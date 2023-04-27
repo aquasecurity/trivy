@@ -58,7 +58,8 @@ type SecretScannerOption struct {
 
 type LicenseScannerOption struct {
 	// Use license classifier to get better results though the classification is expensive.
-	Full bool
+	Full                      bool
+	ClassifierConfidenceLevel float64
 }
 
 ////////////////

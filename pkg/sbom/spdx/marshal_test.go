@@ -132,6 +132,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:gem/actioncontroller@7.0.1",
 							},
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-826226d056ff30c0"),
@@ -147,6 +148,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:gem/actionpack@7.0.1",
 							},
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
@@ -162,25 +164,29 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 							},
 						},
-						PackageSourceInfo: "built package from: binutils 2.30-93.el8",
+						PackageSourceInfo:     "built package from: binutils 2.30-93.el8",
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-73c871d73f3c8248"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "bundler",
 						PackageSourceInfo:       "app/subproject/Gemfile.lock",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-c3fac92c1ac0a9fa"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "bundler",
 						PackageSourceInfo:       "app/Gemfile.lock",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("ContainerImage-9396d894cd0cb6cb"),
@@ -201,6 +207,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"DiffID: sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 							"RepoTag: rails:latest",
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeContainer,
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -352,7 +359,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 							},
 						},
-						PackageSourceInfo: "built package from: acl 1:2.2.53-1.el8",
+						PackageSourceInfo:     "built package from: acl 1:2.2.53-1.el8",
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),
@@ -383,6 +391,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d5443dbcbba0dbd4"),
@@ -413,12 +422,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
 					},
 					{
 						PackageName:             "centos:latest",
@@ -430,12 +441,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"Size: 1024",
 							"RepoTag: centos:latest",
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeContainer,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-441a648f2aeeee72"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "gemspec",
 						PackageSourceInfo:       "Ruby",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -530,12 +543,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:gem/actioncable@6.1.4.1",
 							},
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-9dd4a4ba7077cc5a"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "bundler",
 						PackageSourceInfo:       "Gemfile.lock",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Filesystem-5af0f1f08c20909a"),
@@ -544,6 +559,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -617,12 +633,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
 					},
 					{
 						PackageSPDXIdentifier:   "Application-24f8a80152e2c0fc",
 						PackageDownloadLocation: "git+http://test-aggregate",
 						PackageName:             "node-pkg",
 						PackageSourceInfo:       "Node.js",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-daedb173cfd43058"),
@@ -647,6 +665,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
 							},
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -704,6 +723,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
 					},
 				},
 				Relationships: []*spdx.Relationship{
