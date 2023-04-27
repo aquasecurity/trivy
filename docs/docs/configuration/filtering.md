@@ -302,6 +302,48 @@ Total: 7 (UNKNOWN: 0, LOW: 1, MEDIUM: 1, HIGH: 3, CRITICAL: 2)
 
 </details>
 
+## By Package Name
+
+|     Scanner      | Supported |
+|:----------------:|:---------:|
+|  Vulnerability   |     ✓     |
+| Misconfiguration |           |
+|      Secret      |           |
+|     License      |           |
+
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+By default, Trivy ignores language package files installed from package managers. You can read about it [here](../scanner/vulnerability/os.md#data-source-selection).
+
+To scan these files as language packages, use `--third-party-os-pkgs` options with package names.
+
+!!! warning
+    This feature removes the OS package from the report, so the dependency tree may not be complete.
+
+
+```bash
+$ trivy -d image --third-party-os-pkgs keycloak test_image
+```
+
+<details>
+<summary>Result</summary>
+
+```bash
+2023-04-27T10:42:50.884+0600	DEBUG	wolfi: the number of packages: 17
+2023-04-27T10:42:50.885+0600	INFO	Number of language-specific files: 1
+Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+2023-04-27T10:42:50.906+0600	INFO	Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
+
+Java (jar)
+
+Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 2, HIGH: 1, CRITICAL: 1)
+
+```
+
+</details>
+
 ## By Open Policy Agent
 
 |     Scanner      | Supported |
