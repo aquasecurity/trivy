@@ -70,7 +70,7 @@ var (
 		Name:       "third-party-os-pkgs",
 		ConfigName: "scan.third-party-os-pkgs",
 		Value:      []string{},
-		Usage:      "parse files of these os packages as language packages (use GitHub and GitLab database for these files)",
+		Usage:      "[EXPERIMENTAL] parse files of these os packages as language packages (use GitHub and GitLab database for these files)",
 	}
 )
 

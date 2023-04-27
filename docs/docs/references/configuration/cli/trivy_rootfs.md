@@ -77,7 +77,7 @@ trivy rootfs [flags] ROOTDIR
       --slow                             scan over time with lower CPU and memory utilization
   -t, --template string                  output template
       --tf-vars strings                  specify paths to override the Terraform tfvars files
-      --third-party-os-pkgs strings      parse files of these os packages as language packages (use GitHub and GitLab database for these files)
+      --third-party-os-pkgs strings      [EXPERIMENTAL] parse files of these os packages as language packages (use GitHub and GitLab database for these files)
       --token string                     for authentication in client/server mode
       --token-header string              specify a header name for token in client/server mode (default "Trivy-Token")
       --trace                            enable more verbose trace output for custom queries
