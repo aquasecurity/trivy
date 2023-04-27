@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
@@ -108,7 +109,7 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		defer f.Close()
 
 		if err = fn(path, d, file); err != nil {
-			log.Logger.Debugf("Unable to parse %q: %s", path, err)
+			log.Logger.Debugw("Walk error", zap.String("file_path", path), zap.Error(err))
 		}
 		return nil
 	})

@@ -4,6 +4,7 @@ import (
 	"context"
 	"io/fs"
 
+	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
@@ -104,7 +105,7 @@ func walk[T any](ctx context.Context, fsys fs.FS, path string, c chan T, onFile 
 	}
 	res, err := onFile(path, info, rsa)
 	if err != nil {
-		log.Logger.Debugf("Unable to parse %q: %s", path, err)
+		log.Logger.Debugw("Walk error", zap.String("file_path", path), zap.Error(err))
 		return nil
 	}
 
