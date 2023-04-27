@@ -10,6 +10,7 @@ The following services are supported:
 - accessanalyzer
 - api-gateway
 - athena
+- autoscaling
 - cloudfront
 - cloudtrail
 - cloudwatch
