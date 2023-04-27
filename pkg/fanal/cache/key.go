@@ -26,8 +26,9 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 		HookVersions     map[string]int
 		SkipFiles        []string
 		SkipDirs         []string
+		ThirdPartyOSPkgs []string
 		FilePatterns     []string `json:",omitempty"`
-	}{id, analyzerVersions, hookVersions, artifactOpt.SkipFiles, artifactOpt.SkipDirs, artifactOpt.FilePatterns}
+	}{id, analyzerVersions, hookVersions, artifactOpt.SkipFiles, artifactOpt.SkipDirs, artifactOpt.ThirdPartyOSPkgs, artifactOpt.FilePatterns}
 
 	if err := json.NewEncoder(h).Encode(keyBase); err != nil {
 		return "", xerrors.Errorf("json encode error: %w", err)
