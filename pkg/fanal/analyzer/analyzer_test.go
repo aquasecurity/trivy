@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"sync"
 	"testing"
 
@@ -556,13 +555,13 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 	tests := []struct {
 		name         string
-		filePaths    []string
+		dir          string
 		analyzerType analyzer.Type
 		want         *analyzer.AnalysisResult
 	}{
 		{
 			name:         "jars with invalid jar",
-			filePaths:    []string{"testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar", "testdata/post-apps/jar/invalid.jar"},
+			dir:          "testdata/post-apps/jar/",
 			analyzerType: analyzer.TypeJar,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -582,7 +581,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 		},
 		{
 			name:         "poetry files with invalid file",
-			filePaths:    []string{"testdata/post-apps/poetry/happy/poetry.lock", "testdata/post-apps/poetry/sad/poetry.lock"},
+			dir:          "testdata/post-apps/poetry/",
 			analyzerType: analyzer.TypePoetry,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -603,30 +602,22 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
-			got := new(analyzer.AnalysisResult)
 			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
+			// Create a virtual filesystem
 			files := new(syncx.Map[analyzer.Type, *mapfs.FS])
-
-			for _, filePath := range tt.filePaths {
-				mfs, _ := files.LoadOrStore(tt.analyzerType, mapfs.New())
-				if d := filepath.Dir(filePath); d != "." {
-					err = mfs.MkdirAll(d, os.ModePerm)
-					assert.NoError(t, err)
-				}
-				err = mfs.WriteFile(filePath, filePath)
-				assert.NoError(t, err)
-			}
+			mfs := mapfs.New()
+			require.NoError(t, mfs.CopyFilesUnder(tt.dir))
+			files.Store(tt.analyzerType, mfs)
 
 			if tt.analyzerType == analyzer.TypeJar {
 				// init java-trivy-db with skip update
 				javadb.Init("./language/java/jar/testdata", "ghcr.io/aquasecurity/trivy-java-db", true, false, false)
-
 			}
 
 			ctx := context.Background()
+			got := new(analyzer.AnalysisResult)
 			err = a.PostAnalyze(ctx, files, got, analyzer.AnalysisOptions{})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
