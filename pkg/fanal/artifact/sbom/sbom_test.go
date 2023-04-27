@@ -29,7 +29,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+					BlobID: "sha256:c285f85ad78b3303c7a81f018b451a5177de693047e3d5ae94789fa821df0407",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -125,9 +125,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+				ID:   "sha256:c285f85ad78b3303c7a81f018b451a5177de693047e3d5ae94789fa821df0407",
 				BlobIDs: []string{
-					"sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+					"sha256:c285f85ad78b3303c7a81f018b451a5177de693047e3d5ae94789fa821df0407",
 				},
 			},
 		},
@@ -136,7 +136,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+					BlobID: "sha256:c285f85ad78b3303c7a81f018b451a5177de693047e3d5ae94789fa821df0407",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -232,9 +232,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+				ID:   "sha256:c285f85ad78b3303c7a81f018b451a5177de693047e3d5ae94789fa821df0407",
 				BlobIDs: []string{
-					"sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+					"sha256:c285f85ad78b3303c7a81f018b451a5177de693047e3d5ae94789fa821df0407",
 				},
 			},
 		},
@@ -248,7 +248,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "os-only-bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:033dc76e6daf7d8ba439d678dc7e33400687098f3e9f563f6975adf4eb440eee",
+					BlobID: "sha256:e5db6fee106daee3ec32ad6b87fd74c48d1f7b062985dad757640b9e775138d5",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{

@@ -945,9 +945,6 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 
-	scanFlagGroup := flag.NewScanFlagGroup()
-	scanFlagGroup.ThirdPartyOSPkgs = nil // disable `--third-party-os-pkgs`
-
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -955,7 +952,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          scanFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 		AWSFlagGroup: &flag.AWSFlagGroup{

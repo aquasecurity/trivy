@@ -18,6 +18,7 @@ func TestCalcKey(t *testing.T) {
 		hookVersions     map[string]int
 		skipFiles        []string
 		skipDirs         []string
+		thirdPartyOSPkgs []string
 		patterns         []string
 		policy           []string
 		data             []string
@@ -42,7 +43,7 @@ func TestCalcKey(t *testing.T) {
 					"python-pkg": 1,
 				},
 			},
-			want: "sha256:c720b502991465ea11929cfefc71cf4b5aeaa9a8c0ae59fdaf597f957f5cdb18",
+			want: "sha256:e1869e8e674badac5f3f940a1a67c486a9b05b7b3286d51eeb61915fa9c9058f",
 		},
 		{
 			name: "with disabled analyzer",
@@ -59,7 +60,7 @@ func TestCalcKey(t *testing.T) {
 					"python-pkg": 1,
 				},
 			},
-			want: "sha256:d63724cc72729edd3c81205739d64fcb414a4e6345dd4dde7f0fe6bdd56bedf9",
+			want: "sha256:2b0965d8bab4d008f4d64161943365518310b7b26b3e9ccf2a011f3e2c8306eb",
 		},
 		{
 			name: "with empty slice file patterns",
@@ -73,7 +74,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				patterns: []string{},
 			},
-			want: "sha256:9f7afa4d27c4c4f371dc6bb47bcc09e7a4a00b1d870e8156f126e35d8f6522e6",
+			want: "sha256:f947b945d3b3f494fa8f871eb627cc7b4a223733cfb90992b17e4aa13fb359be",
 		},
 		{
 			name: "with single empty string in file patterns",
@@ -87,7 +88,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				patterns: []string{""},
 			},
-			want: "sha256:bcfc5da13ef9bf0b85e719584800a010063474546f1051a781b78bd83de01102",
+			want: "sha256:a408cd958b192d07f1283e4a1548da0c458a9bf15568ae07933b10d0fe3b9ae1",
 		},
 		{
 			name: "with single non empty string in file patterns",
@@ -101,7 +102,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				patterns: []string{"test"},
 			},
-			want: "sha256:8c9750b8eca507628417f21d7db707a7876d2e22c3e75b13f31a795af4051c57",
+			want: "sha256:6580886916ab4b096242b312b000ea3da31bc376048e08c1cde0a45b8ef8fb51",
 		},
 		{
 			name: "with non empty followed by empty string in file patterns",
@@ -115,7 +116,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				patterns: []string{"test", ""},
 			},
-			want: "sha256:71abf09bf1422531e2838db692b80f9b9f48766f56b7d3d02aecdb36b019e103",
+			want: "sha256:95b2152ce27471ba076e1da987a5efd62372076a833874f9d04c8c5d16dbfb28",
 		},
 		{
 			name: "with non empty preceded by empty string in file patterns",
@@ -129,7 +130,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				patterns: []string{"", "test"},
 			},
-			want: "sha256:71abf09bf1422531e2838db692b80f9b9f48766f56b7d3d02aecdb36b019e103",
+			want: "sha256:95b2152ce27471ba076e1da987a5efd62372076a833874f9d04c8c5d16dbfb28",
 		},
 		{
 			name: "with policy",
@@ -143,7 +144,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				policy: []string{"testdata/policy"},
 			},
-			want: "sha256:9602d5ef5af086112cc9fae8310390ed3fb79f4b309d8881b9807e379c8dfa57",
+			want: "sha256:46538f674ad7373e6f63273fc09edabe63085eaa37c95abb40a7a0ed14160db5",
 		},
 		{
 			name: "skip files and dirs",
@@ -159,7 +160,21 @@ func TestCalcKey(t *testing.T) {
 				skipDirs:  []string{"usr/java"},
 				policy:    []string{"testdata/policy"},
 			},
-			want: "sha256:363f70f4ee795f250873caea11c2fc94ef12945444327e7e2f8a99e3884695e0",
+			want: "sha256:2bf2573e9f381b81c1d7563b0ef2f1c78cc3cf8d626ff31c6c1aa934b59f5a71",
+		},
+		{
+			name: "third party os pkgs",
+			args: args{
+				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
+				},
+				thirdPartyOSPkgs: []string{"busybox"},
+			},
+			want: "sha256:0c131167d441f8131d263f9ff6b0eb429b63da2e9923bb73992d87b1d80feaf1",
 		},
 		{
 			name: "with policy/non-existent dir",
@@ -179,9 +194,10 @@ func TestCalcKey(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			artifactOpt := artifact.Option{
-				SkipFiles:    tt.args.skipFiles,
-				SkipDirs:     tt.args.skipDirs,
-				FilePatterns: tt.args.patterns,
+				SkipFiles:        tt.args.skipFiles,
+				SkipDirs:         tt.args.skipDirs,
+				FilePatterns:     tt.args.patterns,
+				ThirdPartyOSPkgs: tt.args.thirdPartyOSPkgs,
 
 				MisconfScannerOption: misconf.ScannerOption{
 					PolicyPaths: tt.args.policy,

@@ -69,7 +69,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
+						BlobID: "sha256:5e20ff2012937031c7ecafc61f4f0dab8d8adb7bf36557cdecdb1a971fa9de75",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							OS: types.OS{
@@ -104,9 +104,9 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
+				ID:   "sha256:5e20ff2012937031c7ecafc61f4f0dab8d8adb7bf36557cdecdb1a971fa9de75",
 				BlobIDs: []string{
-					"sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
+					"sha256:5e20ff2012937031c7ecafc61f4f0dab8d8adb7bf36557cdecdb1a971fa9de75",
 				},
 			},
 		},
@@ -208,7 +208,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:d07a1894bfd283b4ac26682ab48f12ad22cdc4fef9cf8b4c09056f631d3667a5",
+						BlobID: "sha256:6c162e9014fd0a5faa4702fb49f56bab6f871c836e97cbbf79f940c47e70f446",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Applications: []types.Application{
@@ -235,9 +235,9 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: registry + "/test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:d07a1894bfd283b4ac26682ab48f12ad22cdc4fef9cf8b4c09056f631d3667a5",
+				ID:   "sha256:6c162e9014fd0a5faa4702fb49f56bab6f871c836e97cbbf79f940c47e70f446",
 				BlobIDs: []string{
-					"sha256:d07a1894bfd283b4ac26682ab48f12ad22cdc4fef9cf8b4c09056f631d3667a5",
+					"sha256:6c162e9014fd0a5faa4702fb49f56bab6f871c836e97cbbf79f940c47e70f446",
 				},
 			},
 		},
