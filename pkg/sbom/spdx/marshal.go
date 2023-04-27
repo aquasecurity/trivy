@@ -58,7 +58,8 @@ const (
 	PackagePurposeApplication = "APPLICATION"
 	PackagePurposeLibrary     = "LIBRARY"
 
-	PackageSupplierNoAssertion = "NOASSERTION"
+	PackageSupplierNoAssertion  = "NOASSERTION"
+	PackageSupplierOrganization = "Organization"
 
 	RelationShipContains  = common.TypeRelationshipContains
 	RelationShipDescribe  = common.TypeRelationshipDescribe
@@ -341,7 +342,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 	supplier := &spdx.Supplier{Supplier: PackageSupplierNoAssertion}
 	if pkg.Maintainer != "" {
 		supplier = &spdx.Supplier{
-			SupplierType: "Organization", // Always use "Organisation" at the moment as it is difficult to distinguish between "Person" or "Organization".
+			SupplierType: PackageSupplierOrganization, // Always use "Organisation" at the moment as it is difficult to distinguish between "Person" or "Organization".
 			Supplier:     pkg.Maintainer,
 		}
 	}
