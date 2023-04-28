@@ -319,7 +319,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 	}
 
 	var pkgSrcInfo string
-	if class == types.ClassOSPkg {
+	if class == types.ClassOSPkg && pkg.SrcName != "" {
 		pkgSrcInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, pkg.SrcName, utils.FormatSrcVersion(pkg))
 	}
 
