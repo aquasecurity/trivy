@@ -120,7 +120,7 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range report.Results {
 		for _, vuln := range result.Vulnerabilities {
-			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.Ref)
+			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.PkgRef)
 			if err != nil {
 				return nil, err
 			}
@@ -392,6 +392,9 @@ func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error)
 			component.BOMRef = p.ToString()
 			component.PackageURL = p.ToString()
 		}
+	case ftypes.ArtifactVM:
+		component.Type = cdx.ComponentTypeContainer
+		component.BOMRef = e.newUUID().String()
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
 		component.BOMRef = e.newUUID().String()
@@ -465,6 +468,12 @@ func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) 
 			return cdx.LicenseChoice{Expression: license}
 		})
 		component.Licenses = lo.ToPtr(cdx.Licenses(choices))
+	}
+
+	if pkg.Maintainer != "" {
+		component.Supplier = &cdx.OrganizationalEntity{
+			Name: pkg.Maintainer,
+		}
 	}
 
 	return component, nil

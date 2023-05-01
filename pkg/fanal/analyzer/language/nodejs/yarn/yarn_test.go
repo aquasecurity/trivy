@@ -14,10 +14,9 @@ import (
 
 func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name    string
-		dir     string
-		want    *analyzer.AnalysisResult
-		wantErr string
+		name string
+		dir  string
+		want *analyzer.AnalysisResult
 	}{
 		{
 			name: "happy path",
@@ -240,11 +239,6 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
-
-			if tt.wantErr != "" {
-				assert.ErrorContains(t, err, tt.wantErr)
-				return
-			}
 
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)

@@ -67,6 +67,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        0,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv3+"},
+								Maintainer:      "CentOS",
 							},
 						},
 					},
@@ -133,6 +134,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-826226d056ff30c0"),
@@ -149,6 +151,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
@@ -157,6 +160,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "2.30-93.el8",
 						PackageLicenseConcluded: "GPL-3.0-or-later",
 						PackageLicenseDeclared:  "GPL-3.0-or-later",
+						PackageSupplier: &spdx.Supplier{
+							SupplierType: tspdx.PackageSupplierOrganization,
+							Supplier:     "CentOS",
+						},
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -361,6 +368,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PackageSourceInfo:     "built package from: acl 1:2.2.53-1.el8",
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),
@@ -392,6 +400,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d5443dbcbba0dbd4"),
@@ -423,6 +432,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
@@ -544,6 +554,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-9dd4a4ba7077cc5a"),
@@ -666,6 +677,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 				},
 				Relationships: []*spdx.Relationship{

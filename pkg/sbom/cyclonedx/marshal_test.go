@@ -69,6 +69,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        0,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv3+"},
+								Maintainer:      "CentOS",
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -232,6 +233,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							cdx.LicenseChoice{Expression: "GPLv3+"},
 						},
 						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+						Supplier: &cdx.OrganizationalEntity{
+							Name: "CentOS",
+						},
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgID",
@@ -1288,7 +1292,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 								VulnerabilityID:  "CVE-2018-20623",
 								PkgName:          "binutils",
 								InstalledVersion: "2.30-93.el8",
-								Ref:              "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								PkgRef:           "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 								},
@@ -1481,7 +1485,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 								VulnerabilityID:  "CVE-2018-20623",
 								PkgName:          "binutils",
 								InstalledVersion: "2.30-93.el8",
-								Ref:              "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								PkgRef:           "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 								},

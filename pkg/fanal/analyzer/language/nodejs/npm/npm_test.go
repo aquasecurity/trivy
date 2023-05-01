@@ -22,10 +22,9 @@ func TestMain(m *testing.M) {
 
 func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name    string
-		dir     string
-		want    *analyzer.AnalysisResult
-		wantErr string
+		name string
+		dir  string
+		want *analyzer.AnalysisResult
 	}{
 		{
 			name: "with node_modules",
@@ -156,9 +155,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "sad path",
-			dir:     "testdata/sad",
-			wantErr: "failed to parse",
+			name: "sad path",
+			dir:  "testdata/sad",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
@@ -170,13 +169,10 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 				FS: os.DirFS(tt.dir),
 			})
 
-			if tt.wantErr != "" {
-				assert.ErrorContains(t, err, tt.wantErr)
-				return
-			}
-
 			assert.NoError(t, err)
-			sortPkgs(got.Applications[0].Libraries)
+			if len(got.Applications) > 0 {
+				sortPkgs(got.Applications[0].Libraries)
+			}
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -58,6 +58,9 @@ const (
 	PackagePurposeApplication = "APPLICATION"
 	PackagePurposeLibrary     = "LIBRARY"
 
+	PackageSupplierNoAssertion  = "NOASSERTION"
+	PackageSupplierOrganization = "Organization"
+
 	RelationShipContains  = common.TypeRelationshipContains
 	RelationShipDescribe  = common.TypeRelationshipDescribe
 	RelationShipDependsOn = common.TypeRelationshipDependsOn
@@ -316,7 +319,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 	}
 
 	var pkgSrcInfo string
-	if class == types.ClassOSPkg {
+	if class == types.ClassOSPkg && pkg.SrcName != "" {
 		pkgSrcInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, pkg.SrcName, utils.FormatSrcVersion(pkg))
 	}
 
@@ -336,6 +339,13 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 		return spdx.Package{}, xerrors.Errorf("package file error: %w", err)
 	}
 
+	supplier := &spdx.Supplier{Supplier: PackageSupplierNoAssertion}
+	if pkg.Maintainer != "" {
+		supplier = &spdx.Supplier{
+			SupplierType: PackageSupplierOrganization, // Always use "Organization" at the moment as it is difficult to distinguish between "Person" or "Organization".
+			Supplier:     pkg.Maintainer,
+		}
+	}
 	return spdx.Package{
 		PackageName:             pkg.Name,
 		PackageVersion:          utils.FormatVersion(pkg),
@@ -352,6 +362,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 		PackageExternalReferences: pkgExtRefs,
 		PackageAttributionTexts:   attrTexts,
 		PrimaryPackagePurpose:     PackagePurposeLibrary,
+		PackageSupplier:           supplier,
 		Files:                     files,
 	}, nil
 }
