@@ -229,6 +229,7 @@
         </td>
       </tr>
       <tr><th colspan="6">No Misconfigurations found</th></tr>
+      <tr><th colspan="6">No Secrets found</th></tr>
     </table>
   </body>
 </html>
