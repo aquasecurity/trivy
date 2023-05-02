@@ -1,11 +1,11 @@
 package cyclonedx_test
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"testing"
 	"time"
+
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -1603,79 +1603,101 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 	}
 }
 
-func TestMarshaler_MarshalKbom(t *testing.T) {
-
-	const bomResult = `{
-  "SchemaVersion": 2,
-  "ArtifactName": "kind-kind@v1.21.1",
-  "ArtifactType": "kubernetes",
-  "Results": [
-    {
-      "Target": "kind-kind@1.21.1",
-      "Class": "container-images",
-      "Type": "oci",
-      "Packages": [
-        {
-          "ID": "etcd@3.4.13-0",
-          "Name": "etcd",
-          "Version": "3.4.13-0",
-          "Digest": "k8s.gcr.io/etcd@sha256:05b738aa1bc6355db8a2ee8639f3631b908286e43f584a3d2ee0c472de033c28"
-        },
-        {
-          "ID": "kube-apiserver@1.21.1",
-          "Name": "kube-apiserver",
-          "Version": "1.21.1",
-          "Digest": "k8s.gcr.io/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f"
-        }
-      ]
-    }
-  ]
-}`
-	/*tests := []struct {
+func TestMarshaler_Kbom(t *testing.T) {
+	tests := []struct {
 		name        string
 		inputReport types.Report
 		want        *cdx.BOM
 	}{
 		{
-			name: "happy kbom path for cyclonedx scan",
+			name: "happy path for kbom generation",
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
-				ArtifactName:  "cyclonedx.json",
-				ArtifactType:  ftypes.ArtifactCycloneDX,
+				ArtifactName:  "kind-kind@v1.21.1",
+				ArtifactType:  ftypes.Kubernetes,
 				Results: types.Results{
 					{
-						Target: "rails:latest (centos 8.3.2011)",
-						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Target: "kind-kind@1.21.1",
+						Class:  types.ClassContainer,
+						Type:   "oci",
 						Packages: []ftypes.Package{
 							{
-								Name:            "binutils",
-								Ref:             "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
-								Version:         "2.30",
-								Release:         "93.el8",
-								Epoch:           0,
-								Arch:            "aarch64",
-								SrcName:         "binutils",
-								SrcVersion:      "2.30",
-								SrcRelease:      "93.el8",
-								SrcEpoch:        0,
-								Modularitylabel: "",
-								Licenses:        []string{"GPLv3+"},
+								ID:      "etcd@3.4.13-0",
+								Name:    "etcd",
+								Digest:  "k8s.gcr.io/etcd@sha256:05b738aa1bc6355db8a2ee8639f3631b908286e43f584a3d2ee0c472de033c28",
+								Version: "3.4.13-0",
+							},
+							{
+								ID:      "kube-apiserver@1.21.1",
+								Name:    "kube-apiserver",
+								Digest:  "k8s.gcr.io/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
+								Version: "1.21.1",
 							},
 						},
 					},
 					{
-						Target: "rails:latest (centos 8.3.2011)",
-						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Target: "kind-control-plane@1.21.1",
+						Class:  types.ClassApplication,
+						Type:   "golang",
+						Packages: []ftypes.Package{
+							{
+								ID:      "containerd@1.5.2",
+								Name:    "containerd",
+								Version: "1.5.2",
+							},
+							{
+								ID:      "kubelet@1.21.1",
+								Name:    "kubelet",
+								Version: "1.21.1",
+								Properties: []ftypes.Property{
+									{
+										Name:  "node-role",
+										Value: "master",
+									},
+								},
+							},
+							{
+								ID:      "kube-proxy@6.2.8-200.fc37.aarch64",
+								Name:    "kube-proxy",
+								Version: "6.2.8-200.fc37.aarch64",
+							},
+						},
+					},
+					{
+						Target: "kind-control-plane@1.21.1",
+						Class:  types.ClassApplication,
+						Type:   "debian",
+						Packages: []ftypes.Package{
+							{
+								ID:      "Ubuntu@21.04",
+								Name:    "Ubuntu",
+								Version: "21.04",
+								Properties: []ftypes.Property{
+									{
+										Name:  "architecture",
+										Value: "arm64",
+									},
+									{
+										Name:  "kernel_version",
+										Value: "6.2.8-200.fc37.aarch64",
+									},
+
+									{
+										Name:  "operating_system",
+										Value: "linux",
+									},
+								},
+							},
+						},
 					},
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:       "http://cyclonedx.org/schema/bom/1.4",
-				BOMFormat:   "CycloneDX",
-				SpecVersion: cdx.SpecVersion1_4,
-				Version:     1,
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				BOMFormat:    "CycloneDX",
+				SpecVersion:  cdx.SpecVersion1_4,
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
 					Tools: &[]cdx.Tool{
@@ -1686,32 +1708,160 @@ func TestMarshaler_MarshalKbom(t *testing.T) {
 						},
 					},
 					Component: &cdx.Component{
-						Name:   "centos:8",
-						Type:   cdx.ComponentTypeApplication,
-						BOMRef: "urn:uuid:f08a6ccd-4dce-4759-bd84-c626675d60a7/1",
+						Name:   "kind-kind@v1.21.1",
+						Type:   cdx.ComponentTypeContainer,
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:SchemaVersion",
+								Value: "2",
+							},
+						},
 					},
 				},
+				Components: &[]cdx.Component{
+					{
+						BOMRef:     "pkg:oci/etcd@sha256:05b738aa1bc6355db8a2ee8639f3631b908286e43f584a3d2ee0c472de033c28?repository_url=k8s.gcr.io%2Fetcd&arch=",
+						Type:       cdx.ComponentTypeContainer,
+						Name:       "etcd",
+						Version:    "sha256:05b738aa1bc6355db8a2ee8639f3631b908286e43f584a3d2ee0c472de033c28",
+						PackageURL: "pkg:oci/etcd@sha256:05b738aa1bc6355db8a2ee8639f3631b908286e43f584a3d2ee0c472de033c28?repository_url=k8s.gcr.io%2Fetcd&arch=",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "etcd@3.4.13-0",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "oci",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:oci/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver&arch=",
+						Type:       cdx.ComponentTypeContainer,
+						Name:       "kube-apiserver",
+						Version:    "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
+						PackageURL: "pkg:oci/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver&arch=",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "kube-apiserver@1.21.1",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "oci",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:golang/containerd@1.5.2",
+						Type:       cdx.ComponentTypeApplication,
+						Name:       "containerd",
+						Version:    "1.5.2",
+						PackageURL: "pkg:golang/containerd@1.5.2",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "containerd@1.5.2",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "golang",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:golang/kubelet@1.21.1",
+						Type:       cdx.ComponentTypeApplication,
+						Name:       "kubelet",
+						Version:    "1.21.1",
+						PackageURL: "pkg:golang/kubelet@1.21.1",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "kubelet@1.21.1",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "golang",
+							},
+							{
+								Name:  "aquasecurity:trivy:node-role",
+								Value: "master",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:golang/kube-proxy@6.2.8-200.fc37.aarch64",
+						Type:       cdx.ComponentTypeApplication,
+						Name:       "kube-proxy",
+						Version:    "6.2.8-200.fc37.aarch64",
+						PackageURL: "pkg:golang/kube-proxy@6.2.8-200.fc37.aarch64",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "kube-proxy@6.2.8-200.fc37.aarch64",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "golang",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:deb/Ubuntu@21.04",
+						Type:       cdx.ComponentTypeApplication,
+						Name:       "Ubuntu",
+						Version:    "21.04",
+						PackageURL: "pkg:deb/Ubuntu@21.04",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "Ubuntu@21.04",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "debian",
+							},
+							{
+								Name:  "aquasecurity:trivy:architecture",
+								Value: "arm64",
+							},
+							{
+								Name:  "aquasecurity:trivy:kernel_version",
+								Value: "6.2.8-200.fc37.aarch64",
+							},
+							{
+								Name:  "aquasecurity:trivy:operating_system",
+								Value: "linux",
+							},
+						},
+					},
+				},
+				Dependencies: &[]cdx.Dependency{{
+					Ref:          "3ff14136-e09f-4df9-80ea-000000000002",
+					Dependencies: &[]string{},
+				}},
+				Vulnerabilities: &[]cdx.Vulnerability{},
 			},
 		},
-	} */
-	var report types.Report
-	err := json.Unmarshal([]byte(bomResult), &report)
-	assert.NoError(t, err)
-	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
-
-	//	for _, tt := range tests {
-	//		t.Run(tt.name, func(t *testing.T) {
-	var count int
-	newUUID := func() uuid.UUID {
-		count++
-		return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
 	}
 
-	marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
-	bom, err := marshaler.Marshal(report)
-	assert.NoError(t, err)
-	b, err := json.Marshal(bom)
-	assert.NoError(t, err)
-	fmt.Println(string(b))
-	//	})
+	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var count int
+			newUUID := func() uuid.UUID {
+				count++
+				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
+			}
+
+			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
+			bom, err := marshaler.Marshal(tt.inputReport)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, bom)
+		})
+	}
 }

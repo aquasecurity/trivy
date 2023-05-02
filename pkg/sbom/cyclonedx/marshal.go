@@ -206,7 +206,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		parents := ftypes.Packages(result.Packages).ParentDeps()
 
 		for _, pkg := range result.Packages {
-			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
+			pkgComponent, err := pkgToCdxComponent(result.Type, result.Class, r.Metadata, pkg)
 			if err != nil {
 				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
@@ -451,14 +451,17 @@ func (e *Marshaler) resultToCdxComponent(r types.Result, osFound *ftypes.OS) cdx
 	return component
 }
 
-func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
+func pkgToCdxComponent(pkgType string, pkgClass types.ResultClass, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
 	pu, err := purl.NewPackageURL(pkgType, meta, pkg)
 	if err != nil {
 		return cdx.Component{}, xerrors.Errorf("failed to new package purl: %w", err)
 	}
 	componentType := cdx.ComponentTypeLibrary
-	if pu.Type == "oci" {
+	if pkgClass == types.ClassContainer {
 		componentType = cdx.ComponentTypeContainer
+	}
+	if pkgClass == types.ClassApplication {
+		componentType = cdx.ComponentTypeApplication
 	}
 	properties := cdxProperties(pkgType, pkg)
 	component := cdx.Component{
@@ -487,55 +490,56 @@ func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) 
 }
 
 func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
-	props := []struct {
-		name  string
-		value string
-	}{
+	props := []ftypes.Property{
+
 		{
-			PropertyPkgID,
-			pkg.ID,
+			Name:  PropertyPkgID,
+			Value: pkg.ID,
 		},
 		{
-			PropertyPkgType,
-			pkgType,
+			Name:  PropertyPkgType,
+			Value: pkgType,
 		},
 		{
-			PropertyFilePath,
-			pkg.FilePath,
+			Name:  PropertyFilePath,
+			Value: pkg.FilePath,
 		},
 		{
-			PropertySrcName,
-			pkg.SrcName,
+			Name:  PropertySrcName,
+			Value: pkg.SrcName,
 		},
 		{
-			PropertySrcVersion,
-			pkg.SrcVersion,
+			Name:  PropertySrcVersion,
+			Value: pkg.SrcVersion,
 		},
 		{
-			PropertySrcRelease,
-			pkg.SrcRelease,
+			Name:  PropertySrcRelease,
+			Value: pkg.SrcRelease,
 		},
 		{
-			PropertySrcEpoch,
-			strconv.Itoa(pkg.SrcEpoch),
+			Name:  PropertySrcEpoch,
+			Value: strconv.Itoa(pkg.SrcEpoch),
 		},
 		{
-			PropertyModularitylabel,
-			pkg.Modularitylabel,
+			Name:  PropertyModularitylabel,
+			Value: pkg.Modularitylabel,
 		},
 		{
-			PropertyLayerDigest,
-			pkg.Layer.Digest,
+			Name:  PropertyLayerDigest,
+			Value: pkg.Layer.Digest,
 		},
 		{
-			PropertyLayerDiffID,
-			pkg.Layer.DiffID,
+			Name:  PropertyLayerDiffID,
+			Value: pkg.Layer.DiffID,
 		},
 	}
 
 	var properties []cdx.Property
+	if len(pkg.Properties) > 0 {
+		props = append(props, pkg.Properties...)
+	}
 	for _, prop := range props {
-		properties = appendProperties(properties, prop.name, prop.value)
+		properties = appendProperties(properties, prop.Name, prop.Value)
 	}
 	if len(properties) == 0 {
 		return nil

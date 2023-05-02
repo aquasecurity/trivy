@@ -57,7 +57,8 @@ const (
 	ClassLicense     = "license"      // For detected package licenses
 	ClassLicenseFile = "license-file" // For detected licenses in files
 	ClassCustom      = "custom"
-	ClassContainer   = "container-images"
+	ClassContainer   = "container-images" // k8s use-case when encapsulate containers
+	ClassApplication = "applications"     // k8s use-case when encapsulate containers
 
 	ComplianceK8sNsa           = Compliance("k8s-nsa")
 	ComplianceK8sCIS           = Compliance("k8s-cis")
