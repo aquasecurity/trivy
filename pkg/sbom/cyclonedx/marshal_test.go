@@ -1,11 +1,11 @@
 package cyclonedx_test
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"testing"
 	"time"
-
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -1601,4 +1601,117 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func TestMarshaler_MarshalKbom(t *testing.T) {
+
+	const bomResult = `{
+  "SchemaVersion": 2,
+  "ArtifactName": "kind-kind@v1.21.1",
+  "ArtifactType": "kubernetes",
+  "Results": [
+    {
+      "Target": "kind-kind@1.21.1",
+      "Class": "container-images",
+      "Type": "oci",
+      "Packages": [
+        {
+          "ID": "etcd@3.4.13-0",
+          "Name": "etcd",
+          "Version": "3.4.13-0",
+          "Digest": "k8s.gcr.io/etcd@sha256:05b738aa1bc6355db8a2ee8639f3631b908286e43f584a3d2ee0c472de033c28"
+        },
+        {
+          "ID": "kube-apiserver@1.21.1",
+          "Name": "kube-apiserver",
+          "Version": "1.21.1",
+          "Digest": "k8s.gcr.io/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f"
+        }
+      ]
+    }
+  ]
+}`
+	/*tests := []struct {
+		name        string
+		inputReport types.Report
+		want        *cdx.BOM
+	}{
+		{
+			name: "happy kbom path for cyclonedx scan",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "cyclonedx.json",
+				ArtifactType:  ftypes.ArtifactCycloneDX,
+				Results: types.Results{
+					{
+						Target: "rails:latest (centos 8.3.2011)",
+						Class:  types.ClassOSPkg,
+						Type:   fos.CentOS,
+						Packages: []ftypes.Package{
+							{
+								Name:            "binutils",
+								Ref:             "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Version:         "2.30",
+								Release:         "93.el8",
+								Epoch:           0,
+								Arch:            "aarch64",
+								SrcName:         "binutils",
+								SrcVersion:      "2.30",
+								SrcRelease:      "93.el8",
+								SrcEpoch:        0,
+								Modularitylabel: "",
+								Licenses:        []string{"GPLv3+"},
+							},
+						},
+					},
+					{
+						Target: "rails:latest (centos 8.3.2011)",
+						Class:  types.ClassOSPkg,
+						Type:   fos.CentOS,
+					},
+				},
+			},
+			want: &cdx.BOM{
+				XMLNS:       "http://cyclonedx.org/schema/bom/1.4",
+				BOMFormat:   "CycloneDX",
+				SpecVersion: cdx.SpecVersion1_4,
+				Version:     1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30+00:00",
+					Tools: &[]cdx.Tool{
+						{
+							Name:    "trivy",
+							Vendor:  "aquasecurity",
+							Version: "dev",
+						},
+					},
+					Component: &cdx.Component{
+						Name:   "centos:8",
+						Type:   cdx.ComponentTypeApplication,
+						BOMRef: "urn:uuid:f08a6ccd-4dce-4759-bd84-c626675d60a7/1",
+					},
+				},
+			},
+		},
+	} */
+	var report types.Report
+	err := json.Unmarshal([]byte(bomResult), &report)
+	assert.NoError(t, err)
+	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+
+	//	for _, tt := range tests {
+	//		t.Run(tt.name, func(t *testing.T) {
+	var count int
+	newUUID := func() uuid.UUID {
+		count++
+		return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
+	}
+
+	marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
+	bom, err := marshaler.Marshal(report)
+	assert.NoError(t, err)
+	b, err := json.Marshal(bom)
+	assert.NoError(t, err)
+	fmt.Println(string(b))
+	//	})
 }

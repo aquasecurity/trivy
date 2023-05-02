@@ -395,6 +395,9 @@ func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error)
 	case ftypes.ArtifactVM:
 		component.Type = cdx.ComponentTypeContainer
 		component.BOMRef = e.newUUID().String()
+	case ftypes.Kubernetes:
+		component.Type = cdx.ComponentTypeContainer
+		component.BOMRef = e.newUUID().String()
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
 		component.BOMRef = e.newUUID().String()
@@ -453,9 +456,13 @@ func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) 
 	if err != nil {
 		return cdx.Component{}, xerrors.Errorf("failed to new package purl: %w", err)
 	}
+	componentType := cdx.ComponentTypeLibrary
+	if pu.Type == "oci" {
+		componentType = cdx.ComponentTypeContainer
+	}
 	properties := cdxProperties(pkgType, pkg)
 	component := cdx.Component{
-		Type:       cdx.ComponentTypeLibrary,
+		Type:       componentType,
 		Name:       pkg.Name,
 		Version:    pu.Version,
 		BOMRef:     pu.BOMRef(),

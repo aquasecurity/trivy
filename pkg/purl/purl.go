@@ -173,6 +173,11 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
 	case packageurl.TypeOCI:
+		metadata := types.Metadata{
+			RepoDigests: []string{
+				string(pkg.Digest),
+			},
+		}
 		purl, err := parseOCI(metadata)
 		if err != nil {
 			return PackageURL{}, err

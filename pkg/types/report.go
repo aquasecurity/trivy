@@ -57,6 +57,7 @@ const (
 	ClassLicense     = "license"      // For detected package licenses
 	ClassLicenseFile = "license-file" // For detected licenses in files
 	ClassCustom      = "custom"
+	ClassContainer   = "container-images"
 
 	ComplianceK8sNsa           = Compliance("k8s-nsa")
 	ComplianceK8sCIS           = Compliance("k8s-cis")
