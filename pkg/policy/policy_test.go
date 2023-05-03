@@ -388,3 +388,13 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_Clear(t *testing.T) {
+	cacheDir := t.TempDir()
+	err := os.MkdirAll(filepath.Join(cacheDir, "policy"), 0755)
+	require.NoError(t, err)
+
+	c, err := policy.NewClient(cacheDir, true)
+	require.NoError(t, err)
+	require.NoError(t, c.Clear())
+}
