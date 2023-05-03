@@ -93,11 +93,11 @@ require (
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.7
 	go.uber.org/zap v1.24.0
-	golang.org/x/crypto v0.7.0
+	golang.org/x/crypto v0.8.0
 	golang.org/x/exp v0.0.0-20230124195608-d38c7dcee874
 	golang.org/x/mod v0.9.0
 	golang.org/x/sync v0.1.0
-	golang.org/x/term v0.6.0
+	golang.org/x/term v0.7.0
 	golang.org/x/text v0.9.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/protobuf v1.30.0
@@ -352,9 +352,9 @@ require (
 	go.starlark.net v0.0.0-20200306205701-8dd3e2ee1dd5 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
-	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/net v0.9.0 // indirect
 	golang.org/x/oauth2 v0.6.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.7.0 // indirect
 	google.golang.org/api v0.114.0 // indirect
