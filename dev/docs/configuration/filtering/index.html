@@ -1681,6 +1681,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../skipping/" class="md-nav__link">
+        Skipping Files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reporting/" class="md-nav__link">
         Reporting
       </a>
@@ -3417,8 +3431,8 @@ Total: <span class="m">7</span> <span class="o">(</span>UNKNOWN: <span class="m"
 <p>Trivy supports Open Policy Agent (OPA) to filter vulnerabilities.
 You can specify a Rego file with <code>--ignore-policy</code> option.</p>
 <p>The Rego package name must be <code>trivy</code> and it must include a rule called <code>ignore</code> which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the <code>input</code> variable. The structure of each vulnerability input is the same as for the Trivy JSON output.<br />
-There is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>. For more info about the helper functions, look at the library <a href="https://github.com/aquasecurity/trivy/tree/v0.40.0/pkg/result/module.go">here</a></p>
-<p>To get started, see the <a href="https://github.com/aquasecurity/trivy/tree/v0.40.0/contrib/example_policy">example policy</a>.</p>
+There is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>. For more info about the helper functions, look at the library <a href="https://github.com/aquasecurity/trivy/tree/v0.41.0/pkg/result/module.go">here</a></p>
+<p>To get started, see the <a href="https://github.com/aquasecurity/trivy/tree/v0.41.0/contrib/example_policy">example policy</a>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
 </code></pre></div>
 <details>
@@ -3545,13 +3559,13 @@ Total: <span class="m">9</span> <span class="o">(</span>UNKNOWN: <span class="m"
       
       
         
-        <a href="../reporting/" class="md-footer__link md-footer__link--next" aria-label="Next: Reporting" rel="next">
+        <a href="../skipping/" class="md-footer__link md-footer__link--next" aria-label="Next: Skipping Files" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Reporting
+              Skipping Files
             </div>
           </div>
           <div class="md-footer__button md-icon">

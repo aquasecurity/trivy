@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/supply-chain/vex/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/configuration/skipping/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>VEX - Trivy</title>
+        <title>Skipping Files - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vulnerability-exploitability-exchange-vex" class="md-skip">
+        <a href="#skipping-files-and-directories" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              VEX
+              Skipping Files
             
           </span>
         </div>
@@ -1545,14 +1545,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" checked>
       
       
       
@@ -1575,7 +1577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1589,7 +1591,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/filtering/" class="md-nav__link">
+      <a href="../filtering/" class="md-nav__link">
         Filtering
       </a>
     </li>
@@ -1601,11 +1603,79 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../configuration/skipping/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Skipping Files
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Skipping Files
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#skip-files" class="md-nav__link">
+    Skip Files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skip-directories" class="md-nav__link">
+    Skip Directories
+  </a>
+  
+    <nav class="md-nav" aria-label="Skip Directories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advanced-globbing" class="md-nav__link">
+    Advanced globbing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-patterns" class="md-nav__link">
+    File patterns
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1617,7 +1687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/reporting/" class="md-nav__link">
+      <a href="../reporting/" class="md-nav__link">
         Reporting
       </a>
     </li>
@@ -1631,7 +1701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/cache/" class="md-nav__link">
+      <a href="../cache/" class="md-nav__link">
         Cache
       </a>
     </li>
@@ -1645,7 +1715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/db/" class="md-nav__link">
+      <a href="../db/" class="md-nav__link">
         DB
       </a>
     </li>
@@ -1659,7 +1729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/others/" class="md-nav__link">
+      <a href="../others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -1678,16 +1748,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
       
       
       
@@ -1710,7 +1778,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sbom/" class="md-nav__link">
+      <a href="../../supply-chain/sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -1750,7 +1818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../attestation/sbom/" class="md-nav__link">
+      <a href="../../supply-chain/attestation/sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -1764,7 +1832,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../attestation/vuln/" class="md-nav__link">
+      <a href="../../supply-chain/attestation/vuln/" class="md-nav__link">
         Cosign Vulnerability Scan Record
       </a>
     </li>
@@ -1778,7 +1846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../attestation/rekor/" class="md-nav__link">
+      <a href="../../supply-chain/attestation/rekor/" class="md-nav__link">
         SBOM Attestation in Rekor
       </a>
     </li>
@@ -1797,113 +1865,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          VEX
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../supply-chain/vex/" class="md-nav__link">
         VEX
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#cyclonedx" class="md-nav__link">
-    CycloneDX
-  </a>
-  
-    <nav class="md-nav" aria-label="CycloneDX">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#generating-the-sbom" class="md-nav__link">
-    Generating the SBOM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-the-vex" class="md-nav__link">
-    Create the VEX
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-sbom-with-vex" class="md-nav__link">
-    Scan SBOM with VEX
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#openvex" class="md-nav__link">
-    OpenVEX
-  </a>
-  
-    <nav class="md-nav" aria-label="OpenVEX">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#generating-the-sbom_1" class="md-nav__link">
-    Generating the SBOM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-the-vex_1" class="md-nav__link">
-    Create the VEX
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-sbom-with-vex_1" class="md-nav__link">
-    Scan SBOM with VEX
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3015,30 +2981,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cyclonedx" class="md-nav__link">
-    CycloneDX
+  <a href="#skip-files" class="md-nav__link">
+    Skip Files
   </a>
   
-    <nav class="md-nav" aria-label="CycloneDX">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skip-directories" class="md-nav__link">
+    Skip Directories
+  </a>
+  
+    <nav class="md-nav" aria-label="Skip Directories">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#generating-the-sbom" class="md-nav__link">
-    Generating the SBOM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-the-vex" class="md-nav__link">
-    Create the VEX
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-sbom-with-vex" class="md-nav__link">
-    Scan SBOM with VEX
+  <a href="#advanced-globbing" class="md-nav__link">
+    Advanced globbing
   </a>
   
 </li>
@@ -3049,36 +3008,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#openvex" class="md-nav__link">
-    OpenVEX
+  <a href="#file-patterns" class="md-nav__link">
+    File patterns
   </a>
-  
-    <nav class="md-nav" aria-label="OpenVEX">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#generating-the-sbom_1" class="md-nav__link">
-    Generating the SBOM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-the-vex_1" class="md-nav__link">
-    Create the VEX
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scan-sbom-with-vex_1" class="md-nav__link">
-    Scan SBOM with VEX
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3096,159 +3028,123 @@
                 
 
 
-<h1 id="vulnerability-exploitability-exchange-vex">Vulnerability Exploitability Exchange (VEX)</h1>
-<div class="admonition warning">
-<p class="admonition-title">EXPERIMENTAL</p>
-<p>This feature might change without preserving backwards compatibility.</p>
+<h1 id="skipping-files-and-directories">Skipping Files and Directories</h1>
+<p>This section details ways to specify the files and directories that Trivy should not scan.</p>
+<h2 id="skip-files">Skip Files</h2>
+<table>
+<thead>
+<tr>
+<th align="center">Scanner</th>
+<th align="center">Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Vulnerability</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Misconfiguration</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Secret</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">License</td>
+<td align="center">✓</td>
+</tr>
+</tbody>
+</table>
+<p>By default, Trivy traverses directories and searches for all necessary files for scanning.
+You can skip files that you don't maintain using the <code>--skip-files</code> flag.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --skip-files &quot;/Gemfile.lock&quot; --skip-files &quot;/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock&quot; quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+</code></pre></div>
+<p>It's possible to specify globs as part of the value.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --skip-files <span class="s2">&quot;./testdata/*/bar&quot;</span> .
+</code></pre></div>
+<p>Will skip any file named <code>bar</code> in the subdirectories of testdata.</p>
+<h2 id="skip-directories">Skip Directories</h2>
+<table>
+<thead>
+<tr>
+<th align="center">Scanner</th>
+<th align="center">Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Vulnerability</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Misconfiguration</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Secret</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">License</td>
+<td align="center">✓</td>
+</tr>
+</tbody>
+</table>
+<p>By default, Trivy traverses directories and searches for all necessary files for scanning.
+You can skip directories that you don't maintain using the <code>--skip-dirs</code> flag.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --skip-dirs /var/lib/gems/2.5.0/gems/fluent-plugin-detect-exceptions-0.0.13 --skip-dirs &quot;/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0&quot; quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+</code></pre></div>
+<p>It's possible to specify globs as part of the value.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --skip-dirs <span class="s2">&quot;./testdata/*&quot;</span> .
+</code></pre></div>
+<p>Will skip all subdirectories of the testdata directory.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Glob patterns work with any trivy subcommand (image, config, etc.) and can be specified to skip both directories (with <code>--skip-dirs</code>) and files (with <code>--skip-files</code>).</p>
 </div>
-<p>Trivy supports filtering detected vulnerabilities using <a href="https://www.ntia.gov/files/ntia/publications/vex_one-page_summary.pdf">the Vulnerability Exploitability Exchange (VEX)</a>, a standardized format for sharing and exchanging information about vulnerabilities.
-By providing VEX alongside the Software Bill of Materials (SBOM) during scanning, it is possible to filter vulnerabilities based on their status.
-Currently, Trivy supports the following two formats:</p>
-<ul>
-<li><a href="https://cyclonedx.org/capabilities/vex/">CycloneDX</a></li>
-<li><a href="https://github.com/openvex/spec">OpenVEX</a></li>
-</ul>
-<p>This is still an experimental implementation, with only minimal functionality added.</p>
-<h2 id="cyclonedx">CycloneDX</h2>
-<p>There are <a href="https://cyclonedx.org/capabilities/vex/">two VEX formats</a> for CycloneDX:</p>
-<ul>
-<li>Independent BOM and VEX BOM</li>
-<li>BOM With Embedded VEX</li>
-</ul>
-<p>Trivy only supports the Independent BOM and VEX BOM format, so you need to provide a separate VEX file alongside the SBOM.
-The input SBOM format must be in CycloneDX format.</p>
-<p>The following steps are required:</p>
-<ol>
-<li>Generate a CycloneDX SBOM</li>
-<li>Create a VEX based on the SBOM generated in step 1</li>
-<li>Provide the VEX when scanning the CycloneDX SBOM</li>
-</ol>
-<h3 id="generating-the-sbom">Generating the SBOM</h3>
-<p>You can generate a CycloneDX SBOM with Trivy as follows:</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format cyclonedx --output debian11.sbom.cdx debian:11
+<h3 id="advanced-globbing">Advanced globbing</h3>
+<p>Trivy also supports the <a href="https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching">globstar</a> pattern matching. </p>
+<div class="highlight"><pre><span></span><code>$ trivy image --skip-files <span class="s2">&quot;**/foo&quot;</span><span class="sb">```</span> image:tag
 </code></pre></div>
-<h3 id="create-the-vex">Create the VEX</h3>
-<p>Next, create a VEX based on the generated SBOM.
-Multiple vulnerability statuses can be defined under <code>vulnerabilities</code>.
-Take a look at the example below.</p>
-<div class="highlight"><pre><span></span><code>$ cat &lt;&lt;EOF &gt; trivy.vex.cdx
-{
-  &quot;bomFormat&quot;: &quot;CycloneDX&quot;,
-  &quot;specVersion&quot;: &quot;1.4&quot;,
-  &quot;version&quot;: 1,
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;id&quot;: &quot;CVE-2020-8911&quot;,
-      &quot;analysis&quot;: {
-        &quot;state&quot;: &quot;not_affected&quot;,
-        &quot;justification&quot;: &quot;code_not_reachable&quot;,
-        &quot;response&quot;: [&quot;will_not_fix&quot;, &quot;update&quot;],
-        &quot;detail&quot;: &quot;The vulnerable function is not called&quot;
-      },
-      &quot;affects&quot;: [
-        {
-          &quot;ref&quot;: &quot;urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:golang/github.com/aws/aws-sdk-go@1.44.234&quot;
-        }
-      ]
-    }
-  ]
-}
-EOF
-</code></pre></div>
-<p>This is a VEX document in the CycloneDX format.
-The vulnerability ID, such as a CVE-ID or GHSA-ID, should be placed in <code>vulnerabilities.id</code>.
-When the <code>analysis.state</code> is set to <code>not_affected</code>, Trivy will not detect the vulnerability.</p>
-<p>BOM-Links must be placed in <code>affects.ref</code>.
-The BOM-Link has the following syntax and consists of three elements:</p>
-<div class="highlight"><pre><span></span><code>urn:cdx:serialNumber/version#bom-ref
-</code></pre></div>
-<ul>
-<li>serialNumber</li>
-<li>version</li>
-<li>bom-ref</li>
-</ul>
-<p>These values must be obtained from the CycloneDX SBOM.
-Please note that while the serialNumber starts with <code>urn:uuid:</code>, the BOM-Link starts with <code>urn:cdx:</code>.</p>
-<p>The <code>bom-ref</code> must contain the BOM-Ref of the package affected by the vulnerability.
-In the example above, since the Go package <code>github.com/aws/aws-sdk-go</code> is affected by CVE-2020-8911, it was necessary to specify the SBOM's BOM-Ref, <code>pkg:golang/github.com/aws/aws-sdk-go@1.44.234</code>.</p>
-<p>For more details on CycloneDX VEX and BOM-Link, please refer to the following links:</p>
-<ul>
-<li><a href="https://cyclonedx.org/capabilities/vex/">CycloneDX VEX</a></li>
-<li><a href="https://cyclonedx.org/capabilities/bomlink/">BOM-Link</a></li>
-<li><a href="https://github.com/CycloneDX/bom-examples/tree/master">Examples</a></li>
-</ul>
-<h3 id="scan-sbom-with-vex">Scan SBOM with VEX</h3>
-<p>Provide the VEX when scanning the CycloneDX SBOM.</p>
-<div class="highlight"><pre><span></span><code>$ trivy sbom trivy.sbom.cdx --vex trivy.vex.cdx
-...
-2023-04-13T12:55:44.838+0300    INFO    Filtered out the detected vulnerability {&quot;VEX format&quot;: &quot;CycloneDX&quot;, &quot;vulnerability-id&quot;: &quot;CVE-2020-8911&quot;, &quot;status&quot;: &quot;not_affected&quot;, &quot;justification&quot;: &quot;code_not_reachable&quot;}
-
-go.mod (gomod)
-==============
-Total: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
-
-┌───────────────────────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
-│          Library          │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                           Title                            │
-├───────────────────────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
-│ github.com/aws/aws-sdk-go │ CVE-2020-8912 │ LOW      │ 1.44.234          │               │ aws-sdk-go: In-band key negotiation issue in AWS S3 Crypto │
-│                           │               │          │                   │               │ SDK for golang...                                          │
-│                           │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-8912                  │
-└───────────────────────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
-</code></pre></div>
-<p>CVE-2020-8911 is no longer shown as it is filtered out according to the given CycloneDX VEX document.</p>
-<h2 id="openvex">OpenVEX</h2>
-<p>Trivy also supports <a href="https://github.com/openvex/spec">OpenVEX</a> that is designed to be minimal, compliant, interoperable, and embeddable.
-Since OpenVEX aims to be SBOM format agnostic, both CycloneDX and SPDX formats are available for use as input SBOMs in Trivy.</p>
-<p>The following steps are required:</p>
-<ol>
-<li>Generate a SBOM (CycloneDX or SPDX)</li>
-<li>Create a VEX based on the SBOM generated in step 1</li>
-<li>Provide the VEX when scanning the SBOM</li>
-</ol>
-<h3 id="generating-the-sbom_1">Generating the SBOM</h3>
-<p>You can generate a CycloneDX or SPDX SBOM with Trivy as follows:</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format spdx-json --output debian11.spdx.json debian:11
-</code></pre></div>
-<h3 id="create-the-vex_1">Create the VEX</h3>
-<p>Please see also <a href="https://github.com/openvex/examples">the example</a>.
-The product identifiers differ depending on the SBOM format the VEX references.</p>
-<ul>
-<li>SPDX: <a href="https://github.com/package-url/purl-spec">Package URL (PURL)</a></li>
-<li>CycloneDX: <a href="https://cyclonedx.org/capabilities/bomlink/">BOM-Link</a></li>
-</ul>
-<div class="highlight"><pre><span></span><code>$ cat &lt;&lt;EOF &gt; trivy.openvex
-{
-  &quot;@context&quot;: &quot;https://openvex.dev/ns&quot;,
-  &quot;@id&quot;: &quot;https://openvex.dev/docs/public/vex-2e67563e128250cbcb3e98930df948dd053e43271d70dc50cfa22d57e03fe96f&quot;,
-  &quot;author&quot;: &quot;Aqua Security&quot;,
-  &quot;timestamp&quot;: &quot;2023-01-16T19:07:16.853479631-06:00&quot;,
-  &quot;version&quot;: &quot;1&quot;,
-  &quot;statements&quot;: [
-    {
-      &quot;vulnerability&quot;: &quot;CVE-2019-8457&quot;,
-      &quot;products&quot;: [
-        &quot;pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8?arch=arm64\u0026distro=debian-11.6&quot;
-      ],
-      &quot;status&quot;: &quot;not_affected&quot;,
-      &quot;justification&quot;: &quot;vulnerable_code_not_in_execute_path&quot;
-    }
-  ]
-}
-EOF
-</code></pre></div>
-<p>In the above example, PURLs, located in <code>packages.externalRefs.referenceLocator</code> are used since the input SBOM format is SPDX.</p>
-<p>As for CycloneDX BOM-Link, please reference <a href="#cyclonedx">the CycloneDX section</a>.</p>
-<h3 id="scan-sbom-with-vex_1">Scan SBOM with VEX</h3>
-<p>Provide the VEX when scanning the SBOM.</p>
-<div class="highlight"><pre><span></span><code>$ trivy sbom debian11.spdx.json --vex trivy.openvex
-...
-2023-04-26T17:56:05.358+0300    INFO    Filtered out the detected vulnerability {&quot;VEX format&quot;: &quot;OpenVEX&quot;, &quot;vulnerability-id&quot;: &quot;CVE-2019-8457&quot;, &quot;status&quot;: &quot;not_affected&quot;, &quot;justification&quot;: &quot;vulnerable_code_not_in_execute_path&quot;}
-
-debian11.spdx.json (debian 11.6)
-================================
-Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
-</code></pre></div>
-<p>CVE-2019-8457 is no longer shown as it is filtered out according to the given OpenVEX document.</p>
+<p>Will skip the file <code>foo</code> that happens to be nested under any parent(s). </p>
+<h2 id="file-patterns">File patterns</h2>
+<table>
+<thead>
+<tr>
+<th align="center">Scanner</th>
+<th align="center">Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Vulnerability</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Misconfiguration</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Secret</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">License</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+<p>When a directory is given as an input, Trivy will recursively look for and test all files based on file patterns.
+The default file patterns are <a href="../../scanner/misconfiguration/custom/">here</a>.</p>
+<p>In addition to the default file patterns, the <code>--file-patterns</code> option takes regexp patterns to look for your files.
+For example, it may be useful when your file name of Dockerfile doesn't match the default patterns.</p>
+<p>This can be repeated for specifying multiple file patterns.</p>
+<p>A file pattern contains the analyzer it is used for, and the pattern itself, joined by a semicolon. For example:
+<div class="highlight"><pre><span></span><code>--file-patterns &quot;dockerfile:.*.docker&quot; --file-patterns &quot;yaml:deployment&quot; --file-patterns &quot;pip:requirements-.*\.txt&quot;
+</code></pre></div></p>
+<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/ade4730fa76fdb60228d4c2ef6cca5822e4723b1/pkg/fanal/analyzer/const.go">here</a></p>
 
               
             </article>
@@ -3266,7 +3162,7 @@ Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../attestation/rekor/" class="md-footer__link md-footer__link--prev" aria-label="Previous: SBOM Attestation in Rekor" rel="prev">
+        <a href="../filtering/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Filtering" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3275,20 +3171,20 @@ Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
               <span class="md-footer__direction">
                 Previous
               </span>
-              SBOM Attestation in Rekor
+              Filtering
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../compliance/compliance/" class="md-footer__link md-footer__link--next" aria-label="Next: Reports" rel="next">
+        <a href="../reporting/" class="md-footer__link md-footer__link--next" aria-label="Next: Reporting" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Reports
+              Reporting
             </div>
           </div>
           <div class="md-footer__button md-icon">
