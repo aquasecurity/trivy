@@ -223,7 +223,7 @@ func decodeChecksumLine(line string) digest.Digest {
 	d := line[2:]
 	if strings.HasPrefix(d, "Q1") {
 		alg = digest.SHA1
-		d = strings.TrimLeft(d, "Q1")
+		d = d[2:] // remove `Q1` prefix
 	}
 
 	decodedDigestString, err := base64.StdEncoding.DecodeString(d)

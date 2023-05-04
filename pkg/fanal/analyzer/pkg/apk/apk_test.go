@@ -26,7 +26,7 @@ func TestParseApkInfo(t *testing.T) {
 					SrcName:    "musl",
 					SrcVersion: "1.1.14-r10",
 					Licenses:   []string{"MIT"},
-					Digest:     "sha1:a2d00bcd7d5dd43d2455ac32d3a21a8ab4d7",
+					Digest:     "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
 				},
 				{
 					ID:         "busybox@1.24.2-r9",

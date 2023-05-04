@@ -173,7 +173,7 @@
     "Licenses": [
       "MIT"
     ],
-    "Digest": "sha1:22783cfeed5521d63d7334b16833bdc0983b",
+    "Digest": "sha1:d489e0f3fbb5548758f5ccd2c5a0cef70260ef62",
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"

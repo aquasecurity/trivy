@@ -180,7 +180,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "pax-utils",
 			SrcVersion: "1.2.4-r0",
 			Licenses:   []string{"GPL-2.0"},
-			Digest:     "sha1:851efaccaffe00ed767e0e8efb1eacc6421c",
+			Digest:     "sha1:d6147beb32bff803b5d9f83a3bec7ab319087185",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},

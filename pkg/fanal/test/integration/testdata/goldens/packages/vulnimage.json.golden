@@ -585,7 +585,7 @@
     "Licenses": [
       "GPL-2.0"
     ],
-    "Digest": "sha1:b31b51c8112b0a4dbc03104abc2b93823f56",
+    "Digest": "sha1:42cc6d472044ac2936f00c412af0ae4e08fd599e",
     "DependsOn": [
       "musl@1.1.18-r3",
       "python2@2.7.15-r2"
