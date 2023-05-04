@@ -346,6 +346,17 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 			Supplier:     pkg.Maintainer,
 		}
 	}
+
+	var checksum []spdx.Checksum
+	if pkg.Digest != "" {
+		checksum = []spdx.Checksum{
+			{
+				Algorithm: common.ChecksumAlgorithm(pkg.Digest.Algorithm()),
+				Value:     pkg.Digest.Encoded(),
+			},
+		}
+	}
+
 	return spdx.Package{
 		PackageName:             pkg.Name,
 		PackageVersion:          utils.FormatVersion(pkg),
@@ -363,6 +374,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 		PackageAttributionTexts:   attrTexts,
 		PrimaryPackagePurpose:     PackagePurposeLibrary,
 		PackageSupplier:           supplier,
+		PackageChecksums:          checksum,
 		Files:                     files,
 	}, nil
 }
