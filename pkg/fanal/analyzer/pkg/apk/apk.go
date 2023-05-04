@@ -3,6 +3,8 @@ package apk
 import (
 	"bufio"
 	"context"
+	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path"
@@ -13,6 +15,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
@@ -91,6 +94,11 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
 			pkg.DependsOn = a.parseDependencies(line)
+		case "C:":
+			d := decodeChecksumLine(line)
+			if d != "" {
+				pkg.Digest = d
+			}
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {
@@ -205,4 +213,24 @@ func (a alpinePkgAnalyzer) Type() analyzer.Type {
 
 func (a alpinePkgAnalyzer) Version() int {
 	return analyzerVersion
+}
+
+// decodeChecksumLine decodes checksum line
+func decodeChecksumLine(line string) digest.Digest {
+	// https://wiki.alpinelinux.org/wiki/Apk_spec#Package_Checksum_Field
+	// https://stackoverflow.com/a/71712569
+	alg := digest.MD5
+	d := line[2:]
+	if strings.HasPrefix(d, "Q1") {
+		alg = digest.SHA1
+		d = strings.TrimLeft(d, "Q1")
+	}
+
+	decodedDigestString, err := base64.StdEncoding.DecodeString(d)
+	if err != nil {
+		log.Logger.Debugf("unable to decode digest: %s", err)
+		return ""
+	}
+	h := hex.EncodeToString(decodedDigestString)
+	return digest.Digest(fmt.Sprintf("%s:%s", alg, h))
 }
