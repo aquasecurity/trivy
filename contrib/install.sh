@@ -79,6 +79,7 @@ get_binaries() {
     openbsd/amd64) BINARIES="trivy" ;;
     openbsd/arm64) BINARIES="trivy" ;;
     openbsd/armv7) BINARIES="trivy" ;;
+    windows/amd64) BINARIES="trivy" ;;
     *)
       log_crit "platform $PLATFORM is not supported.  Make sure this script is up-to-date and file request at https://github.com/${PREFIX}/issues/new"
       exit 1
@@ -102,6 +103,9 @@ tag_to_version() {
 }
 adjust_format() {
   # change format (tar.gz or zip) based on OS
+  case ${OS} in
+    windows) FORMAT=zip ;;
+  esac
   true
 }
 adjust_os() {
