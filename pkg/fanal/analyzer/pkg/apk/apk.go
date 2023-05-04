@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/digest"
 	"os"
 	"path"
 	"sort"
@@ -14,6 +13,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"

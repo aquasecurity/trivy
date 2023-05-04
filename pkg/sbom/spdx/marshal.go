@@ -348,7 +348,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 	}
 
 	var checksum []spdx.Checksum
-	if pkg.Digest != "" {
+	if pkg.Digest != "" && class == types.ClassOSPkg {
 		checksum = []spdx.Checksum{
 			{
 				Algorithm: common.ChecksumAlgorithm(pkg.Digest.Algorithm()),

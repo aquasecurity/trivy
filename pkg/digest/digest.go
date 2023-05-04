@@ -6,12 +6,13 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"hash"
 	"io"
 	"strings"
 
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Algorithm string
