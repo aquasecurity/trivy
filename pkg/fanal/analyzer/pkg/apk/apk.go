@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"os"
 	"path"
 	"sort"
@@ -91,6 +92,16 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
 			pkg.DependsOn = a.parseDependencies(line)
+		case "C:":
+			// https://wiki.alpinelinux.org/wiki/Apk_spec#Package_Checksum_Field
+			// https://stackoverflow.com/a/71712569
+			alg := digest.MD5
+			d := line[2:]
+			if strings.HasPrefix(d, "Q1") {
+				alg = digest.SHA1
+				d = strings.TrimLeft(d, "Q1")
+			}
+			pkg.Digest = digest.NewDigestFromBase64EncodedString(alg, d)
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {
