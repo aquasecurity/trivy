@@ -49,7 +49,7 @@ require (
 	github.com/google/licenseclassifier/v2 v2.0.0
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
-	github.com/hashicorp/go-getter v1.7.0
+	github.com/hashicorp/go-getter v1.7.1
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/golang-lru/v2 v2.0.1
 	github.com/in-toto/in-toto-golang v0.8.0
