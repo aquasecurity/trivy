@@ -529,7 +529,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 							},
 						},
 						Insecure: true,
-						Platform: &types.Platform{
+						Platform: types.Platform{
 							Platform: &v1.Platform{
 								Architecture: "arm",
 								OS:           "linux",
