@@ -345,6 +345,7 @@ func Test_Run(t *testing.T) {
 					PolicyNamespaces: []string{
 						"user",
 					},
+					SkipPolicyUpdate: true,
 				},
 			},
 			regoPolicy: `# METADATA
@@ -673,6 +674,7 @@ deny[res] {
 					Format:       "table",
 					ReportFormat: "summary",
 				},
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 			},
 			cacheContent: exampleS3Cache,
 			want: `

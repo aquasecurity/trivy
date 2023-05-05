@@ -16,7 +16,7 @@ import (
 const mediaType = "application/vnd.module.wasm.content.layer.v1+wasm"
 
 // Install installs a module
-func Install(ctx context.Context, dir, repo string, quiet bool, opt types.RemoteOptions) error {
+func Install(ctx context.Context, dir, repo string, quiet bool, opt types.RegistryOptions) error {
 	ref, err := name.ParseReference(repo)
 	if err != nil {
 		return xerrors.Errorf("repository parse error: %w", err)

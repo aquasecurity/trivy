@@ -32,7 +32,7 @@ func initGoogleClassifier() error {
 }
 
 // Classify detects and classifies the license found in a file
-func Classify(filePath string, r io.Reader) (*types.LicenseFile, error) {
+func Classify(filePath string, r io.Reader, confidenceLevel float64) (*types.LicenseFile, error) {
 	content, err := io.ReadAll(r)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to read a license file %q: %w", filePath, err)
@@ -54,7 +54,7 @@ func Classify(filePath string, r io.Reader) (*types.LicenseFile, error) {
 	m.Unlock()
 
 	for _, match := range result.Matches {
-		if match.Confidence <= 0.9 {
+		if match.Confidence <= confidenceLevel {
 			continue
 		}
 		if _, ok := seen[match.Name]; ok {

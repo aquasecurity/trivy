@@ -7,9 +7,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
@@ -106,6 +108,9 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		}
 		defer f.Close()
 
-		return fn(path, d, file)
+		if err = fn(path, d, file); err != nil {
+			log.Logger.Debugw("Walk error", zap.String("file_path", path), zap.Error(err))
+		}
+		return nil
 	})
 }

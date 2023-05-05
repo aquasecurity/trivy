@@ -294,9 +294,10 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.Compliance = nil   // disable '--compliance'
-	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
+	reportFormat := flag.ReportFormatFlag
+	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFlagGroup.ReportFormat = &reportFormat
+	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -561,9 +562,10 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
 	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
-	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
-	reportFlagGroup.Compliance = nil     // disable '--compliance'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
+	reportFormat := flag.ReportFormatFlag
+	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFlagGroup.ReportFormat = &reportFormat
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
@@ -760,7 +762,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
-				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Remote())
+				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Registry())
 			},
 		},
 		&cobra.Command{
@@ -815,7 +817,6 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
-		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
@@ -940,7 +941,6 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
-		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode

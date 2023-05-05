@@ -16,12 +16,13 @@ import (
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/report"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -270,16 +271,20 @@ func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initialize
 }
 
 func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error) {
-	results := report.Results
-
 	// Filter results
-	for i := range results {
-		err := result.Filter(ctx, &results[i], opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures,
-			opts.IgnoreFile, opts.IgnorePolicy, opts.IgnoredLicenses)
-		if err != nil {
-			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
-		}
+	err := result.Filter(ctx, report, result.FilterOption{
+		Severities:         opts.Severities,
+		IgnoreUnfixed:      opts.IgnoreUnfixed,
+		IncludeNonFailures: opts.IncludeNonFailures,
+		IgnoreFile:         opts.IgnoreFile,
+		PolicyFile:         opts.IgnorePolicy,
+		IgnoreLicenses:     opts.IgnoredLicenses,
+		VEXPath:            opts.VEXPath,
+	})
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("filtering error: %w", err)
 	}
+
 	return report, nil
 }
 
@@ -314,7 +319,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 
 	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
-	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.Remote()); err != nil {
+	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.Registry()); err != nil {
 		return err
 	}
 
@@ -560,7 +565,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	}
 
 	// ScannerOption is filled only when config scanning is enabled.
-	var configScannerOptions config.ScannerOption
+	var configScannerOptions misconf.ScannerOption
 	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		log.Logger.Info("Misconfiguration scanning is enabled")
 
@@ -575,7 +580,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			log.Logger.Debug("Policies successfully loaded from disk")
 			disableEmbedded = true
 		}
-		configScannerOptions = config.ScannerOption{
+		configScannerOptions = misconf.ScannerOption{
 			Trace:                   opts.Trace,
 			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:             append(opts.PolicyPaths, downloadedPolicyPaths...),
@@ -630,17 +635,24 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			FilePatterns:      opts.FilePatterns,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
+			Insecure:          opts.Insecure,
 			RepoBranch:        opts.RepoBranch,
 			RepoCommit:        opts.RepoCommit,
 			RepoTag:           opts.RepoTag,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
-			Slow:              opts.Slow,
-			AWSRegion:         opts.Region,
-			FileChecksum:      fileChecksum,
+			//Platform:          opts.Platform,
+			Slow:         opts.Slow,
+			AWSRegion:    opts.Region,
+			FileChecksum: fileChecksum,
 
-			// For OCI registries
-			RemoteOptions: opts.Remote(),
+			// For image scanning
+			ImageOption: ftypes.ImageOptions{
+				RegistryOptions: opts.Registry(),
+				DockerOptions: ftypes.DockerOptions{
+					Host: opts.DockerHost,
+				},
+			},
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,
@@ -652,7 +664,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 			// For license scanning
 			LicenseScannerOption: analyzer.LicenseScannerOption{
-				Full: opts.LicenseFull,
+				Full:                      opts.LicenseFull,
+				ClassifierConfidenceLevel: opts.LicenseConfidenceLevel,
 			},
 		},
 	}, scanOptions, nil

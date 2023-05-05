@@ -2,7 +2,7 @@ package mod
 
 import (
 	"context"
-	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,18 +11,21 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 func Test_gomodAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name    string
-		dir     string
-		want    *analyzer.AnalysisResult
-		wantErr string
+		name  string
+		files []string
+		want  *analyzer.AnalysisResult
 	}{
 		{
 			name: "happy",
-			dir:  "testdata/happy",
+			files: []string{
+				"testdata/happy/mod",
+				"testdata/happy/sum",
+			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -53,7 +56,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "wrong go.mod from `pkg`",
-			dir:  "testdata/wrong-gomod-in-pkg",
+			files: []string{
+				"testdata/wrong-gomod-in-pkg/mod",
+			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -72,7 +77,10 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "less than 1.17",
-			dir:  "testdata/merge",
+			files: []string{
+				"testdata/merge/mod",
+				"testdata/merge/sum",
+			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -103,7 +111,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "no go.sum",
-			dir:  "testdata/no_gosum",
+			files: []string{
+				"testdata/merge/mod",
+			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -111,9 +121,10 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 						FilePath: "go.mod",
 						Libraries: []types.Package{
 							{
-								ID:      "github.com/aquasecurity/go-dep-parser@v0.0.0-20211110174639-8257534ffed3",
-								Name:    "github.com/aquasecurity/go-dep-parser",
-								Version: "0.0.0-20211110174639-8257534ffed3",
+								ID:        "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
+								Name:      "github.com/aquasecurity/go-dep-parser",
+								Version:   "0.0.0-20230219131432-590b1dfb6edd",
+								DependsOn: []string{},
 							},
 						},
 					},
@@ -121,9 +132,11 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "sad go.mod",
-			dir:     "testdata/sad",
-			wantErr: "unknown directive",
+			name: "sad go.mod",
+			files: []string{
+				"testdata/sad/mod",
+			},
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
@@ -132,16 +145,23 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			a, err := newGoModAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
+			mfs := mapfs.New()
+			for _, file := range tt.files {
+				// Since broken go.mod files bothers IDE, we should use other file names than "go.mod" and "go.sum".
+				if filepath.Base(file) == "mod" {
+					require.NoError(t, mfs.WriteFile("go.mod", file))
+				} else if filepath.Base(file) == "sum" {
+					require.NoError(t, mfs.WriteFile("go.sum", file))
+				}
+			}
+
 			ctx := context.Background()
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
-				FS: os.DirFS(tt.dir),
+				FS: mfs,
 			})
+			assert.NoError(t, err)
 
-			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
-				return
-			}
-			if got != nil {
+			if len(got.Applications) > 0 {
 				slices.SortFunc(got.Applications[0].Libraries, func(a, b types.Package) bool {
 					return a.Name < b.Name
 				})

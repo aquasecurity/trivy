@@ -77,6 +77,7 @@ nav:
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md
+          - Skipping Files: docs/configuration/skipping.md
           - Reporting: docs/configuration/reporting.md
           - Cache: docs/configuration/cache.md
           - DB: docs/configuration/db.md
@@ -87,6 +88,7 @@ nav:
                 - SBOM: docs/supply-chain/attestation/sbom.md
                 - Cosign Vulnerability Scan Record: docs/supply-chain/attestation/vuln.md
                 - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
+          - VEX: docs/supply-chain/vex.md
       - Compliance:
           - Reports:  docs/compliance/compliance.md
       - Advanced:

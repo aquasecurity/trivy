@@ -90,6 +90,7 @@ func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (art
 		Group:                opt.AnalyzerGroup,
 		FilePatterns:         opt.FilePatterns,
 		DisabledAnalyzers:    opt.DisabledAnalyzers,
+		MisconfScannerOption: opt.MisconfScannerOption,
 		SecretScannerOption:  opt.SecretScannerOption,
 		LicenseScannerOption: opt.LicenseScannerOption,
 	})

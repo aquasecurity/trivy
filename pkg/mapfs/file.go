@@ -21,10 +21,10 @@ var separator = "/"
 // - a virtual file
 // - a virtual dir
 type file struct {
-	path  string // underlying file path
-	data  []byte // virtual file, only either of 'path' or 'data' has a value.
-	stat  fileStat
-	files syncx.Map[string, *file]
+	underlyingPath string // underlying file path
+	data           []byte // virtual file, only either of 'path' or 'data' has a value.
+	stat           fileStat
+	files          syncx.Map[string, *file]
 }
 
 func (f *file) isVirtual() bool {
@@ -55,7 +55,7 @@ func (f *file) open() (fs.File, error) {
 			return nil, xerrors.Errorf("read dir error: %w", err)
 		}
 		return &mapDir{
-			path:     f.path,
+			path:     f.underlyingPath,
 			fileStat: f.stat,
 			entry:    entries,
 		}, nil
@@ -66,7 +66,7 @@ func (f *file) open() (fs.File, error) {
 			offset: 0,
 		}, nil
 	default: // Real file
-		return os.Open(f.path)
+		return os.Open(f.underlyingPath)
 	}
 }
 
@@ -140,7 +140,7 @@ func (f *file) ReadDir(name string) ([]fs.DirEntry, error) {
 				entries = append(entries, &value.stat)
 			} else {
 				var fi os.FileInfo
-				fi, err = os.Stat(value.path)
+				fi, err = os.Stat(value.underlyingPath)
 				if err != nil {
 					return false
 				}
@@ -208,7 +208,7 @@ func (f *file) WriteFile(path, underlyingPath string) error {
 
 	if len(parts) == 1 {
 		f.files.Store(parts[0], &file{
-			path: underlyingPath,
+			underlyingPath: underlyingPath,
 		})
 		return nil
 	}
@@ -345,7 +345,7 @@ func (f *openMapFile) ReadAt(b []byte, offset int64) (int, error) {
 	return n, nil
 }
 
-// A mapDir is a directory fs.File (so also an fs.ReadDirFile) open for reading.
+// A mapDir is a directory fs.File (so also fs.ReadDirFile) open for reading.
 type mapDir struct {
 	path string
 	fileStat
