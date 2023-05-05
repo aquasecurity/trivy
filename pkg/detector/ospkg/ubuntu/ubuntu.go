@@ -1,6 +1,7 @@
 package ubuntu
 
 import (
+	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-deb-version"
@@ -100,6 +101,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
+		osVer = s.versionFromEolDates(osVer)
 		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Ubuntu advisories: %w", err)
@@ -145,10 +147,28 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 // IsSupportedVersion checks is OSFamily can be scanned using Ubuntu scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	eol, ok := eolDates[osVer]
+	eol, ok := eolDates[s.versionFromEolDates(osVer)]
 	if !ok {
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
 		return false
 	}
 	return s.clock.Now().Before(eol)
+}
+
+// versionFromEolDates checks if actual (not ESM) version is not outdated
+func (s *Scanner) versionFromEolDates(osVer string) string {
+	if _, ok := eolDates[osVer]; ok {
+		return osVer
+	}
+
+	// if base version (not ESM) is still actual
+	// we need to use this version
+	// e.g. Ubuntu doesn't have vulnerabilities for `18.04-ESM`, because `18.04` is not outdated
+	// then we need to get vulnerabilities for `18.04`
+	// if `18.04` is outdated - we need to use `18.04-ESM` (we will return error until we add `18.04-ESM` to eolDates)
+	ver := strings.TrimRight(osVer, "-ESM")
+	if eol, ok := eolDates[ver]; ok && s.clock.Now().Before(eol) {
+		return ver
+	}
+	return osVer
 }
