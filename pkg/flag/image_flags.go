@@ -58,7 +58,7 @@ type ImageOptions struct {
 	Input               string
 	ImageConfigScanners types.Scanners
 	ScanRemovedPkgs     bool
-	Platform            *ftypes.Platform
+	Platform            ftypes.Platform
 	DockerHost          string
 }
 
@@ -92,7 +92,7 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		return ImageOptions{}, xerrors.Errorf("unable to parse image config scanners: %w", err)
 	}
 
-	var platform *ftypes.Platform
+	var platform ftypes.Platform
 	if p := getString(f.Platform); p != "" {
 		pl, err := v1.ParsePlatform(p)
 		if err != nil {
@@ -101,7 +101,7 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		if pl.OS == "*" {
 			pl.OS = "" // Empty OS means any OS
 		}
-		platform = &ftypes.Platform{Platform: pl}
+		platform = ftypes.Platform{Platform: pl}
 	}
 
 	return ImageOptions{

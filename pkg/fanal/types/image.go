@@ -52,7 +52,7 @@ type RegistryOptions struct {
 	Insecure bool
 
 	// Architecture
-	Platform string
+	Platform Platform
 
 	// ECR
 	AWSAccessKey    string
