@@ -78,7 +78,15 @@ func (a *Artifact) populate(ctx context.Context, opt types.RegistryOptions) erro
 	a.m.Lock()
 	defer a.m.Unlock()
 
-	ref, err := name.ParseReference(a.repository)
+	var ref name.Reference
+	var err error
+
+	if opt.Insecure {
+		ref, err = name.ParseReference(a.repository, name.Insecure)
+	} else {
+		ref, err = name.ParseReference(a.repository)
+	}
+
 	if err != nil {
 		return xerrors.Errorf("repository name error (%s): %w", a.repository, err)
 	}
