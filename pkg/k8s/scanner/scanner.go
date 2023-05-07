@@ -47,7 +47,7 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 			log.Fatal(xerrors.Errorf("can't enable logger error: %w", err))
 		}
 	}()
-	var vulns, misconfigs []report.Resource
+	var resources []report.Resource
 
 	type scanResult struct {
 		vulns     []report.Resource
@@ -74,8 +74,8 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	}
 
 	onResult := func(result scanResult) error {
-		vulns = append(vulns, result.vulns...)
-		misconfigs = append(misconfigs, result.misconfig)
+		resources = append(resources, result.vulns...)
+		resources = append(resources, result.misconfig)
 		return nil
 	}
 
@@ -84,11 +84,10 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	if err != nil {
 		return report.Report{}, err
 	}
-	vulns = append(vulns, misconfigs...)
 	return report.Report{
 		SchemaVersion: 0,
 		ClusterName:   s.cluster,
-		Resources:     vulns,
+		Resources:     resources,
 	}, nil
 }
 
