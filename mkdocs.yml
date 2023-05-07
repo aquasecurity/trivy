@@ -144,6 +144,7 @@ nav:
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
+          - Discussions: community/contribute/discussion.md
           - Pull Requests: community/contribute/pr.md
       - Maintainer:
           - Help Wanted: community/maintainer/help-wanted.md
