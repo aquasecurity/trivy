@@ -111,7 +111,7 @@ func (r Report) consolidate() ConsolidatedReport {
 
 			continue
 		}
-		
+
 		index[key] = v
 	}
 
