@@ -84,12 +84,11 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	if err != nil {
 		return report.Report{}, err
 	}
-
+	vulns = append(vulns, misconfigs...)
 	return report.Report{
-		SchemaVersion:     0,
-		ClusterName:       s.cluster,
-		Vulnerabilities:   vulns,
-		Misconfigurations: misconfigs,
+		SchemaVersion: 0,
+		ClusterName:   s.cluster,
+		Resources:     vulns,
 	}, nil
 }
 
