@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/ruby/gemspec"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -28,6 +29,10 @@ func (a gemspecLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analys
 }
 
 func (a gemspecLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	// Bitnami images have SBOMs inside, so there is no need to analyze Ruby packages.
+	if strings.HasPrefix(filePath, "opt/bitnami") {
+		return false
+	}
 	return fileRegex.MatchString(filepath.ToSlash(filePath))
 }
 

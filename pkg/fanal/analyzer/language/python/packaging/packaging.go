@@ -6,7 +6,6 @@ import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -99,8 +98,10 @@ func (a packagingAnalyzer) open(file *zip.File) (dio.ReadSeekerAt, error) {
 }
 
 func (a packagingAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	// For Windows
-	filePath = filepath.ToSlash(filePath)
+	// Bitnami images have SBOMs inside, so there is no need to analyze Python packages.
+	if strings.HasPrefix(filePath, "opt/bitnami") {
+		return false
+	}
 
 	for _, r := range requiredFiles {
 		if strings.HasSuffix(filePath, r) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
@@ -44,6 +45,10 @@ func (a nodePkgLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analys
 }
 
 func (a nodePkgLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	// Bitnami images have SBOMs inside, so there is no need to analyze npm packages.
+	if strings.HasPrefix(filePath, "opt/bitnami") {
+		return false
+	}
 	return requiredFile == filepath.Base(filePath)
 }
 

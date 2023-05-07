@@ -93,6 +93,7 @@ const (
 	// Non-packaged
 	// ============
 	TypeExecutable Type = "executable"
+	TypeSBOM       Type = "sbom"
 
 	// ============
 	// Image Config

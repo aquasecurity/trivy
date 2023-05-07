@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -34,7 +35,11 @@ func (a gobinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 	return res, nil
 }
 
-func (a gobinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
+func (a gobinaryLibraryAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	// Bitnami images have SBOMs inside, so there is no need to analyze JAR files.
+	if strings.HasPrefix(filePath, "opt/bitnami") {
+		return false
+	}
 	return utils.IsExecutable(fileInfo)
 }
 
