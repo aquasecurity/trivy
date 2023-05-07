@@ -108,8 +108,10 @@ func (r Report) consolidate() ConsolidatedReport {
 				Results:   append(res.Results, v.Results...),
 				Error:     res.Error,
 			}
+
 			continue
 		}
+		
 		index[key] = v
 	}
 
