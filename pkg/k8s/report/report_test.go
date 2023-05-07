@@ -598,8 +598,8 @@ func TestReportWrite_Summary(t *testing.T) {
 		{
 			name: "Only config, all serverities",
 			report: Report{
-				ClusterName:       "test",
-				Resources: []Resource{deployOrionWithMisconfigs},
+				ClusterName: "test",
+				Resources:   []Resource{deployOrionWithMisconfigs},
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
 			components: []string{workloadComponent},
@@ -620,8 +620,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "Only vuln, all serverities",
 			report: Report{
-				ClusterName:     "test",
-				Resources: []Resource{deployOrionWithVulns},
+				ClusterName: "test",
+				Resources:   []Resource{deployOrionWithVulns},
 			},
 			scanners:   types.Scanners{types.VulnerabilityScanner},
 			severities: allSeverities,
@@ -641,8 +641,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "Only rbac, all serverities",
 			report: Report{
-				ClusterName:       "test",
-				Resources: []Resource{roleWithMisconfig},
+				ClusterName: "test",
+				Resources:   []Resource{roleWithMisconfig},
 			},
 			scanners:   types.Scanners{types.RBACScanner},
 			severities: allSeverities,
@@ -662,8 +662,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "Only secret, all serverities",
 			report: Report{
-				ClusterName:     "test",
-				Resources: []Resource{deployLuaWithSecrets},
+				ClusterName: "test",
+				Resources:   []Resource{deployLuaWithSecrets},
 			},
 			scanners:   types.Scanners{types.SecretScanner},
 			severities: allSeverities,
@@ -683,8 +683,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "apiserver, only infra and serverities",
 			report: Report{
-				ClusterName:       "test",
-				Resources: []Resource{apiseverPodWithMisconfigAndInfra},
+				ClusterName: "test",
+				Resources:   []Resource{apiseverPodWithMisconfigAndInfra},
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
 			components: []string{infraComponent},
@@ -705,8 +705,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "apiserver, vuln,config,secret and serverities",
 			report: Report{
-				ClusterName:       "test",
-				Resources: []Resource{apiseverPodWithMisconfigAndInfra},
+				ClusterName: "test",
+				Resources:   []Resource{apiseverPodWithMisconfigAndInfra},
 			},
 			scanners: types.Scanners{
 				types.VulnerabilityScanner,
@@ -731,8 +731,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "apiserver, all scanners and serverities",
 			report: Report{
-				ClusterName:       "test",
-				Resources: []Resource{apiseverPodWithMisconfigAndInfra},
+				ClusterName: "test",
+				Resources:   []Resource{apiseverPodWithMisconfigAndInfra},
 			},
 			scanners: types.Scanners{
 				types.MisconfigScanner,
