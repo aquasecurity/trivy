@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"net"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/authn"
@@ -37,14 +36,14 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 			authOpt,
 		}
 
-		if option.Platform != "" {
-			s, err := parsePlatform(ref, option.Platform, remoteOpts)
+		if option.Platform.Platform != nil {
+			p, err := resolvePlatform(ref, option.Platform, remoteOpts)
 			if err != nil {
 				return nil, xerrors.Errorf("platform error: %w", err)
 			}
 			// Don't pass platform when the specified image is single-arch.
-			if s != nil {
-				remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
+			if p.Platform != nil {
+				remoteOpts = append(remoteOpts, remote.WithPlatform(*p.Platform))
 			}
 		}
 
@@ -54,6 +53,11 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 			continue
 		}
 
+		if option.Platform.Force {
+			if err = satisfyPlatform(desc, lo.FromPtr(option.Platform.Platform)); err != nil {
+				return nil, err
+			}
+		}
 		return desc, nil
 	}
 
@@ -113,12 +117,11 @@ func httpTransport(insecure bool) *http.Transport {
 	d := &net.Dialer{
 		Timeout: 10 * time.Minute,
 	}
-	return &http.Transport{
-		Proxy:             http.ProxyFromEnvironment,
-		DisableKeepAlives: true,
-		DialContext:       d.DialContext,
-		TLSClientConfig:   &tls.Config{InsecureSkipVerify: insecure},
-	}
+	tr := http.DefaultTransport.(*http.Transport).Clone()
+	tr.DialContext = d.DialContext
+	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure}
+
+	return tr
 }
 
 func authOptions(ctx context.Context, ref name.Reference, option types.RegistryOptions) []remote.Option {
@@ -147,45 +150,69 @@ func authOptions(ctx context.Context, ref name.Reference, option types.RegistryO
 	}
 }
 
-func parsePlatform(ref name.Reference, p string, options []remote.Option) (*v1.Platform, error) {
+// resolvePlatform resolves the OS platform for a given image reference.
+// If the platform has an empty OS, the function will attempt to find the first OS
+// in the image's manifest list and return the platform with the detected OS.
+// It ignores the specified platform if the image is not multi-arch.
+func resolvePlatform(ref name.Reference, p types.Platform, options []remote.Option) (types.Platform, error) {
+	if p.OS != "" {
+		return p, nil
+	}
+
 	// OS wildcard, implicitly pick up the first os found in the image list.
 	// e.g. */amd64
-	if strings.HasPrefix(p, "*/") {
-		d, err := remote.Get(ref, options...)
-		if err != nil {
-			return nil, xerrors.Errorf("image get error: %w", err)
-		}
-		switch d.MediaType {
-		case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
-			// We want an index but the registry has an image, not multi-arch. We just ignore "--platform".
-			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
-			return nil, nil
-		case v1types.OCIImageIndex, v1types.DockerManifestList:
-			// These are expected.
-		}
-
-		index, err := d.ImageIndex()
-		if err != nil {
-			return nil, xerrors.Errorf("image index error: %w", err)
-		}
-
-		m, err := index.IndexManifest()
-		if err != nil {
-			return nil, xerrors.Errorf("remote index manifest error: %w", err)
-		}
-		if len(m.Manifests) == 0 {
-			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
-			return nil, nil
-		}
-		if m.Manifests[0].Platform != nil {
-			// Replace with the detected OS
-			// e.g. */amd64 => linux/amd64
-			p = m.Manifests[0].Platform.OS + strings.TrimPrefix(p, "*")
-		}
-	}
-	platform, err := v1.ParsePlatform(p)
+	d, err := remote.Get(ref, options...)
 	if err != nil {
-		return nil, xerrors.Errorf("platform parse error: %w", err)
+		return types.Platform{}, xerrors.Errorf("image get error: %w", err)
 	}
-	return platform, nil
+	switch d.MediaType {
+	case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
+		// We want an index but the registry has an image, not multi-arch. We just ignore "--platform".
+		log.Logger.Debug("Ignore --platform as the image is not multi-arch")
+		return types.Platform{}, nil
+	case v1types.OCIImageIndex, v1types.DockerManifestList:
+		// These are expected.
+	}
+
+	index, err := d.ImageIndex()
+	if err != nil {
+		return types.Platform{}, xerrors.Errorf("image index error: %w", err)
+	}
+
+	m, err := index.IndexManifest()
+	if err != nil {
+		return types.Platform{}, xerrors.Errorf("remote index manifest error: %w", err)
+	}
+	if len(m.Manifests) == 0 {
+		log.Logger.Debug("Ignore '--platform' as the image is not multi-arch")
+		return types.Platform{}, nil
+	}
+	if m.Manifests[0].Platform != nil {
+		newPlatform := p.DeepCopy()
+		// Replace with the detected OS
+		// e.g. */amd64 => linux/amd64
+		newPlatform.OS = m.Manifests[0].Platform.OS
+
+		// Return the platform with the found OS
+		return types.Platform{
+			Platform: newPlatform,
+			Force:    p.Force,
+		}, nil
+	}
+	return types.Platform{}, nil
+}
+
+func satisfyPlatform(desc *remote.Descriptor, platform v1.Platform) error {
+	img, err := desc.Image()
+	if err != nil {
+		return err
+	}
+	c, err := img.ConfigFile()
+	if err != nil {
+		return err
+	}
+	if !lo.FromPtr(c.Platform()).Satisfies(platform) {
+		return xerrors.Errorf("the specified platform not found")
+	}
+	return nil
 }
