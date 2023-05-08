@@ -156,7 +156,8 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		for _, relativePath := range result.modules {
 			moduleArtifact, err := p.parseModule(result.filePath, relativePath)
 			if err != nil {
-				return nil, nil, xerrors.Errorf("module error (%s): %w", relativePath, err)
+				log.Logger.Debugf("Unable to parse %q module: %s", result.filePath, err)
+				continue
 			}
 
 			queue.enqueue(moduleArtifact)

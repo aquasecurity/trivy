@@ -442,10 +442,15 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
-			name:      "module not found",
+			name:      "module not found - unable to parse module",
 			inputFile: filepath.Join("testdata", "not-found-module", "pom.xml"),
 			local:     true,
-			wantErr:   "stat testdata/not-found-module/module: no such file or directory",
+			want: []types.Library{
+				{
+					Name:    "com.example:aggregation",
+					Version: "1.0.0",
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
