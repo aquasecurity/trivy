@@ -84,7 +84,7 @@ func (m *FS) FilterFunc(fn func(path string, d fs.DirEntry) (bool, error)) (*FS,
 		return newFS.WriteFile(path, f.underlyingPath)
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("walk error", err)
+		return nil, xerrors.Errorf("walk error %w", err)
 	}
 
 	return newFS, nil

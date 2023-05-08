@@ -1,7 +1,6 @@
 package daemon
 
 import (
-	"io/ioutil"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -21,12 +20,12 @@ import (
 func setupPodmanSock(t *testing.T) *httptest.Server {
 	t.Helper()
 
-	runtimeDir, err := ioutil.TempDir("", "daemon")
+	runtimeDir, err := os.CreateTemp("", "daemon")
 	require.NoError(t, err)
 
-	os.Setenv("XDG_RUNTIME_DIR", runtimeDir)
+	os.Setenv("XDG_RUNTIME_DIR", runtimeDir.Name())
 
-	dir := filepath.Join(runtimeDir, "podman")
+	dir := filepath.Join(runtimeDir.Name(), "podman")
 	err = os.MkdirAll(dir, os.ModePerm)
 	require.NoError(t, err)
 

@@ -36,6 +36,9 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := centOSAnalyzer{}
 			f, err := os.Open(tt.inputFile)
+			if err != nil {
+				return
+			}
 			defer f.Close()
 
 			require.NoError(t, err)

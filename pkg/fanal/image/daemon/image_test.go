@@ -86,10 +86,10 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 	var dockerHostParam string
 
 	if runtime.GOOS != "windows" {
-		runtimeDir, err := ioutil.TempDir("", "daemon")
+		runtimeDir, err := os.CreateTemp("", "daemon")
 		require.NoError(t, err)
 
-		dir := filepath.Join(runtimeDir, "image")
+		dir := filepath.Join(runtimeDir.Name(), "image")
 		err = os.MkdirAll(dir, os.ModePerm)
 		require.NoError(t, err)
 
