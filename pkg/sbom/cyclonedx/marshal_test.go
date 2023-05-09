@@ -1629,6 +1629,24 @@ func TestMarshaler_Kbom(t *testing.T) {
 									Family: "debian",
 									Name:   "11",
 								},
+								Properties: []types.Property{
+									{
+										Key:   "host_name",
+										Value: "kind-control-plane",
+									},
+									{
+										Key:   "kernel_version",
+										Value: "6.2.13-300.fc38.aarch64",
+									},
+									{
+										Key:   "operating_system",
+										Value: "linux",
+									},
+									{
+										Key:   "architecture",
+										Value: "arm64",
+									},
+								},
 							},
 							Results: types.Results{
 								{

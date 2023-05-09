@@ -422,7 +422,11 @@ func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error)
 	if r.Metadata.Size != 0 {
 		properties = appendProperties(properties, PropertySize, strconv.FormatInt(r.Metadata.Size, 10))
 	}
-
+	if customProperties := r.Metadata.Properties; len(customProperties) > 0 {
+		for _, property := range customProperties {
+			properties = append(properties, cdxProperty(property.Key, property.Value))
+		}
+	}
 	switch r.ArtifactType {
 	case ftypes.ArtifactContainerImage:
 		component.Type = cdx.ComponentTypeContainer
