@@ -344,6 +344,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								SrcName:    "musl",
 								SrcVersion: "1.1.24-r2",
 								Licenses:   []string{"MIT"},
+								Arch:       "x86_64",
 							},
 						},
 					},
