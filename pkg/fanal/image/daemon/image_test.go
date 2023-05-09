@@ -2,7 +2,6 @@ package daemon
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -288,7 +287,7 @@ func Test_image_RawConfigFile(t *testing.T) {
 				return
 			}
 
-			want, err := ioutil.ReadFile(tt.goldenFile)
+			want, err := os.ReadFile(tt.goldenFile)
 			require.NoError(t, err)
 
 			require.JSONEq(t, string(want), string(got))
