@@ -58,11 +58,8 @@ type Driver interface {
 	IsSupportedVersion(string, string) bool
 }
 
-// Detector implements Operation
-type Detector struct{}
-
 // Detect detects the vulnerabilities
-func (d Detector) Detect(_, osFamily, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
+func Detect(_, osFamily, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver, err := newDriver(osFamily)
 	if err != nil {
 		return nil, false, ErrUnsupportedOS
