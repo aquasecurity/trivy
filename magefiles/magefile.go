@@ -12,10 +12,6 @@ import (
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
-	"github.com/spf13/cobra/doc"
-
-	"github.com/aquasecurity/trivy/pkg/commands"
-	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
 var (
@@ -344,20 +340,7 @@ func (Docs) Serve() error {
 
 // Generate generates CLI references
 func (Docs) Generate() error {
-	ver, err := version()
-	if err != nil {
-		return err
-	}
-	// Set a dummy path for the documents
-	flag.CacheDirFlag.Value = "/path/to/cache"
-	flag.ModuleDirFlag.Value = "$HOME/.trivy/modules"
-
-	cmd := commands.NewApp(ver)
-	cmd.DisableAutoGenTag = true
-	if err = doc.GenMarkdownTree(cmd, "./docs/docs/references/configuration/cli"); err != nil {
-		return err
-	}
-	return nil
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_docs", "./magefiles")
 }
 
 func findProtoFiles() ([]string, error) {
