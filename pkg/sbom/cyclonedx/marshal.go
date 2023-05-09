@@ -16,6 +16,7 @@ import (
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	k8s "github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -111,6 +112,51 @@ func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 		return nil, xerrors.Errorf("failed to parse components: %w", err)
 	}
 
+	return bom, nil
+}
+
+func (e *Marshaler) k8sreportToCdxComponent(r k8s.Report) (*cdx.Component, error) {
+	component := &cdx.Component{
+		Name: r.ClusterName,
+	}
+
+	properties := []cdx.Property{
+		cdxProperty(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion)),
+	}
+
+	component.Type = cdx.ComponentTypeContainer
+	component.BOMRef = e.newUUID().String()
+
+	component.Properties = &properties
+	return component, nil
+}
+
+// Marshal converts the Trivy report to the CycloneDX format
+func (e *Marshaler) MarshalKbom(report k8s.Report) (*cdx.BOM, error) {
+	bom := cdx.NewBOM()
+	bom.SerialNumber = e.newUUID().URN()
+	metadataComponent, err := e.k8sreportToCdxComponent(report)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
+	}
+	bom.Metadata = e.cdxMetadata()
+	bom.Metadata.Component = metadataComponent
+	bomComponents := make([]cdx.Component, 0)
+	bomDependecies := make([]cdx.Dependency, 0)
+	bomVulnerabilities := make([]cdx.Vulnerability, 0)
+	for _, resource := range report.Resources {
+		bom, err := e.Marshal(resource.Report)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse components: %w", err)
+		}
+		bomComponents = append(bomComponents, *bom.Metadata.Component)
+		bomComponents = append(bomComponents, *bom.Components...)
+		bomDependecies = append(bomDependecies, *bom.Dependencies...)
+		bomVulnerabilities = append(bomVulnerabilities, *bom.Vulnerabilities...)
+	}
+	bom.Components = &bomComponents
+	bom.Dependencies = &bomDependecies
+	bom.Vulnerabilities = &bomVulnerabilities
 	return bom, nil
 }
 
