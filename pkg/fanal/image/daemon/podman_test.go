@@ -20,12 +20,12 @@ import (
 func setupPodmanSock(t *testing.T) *httptest.Server {
 	t.Helper()
 
-	runtimeDir, err := os.CreateTemp("", "daemon")
+	runtimeDir, err := os.MkdirTemp("", "daemon")
 	require.NoError(t, err)
 
-	os.Setenv("XDG_RUNTIME_DIR", runtimeDir.Name())
+	os.Setenv("XDG_RUNTIME_DIR", runtimeDir)
 
-	dir := filepath.Join(runtimeDir.Name(), "podman")
+	dir := filepath.Join(runtimeDir, "podman")
 	err = os.MkdirAll(dir, os.ModePerm)
 	require.NoError(t, err)
 
@@ -86,13 +86,13 @@ func TestPodmanImage(t *testing.T) {
 			require.NoError(t, err)
 
 			img, cleanup, err := PodmanImage(ref.Name())
+			defer cleanup()
 
 			if tt.wantErr {
 				assert.NotNil(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			defer cleanup()
 
 			confName, err := img.ConfigName()
 			require.NoError(t, err)
