@@ -42,7 +42,7 @@ var (
 		"14.10":     time.Date(2015, 7, 23, 23, 59, 59, 0, time.UTC),
 		"15.04":     time.Date(2016, 1, 23, 23, 59, 59, 0, time.UTC),
 		"15.10":     time.Date(2016, 7, 22, 23, 59, 59, 0, time.UTC),
-		"16.04":     time.Date(2024, 4, 21, 23, 59, 59, 0, time.UTC),
+		"16.04":     time.Date(2021, 4, 21, 23, 59, 59, 0, time.UTC),
 		"16.04-ESM": time.Date(2026, 4, 29, 23, 59, 59, 0, time.UTC),
 		"16.10":     time.Date(2017, 7, 20, 23, 59, 59, 0, time.UTC),
 		"17.04":     time.Date(2018, 1, 13, 23, 59, 59, 0, time.UTC),
