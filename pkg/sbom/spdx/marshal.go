@@ -247,6 +247,12 @@ func (m *Marshaler) rootPackage(r types.Report) (*spdx.Package2_2, error) {
 	for _, d := range r.Metadata.RepoDigests {
 		attributionTexts = appendAttributionText(attributionTexts, PropertyRepoDigest, d)
 	}
+
+	// sort diffIDs for consistency
+	sort.Slice(r.Metadata.DiffIDs, func(i, j int) bool {
+		return r.Metadata.DiffIDs[i] < r.Metadata.DiffIDs[j]
+	})
+
 	for _, d := range r.Metadata.DiffIDs {
 		attributionTexts = appendAttributionText(attributionTexts, PropertyDiffID, d)
 	}
