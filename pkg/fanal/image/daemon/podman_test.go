@@ -86,13 +86,13 @@ func TestPodmanImage(t *testing.T) {
 			require.NoError(t, err)
 
 			img, cleanup, err := PodmanImage(ref.Name())
-			defer cleanup()
 
 			if tt.wantErr {
 				assert.NotNil(t, err)
 				return
 			}
 			assert.NoError(t, err)
+			defer cleanup()
 
 			confName, err := img.ConfigName()
 			require.NoError(t, err)
