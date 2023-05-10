@@ -36,6 +36,11 @@ func NewDigest(alg Algorithm, h hash.Hash) Digest {
 	return Digest(fmt.Sprintf("%s:%x", alg, h.Sum(nil)))
 }
 
+// NewDigestFromString returns a Digest from alg and a string.
+func NewDigestFromString(alg Algorithm, h string) Digest {
+	return Digest(fmt.Sprintf("%s:%s", alg, h))
+}
+
 func (d Digest) Algorithm() Algorithm {
 	return Algorithm(d[:d.sepIndex()])
 }

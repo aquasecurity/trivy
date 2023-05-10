@@ -236,5 +236,5 @@ func decodeChecksumLine(line string) digest.Digest {
 		return ""
 	}
 	h := hex.EncodeToString(decodedDigestString)
-	return digest.Digest(fmt.Sprintf("%s:%s", alg, h))
+	return digest.NewDigestFromString(alg, h)
 }
