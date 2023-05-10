@@ -10,8 +10,7 @@ function create_common_rpm_repo () {
                 prefix=$arch
                 if [ "$arch" == "x86_64" ]; then
                         prefix="64bit"
-                fi
-                if [ "$arch" == "aarch64" ]; then
+                elif [ "$arch" == "aarch64" ]; then
                         prefix="ARM64"
                 fi
 
