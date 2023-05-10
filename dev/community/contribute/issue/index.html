@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#wrong-detection" class="md-skip">
+        <a href="#issues" class="md-skip">
           Skip to content
         </a>
       
@@ -2794,67 +2794,27 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Issues
-          <span class="md-nav__icon md-icon"></span>
-        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         Issues
       </a>
       
-        
+    </li>
+  
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+            
+          
+            
+              
   
   
   
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#wrong-detection" class="md-nav__link">
-    Wrong detection
-  </a>
-  
-    <nav class="md-nav" aria-label="Wrong detection">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#github-advisory-database" class="md-nav__link">
-    GitHub Advisory Database
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#gitlab-advisory-database" class="md-nav__link">
-    GitLab Advisory Database
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#red-hat-cve-database" class="md-nav__link">
-    Red Hat CVE Database
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
+    <li class="md-nav__item">
+      <a href="../discussion/" class="md-nav__link">
+        Discussions
+      </a>
     </li>
   
 
@@ -2967,48 +2927,8 @@
   
   
   
+    
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#wrong-detection" class="md-nav__link">
-    Wrong detection
-  </a>
-  
-    <nav class="md-nav" aria-label="Wrong detection">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#github-advisory-database" class="md-nav__link">
-    GitHub Advisory Database
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#gitlab-advisory-database" class="md-nav__link">
-    GitLab Advisory Database
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#red-hat-cve-database" class="md-nav__link">
-    Red Hat CVE Database
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -3022,32 +2942,9 @@
                 
 
 
-  <h1>Issues</h1>
-
+<h1 id="issues">Issues</h1>
 <p>Thank you for taking interest in contributing to Trivy!</p>
-<ul>
-<li>Feel free to open issues for any reason. When you open a new issue, you'll have to select an issue kind: bug/feature/support and fill the required information based on the selected template.</li>
-<li>Please spend a small amount of time giving due diligence to the issue tracker. Your issue might be a duplicate. If it is, please add your comment to the existing issue.</li>
-<li>Remember that users might search for your issue in the future, so please give it a meaningful title to help others.</li>
-<li>The issue should clearly explain the reason for opening, the proposal if you have any, and any relevant technical information.</li>
-</ul>
-<h2 id="wrong-detection">Wrong detection</h2>
-<p>Trivy depends on <a href="https://aquasecurity.github.io/trivy/latest/docs/vulnerability/detection/data-source/">multiple data sources</a>.
-Sometime these databases contain mistakes.</p>
-<p>If Trivy can't detect any CVE-IDs or shows false positive result, at first please follow the next steps:</p>
-<ol>
-<li>Run Trivy with <code>-f json</code> that shows data sources.</li>
-<li>According to the shown data source, make sure that the security advisory in the data source is correct.</li>
-</ol>
-<p>If the data source is correct and Trivy shows wrong results, please raise an issue on Trivy.</p>
-<h3 id="github-advisory-database">GitHub Advisory Database</h3>
-<p>Visit <a href="https://github.com/advisories">here</a> and search CVE-ID.</p>
-<p>If you find a problem, it'll be nice to fix it: <a href="https://github.blog/2022-02-22-github-advisory-database-now-open-to-community-contributions/">How to contribute to a GitHub security advisory</a></p>
-<h3 id="gitlab-advisory-database">GitLab Advisory Database</h3>
-<p>Visit <a href="https://advisories.gitlab.com/">here</a> and search CVE-ID.</p>
-<p>If you find a problem, it'll be nice to fix it: <a href="https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/issues/new">Create an issue to GitLab Advisory Database</a></p>
-<h3 id="red-hat-cve-database">Red Hat CVE Database</h3>
-<p>Visit <a href="https://access.redhat.com/security/security-updates/?cwe=476#/cve">here</a> and search CVE-ID.</p>
+<p>Trivy uses <a href="../discussion/">GitHub Discussion</a> for bug reports, feature requests, and questions.</p>
 
               
             </article>
@@ -3081,13 +2978,13 @@ Sometime these databases contain mistakes.</p>
       
       
         
-        <a href="../pr/" class="md-footer__link md-footer__link--next" aria-label="Next: Pull Requests" rel="next">
+        <a href="../discussion/" class="md-footer__link md-footer__link--next" aria-label="Next: Discussions" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Pull Requests
+              Discussions
             </div>
           </div>
           <div class="md-footer__button md-icon">
