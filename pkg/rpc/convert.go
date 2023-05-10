@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/protobuf/types/known/structpb"
 
@@ -159,11 +161,11 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 
 		var lastModifiedDate, publishedDate *timestamp.Timestamp
 		if vuln.LastModifiedDate != nil {
-			lastModifiedDate, _ = ptypes.TimestampProto(*vuln.LastModifiedDate) // nolint: errcheck
+			lastModifiedDate = timestamppb.New(*vuln.LastModifiedDate) // nolint: errcheck
 		}
 
 		if vuln.PublishedDate != nil {
-			publishedDate, _ = ptypes.TimestampProto(*vuln.PublishedDate) // nolint: errcheck
+			publishedDate = timestamppb.New(*vuln.PublishedDate) // nolint: errcheck
 		}
 
 		var customAdvisoryData, customVulnData *structpb.Value
