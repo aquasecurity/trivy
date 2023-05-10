@@ -283,11 +283,9 @@ func TestReport_consolidate(t *testing.T) {
 		{
 			name: "report with both misconfigs and vulnerabilities",
 			report: Report{
-				Vulnerabilities: []Resource{
+				Resources: []Resource{
 					deployOrionWithVulns,
 					cronjobHelloWithVulns,
-				},
-				Misconfigurations: []Resource{
 					deployOrionWithMisconfigs,
 					podPrometheusWithMisconfigs,
 				},
@@ -301,7 +299,7 @@ func TestReport_consolidate(t *testing.T) {
 		{
 			name: "report with only misconfigurations",
 			report: Report{
-				Misconfigurations: []Resource{
+				Resources: []Resource{
 					deployOrionWithMisconfigs,
 					podPrometheusWithMisconfigs,
 				},
@@ -314,7 +312,7 @@ func TestReport_consolidate(t *testing.T) {
 		{
 			name: "report with only vulnerabilities",
 			report: Report{
-				Vulnerabilities: []Resource{
+				Resources: []Resource{
 					deployOrionWithVulns,
 					cronjobHelloWithVulns,
 				},
@@ -382,11 +380,9 @@ func TestResourceFailed(t *testing.T) {
 		{
 			name: "report with both misconfigs and vulnerabilities",
 			report: Report{
-				Vulnerabilities: []Resource{
+				Resources: []Resource{
 					deployOrionWithVulns,
 					cronjobHelloWithVulns,
-				},
-				Misconfigurations: []Resource{
 					deployOrionWithMisconfigs,
 					podPrometheusWithMisconfigs,
 				},
@@ -396,7 +392,7 @@ func TestResourceFailed(t *testing.T) {
 		{
 			name: "report with only misconfigurations",
 			report: Report{
-				Misconfigurations: []Resource{
+				Resources: []Resource{
 					deployOrionWithMisconfigs,
 					podPrometheusWithMisconfigs,
 				},
@@ -406,7 +402,7 @@ func TestResourceFailed(t *testing.T) {
 		{
 			name: "report with only vulnerabilities",
 			report: Report{
-				Vulnerabilities: []Resource{
+				Resources: []Resource{
 					deployOrionWithVulns,
 					cronjobHelloWithVulns,
 				},
@@ -464,7 +460,7 @@ func Test_rbacResource(t *testing.T) {
 
 func Test_separateMisconfigReports(t *testing.T) {
 	k8sReport := Report{
-		Misconfigurations: []Resource{
+		Resources: []Resource{
 			{Kind: "Role"},
 			{Kind: "Deployment"},
 			{Kind: "StatefulSet"},
@@ -500,14 +496,14 @@ func Test_separateMisconfigReports(t *testing.T) {
 			expectedReports: []Report{
 				// the order matter for the test
 				{
-					Misconfigurations: []Resource{
+					Resources: []Resource{
 						{Kind: "Deployment"},
 						{Kind: "StatefulSet"},
 						{Kind: "Pod"},
 					},
 				},
-				{Misconfigurations: []Resource{{Kind: "Role"}}},
-				{Misconfigurations: []Resource{{Kind: "Pod"}}},
+				{Resources: []Resource{{Kind: "Role"}}},
+				{Resources: []Resource{{Kind: "Pod"}}},
 			},
 		},
 		{
@@ -521,13 +517,13 @@ func Test_separateMisconfigReports(t *testing.T) {
 			expectedReports: []Report{
 				// the order matter for the test
 				{
-					Misconfigurations: []Resource{
+					Resources: []Resource{
 						{Kind: "Deployment"},
 						{Kind: "StatefulSet"},
 						{Kind: "Pod"},
 					},
 				},
-				{Misconfigurations: []Resource{{Kind: "Pod"}}},
+				{Resources: []Resource{{Kind: "Pod"}}},
 			},
 		},
 		{
@@ -535,7 +531,7 @@ func Test_separateMisconfigReports(t *testing.T) {
 			k8sReport: k8sReport,
 			scanners:  types.Scanners{types.RBACScanner},
 			expectedReports: []Report{
-				{Misconfigurations: []Resource{{Kind: "Role"}}},
+				{Resources: []Resource{{Kind: "Role"}}},
 			},
 		},
 		{
@@ -545,7 +541,7 @@ func Test_separateMisconfigReports(t *testing.T) {
 			components: []string{workloadComponent},
 			expectedReports: []Report{
 				{
-					Misconfigurations: []Resource{
+					Resources: []Resource{
 						{Kind: "Deployment"},
 						{Kind: "StatefulSet"},
 						{Kind: "Pod"},
@@ -559,7 +555,7 @@ func Test_separateMisconfigReports(t *testing.T) {
 			scanners:   types.Scanners{types.MisconfigScanner},
 			components: []string{infraComponent},
 			expectedReports: []Report{
-				{Misconfigurations: []Resource{{Kind: "Pod"}}},
+				{Resources: []Resource{{Kind: "Pod"}}},
 			},
 		},
 
@@ -572,9 +568,9 @@ func Test_separateMisconfigReports(t *testing.T) {
 			assert.Equal(t, len(tt.expectedReports), len(reports))
 
 			for i := range reports {
-				assert.Equal(t, len(tt.expectedReports[i].Misconfigurations), len(reports[i].report.Misconfigurations))
-				for j, m := range tt.expectedReports[i].Misconfigurations {
-					assert.Equal(t, m.Kind, reports[i].report.Misconfigurations[j].Kind)
+				assert.Equal(t, len(tt.expectedReports[i].Resources), len(reports[i].report.Resources))
+				for j, m := range tt.expectedReports[i].Resources {
+					assert.Equal(t, m.Kind, reports[i].report.Resources[j].Kind)
 				}
 			}
 		})
@@ -602,8 +598,8 @@ func TestReportWrite_Summary(t *testing.T) {
 		{
 			name: "Only config, all serverities",
 			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{deployOrionWithMisconfigs},
+				ClusterName: "test",
+				Resources:   []Resource{deployOrionWithMisconfigs},
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
 			components: []string{workloadComponent},
@@ -624,8 +620,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "Only vuln, all serverities",
 			report: Report{
-				ClusterName:     "test",
-				Vulnerabilities: []Resource{deployOrionWithVulns},
+				ClusterName: "test",
+				Resources:   []Resource{deployOrionWithVulns},
 			},
 			scanners:   types.Scanners{types.VulnerabilityScanner},
 			severities: allSeverities,
@@ -645,8 +641,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "Only rbac, all serverities",
 			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{roleWithMisconfig},
+				ClusterName: "test",
+				Resources:   []Resource{roleWithMisconfig},
 			},
 			scanners:   types.Scanners{types.RBACScanner},
 			severities: allSeverities,
@@ -666,8 +662,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "Only secret, all serverities",
 			report: Report{
-				ClusterName:     "test",
-				Vulnerabilities: []Resource{deployLuaWithSecrets},
+				ClusterName: "test",
+				Resources:   []Resource{deployLuaWithSecrets},
 			},
 			scanners:   types.Scanners{types.SecretScanner},
 			severities: allSeverities,
@@ -687,8 +683,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "apiserver, only infra and serverities",
 			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{apiseverPodWithMisconfigAndInfra},
+				ClusterName: "test",
+				Resources:   []Resource{apiseverPodWithMisconfigAndInfra},
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
 			components: []string{infraComponent},
@@ -709,8 +705,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "apiserver, vuln,config,secret and serverities",
 			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{apiseverPodWithMisconfigAndInfra},
+				ClusterName: "test",
+				Resources:   []Resource{apiseverPodWithMisconfigAndInfra},
 			},
 			scanners: types.Scanners{
 				types.VulnerabilityScanner,
@@ -735,8 +731,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		{
 			name: "apiserver, all scanners and serverities",
 			report: Report{
-				ClusterName:       "test",
-				Misconfigurations: []Resource{apiseverPodWithMisconfigAndInfra},
+				ClusterName: "test",
+				Resources:   []Resource{apiseverPodWithMisconfigAndInfra},
 			},
 			scanners: types.Scanners{
 				types.MisconfigScanner,

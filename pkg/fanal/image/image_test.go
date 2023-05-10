@@ -531,7 +531,12 @@ func TestDockerPlatformArguments(t *testing.T) {
 							},
 						},
 						Insecure: true,
-						Platform: "arm/linux",
+						Platform: types.Platform{
+							Platform: &v1.Platform{
+								Architecture: "arm",
+								OS:           "linux",
+							},
+						},
 					},
 				},
 			},
@@ -545,8 +550,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 			defer cleanup()
 
 			if tt.wantErr != "" {
-				assert.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, err)
+				assert.ErrorContains(t, err, tt.wantErr, err)
 			} else {
 				assert.NoError(t, err)
 			}
