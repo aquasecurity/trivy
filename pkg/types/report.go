@@ -2,8 +2,10 @@ package types
 
 import (
 	"encoding/json"
+	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
+	"github.com/google/uuid"
 
 	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
@@ -26,6 +28,9 @@ type Report struct {
 
 	// SBOM
 	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
+
+	// DF
+	DfScanMeta DfScanMeta `json:"-"`
 }
 
 // Metadata represents a metadata of artifact
@@ -135,4 +140,9 @@ func (results Results) Failed() bool {
 		}
 	}
 	return false
+}
+
+type DfScanMeta struct {
+	ScanID  uuid.UUID
+	Created time.Time
 }

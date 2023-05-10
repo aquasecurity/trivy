@@ -2,6 +2,7 @@ package spdx
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -146,7 +147,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 		)
 
 		for _, pkg := range result.Packages {
-			spdxPackage, err := m.pkgToSpdxPackage(result.Type, result.Class, r.Metadata, pkg)
+			spdxPackage, err := m.pkgToSpdxPackage(result.Type, result.Class, r.Metadata, pkg, r.ArtifactType)
 			if err != nil {
 				return nil, xerrors.Errorf("failed to parse package: %w", err)
 			}
@@ -155,6 +156,21 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 				relationShip(parentPackage.PackageSPDXIdentifier, spdxPackage.PackageSPDXIdentifier, RelationShipContains),
 			)
 		}
+	}
+
+	if len(relationShips) > 1 {
+		// for consistent report generation accross UI and CLI
+		// sort relationships except for the first item
+		from := 1
+		sort.Slice(relationShips[from:], func(i, j int) bool {
+			r1 := relationShips[i+from]
+			r2 := relationShips[j+from]
+
+			s1 := string(r1.RefA.ElementRefID) + r1.Relationship + string(r1.RefB.ElementRefID)
+			s2 := string(r2.RefA.ElementRefID) + r2.Relationship + string(r2.RefB.ElementRefID)
+
+			return s1 < s2
+		})
 	}
 
 	// Augment SPDX data
@@ -171,7 +187,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 			DocumentNamespace:    getDocumentNamespace(r, m),
 			CreatorOrganizations: []string{CreatorOrganization},
 			CreatorTools:         []string{CreatorTool},
-			Created:              m.clock.Now().UTC().Format(time.RFC3339),
+			Created:              r.DfScanMeta.Created.UTC().Format(time.RFC3339),
 		},
 		Packages:      packages,
 		Relationships: relationShips,
@@ -231,6 +247,12 @@ func (m *Marshaler) rootPackage(r types.Report) (*spdx.Package2_2, error) {
 	for _, d := range r.Metadata.RepoDigests {
 		attributionTexts = appendAttributionText(attributionTexts, PropertyRepoDigest, d)
 	}
+
+	// sort diffIDs for consistency
+	sort.Slice(r.Metadata.DiffIDs, func(i, j int) bool {
+		return r.Metadata.DiffIDs[i] < r.Metadata.DiffIDs[j]
+	})
+
 	for _, d := range r.Metadata.DiffIDs {
 		attributionTexts = appendAttributionText(attributionTexts, PropertyDiffID, d)
 	}
@@ -282,8 +304,8 @@ func (m *Marshaler) langPackage(target, appType string) (spdx.Package2_2, error)
 }
 
 // Create a pkg object that will be common for cli and deepfactor portal
-func createDFPkgObject(pkg ftypes.Package) ftypes.Package {
-	return ftypes.Package{
+func createDFPkgObject(pkg ftypes.Package, artifactType ftypes.ArtifactType) ftypes.Package {
+	pkgObj := ftypes.Package{
 		ID:         pkg.ID,
 		Arch:       pkg.Arch,
 		Name:       pkg.Name,
@@ -293,11 +315,6 @@ func createDFPkgObject(pkg ftypes.Package) ftypes.Package {
 		SrcRelease: pkg.SrcRelease,
 		SrcEpoch:   pkg.SrcEpoch,
 		Licenses:   pkg.Licenses,
-		Layer: ftypes.Layer{
-			Digest:    pkg.Layer.Digest,
-			DiffID:    pkg.Layer.DiffID,
-			CreatedBy: pkg.Layer.CreatedBy,
-		},
 		FilePath:   pkg.FilePath,
 		Release:    pkg.Release,
 		Ref:        pkg.Ref,
@@ -309,13 +326,23 @@ func createDFPkgObject(pkg ftypes.Package) ftypes.Package {
 		Indirect:        pkg.Indirect,
 		// Locations:       pkg.Locations,
 	}
+
+	if artifactType == ftypes.ArtifactContainerImage {
+		pkgObj.Layer = ftypes.Layer{
+			Digest:    pkg.Layer.Digest,
+			DiffID:    pkg.Layer.DiffID,
+			CreatedBy: pkg.Layer.CreatedBy,
+		}
+	}
+
+	return pkgObj
 }
 
-func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
+func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package, artifactType ftypes.ArtifactType) (spdx.Package2_2, error) {
 	license := getLicense(pkg)
 
 	// Create a pkg object that will be common for cli and deepfactor portal
-	dfPkgObj := createDFPkgObject(pkg)
+	dfPkgObj := createDFPkgObject(pkg, artifactType)
 
 	pkgID, err := calcPkgID(m.hasher, dfPkgObj)
 	if err != nil {
@@ -420,7 +447,7 @@ func getDocumentNamespace(r types.Report, m *Marshaler) string {
 		DocumentNamespace,
 		string(r.ArtifactType),
 		r.ArtifactName,
-		m.newUUID().String(),
+		r.DfScanMeta.ScanID, // overriden for consistency
 	)
 }
 
