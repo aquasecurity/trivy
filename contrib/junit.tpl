@@ -9,7 +9,7 @@
         </properties>
         {{- end -}}
         {{ range .Vulnerabilities }}
-        <testcase classname="{{ .PkgName | replace "/" "." }}-{{ .InstalledVersion }}" file="{{ .PkgName }}" name="[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}" time="">
+        <testcase classname="{{ escapeXML .PkgName }}-{{ .InstalledVersion }}" file="{{ .PkgName }}" name="[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}" time="">
           <failure message="{{ escapeXML .Title }}" type="description">
             Severity: {{ .Severity }}
             Package Path (if available): {{ .PkgPath }}
