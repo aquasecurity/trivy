@@ -296,11 +296,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/examples/</loc>
-         <lastmod>2023-05-10</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/custom/schema/</loc>
          <lastmod>2023-05-10</lastmod>
          <changefreq>daily</changefreq>
