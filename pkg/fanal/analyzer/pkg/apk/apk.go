@@ -218,7 +218,7 @@ func (a alpinePkgAnalyzer) Version() int {
 // decodeChecksumLine decodes checksum line
 func decodeChecksumLine(line string) digest.Digest {
 	if len(line) < 2 {
-		log.Logger.Debugf("Unable decode checksum line: %s", line)
+		log.Logger.Debugf("Unable to decode checksum line of apk package: %s", line)
 		return ""
 	}
 	// https://wiki.alpinelinux.org/wiki/Apk_spec#Package_Checksum_Field
