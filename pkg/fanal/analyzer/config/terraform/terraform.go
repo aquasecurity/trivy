@@ -19,6 +19,7 @@ const (
 var requiredExts = []string{
 	".tf",
 	".tf.json",
+	".tfvars",
 }
 
 func init() {
