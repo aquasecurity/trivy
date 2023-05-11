@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	packageurl "github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
@@ -341,7 +342,10 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 	}
 
 	pkg := p.Package()
-	if component.Name != "" {
+
+	// Trivy's marshall loses case-sensitivity in PURL used in SBOM for Go,
+	// so we have to use an original package name (if possible)
+	if p.Type == packageurl.TypeGolang && component.Name != "" {
 		pkg.Name = component.Name
 	}
 	pkg.Ref = component.BOMRef
