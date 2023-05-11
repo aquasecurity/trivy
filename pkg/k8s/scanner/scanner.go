@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/bom"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
@@ -20,6 +21,13 @@ import (
 	rep "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
+)
+
+const (
+	pod                = "PodInfo"
+	nodeInfo           = "NodeInfo"
+	osPackages         = "os-packages"
+	nodeCoreComponents = "node-core-components"
 )
 
 type Scanner struct {
@@ -56,7 +64,7 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	}()
 	var resources []report.Resource
 	if s.opts.Format == rep.FormatCycloneDX {
-		resources, err = clusterInfoToReport(artifactsData)
+		resources, err = clusterInfoToReportResources(artifactsData)
 		if err != nil {
 			return report.Report{}, err
 		}
@@ -157,39 +165,48 @@ func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifact
 	return report.CreateResource(artifact, r, nil), nil
 }
 
-func clusterInfoToReport(allArtifact []*artifacts.Artifact) ([]report.Resource, error) {
+func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) ([]report.Resource, error) {
 	resources := make([]report.Resource, 0)
 	for _, artifact := range allArtifact {
 		switch artifact.Kind {
-		case "Pod":
+		case pod:
 			var comp bom.Component
 			err := ms.Decode(artifact.RawResource, &comp)
 			if err != nil {
 				return []report.Resource{}, err
 			}
+			packages := make(ftypes.Packages, 0)
+			repoDigest := make([]string, 0)
+			for _, c := range comp.Containers {
+				name := fmt.Sprintf("%s/%s", c.Registry, c.Repository)
+				version := sanitizedVersion(c.Version)
+				packages = append(packages, ftypes.Package{
+					ID:      fmt.Sprintf("%s:%s", name, version),
+					Name:    name,
+					Version: version,
+					Digest:  digest.NewDigestFromString("sha256", c.Digest),
+				},
+				)
+			}
 			resources = append(resources, report.Resource{
 				Kind: artifact.Kind,
-				Name: comp.ID,
+				Name: comp.Name,
 				Report: types.Report{
-					ArtifactName: comp.ID,
-					ArtifactType: ftypes.ArtifactContainerImage,
+					ArtifactName: comp.Name,
+					ArtifactType: ftypes.KubernetesPod,
 					Metadata: types.Metadata{
-						RepoDigests: []string{fmt.Sprintf("%s/%s@sha256:%s", comp.Registry, comp.Repository, comp.Digest)},
+						RepoDigests: repoDigest,
 					},
 					Results: types.Results{
 						{
-							Target: "containers",
-							Type:   "oci",
-							Packages: ftypes.Packages{
-								{
-									Name:    fmt.Sprintf("%s/%s", comp.Registry, comp.Repository),
-									Version: comp.Version,
-								},
-							},
+							Target:   "containers",
+							Type:     "oci",
+							Class:    types.ClassK8sComponents,
+							Packages: packages,
 						},
 					},
 				}})
-		case "NodeInfo":
+		case nodeInfo:
 			var nf bom.NodeInfo
 			err := ms.Decode(artifact.RawResource, &nf)
 			if err != nil {
@@ -219,15 +236,18 @@ func clusterInfoToReport(allArtifact []*artifacts.Artifact) ([]report.Resource, 
 					},
 				},
 			}
+			var name, version string
 			osParts := strings.Split(nf.OsImage, " ")
 			if len(osParts) == 2 {
+				name = strings.TrimSpace(osParts[0])
+				version = strings.TrimSpace(osParts[1])
 				metadata.OS = &ftypes.OS{
-					Family: strings.TrimSpace(osParts[0]),
-					Name:   strings.TrimSpace(osParts[1]),
+					Family: strings.ToLower(name),
+					Name:   version,
 				}
 			}
 			resources = append(resources, report.Resource{
-				Kind: "Node",
+				Kind: artifact.Kind,
 				Name: artifact.Name,
 				Report: types.Report{
 					ArtifactName: nf.NodeName,
@@ -235,30 +255,36 @@ func clusterInfoToReport(allArtifact []*artifacts.Artifact) ([]report.Resource, 
 					Metadata:     metadata,
 					Results: types.Results{
 						{
-							Target: "os-packages",
+							Target: osPackages,
 							Class:  types.ClassOSPkg,
-							Type:   "debian",
+							Type:   strings.ToLower(name),
 						},
 						{
-							Target: "core-components",
+							Target: nodeCoreComponents,
 							Class:  types.ClassLangPkg,
 							Type:   "golang",
 							Packages: ftypes.Packages{
 								{
 									Name:    "containerd",
-									Version: nf.ContainerRuntimeVersion,
+									Version: strings.Replace(nf.ContainerRuntimeVersion, "containerd://", "", -1),
 								},
 								{
-									Name:    "kubelet_version",
-									Version: nf.KubeletVersion,
+									Name:    "kubelet",
+									Version: sanitizedVersion(nf.KubeletVersion),
 								},
 							},
 						},
 					},
 				},
 			})
+		default:
+			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
 		}
 	}
 
 	return resources, nil
+}
+
+func sanitizedVersion(version string) string {
+	return strings.Replace(version, "v", "", -1)
 }

@@ -3,8 +3,6 @@ package k8s
 import (
 	"fmt"
 
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 
 	rp "github.com/aquasecurity/trivy/pkg/report"
@@ -52,7 +50,6 @@ func Write(k8sreport report.Report, option report.Option) error {
 	case rp.FormatCycloneDX:
 		w := cyclonedx.NewWriter(option.Output, option.APIVersion)
 		return w.WriteKbom(k8sreport)
-	default:
-		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
 	}
+	return nil
 }

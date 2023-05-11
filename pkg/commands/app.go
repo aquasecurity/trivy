@@ -896,7 +896,11 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance.Usage += fmt.Sprintf(" (%s,%s, %s, %s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS, types.ComplianceK8sPSSBaseline, types.ComplianceK8sPSSRestricted)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
-	reportFlagGroup.Format.Usage = "format (" + strings.Join([]string{r.FormatTable, r.FormatJSON, r.FormatCycloneDX}, ", ") + ")"
+
+	formatFlag := flag.FormatFlag
+	formatFlag.Usage = "format (" + strings.Join([]string{r.FormatTable, r.FormatJSON, r.FormatCycloneDX}, ", ") + ")"
+	reportFlagGroup.Format = &formatFlag
+
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),

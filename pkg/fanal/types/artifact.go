@@ -91,7 +91,7 @@ type Package struct {
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
 
-	// This is required when using SPDX formats. Otherwise, it will be empty.
+	// This is required when using SPDX formats or kbom. Otherwise, it will be empty.
 	Digest digest.Digest `json:",omitempty"`
 
 	// lines from the lock file where the dependency is written
@@ -191,6 +191,7 @@ const (
 	ArtifactSPDX             ArtifactType = "spdx"
 	ArtifactAWSAccount       ArtifactType = "aws_account"
 	ArtifactVM               ArtifactType = "vm"
+	KubernetesPod            ArtifactType = "k8s_pod"
 )
 
 // ArtifactReference represents a reference of container image, local filesystem and repository

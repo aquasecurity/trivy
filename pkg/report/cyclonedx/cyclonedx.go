@@ -55,7 +55,7 @@ func (w Writer) Write(report types.Report) error {
 	return nil
 }
 
-// Write writes the results in CycloneDX format
+// WriteKbom writes the k8s results in CycloneDX format
 func (w Writer) WriteKbom(report rep.Report) error {
 	bom, err := w.marshaler.MarshalKbom(report)
 	if err != nil {

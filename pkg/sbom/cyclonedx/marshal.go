@@ -133,7 +133,7 @@ func (e *Marshaler) k8sreportToCdxComponent(r k8s.Report) (*cdx.Component, error
 	return component, nil
 }
 
-// Marshal converts the Trivy report to the CycloneDX format
+// MarshalKbom converts the Trivy k8s report to the CycloneDX format
 func (e *Marshaler) MarshalKbom(report k8s.Report) (*cdx.BOM, error) {
 	bom := cdx.NewBOM()
 	bom.SerialNumber = e.newUUID().URN()
@@ -143,22 +143,23 @@ func (e *Marshaler) MarshalKbom(report k8s.Report) (*cdx.BOM, error) {
 	}
 	bom.Metadata = e.cdxMetadata()
 	bom.Metadata.Component = metadataComponent
+
 	bomComponents := make([]cdx.Component, 0)
 	bomDependecies := make([]cdx.Dependency, 0)
-	bomVulnerabilities := make([]cdx.Vulnerability, 0)
 	for _, resource := range report.Resources {
 		bom, err := e.Marshal(resource.Report)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse components: %w", err)
 		}
+		// append resource metadata component
 		bomComponents = append(bomComponents, *bom.Metadata.Component)
+		// append pkg components
 		bomComponents = append(bomComponents, *bom.Components...)
 		bomDependecies = append(bomDependecies, *bom.Dependencies...)
-		bomVulnerabilities = append(bomVulnerabilities, *bom.Vulnerabilities...)
+
 	}
 	bom.Components = &bomComponents
 	bom.Dependencies = &bomDependecies
-	bom.Vulnerabilities = &bomVulnerabilities
 	return bom, nil
 }
 
@@ -324,8 +325,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			}
 		}
 
-		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
-			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
+		if languageSpecificPackage(result.Type) {
 			// If a package is language-specific package that isn't associated with a lock file,
 			// it will be a dependency of a component under "metadata".
 			// e.g.
@@ -382,6 +382,11 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		return dependencyList[i].Ref < dependencyList[j].Ref
 	})
 	return &components, &dependencyList, &vulns, nil
+}
+
+func languageSpecificPackage(pkgType string) bool {
+	return pkgType == ftypes.NodePkg || pkgType == ftypes.PythonPkg ||
+		pkgType == ftypes.GemSpec || pkgType == ftypes.Jar || pkgType == ftypes.CondaPkg || pkgType == ftypes.Oci
 }
 
 func packageID(target, pkgName, pkgVersion, pkgFilePath string) string {
@@ -446,6 +451,9 @@ func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error)
 		}
 	case ftypes.ArtifactVM:
 		component.Type = cdx.ComponentTypeContainer
+		component.BOMRef = e.newUUID().String()
+	case ftypes.KubernetesPod:
+		component.Type = cdx.ComponentTypeApplication
 		component.BOMRef = e.newUUID().String()
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
@@ -518,8 +526,12 @@ func pkgToCdxComponent(pkgType string, meta types.Metadata, class types.ResultCl
 		}
 
 	}
+	compType := cdx.ComponentTypeLibrary
+	if class == types.ClassK8sComponents {
+		compType = cdx.ComponentTypeContainer
+	}
 	component := cdx.Component{
-		Type:       cdx.ComponentTypeLibrary,
+		Type:       compType,
 		Name:       pkg.Name,
 		Version:    pu.Version,
 		BOMRef:     pu.BOMRef(),
