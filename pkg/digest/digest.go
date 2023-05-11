@@ -21,6 +21,7 @@ func (a Algorithm) String() string {
 const (
 	SHA1   Algorithm = "sha1"   // sha1 with hex encoding (lower case only)
 	SHA256 Algorithm = "sha256" // sha256 with hex encoding (lower case only)
+	MD5    Algorithm = "md5"    // md5 with hex encoding (lower case only)
 )
 
 // Digest allows simple protection of hex formatted digest strings, prefixed by their algorithm.
@@ -33,6 +34,11 @@ type Digest string
 // NewDigest returns a Digest from alg and a hash.Hash object.
 func NewDigest(alg Algorithm, h hash.Hash) Digest {
 	return Digest(fmt.Sprintf("%s:%x", alg, h.Sum(nil)))
+}
+
+// NewDigestFromString returns a Digest from alg and a string.
+func NewDigestFromString(alg Algorithm, h string) Digest {
+	return Digest(fmt.Sprintf("%s:%s", alg, h))
 }
 
 func (d Digest) Algorithm() Algorithm {
