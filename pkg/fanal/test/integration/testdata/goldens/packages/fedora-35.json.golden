@@ -1,5 +1,6 @@
 [
   {
+    "ID": "alternatives@1.19-1.fc35.x86_64",
     "Name": "alternatives",
     "Version": "1.19",
     "Release": "1.fc35",
@@ -7,13 +8,19 @@
     "SrcName": "chkconfig",
     "SrcVersion": "1.19",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2",
+    "Licenses": [
+      "GPLv2"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "audit-libs@3.0.7-2.fc35.x86_64",
     "Name": "audit-libs",
     "Version": "3.0.7",
     "Release": "2.fc35",
@@ -21,13 +28,20 @@
     "SrcName": "audit",
     "SrcVersion": "3.0.7",
     "SrcRelease": "2.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libcap-ng@0.8.2-8.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "basesystem@11-12.fc35.noarch",
     "Name": "basesystem",
     "Version": "11",
     "Release": "12.fc35",
@@ -35,13 +49,20 @@
     "SrcName": "basesystem",
     "SrcVersion": "11",
     "SrcRelease": "12.fc35",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "filesystem@3.14-7.fc35.x86_64",
+      "setup@2.13.9.1-2.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "bash@5.1.8-2.fc35.x86_64",
     "Name": "bash",
     "Version": "5.1.8",
     "Release": "2.fc35",
@@ -49,13 +70,21 @@
     "SrcName": "bash",
     "SrcVersion": "5.1.8",
     "SrcRelease": "2.fc35",
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "filesystem@3.14-7.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "ncurses-libs@6.2-8.20210508.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "bzip2-libs@1.0.8-9.fc35.x86_64",
     "Name": "bzip2-libs",
     "Version": "1.0.8",
     "Release": "9.fc35",
@@ -63,13 +92,19 @@
     "SrcName": "bzip2",
     "SrcVersion": "1.0.8",
     "SrcRelease": "9.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "ca-certificates@2021.2.52-1.0.fc35.noarch",
     "Name": "ca-certificates",
     "Version": "2021.2.52",
     "Release": "1.0.fc35",
@@ -77,13 +112,24 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "2021.2.52",
     "SrcRelease": "1.0.fc35",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "coreutils@8.32-31.fc35.x86_64",
+      "grep@3.6-4.fc35.x86_64",
+      "p11-kit-trust@0.23.22-4.fc35.x86_64",
+      "p11-kit@0.23.22-4.fc35.x86_64",
+      "sed@4.8-8.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "coreutils@8.32-31.fc35.x86_64",
     "Name": "coreutils",
     "Version": "8.32",
     "Release": "31.fc35",
@@ -91,13 +137,26 @@
     "SrcName": "coreutils",
     "SrcVersion": "8.32",
     "SrcRelease": "31.fc35",
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "coreutils-common@8.32-31.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "gmp@6.2.0-7.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libattr@2.5.1-3.fc35.x86_64",
+      "libcap@2.48-3.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "coreutils-common@8.32-31.fc35.x86_64",
     "Name": "coreutils-common",
     "Version": "8.32",
     "Release": "31.fc35",
@@ -105,13 +164,16 @@
     "SrcName": "coreutils",
     "SrcVersion": "8.32",
     "SrcRelease": "31.fc35",
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "cracklib@2.9.6-27.fc35.x86_64",
     "Name": "cracklib",
     "Version": "2.9.6",
     "Release": "27.fc35",
@@ -119,13 +181,21 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
     "SrcRelease": "27.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "gzip@1.10-5.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "crypto-policies@20210819-1.gitd0fdcfb.fc35.noarch",
     "Name": "crypto-policies",
     "Version": "20210819",
     "Release": "1.gitd0fdcfb.fc35",
@@ -133,13 +203,16 @@
     "SrcName": "crypto-policies",
     "SrcVersion": "20210819",
     "SrcRelease": "1.gitd0fdcfb.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "curl@7.79.1-1.fc35.x86_64",
     "Name": "curl",
     "Version": "7.79.1",
     "Release": "1.fc35",
@@ -147,13 +220,21 @@
     "SrcName": "curl",
     "SrcVersion": "7.79.1",
     "SrcRelease": "1.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libcurl@7.79.1-1.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "cyrus-sasl-lib@2.1.27-13.fc35.x86_64",
     "Name": "cyrus-sasl-lib",
     "Version": "2.1.27",
     "Release": "13.fc35",
@@ -161,13 +242,23 @@
     "SrcName": "cyrus-sasl",
     "SrcVersion": "2.1.27",
     "SrcRelease": "13.fc35",
-    "License": "BSD with advertising",
+    "Licenses": [
+      "BSD with advertising"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "gdbm-libs@1.22-1.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "krb5-libs@1.19.2-2.fc35.x86_64",
+      "libcom_err@1.46.3-1.fc35.x86_64",
+      "libxcrypt@4.4.28-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "dnf@4.9.0-1.fc35.noarch",
     "Name": "dnf",
     "Version": "4.9.0",
     "Release": "1.fc35",
@@ -175,13 +266,20 @@
     "SrcName": "dnf",
     "SrcVersion": "4.9.0",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "python3-dnf@4.9.0-1.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "dnf-data@4.9.0-1.fc35.noarch",
     "Name": "dnf-data",
     "Version": "4.9.0",
     "Release": "1.fc35",
@@ -189,13 +287,19 @@
     "SrcName": "dnf",
     "SrcVersion": "4.9.0",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "libreport-filesystem@2.15.2-6.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "elfutils-default-yama-scope@0.186-1.fc35.noarch",
     "Name": "elfutils-default-yama-scope",
     "Version": "0.186",
     "Release": "1.fc35",
@@ -203,13 +307,19 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.186",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2+ or LGPLv3+",
+    "Licenses": [
+      "GPLv2+ or LGPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "elfutils-libelf@0.186-1.fc35.x86_64",
     "Name": "elfutils-libelf",
     "Version": "0.186",
     "Release": "1.fc35",
@@ -217,13 +327,20 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.186",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2+ or LGPLv3+",
+    "Licenses": [
+      "GPLv2+ or LGPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "elfutils-libs@0.186-1.fc35.x86_64",
     "Name": "elfutils-libs",
     "Version": "0.186",
     "Release": "1.fc35",
@@ -231,13 +348,25 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.186",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2+ or LGPLv3+",
+    "Licenses": [
+      "GPLv2+ or LGPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "elfutils-default-yama-scope@0.186-1.fc35.noarch",
+      "elfutils-libelf@0.186-1.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libzstd@1.5.2-1.fc35.x86_64",
+      "xz-libs@5.2.5-7.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "expat@2.4.4-1.fc35.x86_64",
     "Name": "expat",
     "Version": "2.4.4",
     "Release": "1.fc35",
@@ -245,13 +374,19 @@
     "SrcName": "expat",
     "SrcVersion": "2.4.4",
     "SrcRelease": "1.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "fedora-gpg-keys@35-1.noarch",
     "Name": "fedora-gpg-keys",
     "Version": "35",
     "Release": "1",
@@ -259,13 +394,16 @@
     "SrcName": "fedora-repos",
     "SrcVersion": "35",
     "SrcRelease": "1",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "fedora-release-common@35-36.noarch",
     "Name": "fedora-release-common",
     "Version": "35",
     "Release": "36",
@@ -273,13 +411,21 @@
     "SrcName": "fedora-release",
     "SrcVersion": "35",
     "SrcRelease": "36",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "fedora-release-container@35-36.noarch",
+      "fedora-release-identity-container@35-36.noarch",
+      "fedora-repos@35-1.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "fedora-release-container@35-36.noarch",
     "Name": "fedora-release-container",
     "Version": "35",
     "Release": "36",
@@ -287,13 +433,19 @@
     "SrcName": "fedora-release",
     "SrcVersion": "35",
     "SrcRelease": "36",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "fedora-release-common@35-36.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "fedora-release-identity-container@35-36.noarch",
     "Name": "fedora-release-identity-container",
     "Version": "35",
     "Release": "36",
@@ -301,13 +453,16 @@
     "SrcName": "fedora-release",
     "SrcVersion": "35",
     "SrcRelease": "36",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "fedora-repos@35-1.noarch",
     "Name": "fedora-repos",
     "Version": "35",
     "Release": "1",
@@ -315,13 +470,20 @@
     "SrcName": "fedora-repos",
     "SrcVersion": "35",
     "SrcRelease": "1",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "fedora-gpg-keys@35-1.noarch",
+      "fedora-release-container@35-36.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "fedora-repos-modular@35-1.noarch",
     "Name": "fedora-repos-modular",
     "Version": "35",
     "Release": "1",
@@ -329,13 +491,19 @@
     "SrcName": "fedora-repos",
     "SrcVersion": "35",
     "SrcRelease": "1",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "fedora-repos@35-1.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "file-libs@5.40-9.fc35.x86_64",
     "Name": "file-libs",
     "Version": "5.40",
     "Release": "9.fc35",
@@ -343,13 +511,20 @@
     "SrcName": "file",
     "SrcVersion": "5.40",
     "SrcRelease": "9.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "filesystem@3.14-7.fc35.x86_64",
     "Name": "filesystem",
     "Version": "3.14",
     "Release": "7.fc35",
@@ -357,13 +532,20 @@
     "SrcName": "filesystem",
     "SrcVersion": "3.14",
     "SrcRelease": "7.fc35",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "setup@2.13.9.1-2.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "gawk@5.1.0-4.fc35.x86_64",
     "Name": "gawk",
     "Version": "5.1.0",
     "Release": "4.fc35",
@@ -371,13 +553,24 @@
     "SrcName": "gawk",
     "SrcVersion": "5.1.0",
     "SrcRelease": "4.fc35",
-    "License": "GPLv3+ and GPLv2+ and LGPLv2+ and BSD",
+    "Licenses": [
+      "GPLv3+ and GPLv2+ and LGPLv2+ and BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "filesystem@3.14-7.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "gmp@6.2.0-7.fc35.x86_64",
+      "libsigsegv@2.13-3.fc35.x86_64",
+      "mpfr@4.1.0-8.fc35.x86_64",
+      "readline@8.1-3.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "gdbm-libs@1.22-1.fc35.x86_64",
     "Name": "gdbm-libs",
     "Version": "1.22",
     "Release": "1.fc35",
@@ -387,13 +580,19 @@
     "SrcVersion": "1.22",
     "SrcRelease": "1.fc35",
     "SrcEpoch": 1,
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "glib2@2.70.4-1.fc35.x86_64",
     "Name": "glib2",
     "Version": "2.70.4",
     "Release": "1.fc35",
@@ -401,13 +600,26 @@
     "SrcName": "glib2",
     "SrcVersion": "2.70.4",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "gnutls@3.7.2-2.fc35.x86_64",
+      "libffi@3.1-29.fc35.x86_64",
+      "libmount@2.37.4-1.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64",
+      "pcre@8.45-1.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "glibc@2.34-25.fc35.x86_64",
     "Name": "glibc",
     "Version": "2.34",
     "Release": "25.fc35",
@@ -415,13 +627,22 @@
     "SrcName": "glibc",
     "SrcVersion": "2.34",
     "SrcRelease": "25.fc35",
-    "License": "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL",
+    "Licenses": [
+      "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "basesystem@11-12.fc35.noarch",
+      "glibc-common@2.34-25.fc35.x86_64",
+      "glibc-minimal-langpack@2.34-25.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "glibc-common@2.34-25.fc35.x86_64",
     "Name": "glibc-common",
     "Version": "2.34",
     "Release": "25.fc35",
@@ -429,13 +650,21 @@
     "SrcName": "glibc",
     "SrcVersion": "2.34",
     "SrcRelease": "25.fc35",
-    "License": "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL",
+    "Licenses": [
+      "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "tzdata@2021e-1.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "glibc-minimal-langpack@2.34-25.fc35.x86_64",
     "Name": "glibc-minimal-langpack",
     "Version": "2.34",
     "Release": "25.fc35",
@@ -443,13 +672,20 @@
     "SrcName": "glibc",
     "SrcVersion": "2.34",
     "SrcRelease": "25.fc35",
-    "License": "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL",
+    "Licenses": [
+      "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc-common@2.34-25.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "gmp@6.2.0-7.fc35.x86_64",
     "Name": "gmp",
     "Version": "6.2.0",
     "Release": "7.fc35",
@@ -459,13 +695,19 @@
     "SrcVersion": "6.2.0",
     "SrcRelease": "7.fc35",
     "SrcEpoch": 1,
-    "License": "LGPLv3+ or GPLv2+",
+    "Licenses": [
+      "LGPLv3+ or GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "gnupg2@2.3.4-1.fc35.x86_64",
     "Name": "gnupg2",
     "Version": "2.3.4",
     "Release": "1.fc35",
@@ -473,13 +715,30 @@
     "SrcName": "gnupg2",
     "SrcVersion": "2.3.4",
     "SrcRelease": "1.fc35",
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "gnutls@3.7.2-2.fc35.x86_64",
+      "libassuan@2.5.5-3.fc35.x86_64",
+      "libgcrypt@1.9.4-1.fc35.x86_64",
+      "libgpg-error@1.43-1.fc35.x86_64",
+      "libksba@1.6.0-2.fc35.x86_64",
+      "npth@1.6-7.fc35.x86_64",
+      "openldap@2.4.59-3.fc35.x86_64",
+      "readline@8.1-3.fc35.x86_64",
+      "sqlite-libs@3.36.0-3.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "gnutls@3.7.2-2.fc35.x86_64",
     "Name": "gnutls",
     "Version": "3.7.2",
     "Release": "2.fc35",
@@ -487,24 +746,40 @@
     "SrcName": "gnutls",
     "SrcVersion": "3.7.2",
     "SrcRelease": "2.fc35",
-    "License": "GPLv3+ and LGPLv2+",
+    "Licenses": [
+      "GPLv3+ and LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "crypto-policies@20210819-1.gitd0fdcfb.fc35.noarch",
+      "glibc@2.34-25.fc35.x86_64",
+      "gmp@6.2.0-7.fc35.x86_64",
+      "libidn2@2.3.2-3.fc35.x86_64",
+      "libtasn1@4.16.0-6.fc35.x86_64",
+      "libunistring@0.9.10-14.fc35.x86_64",
+      "nettle@3.7.3-2.fc35.x86_64",
+      "p11-kit-trust@0.23.22-4.fc35.x86_64",
+      "p11-kit@0.23.22-4.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "gpg-pubkey@9867c58f-601c49ca.",
     "Name": "gpg-pubkey",
     "Version": "9867c58f",
     "Release": "601c49ca",
     "Arch": "None",
-    "License": "pubkey",
+    "Licenses": [
+      "pubkey"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "gpgme@1.15.1-6.fc35.x86_64",
     "Name": "gpgme",
     "Version": "1.15.1",
     "Release": "6.fc35",
@@ -512,13 +787,22 @@
     "SrcName": "gpgme",
     "SrcVersion": "1.15.1",
     "SrcRelease": "6.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "gnupg2@2.3.4-1.fc35.x86_64",
+      "libassuan@2.5.5-3.fc35.x86_64",
+      "libgpg-error@1.43-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "grep@3.6-4.fc35.x86_64",
     "Name": "grep",
     "Version": "3.6",
     "Release": "4.fc35",
@@ -526,13 +810,21 @@
     "SrcName": "grep",
     "SrcVersion": "3.6",
     "SrcRelease": "4.fc35",
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libsigsegv@2.13-3.fc35.x86_64",
+      "pcre@8.45-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "gzip@1.10-5.fc35.x86_64",
     "Name": "gzip",
     "Version": "1.10",
     "Release": "5.fc35",
@@ -540,13 +832,20 @@
     "SrcName": "gzip",
     "SrcVersion": "1.10",
     "SrcRelease": "5.fc35",
-    "License": "GPLv3+ and GFDL",
+    "Licenses": [
+      "GPLv3+ and GFDL"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "coreutils@8.32-31.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "ima-evm-utils@1.3.2-3.fc35.x86_64",
     "Name": "ima-evm-utils",
     "Version": "1.3.2",
     "Release": "3.fc35",
@@ -554,13 +853,22 @@
     "SrcName": "ima-evm-utils",
     "SrcVersion": "1.3.2",
     "SrcRelease": "3.fc35",
-    "License": "GPLv2",
+    "Licenses": [
+      "GPLv2"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "keyutils-libs@1.6.1-3.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "tpm2-tss@3.1.0-3.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "json-c@0.15-2.fc35.x86_64",
     "Name": "json-c",
     "Version": "0.15",
     "Release": "2.fc35",
@@ -568,13 +876,19 @@
     "SrcName": "json-c",
     "SrcVersion": "0.15",
     "SrcRelease": "2.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "keyutils-libs@1.6.1-3.fc35.x86_64",
     "Name": "keyutils-libs",
     "Version": "1.6.1",
     "Release": "3.fc35",
@@ -582,13 +896,19 @@
     "SrcName": "keyutils",
     "SrcVersion": "1.6.1",
     "SrcRelease": "3.fc35",
-    "License": "GPLv2+ and LGPLv2+",
+    "Licenses": [
+      "GPLv2+ and LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "krb5-libs@1.19.2-2.fc35.x86_64",
     "Name": "krb5-libs",
     "Version": "1.19.2",
     "Release": "2.fc35",
@@ -596,13 +916,29 @@
     "SrcName": "krb5",
     "SrcVersion": "1.19.2",
     "SrcRelease": "2.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "coreutils@8.32-31.fc35.x86_64",
+      "gawk@5.1.0-4.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "grep@3.6-4.fc35.x86_64",
+      "keyutils-libs@1.6.1-3.fc35.x86_64",
+      "libcom_err@1.46.3-1.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64",
+      "libverto@0.3.2-2.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "sed@4.8-8.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libacl@2.3.1-2.fc35.x86_64",
     "Name": "libacl",
     "Version": "2.3.1",
     "Release": "2.fc35",
@@ -610,13 +946,20 @@
     "SrcName": "acl",
     "SrcVersion": "2.3.1",
     "SrcRelease": "2.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libattr@2.5.1-3.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libarchive@3.5.2-2.fc35.x86_64",
     "Name": "libarchive",
     "Version": "3.5.2",
     "Release": "2.fc35",
@@ -624,13 +967,27 @@
     "SrcName": "libarchive",
     "SrcVersion": "3.5.2",
     "SrcRelease": "2.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libxml2@2.9.12-6.fc35.x86_64",
+      "libzstd@1.5.2-1.fc35.x86_64",
+      "lz4-libs@1.9.3-3.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "xz-libs@5.2.5-7.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libassuan@2.5.5-3.fc35.x86_64",
     "Name": "libassuan",
     "Version": "2.5.5",
     "Release": "3.fc35",
@@ -638,13 +995,20 @@
     "SrcName": "libassuan",
     "SrcVersion": "2.5.5",
     "SrcRelease": "3.fc35",
-    "License": "LGPLv2+ and GPLv3+",
+    "Licenses": [
+      "LGPLv2+ and GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libgpg-error@1.43-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libattr@2.5.1-3.fc35.x86_64",
     "Name": "libattr",
     "Version": "2.5.1",
     "Release": "3.fc35",
@@ -652,13 +1016,19 @@
     "SrcName": "attr",
     "SrcVersion": "2.5.1",
     "SrcRelease": "3.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libblkid@2.37.4-1.fc35.x86_64",
     "Name": "libblkid",
     "Version": "2.37.4",
     "Release": "1.fc35",
@@ -666,13 +1036,22 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.37.4",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "coreutils@8.32-31.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libuuid@2.37.4-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libbrotli@1.0.9-6.fc35.x86_64",
     "Name": "libbrotli",
     "Version": "1.0.9",
     "Release": "6.fc35",
@@ -680,13 +1059,19 @@
     "SrcName": "brotli",
     "SrcVersion": "1.0.9",
     "SrcRelease": "6.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libcap@2.48-3.fc35.x86_64",
     "Name": "libcap",
     "Version": "2.48",
     "Release": "3.fc35",
@@ -694,13 +1079,20 @@
     "SrcName": "libcap",
     "SrcVersion": "2.48",
     "SrcRelease": "3.fc35",
-    "License": "BSD or GPLv2",
+    "Licenses": [
+      "BSD or GPLv2"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libcap-ng@0.8.2-8.fc35.x86_64",
     "Name": "libcap-ng",
     "Version": "0.8.2",
     "Release": "8.fc35",
@@ -708,13 +1100,19 @@
     "SrcName": "libcap-ng",
     "SrcVersion": "0.8.2",
     "SrcRelease": "8.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libcom_err@1.46.3-1.fc35.x86_64",
     "Name": "libcom_err",
     "Version": "1.46.3",
     "Release": "1.fc35",
@@ -722,13 +1120,19 @@
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.46.3",
     "SrcRelease": "1.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libcomps@0.1.18-1.fc35.x86_64",
     "Name": "libcomps",
     "Version": "0.1.18",
     "Release": "1.fc35",
@@ -736,13 +1140,21 @@
     "SrcName": "libcomps",
     "SrcVersion": "0.1.18",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "expat@2.4.4-1.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libxml2@2.9.12-6.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libcurl@7.79.1-1.fc35.x86_64",
     "Name": "libcurl",
     "Version": "7.79.1",
     "Release": "1.fc35",
@@ -750,13 +1162,29 @@
     "SrcName": "curl",
     "SrcVersion": "7.79.1",
     "SrcRelease": "1.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "krb5-libs@1.19.2-2.fc35.x86_64",
+      "libbrotli@1.0.9-6.fc35.x86_64",
+      "libcom_err@1.46.3-1.fc35.x86_64",
+      "libidn2@2.3.2-3.fc35.x86_64",
+      "libnghttp2@1.45.1-1.fc35.x86_64",
+      "libpsl@0.21.1-4.fc35.x86_64",
+      "libssh@0.9.6-1.fc35.x86_64",
+      "openldap@2.4.59-3.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libdb@5.3.28-50.fc35.x86_64",
     "Name": "libdb",
     "Version": "5.3.28",
     "Release": "50.fc35",
@@ -764,13 +1192,19 @@
     "SrcName": "libdb",
     "SrcVersion": "5.3.28",
     "SrcRelease": "50.fc35",
-    "License": "BSD and LGPLv2 and Sleepycat",
+    "Licenses": [
+      "BSD and LGPLv2 and Sleepycat"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libdnf@0.64.0-1.fc35.x86_64",
     "Name": "libdnf",
     "Version": "0.64.0",
     "Release": "1.fc35",
@@ -778,13 +1212,31 @@
     "SrcName": "libdnf",
     "SrcVersion": "0.64.0",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glib2@2.70.4-1.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "gpgme@1.15.1-6.fc35.x86_64",
+      "json-c@0.15-2.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64",
+      "libmodulemd@2.14.0-1.fc35.x86_64",
+      "librepo@1.14.2-1.fc35.x86_64",
+      "libsmartcols@2.37.4-1.fc35.x86_64",
+      "libsolv@0.7.19-3.fc35.x86_64",
+      "libstdc++@11.2.1-9.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "rpm-libs@4.17.0-4.fc35.x86_64",
+      "sqlite-libs@3.36.0-3.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libeconf@0.4.0-2.fc35.x86_64",
     "Name": "libeconf",
     "Version": "0.4.0",
     "Release": "2.fc35",
@@ -792,13 +1244,19 @@
     "SrcName": "libeconf",
     "SrcVersion": "0.4.0",
     "SrcRelease": "2.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libffi@3.1-29.fc35.x86_64",
     "Name": "libffi",
     "Version": "3.1",
     "Release": "29.fc35",
@@ -806,13 +1264,19 @@
     "SrcName": "libffi",
     "SrcVersion": "3.1",
     "SrcRelease": "29.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libfsverity@1.4-6.fc35.x86_64",
     "Name": "libfsverity",
     "Version": "1.4",
     "Release": "6.fc35",
@@ -820,13 +1284,20 @@
     "SrcName": "fsverity-utils",
     "SrcVersion": "1.4",
     "SrcRelease": "6.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libgcc@11.2.1-9.fc35.x86_64",
     "Name": "libgcc",
     "Version": "11.2.1",
     "Release": "9.fc35",
@@ -834,13 +1305,16 @@
     "SrcName": "gcc",
     "SrcVersion": "11.2.1",
     "SrcRelease": "9.fc35",
-    "License": "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD",
+    "Licenses": [
+      "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libgcrypt@1.9.4-1.fc35.x86_64",
     "Name": "libgcrypt",
     "Version": "1.9.4",
     "Release": "1.fc35",
@@ -848,13 +1322,20 @@
     "SrcName": "libgcrypt",
     "SrcVersion": "1.9.4",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libgpg-error@1.43-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libgomp@11.2.1-9.fc35.x86_64",
     "Name": "libgomp",
     "Version": "11.2.1",
     "Release": "9.fc35",
@@ -862,13 +1343,19 @@
     "SrcName": "gcc",
     "SrcVersion": "11.2.1",
     "SrcRelease": "9.fc35",
-    "License": "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD",
+    "Licenses": [
+      "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libgpg-error@1.43-1.fc35.x86_64",
     "Name": "libgpg-error",
     "Version": "1.43",
     "Release": "1.fc35",
@@ -876,13 +1363,19 @@
     "SrcName": "libgpg-error",
     "SrcVersion": "1.43",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libidn2@2.3.2-3.fc35.x86_64",
     "Name": "libidn2",
     "Version": "2.3.2",
     "Release": "3.fc35",
@@ -890,13 +1383,20 @@
     "SrcName": "libidn2",
     "SrcVersion": "2.3.2",
     "SrcRelease": "3.fc35",
-    "License": "(GPLv2+ or LGPLv3+) and GPLv3+",
+    "Licenses": [
+      "(GPLv2+ or LGPLv3+) and GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libunistring@0.9.10-14.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libksba@1.6.0-2.fc35.x86_64",
     "Name": "libksba",
     "Version": "1.6.0",
     "Release": "2.fc35",
@@ -904,13 +1404,20 @@
     "SrcName": "libksba",
     "SrcVersion": "1.6.0",
     "SrcRelease": "2.fc35",
-    "License": "(LGPLv3+ or GPLv2+) and GPLv3+",
+    "Licenses": [
+      "(LGPLv3+ or GPLv2+) and GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libgpg-error@1.43-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libmodulemd@2.14.0-1.fc35.x86_64",
     "Name": "libmodulemd",
     "Version": "2.14.0",
     "Release": "1.fc35",
@@ -918,13 +1425,24 @@
     "SrcName": "libmodulemd",
     "SrcVersion": "2.14.0",
     "SrcRelease": "1.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "file-libs@5.40-9.fc35.x86_64",
+      "glib2@2.70.4-1.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64",
+      "libyaml@0.2.5-6.fc35.x86_64",
+      "rpm-libs@4.17.0-4.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libmount@2.37.4-1.fc35.x86_64",
     "Name": "libmount",
     "Version": "2.37.4",
     "Release": "1.fc35",
@@ -932,13 +1450,22 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.37.4",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libblkid@2.37.4-1.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64",
+      "libuuid@2.37.4-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libnghttp2@1.45.1-1.fc35.x86_64",
     "Name": "libnghttp2",
     "Version": "1.45.1",
     "Release": "1.fc35",
@@ -946,13 +1473,19 @@
     "SrcName": "nghttp2",
     "SrcVersion": "1.45.1",
     "SrcRelease": "1.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libnsl2@1.3.0-4.fc35.x86_64",
     "Name": "libnsl2",
     "Version": "1.3.0",
     "Release": "4.fc35",
@@ -960,13 +1493,20 @@
     "SrcName": "libnsl2",
     "SrcVersion": "1.3.0",
     "SrcRelease": "4.fc35",
-    "License": "BSD and LGPLv2+",
+    "Licenses": [
+      "BSD and LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libtirpc@1.3.2-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libpsl@0.21.1-4.fc35.x86_64",
     "Name": "libpsl",
     "Version": "0.21.1",
     "Release": "4.fc35",
@@ -974,13 +1514,22 @@
     "SrcName": "libpsl",
     "SrcVersion": "0.21.1",
     "SrcRelease": "4.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libidn2@2.3.2-3.fc35.x86_64",
+      "libunistring@0.9.10-14.fc35.x86_64",
+      "publicsuffix-list-dafsa@20210518-2.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libpwquality@1.4.4-6.fc35.x86_64",
     "Name": "libpwquality",
     "Version": "1.4.4",
     "Release": "6.fc35",
@@ -988,13 +1537,21 @@
     "SrcName": "libpwquality",
     "SrcVersion": "1.4.4",
     "SrcRelease": "6.fc35",
-    "License": "BSD or GPLv2+",
+    "Licenses": [
+      "BSD or GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "cracklib@2.9.6-27.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "pam@1.5.2-7.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "librepo@1.14.2-1.fc35.x86_64",
     "Name": "librepo",
     "Version": "1.14.2",
     "Release": "1.fc35",
@@ -1002,13 +1559,26 @@
     "SrcName": "librepo",
     "SrcVersion": "1.14.2",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glib2@2.70.4-1.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "gpgme@1.15.1-6.fc35.x86_64",
+      "libcurl@7.79.1-1.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64",
+      "libxml2@2.9.12-6.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "zchunk-libs@1.1.15-2.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libreport-filesystem@2.15.2-6.fc35.noarch",
     "Name": "libreport-filesystem",
     "Version": "2.15.2",
     "Release": "6.fc35",
@@ -1016,13 +1586,16 @@
     "SrcName": "libreport",
     "SrcVersion": "2.15.2",
     "SrcRelease": "6.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libselinux@3.3-1.fc35.x86_64",
     "Name": "libselinux",
     "Version": "3.3",
     "Release": "1.fc35",
@@ -1030,13 +1603,21 @@
     "SrcName": "libselinux",
     "SrcVersion": "3.3",
     "SrcRelease": "1.fc35",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libsepol@3.3-2.fc35.x86_64",
+      "pcre2@10.39-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libsemanage@3.3-1.fc35.x86_64",
     "Name": "libsemanage",
     "Version": "3.3",
     "Release": "1.fc35",
@@ -1044,13 +1625,23 @@
     "SrcName": "libsemanage",
     "SrcVersion": "3.3",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "audit-libs@3.0.7-2.fc35.x86_64",
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64",
+      "libsepol@3.3-2.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libsepol@3.3-2.fc35.x86_64",
     "Name": "libsepol",
     "Version": "3.3",
     "Release": "2.fc35",
@@ -1058,13 +1649,19 @@
     "SrcName": "libsepol",
     "SrcVersion": "3.3",
     "SrcRelease": "2.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libsigsegv@2.13-3.fc35.x86_64",
     "Name": "libsigsegv",
     "Version": "2.13",
     "Release": "3.fc35",
@@ -1072,13 +1669,19 @@
     "SrcName": "libsigsegv",
     "SrcVersion": "2.13",
     "SrcRelease": "3.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libsmartcols@2.37.4-1.fc35.x86_64",
     "Name": "libsmartcols",
     "Version": "2.37.4",
     "Release": "1.fc35",
@@ -1086,13 +1689,19 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.37.4",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libsolv@0.7.19-3.fc35.x86_64",
     "Name": "libsolv",
     "Version": "0.7.19",
     "Release": "3.fc35",
@@ -1100,13 +1709,26 @@
     "SrcName": "libsolv",
     "SrcVersion": "0.7.19",
     "SrcRelease": "3.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libxml2@2.9.12-6.fc35.x86_64",
+      "libzstd@1.5.2-1.fc35.x86_64",
+      "rpm-libs@4.17.0-4.fc35.x86_64",
+      "xz-libs@5.2.5-7.fc35.x86_64",
+      "zchunk-libs@1.1.15-2.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libssh@0.9.6-1.fc35.x86_64",
     "Name": "libssh",
     "Version": "0.9.6",
     "Release": "1.fc35",
@@ -1114,13 +1736,23 @@
     "SrcName": "libssh",
     "SrcVersion": "0.9.6",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "krb5-libs@1.19.2-2.fc35.x86_64",
+      "libssh-config@0.9.6-1.fc35.noarch",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libssh-config@0.9.6-1.fc35.noarch",
     "Name": "libssh-config",
     "Version": "0.9.6",
     "Release": "1.fc35",
@@ -1128,13 +1760,16 @@
     "SrcName": "libssh",
     "SrcVersion": "0.9.6",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libstdc++@11.2.1-9.fc35.x86_64",
     "Name": "libstdc++",
     "Version": "11.2.1",
     "Release": "9.fc35",
@@ -1142,13 +1777,20 @@
     "SrcName": "gcc",
     "SrcVersion": "11.2.1",
     "SrcRelease": "9.fc35",
-    "License": "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD",
+    "Licenses": [
+      "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libtasn1@4.16.0-6.fc35.x86_64",
     "Name": "libtasn1",
     "Version": "4.16.0",
     "Release": "6.fc35",
@@ -1156,13 +1798,19 @@
     "SrcName": "libtasn1",
     "SrcVersion": "4.16.0",
     "SrcRelease": "6.fc35",
-    "License": "GPLv3+ and LGPLv2+",
+    "Licenses": [
+      "GPLv3+ and LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libtirpc@1.3.2-1.fc35.x86_64",
     "Name": "libtirpc",
     "Version": "1.3.2",
     "Release": "1.fc35",
@@ -1170,13 +1818,21 @@
     "SrcName": "libtirpc",
     "SrcVersion": "1.3.2",
     "SrcRelease": "1.fc35",
-    "License": "SISSL and BSD",
+    "Licenses": [
+      "SISSL and BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "krb5-libs@1.19.2-2.fc35.x86_64",
+      "libcom_err@1.46.3-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libunistring@0.9.10-14.fc35.x86_64",
     "Name": "libunistring",
     "Version": "0.9.10",
     "Release": "14.fc35",
@@ -1184,13 +1840,19 @@
     "SrcName": "libunistring",
     "SrcVersion": "0.9.10",
     "SrcRelease": "14.fc35",
-    "License": "GPLv2+ or LGPLv3+",
+    "Licenses": [
+      "GPLv2+ or LGPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libuuid@2.37.4-1.fc35.x86_64",
     "Name": "libuuid",
     "Version": "2.37.4",
     "Release": "1.fc35",
@@ -1198,13 +1860,19 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.37.4",
     "SrcRelease": "1.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libverto@0.3.2-2.fc35.x86_64",
     "Name": "libverto",
     "Version": "0.3.2",
     "Release": "2.fc35",
@@ -1212,13 +1880,19 @@
     "SrcName": "libverto",
     "SrcVersion": "0.3.2",
     "SrcRelease": "2.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libxcrypt@4.4.28-1.fc35.x86_64",
     "Name": "libxcrypt",
     "Version": "4.4.28",
     "Release": "1.fc35",
@@ -1226,13 +1900,19 @@
     "SrcName": "libxcrypt",
     "SrcVersion": "4.4.28",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+ and BSD and Public Domain",
+    "Licenses": [
+      "LGPLv2+ and BSD and Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libxml2@2.9.12-6.fc35.x86_64",
     "Name": "libxml2",
     "Version": "2.9.12",
     "Release": "6.fc35",
@@ -1240,13 +1920,21 @@
     "SrcName": "libxml2",
     "SrcVersion": "2.9.12",
     "SrcRelease": "6.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "xz-libs@5.2.5-7.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libyaml@0.2.5-6.fc35.x86_64",
     "Name": "libyaml",
     "Version": "0.2.5",
     "Release": "6.fc35",
@@ -1254,13 +1942,19 @@
     "SrcName": "libyaml",
     "SrcVersion": "0.2.5",
     "SrcRelease": "6.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "libzstd@1.5.2-1.fc35.x86_64",
     "Name": "libzstd",
     "Version": "1.5.2",
     "Release": "1.fc35",
@@ -1268,13 +1962,19 @@
     "SrcName": "zstd",
     "SrcVersion": "1.5.2",
     "SrcRelease": "1.fc35",
-    "License": "BSD and GPLv2",
+    "Licenses": [
+      "BSD and GPLv2"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "lua-libs@5.4.4-1.fc35.x86_64",
     "Name": "lua-libs",
     "Version": "5.4.4",
     "Release": "1.fc35",
@@ -1282,13 +1982,19 @@
     "SrcName": "lua",
     "SrcVersion": "5.4.4",
     "SrcRelease": "1.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "lz4-libs@1.9.3-3.fc35.x86_64",
     "Name": "lz4-libs",
     "Version": "1.9.3",
     "Release": "3.fc35",
@@ -1296,13 +2002,19 @@
     "SrcName": "lz4",
     "SrcVersion": "1.9.3",
     "SrcRelease": "3.fc35",
-    "License": "GPLv2+ and BSD",
+    "Licenses": [
+      "GPLv2+ and BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "mpdecimal@2.5.1-2.fc35.x86_64",
     "Name": "mpdecimal",
     "Version": "2.5.1",
     "Release": "2.fc35",
@@ -1310,13 +2022,21 @@
     "SrcName": "mpdecimal",
     "SrcVersion": "2.5.1",
     "SrcRelease": "2.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64",
+      "libstdc++@11.2.1-9.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "mpfr@4.1.0-8.fc35.x86_64",
     "Name": "mpfr",
     "Version": "4.1.0",
     "Release": "8.fc35",
@@ -1324,13 +2044,20 @@
     "SrcName": "mpfr",
     "SrcVersion": "4.1.0",
     "SrcRelease": "8.fc35",
-    "License": "LGPLv3+",
+    "Licenses": [
+      "LGPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "gmp@6.2.0-7.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "ncurses-base@6.2-8.20210508.fc35.noarch",
     "Name": "ncurses-base",
     "Version": "6.2",
     "Release": "8.20210508.fc35",
@@ -1338,13 +2065,16 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.2",
     "SrcRelease": "8.20210508.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "ncurses-libs@6.2-8.20210508.fc35.x86_64",
     "Name": "ncurses-libs",
     "Version": "6.2",
     "Release": "8.20210508.fc35",
@@ -1352,13 +2082,20 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.2",
     "SrcRelease": "8.20210508.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "ncurses-base@6.2-8.20210508.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "nettle@3.7.3-2.fc35.x86_64",
     "Name": "nettle",
     "Version": "3.7.3",
     "Release": "2.fc35",
@@ -1366,13 +2103,20 @@
     "SrcName": "nettle",
     "SrcVersion": "3.7.3",
     "SrcRelease": "2.fc35",
-    "License": "LGPLv3+ or GPLv2+",
+    "Licenses": [
+      "LGPLv3+ or GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "gmp@6.2.0-7.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "npth@1.6-7.fc35.x86_64",
     "Name": "npth",
     "Version": "1.6",
     "Release": "7.fc35",
@@ -1380,13 +2124,19 @@
     "SrcName": "npth",
     "SrcVersion": "1.6",
     "SrcRelease": "7.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "openldap@2.4.59-3.fc35.x86_64",
     "Name": "openldap",
     "Version": "2.4.59",
     "Release": "3.fc35",
@@ -1394,13 +2144,21 @@
     "SrcName": "openldap",
     "SrcVersion": "2.4.59",
     "SrcRelease": "3.fc35",
-    "License": "OpenLDAP",
+    "Licenses": [
+      "OpenLDAP"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "cyrus-sasl-lib@2.1.27-13.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "openssl-libs@1.1.1l-2.fc35.x86_64",
     "Name": "openssl-libs",
     "Version": "1.1.1l",
     "Release": "2.fc35",
@@ -1410,13 +2168,22 @@
     "SrcVersion": "1.1.1l",
     "SrcRelease": "2.fc35",
     "SrcEpoch": 1,
-    "License": "OpenSSL and ASL 2.0",
+    "Licenses": [
+      "OpenSSL and ASL 2.0"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "ca-certificates@2021.2.52-1.0.fc35.noarch",
+      "crypto-policies@20210819-1.gitd0fdcfb.fc35.noarch",
+      "glibc@2.34-25.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "p11-kit@0.23.22-4.fc35.x86_64",
     "Name": "p11-kit",
     "Version": "0.23.22",
     "Release": "4.fc35",
@@ -1424,13 +2191,20 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.22",
     "SrcRelease": "4.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libffi@3.1-29.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "p11-kit-trust@0.23.22-4.fc35.x86_64",
     "Name": "p11-kit-trust",
     "Version": "0.23.22",
     "Release": "4.fc35",
@@ -1438,13 +2212,22 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.22",
     "SrcRelease": "4.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libtasn1@4.16.0-6.fc35.x86_64",
+      "p11-kit@0.23.22-4.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "pam@1.5.2-7.fc35.x86_64",
     "Name": "pam",
     "Version": "1.5.2",
     "Release": "7.fc35",
@@ -1452,13 +2235,29 @@
     "SrcName": "pam",
     "SrcVersion": "1.5.2",
     "SrcRelease": "7.fc35",
-    "License": "BSD and GPLv2+",
+    "Licenses": [
+      "BSD and GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "audit-libs@3.0.7-2.fc35.x86_64",
+      "bash@5.1.8-2.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libdb@5.3.28-50.fc35.x86_64",
+      "libeconf@0.4.0-2.fc35.x86_64",
+      "libnsl2@1.3.0-4.fc35.x86_64",
+      "libpwquality@1.4.4-6.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64",
+      "libtirpc@1.3.2-1.fc35.x86_64",
+      "libxcrypt@4.4.28-1.fc35.x86_64",
+      "setup@2.13.9.1-2.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "pcre@8.45-1.fc35.x86_64",
     "Name": "pcre",
     "Version": "8.45",
     "Release": "1.fc35",
@@ -1466,13 +2265,19 @@
     "SrcName": "pcre",
     "SrcVersion": "8.45",
     "SrcRelease": "1.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "pcre2@10.39-1.fc35.x86_64",
     "Name": "pcre2",
     "Version": "10.39",
     "Release": "1.fc35",
@@ -1480,13 +2285,20 @@
     "SrcName": "pcre2",
     "SrcVersion": "10.39",
     "SrcRelease": "1.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "pcre2-syntax@10.39-1.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "pcre2-syntax@10.39-1.fc35.noarch",
     "Name": "pcre2-syntax",
     "Version": "10.39",
     "Release": "1.fc35",
@@ -1494,13 +2306,16 @@
     "SrcName": "pcre2",
     "SrcVersion": "10.39",
     "SrcRelease": "1.fc35",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "popt@1.18-6.fc35.x86_64",
     "Name": "popt",
     "Version": "1.18",
     "Release": "6.fc35",
@@ -1508,13 +2323,19 @@
     "SrcName": "popt",
     "SrcVersion": "1.18",
     "SrcRelease": "6.fc35",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "publicsuffix-list-dafsa@20210518-2.fc35.noarch",
     "Name": "publicsuffix-list-dafsa",
     "Version": "20210518",
     "Release": "2.fc35",
@@ -1522,13 +2343,16 @@
     "SrcName": "publicsuffix-list",
     "SrcVersion": "20210518",
     "SrcRelease": "2.fc35",
-    "License": "MPLv2.0",
+    "Licenses": [
+      "MPLv2.0"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python-pip-wheel@21.2.3-4.fc35.noarch",
     "Name": "python-pip-wheel",
     "Version": "21.2.3",
     "Release": "4.fc35",
@@ -1536,13 +2360,19 @@
     "SrcName": "python-pip",
     "SrcVersion": "21.2.3",
     "SrcRelease": "4.fc35",
-    "License": "MIT and Python and ASL 2.0 and BSD and ISC and LGPLv2 and MPLv2.0 and (ASL 2.0 or BSD)",
+    "Licenses": [
+      "MIT and Python and ASL 2.0 and BSD and ISC and LGPLv2 and MPLv2.0 and (ASL 2.0 or BSD)"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "ca-certificates@2021.2.52-1.0.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python-setuptools-wheel@57.4.0-1.fc35.noarch",
     "Name": "python-setuptools-wheel",
     "Version": "57.4.0",
     "Release": "1.fc35",
@@ -1550,13 +2380,16 @@
     "SrcName": "python-setuptools",
     "SrcVersion": "57.4.0",
     "SrcRelease": "1.fc35",
-    "License": "MIT and (BSD or ASL 2.0)",
+    "Licenses": [
+      "MIT and (BSD or ASL 2.0)"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python3@3.10.2-1.fc35.x86_64",
     "Name": "python3",
     "Version": "3.10.2",
     "Release": "1.fc35",
@@ -1564,13 +2397,20 @@
     "SrcName": "python3.10",
     "SrcVersion": "3.10.2",
     "SrcRelease": "1.fc35",
-    "License": "Python",
+    "Licenses": [
+      "Python"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "python3-libs@3.10.2-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python3-dnf@4.9.0-1.fc35.noarch",
     "Name": "python3-dnf",
     "Version": "4.9.0",
     "Release": "1.fc35",
@@ -1578,13 +2418,26 @@
     "SrcName": "dnf",
     "SrcVersion": "4.9.0",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "dnf-data@4.9.0-1.fc35.noarch",
+      "libmodulemd@2.14.0-1.fc35.x86_64",
+      "python3-gpg@1.15.1-6.fc35.x86_64",
+      "python3-hawkey@0.64.0-1.fc35.x86_64",
+      "python3-libcomps@0.1.18-1.fc35.x86_64",
+      "python3-libdnf@0.64.0-1.fc35.x86_64",
+      "python3-rpm@4.17.0-4.fc35.x86_64",
+      "python3@3.10.2-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python3-gpg@1.15.1-6.fc35.x86_64",
     "Name": "python3-gpg",
     "Version": "1.15.1",
     "Release": "6.fc35",
@@ -1592,13 +2445,21 @@
     "SrcName": "gpgme",
     "SrcVersion": "1.15.1",
     "SrcRelease": "6.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "gpgme@1.15.1-6.fc35.x86_64",
+      "python3@3.10.2-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python3-hawkey@0.64.0-1.fc35.x86_64",
     "Name": "python3-hawkey",
     "Version": "0.64.0",
     "Release": "1.fc35",
@@ -1606,13 +2467,27 @@
     "SrcName": "libdnf",
     "SrcVersion": "0.64.0",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glib2@2.70.4-1.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libdnf@0.64.0-1.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64",
+      "libsolv@0.7.19-3.fc35.x86_64",
+      "libstdc++@11.2.1-9.fc35.x86_64",
+      "python3-libdnf@0.64.0-1.fc35.x86_64",
+      "python3-libs@3.10.2-1.fc35.x86_64",
+      "python3@3.10.2-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python3-libcomps@0.1.18-1.fc35.x86_64",
     "Name": "python3-libcomps",
     "Version": "0.1.18",
     "Release": "1.fc35",
@@ -1620,13 +2495,23 @@
     "SrcName": "libcomps",
     "SrcVersion": "0.1.18",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libcomps@0.1.18-1.fc35.x86_64",
+      "python3-libs@3.10.2-1.fc35.x86_64",
+      "python3@3.10.2-1.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python3-libdnf@0.64.0-1.fc35.x86_64",
     "Name": "python3-libdnf",
     "Version": "0.64.0",
     "Release": "1.fc35",
@@ -1634,13 +2519,25 @@
     "SrcName": "libdnf",
     "SrcVersion": "0.64.0",
     "SrcRelease": "1.fc35",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libdnf@0.64.0-1.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64",
+      "libsmartcols@2.37.4-1.fc35.x86_64",
+      "libstdc++@11.2.1-9.fc35.x86_64",
+      "python3-libs@3.10.2-1.fc35.x86_64",
+      "python3@3.10.2-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python3-libs@3.10.2-1.fc35.x86_64",
     "Name": "python3-libs",
     "Version": "3.10.2",
     "Release": "1.fc35",
@@ -1648,13 +2545,37 @@
     "SrcName": "python3.10",
     "SrcVersion": "3.10.2",
     "SrcRelease": "1.fc35",
-    "License": "Python",
+    "Licenses": [
+      "Python"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "expat@2.4.4-1.fc35.x86_64",
+      "gdbm-libs@1.22-1.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libffi@3.1-29.fc35.x86_64",
+      "libnsl2@1.3.0-4.fc35.x86_64",
+      "libtirpc@1.3.2-1.fc35.x86_64",
+      "libuuid@2.37.4-1.fc35.x86_64",
+      "libxcrypt@4.4.28-1.fc35.x86_64",
+      "mpdecimal@2.5.1-2.fc35.x86_64",
+      "ncurses-libs@6.2-8.20210508.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "python-pip-wheel@21.2.3-4.fc35.noarch",
+      "python-setuptools-wheel@57.4.0-1.fc35.noarch",
+      "readline@8.1-3.fc35.x86_64",
+      "sqlite-libs@3.36.0-3.fc35.x86_64",
+      "tzdata@2021e-1.fc35.noarch",
+      "xz-libs@5.2.5-7.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "python3-rpm@4.17.0-4.fc35.x86_64",
     "Name": "python3-rpm",
     "Version": "4.17.0",
     "Release": "4.fc35",
@@ -1662,13 +2583,39 @@
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
     "SrcRelease": "4.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "audit-libs@3.0.7-2.fc35.x86_64",
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "elfutils-libelf@0.186-1.fc35.x86_64",
+      "elfutils-libs@0.186-1.fc35.x86_64",
+      "file-libs@5.40-9.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "ima-evm-utils@1.3.2-3.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libcap@2.48-3.fc35.x86_64",
+      "libfsverity@1.4-6.fc35.x86_64",
+      "libzstd@1.5.2-1.fc35.x86_64",
+      "lua-libs@5.4.4-1.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "popt@1.18-6.fc35.x86_64",
+      "python3@3.10.2-1.fc35.x86_64",
+      "rpm-build-libs@4.17.0-4.fc35.x86_64",
+      "rpm-libs@4.17.0-4.fc35.x86_64",
+      "rpm-sign-libs@4.17.0-4.fc35.x86_64",
+      "sqlite-libs@3.36.0-3.fc35.x86_64",
+      "xz-libs@5.2.5-7.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "readline@8.1-3.fc35.x86_64",
     "Name": "readline",
     "Version": "8.1",
     "Release": "3.fc35",
@@ -1676,13 +2623,20 @@
     "SrcName": "readline",
     "SrcVersion": "8.1",
     "SrcRelease": "3.fc35",
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "ncurses-libs@6.2-8.20210508.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "rootfiles@8.1-30.fc35.noarch",
     "Name": "rootfiles",
     "Version": "8.1",
     "Release": "30.fc35",
@@ -1690,13 +2644,19 @@
     "SrcName": "rootfiles",
     "SrcVersion": "8.1",
     "SrcRelease": "30.fc35",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "rpm@4.17.0-4.fc35.x86_64",
     "Name": "rpm",
     "Version": "4.17.0",
     "Release": "4.fc35",
@@ -1704,13 +2664,25 @@
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
     "SrcRelease": "4.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "coreutils@8.32-31.fc35.x86_64",
+      "curl@7.79.1-1.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libarchive@3.5.2-2.fc35.x86_64",
+      "popt@1.18-6.fc35.x86_64",
+      "rpm-libs@4.17.0-4.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "rpm-build-libs@4.17.0-4.fc35.x86_64",
     "Name": "rpm-build-libs",
     "Version": "4.17.0",
     "Release": "4.fc35",
@@ -1718,13 +2690,36 @@
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
     "SrcRelease": "4.fc35",
-    "License": "GPLv2+ and LGPLv2+ with exceptions",
+    "Licenses": [
+      "GPLv2+ and LGPLv2+ with exceptions"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "audit-libs@3.0.7-2.fc35.x86_64",
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "elfutils-libelf@0.186-1.fc35.x86_64",
+      "elfutils-libs@0.186-1.fc35.x86_64",
+      "file-libs@5.40-9.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libcap@2.48-3.fc35.x86_64",
+      "libgcc@11.2.1-9.fc35.x86_64",
+      "libgomp@11.2.1-9.fc35.x86_64",
+      "libzstd@1.5.2-1.fc35.x86_64",
+      "lua-libs@5.4.4-1.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "popt@1.18-6.fc35.x86_64",
+      "rpm-libs@4.17.0-4.fc35.x86_64",
+      "sqlite-libs@3.36.0-3.fc35.x86_64",
+      "xz-libs@5.2.5-7.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "rpm-libs@4.17.0-4.fc35.x86_64",
     "Name": "rpm-libs",
     "Version": "4.17.0",
     "Release": "4.fc35",
@@ -1732,13 +2727,31 @@
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
     "SrcRelease": "4.fc35",
-    "License": "GPLv2+ and LGPLv2+ with exceptions",
+    "Licenses": [
+      "GPLv2+ and LGPLv2+ with exceptions"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "audit-libs@3.0.7-2.fc35.x86_64",
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libcap@2.48-3.fc35.x86_64",
+      "libzstd@1.5.2-1.fc35.x86_64",
+      "lua-libs@5.4.4-1.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "popt@1.18-6.fc35.x86_64",
+      "rpm@4.17.0-4.fc35.x86_64",
+      "sqlite-libs@3.36.0-3.fc35.x86_64",
+      "xz-libs@5.2.5-7.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "rpm-sign-libs@4.17.0-4.fc35.x86_64",
     "Name": "rpm-sign-libs",
     "Version": "4.17.0",
     "Release": "4.fc35",
@@ -1746,13 +2759,33 @@
     "SrcName": "rpm",
     "SrcVersion": "4.17.0",
     "SrcRelease": "4.fc35",
-    "License": "GPLv2+ and LGPLv2+ with exceptions",
+    "Licenses": [
+      "GPLv2+ and LGPLv2+ with exceptions"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "audit-libs@3.0.7-2.fc35.x86_64",
+      "bzip2-libs@1.0.8-9.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "ima-evm-utils@1.3.2-3.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libcap@2.48-3.fc35.x86_64",
+      "libfsverity@1.4-6.fc35.x86_64",
+      "libzstd@1.5.2-1.fc35.x86_64",
+      "lua-libs@5.4.4-1.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "popt@1.18-6.fc35.x86_64",
+      "rpm-libs@4.17.0-4.fc35.x86_64",
+      "sqlite-libs@3.36.0-3.fc35.x86_64",
+      "xz-libs@5.2.5-7.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "sed@4.8-8.fc35.x86_64",
     "Name": "sed",
     "Version": "4.8",
     "Release": "8.fc35",
@@ -1760,13 +2793,21 @@
     "SrcName": "sed",
     "SrcVersion": "4.8",
     "SrcRelease": "8.fc35",
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "setup@2.13.9.1-2.fc35.noarch",
     "Name": "setup",
     "Version": "2.13.9.1",
     "Release": "2.fc35",
@@ -1774,13 +2815,19 @@
     "SrcName": "setup",
     "SrcVersion": "2.13.9.1",
     "SrcRelease": "2.fc35",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "fedora-release-container@35-36.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "shadow-utils@4.9-9.fc35.x86_64",
     "Name": "shadow-utils",
     "Version": "4.9",
     "Release": "9.fc35",
@@ -1790,13 +2837,26 @@
     "SrcVersion": "4.9",
     "SrcRelease": "9.fc35",
     "SrcEpoch": 2,
-    "License": "BSD and GPLv2+",
+    "Licenses": [
+      "BSD and GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "audit-libs@3.0.7-2.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libattr@2.5.1-3.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64",
+      "libsemanage@3.3-1.fc35.x86_64",
+      "libxcrypt@4.4.28-1.fc35.x86_64",
+      "setup@2.13.9.1-2.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "sqlite-libs@3.36.0-3.fc35.x86_64",
     "Name": "sqlite-libs",
     "Version": "3.36.0",
     "Release": "3.fc35",
@@ -1804,13 +2864,20 @@
     "SrcName": "sqlite",
     "SrcVersion": "3.36.0",
     "SrcRelease": "3.fc35",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "sudo@1.9.7p2-2.fc35.x86_64",
     "Name": "sudo",
     "Version": "1.9.7p2",
     "Release": "2.fc35",
@@ -1818,13 +2885,25 @@
     "SrcName": "sudo",
     "SrcVersion": "1.9.7p2",
     "SrcRelease": "2.fc35",
-    "License": "ISC",
+    "Licenses": [
+      "ISC"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "audit-libs@3.0.7-2.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64",
+      "openldap@2.4.59-3.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "pam@1.5.2-7.fc35.x86_64",
+      "zlib@1.2.11-30.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "tar@1.34-2.fc35.x86_64",
     "Name": "tar",
     "Version": "1.34",
     "Release": "2.fc35",
@@ -1834,13 +2913,21 @@
     "SrcVersion": "1.34",
     "SrcRelease": "2.fc35",
     "SrcEpoch": 2,
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "tpm2-tss@3.1.0-3.fc35.x86_64",
     "Name": "tpm2-tss",
     "Version": "3.1.0",
     "Release": "3.fc35",
@@ -1848,13 +2935,24 @@
     "SrcName": "tpm2-tss",
     "SrcVersion": "3.1.0",
     "SrcRelease": "3.fc35",
-    "License": "BSD and TCGL",
+    "Licenses": [
+      "BSD and TCGL"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "bash@5.1.8-2.fc35.x86_64",
+      "glibc@2.34-25.fc35.x86_64",
+      "json-c@0.15-2.fc35.x86_64",
+      "libcurl@7.79.1-1.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64",
+      "shadow-utils@4.9-9.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "tzdata@2021e-1.fc35.noarch",
     "Name": "tzdata",
     "Version": "2021e",
     "Release": "1.fc35",
@@ -1862,13 +2960,16 @@
     "SrcName": "tzdata",
     "SrcVersion": "2021e",
     "SrcRelease": "1.fc35",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "vim-data@8.2.4386-1.fc35.noarch",
     "Name": "vim-data",
     "Version": "8.2.4386",
     "Release": "1.fc35",
@@ -1878,13 +2979,16 @@
     "SrcVersion": "8.2.4386",
     "SrcRelease": "1.fc35",
     "SrcEpoch": 2,
-    "License": "Vim and MIT",
+    "Licenses": [
+      "Vim and MIT"
+    ],
+    "Maintainer": "Fedora Project",
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "vim-minimal@8.2.4386-1.fc35.x86_64",
     "Name": "vim-minimal",
     "Version": "8.2.4386",
     "Release": "1.fc35",
@@ -1894,13 +2998,23 @@
     "SrcVersion": "8.2.4386",
     "SrcRelease": "1.fc35",
     "SrcEpoch": 2,
-    "License": "Vim and MIT",
+    "Licenses": [
+      "Vim and MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libacl@2.3.1-2.fc35.x86_64",
+      "libselinux@3.3-1.fc35.x86_64",
+      "ncurses-libs@6.2-8.20210508.fc35.x86_64",
+      "vim-data@8.2.4386-1.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "xz-libs@5.2.5-7.fc35.x86_64",
     "Name": "xz-libs",
     "Version": "5.2.5",
     "Release": "7.fc35",
@@ -1908,13 +3022,19 @@
     "SrcName": "xz",
     "SrcVersion": "5.2.5",
     "SrcRelease": "7.fc35",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "yum@4.9.0-1.fc35.noarch",
     "Name": "yum",
     "Version": "4.9.0",
     "Release": "1.fc35",
@@ -1922,13 +3042,19 @@
     "SrcName": "dnf",
     "SrcVersion": "4.9.0",
     "SrcRelease": "1.fc35",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "dnf@4.9.0-1.fc35.noarch"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "zchunk-libs@1.1.15-2.fc35.x86_64",
     "Name": "zchunk-libs",
     "Version": "1.1.15",
     "Release": "2.fc35",
@@ -1936,13 +3062,21 @@
     "SrcName": "zchunk",
     "SrcVersion": "1.1.15",
     "SrcRelease": "2.fc35",
-    "License": "BSD and MIT",
+    "Licenses": [
+      "BSD and MIT"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64",
+      "libzstd@1.5.2-1.fc35.x86_64",
+      "openssl-libs@1.1.1l-2.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   },
   {
+    "ID": "zlib@1.2.11-30.fc35.x86_64",
     "Name": "zlib",
     "Version": "1.2.11",
     "Release": "30.fc35",
@@ -1950,9 +3084,14 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.11",
     "SrcRelease": "30.fc35",
-    "License": "zlib and Boost",
+    "Licenses": [
+      "zlib and Boost"
+    ],
+    "Maintainer": "Fedora Project",
+    "DependsOn": [
+      "glibc@2.34-25.fc35.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:054e3e802ba7bde57dcc19df7b12ac4fecb92bc0c3e7b591210bcea96f993b5d",
       "DiffID": "sha256:5b86cbe1caa031a8d90f13401b67620c51b1f2c6d8e9ed17a074cd8bbe50d837"
     }
   }
