@@ -112,10 +112,6 @@ func (p *PackageURL) PackageType() string {
 	return p.Type
 }
 
-func (p *PackageURL) IsGoPkg() bool {
-	return p.Type == packageurl.TypeGolang
-}
-
 func (p *PackageURL) IsOSPkg() bool {
 	return p.Type == TypeAPK || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
 }
