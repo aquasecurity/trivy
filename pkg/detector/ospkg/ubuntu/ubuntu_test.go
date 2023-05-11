@@ -218,7 +218,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 		},
 		{
 			name: "ubuntu 18.04 ESM. 18.04 is not outdated",
-			now:  time.Date(2026, 4, 31, 23, 59, 59, 0, time.UTC),
+			now:  time.Date(2022, 4, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "ubuntu",
 				osVer:    "18.04-ESM",

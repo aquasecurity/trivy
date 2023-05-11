@@ -15,7 +15,7 @@ import (
 var (
 	_ analyzer.PostAnalyzer = (*Analyzer)(nil)
 
-	requiredExts = []string{".json", ".yaml", ".yml"}
+	requiredExts = []string{".json", ".yaml", ".yml", ".tfvars"}
 )
 
 // Analyzer represents an analyzer for config files,

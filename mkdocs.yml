@@ -71,7 +71,6 @@ nav:
                   - Schemas: docs/scanner/misconfiguration/custom/schema.md
                   - Testing: docs/scanner/misconfiguration/custom/testing.md
                   - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
-                  - Examples: docs/scanner/misconfiguration/custom/examples.md
           - Secret: docs/scanner/secret.md
           - License: docs/scanner/license.md
       - Configuration:
@@ -144,6 +143,7 @@ nav:
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
+          - Discussions: community/contribute/discussion.md
           - Pull Requests: community/contribute/pr.md
       - Maintainer:
           - Help Wanted: community/maintainer/help-wanted.md

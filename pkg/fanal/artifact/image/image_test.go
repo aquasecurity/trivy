@@ -41,6 +41,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "alpine-baselayout",
 			SrcVersion: "3.2.0-r3",
 			Licenses:   []string{"GPL-2.0"},
+			Digest:     "sha1:8f373f5b329c3aaf136eb30c63a387661ee0f3d0",
 			DependsOn: []string{
 				"busybox@1.31.1-r9",
 				"musl@1.1.24-r2",
@@ -55,6 +56,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcVersion: "2.1-r2",
 			Licenses:   []string{"MIT"},
 			Arch:       "x86_64",
+			Digest:     "sha1:64929f85b7f8b4adbb664d905410312936b79d9b",
 		},
 		{
 			ID:         "apk-tools@2.10.4-r3",
@@ -63,6 +65,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "apk-tools",
 			SrcVersion: "2.10.4-r3",
 			Licenses:   []string{"GPL-2.0"},
+			Digest:     "sha1:b15ad0c90e4493dfdc948d6b90a8e020da8936ef",
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
 				"libssl1.1@1.1.1d-r3",
@@ -78,6 +81,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
 			Licenses:   []string{"GPL-2.0"},
+			Digest:     "sha1:a457703d71654811ea28d8d27a5cfc49ece27b34",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -93,7 +97,8 @@ func TestArtifact_Inspect(t *testing.T) {
 				"MPL-2.0",
 				"GPL-2.0",
 			},
-			Arch: "x86_64",
+			Arch:   "x86_64",
+			Digest: "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
 		},
 		{
 			ID:         "libc-utils@0.7.2-r0",
@@ -102,6 +107,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "libc-dev",
 			SrcVersion: "0.7.2-r0",
 			Licenses:   []string{"BSD-3-Clause"},
+			Digest:     "sha1:a7bf32bd32c6d3de2d1c4d7e753a0919b998cd01",
 			DependsOn: []string{
 				"musl-utils@1.1.24-r2",
 			},
@@ -114,6 +120,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "openssl",
 			SrcVersion: "1.1.1d-r3",
 			Licenses:   []string{"OpenSSL"},
+			Digest:     "sha1:dd8fb9a3cce7b2bcf954271da62fb85dac2b106a",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -126,6 +133,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "openssl",
 			SrcVersion: "1.1.1d-r3",
 			Licenses:   []string{"OpenSSL"},
+			Digest:     "sha1:938d46e41b3e56b339a3aeb2d02fad3d75728f35",
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
 				"musl@1.1.24-r2",
@@ -139,6 +147,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "libtls-standalone",
 			SrcVersion: "2.9.1-r0",
 			Licenses:   []string{"ISC"},
+			Digest:     "sha1:b2e5627a56378ea6eeb962a8f33722df9393c1c5",
 			DependsOn: []string{
 				"ca-certificates-cacert@20191127-r1",
 				"libcrypto1.1@1.1.1d-r3",
@@ -155,6 +164,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcVersion: "1.1.24-r2",
 			Licenses:   []string{"MIT"},
 			Arch:       "x86_64",
+			Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
 		},
 		{
 			ID:         "musl-utils@1.1.24-r2",
@@ -167,6 +177,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"BSD-3-Clause",
 				"GPL-2.0",
 			},
+			Digest: "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 				"scanelf@1.2.4-r0",
@@ -180,6 +191,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "pax-utils",
 			SrcVersion: "1.2.4-r0",
 			Licenses:   []string{"GPL-2.0"},
+			Digest:     "sha1:d6147beb32bff803b5d9f83a3bec7ab319087185",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -192,6 +204,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
 			Licenses:   []string{"GPL-2.0"},
+			Digest:     "sha1:3b685152af320120ae8941c740d3376b54e43c10",
 			DependsOn: []string{
 				"libtls-standalone@2.9.1-r0",
 				"musl@1.1.24-r2",
@@ -205,6 +218,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "zlib",
 			SrcVersion: "1.2.11-r3",
 			Licenses:   []string{"Zlib"},
+			Digest:     "sha1:acca078ee8baa93e005f57b2fae359c1efd443cd",
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
