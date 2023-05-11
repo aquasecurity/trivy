@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
-  "serialNumber": "urn:uuid:ca83ba24-5ed5-4f79-bc6a-5e37567f0201",
+  "serialNumber": "urn:uuid:02dfc387-959f-4356-bdd4-479477612e50",
   "version": 1,
   "metadata": {
-    "timestamp": "2023-05-11T10:38:48+00:00",
+    "timestamp": "2023-05-11T11:02:21+00:00",
     "tools": [
       {
         "vendor": "aquasecurity",
@@ -13,7 +13,7 @@
       }
     ],
     "component": {
-      "bom-ref": "36e7d95b-4922-44c2-a456-b829fc8f74c3",
+      "bom-ref": "755e4ff2-8f58-44df-8100-495d2e7159a3",
       "type": "application",
       "name": "testdata/fixtures/fs/conda",
       "properties": [
@@ -72,7 +72,7 @@
   ],
   "dependencies": [
     {
-      "ref": "36e7d95b-4922-44c2-a456-b829fc8f74c3",
+      "ref": "755e4ff2-8f58-44df-8100-495d2e7159a3",
       "dependsOn": [
         "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json",
         "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json"
