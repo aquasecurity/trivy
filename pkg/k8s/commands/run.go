@@ -3,33 +3,28 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
-	"strings"
 
-	ms "github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
-	"github.com/aquasecurity/trivy-kubernetes/pkg/bom"
+
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+
 	"github.com/aquasecurity/trivy/pkg/flag"
 	k8sRep "github.com/aquasecurity/trivy/pkg/k8s"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
-	rep "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
 	clusterArtifact = "cluster"
 	allArtifact     = "all"
-	schemaVersion   = 0
 )
 
 // Run runs a k8s scan
@@ -86,43 +81,36 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		}
 	}()
 	var rpt report.Report
-	if r.flagOpts.Format == rep.FormatCycloneDX {
-		rpt, err = clusterInfoToReport(r.cluster, artifacts)
+	s := scanner.NewScanner(r.cluster, runner, r.flagOpts)
+
+	// set scanners types by spec
+	if r.flagOpts.Compliance.Spec.ID != "" {
+		scanners, err := r.flagOpts.Compliance.Scanners()
 		if err != nil {
 			return xerrors.Errorf("scanner error: %w", err)
 		}
-	} else {
-		s := scanner.NewScanner(r.cluster, runner, r.flagOpts)
+		r.flagOpts.ScanOptions.Scanners = scanners
+	}
 
-		// set scanners types by spec
-		if r.flagOpts.Compliance.Spec.ID != "" {
-			scanners, err := r.flagOpts.Compliance.Scanners()
-			if err != nil {
-				return xerrors.Errorf("scanner error: %w", err)
-			}
-			r.flagOpts.ScanOptions.Scanners = scanners
+	rpt, err = s.Scan(ctx, artifacts)
+	if err != nil {
+		return xerrors.Errorf("k8s scan error: %w", err)
+	}
+
+	if r.flagOpts.Compliance.Spec.ID != "" {
+		var scanResults []types.Results
+		for _, rss := range rpt.Resources {
+			scanResults = append(scanResults, rss.Results)
 		}
-
-		rpt, err = s.Scan(ctx, artifacts)
+		complianceReport, err := cr.BuildComplianceReport(scanResults, r.flagOpts.Compliance)
 		if err != nil {
-			return xerrors.Errorf("k8s scan error: %w", err)
+			return xerrors.Errorf("compliance report build error: %w", err)
 		}
-
-		if r.flagOpts.Compliance.Spec.ID != "" {
-			var scanResults []types.Results
-			for _, rss := range rpt.Resources {
-				scanResults = append(scanResults, rss.Results)
-			}
-			complianceReport, err := cr.BuildComplianceReport(scanResults, r.flagOpts.Compliance)
-			if err != nil {
-				return xerrors.Errorf("compliance report build error: %w", err)
-			}
-			return cr.Write(complianceReport, cr.Option{
-				Format: r.flagOpts.Format,
-				Report: r.flagOpts.ReportFormat,
-				Output: r.flagOpts.Output,
-			})
-		}
+		return cr.Write(complianceReport, cr.Option{
+			Format: r.flagOpts.Format,
+			Report: r.flagOpts.ReportFormat,
+			Output: r.flagOpts.Output,
+		})
 	}
 
 	if err := k8sRep.Write(rpt, report.Option{
@@ -168,111 +156,4 @@ func validateReportArguments(opts flag.Options) error {
 	}
 
 	return nil
-}
-
-func clusterInfoToReport(clusterName string, allArtifact []*artifacts.Artifact) (report.Report, error) {
-	resources := make([]report.Resource, 0)
-	for _, artifact := range allArtifact {
-		switch artifact.Kind {
-		case "Pod":
-			var comp bom.Component
-			err := ms.Decode(artifact.RawResource, &comp)
-			if err != nil {
-				return report.Report{}, err
-			}
-			resources = append(resources, report.Resource{
-				Kind: artifact.Kind,
-				Name: comp.ID,
-				Report: types.Report{
-					ArtifactName: comp.ID,
-					ArtifactType: ftypes.ArtifactContainerImage,
-					Metadata: types.Metadata{
-						RepoDigests: []string{fmt.Sprintf("%s/%s@sha256:%s", comp.Registry, comp.Repository, comp.Digest)},
-					},
-					Results: types.Results{
-						{
-							Target: "containers",
-							Type:   "oci",
-							Packages: ftypes.Packages{
-								{
-									Name:    fmt.Sprintf("%s/%s", comp.Registry, comp.Repository),
-									Version: comp.Version,
-								},
-							},
-						},
-					},
-				}})
-		case "NodeInfo":
-			var nf bom.NodeInfo
-			err := ms.Decode(artifact.RawResource, &nf)
-			if err != nil {
-				return report.Report{}, err
-			}
-			metadata := types.Metadata{
-				Properties: []types.Property{
-					{
-						Key:   "node_role",
-						Value: nf.NodeRole,
-					},
-					{
-						Key:   "host_name",
-						Value: nf.Hostname,
-					},
-					{
-						Key:   "kernel_version",
-						Value: nf.KernelVersion,
-					},
-					{
-						Key:   "operating_system",
-						Value: nf.OperatingSystem,
-					},
-					{
-						Key:   "architecture",
-						Value: nf.Architecture,
-					},
-				},
-			}
-			osParts := strings.Split(nf.OsImage, " ")
-			if len(osParts) == 2 {
-				metadata.OS = &ftypes.OS{
-					Family: strings.TrimSpace(osParts[0]),
-					Name:   strings.TrimSpace(osParts[1]),
-				}
-			}
-			resources = append(resources, report.Resource{
-				Kind: "Node",
-				Name: artifact.Name,
-				Report: types.Report{
-					ArtifactName: nf.NodeName,
-					ArtifactType: ftypes.ArtifactVM,
-					Metadata:     metadata,
-					Results: types.Results{
-						{
-							Target: "os-packages",
-							Class:  types.ClassOSPkg,
-							Type:   "debian",
-						},
-						{
-							Target: "core-components",
-							Class:  types.ClassLangPkg,
-							Type:   "golang",
-							Packages: ftypes.Packages{
-								{
-									Name:    "containerd",
-									Version: nf.ContainerRuntimeVersion,
-								},
-								{
-									Name:    "kubelet_version",
-									Version: nf.KubeletVersion,
-								},
-							},
-						},
-					},
-				},
-			})
-		}
-	}
-	return report.Report{
-		Resources: resources, ClusterName: clusterName, SchemaVersion: 0,
-	}, nil
 }
