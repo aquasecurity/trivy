@@ -214,6 +214,10 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	done := make(chan struct{})
 	errCh := make(chan error)
 	limit := semaphore.New(a.artifactOption.Slow)
@@ -225,31 +229,36 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 		}
 
 		go func(ctx context.Context, layerKey string) {
+			var err error
 			defer func() {
 				limit.Release(1)
+				if err != nil {
+					errCh <- err
+				}
 				done <- struct{}{}
 			}()
 
-			layer := layerKeyMap[layerKey]
+			err = func() error {
+				layer := layerKeyMap[layerKey]
 
-			// If it is a base layer, secret scanning should not be performed.
-			var disabledAnalyers []analyzer.Type
-			if slices.Contains(baseDiffIDs, layer.DiffID) {
-				disabledAnalyers = append(disabledAnalyers, analyzer.TypeSecret)
-			}
+				// If it is a base layer, secret scanning should not be performed.
+				var disabledAnalyers []analyzer.Type
+				if slices.Contains(baseDiffIDs, layer.DiffID) {
+					disabledAnalyers = append(disabledAnalyers, analyzer.TypeSecret)
+				}
 
-			layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyers)
-			if err != nil {
-				errCh <- xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
-				return
-			}
-			if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
-				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
-				return
-			}
-			if lo.IsNotEmpty(layerInfo.OS) {
-				osFound = layerInfo.OS
-			}
+				layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyers)
+				if err != nil {
+					return xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
+				}
+				if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
+					return xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
+				}
+				if lo.IsNotEmpty(layerInfo.OS) {
+					osFound = layerInfo.OS
+				}
+				return nil
+			}()
 		}(ctx, k)
 	}
 

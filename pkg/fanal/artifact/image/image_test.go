@@ -1830,6 +1830,79 @@ func TestArtifact_Inspect(t *testing.T) {
 			wantErr: "put layer failed",
 		},
 		{
+			name:      "sad path, PutBlob returns an error with multiple layers and Slow enabled",
+			imagePath: "../../test/testdata/vuln-image.tar.gz",
+			artifactOpt: artifact.Option{
+				Slow: true,
+			},
+			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
+				Args: cache.ArtifactCacheMissingBlobsArgs{
+					ArtifactID: "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
+					BlobIDs: []string{
+						"sha256:1d02588865377e478a263c4ef2b020d8bf8d9919fdbd14243283b35249b91d4a",
+						"sha256:7b2d1df7e78b9e5c851676d9cc04bad8d7e86deb2661f0e15ff3d7f37bf53d53",
+						"sha256:57508fe06ce45edcad30f95a9da631edf746914b0ffa32fa13b83a133529828e",
+						"sha256:f8d6b5b326b6bad89cf20b94e1c98380187e536ec34795d18c00907f9a35aeb5",
+					},
+				},
+				Returns: cache.ArtifactCacheMissingBlobsReturns{
+					MissingBlobIDs: []string{
+						"sha256:1d02588865377e478a263c4ef2b020d8bf8d9919fdbd14243283b35249b91d4a",
+						"sha256:7b2d1df7e78b9e5c851676d9cc04bad8d7e86deb2661f0e15ff3d7f37bf53d53",
+						"sha256:57508fe06ce45edcad30f95a9da631edf746914b0ffa32fa13b83a133529828e",
+						"sha256:f8d6b5b326b6bad89cf20b94e1c98380187e536ec34795d18c00907f9a35aeb5",
+					},
+				},
+			},
+			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
+				{
+
+					Args: cache.ArtifactCachePutBlobArgs{
+						BlobID:           "sha256:1d02588865377e478a263c4ef2b020d8bf8d9919fdbd14243283b35249b91d4a",
+						BlobInfoAnything: true,
+					},
+
+					Returns: cache.ArtifactCachePutBlobReturns{
+						Err: errors.New("put layer failed"),
+					},
+				},
+				{
+
+					Args: cache.ArtifactCachePutBlobArgs{
+						BlobID:           "sha256:7b2d1df7e78b9e5c851676d9cc04bad8d7e86deb2661f0e15ff3d7f37bf53d53",
+						BlobInfoAnything: true,
+					},
+
+					Returns: cache.ArtifactCachePutBlobReturns{
+						Err: errors.New("put layer failed"),
+					},
+				},
+				{
+
+					Args: cache.ArtifactCachePutBlobArgs{
+						BlobID:           "sha256:57508fe06ce45edcad30f95a9da631edf746914b0ffa32fa13b83a133529828e",
+						BlobInfoAnything: true,
+					},
+
+					Returns: cache.ArtifactCachePutBlobReturns{
+						Err: errors.New("put layer failed"),
+					},
+				},
+				{
+
+					Args: cache.ArtifactCachePutBlobArgs{
+						BlobID:           "sha256:f8d6b5b326b6bad89cf20b94e1c98380187e536ec34795d18c00907f9a35aeb5",
+						BlobInfoAnything: true,
+					},
+
+					Returns: cache.ArtifactCachePutBlobReturns{
+						Err: errors.New("put layer failed"),
+					},
+				},
+			},
+			wantErr: "put layer failed",
+		},
+		{
 			name:      "sad path, PutArtifact returns an error",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
