@@ -342,9 +342,10 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 
 	pkg := p.Package()
 
+	pkgType := p.PackageType()
 	// Trivy's marshall loses case-sensitivity in PURL used in SBOM for Go,
 	// so we have to use an original package name (if possible)
-	if p.PackageType() == ftypes.GoBinary && component.Name != "" {
+	if pkgType == ftypes.GoBinary && component.Name != "" {
 		pkg.Name = component.Name
 	}
 	pkg.Ref = component.BOMRef
@@ -394,7 +395,7 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 		}
 	}
 
-	return isOSPkg, p.PackageType(), pkg, nil
+	return isOSPkg, pkgType, pkg, nil
 }
 
 func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
