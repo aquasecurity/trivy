@@ -341,6 +341,7 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 	}
 
 	pkg := p.Package()
+	pkg.Name = component.Name
 	pkg.Ref = component.BOMRef
 
 	for _, license := range lo.FromPtr(component.Licenses) {
