@@ -7,6 +7,7 @@ import (
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	rep "github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -51,5 +52,19 @@ func (w Writer) Write(report types.Report) error {
 		return xerrors.Errorf("failed to encode bom: %w", err)
 	}
 
+	return nil
+}
+
+// Write writes the results in CycloneDX format
+func (w Writer) WriteKbom(report rep.Report) error {
+	bom, err := w.marshaler.MarshalKbom(report)
+	if err != nil {
+		return xerrors.Errorf("CycloneDX marshal error: %w", err)
+	}
+	encoder := cdx.NewBOMEncoder(w.output, w.format)
+	encoder.SetPretty(true)
+	if err = encoder.Encode(bom); err != nil {
+		return xerrors.Errorf("failed to encode bom: %w", err)
+	}
 	return nil
 }

@@ -1,6 +1,7 @@
 package cyclonedx_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	k8s "github.com/aquasecurity/trivy/pkg/k8s/report"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/uuid"
 	"github.com/samber/lo"
@@ -1620,6 +1622,123 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestMarshaler_Kbom(t *testing.T) {
+	tests := []struct {
+		name        string
+		inputReport k8s.Report
+		want        *cdx.BOM
+	}{
+		{
+			name: "happy path for kbom generation",
+			inputReport: k8s.Report{
+				SchemaVersion: 1,
+				ClusterName:   "kind-kind",
+				Resources: []k8s.Resource{
+					{
+						Namespace: "",
+						Kind:      "Node",
+						Name:      "kind-master",
+						Report: types.Report{
+							ArtifactType: "vm",
+							ArtifactName: "kind-master",
+							Metadata: types.Metadata{
+								OS: &ftypes.OS{
+									Family: "debian",
+									Name:   "11",
+								},
+								Properties: []types.Property{
+									{
+										Key:   "host_name",
+										Value: "kind-control-plane",
+									},
+									{
+										Key:   "kernel_version",
+										Value: "6.2.13-300.fc38.aarch64",
+									},
+									{
+										Key:   "operating_system",
+										Value: "linux",
+									},
+									{
+										Key:   "architecture",
+										Value: "arm64",
+									},
+								},
+							},
+							Results: types.Results{
+								{
+									Target: "os-packages",
+									Class:  types.ClassOSPkg,
+									Type:   "debian",
+								},
+								{
+									Target: "core-components",
+									Class:  types.ClassLangPkg,
+									Type:   "golang",
+									Packages: ftypes.Packages{
+										{
+											Name:    "containerd",
+											Version: "1.2.3",
+										},
+										{
+											Name:    "kubelet",
+											Version: "1.2.3",
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						Namespace: "kube-system",
+						Kind:      "Pod",
+						Name:      "kube-apiserver",
+						Report: types.Report{
+							ArtifactName: "kube-apiserver:latest",
+							ArtifactType: "Pod", // TODO
+							Metadata: types.Metadata{
+								RepoDigests: []string{"k8s.gcr.io/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f"},
+							},
+							Results: types.Results{
+								{
+									Target: "containers",
+									Type:   "oci",
+									Packages: ftypes.Packages{
+										{
+											// Containers in the Pod
+											Name:    "k8s.gcr.io/kube-apiserver",
+											Version: "1.2.3",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var count int
+			newUUID := func() uuid.UUID {
+				count++
+				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
+			}
+
+			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
+			bom, err := marshaler.MarshalKbom(tt.inputReport)
+			assert.NoError(t, err)
+			b, err := json.Marshal(bom)
+			assert.NoError(t, err)
+			fmt.Println(string(b))
 		})
 	}
 }

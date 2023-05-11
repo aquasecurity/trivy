@@ -41,6 +41,12 @@ type Metadata struct {
 	RepoTags    []string      `json:",omitempty"`
 	RepoDigests []string      `json:",omitempty"`
 	ImageConfig v1.ConfigFile `json:",omitempty"`
+	Properties  []Property    `json:"-"`
+}
+
+type Property struct {
+	Key   string `json:",omitempty"`
+	Value string `json:",omitempty"`
 }
 
 // Results to hold list of Result

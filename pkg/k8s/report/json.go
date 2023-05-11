@@ -19,9 +19,9 @@ func (jw JSONWriter) Write(report Report) error {
 	var err error
 
 	switch jw.Report {
-	case allReport:
+	case AllReport:
 		output, err = json.MarshalIndent(report, "", "  ")
-	case summaryReport:
+	case SummaryReport:
 		output, err = json.MarshalIndent(report.consolidate(), "", "  ")
 	default:
 		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, jw.Report)
