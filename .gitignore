@@ -5,6 +5,7 @@
 *.so
 *.dylib
 /trivy
+cmd/trivy/trivy
 
 ## chart release
 .cr-release-packages
@@ -29,6 +30,7 @@ integration/testdata/fixtures/vm-images
 
 # SBOMs generated during CI
 /bom.json
+spdx.json
 
 # goreleaser output
 dist
@@ -38,4 +40,4 @@ dist
 
 # Signing
 gpg.key
-cmd/trivy/trivy
+
