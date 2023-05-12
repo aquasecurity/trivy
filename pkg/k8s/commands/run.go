@@ -95,10 +95,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 
 	if r.flagOpts.Compliance.Spec.ID != "" {
 		var scanResults []types.Results
-		for _, rss := range rpt.Vulnerabilities {
-			scanResults = append(scanResults, rss.Results)
-		}
-		for _, rss := range rpt.Misconfigurations {
+		for _, rss := range rpt.Resources {
 			scanResults = append(scanResults, rss.Results)
 		}
 		complianceReport, err := cr.BuildComplianceReport(scanResults, r.flagOpts.Compliance)
