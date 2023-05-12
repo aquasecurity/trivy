@@ -214,8 +214,8 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
-	done := make(chan struct{})
-	errCh := make(chan error)
+	done := make(chan struct{}, len(layerKeys))
+	errCh := make(chan error, len(layerKeys))
 	limit := semaphore.New(a.artifactOption.Slow)
 
 	var osFound types.OS
