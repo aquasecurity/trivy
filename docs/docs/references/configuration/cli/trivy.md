@@ -43,10 +43,12 @@ trivy [global flags] command [flags] target
 
 ### SEE ALSO
 
+* [trivy aqua](trivy_aqua.md)	 - trivy aqua <srcPath>
 * [trivy aws](trivy_aws.md)	 - [EXPERIMENTAL] Scan AWS account
 * [trivy config](trivy_config.md)	 - Scan config files for misconfigurations
 * [trivy filesystem](trivy_filesystem.md)	 - Scan local filesystem
 * [trivy image](trivy_image.md)	 - Scan a container image
+* [trivy kubectl](trivy_kubectl.md)	 - scan kubectl resources
 * [trivy kubernetes](trivy_kubernetes.md)	 - [EXPERIMENTAL] Scan kubernetes cluster
 * [trivy module](trivy_module.md)	 - Manage modules
 * [trivy plugin](trivy_plugin.md)	 - Manage plugins
@@ -56,4 +58,5 @@ trivy [global flags] command [flags] target
 * [trivy server](trivy_server.md)	 - Server mode
 * [trivy version](trivy_version.md)	 - Print the version
 * [trivy vm](trivy_vm.md)	 - [EXPERIMENTAL] Scan a virtual machine image
+* [trivy webhook](trivy_webhook.md)	 - trivy webhook -- <plugin args> -- <trivy args>
 

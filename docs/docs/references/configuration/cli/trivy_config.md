@@ -37,6 +37,7 @@ trivy config [flags] DIR
       --redis-tls                   enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string       registry token
       --report string               specify a compliance report format for the output. (all,summary) (default "all")
+      --reset-policy-bundle         remove policy bundle
   -s, --severity string             severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
       --skip-dirs strings           specify the directories where the traversal is skipped
       --skip-files strings          specify the file paths to skip traversal
