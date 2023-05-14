@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"golang.org/x/xerrors"
-	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -39,7 +38,6 @@ func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.
 
 // PutArtifact sends artifact to remote client
 func (c RemoteCache) PutArtifact(imageID string, artifactInfo types.ArtifactInfo) error {
-	var _ *emptypb.Empty
 	err := rpc.Retry(func() error {
 		var err error
 		_, err = c.client.PutArtifact(c.ctx, rpc.ConvertToRPCArtifactInfo(imageID, artifactInfo))
@@ -53,7 +51,6 @@ func (c RemoteCache) PutArtifact(imageID string, artifactInfo types.ArtifactInfo
 
 // PutBlob sends blobInfo to remote client
 func (c RemoteCache) PutBlob(diffID string, blobInfo types.BlobInfo) error {
-	var _ *emptypb.Empty
 	err := rpc.Retry(func() error {
 		var err error
 		_, err = c.client.PutBlob(c.ctx, rpc.ConvertToRPCBlobInfo(diffID, blobInfo))
@@ -81,7 +78,6 @@ func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []st
 
 // DeleteBlobs removes blobs by IDs from RemoteCache
 func (c RemoteCache) DeleteBlobs(blobIDs []string) error {
-	var _ *emptypb.Empty
 	err := rpc.Retry(func() error {
 		var err error
 		_, err = c.client.DeleteBlobs(c.ctx, rpc.ConvertToDeleteBlobsRequest(blobIDs))
