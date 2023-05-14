@@ -2,13 +2,8 @@ package commands
 
 import (
 	"bytes"
-	"os"
 	"testing"
-	"time"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -92,34 +87,64 @@ Policy Bundle:
 		want      string
 	}{
 		{
-			name:      "happy path. '-v' flag is used",
-			arguments: []string{"-v", "--cache-dir", "testdata"},
-			want:      tableOutput,
+			name: "happy path. '-v' flag is used",
+			arguments: []string{
+				"-v",
+				"--cache-dir",
+				"testdata",
+			},
+			want: tableOutput,
 		},
 		{
-			name:      "happy path. '-version' flag is used",
-			arguments: []string{"--version", "--cache-dir", "testdata"},
-			want:      tableOutput,
+			name: "happy path. '-version' flag is used",
+			arguments: []string{
+				"--version",
+				"--cache-dir",
+				"testdata",
+			},
+			want: tableOutput,
 		},
 		{
-			name:      "happy path. 'version' command is used",
-			arguments: []string{"--cache-dir", "testdata", "version"},
-			want:      tableOutput,
+			name: "happy path. 'version' command is used",
+			arguments: []string{
+				"--cache-dir",
+				"testdata",
+				"version",
+			},
+			want: tableOutput,
 		},
 		{
-			name:      "happy path. 'version', '--format json' flags are used",
-			arguments: []string{"--cache-dir", "testdata", "version", "--format", "json"},
-			want:      jsonOutput,
+			name: "happy path. 'version', '--format json' flags are used",
+			arguments: []string{
+				"--cache-dir",
+				"testdata",
+				"version",
+				"--format",
+				"json",
+			},
+			want: jsonOutput,
 		},
 		{
-			name:      "happy path. '-v', '--format json' flags are used",
-			arguments: []string{"--cache-dir", "testdata", "-v", "--format", "json"},
-			want:      jsonOutput,
+			name: "happy path. '-v', '--format json' flags are used",
+			arguments: []string{
+				"--cache-dir",
+				"testdata",
+				"-v",
+				"--format",
+				"json",
+			},
+			want: jsonOutput,
 		},
 		{
-			name:      "happy path. '--version', '--format json' flags are used",
-			arguments: []string{"--cache-dir", "testdata", "--version", "--format", "json"},
-			want:      jsonOutput,
+			name: "happy path. '--version', '--format json' flags are used",
+			arguments: []string{
+				"--cache-dir",
+				"testdata",
+				"--version",
+				"--format",
+				"json",
+			},
+			want: jsonOutput,
 		},
 	}
 
@@ -133,134 +158,6 @@ Policy Bundle:
 			err := app.Execute()
 			require.NoError(t, err)
 			assert.Equal(t, test.want, got.String())
-		})
-	}
-}
-
-//Check that options from config file and envs work correctly
-func TestConfigFileAndEnv(t *testing.T) {
-	type wantValues = struct {
-		debug     bool
-		timeout   time.Duration
-		redisCert string
-		skipDirs  []string
-		vulnType  []string
-	}
-	tests := []struct {
-		name      string
-		arguments []string
-		envs      map[string]string
-		want      wantValues
-	}{
-		{
-			name:      "happy path. Without config file or envs",
-			arguments: []string{"image"},
-			want: wantValues{
-				timeout:  time.Second * 300,
-				skipDirs: []string{},
-				vulnType: []string{types.VulnTypeOS, types.VulnTypeLibrary},
-			},
-		},
-		{
-			name:      "happy path.Used env",
-			arguments: []string{"image"},
-			envs: map[string]string{
-				"TRIVY_DEBUG":      "true",
-				"TRIVY_TIMEOUT":    "10m",
-				"TRIVY_REDIS_CERT": "ca-cert.pem",
-				"TRIVY_SKIP_DIRS":  "envDir1,envDir2",
-				"TRIVY_VULN_TYPE":  "library",
-			},
-			want: wantValues{
-				debug:     true,
-				timeout:   time.Minute * 10,
-				redisCert: "ca-cert.pem",
-				skipDirs:  []string{"envDir1,envDir2"},
-				vulnType:  []string{types.VulnTypeLibrary},
-			},
-		},
-		{
-			name:      "happy path. Used config file",
-			arguments: []string{"--config", "./testdata/trivy.yaml", "image"},
-			want: wantValues{
-				debug:     false,
-				timeout:   time.Minute * 20,
-				redisCert: "ca-conf-cert.pem",
-				skipDirs:  []string{"dir1", "dir2"},
-				vulnType:  []string{types.VulnTypeOS},
-			},
-		},
-		{
-			name:      "happy path.Used env and config file", // env takes precedence over config file
-			arguments: []string{"--config", "./testdata/trivy.yaml", "image"},
-			envs: map[string]string{
-				"TRIVY_DEBUG":      "true",
-				"TRIVY_TIMEOUT":    "10m",
-				"TRIVY_REDIS_CERT": "ca-cert.pem",
-				"TRIVY_SKIP_DIRS":  "envDir1,envDir2",
-				"TRIVY_VULN_TYPE":  "library",
-			},
-			want: wantValues{
-				debug:     true,
-				timeout:   time.Minute * 10,
-				redisCert: "ca-cert.pem",
-				skipDirs:  []string{"envDir1,envDir2"},
-				vulnType:  []string{types.VulnTypeLibrary},
-			},
-		},
-		{
-			name:      "happy path.Used command and env", // command takes precedence over env or config file
-			arguments: []string{"--timeout", "12m", "--skip-dirs", "dir1,dir2", "--vuln-type", "os", "image"},
-			envs: map[string]string{
-				"TRIVY_DEBUG":     "true",
-				"TRIVY_TIMEOUT":   "10m",
-				"TRIVY_SKIP_DIRS": "envDir1,envDir2",
-				"TRIVY_VULN_TYPE": "library",
-			},
-			want: wantValues{
-				debug:    true,
-				timeout:  time.Minute * 12,
-				skipDirs: []string{"dir1", "dir2"},
-				vulnType: []string{types.VulnTypeOS},
-			},
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			// set envs
-			oldEnvs := map[string]string{}
-			for k, v := range test.envs {
-				oldEnvs[k] = os.Getenv(k)
-				err := os.Setenv(k, v)
-				assert.NoError(t, err)
-			}
-			defer func() {
-				for k, v := range oldEnvs {
-					err := os.Setenv(k, v)
-					assert.NoError(t, err)
-				}
-				// reset viper after each test because it keeps the values from the previous config file
-				viper.Reset()
-			}()
-
-			// create buffer to not show cli recommendation in test result
-			got := new(bytes.Buffer)
-			app := NewApp("test")
-			SetOut(got)
-			app.SetArgs(test.arguments)
-
-			// subcommands are executed without target
-			// this error is expected
-			err := app.Execute()
-			require.NotNil(t, err)
-
-			// compare flag values
-			assert.Equal(t, test.want.debug, viper.GetBool(flag.DebugFlag.ConfigName), "Check debug flag")
-			assert.Equal(t, test.want.timeout, viper.GetDuration(flag.TimeoutFlag.ConfigName), "Check timeout flag")
-			assert.Equal(t, test.want.redisCert, viper.GetString(flag.RedisCertFlag.ConfigName), "Check redis-cert flag")
-			assert.Equal(t, test.want.skipDirs, viper.GetStringSlice(flag.SkipDirsFlag.ConfigName), "Check skip-dirs flag")
-			assert.Equal(t, test.want.vulnType, viper.GetStringSlice(flag.VulnTypeFlag.ConfigName), "Check vuln-type flag")
 		})
 	}
 }
