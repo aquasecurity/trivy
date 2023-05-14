@@ -22,7 +22,7 @@ import (
 // initializeDockerScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, dockerOpt types.DockerOption, artifactOption artifact.Option) (
+	localArtifactCache cache.LocalArtifactCache, imageOpt types.ImageOptions, artifactOption artifact.Option) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneDockerSet)
 	return scanner.Scanner{}, nil, nil
@@ -55,6 +55,13 @@ func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache c
 	return scanner.Scanner{}, nil, nil
 }
 
+func initializeVMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
+	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (
+	scanner.Scanner, func(), error) {
+	wire.Build(scanner.StandaloneVMSet)
+	return scanner.Scanner{}, nil, nil
+}
+
 /////////////////
 // Client/Server
 /////////////////
@@ -62,7 +69,7 @@ func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache c
 // initializeRemoteDockerScanner is for container image scanning in client/server mode
 // e.g. dockerd, container registry, podman, etc.
 func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
-	remoteScanOptions client.ScannerOption, dockerOpt types.DockerOption, artifactOption artifact.Option) (
+	remoteScanOptions client.ScannerOption, imageOpt types.ImageOptions, artifactOption artifact.Option) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteDockerSet)
 	return scanner.Scanner{}, nil, nil
@@ -83,9 +90,24 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 	return scanner.Scanner{}, nil, nil
 }
 
+// initializeRemoteRepositoryScanner is for repository scanning in client/server mode
+func initializeRemoteRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache,
+	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (
+	scanner.Scanner, func(), error) {
+	wire.Build(scanner.RemoteRepositorySet)
+	return scanner.Scanner{}, nil, nil
+}
+
 // initializeRemoteSBOMScanner is for sbom scanning in client/server mode
 func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
 	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteSBOMSet)
+	return scanner.Scanner{}, nil, nil
+}
+
+// initializeRemoteVMScanner is for vm scanning in client/server mode
+func initializeRemoteVMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
+	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	wire.Build(scanner.RemoteVMSet)
 	return scanner.Scanner{}, nil, nil
 }

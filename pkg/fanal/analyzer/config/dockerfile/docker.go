@@ -1,60 +1,44 @@
 package dockerfile
 
 import (
-	"context"
-	"io"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
-const version = 1
+const (
+	version      = 1
+	analyzerType = analyzer.TypeDockerfile
+)
 
 var requiredFiles = []string{"Dockerfile", "Containerfile"}
 
-type ConfigAnalyzer struct {
-	filePattern *regexp.Regexp
+func init() {
+	analyzer.RegisterPostAnalyzer(analyzerType, newDockerfileConfigAnalyzer)
 }
 
-func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
-	return ConfigAnalyzer{
-		filePattern: filePattern,
-	}
+// dockerConfigAnalyzer is an analyzer for detecting misconfigurations in Dockerfiles.
+// It embeds config.Analyzer so it can implement analyzer.PostAnalyzer.
+type dockerConfigAnalyzer struct {
+	*config.Analyzer
 }
 
-func (s ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	b, err := io.ReadAll(input.Content)
+func newDockerfileConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewDockerfileScanner, opts)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
+		return nil, err
 	}
-
-	return &analyzer.AnalysisResult{
-		Files: map[types.HandlerType][]types.File{
-			// It will be passed to misconfig post handler
-			types.MisconfPostHandler: {
-				{
-					Type:    types.Dockerfile,
-					Path:    input.FilePath,
-					Content: b,
-				},
-			},
-		},
-	}, nil
+	return &dockerConfigAnalyzer{Analyzer: a}, nil
 }
 
 // Required does a case-insensitive check for filePath and returns true if
 // filePath equals/startsWith/hasExtension requiredFiles
-func (s ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	if s.filePattern != nil && s.filePattern.MatchString(filePath) {
-		return true
-	}
-
+// It overrides config.Analyzer.Required().
+func (a *dockerConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	base := filepath.Base(filePath)
 	ext := filepath.Ext(base)
 	for _, file := range requiredFiles {
@@ -67,12 +51,4 @@ func (s ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	}
 
 	return false
-}
-
-func (s ConfigAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeDockerfile
-}
-
-func (s ConfigAnalyzer) Version() int {
-	return version
 }

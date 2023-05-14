@@ -14,6 +14,7 @@ import (
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/docker/go-connections/nat"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	testcontainers "github.com/testcontainers/testcontainers-go"
@@ -35,6 +36,7 @@ type csArgs struct {
 	ClientTokenHeader string
 	ListAllPackages   bool
 	Target            string
+	secretConfig      string
 }
 
 func TestClientServer(t *testing.T) {
@@ -55,8 +57,11 @@ func TestClientServer(t *testing.T) {
 			name: "alpine 3.9 with high and critical severity",
 			args: csArgs{
 				IgnoreUnfixed: true,
-				Severity:      []string{"HIGH", "CRITICAL"},
-				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+				Severity: []string{
+					"HIGH",
+					"CRITICAL",
+				},
+				Input: "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39-high-critical.json.golden",
 		},
@@ -64,8 +69,11 @@ func TestClientServer(t *testing.T) {
 			name: "alpine 3.9 with .trivyignore",
 			args: csArgs{
 				IgnoreUnfixed: false,
-				IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-14697"},
-				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+				IgnoreIDs: []string{
+					"CVE-2019-1549",
+					"CVE-2019-14697",
+				},
+				Input: "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39-ignore-cveids.json.golden",
 		},
@@ -236,6 +244,25 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/pom.json.golden",
 		},
+		{
+			name: "scan sample.pem with fs command in client/server mode",
+			args: csArgs{
+				Command:          "fs",
+				RemoteAddrOption: "--server",
+				secretConfig:     "testdata/fixtures/fs/secrets/trivy-secret.yaml",
+				Target:           "testdata/fixtures/fs/secrets/",
+			},
+			golden: "testdata/secrets.json.golden",
+		},
+		{
+			name: "scan remote repository with repo command in client/server mode",
+			args: csArgs{
+				Command:          "repo",
+				RemoteAddrOption: "--server",
+				Target:           "https://github.com/knqyf263/trivy-ci-test",
+			},
+			golden: "testdata/test-repo.json.golden",
+		},
 	}
 
 	addr, cacheDir := setup(t, setupOptions{})
@@ -243,6 +270,10 @@ func TestClientServer(t *testing.T) {
 	for _, c := range tests {
 		t.Run(c.name, func(t *testing.T) {
 			osArgs, outputFile := setupClient(t, c.args, addr, cacheDir, c.golden)
+
+			if c.args.secretConfig != "" {
+				osArgs = append(osArgs, "--secret-config", c.args.secretConfig)
+			}
 
 			//
 			err := execute(osArgs)
@@ -293,6 +324,17 @@ func TestClientServerWithFormat(t *testing.T) {
 				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.asff.golden",
+		},
+		{
+			name: "scan secrets with ASFF template",
+			args: csArgs{
+				Command:          "fs",
+				RemoteAddrOption: "--server",
+				Format:           "template",
+				TemplatePath:     "@../contrib/asff.tpl",
+				Target:           "testdata/fixtures/fs/secrets/",
+			},
+			golden: "testdata/secrets.asff.golden",
 		},
 		{
 			name: "alpine 3.10 with html template",
@@ -365,7 +407,6 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 		args                  csArgs
 		wantComponentsCount   int
 		wantDependenciesCount int
-		wantDependsOnCount    []int
 	}{
 		{
 			name: "fluentd with RubyGems with CycloneDX format",
@@ -374,11 +415,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 				Input:  "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
 			},
 			wantComponentsCount:   161,
-			wantDependenciesCount: 2,
-			wantDependsOnCount: []int{
-				105,
-				56,
-			},
+			wantDependenciesCount: 80,
 		},
 	}
 
@@ -399,11 +436,8 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 			err = json.NewDecoder(f).Decode(&got)
 			require.NoError(t, err)
 
-			assert.EqualValues(t, tt.wantComponentsCount, len(*got.Components))
-			assert.EqualValues(t, tt.wantDependenciesCount, len(*got.Dependencies))
-			for i, dep := range *got.Dependencies {
-				assert.EqualValues(t, tt.wantDependsOnCount[i], len(*dep.Dependencies))
-			}
+			assert.EqualValues(t, tt.wantComponentsCount, len(lo.FromPtr(got.Components)))
+			assert.EqualValues(t, tt.wantDependenciesCount, len(lo.FromPtr(got.Dependencies)))
 		})
 	}
 }
@@ -541,9 +575,21 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 }
 
 func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []string {
-	osArgs := []string{"--cache-dir", cacheDir, "server", "--skip-update", "--listen", addr}
+	osArgs := []string{
+		"--cache-dir",
+		cacheDir,
+		"server",
+		"--skip-update",
+		"--listen",
+		addr,
+	}
 	if token != "" {
-		osArgs = append(osArgs, []string{"--token", token, "--token-header", tokenHeader}...)
+		osArgs = append(osArgs, []string{
+			"--token",
+			token,
+			"--token-header",
+			tokenHeader,
+		}...)
 	}
 	if cacheBackend != "" {
 		osArgs = append(osArgs, "--cache-backend", cacheBackend)
@@ -559,7 +605,13 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 		c.RemoteAddrOption = "--server"
 	}
 	t.Helper()
-	osArgs := []string{"--cache-dir", cacheDir, c.Command, c.RemoteAddrOption, "http://" + addr}
+	osArgs := []string{
+		"--cache-dir",
+		cacheDir,
+		c.Command,
+		c.RemoteAddrOption,
+		"http://" + addr,
+	}
 
 	if c.Format != "" {
 		osArgs = append(osArgs, "--format", c.Format)

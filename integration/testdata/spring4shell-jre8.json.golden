@@ -185,18 +185,18 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/spring4shell-jre8.tar.gz (debian 11.3)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "debian"
     },
     {
       "Target": "Java",
-      "Class": "vuln-lang-pkgs",
+      "Class": "lang-pkgs",
       "Type": "jar",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2022-22965",
           "PkgName": "org.springframework:spring-beans",
-          "PkgPath": "usr/local/tomcat/webapps/helloworld.war",
+          "PkgPath": "usr/local/tomcat/webapps/helloworld.war/WEB-INF/lib/spring-beans-5.3.15.jar",
           "InstalledVersion": "5.3.15",
           "FixedVersion": "5.3.18",
           "Layer": {

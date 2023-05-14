@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/wire"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -30,6 +31,7 @@ import (
 var (
 	pkgTargets = map[string]string{
 		ftypes.PythonPkg: "Python",
+		ftypes.CondaPkg:  "Conda",
 		ftypes.GemSpec:   "Ruby",
 		ftypes.NodePkg:   "Node.js",
 		ftypes.Jar:       "Java",
@@ -73,17 +75,22 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, vulnClient vulnera
 }
 
 // Scan scans the artifact and return results.
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
 		log.Logger.Debug("OS is not detected.")
 
+		// Packages may contain OS-independent binary information even though OS is not detected.
+		if len(artifactDetail.Packages) != 0 {
+			artifactDetail.OS = ftypes.OS{Family: "none"}
+		}
+
 		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
 		if artifactDetail.Repository != nil {
 			log.Logger.Debugf("Package repository: %s %s", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
 			log.Logger.Debugf("Assuming OS is %s %s.", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
-			artifactDetail.OS = &ftypes.OS{
+			artifactDetail.OS = ftypes.OS{
 				Family: artifactDetail.Repository.Family,
 				Name:   artifactDetail.Repository.Release,
 			}
@@ -92,49 +99,70 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
-		return nil, nil, xerrors.Errorf("failed to apply layers: %w", err)
+		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
 	var eosl bool
-	var results types.Results
+	var results, pkgResults types.Results
 
 	// Fill OS packages and language-specific packages
 	if options.ListAllPackages {
 		if res := s.osPkgsToResult(target, artifactDetail, options); res != nil {
-			results = append(results, *res)
+			pkgResults = append(pkgResults, *res)
 		}
-		results = append(results, s.langPkgsToResult(artifactDetail)...)
+		pkgResults = append(pkgResults, s.langPkgsToResult(artifactDetail)...)
 	}
 
 	// Scan packages for vulnerabilities
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckVulnerability) {
+	if options.Scanners.Enabled(types.VulnerabilityScanner) {
 		var vulnResults types.Results
 		vulnResults, eosl, err = s.scanVulnerabilities(target, artifactDetail, options)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
+			return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
-		if artifactDetail.OS != nil {
-			artifactDetail.OS.Eosl = eosl
-		}
-		results = append(results, vulnResults...)
+		artifactDetail.OS.Eosl = eosl
+
+		// Merge package results into vulnerability results
+		mergedResults := s.fillPkgsInVulns(pkgResults, vulnResults)
+
+		results = append(results, mergedResults...)
+	} else {
+		// If vulnerability scanning is not enabled, it just adds package results.
+		results = append(results, pkgResults...)
 	}
 
 	// Scan IaC config files
-	if shouldScanMisconfig(options.SecurityChecks) {
-		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
+	if ShouldScanMisconfigOrRbac(options.Scanners) {
+		configResults := s.MisconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
 	}
 
 	// Scan secrets
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckSecret) {
+	if options.Scanners.Enabled(types.SecretScanner) {
 		secretResults := s.secretsToResults(artifactDetail.Secrets)
 		results = append(results, secretResults...)
 	}
 
 	// Scan licenses
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckLicense) {
+	if options.Scanners.Enabled(types.LicenseScanner) {
 		licenseResults := s.scanLicenses(artifactDetail, options.LicenseCategories)
 		results = append(results, licenseResults...)
+	}
+
+	// Scan misconfigurations on container image config
+	if options.ImageConfigScanners.Enabled(types.MisconfigScanner) {
+		if im := artifactDetail.ImageConfig.Misconfiguration; im != nil {
+			im.FilePath = target // Set the target name to the file path as container image config is not a real file.
+			results = append(results, s.MisconfsToResults([]ftypes.Misconfiguration{*im})...)
+		}
+	}
+
+	// Scan secrets on container image config
+	if options.ImageConfigScanners.Enabled(types.SecretScanner) {
+		if is := artifactDetail.ImageConfig.Secret; is != nil {
+			is.FilePath = target // Set the target name to the file path as container image config is not a real file.
+			results = append(results, s.secretsToResults([]ftypes.Secret{*is})...)
+		}
 	}
 
 	// For WASM plugins and custom analyzers
@@ -153,28 +181,24 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	// Post scanning
 	results, err = post.Scan(ctx, results)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("post scan error: %w", err)
+		return nil, ftypes.OS{}, xerrors.Errorf("post scan error: %w", err)
 	}
 
 	return results, artifactDetail.OS, nil
 }
 
 func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) *types.Result {
-	if len(detail.Packages) == 0 {
+	if len(detail.Packages) == 0 || !detail.OS.Detected() {
 		return nil
 	}
-	if detail.OS != nil {
-		target = fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name)
-	}
+
 	pkgs := detail.Packages
 	if options.ScanRemovedPackages {
-		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
+		pkgs = mergePkgs(pkgs, detail.ImageConfig.Packages)
 	}
-	sort.Slice(pkgs, func(i, j int) bool {
-		return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-	})
+	sort.Sort(pkgs)
 	return &types.Result{
-		Target:   target,
+		Target:   fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name),
 		Class:    types.ClassOSPkg,
 		Type:     detail.OS.Family,
 		Packages: pkgs,
@@ -231,7 +255,7 @@ func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail
 
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
 	*types.Result, bool, error) {
-	if detail.OS == nil || detail.OS.Family == "" {
+	if !detail.OS.Detected() {
 		log.Logger.Debug("Detected OS: unknown")
 		return nil, false, nil
 	}
@@ -239,7 +263,12 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 
 	pkgs := detail.Packages
 	if options.ScanRemovedPackages {
-		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
+		pkgs = mergePkgs(pkgs, detail.ImageConfig.Packages)
+	}
+
+	if detail.OS.Extended {
+		// TODO: move the logic to each detector
+		detail.OS.Name += "-ESM"
 	}
 
 	vulns, eosl, err := s.ospkgDetector.Detect("", detail.OS.Family, detail.OS.Name, detail.Repository, time.Time{}, pkgs)
@@ -253,7 +282,7 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 	result := &types.Result{
 		Target:          artifactDetail,
 		Vulnerabilities: vulns,
-		Class:           types.ClassVulnOSPkg,
+		Class:           types.ClassOSPkg,
 		Type:            detail.OS.Family,
 	}
 	return result, eosl, nil
@@ -283,7 +312,7 @@ func (s Scanner) scanLangPkgs(apps []ftypes.Application) (types.Results, error) 
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		} else if len(vulns) == 0 {
-			return nil, nil
+			continue
 		}
 
 		target := app.FilePath
@@ -295,7 +324,7 @@ func (s Scanner) scanLangPkgs(apps []ftypes.Application) (types.Results, error) 
 		results = append(results, types.Result{
 			Target:          target,
 			Vulnerabilities: vulns,
-			Class:           types.ClassVulnLangPkg,
+			Class:           types.ClassLangPkg,
 			Type:            app.Type,
 		})
 	}
@@ -305,7 +334,26 @@ func (s Scanner) scanLangPkgs(apps []ftypes.Application) (types.Results, error) 
 	return results, nil
 }
 
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
+func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Results {
+	var results types.Results
+	if len(pkgResults) == 0 { // '--list-all-pkgs' == false or packages not found
+		return vulnResults
+	}
+	for _, result := range pkgResults {
+		if r, found := lo.Find(vulnResults, func(r types.Result) bool {
+			return r.Class == result.Class && r.Target == result.Target
+		}); found {
+			r.Packages = result.Packages
+			results = append(results, r)
+		} else { // when package result has no vulnerabilities we still need to add it to result(for 'list-all-pkgs')
+			results = append(results, result)
+		}
+	}
+	return results
+}
+
+// This function is exported for trivy-plugin-aqua purposes only
+func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results types.Results
 	for _, misconf := range misconfs {
@@ -460,8 +508,13 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		res.References = append(res.References, primaryURL)
 	}
 
+	if len(primaryURL) == 0 && len(res.References) > 0 {
+		primaryURL = res.References[0]
+	}
+
 	return types.DetectedMisconfiguration{
 		ID:          res.ID,
+		AVDID:       res.AVDID,
 		Type:        res.Type,
 		Title:       res.Title,
 		Description: res.Description,
@@ -501,6 +554,6 @@ func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
 	return pkgs
 }
 
-func shouldScanMisconfig(securityChecks []string) bool {
-	return slices.Contains(securityChecks, types.SecurityCheckConfig) || slices.Contains(securityChecks, types.SecurityCheckRbac)
+func ShouldScanMisconfigOrRbac(scanners types.Scanners) bool {
+	return scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner)
 }

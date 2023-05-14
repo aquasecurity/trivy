@@ -6,6 +6,7 @@ import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 type DetectedMisconfiguration struct {
 	Type          string               `json:",omitempty"`
 	ID            string               `json:",omitempty"`
+	AVDID         string               `json:",omitempty"`
 	Title         string               `json:",omitempty"`
 	Description   string               `json:",omitempty"`
 	Message       string               `json:",omitempty"`
@@ -36,3 +37,8 @@ const (
 	// StatusException Passed represents the status of exception
 	StatusException MisconfStatus = "EXCEPTION"
 )
+
+// GetID retrun misconfig ID
+func (mc *DetectedMisconfiguration) GetID() string {
+	return mc.AVDID
+}

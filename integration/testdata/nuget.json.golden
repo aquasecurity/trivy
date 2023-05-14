@@ -1,0 +1,88 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/nuget",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "packages.lock.json",
+      "Class": "lang-pkgs",
+      "Type": "nuget",
+      "Packages": [
+        {
+          "ID": "Newtonsoft.Json@12.0.3",
+          "Name": "Newtonsoft.Json",
+          "Version": "12.0.3",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 10
+            }
+         ]
+        },
+        {
+          "ID": "NuGet.Frameworks@5.7.0",
+          "Name": "NuGet.Frameworks",
+          "Version": "5.7.0",
+          "Layer": {},
+          "DependsOn": [
+            "Newtonsoft.Json@12.0.3"
+          ],
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 19
+            }
+         ]
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
+          "PkgName": "Newtonsoft.Json",
+          "PkgID": "Newtonsoft.Json@12.0.3",
+          "InstalledVersion": "12.0.3",
+          "FixedVersion": "13.0.1",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Nuget",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anuget"
+          },
+          "Title": "Improper Handling of Exceptional Conditions in Newtonsoft.Json",
+          "Description": "Newtonsoft.Json prior to version 13.0.1 is vulnerable to Insecure Defaults due to improper handling of expressions with high nesting level that lead to StackOverFlow exception or high CPU and RAM usage.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-755"
+          ],
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://alephsecurity.com/2018/10/22/StackOverflowException/",
+            "https://alephsecurity.com/vulns/aleph-2018004"
+          ],
+          "PublishedDate": "2022-06-22T15:08:47Z",
+          "LastModifiedDate": "2022-06-27T18:37:23Z"
+        }
+      ]
+    }
+  ]
+}

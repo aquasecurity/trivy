@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -12,7 +13,10 @@ import (
 	dimage "github.com/docker/docker/api/types/image"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Image interface {
@@ -58,7 +62,7 @@ type image struct {
 	v1.Image
 	opener  opener
 	inspect types.ImageInspect
-	history []dimage.HistoryResponseItem
+	history []v1.History
 }
 
 // populateImage initializes an "image" struct.
@@ -88,10 +92,17 @@ func (img *image) ConfigName() (v1.Hash, error) {
 func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 	if len(img.inspect.RootFS.Layers) == 0 {
 		// Podman doesn't return RootFS...
-		if err := img.populateImage(); err != nil {
-			return nil, xerrors.Errorf("unable to populate: %w", err)
-		}
-		return img.Image.ConfigFile()
+		return img.configFile()
+	}
+
+	nonEmptyLayerCount := lo.CountBy(img.history, func(history v1.History) bool {
+		return !history.EmptyLayer
+	})
+
+	if len(img.inspect.RootFS.Layers) != nonEmptyLayerCount {
+		// In cases where empty layers are not correctly determined from the history API.
+		// There are some edge cases where we cannot guess empty layers well.
+		return img.configFile()
 	}
 
 	diffIDs, err := img.diffIDs()
@@ -111,13 +122,24 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 		Created:       v1.Time{Time: created},
 		DockerVersion: img.inspect.DockerVersion,
 		Config:        img.imageConfig(img.inspect.Config),
-		History:       img.configHistory(),
+		History:       img.history,
 		OS:            img.inspect.Os,
 		RootFS: v1.RootFS{
 			Type:    img.inspect.RootFS.Type,
 			DiffIDs: diffIDs,
 		},
 	}, nil
+}
+
+func (img *image) configFile() (*v1.ConfigFile, error) {
+	log.Logger.Debug("Saving the container image to a local file to obtain the image config...")
+
+	// Need to fall back into expensive operations like "docker save"
+	// because the config file cannot be generated properly from container engine API for some reason.
+	if err := img.populateImage(); err != nil {
+		return nil, xerrors.Errorf("unable to populate: %w", err)
+	}
+	return img.Image.ConfigFile()
 }
 
 func (img *image) LayerByDiffID(h v1.Hash) (v1.Layer, error) {
@@ -140,23 +162,6 @@ func (img *image) RepoTags() []string {
 
 func (img *image) RepoDigests() []string {
 	return img.inspect.RepoDigests
-}
-
-func (img *image) configHistory() []v1.History {
-	// Fill only required metadata
-	var history []v1.History
-	for i := len(img.history) - 1; i >= 0; i-- {
-		h := img.history[i]
-		history = append(history, v1.History{
-			Created: v1.Time{
-				Time: time.Unix(h.Created, 0).UTC(),
-			},
-			CreatedBy:  h.CreatedBy,
-			Comment:    h.Comment,
-			EmptyLayer: h.Size == 0,
-		})
-	}
-	return history
 }
 
 func (img *image) diffIDs() ([]v1.Hash, error) {
@@ -219,4 +224,62 @@ func (img *image) imageConfig(config *container.Config) v1.Config {
 	}
 
 	return c
+}
+
+func configHistory(dhistory []dimage.HistoryResponseItem) []v1.History {
+	// Fill only required metadata
+	var history []v1.History
+
+	for i := len(dhistory) - 1; i >= 0; i-- {
+		h := dhistory[i]
+		history = append(history, v1.History{
+			Created: v1.Time{
+				Time: time.Unix(h.Created, 0).UTC(),
+			},
+			CreatedBy:  h.CreatedBy,
+			Comment:    h.Comment,
+			EmptyLayer: emptyLayer(h),
+		})
+	}
+	return history
+}
+
+// emptyLayer tries to determine if the layer is empty from the history API, but may return a wrong result.
+// The non-empty layers will be compared to diffIDs later so that results can be validated.
+func emptyLayer(history dimage.HistoryResponseItem) bool {
+	if history.Size != 0 {
+		return false
+	}
+	createdBy := strings.TrimSpace(strings.TrimLeft(history.CreatedBy, "/bin/sh -c #(nop)"))
+	// This logic is taken from https://github.com/moby/buildkit/blob/2942d13ff489a2a49082c99e6104517e357e53ad/frontend/dockerfile/dockerfile2llb/convert.go
+	if strings.HasPrefix(createdBy, "ENV") ||
+		strings.HasPrefix(createdBy, "MAINTAINER") ||
+		strings.HasPrefix(createdBy, "LABEL") ||
+		strings.HasPrefix(createdBy, "CMD") ||
+		strings.HasPrefix(createdBy, "ENTRYPOINT") ||
+		strings.HasPrefix(createdBy, "HEALTHCHECK") ||
+		strings.HasPrefix(createdBy, "EXPOSE") ||
+		strings.HasPrefix(createdBy, "USER") ||
+		strings.HasPrefix(createdBy, "VOLUME") ||
+		strings.HasPrefix(createdBy, "STOPSIGNAL") ||
+		strings.HasPrefix(createdBy, "SHELL") ||
+		strings.HasPrefix(createdBy, "ARG") {
+		return true
+	}
+	// buildkit layers with "WORKDIR /" command are empty,
+	if strings.HasPrefix(history.Comment, "buildkit.dockerfile") {
+		if createdBy == "WORKDIR /" {
+			return true
+		}
+	} else if strings.HasPrefix(createdBy, "WORKDIR") { // layers build with docker and podman, WORKDIR command is always empty layer.
+		return true
+	}
+	// The following instructions could reach here:
+	//     - "ADD"
+	//     - "COPY"
+	//     - "RUN"
+	//         - "RUN" may not include even 'RUN' prefix
+	//            e.g. '/bin/sh -c mkdir test '
+	//     - "WORKDIR", which doesn't meet the above conditions
+	return false
 }

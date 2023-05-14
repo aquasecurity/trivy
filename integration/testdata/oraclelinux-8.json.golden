@@ -58,11 +58,12 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/oraclelinux-8.tar.gz (oracle 8.0)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "oracle",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-3823",
+          "PkgID": "curl@7.61.1-8.el8.x86_64",
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-11.el8",
@@ -119,6 +120,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-5436",
+          "PkgID": "curl@7.61.1-8.el8.x86_64",
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-12.el8",

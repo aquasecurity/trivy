@@ -1,74 +1,65 @@
 package config
 
 import (
-	"regexp"
-	"sort"
-	"strings"
+	"context"
+	"os"
+	"path/filepath"
 
 	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/helm"
+	"k8s.io/utils/strings/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/dockerfile"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/json"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/terraform"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/yaml"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
-const separator = ":"
+var (
+	_ analyzer.PostAnalyzer = (*Analyzer)(nil)
 
-type ScannerOption struct {
-	Trace                   bool
-	RegoOnly                bool
-	Namespaces              []string
-	FilePatterns            []string
-	PolicyPaths             []string
-	DataPaths               []string
-	DisableEmbeddedPolicies bool
+	requiredExts = []string{".json", ".yaml", ".yml"}
+)
+
+// Analyzer represents an analyzer for config files,
+// which is embedded into each config analyzer such as Kubernetes.
+type Analyzer struct {
+	typ     analyzer.Type
+	version int
+	scanner *misconf.Scanner
 }
 
-func (o *ScannerOption) Sort() {
-	sort.Strings(o.Namespaces)
-	sort.Strings(o.FilePatterns)
-	sort.Strings(o.PolicyPaths)
-	sort.Strings(o.DataPaths)
-}
+type NewScanner func([]string, misconf.ScannerOption) (*misconf.Scanner, error)
 
-func RegisterConfigAnalyzers(filePatterns []string) error {
-	var dockerRegexp, jsonRegexp, yamlRegexp, helmRegexp *regexp.Regexp
-	for _, p := range filePatterns {
-		// e.g. "dockerfile:my_dockerfile_*"
-		s := strings.SplitN(p, separator, 2)
-		if len(s) != 2 {
-			return xerrors.Errorf("invalid file pattern (%s)", p)
-		}
-		fileType, pattern := s[0], s[1]
-		r, err := regexp.Compile(pattern)
-		if err != nil {
-			return xerrors.Errorf("invalid file regexp (%s): %w", p, err)
-		}
-
-		switch fileType {
-		case types.Dockerfile:
-			dockerRegexp = r
-		case types.JSON:
-			jsonRegexp = r
-		case types.YAML:
-			yamlRegexp = r
-		case types.Helm:
-			helmRegexp = r
-		default:
-			return xerrors.Errorf("unknown file type: %s, pattern: %s", fileType, pattern)
-		}
+func NewAnalyzer(t analyzer.Type, version int, newScanner NewScanner, opts analyzer.AnalyzerOptions) (*Analyzer, error) {
+	s, err := newScanner(opts.FilePatterns, opts.MisconfScannerOption)
+	if err != nil {
+		return nil, xerrors.Errorf("%s scanner init error: %w", t, err)
 	}
+	return &Analyzer{
+		typ:     t,
+		version: version,
+		scanner: s,
+	}, nil
+}
 
-	analyzer.RegisterAnalyzer(dockerfile.NewConfigAnalyzer(dockerRegexp))
-	analyzer.RegisterAnalyzer(terraform.NewConfigAnalyzer())
-	analyzer.RegisterAnalyzer(json.NewConfigAnalyzer(jsonRegexp))
-	analyzer.RegisterAnalyzer(yaml.NewConfigAnalyzer(yamlRegexp))
-	analyzer.RegisterAnalyzer(helm.NewConfigAnalyzer(helmRegexp))
+// PostAnalyze performs configuration analysis on the input filesystem and detect misconfigurations.
+func (a *Analyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+	misconfs, err := a.scanner.Scan(ctx, input.FS)
+	if err != nil {
+		return nil, xerrors.Errorf("%s scan error: %w", a.typ, err)
+	}
+	return &analyzer.AnalysisResult{Misconfigurations: misconfs}, nil
+}
 
-	return nil
+// Required checks if the given file path has one of the required file extensions.
+func (a *Analyzer) Required(filePath string, _ os.FileInfo) bool {
+	return slices.Contains(requiredExts, filepath.Ext(filePath))
+}
+
+// Type returns the analyzer type of the current Analyzer instance.
+func (a *Analyzer) Type() analyzer.Type {
+	return a.typ
+}
+
+// Version returns the version of the current Analyzer instance.
+func (a *Analyzer) Version() int {
+	return a.version
 }

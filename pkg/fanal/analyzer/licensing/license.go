@@ -2,7 +2,6 @@ package licensing
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"math"
 	"os"
@@ -49,11 +48,13 @@ var (
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(licenseFileAnalyzer{})
+	analyzer.RegisterAnalyzer(&licenseFileAnalyzer{})
 }
 
 // licenseFileAnalyzer is an analyzer for file headers and license files
-type licenseFileAnalyzer struct{}
+type licenseFileAnalyzer struct {
+	classifierConfidenceLevel float64
+}
 
 func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	log.Logger.Debugf("License scanning: %s", input.FilePath)
@@ -63,21 +64,7 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	if err != nil || !readable {
 		return nil, nil
 	}
-
-	content, err := io.ReadAll(input.Content)
-	if err != nil {
-		return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
-	}
-
-	filePath := input.FilePath
-	// Files extracted from the image have an empty input.Dir.
-	// Also, paths to these files do not have "/" prefix.
-	// We need to add a "/" prefix to properly filter paths from the config file.
-	if input.Dir == "" { // add leading `/` for files extracted from image
-		filePath = fmt.Sprintf("/%s", filePath)
-	}
-
-	lf, err := licensing.FullClassify(filePath, content)
+	lf, err := licensing.Classify(input.FilePath, input.Content, a.classifierConfidenceLevel)
 	if err != nil {
 		return nil, xerrors.Errorf("license classification error: %w", err)
 	} else if len(lf.Findings) == 0 {
@@ -85,8 +72,13 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	}
 
 	return &analyzer.AnalysisResult{
-		Licenses: []types.LicenseFile{lf},
+		Licenses: []types.LicenseFile{*lf},
 	}, nil
+}
+
+func (a *licenseFileAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
+	a.classifierConfidenceLevel = opt.LicenseScannerOption.ClassifierConfidenceLevel
+	return nil
 }
 
 func (a licenseFileAnalyzer) Required(filePath string, _ os.FileInfo) bool {

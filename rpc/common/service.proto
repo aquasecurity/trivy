@@ -8,9 +8,10 @@ option  go_package = "github.com/aquasecurity/trivy/rpc/common;common";
 import "google/protobuf/struct.proto";
 
 message OS {
-  string family = 1;
-  string name   = 2;
-  bool   eosl   = 3;
+  string family   = 1;
+  string name     = 2;
+  bool   eosl     = 3;
+  bool   extended = 4;
 }
 
 message Repository {
@@ -48,6 +49,7 @@ message Package {
   Layer           layer       = 11;
   string          file_path   = 12;
   repeated string depends_on  = 14;
+  string          digest      = 16;
 }
 
 message Misconfiguration {
@@ -115,8 +117,9 @@ message DataSource {
 }
 
 message Layer {
-  string digest  = 1;
-  string diff_id = 2;
+  string digest     = 1;
+  string diff_id    = 2;
+  string created_by = 3;
 }
 
 enum Severity {
@@ -139,4 +142,38 @@ message CustomResource {
   string                file_path = 2;
   Layer                 layer     = 3;
   google.protobuf.Value data      = 4;
+}
+
+message Line {
+  int32  number      = 1;
+  string content     = 2;
+  bool   is_cause    = 3;
+  string annotation  = 4;
+  bool   truncated   = 5;
+  string highlighted = 6;
+  bool   first_cause = 7;
+  bool   last_cause  = 8;
+}
+
+message Code {
+  repeated Line lines = 1;
+}
+
+message SecretFinding {
+  string rule_id    = 1;
+  string category   = 2;
+  string severity   = 3;
+  string title      = 4;
+  int32  start_line = 5;
+  int32  end_line   = 6;
+  Code   code       = 7;
+  string match      = 8;
+  Layer  layer      = 10;
+
+  reserved 9;  // deprecated 'deleted'
+}
+
+message Secret {
+  string                 filepath = 1;
+  repeated SecretFinding findings = 2;
 }

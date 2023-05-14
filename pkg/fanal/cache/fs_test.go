@@ -77,7 +77,7 @@ func TestFSCache_GetBlob(t *testing.T) {
 			},
 			want: types.BlobInfo{
 				SchemaVersion: 2,
-				OS: &types.OS{
+				OS: types.OS{
 					Family: "alpine",
 					Name:   "3.10",
 				},
@@ -99,7 +99,10 @@ func TestFSCache_GetBlob(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			got, err := fs.GetBlob(tt.args.layerID)
 			assert.Equal(t, tt.wantErr, err != nil, err)
@@ -131,7 +134,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				diffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				layerInfo: types.BlobInfo{
 					SchemaVersion: 1,
-					OS: &types.OS{
+					OS: types.OS{
 						Family: "alpine",
 						Name:   "3.10",
 					},
@@ -163,7 +166,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 					SchemaVersion: 1,
 					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					DiffID:        "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
-					OS: &types.OS{
+					OS: types.OS{
 						Family: "alpine",
 						Name:   "3.10",
 					},
@@ -269,7 +272,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			if strings.HasPrefix(tt.name, "sad") {
 				require.NoError(t, fs.Close())
@@ -349,7 +355,10 @@ func TestFSCache_PutArtifact(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			//defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			err = fs.PutArtifact(tt.args.imageID, tt.args.imageConfig)
 			if tt.wantErr != "" {
@@ -466,17 +475,17 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				assert.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
-
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.wantMissingImage, gotMissingImage, tt.name)
 			assert.Equal(t, tt.wantMissingLayerIDs, gotMissingLayerIDs, tt.name)
 		})

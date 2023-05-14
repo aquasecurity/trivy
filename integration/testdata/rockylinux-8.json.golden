@@ -48,11 +48,12 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/rockylinux-8.tar.gz (rocky 8.5)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "rocky",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2021-3712",
+          "PkgID": "openssl-libs@1.1.1k-4.el8.x86_64",
           "PkgName": "openssl-libs",
           "InstalledVersion": "1:1.1.1k-4.el8",
           "FixedVersion": "1:1.1.1k-5.el8_5",

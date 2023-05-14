@@ -8,6 +8,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -35,9 +36,78 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			Layer:      ConvertToRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
+			Digest:     pkg.Digest.String(),
 		})
 	}
 	return rpcPkgs
+}
+
+func ConvertToRPCCustomResources(resources []ftypes.CustomResource) []*common.CustomResource {
+	var rpcResources []*common.CustomResource
+	for _, r := range resources {
+		data, err := structpb.NewValue(r.Data)
+		if err != nil {
+			log.Logger.Warn(err)
+		}
+		rpcResources = append(rpcResources, &common.CustomResource{
+			Type:     r.Type,
+			FilePath: r.FilePath,
+			Layer: &common.Layer{
+				Digest: r.Layer.Digest,
+				DiffId: r.Layer.DiffID,
+			},
+			Data: data,
+		})
+	}
+	return rpcResources
+}
+
+func ConvertToRPCCode(code ftypes.Code) *common.Code {
+	var rpcLines []*common.Line
+	for _, line := range code.Lines {
+		rpcLines = append(rpcLines, &common.Line{
+			Number:      int32(line.Number),
+			Content:     line.Content,
+			IsCause:     line.IsCause,
+			Annotation:  line.Annotation,
+			Truncated:   line.Truncated,
+			Highlighted: line.Highlighted,
+			FirstCause:  line.FirstCause,
+			LastCause:   line.LastCause,
+		})
+	}
+	return &common.Code{
+		Lines: rpcLines,
+	}
+}
+
+func ConvertToRPCSecrets(secrets []ftypes.Secret) []*common.Secret {
+	var rpcSecrets []*common.Secret
+	for _, s := range secrets {
+		rpcSecrets = append(rpcSecrets, &common.Secret{
+			Filepath: s.FilePath,
+			Findings: ConvertToRPCSecretFindings(s.Findings),
+		})
+	}
+	return rpcSecrets
+}
+
+func ConvertToRPCSecretFindings(findings []ftypes.SecretFinding) []*common.SecretFinding {
+	var rpcFindings []*common.SecretFinding
+	for _, f := range findings {
+		rpcFindings = append(rpcFindings, &common.SecretFinding{
+			RuleId:    f.RuleID,
+			Category:  string(f.Category),
+			Severity:  f.Severity,
+			Title:     f.Title,
+			EndLine:   int32(f.EndLine),
+			StartLine: int32(f.StartLine),
+			Code:      ConvertToRPCCode(f.Code),
+			Match:     f.Match,
+			Layer:     ConvertToRPCLayer(f.Layer),
+		})
+	}
+	return rpcFindings
 }
 
 // ConvertFromRPCPkgs returns list of Fanal package objects
@@ -59,6 +129,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
+			Digest:     digest.Digest(pkg.Digest),
 		})
 	}
 	return pkgs
@@ -161,8 +232,9 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 // ConvertToRPCLayer returns common.Layer
 func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 	return &common.Layer{
-		Digest: layer.Digest,
-		DiffId: layer.DiffID,
+		Digest:    layer.Digest,
+		DiffId:    layer.DiffID,
+		CreatedBy: layer.CreatedBy,
 	}
 }
 
@@ -190,6 +262,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
 			Type:              result.Type,
 			Packages:          ConvertFromRPCPkgs(result.Packages),
 			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
+			Secrets:           ConvertFromRPCSecretFindings(result.Secrets),
 		})
 	}
 	return results
@@ -210,6 +283,58 @@ func ConvertFromRPCCustomResources(rpcCustomResources []*common.CustomResource) 
 		})
 	}
 	return resources
+}
+
+func ConvertFromRPCCode(rpcCode *common.Code) ftypes.Code {
+	var lines []ftypes.Line
+	for _, line := range rpcCode.Lines {
+		lines = append(lines, ftypes.Line{
+			Number:      int(line.Number),
+			Content:     line.Content,
+			IsCause:     line.IsCause,
+			Annotation:  line.Annotation,
+			Truncated:   line.Truncated,
+			Highlighted: line.Highlighted,
+			FirstCause:  line.FirstCause,
+			LastCause:   line.LastCause,
+		})
+	}
+	return ftypes.Code{
+		Lines: lines,
+	}
+}
+
+func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.SecretFinding {
+	var findings []ftypes.SecretFinding
+	for _, finding := range rpcFindings {
+		findings = append(findings, ftypes.SecretFinding{
+			RuleID:    finding.RuleId,
+			Category:  ftypes.SecretRuleCategory(finding.Category),
+			Severity:  finding.Severity,
+			Title:     finding.Title,
+			StartLine: int(finding.StartLine),
+			EndLine:   int(finding.EndLine),
+			Code:      ConvertFromRPCCode(finding.Code),
+			Match:     finding.Match,
+			Layer: ftypes.Layer{
+				Digest:    finding.Layer.Digest,
+				DiffID:    finding.Layer.DiffId,
+				CreatedBy: finding.Layer.CreatedBy,
+			},
+		})
+	}
+	return findings
+}
+
+func ConvertFromRPCSecrets(recSecrets []*common.Secret) []ftypes.Secret {
+	var secrets []ftypes.Secret
+	for _, secret := range recSecrets {
+		secrets = append(secrets, ftypes.Secret{
+			FilePath: secret.Filepath,
+			Findings: ConvertFromRPCSecretFindings(secret.Findings),
+		})
+	}
+	return secrets
 }
 
 // ConvertFromRPCVulns converts []*common.Vulnerability to []types.DetectedVulnerability
@@ -305,14 +430,15 @@ func ConvertFromRPCLayer(rpcLayer *common.Layer) ftypes.Layer {
 }
 
 // ConvertFromRPCOS converts common.OS to fanal.OS
-func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
+func ConvertFromRPCOS(rpcOS *common.OS) ftypes.OS {
 	if rpcOS == nil {
-		return nil
+		return ftypes.OS{}
 	}
-	return &ftypes.OS{
-		Family: rpcOS.Family,
-		Name:   rpcOS.Name,
-		Eosl:   rpcOS.Eosl,
+	return ftypes.OS{
+		Family:   rpcOS.Family,
+		Name:     rpcOS.Name,
+		Eosl:     rpcOS.Eosl,
+		Extended: rpcOS.Extended,
 	}
 }
 
@@ -426,18 +552,17 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
 		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
+		Secrets:           ConvertFromRPCSecrets(req.BlobInfo.Secrets),
 	}
 }
 
 // ConvertToRPCOS returns common.OS
-func ConvertToRPCOS(fos *ftypes.OS) *common.OS {
-	if fos == nil {
-		return nil
-	}
+func ConvertToRPCOS(fos ftypes.OS) *common.OS {
 	return &common.OS{
-		Family: fos.Family,
-		Name:   fos.Name,
-		Eosl:   fos.Eosl,
+		Family:   fos.Family,
+		Name:     fos.Name,
+		Eosl:     fos.Eosl,
+		Extended: fos.Extended,
 	}
 }
 
@@ -536,6 +661,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
 			CustomResources:   customResources,
+			Secrets:           ConvertToRPCSecrets(blobInfo.Secrets),
 		},
 	}
 }
@@ -565,7 +691,7 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 }
 
 // ConvertToRPCScanResponse converts types.Result to ScanResponse
-func ConvertToRPCScanResponse(results types.Results, fos *ftypes.OS) *scanner.ScanResponse {
+func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range results {
 		rpcResults = append(rpcResults, &scanner.Result{
@@ -575,6 +701,8 @@ func ConvertToRPCScanResponse(results types.Results, fos *ftypes.OS) *scanner.Sc
 			Vulnerabilities:   ConvertToRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertToRPCMisconfs(result.Misconfigurations),
 			Packages:          ConvertToRPCPkgs(result.Packages),
+			CustomResources:   ConvertToRPCCustomResources(result.CustomResources),
+			Secrets:           ConvertToRPCSecretFindings(result.Secrets),
 		})
 	}
 

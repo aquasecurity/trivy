@@ -1,0 +1,76 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/conan",
+  "ArtifactType": "filesystem",
+  "Results": [
+    {
+      "Target": "conan.lock",
+      "Class": "lang-pkgs",
+      "Type": "conan",
+      "Packages": [
+        {
+          "ID": "bzip2/1.0.8",
+          "Name": "bzip2",
+          "Version": "1.0.8",
+          "Indirect": true
+        },
+        {
+          "ID": "expat/2.4.8",
+          "Name": "expat",
+          "Version": "2.4.8",
+          "Indirect": true
+        },
+        {
+          "ID": "openssl/1.1.1q",
+          "Name": "openssl",
+          "Version": "1.1.1q",
+          "Indirect": true
+        },
+        {
+          "ID": "pcre/8.43",
+          "Name": "pcre",
+          "Version": "8.43",
+          "Indirect": true,
+          "DependsOn": [
+            "bzip2/1.0.8",
+            "zlib/1.2.12"
+          ]
+        },
+        {
+          "ID": "poco/1.9.4",
+          "Name": "poco",
+          "Version": "1.9.4",
+          "DependsOn": [
+            "pcre/8.43",
+            "zlib/1.2.12",
+            "expat/2.4.8",
+            "sqlite3/3.39.2",
+            "openssl/1.1.1q"
+          ]
+        },
+        {
+          "ID": "sqlite3/3.39.2",
+          "Name": "sqlite3",
+          "Version": "3.39.2",
+          "Indirect": true
+        },
+        {
+          "ID": "zlib/1.2.12",
+          "Name": "zlib",
+          "Version": "1.2.12",
+          "Indirect": true
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2020-14155",
+          "PkgID": "pcre/8.43",
+          "PkgName": "pcre",
+          "InstalledVersion": "8.43",
+          "FixedVersion": "8.45",
+          "Severity": "UNKNOWN"
+        }
+      ]
+    }
+  ]
+}

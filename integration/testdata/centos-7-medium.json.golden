@@ -61,7 +61,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/centos-7.tar.gz (centos 7.6.1810)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "centos",
       "Vulnerabilities": [
         {
@@ -69,6 +69,7 @@
           "VendorIDs": [
             "RHSA-2019:2304"
           ],
+          "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",

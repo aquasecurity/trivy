@@ -87,7 +87,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 							Type: "npm",
 						},
 					},
-					OsFound: &ftypes.OS{
+					OsFound: ftypes.OS{
 						Family: "alpine",
 						Name:   "3.10",
 						Eosl:   true,

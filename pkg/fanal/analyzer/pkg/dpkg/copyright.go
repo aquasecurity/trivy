@@ -5,7 +5,7 @@ import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
+	"path"
 	"regexp"
 	"strings"
 
@@ -31,26 +31,29 @@ var (
 )
 
 // dpkgLicenseAnalyzer parses copyright files and detect licenses
-type dpkgLicenseAnalyzer struct{}
+type dpkgLicenseAnalyzer struct {
+	licenseFull               bool
+	classifierConfidenceLevel float64
+}
 
 // Analyze parses /usr/share/doc/*/copyright files
-func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	findings, err := a.parseCopyright(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("parse copyright %s: %w", input.FilePath, err)
 	}
 
 	// If licenses are not found, fallback to the classifier
-	if len(findings) == 0 {
+	if len(findings) == 0 && a.licenseFull {
 		// Rewind the reader to the beginning of the stream after saving
 		if _, err = input.Content.Seek(0, io.SeekStart); err != nil {
 			return nil, xerrors.Errorf("seek error: %w", err)
 		}
-
-		findings, err = licensing.Classify(input.Content)
+		licenseFile, err := licensing.Classify(input.FilePath, input.Content, a.classifierConfidenceLevel)
 		if err != nil {
 			return nil, xerrors.Errorf("license classification error: %w", err)
 		}
+		findings = licenseFile.Findings
 	}
 
 	if len(findings) == 0 {
@@ -73,7 +76,7 @@ func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 }
 
 // parseCopyright parses /usr/share/doc/*/copyright files
-func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.LicenseFinding, error) {
+func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.LicenseFinding, error) {
 	scanner := bufio.NewScanner(r)
 	var licenses []string
 	for scanner.Scan() {
@@ -84,6 +87,8 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.License
 			// Machine-readable format
 			// cf. https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#:~:text=The%20debian%2Fcopyright%20file%20must,in%20the%20Debian%20Policy%20Manual.
 			l := strings.TrimSpace(line[8:])
+
+			l = normalizeLicense(l)
 			if len(l) > 0 {
 				// Split licenses without considering "and"/"or"
 				// examples:
@@ -117,14 +122,38 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.License
 
 }
 
-func (a dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasPrefix(filePath, "usr/share/doc/") && filepath.Base(filePath) == "copyright"
+func (a *dpkgLicenseAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
+	a.licenseFull = opt.LicenseScannerOption.Full
+	a.classifierConfidenceLevel = opt.LicenseScannerOption.ClassifierConfidenceLevel
+	return nil
 }
 
-func (a dpkgLicenseAnalyzer) Type() analyzer.Type {
+func (a *dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	// To exclude files from subfolders
+	// e.g. usr/share/doc/ca-certificates/examples/ca-certificates-local/debian/copyright
+	match, err := path.Match("usr/share/doc/*/copyright", filePath)
+	if err != nil {
+		return false
+	}
+	return match
+}
+
+func (a *dpkgLicenseAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeDpkgLicense
 }
 
-func (a dpkgLicenseAnalyzer) Version() int {
+func (a *dpkgLicenseAnalyzer) Version() int {
 	return dpkgLicenseAnalyzerVersion
+}
+
+// normalizeLicense returns a normalized license identifier in a heuristic way
+func normalizeLicense(s string) string {
+	// "The MIT License (MIT)" => "The MIT License"
+	s, _, _ = strings.Cut(s, "(")
+
+	// Very rarely has below phrases
+	s = strings.TrimPrefix(s, "The main library is licensed under ")
+	s = strings.TrimSuffix(s, " license")
+
+	return strings.TrimSpace(s)
 }

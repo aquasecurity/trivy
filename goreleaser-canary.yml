@@ -12,20 +12,28 @@ builds:
     goos:
       - darwin
       - linux
+      - windows
     goarch:
       - amd64
       - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
 
 archives:
   -
     format: tar.gz
-    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
-    replacements:
-      amd64: 64bit
-      arm64: ARM64
-      darwin: macOS
-      linux: Linux
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_
+      {{- if eq .Os "darwin" }}macOS
+      {{- else}}{{- title .Os }}{{ end }}-
+      {{- if eq .Arch "amd64" }}64bit
+      {{- else if eq .Arch "arm64" }}ARM64
+      {{- else }}{{ .Arch }}{{ end }}
     files:
       - README.md
       - LICENSE
       - contrib/*.tpl
+    format_overrides:
+      - goos: windows
+        format: zip

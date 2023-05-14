@@ -197,6 +197,37 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			wantErr: "failed to get alpine advisories",
 		},
+		{
+			name:     "No src name",
+			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "3.9.3",
+				repo: &ftypes.Repository{
+					Family:  os.Alpine,
+					Release: "3.10",
+				},
+				pkgs: []ftypes.Package{
+					{
+						Name:       "jq",
+						Version:    "1.6-r0",
+						SrcVersion: "1.6-r0",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "jq",
+					VulnerabilityID:  "CVE-2020-1234",
+					InstalledVersion: "1.6-r0",
+					FixedVersion:     "1.6-r1",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Alpine,
+						Name: "Alpine Secdb",
+						URL:  "https://secdb.alpinelinux.org/",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

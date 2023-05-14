@@ -1,0 +1,96 @@
+{
+	"SPDXID": "SPDXRef-DOCUMENT",
+	"creationInfo": {
+		"created": "2022-09-13T13:27:55.874784Z",
+		"creators": [
+			"Tool: trivy-dev",
+			"Organization: aquasecurity"
+		]
+	},
+	"dataLicense": "CC0-1.0",
+	"documentNamespace": "http://aquasecurity.github.io/trivy/container_image/integration/testdata/fixtures/images/centos-7.tar.gz-2906855d-5098-4a22-9a72-4f7099ea3d66",
+	"name": "integration/testdata/fixtures/images/centos-7.tar.gz",
+	"packages": [
+		{
+			"SPDXID": "SPDXRef-ContainerImage-dd5cad897c6263",
+			"attributionTexts": [
+				"SchemaVersion: 2",
+				"ImageID: sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427",
+				"DiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+			],
+			"filesAnalyzed": false,
+			"name": "integration/testdata/fixtures/images/centos-7.tar.gz"
+		},
+		{
+			"SPDXID": "SPDXRef-OperatingSystem-2e91c856c499a371",
+			"filesAnalyzed": false,
+			"name": "centos",
+			"versionInfo": "7.6.1810"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-5a18334f22149877",
+			"attributionTexts": [
+				"PkgID: bash@4.2.46-31.el7.x86_64",
+				"LayerDigest: sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
+				"LayerDiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+			],
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64\u0026distro=centos-7.6.1810",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "GPLv3+",
+			"licenseDeclared": "GPLv3+",
+			"name": "bash",
+			"sourceInfo": "built package from: bash 4.2.46-31.el7",
+			"versionInfo": "4.2.46"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-e16b1cbaa5186199",
+			"attributionTexts": [
+				"PkgID: openssl-libs@1.0.2k-16.el7.x86_64",
+				"LayerDigest: sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
+				"LayerDiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+			],
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026epoch=1\u0026distro=centos-7.6.1810",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "OpenSSL",
+			"licenseDeclared": "OpenSSL",
+			"name": "openssl-libs",
+			"sourceInfo": "built package from: openssl-libs 1:1.0.2k-16.el7",
+			"versionInfo": "1:1.0.2k-19.el7"
+		}
+	],
+	"relationships": [
+		{
+			"relatedSpdxElement": "SPDXRef-ContainerImage-dd5cad897c6263",
+			"relationshipType": "DESCRIBE",
+			"spdxElementId": "SPDXRef-DOCUMENT"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-OperatingSystem-2e91c856c499a371",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-ContainerImage-dd5cad897c6263"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-5a18334f22149877",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-OperatingSystem-2e91c856c499a371"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-e16b1cbaa5186199",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-OperatingSystem-2e91c856c499a371"
+		}
+	],
+	"spdxVersion": "SPDX-2.2"
+}

@@ -50,11 +50,12 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.9.4)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "alpine",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-14697",
+          "PkgID": "musl@1.1.20-r4",
           "PkgName": "musl",
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
@@ -92,6 +93,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-14697",
+          "PkgID": "musl-utils@1.1.20-r4",
           "PkgName": "musl-utils",
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",

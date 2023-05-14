@@ -2,11 +2,15 @@ package walker
 
 import (
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/bmatcuk/doublestar"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
@@ -15,25 +19,29 @@ var (
 	SystemDirs = []string{"proc", "sys", "dev"}
 )
 
-const ThresholdSize = int64(200) << 20
+const (
+	defaultSizeThreshold = int64(200) << 20 // 200MB
+	slowSizeThreshold    = int64(100) << 10 // 10KB
+)
 
 type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) error
 
 type walker struct {
 	skipFiles []string
 	skipDirs  []string
+	slow      bool
 }
 
-func newWalker(skipFiles, skipDirs []string) walker {
+func newWalker(skipFiles, skipDirs []string, slow bool) walker {
 	var cleanSkipFiles, cleanSkipDirs []string
 	for _, skipFile := range skipFiles {
-		skipFile = filepath.Clean(filepath.ToSlash(skipFile))
+		skipFile = filepath.ToSlash(filepath.Clean(skipFile))
 		skipFile = strings.TrimLeft(skipFile, "/")
 		cleanSkipFiles = append(cleanSkipFiles, skipFile)
 	}
 
 	for _, skipDir := range append(skipDirs, SystemDirs...) {
-		skipDir = filepath.Clean(filepath.ToSlash(skipDir))
+		skipDir = filepath.ToSlash(filepath.Clean(skipDir))
 		skipDir = strings.TrimLeft(skipDir, "/")
 		cleanSkipDirs = append(cleanSkipDirs, skipDir)
 	}
@@ -41,19 +49,27 @@ func newWalker(skipFiles, skipDirs []string) walker {
 	return walker{
 		skipFiles: cleanSkipFiles,
 		skipDirs:  cleanSkipDirs,
+		slow:      slow,
 	}
 }
 
 func (w *walker) shouldSkipFile(filePath string) bool {
-	filePath = filepath.ToSlash(filePath)
 	filePath = strings.TrimLeft(filePath, "/")
 
 	// skip files
-	return utils.StringInSlice(filePath, w.skipFiles)
+	for _, pattern := range w.skipFiles {
+		match, err := doublestar.Match(pattern, filePath)
+		if err != nil {
+			return false // return early if bad pattern
+		} else if match {
+			log.Logger.Debugf("Skipping file: %s", filePath)
+			return true
+		}
+	}
+	return false
 }
 
 func (w *walker) shouldSkipDir(dir string) bool {
-	dir = filepath.ToSlash(dir)
 	dir = strings.TrimLeft(dir, "/")
 
 	// Skip application dirs (relative path)
@@ -63,8 +79,13 @@ func (w *walker) shouldSkipDir(dir string) bool {
 	}
 
 	// Skip system dirs and specified dirs (absolute path)
-	if utils.StringInSlice(dir, w.skipDirs) {
-		return true
+	for _, pattern := range w.skipDirs {
+		if match, err := path.Match(pattern, dir); err != nil {
+			return false // return early if bad pattern
+		} else if match {
+			log.Logger.Debugf("Skipping directory: %s", dir)
+			return true
+		}
 	}
 
 	return false

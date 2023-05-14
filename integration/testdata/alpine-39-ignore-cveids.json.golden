@@ -50,11 +50,12 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.9.4)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "alpine",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-1551",
+          "PkgID": "libcrypto1.1@1.1.1b-r1",
           "PkgName": "libcrypto1.1",
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
@@ -124,6 +125,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-1551",
+          "PkgID": "libssl1.1@1.1.1b-r1",
           "PkgName": "libssl1.1",
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",

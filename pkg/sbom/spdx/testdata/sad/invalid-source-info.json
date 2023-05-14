@@ -1,0 +1,58 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "2022-09-12T17:02:46.826609Z",
+    "creators": [
+      "Tool: trivy-dev",
+      "Organization: aquasecurity"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "http://aquasecurity.github.io/trivy/container/meven-test-project-eb7a0384-b04a-4fc6-8afb-1662fe59ca79",
+  "name": "maven-test-projecct",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-ContainerImage-b5d81cde5f95c8fc",
+      "filesAnalyzed": false,
+      "name": "meven-test-project"
+    },
+    {
+      "SPDXID": "SPDXRef-OperatingSystem-bd17bf9010aa612c",
+      "filesAnalyzed": false,
+      "name": "alpine",
+      "versionInfo": "3.16.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-b7ebaf0233f1ef7b",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "name": "musl",
+      "sourceInfo": "built package from: invalid",
+      "versionInfo": "1.2.3-r0"
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-ContainerImage-b5d81cde5f95c8fc",
+      "relationshipType": "DESCRIBE",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-OperatingSystem-bd17bf9010aa612c",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-ContainerImage-b5d81cde5f95c8fc"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-b7ebaf0233f1ef7b",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-OperatingSystem-bd17bf9010aa612c"
+    }
+  ],
+  "spdxVersion": "SPDX-2.2"
+}

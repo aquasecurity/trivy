@@ -23,7 +23,7 @@ func TestApplyLayers(t *testing.T) {
 					SchemaVersion: 1,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-					OS: &types.OS{
+					OS: types.OS{
 						Family: "alpine",
 						Name:   "3.10",
 					},
@@ -133,7 +133,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: "alpine",
 					Name:   "3.10",
 				},
@@ -199,13 +199,43 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with merging ubuntu version and ESM",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 1,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					OS: types.OS{
+						Family:   "ubuntu",
+						Extended: true,
+					},
+				},
+				{
+					SchemaVersion: 1,
+					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					OS: types.OS{
+						Family: "ubuntu",
+						Name:   "16.04",
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				OS: types.OS{
+					Family:   "ubuntu",
+					Name:     "16.04",
+					Extended: true,
+				},
+			},
+		},
+		{
 			name: "happy path with removed and updated lockfile",
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-					OS: &types.OS{
+					OS: types.OS{
 						Family: "alpine",
 						Name:   "3.10",
 					},
@@ -284,7 +314,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: "alpine",
 					Name:   "3.10",
 				},
@@ -329,13 +359,177 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with removed and updated secret",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					CreatedBy:     "Line_1",
+					Secrets: []types.Secret{
+						{
+							FilePath: "usr/secret.txt",
+							Findings: []types.SecretFinding{
+								{
+									RuleID:    "aws-access-key-id",
+									Category:  "AWS",
+									Severity:  "CRITICAL",
+									Title:     "AWS Access Key ID",
+									StartLine: 1,
+									EndLine:   1,
+									Match:     "AWS_ACCESS_KEY_ID=********************",
+									Code: types.Code{
+										Lines: []types.Line{
+											{
+												Number:      1,
+												Content:     "AWS_ACCESS_KEY_ID=********************",
+												IsCause:     true,
+												Highlighted: "AWS_ACCESS_KEY_ID=********************",
+												FirstCause:  true,
+												LastCause:   true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					CreatedBy:     "Line_2",
+					Secrets: []types.Secret{
+						{
+							FilePath: "usr/secret.txt",
+							Findings: []types.SecretFinding{
+								{
+									RuleID:    "github-pat",
+									Category:  "GitHub",
+									Severity:  "CRITICAL",
+									Title:     "GitHub Personal Access Token",
+									StartLine: 1,
+									EndLine:   1,
+									Match:     "GITHUB_PAT=****************************************",
+									Code: types.Code{
+										Lines: []types.Line{
+											{
+												Number:      1,
+												Content:     "GITHUB_PAT=****************************************",
+												IsCause:     true,
+												Highlighted: "GITHUB_PAT=****************************************",
+												FirstCause:  true,
+												LastCause:   true,
+											},
+										},
+									},
+								},
+								{
+									RuleID:    "aws-access-key-id",
+									Category:  "AWS",
+									Severity:  "CRITICAL",
+									Title:     "AWS Access Key ID",
+									StartLine: 2,
+									EndLine:   2,
+									Match:     "AWS_ACCESS_KEY_ID=********************",
+									Code: types.Code{
+										Lines: []types.Line{
+											{
+												Number:      1,
+												Content:     "AWS_ACCESS_KEY_ID=********************",
+												IsCause:     true,
+												Highlighted: "AWS_ACCESS_KEY_ID=********************",
+												FirstCause:  true,
+												LastCause:   true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					CreatedBy:     "Line_3",
+					WhiteoutFiles: []string{
+						"usr/secret.txt",
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				Secrets: []types.Secret{
+					{
+						FilePath: "usr/secret.txt",
+						Findings: []types.SecretFinding{
+							{
+								RuleID:    "github-pat",
+								Category:  "GitHub",
+								Severity:  "CRITICAL",
+								Title:     "GitHub Personal Access Token",
+								StartLine: 1,
+								EndLine:   1,
+								Match:     "GITHUB_PAT=****************************************",
+								Layer: types.Layer{
+									Digest:    "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+									DiffID:    "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+									CreatedBy: "Line_2",
+								},
+								Code: types.Code{
+									Lines: []types.Line{
+										{
+											Number:      1,
+											Content:     "GITHUB_PAT=****************************************",
+											IsCause:     true,
+											Highlighted: "GITHUB_PAT=****************************************",
+											FirstCause:  true,
+											LastCause:   true,
+										},
+									},
+								},
+							},
+							{
+								RuleID:    "aws-access-key-id",
+								Category:  "AWS",
+								Severity:  "CRITICAL",
+								Title:     "AWS Access Key ID",
+								StartLine: 2,
+								EndLine:   2,
+								Match:     "AWS_ACCESS_KEY_ID=********************",
+								Layer: types.Layer{
+									Digest:    "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+									DiffID:    "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+									CreatedBy: "Line_2",
+								},
+								Code: types.Code{
+									Lines: []types.Line{
+										{
+											Number:      1,
+											Content:     "AWS_ACCESS_KEY_ID=********************",
+											IsCause:     true,
+											Highlighted: "AWS_ACCESS_KEY_ID=********************",
+											FirstCause:  true,
+											LastCause:   true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with status.d and opaque dirs without the trailing slash",
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-					OS: &types.OS{
+					OS: types.OS{
 						Family: "debian",
 						Name:   "8",
 					},
@@ -404,7 +598,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: "debian",
 					Name:   "8",
 				},
@@ -468,7 +662,7 @@ func TestApplyLayers(t *testing.T) {
 					SchemaVersion: 1,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-					OS: &types.OS{
+					OS: types.OS{
 						Family: "redhat",
 						Name:   "8",
 					},
@@ -551,7 +745,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: "redhat",
 					Name:   "8",
 				},
@@ -607,9 +801,7 @@ func TestApplyLayers(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := applier.ApplyLayers(tt.inputLayers)
-			sort.Slice(got.Packages, func(i, j int) bool {
-				return got.Packages[i].Name < got.Packages[j].Name
-			})
+			sort.Sort(got.Packages)
 			sort.Slice(got.Applications, func(i, j int) bool {
 				return got.Applications[i].FilePath < got.Applications[j].FilePath
 			})

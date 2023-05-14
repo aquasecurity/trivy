@@ -26,7 +26,7 @@ const version = 1
 
 var requiredFiles = []string{
 	"etc/system-release",     // for 1 and 2 versions
-	"usr/lib/system-release", // for 2022 version
+	"usr/lib/system-release", // for 2022, 2023 version
 }
 
 type amazonlinuxOSAnalyzer struct{}
@@ -37,7 +37,7 @@ func (a amazonlinuxOSAnalyzer) Analyze(_ context.Context, input analyzer.Analysi
 		return nil, err
 	}
 	return &analyzer.AnalysisResult{
-		OS: &foundOS,
+		OS: foundOS,
 	}, nil
 }
 

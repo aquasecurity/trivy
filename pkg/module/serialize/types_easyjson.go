@@ -4,13 +4,15 @@ package serialize
 
 import (
 	json "encoding/json"
-	types2 "github.com/aquasecurity/trivy-db/pkg/types"
-	types1 "github.com/aquasecurity/trivy/pkg/fanal/types"
-	types "github.com/aquasecurity/trivy/pkg/types"
+	time "time"
+
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
-	time "time"
+
+	types2 "github.com/aquasecurity/trivy-db/pkg/types"
+	types1 "github.com/aquasecurity/trivy/pkg/fanal/types"
+	types "github.com/aquasecurity/trivy/pkg/types"
 )
 
 // suppress unused package warning
@@ -1302,8 +1304,8 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 			out.SeveritySource = types2.SourceID(in.String())
 		case "PrimaryURL":
 			out.PrimaryURL = string(in.String())
-		case "Ref":
-			out.Ref = string(in.String())
+		case "PkgRef":
+			out.PkgRef = string(in.String())
 		case "DataSource":
 			if in.IsNull() {
 				in.Skip()
@@ -1557,15 +1559,15 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 		}
 		out.String(string(in.PrimaryURL))
 	}
-	if in.Ref != "" {
-		const prefix string = ",\"Ref\":"
+	if in.PkgRef != "" {
+		const prefix string = ",\"PkgRef\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
 		} else {
 			out.RawString(prefix)
 		}
-		out.String(string(in.Ref))
+		out.String(string(in.PkgRef))
 	}
 	if in.DataSource != nil {
 		const prefix string = ",\"DataSource\":"
@@ -1951,7 +1953,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 				}
 				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes7(in, out.BuildInfo)
 			}
-		case "Ref":
+		case "PkgRef":
 			out.Ref = string(in.String())
 		case "Indirect":
 			out.Indirect = bool(in.Bool())
@@ -2132,7 +2134,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes7(out, *in.BuildInfo)
 	}
 	if in.Ref != "" {
-		const prefix string = ",\"Ref\":"
+		const prefix string = ",\"PkgRef\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])

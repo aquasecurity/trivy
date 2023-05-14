@@ -1,0 +1,83 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:4dd4cf4a-d4de-4ea0-b75f-ad617f31b5a9",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2023-01-08T23:57:37+00:00",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ],
+    "component": {
+      "bom-ref": "582a7c6f-b30e-4b65-a911-f3f5034aa003",
+      "type": "application",
+      "name": "testdata/fixtures/fs/conda",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json",
+      "type": "library",
+      "name": "openssl",
+      "version": "1.1.1q",
+      "licenses": [
+        {
+          "expression": "OpenSSL"
+        }
+      ],
+      "purl": "pkg:conda/openssl@1.1.1q",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "conda-pkg"
+        },
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json",
+      "type": "library",
+      "name": "pip",
+      "version": "22.2.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "purl": "pkg:conda/pip@22.2.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "conda-pkg"
+        },
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "582a7c6f-b30e-4b65-a911-f3f5034aa003",
+      "dependsOn": [
+        "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json",
+        "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json"
+      ]
+    }
+  ],
+  "vulnerabilities": []
+}

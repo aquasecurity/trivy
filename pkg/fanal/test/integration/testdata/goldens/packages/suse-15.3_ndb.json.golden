@@ -209,8 +209,8 @@
   },
   {
     "Name": "gpg-pubkey",
-    "Version": "39db7c82",
-    "Release": "5f68629b",
+    "Version": "307e3d54",
+    "Release": "5aaa90a5",
     "Arch": "None",
     "License": "pubkey",
     "Layer": {
@@ -219,8 +219,8 @@
   },
   {
     "Name": "gpg-pubkey",
-    "Version": "307e3d54",
-    "Release": "5aaa90a5",
+    "Version": "39db7c82",
+    "Release": "5f68629b",
     "Arch": "None",
     "License": "pubkey",
     "Layer": {

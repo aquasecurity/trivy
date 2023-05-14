@@ -1,0 +1,2 @@
+This directory contains media assets, such as the Trivy logo.
+Assets under this directory are provided under the Creative Commons - BY 4.0 License. For more details, see here: <https://creativecommons.org/licenses/by/4.0/>

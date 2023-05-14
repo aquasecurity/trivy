@@ -7,8 +7,8 @@ package types
 // cf. https://tinygo.org/docs/reference/lang-support/stdlib/
 type CycloneDX struct {
 	// JSON specific fields
-	BOMFormat   string `json:"bomFormat" xml:"-"`
-	SpecVersion string `json:"specVersion" xml:"-"`
+	BOMFormat   string      `json:"bomFormat" xml:"-"`
+	SpecVersion SpecVersion `json:"specVersion" xml:"-"`
 
 	SerialNumber string      `json:"serialNumber,omitempty" xml:"serialNumber,attr,omitempty"`
 	Version      int         `json:"version" xml:"version,attr"`
@@ -30,4 +30,7 @@ type Component struct {
 	PackageURL string        `json:"purl,omitempty" xml:"purl,omitempty"`
 }
 
-type ComponentType string
+type (
+	ComponentType string
+	SpecVersion   int
+)

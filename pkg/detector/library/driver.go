@@ -4,20 +4,22 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/rubygems"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+var ErrSBOMSupportOnly = xerrors.New("SBOM support only")
 
 // NewDriver returns a driver according to the library type
 func NewDriver(libType string) (Driver, error) {
@@ -28,7 +30,7 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Bundler, ftypes.GemSpec:
 		ecosystem = vulnerability.RubyGems
 		comparer = rubygems.Comparer{}
-	case ftypes.Cargo:
+	case ftypes.RustBinary, ftypes.Cargo:
 		ecosystem = vulnerability.Cargo
 		comparer = compare.GenericComparer{}
 	case ftypes.Composer:
@@ -37,7 +39,7 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.GoBinary, ftypes.GoModule:
 		ecosystem = vulnerability.Go
 		comparer = compare.GenericComparer{}
-	case ftypes.Jar, ftypes.Pom:
+	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
 		ecosystem = vulnerability.Maven
 		comparer = maven.Comparer{}
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
@@ -49,6 +51,23 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
 		ecosystem = vulnerability.Pip
 		comparer = pep440.Comparer{}
+	case ftypes.Pub:
+		ecosystem = vulnerability.Pub
+		comparer = compare.GenericComparer{}
+	case ftypes.Hex:
+		ecosystem = vulnerability.Erlang
+		comparer = compare.GenericComparer{}
+	case ftypes.Conan:
+		ecosystem = vulnerability.Conan
+		// Only semver can be used for version ranges
+		// https://docs.conan.io/en/latest/versioning/version_ranges.html
+		comparer = compare.GenericComparer{}
+	case ftypes.Cocoapods:
+		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
+		return Driver{}, ErrSBOMSupportOnly
+	case ftypes.CondaPkg:
+		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
+		return Driver{}, ErrSBOMSupportOnly
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}

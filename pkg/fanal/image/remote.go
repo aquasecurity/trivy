@@ -2,46 +2,21 @@ package image
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
-	"net/http"
 	"strings"
 
-	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/image/token"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/remote"
 )
 
-func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.DockerOption) (types.Image, error) {
-	var remoteOpts []remote.Option
-	if option.InsecureSkipTLSVerify {
-		t := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		remoteOpts = append(remoteOpts, remote.WithTransport(t))
-	}
-
-	domain := ref.Context().RegistryStr()
-	auth := token.GetToken(ctx, domain, option)
-
-	if auth.Username != "" && auth.Password != "" {
-		remoteOpts = append(remoteOpts, remote.WithAuth(&auth))
-	} else if option.RegistryToken != "" {
-		bearer := authn.Bearer{Token: option.RegistryToken}
-		remoteOpts = append(remoteOpts, remote.WithAuth(&bearer))
-	} else {
-		remoteOpts = append(remoteOpts, remote.WithAuthFromKeychain(authn.DefaultKeychain))
-	}
-
-	desc, err := remote.Get(ref, remoteOpts...)
+func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.RegistryOptions) (types.Image, error) {
+	desc, err := remote.Get(ctx, ref, option)
 	if err != nil {
 		return nil, err
 	}
-
 	img, err := desc.Image()
 	if err != nil {
 		return nil, err
@@ -70,10 +45,6 @@ func (img remoteImage) Name() string {
 
 func (img remoteImage) ID() (string, error) {
 	return ID(img)
-}
-
-func (img remoteImage) LayerIDs() ([]string, error) {
-	return LayerIDs(img)
 }
 
 func (img remoteImage) RepoTags() []string {

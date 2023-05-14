@@ -49,11 +49,12 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/amazon-2.tar.gz (amazon 2 (Karoo))",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "amazon",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-5481",
+          "PkgID": "curl@7.61.1-9.amzn2.0.1.x86_64",
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-12.amzn2.0.1",
@@ -111,6 +112,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-5436",
+          "PkgID": "curl@7.61.1-9.amzn2.0.1.x86_64",
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-11.amzn2.0.2",

@@ -1,0 +1,230 @@
+{
+	"SPDXID": "SPDXRef-DOCUMENT",
+	"creationInfo": {
+		"created": "2022-09-12T17:02:46.826609Z",
+		"creators": [
+			"Tool: trivy-dev",
+			"Organization: aquasecurity"
+		]
+	},
+	"dataLicense": "CC0-1.0",
+	"documentNamespace": "http://aquasecurity.github.io/trivy/container/meven-test-project-eb7a0384-b04a-4fc6-8afb-1662fe59ca79",
+	"name": "maven-test-projecct",
+	"packages": [
+		{
+			"SPDXID": "SPDXRef-Application-150e605f5f17224d",
+			"filesAnalyzed": false,
+			"name": "jar",
+			"sourceInfo": "Java"
+		},
+		{
+			"SPDXID": "SPDXRef-Application-24f8a80152e2c0fc",
+			"filesAnalyzed": false,
+			"name": "node-pkg",
+			"sourceInfo": "Node.js"
+		},
+		{
+			"SPDXID": "SPDXRef-Application-36324ee492e03f0a",
+			"filesAnalyzed": false,
+			"name": "gobinary",
+			"sourceInfo": "app/gobinary/gobinary"
+		},
+		{
+			"SPDXID": "SPDXRef-Application-4af197c15114fb0e",
+			"filesAnalyzed": false,
+			"name": "composer",
+			"sourceInfo": "app/composer/composer.lock"
+		},
+		{
+			"SPDXID": "SPDXRef-ContainerImage-b5d81cde5f95c8fc",
+			"attributionTexts": [
+				"SchemaVersion: 2",
+				"ImageID: sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5",
+				"DiffID: sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
+				"DiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+				"RepoTag: maven-test-project:latest",
+				"RepoTag: tmp-test:latest"
+			],
+			"filesAnalyzed": false,
+			"name": "meven-test-project"
+		},
+		{
+			"SPDXID": "SPDXRef-OperatingSystem-bd17bf9010aa612c",
+			"filesAnalyzed": false,
+			"name": "alpine",
+			"versionInfo": "3.16.0"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-2906575950df652b",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:composer/pear/log@1.13.1",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "NONE",
+			"licenseDeclared": "NONE",
+			"name": "pear/log",
+			"versionInfo": "1.13.1"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-2a53baa495b9ddaf",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:maven/org.codehaus.mojo/child-project@1.0",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "NONE",
+			"licenseDeclared": "NONE",
+			"name": "org.codehaus.mojo:child-project",
+			"versionInfo": "1.0"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-5e2e255ac76747ef",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:composer/pear/pear_exception@v1.0.0",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "NONE",
+			"licenseDeclared": "NONE",
+			"name": "pear/pear_exception",
+			"versionInfo": "v1.0.0"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-5f1dbaff8de5eb06",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:npm/bootstrap@5.0.2",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "MIT",
+			"licenseDeclared": "MIT",
+			"name": "bootstrap",
+			"versionInfo": "5.0.2"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-84ebffe38343d949",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "NONE",
+			"licenseDeclared": "NONE",
+			"name": "github.com/package-url/packageurl-go",
+			"versionInfo": "v0.1.1-0.20220203205134-d70459300c8a"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-b7ebaf0233f1ef7b",
+			"attributionTexts": [
+				"LayerDiffID: sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3"
+			],
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"licenseConcluded": "MIT",
+			"licenseDeclared": "MIT",
+			"name": "musl",
+			"sourceInfo": "built package from: musl 1.2.3-r0",
+			"versionInfo": "1.2.3-r0"
+		}
+	],
+	"relationships": [
+		{
+			"relatedSpdxElement": "SPDXRef-ContainerImage-b5d81cde5f95c8fc",
+			"relationshipType": "DESCRIBES",
+			"spdxElementId": "SPDXRef-DOCUMENT"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-OperatingSystem-bd17bf9010aa612c",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-ContainerImage-b5d81cde5f95c8fc"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-b7ebaf0233f1ef7b",
+			"relationshipType": "DEPENDS_ON",
+			"spdxElementId": "SPDXRef-OperatingSystem-bd17bf9010aa612c"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Application-150e605f5f17224d",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-ContainerImage-b5d81cde5f95c8fc"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-2a53baa495b9ddaf",
+			"relationshipType": "DEPENDS_ON",
+			"spdxElementId": "SPDXRef-Application-150e605f5f17224d"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Application-24f8a80152e2c0fc",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-ContainerImage-b5d81cde5f95c8fc"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-5f1dbaff8de5eb06",
+			"relationshipType": "DEPENDS_ON",
+			"spdxElementId": "SPDXRef-Application-24f8a80152e2c0fc"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Application-4af197c15114fb0e",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-ContainerImage-b5d81cde5f95c8fc"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-2906575950df652b",
+			"relationshipType": "DEPENDS_ON",
+			"spdxElementId": "SPDXRef-Application-4af197c15114fb0e"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-5e2e255ac76747ef",
+			"relationshipType": "DEPENDS_ON",
+			"spdxElementId": "SPDXRef-Application-4af197c15114fb0e"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Application-36324ee492e03f0a",
+			"relationshipType": "CONTAINS",
+			"spdxElementId": "SPDXRef-ContainerImage-b5d81cde5f95c8fc"
+		},
+		{
+			"relatedSpdxElement": "SPDXRef-Package-84ebffe38343d949",
+			"relationshipType": "DEPENDS_ON",
+			"spdxElementId": "SPDXRef-Application-36324ee492e03f0a"
+		}
+	],
+	"spdxVersion": "SPDX-2.2"
+}

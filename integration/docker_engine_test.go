@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	api "github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -213,7 +213,7 @@ func TestDockerEngine(t *testing.T) {
 				require.NoError(t, err, tt.name)
 
 				// ensure image doesnt already exists
-				_, _ = cli.ImageRemove(ctx, tt.input, types.ImageRemoveOptions{
+				_, _ = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
 					Force:         true,
 					PruneChildren: true,
 				})
@@ -264,11 +264,11 @@ func TestDockerEngine(t *testing.T) {
 			compareReports(t, tt.golden, output)
 
 			// cleanup
-			_, err = cli.ImageRemove(ctx, tt.input, types.ImageRemoveOptions{
+			_, err = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
 				Force:         true,
 				PruneChildren: true,
 			})
-			_, err = cli.ImageRemove(ctx, tt.imageTag, types.ImageRemoveOptions{
+			_, err = cli.ImageRemove(ctx, tt.imageTag, api.ImageRemoveOptions{
 				Force:         true,
 				PruneChildren: true,
 			})

@@ -8,6 +8,16 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
+var Compliances = []string{
+	ComplianceK8sNsa,
+	ComplianceK8sCIS,
+	ComplianceK8sPSSBaseline,
+	ComplianceK8sPSSRestricted,
+	ComplianceAWSCIS12,
+	ComplianceAWSCIS14,
+	ComplianceDockerCIS,
+}
+
 // Report represents a scan result
 type Report struct {
 	SchemaVersion int                 `json:",omitempty"`
@@ -37,17 +47,24 @@ type Metadata struct {
 type Results []Result
 
 type ResultClass string
+type Compliance = string
 
 const (
-	ClassOSPkg       = "os-pkgs"        // For OS packages
-	ClassLangPkg     = "lang-pkgs"      // For language-specific packages
-	ClassVulnOSPkg   = "vuln-os-pkgs"   // For detected vulnerabilities in OS packages
-	ClassVulnLangPkg = "vuln-lang-pkgs" // For detected vulnerabilities in language-specific packages
-	ClassConfig      = "config"         // For detected misconfigurations
-	ClassSecret      = "secret"         // For detected secrets
-	ClassLicense     = "license"        // For detected package licenses
-	ClassLicenseFile = "license-file"   // For detected licenses in files
+	ClassOSPkg       = "os-pkgs"      // For detected packages and vulnerabilities in OS packages
+	ClassLangPkg     = "lang-pkgs"    // For detected packages and vulnerabilities in language-specific packages
+	ClassConfig      = "config"       // For detected misconfigurations
+	ClassSecret      = "secret"       // For detected secrets
+	ClassLicense     = "license"      // For detected package licenses
+	ClassLicenseFile = "license-file" // For detected licenses in files
 	ClassCustom      = "custom"
+
+	ComplianceK8sNsa           = Compliance("k8s-nsa")
+	ComplianceK8sCIS           = Compliance("k8s-cis")
+	ComplianceK8sPSSBaseline   = Compliance("k8s-pss-baseline")
+	ComplianceK8sPSSRestricted = Compliance("k8s-pss-restricted")
+	ComplianceAWSCIS12         = Compliance("aws-cis-1.2")
+	ComplianceAWSCIS14         = Compliance("aws-cis-1.4")
+	ComplianceDockerCIS        = Compliance("docker-cis")
 )
 
 // Result holds a target and detected vulnerabilities

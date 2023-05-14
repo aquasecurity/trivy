@@ -89,6 +89,7 @@ func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.
 func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
+	secretsMap := map[string]types.Secret{}
 	var mergedLayer types.ArtifactDetail
 
 	for _, layer := range layers {
@@ -100,9 +101,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			_ = nestedMap.DeleteByString(whFile, sep) // nolint
 		}
 
-		if layer.OS != nil {
-			mergedLayer.OS = layer.OS
-		}
+		mergedLayer.OS.Merge(layer.OS)
 
 		if layer.Repository != nil {
 			mergedLayer.Repository = layer.Repository
@@ -132,12 +131,12 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 		// Apply secrets
 		for _, secret := range layer.Secrets {
-			secret.Layer = types.Layer{
-				Digest: layer.Digest,
-				DiffID: layer.DiffID,
+			l := types.Layer{
+				Digest:    layer.Digest,
+				DiffID:    layer.DiffID,
+				CreatedBy: layer.CreatedBy,
 			}
-			key := fmt.Sprintf("%s/type:secret", secret.FilePath)
-			nestedMap.SetByString(key, sep, secret)
+			secretsMap = mergeSecrets(secretsMap, secret, l)
 		}
 
 		// Apply license files
@@ -170,8 +169,6 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.Applications = append(mergedLayer.Applications, v)
 		case types.Misconfiguration:
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
-		case types.Secret:
-			mergedLayer.Secrets = append(mergedLayer.Secrets, v)
 		case types.LicenseFile:
 			mergedLayer.Licenses = append(mergedLayer.Licenses, v)
 		case types.CustomResource:
@@ -179,6 +176,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		}
 		return nil
 	})
+
+	for _, s := range secretsMap {
+		mergedLayer.Secrets = append(mergedLayer.Secrets, s)
+	}
 
 	// Extract dpkg licenses
 	// The license information is not stored in the dpkg database and in a separate file,
@@ -231,12 +232,13 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	return mergedLayer
 }
 
-// aggregate merges all packages installed by pip/gem/npm/jar into each application
+// aggregate merges all packages installed by pip/gem/npm/jar/conda into each application
 func aggregate(detail *types.ArtifactDetail) {
 	var apps []types.Application
 
 	aggregatedApps := map[string]*types.Application{
 		types.PythonPkg: {Type: types.PythonPkg},
+		types.CondaPkg:  {Type: types.CondaPkg},
 		types.GemSpec:   {Type: types.GemSpec},
 		types.NodePkg:   {Type: types.NodePkg},
 		types.Jar:       {Type: types.Jar},
@@ -259,4 +261,36 @@ func aggregate(detail *types.ArtifactDetail) {
 
 	// Overwrite Applications
 	detail.Applications = apps
+}
+
+// We must save secrets from all layers even though they are removed in the uppler layer.
+// If the secret was changed at the top level, we need to overwrite it.
+func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, layer types.Layer) map[string]types.Secret {
+	for i := range newSecret.Findings { // add layer to the Findings from the new secret
+		newSecret.Findings[i].Layer = layer
+	}
+
+	secret, ok := secretsMap[newSecret.FilePath]
+	if !ok {
+		// Add the new finding if its file doesn't exist before
+		secretsMap[newSecret.FilePath] = newSecret
+	} else {
+		// If the new finding has the same `RuleID` as the finding in the previous layers - use the new finding
+		for _, previousFinding := range secret.Findings { // secrets from previous layers
+			if !secretFindingsContains(newSecret.Findings, previousFinding) {
+				newSecret.Findings = append(newSecret.Findings, previousFinding)
+			}
+		}
+		secretsMap[newSecret.FilePath] = newSecret
+	}
+	return secretsMap
+}
+
+func secretFindingsContains(findings []types.SecretFinding, finding types.SecretFinding) bool {
+	for _, f := range findings {
+		if f.RuleID == finding.RuleID {
+			return true
+		}
+	}
+	return false
 }

@@ -1,0 +1,10 @@
+- bucket: "nuget::GitHub Security Advisory Nuget"
+  pairs:
+    - bucket: Newtonsoft.Json
+      pairs:
+        - key: GHSA-5crp-9r3c-p9vr
+          value:
+            PatchedVersions:
+              - 13.0.1
+            VulnerableVersions:
+              - < 13.0.1

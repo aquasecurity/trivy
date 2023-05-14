@@ -1,0 +1,61 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/cocoapods",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "Podfile.lock",
+      "Class": "lang-pkgs",
+      "Type": "cocoapods",
+      "Packages": [
+        {
+          "ID": "AppCenter/4.2.0",
+          "Name": "AppCenter",
+          "Version": "4.2.0",
+          "DependsOn": [
+            "AppCenter/Analytics/4.2.0",
+            "AppCenter/Crashes/4.2.0"
+          ]
+        },
+        {
+          "ID": "AppCenter/Analytics/4.2.0",
+          "Name": "AppCenter/Analytics",
+          "Version": "4.2.0",
+          "DependsOn": [
+            "AppCenter/Core/4.2.0"
+          ]
+        },
+        {
+          "ID": "AppCenter/Core/4.2.0",
+          "Name": "AppCenter/Core",
+          "Version": "4.2.0"
+        },
+        {
+          "ID": "AppCenter/Crashes/4.2.0",
+          "Name": "AppCenter/Crashes",
+          "Version": "4.2.0",
+          "DependsOn": [
+            "AppCenter/Core/4.2.0"
+          ]
+        },
+        {
+          "ID": "KeychainAccess/4.2.1",
+          "Name": "KeychainAccess",
+          "Version": "4.2.1"
+        }
+      ]
+    }
+  ]
+}

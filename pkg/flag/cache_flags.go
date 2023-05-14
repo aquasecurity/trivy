@@ -9,14 +9,15 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// e.g. config yaml
-// cache:
-//   clear: true
-//   backend: "redis://localhost:6379"
-//   redis:
-//    ca: ca-cert.pem
-//    cert: cert.pem
-//    key: key.pem
+// e.g. config yaml:
+//
+//	cache:
+//	  clear: true
+//	  backend: "redis://localhost:6379"
+//	redis:
+//	  ca: ca-cert.pem
+//	  cert: cert.pem
+//	  key: key.pem
 var (
 	ClearCacheFlag = Flag{
 		Name:       "clear-cache",
@@ -35,6 +36,12 @@ var (
 		ConfigName: "cache.ttl",
 		Value:      time.Duration(0),
 		Usage:      "cache TTL when using redis as cache backend",
+	}
+	RedisTLSFlag = Flag{
+		Name:       "redis-tls",
+		ConfigName: "cache.redis.tls",
+		Value:      false,
+		Usage:      "enable redis TLS with public certificates, if using redis as cache backend",
 	}
 	RedisCACertFlag = Flag{
 		Name:       "redis-ca",
@@ -62,6 +69,7 @@ type CacheFlagGroup struct {
 	CacheBackend *Flag
 	CacheTTL     *Flag
 
+	RedisTLS    *Flag
 	RedisCACert *Flag
 	RedisCert   *Flag
 	RedisKey    *Flag
@@ -71,6 +79,7 @@ type CacheOptions struct {
 	ClearCache   bool
 	CacheBackend string
 	CacheTTL     time.Duration
+	RedisTLS     bool
 	RedisOptions
 }
 
@@ -87,6 +96,7 @@ func NewCacheFlagGroup() *CacheFlagGroup {
 		ClearCache:   &ClearCacheFlag,
 		CacheBackend: &CacheBackendFlag,
 		CacheTTL:     &CacheTTLFlag,
+		RedisTLS:     &RedisTLSFlag,
 		RedisCACert:  &RedisCACertFlag,
 		RedisCert:    &RedisCertFlag,
 		RedisKey:     &RedisKeyFlag,
@@ -98,7 +108,7 @@ func (fg *CacheFlagGroup) Name() string {
 }
 
 func (fg *CacheFlagGroup) Flags() []*Flag {
-	return []*Flag{fg.ClearCache, fg.CacheBackend, fg.CacheTTL, fg.RedisCACert, fg.RedisCert, fg.RedisKey}
+	return []*Flag{fg.ClearCache, fg.CacheBackend, fg.CacheTTL, fg.RedisTLS, fg.RedisCACert, fg.RedisCert, fg.RedisKey}
 }
 
 func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
@@ -126,6 +136,7 @@ func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 		ClearCache:   getBool(fg.ClearCache),
 		CacheBackend: cacheBackend,
 		CacheTTL:     getDuration(fg.CacheTTL),
+		RedisTLS:     getBool(fg.RedisTLS),
 		RedisOptions: redisOptions,
 	}, nil
 }

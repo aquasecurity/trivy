@@ -3,8 +3,10 @@ package binary
 import (
 	"context"
 	"os"
+	"runtime"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -31,8 +33,14 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:    "github.com/aquasecurity/go-pep440-version",
 								Version: "v0.0.0-20210121094942-22b2f8951d46",
 							},
-							{Name: "github.com/aquasecurity/go-version", Version: "v0.0.0-20210121072130-637058cfe492"},
-							{Name: "golang.org/x/xerrors", Version: "v0.0.0-20200804184101-5ec99f83aff1"},
+							{
+								Name:    "github.com/aquasecurity/go-version",
+								Version: "v0.0.0-20210121072130-637058cfe492",
+							},
+							{
+								Name:    "golang.org/x/xerrors",
+								Version: "v0.0.0-20200804184101-5ec99f83aff1",
+							},
 						},
 					},
 				},
@@ -73,8 +81,8 @@ func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
 		want     bool
 	}{
 		{
-			name:     "file perm 0755",
-			filePath: "testdata/0755",
+			name:     "executable file",
+			filePath: lo.Ternary(runtime.GOOS == "windows", "testdata/binary.exe", "testdata/0755"),
 			want:     true,
 		},
 		{

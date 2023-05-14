@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<testsuites>
+<testsuites name="trivy">
 {{- range . -}}
 {{- $failures := len .Vulnerabilities }}
     <testsuite tests="{{ $failures }}" failures="{{ $failures }}" name="{{  .Target }}" errors="0" skipped="0" time="">
