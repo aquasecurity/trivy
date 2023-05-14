@@ -20,7 +20,7 @@ func TestParse(t *testing.T) {
 		wantErr   string
 	}{
 		{
-			name:      "happypath",
+			name:      "happy path",
 			inputFile: "testdata/package.json",
 
 			// docker run --name composer --rm -it node:12-alpine sh
@@ -54,6 +54,11 @@ func TestParse(t *testing.T) {
 				},
 				Dependencies: map[string]string{},
 			},
+		},
+		{
+			name:      "happy path - version doesn't exist",
+			inputFile: "testdata/without_version_package.json",
+			want:      packagejson.Package{},
 		},
 		{
 			name:      "sad path",

@@ -35,8 +35,10 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 		return Package{}, xerrors.Errorf("JSON decode error: %w", err)
 	}
 
+	// Name and version fields are optional
+	// https://docs.npmjs.com/cli/v9/configuring-npm/package-json#name
 	if pkgJSON.Name == "" || pkgJSON.Version == "" {
-		return Package{}, xerrors.New("unable to parse package.json")
+		return Package{}, nil
 	}
 
 	return Package{
