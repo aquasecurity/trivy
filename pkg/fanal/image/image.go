@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type imageSourceFunc func(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error)
@@ -20,28 +21,9 @@ var imageSourceFuncs = map[types.ImageSource]imageSourceFunc{
 	types.RemoteImageSource:     tryRemote,
 }
 
-func parseImageSources(imageSources types.ImageSources) ([]imageSourceFunc, error) {
-	funcs := []imageSourceFunc{}
-
-	for _, r := range imageSources {
-		f, ok := imageSourceFuncs[r]
-		if !ok {
-			return nil, xerrors.Errorf("unrecoginized image source: '%s'", r)
-		}
-		funcs = append(funcs, f)
-	}
-
-	return funcs, nil
-}
-
 func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions) (types.Image, func(), error) {
 	if len(opt.ImageSources) == 0 {
 		return nil, func() {}, xerrors.Errorf("no image sources supplied")
-	}
-
-	imageSources, err := parseImageSources(opt.ImageSources)
-	if err != nil {
-		return nil, func() {}, xerrors.Errorf("unable to parse image source: %w", err)
 	}
 
 	var errs error
@@ -55,9 +37,16 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 		return nil, func() {}, xerrors.Errorf("failed to parse the image name: %w", err)
 	}
 
-	for _, tryImageSource := range imageSources {
-		img, cleanup, err := tryImageSource(ctx, imageName, ref, opt)
+	for _, src := range opt.ImageSources {
+		trySrc, ok := imageSourceFuncs[src]
+		if !ok {
+			log.Logger.Warnf("Unknown image source: '%s'", src)
+			continue
+		}
+
+		img, cleanup, err := trySrc(ctx, imageName, ref, opt)
 		if err == nil {
+			// Return v1.Image if the image is found
 			return img, cleanup, nil
 		}
 		errs = multierror.Append(errs, err)
