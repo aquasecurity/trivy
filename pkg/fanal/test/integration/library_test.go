@@ -179,6 +179,12 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 }
 
 func TestFanal_Library_DockerMode(t *testing.T) {
+	// Disable updating golden files because local images don't have compressed layer digests,
+	// and updating golden files in this function results in incomplete files.
+	if *update {
+		*update = false
+		defer func() { *update = true }()
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
