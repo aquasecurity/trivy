@@ -224,41 +224,45 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 
 	var osFound types.OS
 	for _, k := range layerKeys {
-		if err := limit.Acquire(ctx, 1); err != nil {
-			return xerrors.Errorf("semaphore acquire: %w", err)
-		}
-
 		go func(ctx context.Context, layerKey string) {
-			var err error
+			if err := limit.Acquire(ctx, 1); err != nil {
+				return // Error in this case is because context was canceled, so will be handled elsewhere
+			}
+
 			defer func() {
 				limit.Release(1)
-				if err != nil {
-					errCh <- err
+				select {
+				case done <- struct{}{}:
+				case <-ctx.Done():
 				}
-				done <- struct{}{}
 			}()
 
-			err = func() error {
-				layer := layerKeyMap[layerKey]
+			layer := layerKeyMap[layerKey]
 
-				// If it is a base layer, secret scanning should not be performed.
-				var disabledAnalyers []analyzer.Type
-				if slices.Contains(baseDiffIDs, layer.DiffID) {
-					disabledAnalyers = append(disabledAnalyers, analyzer.TypeSecret)
-				}
+			// If it is a base layer, secret scanning should not be performed.
+			var disabledAnalyers []analyzer.Type
+			if slices.Contains(baseDiffIDs, layer.DiffID) {
+				disabledAnalyers = append(disabledAnalyers, analyzer.TypeSecret)
+			}
 
-				layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyers)
-				if err != nil {
-					return xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
+			layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyers)
+			if err != nil {
+				select {
+				case errCh <- xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err):
+				case <-ctx.Done():
 				}
-				if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
-					return xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
+				return
+			}
+			if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
+				select {
+				case errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err):
+				case <-ctx.Done():
 				}
-				if lo.IsNotEmpty(layerInfo.OS) {
-					osFound = layerInfo.OS
-				}
-				return nil
-			}()
+				return
+			}
+			if lo.IsNotEmpty(layerInfo.OS) {
+				osFound = layerInfo.OS
+			}
 		}(ctx, k)
 	}
 
