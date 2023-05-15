@@ -83,7 +83,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --tf-vars strings             specify paths to override the Terraform tfvars files
       --tolerations strings         specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace                       enable more verbose trace output for custom queries
-      --vuln-type string            comma-separated list of vulnerability types (os,library) (default "os,library")
+      --vuln-type strings           comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 
 ### Options inherited from parent commands
