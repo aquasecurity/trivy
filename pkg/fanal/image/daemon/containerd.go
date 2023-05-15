@@ -15,7 +15,6 @@ import (
 	"github.com/containerd/containerd/images/archive"
 	"github.com/containerd/containerd/namespaces"
 	"github.com/containerd/containerd/platforms"
-	"github.com/containerd/containerd/reference/docker"
 	refdocker "github.com/containerd/containerd/reference/docker"
 	api "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -193,7 +192,7 @@ func readImageConfig(ctx context.Context, img containerd.Image) (ocispec.Image, 
 }
 
 // ported from https://github.com/containerd/nerdctl/blob/d110fea18018f13c3f798fa6565e482f3ff03591/pkg/inspecttypes/dockercompat/dockercompat.go#L279-L321
-func inspect(ctx context.Context, img containerd.Image, ref docker.Reference) (api.ImageInspect, []v1.History, refdocker.Reference, error) {
+func inspect(ctx context.Context, img containerd.Image, ref refdocker.Reference) (api.ImageInspect, []v1.History, refdocker.Reference, error) {
 	if _, ok := ref.(refdocker.Digested); ok {
 		ref = familiarNamed(img.Name())
 	}
@@ -204,7 +203,7 @@ func inspect(ctx context.Context, img containerd.Image, ref docker.Reference) (a
 	}
 
 	var repository string
-	if n, isNamed := ref.(docker.Named); isNamed {
+	if n, isNamed := ref.(refdocker.Named); isNamed {
 		repository = refdocker.FamiliarName(n)
 	}
 

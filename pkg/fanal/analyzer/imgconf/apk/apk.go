@@ -168,9 +168,7 @@ func (a alpineCmdAnalyzer) parseCommand(command string, envs map[string]string) 
 				add = true
 			} else if add {
 				if strings.HasPrefix(field, "$") {
-					for _, pkg := range strings.Fields(envs[field]) {
-						pkgs = append(pkgs, pkg)
-					}
+					pkgs = append(pkgs, strings.Fields(envs[field])...)
 					continue
 				}
 				pkgs = append(pkgs, field)
