@@ -56,7 +56,7 @@ Will skip all subdirectories of the testdata directory.
 Trivy also supports the [globstar](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching) pattern matching. 
 
 ```bash
-$ trivy image --skip-files "**/foo"``` image:tag
+$ trivy image --skip-files "**/foo" image:tag
 ```
 
 Will skip the file `foo` that happens to be nested under any parent(s). 
