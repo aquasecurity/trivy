@@ -23,7 +23,7 @@ var imageSourceFuncs = map[types.ImageSource]imageSourceFunc{
 
 func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions) (types.Image, func(), error) {
 	if len(opt.ImageSources) == 0 {
-		return nil, func() {}, xerrors.Errorf("no image sources supplied")
+		return nil, func() {}, xerrors.New("no image sources supplied")
 	}
 
 	var errs error
