@@ -103,9 +103,9 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		return ImageOptions{}, xerrors.Errorf("unable to parse image config scanners: %w", err)
 	}
 
-	imageSources, err := parseImageSources(getStringSlice(f.ImageSources), ftypes.AllImageSources)
+	imageSources, err := parseImageSources(getStringSlice(f.ImageSources))
 	if err != nil {
-		return ImageOptions{}, xerrors.Errorf("unable to parse runtimes: %w", err)
+		return ImageOptions{}, xerrors.Errorf("unable to parse image sources: %w", err)
 	}
 
 	var platform ftypes.Platform
@@ -130,14 +130,14 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 	}, nil
 }
 
-func parseImageSources(runtime []string, allowedImageSources ftypes.ImageSources) (ftypes.ImageSources, error) {
+func parseImageSources(srcs []string) (ftypes.ImageSources, error) {
 	var imageSources ftypes.ImageSources
-	for _, v := range runtime {
-		s := ftypes.ImageSource(v)
-		if !slices.Contains(allowedImageSources, s) {
-			return nil, xerrors.Errorf("unknown runtime: %s", v)
+	for _, s := range srcs {
+		src := ftypes.ImageSource(s)
+		if !slices.Contains(ftypes.AllImageSources, src) {
+			return nil, xerrors.Errorf("unknown image source: %s", s)
 		}
-		imageSources = append(imageSources, s)
+		imageSources = append(imageSources, src)
 	}
 	return imageSources, nil
 }

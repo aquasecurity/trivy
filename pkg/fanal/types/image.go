@@ -68,10 +68,11 @@ type ContainerdOptions struct {
 	// TODO
 }
 
-// ImageSource represents a container runtime
+// ImageSource represents the source of an image. It can be a string that identifies
+// the container registry or a type of container runtime.
 type ImageSource string
 
-// ImageSources is a slice of runtimes
+// ImageSources is a slice of image sources
 type ImageSources []ImageSource
 
 type RegistryOptions struct {
