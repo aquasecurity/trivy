@@ -3571,6 +3571,17 @@ GitHub Personal Access Token
 <p>You can see environment variables with <code>docker inspect</code>.</p>
 </div>
 <h2 id="supported">Supported</h2>
+<p>Trivy will look for the specified image in a series of locations. By default, it
+will first look in the local Docker Engine, then Containerd, Podman, and
+finally container registry.</p>
+<p>This behavior can be modified with the <code>--image-src</code> flag. For example, the
+command</p>
+<div class="highlight"><pre><span></span><code>trivy image --image-src podman,containerd alpine:3.7.3
+</code></pre></div>
+<p>Will first search in Podman. If the image is found there, it will be scanned
+and the results returned. If the image is not found in Podman, then Trivy will
+search in Containerd. If the image is not found there either, the scan will
+fail and no more image sources will be searched.</p>
 <h3 id="docker-engine">Docker Engine</h3>
 <p>Trivy tries to looks for the specified image in your local Docker Engine.
 It will be skipped if Docker Engine is not running locally.</p>
