@@ -27,7 +27,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	testdocker "github.com/aquasecurity/trivy/pkg/fanal/test/integration/docker"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 const (
@@ -82,19 +82,19 @@ func TestTLSRegistry(t *testing.T) {
 		name         string
 		imageName    string
 		imageFile    string
-		option       ftypes.ImageOptions
+		option       types.ImageOptions
 		login        bool
-		expectedOS   ftypes.OS
-		expectedRepo ftypes.Repository
+		expectedOS   types.OS
+		expectedRepo types.Repository
 		wantErr      bool
 	}{
 		{
 			name:      "happy path",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: ftypes.ImageOptions{
-				RegistryOptions: ftypes.RegistryOptions{
-					Credentials: []ftypes.Credential{
+			option: types.ImageOptions{
+				RegistryOptions: types.RegistryOptions{
+					Credentials: []types.Credential{
 						{
 							Username: registryUsername,
 							Password: registryPassword,
@@ -103,11 +103,11 @@ func TestTLSRegistry(t *testing.T) {
 					Insecure: true,
 				},
 			},
-			expectedOS: ftypes.OS{
+			expectedOS: types.OS{
 				Name:   "3.10.2",
 				Family: "alpine",
 			},
-			expectedRepo: ftypes.Repository{
+			expectedRepo: types.Repository{
 				Family:  "alpine",
 				Release: "3.10",
 			},
@@ -117,17 +117,17 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "happy path with docker login",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: ftypes.ImageOptions{
-				RegistryOptions: ftypes.RegistryOptions{
+			option: types.ImageOptions{
+				RegistryOptions: types.RegistryOptions{
 					Insecure: true,
 				},
 			},
 			login: true,
-			expectedOS: ftypes.OS{
+			expectedOS: types.OS{
 				Name:   "3.10.2",
 				Family: "alpine",
 			},
-			expectedRepo: ftypes.Repository{
+			expectedRepo: types.Repository{
 				Family:  "alpine",
 				Release: "3.10",
 			},
@@ -137,9 +137,9 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "sad path: tls verify",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: ftypes.ImageOptions{
-				RegistryOptions: ftypes.RegistryOptions{
-					Credentials: []ftypes.Credential{
+			option: types.ImageOptions{
+				RegistryOptions: types.RegistryOptions{
+					Credentials: []types.Credential{
 						{
 							Username: registryUsername,
 							Password: registryPassword,
@@ -153,8 +153,8 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "sad path: no credential",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: ftypes.ImageOptions{
-				RegistryOptions: ftypes.RegistryOptions{
+			option: types.ImageOptions{
+				RegistryOptions: types.RegistryOptions{
 					Insecure: true,
 				},
 			},
@@ -167,7 +167,8 @@ func TestTLSRegistry(t *testing.T) {
 			d, err := testdocker.New()
 			require.NoError(t, err)
 
-			tc.option.ImageSources = []ftypes.ImageSource{ftypes.RemoteImageSource}
+			// 0. Set the image source to remote
+			tc.option.ImageSources = []types.ImageSource{types.RemoteImageSource}
 
 			// 1. Load a test image from the tar file, tag it and push to the test registry.
 			err = d.ReplicateImage(ctx, tc.imageName, tc.imageFile, config)
@@ -209,7 +210,7 @@ func getRegistryURL(ctx context.Context, registryC testcontainers.Container, exp
 	return url.Parse(urlStr)
 }
 
-func analyze(ctx context.Context, imageRef string, opt ftypes.ImageOptions) (*ftypes.ArtifactDetail, error) {
+func analyze(ctx context.Context, imageRef string, opt types.ImageOptions) (*types.ArtifactDetail, error) {
 	d, err := ioutil.TempDir("", "TestRegistry-*")
 	if err != nil {
 		return nil, err
