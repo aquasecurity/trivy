@@ -65,9 +65,13 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "sad path",
+			name:      "happy path without name",
 			inputFile: "testdata/noname.json",
-			wantErr:   "unable to parse",
+		},
+		{
+			name:      "sad path",
+			inputFile: "testdata/sad.json",
+			wantErr:   "JSON decode error",
 		},
 	}
 	for _, tt := range tests {
