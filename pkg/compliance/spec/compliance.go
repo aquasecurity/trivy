@@ -5,13 +5,12 @@ import (
 	"os"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	sp "github.com/aquasecurity/defsec/pkg/spec"
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

@@ -167,6 +167,9 @@ func TestTLSRegistry(t *testing.T) {
 			d, err := testdocker.New()
 			require.NoError(t, err)
 
+			// 0. Set the image source to remote
+			tc.option.ImageSources = types.ImageSources{types.RemoteImageSource}
+
 			// 1. Load a test image from the tar file, tag it and push to the test registry.
 			err = d.ReplicateImage(ctx, tc.imageName, tc.imageFile, config)
 			require.NoError(t, err)
