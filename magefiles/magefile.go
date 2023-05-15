@@ -194,6 +194,11 @@ func (Test) GenerateExampleModules() error {
 	return nil
 }
 
+// UpdateGolden updates golden files for integration tests
+func (Test) UpdateGolden() error {
+	return sh.RunWithV(ENV, "go", "test", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...", "-update")
+}
+
 func compileWasmModules(pattern string) error {
 	goFiles, err := filepath.Glob(pattern)
 	if err != nil {

@@ -24,14 +24,13 @@
           "ID": "guzzlehttp/guzzle@7.4.4",
           "Name": "guzzlehttp/guzzle",
           "Version": "7.4.4",
-          "Indirect": false,
-          "Layer": {},
           "Licenses": [
             "MIT"
           ],
           "DependsOn": [
             "guzzlehttp/psr7@1.8.3"
           ],
+          "Layer": {},
           "Locations": [
             {
               "StartLine": 9,
@@ -43,11 +42,11 @@
           "ID": "guzzlehttp/psr7@1.8.3",
           "Name": "guzzlehttp/psr7",
           "Version": "1.8.3",
-          "Indirect": true,
-          "Layer": {},
           "Licenses": [
             "MIT"
           ],
+          "Indirect": true,
+          "Layer": {},
           "Locations": [
             {
               "StartLine": 130,
