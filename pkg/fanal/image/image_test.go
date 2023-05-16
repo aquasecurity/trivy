@@ -276,6 +276,7 @@ func TestNewDockerImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.args.option.ImageSources = types.AllImageSources
 			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
@@ -393,6 +394,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.args.option.ImageSources = types.AllImageSources
 			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
@@ -543,7 +545,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
-
+			tt.args.option.ImageSources = types.AllImageSources
 			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
 			defer cleanup()
 
