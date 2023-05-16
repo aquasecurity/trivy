@@ -23,7 +23,6 @@
         {
           "Name": "Newtonsoft.Json",
           "Version": "9.0.1",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 8,

@@ -27,8 +27,7 @@
           "DependsOn": [
             "AppCenter/Analytics/4.2.0",
             "AppCenter/Crashes/4.2.0"
-          ],
-          "Layer": {}
+          ]
         },
         {
           "ID": "AppCenter/Analytics/4.2.0",
@@ -36,14 +35,12 @@
           "Version": "4.2.0",
           "DependsOn": [
             "AppCenter/Core/4.2.0"
-          ],
-          "Layer": {}
+          ]
         },
         {
           "ID": "AppCenter/Core/4.2.0",
           "Name": "AppCenter/Core",
-          "Version": "4.2.0",
-          "Layer": {}
+          "Version": "4.2.0"
         },
         {
           "ID": "AppCenter/Crashes/4.2.0",
@@ -51,14 +48,12 @@
           "Version": "4.2.0",
           "DependsOn": [
             "AppCenter/Core/4.2.0"
-          ],
-          "Layer": {}
+          ]
         },
         {
           "ID": "KeychainAccess/4.2.1",
           "Name": "KeychainAccess",
-          "Version": "4.2.1",
-          "Layer": {}
+          "Version": "4.2.1"
         }
       ]
     }

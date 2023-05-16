@@ -1,6 +1,5 @@
 [
   {
-    "ID": "aaa_base@84.87+git20180409.04c9dae-3.45.1.x86_64",
     "Name": "aaa_base",
     "Version": "84.87+git20180409.04c9dae",
     "Release": "3.45.1",
@@ -8,23 +7,12 @@
     "SrcName": "aaa_base",
     "SrcVersion": "84.87+git20180409.04c9dae",
     "SrcRelease": "3.45.1",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "cpio@2.12-3.9.1.x86_64",
-      "filesystem@15.0-11.3.2.x86_64",
-      "fillup@1.42-2.18.x86_64",
-      "glibc@2.31-9.3.2.x86_64",
-      "sles-release@15.3-55.4.1.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "bash@4.4-19.6.1.x86_64",
     "Name": "bash",
     "Version": "4.4",
     "Release": "19.6.1",
@@ -32,20 +20,12 @@
     "SrcName": "bash",
     "SrcVersion": "4.4",
     "SrcRelease": "19.6.1",
-    "Licenses": [
-      "GPL-3.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libreadline7@7.0-19.6.1.x86_64"
-    ],
+    "License": "GPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "boost-license1_66_0@1.66.0-10.1.noarch",
     "Name": "boost-license1_66_0",
     "Version": "1.66.0",
     "Release": "10.1",
@@ -53,16 +33,12 @@
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
     "SrcRelease": "10.1",
-    "Licenses": [
-      "BSL-1.0"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
+    "License": "BSL-1.0",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "ca-certificates@2+git20210309.21162a6-2.1.noarch",
     "Name": "ca-certificates",
     "Version": "2+git20210309.21162a6",
     "Release": "2.1",
@@ -70,23 +46,12 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "2+git20210309.21162a6",
     "SrcRelease": "2.1",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "coreutils@8.32-3.2.1.x86_64",
-      "findutils@4.8.0-1.20.x86_64",
-      "openssl-1_1@1.1.1d-11.30.1.x86_64",
-      "p11-kit-tools@0.23.2-4.8.3.x86_64",
-      "p11-kit@0.23.2-4.8.3.x86_64"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "ca-certificates-mozilla@2.44-21.1.noarch",
     "Name": "ca-certificates-mozilla",
     "Version": "2.44",
     "Release": "21.1",
@@ -94,19 +59,12 @@
     "SrcName": "ca-certificates-mozilla",
     "SrcVersion": "2.44",
     "SrcRelease": "21.1",
-    "Licenses": [
-      "MPL-2.0"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "ca-certificates@2+git20210309.21162a6-2.1.noarch"
-    ],
+    "License": "MPL-2.0",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "container-suseconnect@2.3.0-4.15.2.x86_64",
     "Name": "container-suseconnect",
     "Version": "2.3.0",
     "Release": "4.15.2",
@@ -114,19 +72,12 @@
     "SrcName": "container-suseconnect",
     "SrcVersion": "2.3.0",
     "SrcRelease": "4.15.2",
-    "Licenses": [
-      "Apache-2.0"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "libzypp@17.27.0-12.1.x86_64"
-    ],
+    "License": "Apache-2.0",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "coreutils@8.32-3.2.1.x86_64",
     "Name": "coreutils",
     "Version": "8.32",
     "Release": "3.2.1",
@@ -134,24 +85,12 @@
     "SrcName": "coreutils",
     "SrcVersion": "8.32",
     "SrcRelease": "3.2.1",
-    "Licenses": [
-      "GPL-3.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libacl1@2.2.52-4.3.1.x86_64",
-      "libattr1@2.4.47-2.19.x86_64",
-      "libcap2@2.26-4.6.1.x86_64",
-      "libgmp10@6.1.2-4.6.1.x86_64",
-      "libselinux1@3.0-1.31.x86_64"
-    ],
+    "License": "GPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "cpio@2.12-3.9.1.x86_64",
     "Name": "cpio",
     "Version": "2.12",
     "Release": "3.9.1",
@@ -159,20 +98,12 @@
     "SrcName": "cpio",
     "SrcVersion": "2.12",
     "SrcRelease": "3.9.1",
-    "Licenses": [
-      "GPL-3.0"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "info@6.5-4.17.x86_64"
-    ],
+    "License": "GPL-3.0",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "cracklib@2.9.7-11.3.1.x86_64",
     "Name": "cracklib",
     "Version": "2.9.7",
     "Release": "11.3.1",
@@ -180,21 +111,12 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.7",
     "SrcRelease": "11.3.1",
-    "Licenses": [
-      "LGPL-2.1-only"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "cracklib-dict-small@2.9.7-11.3.1.x86_64",
-      "glibc@2.31-9.3.2.x86_64",
-      "libcrack2@2.9.7-11.3.1.x86_64"
-    ],
+    "License": "LGPL-2.1-only",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "cracklib-dict-small@2.9.7-11.3.1.x86_64",
     "Name": "cracklib-dict-small",
     "Version": "2.9.7",
     "Release": "11.3.1",
@@ -202,16 +124,12 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.7",
     "SrcRelease": "11.3.1",
-    "Licenses": [
-      "LGPL-2.1-only"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
+    "License": "LGPL-2.1-only",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "diffutils@3.6-4.3.1.x86_64",
     "Name": "diffutils",
     "Version": "3.6",
     "Release": "4.3.1",
@@ -219,20 +137,12 @@
     "SrcName": "diffutils",
     "SrcVersion": "3.6",
     "SrcRelease": "4.3.1",
-    "Licenses": [
-      "GFDL-1.2 and GPL-3.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "info@6.5-4.17.x86_64"
-    ],
+    "License": "GFDL-1.2 and GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "file-magic@5.32-7.14.1.noarch",
     "Name": "file-magic",
     "Version": "5.32",
     "Release": "7.14.1",
@@ -240,16 +150,12 @@
     "SrcName": "file",
     "SrcVersion": "5.32",
     "SrcRelease": "7.14.1",
-    "Licenses": [
-      "BSD-2-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
+    "License": "BSD-2-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "filesystem@15.0-11.3.2.x86_64",
     "Name": "filesystem",
     "Version": "15.0",
     "Release": "11.3.2",
@@ -257,19 +163,12 @@
     "SrcName": "filesystem",
     "SrcVersion": "15.0",
     "SrcRelease": "11.3.2",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "system-user-root@20190513-3.3.1.noarch"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "fillup@1.42-2.18.x86_64",
     "Name": "fillup",
     "Version": "1.42",
     "Release": "2.18",
@@ -277,19 +176,12 @@
     "SrcName": "fillup",
     "SrcVersion": "1.42",
     "SrcRelease": "2.18",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "findutils@4.8.0-1.20.x86_64",
     "Name": "findutils",
     "Version": "4.8.0",
     "Release": "1.20",
@@ -297,20 +189,12 @@
     "SrcName": "findutils",
     "SrcVersion": "4.8.0",
     "SrcRelease": "1.20",
-    "Licenses": [
-      "GPL-3.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libselinux1@3.0-1.31.x86_64"
-    ],
+    "License": "GPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "glibc@2.31-9.3.2.x86_64",
     "Name": "glibc",
     "Version": "2.31",
     "Release": "9.3.2",
@@ -318,58 +202,42 @@
     "SrcName": "glibc",
     "SrcVersion": "2.31",
     "SrcRelease": "9.3.2",
-    "Licenses": [
-      "LGPL-2.1-or-later AND LGPL-2.1-or-later WITH GCC-exception-2.0 AND GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "filesystem@15.0-11.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later AND LGPL-2.1-or-later WITH GCC-exception-2.0 AND GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "gpg-pubkey@307e3d54-5aaa90a5.",
     "Name": "gpg-pubkey",
     "Version": "307e3d54",
     "Release": "5aaa90a5",
     "Arch": "None",
-    "Licenses": [
-      "pubkey"
-    ],
+    "License": "pubkey",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "gpg-pubkey@39db7c82-5f68629b.",
     "Name": "gpg-pubkey",
     "Version": "39db7c82",
     "Release": "5f68629b",
     "Arch": "None",
-    "Licenses": [
-      "pubkey"
-    ],
+    "License": "pubkey",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "gpg-pubkey@50a3dd1c-50f35137.",
     "Name": "gpg-pubkey",
     "Version": "50a3dd1c",
     "Release": "50f35137",
     "Arch": "None",
-    "Licenses": [
-      "pubkey"
-    ],
+    "License": "pubkey",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "gpg2@2.2.27-1.2.x86_64",
     "Name": "gpg2",
     "Version": "2.2.27",
     "Release": "1.2",
@@ -377,30 +245,12 @@
     "SrcName": "gpg2",
     "SrcVersion": "2.2.27",
     "SrcRelease": "1.2",
-    "Licenses": [
-      "GPL-3.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libassuan0@2.5.1-2.14.x86_64",
-      "libbz2-1@1.0.6-5.11.1.x86_64",
-      "libgcrypt20@1.8.2-8.39.1.x86_64",
-      "libgpg-error0@1.29-1.8.x86_64",
-      "libksba8@1.3.5-2.14.x86_64",
-      "libnpth0@1.5-2.11.x86_64",
-      "libreadline7@7.0-19.6.1.x86_64",
-      "libsqlite3-0@3.36.0-3.12.1.x86_64",
-      "libusb-1_0-0@1.0.21-3.3.1.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64",
-      "pinentry@1.1.0-4.3.1.x86_64"
-    ],
+    "License": "GPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "grep@3.1-4.3.12.x86_64",
     "Name": "grep",
     "Version": "3.1",
     "Release": "4.3.12",
@@ -408,21 +258,12 @@
     "SrcName": "grep",
     "SrcVersion": "3.1",
     "SrcRelease": "4.3.12",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "info@6.5-4.17.x86_64",
-      "libpcre1@8.41-6.4.2.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "info@6.5-4.17.x86_64",
     "Name": "info",
     "Version": "6.5",
     "Release": "4.17",
@@ -430,21 +271,12 @@
     "SrcName": "texinfo",
     "SrcVersion": "6.5",
     "SrcRelease": "4.17",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libncurses6@6.1-5.6.2.x86_64",
-      "libzio1@1.06-2.20.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "krb5@1.16.3-3.24.1.x86_64",
     "Name": "krb5",
     "Version": "1.16.3",
     "Release": "3.24.1",
@@ -452,24 +284,12 @@
     "SrcName": "krb5",
     "SrcVersion": "1.16.3",
     "SrcRelease": "3.24.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libcom_err2@1.43.8-4.26.1.x86_64",
-      "libkeyutils1@1.5.10-5.3.1.x86_64",
-      "libopenssl1_1@1.1.1d-11.30.1.x86_64",
-      "libselinux1@3.0-1.31.x86_64",
-      "libverto1@0.2.6-3.20.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "kubic-locale-archive@2.31-10.36.noarch",
     "Name": "kubic-locale-archive",
     "Version": "2.31",
     "Release": "10.36",
@@ -477,19 +297,12 @@
     "SrcName": "kubic-locale-archive",
     "SrcVersion": "2.31",
     "SrcRelease": "10.36",
-    "Licenses": [
-      "GPL-2.0+ AND MIT AND LGPL-2.1+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "GPL-2.0+ AND MIT AND LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libacl1@2.2.52-4.3.1.x86_64",
     "Name": "libacl1",
     "Version": "2.2.52",
     "Release": "4.3.1",
@@ -497,20 +310,12 @@
     "SrcName": "acl",
     "SrcVersion": "2.2.52",
     "SrcRelease": "4.3.1",
-    "Licenses": [
-      "GPL-2.0+ and LGPL-2.1+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libattr1@2.4.47-2.19.x86_64"
-    ],
+    "License": "GPL-2.0+ and LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libassuan0@2.5.1-2.14.x86_64",
     "Name": "libassuan0",
     "Version": "2.5.1",
     "Release": "2.14",
@@ -518,20 +323,12 @@
     "SrcName": "libassuan",
     "SrcVersion": "2.5.1",
     "SrcRelease": "2.14",
-    "Licenses": [
-      "GPL-3.0+ and LGPL-2.1+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libgpg-error0@1.29-1.8.x86_64"
-    ],
+    "License": "GPL-3.0+ and LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libattr1@2.4.47-2.19.x86_64",
     "Name": "libattr1",
     "Version": "2.4.47",
     "Release": "2.19",
@@ -539,19 +336,12 @@
     "SrcName": "attr",
     "SrcVersion": "2.4.47",
     "SrcRelease": "2.19",
-    "Licenses": [
-      "GPL-2.0-or-later AND LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libaudit1@2.8.5-3.43.x86_64",
     "Name": "libaudit1",
     "Version": "2.8.5",
     "Release": "3.43",
@@ -559,19 +349,12 @@
     "SrcName": "audit",
     "SrcVersion": "2.8.5",
     "SrcRelease": "3.43",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libaugeas0@1.10.1-1.11.x86_64",
     "Name": "libaugeas0",
     "Version": "1.10.1",
     "Release": "1.11",
@@ -579,20 +362,12 @@
     "SrcName": "augeas",
     "SrcVersion": "1.10.1",
     "SrcRelease": "1.11",
-    "Licenses": [
-      "GPL-3.0-or-later AND LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libxml2-2@2.9.7-3.37.1.x86_64"
-    ],
+    "License": "GPL-3.0-or-later AND LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libblkid1@2.36.2-4.5.1.x86_64",
     "Name": "libblkid1",
     "Version": "2.36.2",
     "Release": "4.5.1",
@@ -600,19 +375,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.36.2",
     "SrcRelease": "4.5.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libboost_system1_66_0@1.66.0-10.1.x86_64",
     "Name": "libboost_system1_66_0",
     "Version": "1.66.0",
     "Release": "10.1",
@@ -620,22 +388,12 @@
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
     "SrcRelease": "10.1",
-    "Licenses": [
-      "BSL-1.0"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "boost-license1_66_0@1.66.0-10.1.noarch",
-      "glibc@2.31-9.3.2.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
-      "libstdc++6@10.3.0+git1587-1.6.4.x86_64"
-    ],
+    "License": "BSL-1.0",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libboost_thread1_66_0@1.66.0-10.1.x86_64",
     "Name": "libboost_thread1_66_0",
     "Version": "1.66.0",
     "Release": "10.1",
@@ -643,23 +401,12 @@
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
     "SrcRelease": "10.1",
-    "Licenses": [
-      "BSL-1.0"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "boost-license1_66_0@1.66.0-10.1.noarch",
-      "glibc@2.31-9.3.2.x86_64",
-      "libboost_system1_66_0@1.66.0-10.1.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
-      "libstdc++6@10.3.0+git1587-1.6.4.x86_64"
-    ],
+    "License": "BSL-1.0",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libbz2-1@1.0.6-5.11.1.x86_64",
     "Name": "libbz2-1",
     "Version": "1.0.6",
     "Release": "5.11.1",
@@ -667,19 +414,12 @@
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6",
     "SrcRelease": "5.11.1",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libcap-ng0@0.7.9-4.37.x86_64",
     "Name": "libcap-ng0",
     "Version": "0.7.9",
     "Release": "4.37",
@@ -687,19 +427,12 @@
     "SrcName": "libcap-ng",
     "SrcVersion": "0.7.9",
     "SrcRelease": "4.37",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libcap2@2.26-4.6.1.x86_64",
     "Name": "libcap2",
     "Version": "2.26",
     "Release": "4.6.1",
@@ -707,19 +440,12 @@
     "SrcName": "libcap",
     "SrcVersion": "2.26",
     "SrcRelease": "4.6.1",
-    "Licenses": [
-      "BSD-3-Clause or GPL-2.0"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "BSD-3-Clause or GPL-2.0",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libcom_err2@1.43.8-4.26.1.x86_64",
     "Name": "libcom_err2",
     "Version": "1.43.8",
     "Release": "4.26.1",
@@ -727,19 +453,12 @@
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.43.8",
     "SrcRelease": "4.26.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libcrack2@2.9.7-11.3.1.x86_64",
     "Name": "libcrack2",
     "Version": "2.9.7",
     "Release": "11.3.1",
@@ -747,21 +466,12 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.7",
     "SrcRelease": "11.3.1",
-    "Licenses": [
-      "LGPL-2.1-only"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "cracklib@2.9.7-11.3.1.x86_64",
-      "glibc@2.31-9.3.2.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64"
-    ],
+    "License": "LGPL-2.1-only",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libcrypt1@4.4.15-2.51.x86_64",
     "Name": "libcrypt1",
     "Version": "4.4.15",
     "Release": "2.51",
@@ -769,19 +479,12 @@
     "SrcName": "libxcrypt",
     "SrcVersion": "4.4.15",
     "SrcRelease": "2.51",
-    "Licenses": [
-      "LGPL-2.1-or-later AND BSD-2-Clause AND BSD-3-Clause AND SUSE-Public-Domain"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later AND BSD-2-Clause AND BSD-3-Clause AND SUSE-Public-Domain",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libcurl4@7.66.0-4.27.1.x86_64",
     "Name": "libcurl4",
     "Version": "7.66.0",
     "Release": "4.27.1",
@@ -789,27 +492,12 @@
     "SrcName": "curl",
     "SrcVersion": "7.66.0",
     "SrcRelease": "4.27.1",
-    "Licenses": [
-      "curl"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "krb5@1.16.3-3.24.1.x86_64",
-      "libidn2-0@2.2.0-3.6.1.x86_64",
-      "libldap-2_4-2@2.4.46-9.58.1.x86_64",
-      "libnghttp2-14@1.40.0-6.1.x86_64",
-      "libopenssl1_1@1.1.1d-11.30.1.x86_64",
-      "libpsl5@0.20.1-1.20.x86_64",
-      "libssh4@0.8.7-10.12.1.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64"
-    ],
+    "License": "curl",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libdw1@0.168-4.5.3.x86_64",
     "Name": "libdw1",
     "Version": "0.168",
     "Release": "4.5.3",
@@ -817,23 +505,12 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
     "SrcRelease": "4.5.3",
-    "Licenses": [
-      "SUSE-GPL-2.0-with-OSI-exception"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libbz2-1@1.0.6-5.11.1.x86_64",
-      "libelf1@0.168-4.5.3.x86_64",
-      "liblzma5@5.2.3-4.3.1.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64"
-    ],
+    "License": "SUSE-GPL-2.0-with-OSI-exception",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libebl-plugins@0.168-4.5.3.x86_64",
     "Name": "libebl-plugins",
     "Version": "0.168",
     "Release": "4.5.3",
@@ -841,21 +518,12 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
     "SrcRelease": "4.5.3",
-    "Licenses": [
-      "SUSE-GPL-2.0-with-OSI-exception"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libdw1@0.168-4.5.3.x86_64",
-      "libelf1@0.168-4.5.3.x86_64"
-    ],
+    "License": "SUSE-GPL-2.0-with-OSI-exception",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libelf1@0.168-4.5.3.x86_64",
     "Name": "libelf1",
     "Version": "0.168",
     "Release": "4.5.3",
@@ -863,21 +531,12 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
     "SrcRelease": "4.5.3",
-    "Licenses": [
-      "SUSE-GPL-2.0-with-OSI-exception"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libebl-plugins@0.168-4.5.3.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64"
-    ],
+    "License": "SUSE-GPL-2.0-with-OSI-exception",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libfdisk1@2.36.2-4.5.1.x86_64",
     "Name": "libfdisk1",
     "Version": "2.36.2",
     "Release": "4.5.1",
@@ -885,21 +544,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.36.2",
     "SrcRelease": "4.5.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libblkid1@2.36.2-4.5.1.x86_64",
-      "libuuid1@2.36.2-4.5.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libffi7@3.2.1.git259-10.8.x86_64",
     "Name": "libffi7",
     "Version": "3.2.1.git259",
     "Release": "10.8",
@@ -907,19 +557,12 @@
     "SrcName": "libffi",
     "SrcVersion": "3.2.1.git259",
     "SrcRelease": "10.8",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
     "Name": "libgcc_s1",
     "Version": "10.3.0+git1587",
     "Release": "1.6.4",
@@ -927,19 +570,12 @@
     "SrcName": "gcc10",
     "SrcVersion": "10.3.0+git1587",
     "SrcRelease": "1.6.4",
-    "Licenses": [
-      "GPL-3.0 WITH GCC-exception-3.1"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "GPL-3.0 WITH GCC-exception-3.1",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libgcrypt20@1.8.2-8.39.1.x86_64",
     "Name": "libgcrypt20",
     "Version": "1.8.2",
     "Release": "8.39.1",
@@ -947,20 +583,12 @@
     "SrcName": "libgcrypt",
     "SrcVersion": "1.8.2",
     "SrcRelease": "8.39.1",
-    "Licenses": [
-      "GPL-2.0+ AND LGPL-2.1+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libgpg-error0@1.29-1.8.x86_64"
-    ],
+    "License": "GPL-2.0+ AND LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libgcrypt20-hmac@1.8.2-8.39.1.x86_64",
     "Name": "libgcrypt20-hmac",
     "Version": "1.8.2",
     "Release": "8.39.1",
@@ -968,19 +596,12 @@
     "SrcName": "libgcrypt",
     "SrcVersion": "1.8.2",
     "SrcRelease": "8.39.1",
-    "Licenses": [
-      "GPL-2.0+ AND LGPL-2.1+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "libgcrypt20@1.8.2-8.39.1.x86_64"
-    ],
+    "License": "GPL-2.0+ AND LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libglib-2_0-0@2.62.6-3.6.1.x86_64",
     "Name": "libglib-2_0-0",
     "Version": "2.62.6",
     "Release": "3.6.1",
@@ -988,20 +609,12 @@
     "SrcName": "glib2",
     "SrcVersion": "2.62.6",
     "SrcRelease": "3.6.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libpcre1@8.41-6.4.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libgmp10@6.1.2-4.6.1.x86_64",
     "Name": "libgmp10",
     "Version": "6.1.2",
     "Release": "4.6.1",
@@ -1009,19 +622,12 @@
     "SrcName": "gmp",
     "SrcVersion": "6.1.2",
     "SrcRelease": "4.6.1",
-    "Licenses": [
-      "LGPL-3.0-or-later OR GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-3.0-or-later OR GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libgpg-error0@1.29-1.8.x86_64",
     "Name": "libgpg-error0",
     "Version": "1.29",
     "Release": "1.8",
@@ -1029,19 +635,12 @@
     "SrcName": "libgpg-error",
     "SrcVersion": "1.29",
     "SrcRelease": "1.8",
-    "Licenses": [
-      "GPL-2.0-or-later AND LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libgpgme11@1.13.1-4.3.1.x86_64",
     "Name": "libgpgme11",
     "Version": "1.13.1",
     "Release": "4.3.1",
@@ -1049,22 +648,12 @@
     "SrcName": "gpgme",
     "SrcVersion": "1.13.1",
     "SrcRelease": "4.3.1",
-    "Licenses": [
-      "LGPL-2.1-or-later AND GPL-3.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "gpg2@2.2.27-1.2.x86_64",
-      "libassuan0@2.5.1-2.14.x86_64",
-      "libgpg-error0@1.29-1.8.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later AND GPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libidn2-0@2.2.0-3.6.1.x86_64",
     "Name": "libidn2-0",
     "Version": "2.2.0",
     "Release": "3.6.1",
@@ -1072,20 +661,12 @@
     "SrcName": "libidn2",
     "SrcVersion": "2.2.0",
     "SrcRelease": "3.6.1",
-    "Licenses": [
-      "GPL-2.0-or-later OR LGPL-3.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libunistring2@0.9.10-1.1.x86_64"
-    ],
+    "License": "GPL-2.0-or-later OR LGPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libkeyutils1@1.5.10-5.3.1.x86_64",
     "Name": "libkeyutils1",
     "Version": "1.5.10",
     "Release": "5.3.1",
@@ -1093,19 +674,12 @@
     "SrcName": "keyutils",
     "SrcVersion": "1.5.10",
     "SrcRelease": "5.3.1",
-    "Licenses": [
-      "LGPL-2.1+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libksba8@1.3.5-2.14.x86_64",
     "Name": "libksba8",
     "Version": "1.3.5",
     "Release": "2.14",
@@ -1113,20 +687,12 @@
     "SrcName": "libksba",
     "SrcVersion": "1.3.5",
     "SrcRelease": "2.14",
-    "Licenses": [
-      "(LGPL-3.0+ or GPL-2.0+) and GPL-3.0+ and MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libgpg-error0@1.29-1.8.x86_64"
-    ],
+    "License": "(LGPL-3.0+ or GPL-2.0+) and GPL-3.0+ and MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libldap-2_4-2@2.4.46-9.58.1.x86_64",
     "Name": "libldap-2_4-2",
     "Version": "2.4.46",
     "Release": "9.58.1",
@@ -1134,22 +700,12 @@
     "SrcName": "openldap2",
     "SrcVersion": "2.4.46",
     "SrcRelease": "9.58.1",
-    "Licenses": [
-      "OLDAP-2.8"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libldap-data@2.4.46-9.58.1.noarch",
-      "libopenssl1_1@1.1.1d-11.30.1.x86_64",
-      "libsasl2-3@2.1.27-2.2.x86_64"
-    ],
+    "License": "OLDAP-2.8",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libldap-data@2.4.46-9.58.1.noarch",
     "Name": "libldap-data",
     "Version": "2.4.46",
     "Release": "9.58.1",
@@ -1157,16 +713,12 @@
     "SrcName": "openldap2",
     "SrcVersion": "2.4.46",
     "SrcRelease": "9.58.1",
-    "Licenses": [
-      "OLDAP-2.8"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
+    "License": "OLDAP-2.8",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "liblua5_3-5@5.3.6-3.6.1.x86_64",
     "Name": "liblua5_3-5",
     "Version": "5.3.6",
     "Release": "3.6.1",
@@ -1174,19 +726,12 @@
     "SrcName": "lua53",
     "SrcVersion": "5.3.6",
     "SrcRelease": "3.6.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "liblz4-1@1.9.2-3.3.1.x86_64",
     "Name": "liblz4-1",
     "Version": "1.9.2",
     "Release": "3.3.1",
@@ -1194,19 +739,12 @@
     "SrcName": "lz4",
     "SrcVersion": "1.9.2",
     "SrcRelease": "3.3.1",
-    "Licenses": [
-      "BSD-2-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "BSD-2-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "liblzma5@5.2.3-4.3.1.x86_64",
     "Name": "liblzma5",
     "Version": "5.2.3",
     "Release": "4.3.1",
@@ -1214,19 +752,12 @@
     "SrcName": "xz",
     "SrcVersion": "5.2.3",
     "SrcRelease": "4.3.1",
-    "Licenses": [
-      "SUSE-Public-Domain"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "SUSE-Public-Domain",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libmagic1@5.32-7.14.1.x86_64",
     "Name": "libmagic1",
     "Version": "5.32",
     "Release": "7.14.1",
@@ -1234,21 +765,12 @@
     "SrcName": "file",
     "SrcVersion": "5.32",
     "SrcRelease": "7.14.1",
-    "Licenses": [
-      "BSD-2-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "file-magic@5.32-7.14.1.noarch",
-      "glibc@2.31-9.3.2.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64"
-    ],
+    "License": "BSD-2-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libmodman1@2.0.1-1.27.x86_64",
     "Name": "libmodman1",
     "Version": "2.0.1",
     "Release": "1.27",
@@ -1256,21 +778,12 @@
     "SrcName": "libmodman",
     "SrcVersion": "2.0.1",
     "SrcRelease": "1.27",
-    "Licenses": [
-      "LGPL-2.1+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
-      "libstdc++6@10.3.0+git1587-1.6.4.x86_64"
-    ],
+    "License": "LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libmount1@2.36.2-4.5.1.x86_64",
     "Name": "libmount1",
     "Version": "2.36.2",
     "Release": "4.5.1",
@@ -1278,21 +791,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.36.2",
     "SrcRelease": "4.5.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libblkid1@2.36.2-4.5.1.x86_64",
-      "libselinux1@3.0-1.31.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libncurses6@6.1-5.6.2.x86_64",
     "Name": "libncurses6",
     "Version": "6.1",
     "Release": "5.6.2",
@@ -1300,22 +804,12 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "5.6.2",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
-      "libstdc++6@10.3.0+git1587-1.6.4.x86_64",
-      "terminfo-base@6.1-5.6.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libnghttp2-14@1.40.0-6.1.x86_64",
     "Name": "libnghttp2-14",
     "Version": "1.40.0",
     "Release": "6.1",
@@ -1323,19 +817,12 @@
     "SrcName": "nghttp2",
     "SrcVersion": "1.40.0",
     "SrcRelease": "6.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libnpth0@1.5-2.11.x86_64",
     "Name": "libnpth0",
     "Version": "1.5",
     "Release": "2.11",
@@ -1343,19 +830,12 @@
     "SrcName": "npth",
     "SrcVersion": "1.5",
     "SrcRelease": "2.11",
-    "Licenses": [
-      "LGPL-2.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-2.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libnsl2@1.2.0-2.44.x86_64",
     "Name": "libnsl2",
     "Version": "1.2.0",
     "Release": "2.44",
@@ -1363,20 +843,12 @@
     "SrcName": "libnsl",
     "SrcVersion": "1.2.0",
     "SrcRelease": "2.44",
-    "Licenses": [
-      "LGPL-2.1-only"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libtirpc3@1.2.6-1.131.x86_64"
-    ],
+    "License": "LGPL-2.1-only",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libopenssl1_1@1.1.1d-11.30.1.x86_64",
     "Name": "libopenssl1_1",
     "Version": "1.1.1d",
     "Release": "11.30.1",
@@ -1384,19 +856,12 @@
     "SrcName": "openssl-1_1",
     "SrcVersion": "1.1.1d",
     "SrcRelease": "11.30.1",
-    "Licenses": [
-      "OpenSSL"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "OpenSSL",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libopenssl1_1-hmac@1.1.1d-11.30.1.x86_64",
     "Name": "libopenssl1_1-hmac",
     "Version": "1.1.1d",
     "Release": "11.30.1",
@@ -1404,19 +869,12 @@
     "SrcName": "openssl-1_1",
     "SrcVersion": "1.1.1d",
     "SrcRelease": "11.30.1",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "libopenssl1_1@1.1.1d-11.30.1.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libp11-kit0@0.23.2-4.8.3.x86_64",
     "Name": "libp11-kit0",
     "Version": "0.23.2",
     "Release": "4.8.3",
@@ -1424,20 +882,12 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
     "SrcRelease": "4.8.3",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libffi7@3.2.1.git259-10.8.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libpcre1@8.41-6.4.2.x86_64",
     "Name": "libpcre1",
     "Version": "8.41",
     "Release": "6.4.2",
@@ -1445,19 +895,12 @@
     "SrcName": "pcre",
     "SrcVersion": "8.41",
     "SrcRelease": "6.4.2",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libpopt0@1.16-3.22.x86_64",
     "Name": "libpopt0",
     "Version": "1.16",
     "Release": "3.22",
@@ -1465,19 +908,12 @@
     "SrcName": "popt",
     "SrcVersion": "1.16",
     "SrcRelease": "3.22",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libprocps7@3.3.15-7.19.1.x86_64",
     "Name": "libprocps7",
     "Version": "3.3.15",
     "Release": "7.19.1",
@@ -1485,20 +921,12 @@
     "SrcName": "procps",
     "SrcVersion": "3.3.15",
     "SrcRelease": "7.19.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libsystemd0@246.16-7.14.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libproxy1@0.4.15-12.41.x86_64",
     "Name": "libproxy1",
     "Version": "0.4.15",
     "Release": "12.41",
@@ -1506,22 +934,12 @@
     "SrcName": "libproxy",
     "SrcVersion": "0.4.15",
     "SrcRelease": "12.41",
-    "Licenses": [
-      "GPL-2.0-or-later AND LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
-      "libmodman1@2.0.1-1.27.x86_64",
-      "libstdc++6@10.3.0+git1587-1.6.4.x86_64"
-    ],
+    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libpsl5@0.20.1-1.20.x86_64",
     "Name": "libpsl5",
     "Version": "0.20.1",
     "Release": "1.20",
@@ -1529,21 +947,12 @@
     "SrcName": "libpsl",
     "SrcVersion": "0.20.1",
     "SrcRelease": "1.20",
-    "Licenses": [
-      "MIT AND MPL-2.0"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libidn2-0@2.2.0-3.6.1.x86_64",
-      "libunistring2@0.9.10-1.1.x86_64"
-    ],
+    "License": "MIT AND MPL-2.0",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libreadline7@7.0-19.6.1.x86_64",
     "Name": "libreadline7",
     "Version": "7.0",
     "Release": "19.6.1",
@@ -1551,20 +960,12 @@
     "SrcName": "bash",
     "SrcVersion": "4.4",
     "SrcRelease": "19.6.1",
-    "Licenses": [
-      "GPL-3.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libncurses6@6.1-5.6.2.x86_64"
-    ],
+    "License": "GPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libsasl2-3@2.1.27-2.2.x86_64",
     "Name": "libsasl2-3",
     "Version": "2.1.27",
     "Release": "2.2",
@@ -1572,19 +973,12 @@
     "SrcName": "cyrus-sasl",
     "SrcVersion": "2.1.27",
     "SrcRelease": "2.2",
-    "Licenses": [
-      "BSD-4-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "BSD-4-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libselinux1@3.0-1.31.x86_64",
     "Name": "libselinux1",
     "Version": "3.0",
     "Release": "1.31",
@@ -1592,20 +986,12 @@
     "SrcName": "libselinux",
     "SrcVersion": "3.0",
     "SrcRelease": "1.31",
-    "Licenses": [
-      "SUSE-Public-Domain"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libpcre1@8.41-6.4.2.x86_64"
-    ],
+    "License": "SUSE-Public-Domain",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libsemanage1@3.0-1.27.x86_64",
     "Name": "libsemanage1",
     "Version": "3.0",
     "Release": "1.27",
@@ -1613,23 +999,12 @@
     "SrcName": "libsemanage",
     "SrcVersion": "3.0",
     "SrcRelease": "1.27",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libaudit1@2.8.5-3.43.x86_64",
-      "libbz2-1@1.0.6-5.11.1.x86_64",
-      "libselinux1@3.0-1.31.x86_64",
-      "libsepol1@3.0-1.31.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libsepol1@3.0-1.31.x86_64",
     "Name": "libsepol1",
     "Version": "3.0",
     "Release": "1.31",
@@ -1637,19 +1012,12 @@
     "SrcName": "libsepol",
     "SrcVersion": "3.0",
     "SrcRelease": "1.31",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libsigc-2_0-0@2.10.2-1.18.x86_64",
     "Name": "libsigc-2_0-0",
     "Version": "2.10.2",
     "Release": "1.18",
@@ -1657,21 +1025,12 @@
     "SrcName": "libsigc++2",
     "SrcVersion": "2.10.2",
     "SrcRelease": "1.18",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
-      "libstdc++6@10.3.0+git1587-1.6.4.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libsmartcols1@2.36.2-4.5.1.x86_64",
     "Name": "libsmartcols1",
     "Version": "2.36.2",
     "Release": "4.5.1",
@@ -1679,19 +1038,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.36.2",
     "SrcRelease": "4.5.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libsolv-tools@0.7.19-6.1.x86_64",
     "Name": "libsolv-tools",
     "Version": "0.7.19",
     "Release": "6.1",
@@ -1699,25 +1051,12 @@
     "SrcName": "libsolv",
     "SrcVersion": "0.7.19",
     "SrcRelease": "6.1",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libbz2-1@1.0.6-5.11.1.x86_64",
-      "liblzma5@5.2.3-4.3.1.x86_64",
-      "libxml2-2@2.9.7-3.37.1.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64",
-      "libzstd1@1.4.4-1.6.1.x86_64",
-      "rpm-ndb@4.14.3-40.1.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libsqlite3-0@3.36.0-3.12.1.x86_64",
     "Name": "libsqlite3-0",
     "Version": "3.36.0",
     "Release": "3.12.1",
@@ -1725,19 +1064,12 @@
     "SrcName": "sqlite3",
     "SrcVersion": "3.36.0",
     "SrcRelease": "3.12.1",
-    "Licenses": [
-      "SUSE-Public-Domain"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "SUSE-Public-Domain",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libssh4@0.8.7-10.12.1.x86_64",
     "Name": "libssh4",
     "Version": "0.8.7",
     "Release": "10.12.1",
@@ -1745,22 +1077,12 @@
     "SrcName": "libssh",
     "SrcVersion": "0.8.7",
     "SrcRelease": "10.12.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "krb5@1.16.3-3.24.1.x86_64",
-      "libopenssl1_1@1.1.1d-11.30.1.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libstdc++6@10.3.0+git1587-1.6.4.x86_64",
     "Name": "libstdc++6",
     "Version": "10.3.0+git1587",
     "Release": "1.6.4",
@@ -1768,20 +1090,12 @@
     "SrcName": "gcc10",
     "SrcVersion": "10.3.0+git1587",
     "SrcRelease": "1.6.4",
-    "Licenses": [
-      "GPL-3.0 WITH GCC-exception-3.1"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64"
-    ],
+    "License": "GPL-3.0 WITH GCC-exception-3.1",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libsystemd0@246.16-7.14.1.x86_64",
     "Name": "libsystemd0",
     "Version": "246.16",
     "Release": "7.14.1",
@@ -1789,25 +1103,12 @@
     "SrcName": "systemd",
     "SrcVersion": "246.16",
     "SrcRelease": "7.14.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libcap2@2.26-4.6.1.x86_64",
-      "libgcrypt20@1.8.2-8.39.1.x86_64",
-      "liblz4-1@1.9.2-3.3.1.x86_64",
-      "liblzma5@5.2.3-4.3.1.x86_64",
-      "libselinux1@3.0-1.31.x86_64",
-      "libzstd1@1.4.4-1.6.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libtasn1@4.13-4.5.1.x86_64",
     "Name": "libtasn1",
     "Version": "4.13",
     "Release": "4.5.1",
@@ -1815,21 +1116,12 @@
     "SrcName": "libtasn1",
     "SrcVersion": "4.13",
     "SrcRelease": "4.5.1",
-    "Licenses": [
-      "LGPL-2.1-or-later AND GPL-3.0-only"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "info@6.5-4.17.x86_64",
-      "libtasn1-6@4.13-4.5.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later AND GPL-3.0-only",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libtasn1-6@4.13-4.5.1.x86_64",
     "Name": "libtasn1-6",
     "Version": "4.13",
     "Release": "4.5.1",
@@ -1837,20 +1129,12 @@
     "SrcName": "libtasn1",
     "SrcVersion": "4.13",
     "SrcRelease": "4.5.1",
-    "Licenses": [
-      "LGPL-2.1-or-later AND GPL-3.0-only"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libtasn1@4.13-4.5.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later AND GPL-3.0-only",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libtirpc-netconfig@1.2.6-1.131.x86_64",
     "Name": "libtirpc-netconfig",
     "Version": "1.2.6",
     "Release": "1.131",
@@ -1858,16 +1142,12 @@
     "SrcName": "libtirpc",
     "SrcVersion": "1.2.6",
     "SrcRelease": "1.131",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libtirpc3@1.2.6-1.131.x86_64",
     "Name": "libtirpc3",
     "Version": "1.2.6",
     "Release": "1.131",
@@ -1875,21 +1155,12 @@
     "SrcName": "libtirpc",
     "SrcVersion": "1.2.6",
     "SrcRelease": "1.131",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "krb5@1.16.3-3.24.1.x86_64",
-      "libtirpc-netconfig@1.2.6-1.131.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libudev1@246.16-7.14.1.x86_64",
     "Name": "libudev1",
     "Version": "246.16",
     "Release": "7.14.1",
@@ -1897,20 +1168,12 @@
     "SrcName": "systemd",
     "SrcVersion": "246.16",
     "SrcRelease": "7.14.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libselinux1@3.0-1.31.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libunistring2@0.9.10-1.1.x86_64",
     "Name": "libunistring2",
     "Version": "0.9.10",
     "Release": "1.1",
@@ -1918,19 +1181,12 @@
     "SrcName": "libunistring",
     "SrcVersion": "0.9.10",
     "SrcRelease": "1.1",
-    "Licenses": [
-      "LGPL-3.0-or-later OR GPL-2.0-only"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "LGPL-3.0-or-later OR GPL-2.0-only",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libusb-1_0-0@1.0.21-3.3.1.x86_64",
     "Name": "libusb-1_0-0",
     "Version": "1.0.21",
     "Release": "3.3.1",
@@ -1938,20 +1194,12 @@
     "SrcName": "libusb-1_0",
     "SrcVersion": "1.0.21",
     "SrcRelease": "3.3.1",
-    "Licenses": [
-      "LGPL-2.1+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libudev1@246.16-7.14.1.x86_64"
-    ],
+    "License": "LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libutempter0@1.1.6-3.42.x86_64",
     "Name": "libutempter0",
     "Version": "1.1.6",
     "Release": "3.42",
@@ -1959,21 +1207,12 @@
     "SrcName": "utempter",
     "SrcVersion": "1.1.6",
     "SrcRelease": "3.42",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "permissions@20181225-23.6.1.x86_64",
-      "system-group-hardware@20170617-15.86.noarch"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libuuid1@2.36.2-4.5.1.x86_64",
     "Name": "libuuid1",
     "Version": "2.36.2",
     "Release": "4.5.1",
@@ -1981,19 +1220,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.36.2",
     "SrcRelease": "4.5.1",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libverto1@0.2.6-3.20.x86_64",
     "Name": "libverto1",
     "Version": "0.2.6",
     "Release": "3.20",
@@ -2001,19 +1233,12 @@
     "SrcName": "libverto",
     "SrcVersion": "0.2.6",
     "SrcRelease": "3.20",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libxml2-2@2.9.7-3.37.1.x86_64",
     "Name": "libxml2-2",
     "Version": "2.9.7",
     "Release": "3.37.1",
@@ -2021,21 +1246,12 @@
     "SrcName": "libxml2",
     "SrcVersion": "2.9.7",
     "SrcRelease": "3.37.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "liblzma5@5.2.3-4.3.1.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libyaml-cpp0_6@0.6.1-4.2.1.x86_64",
     "Name": "libyaml-cpp0_6",
     "Version": "0.6.1",
     "Release": "4.2.1",
@@ -2043,21 +1259,12 @@
     "SrcName": "yaml-cpp",
     "SrcVersion": "0.6.1",
     "SrcRelease": "4.2.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
-      "libstdc++6@10.3.0+git1587-1.6.4.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libz1@1.2.11-3.21.1.x86_64",
     "Name": "libz1",
     "Version": "1.2.11",
     "Release": "3.21.1",
@@ -2065,19 +1272,12 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.11",
     "SrcRelease": "3.21.1",
-    "Licenses": [
-      "Zlib"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "Zlib",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libzio1@1.06-2.20.x86_64",
     "Name": "libzio1",
     "Version": "1.06",
     "Release": "2.20",
@@ -2085,22 +1285,12 @@
     "SrcName": "libzio",
     "SrcVersion": "1.06",
     "SrcRelease": "2.20",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libbz2-1@1.0.6-5.11.1.x86_64",
-      "liblzma5@5.2.3-4.3.1.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libzstd1@1.4.4-1.6.1.x86_64",
     "Name": "libzstd1",
     "Version": "1.4.4",
     "Release": "1.6.1",
@@ -2108,19 +1298,12 @@
     "SrcName": "zstd",
     "SrcVersion": "1.4.4",
     "SrcRelease": "1.6.1",
-    "Licenses": [
-      "BSD-3-Clause AND GPL-2.0-only"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "BSD-3-Clause AND GPL-2.0-only",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "libzypp@17.27.0-12.1.x86_64",
     "Name": "libzypp",
     "Version": "17.27.0",
     "Release": "12.1",
@@ -2128,35 +1311,12 @@
     "SrcName": "libzypp",
     "SrcVersion": "17.27.0",
     "SrcRelease": "12.1",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libboost_thread1_66_0@1.66.0-10.1.x86_64",
-      "libcurl4@7.66.0-4.27.1.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
-      "libglib-2_0-0@2.62.6-3.6.1.x86_64",
-      "libgpgme11@1.13.1-4.3.1.x86_64",
-      "libopenssl1_1@1.1.1d-11.30.1.x86_64",
-      "libproxy1@0.4.15-12.41.x86_64",
-      "libsigc-2_0-0@2.10.2-1.18.x86_64",
-      "libsolv-tools@0.7.19-6.1.x86_64",
-      "libstdc++6@10.3.0+git1587-1.6.4.x86_64",
-      "libudev1@246.16-7.14.1.x86_64",
-      "libxml2-2@2.9.7-3.37.1.x86_64",
-      "libyaml-cpp0_6@0.6.1-4.2.1.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64",
-      "libzstd1@1.4.4-1.6.1.x86_64",
-      "rpm-ndb@4.14.3-40.1.x86_64"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "login_defs@4.8.1-2.43.noarch",
     "Name": "login_defs",
     "Version": "4.8.1",
     "Release": "2.43",
@@ -2164,16 +1324,12 @@
     "SrcName": "shadow",
     "SrcVersion": "4.8.1",
     "SrcRelease": "2.43",
-    "Licenses": [
-      "BSD-3-Clause AND GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
+    "License": "BSD-3-Clause AND GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "ncurses-utils@6.1-5.6.2.x86_64",
     "Name": "ncurses-utils",
     "Version": "6.1",
     "Release": "5.6.2",
@@ -2181,20 +1337,12 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "5.6.2",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libncurses6@6.1-5.6.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "netcfg@11.6-3.3.1.noarch",
     "Name": "netcfg",
     "Version": "11.6",
     "Release": "3.3.1",
@@ -2202,19 +1350,12 @@
     "SrcName": "netcfg",
     "SrcVersion": "11.6",
     "SrcRelease": "3.3.1",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "coreutils@8.32-3.2.1.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "openssl-1_1@1.1.1d-11.30.1.x86_64",
     "Name": "openssl-1_1",
     "Version": "1.1.1d",
     "Release": "11.30.1",
@@ -2222,20 +1363,12 @@
     "SrcName": "openssl-1_1",
     "SrcVersion": "1.1.1d",
     "SrcRelease": "11.30.1",
-    "Licenses": [
-      "OpenSSL"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libopenssl1_1@1.1.1d-11.30.1.x86_64"
-    ],
+    "License": "OpenSSL",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "p11-kit@0.23.2-4.8.3.x86_64",
     "Name": "p11-kit",
     "Version": "0.23.2",
     "Release": "4.8.3",
@@ -2243,21 +1376,12 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
     "SrcRelease": "4.8.3",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libp11-kit0@0.23.2-4.8.3.x86_64",
-      "libtasn1-6@4.13-4.5.1.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "p11-kit-tools@0.23.2-4.8.3.x86_64",
     "Name": "p11-kit-tools",
     "Version": "0.23.2",
     "Release": "4.8.3",
@@ -2265,21 +1389,12 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
     "SrcRelease": "4.8.3",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libp11-kit0@0.23.2-4.8.3.x86_64",
-      "libtasn1-6@4.13-4.5.1.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "pam@1.3.0-6.38.1.x86_64",
     "Name": "pam",
     "Version": "1.3.0",
     "Release": "6.38.1",
@@ -2287,27 +1402,12 @@
     "SrcName": "pam",
     "SrcVersion": "1.3.0",
     "SrcRelease": "6.38.1",
-    "Licenses": [
-      "GPL-2.0+ or BSD-3-Clause"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libaudit1@2.8.5-3.43.x86_64",
-      "libcrack2@2.9.7-11.3.1.x86_64",
-      "libcrypt1@4.4.15-2.51.x86_64",
-      "libnsl2@1.2.0-2.44.x86_64",
-      "libselinux1@3.0-1.31.x86_64",
-      "libtirpc3@1.2.6-1.131.x86_64",
-      "permissions@20181225-23.6.1.x86_64",
-      "system-user-root@20190513-3.3.1.noarch"
-    ],
+    "License": "GPL-2.0+ or BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "patterns-base-fips@20200124-10.5.1.x86_64",
     "Name": "patterns-base-fips",
     "Version": "20200124",
     "Release": "10.5.1",
@@ -2315,16 +1415,12 @@
     "SrcName": "patterns-base",
     "SrcVersion": "20200124",
     "SrcRelease": "10.5.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "perl-base@5.26.1-15.87.x86_64",
     "Name": "perl-base",
     "Version": "5.26.1",
     "Release": "15.87",
@@ -2332,20 +1428,12 @@
     "SrcName": "perl",
     "SrcVersion": "5.26.1",
     "SrcRelease": "15.87",
-    "Licenses": [
-      "Artistic-1.0 or GPL-2.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libcrypt1@4.4.15-2.51.x86_64"
-    ],
+    "License": "Artistic-1.0 or GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "permissions@20181225-23.6.1.x86_64",
     "Name": "permissions",
     "Version": "20181225",
     "Release": "23.6.1",
@@ -2353,25 +1441,12 @@
     "SrcName": "permissions",
     "SrcVersion": "20181225",
     "SrcRelease": "23.6.1",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "coreutils@8.32-3.2.1.x86_64",
-      "diffutils@3.6-4.3.1.x86_64",
-      "fillup@1.42-2.18.x86_64",
-      "glibc@2.31-9.3.2.x86_64",
-      "grep@3.1-4.3.12.x86_64",
-      "libcap2@2.26-4.6.1.x86_64",
-      "system-user-root@20190513-3.3.1.noarch"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "pinentry@1.1.0-4.3.1.x86_64",
     "Name": "pinentry",
     "Version": "1.1.0",
     "Release": "4.3.1",
@@ -2379,23 +1454,12 @@
     "SrcName": "pinentry",
     "SrcVersion": "1.1.0",
     "SrcRelease": "4.3.1",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "info@6.5-4.17.x86_64",
-      "libassuan0@2.5.1-2.14.x86_64",
-      "libgpg-error0@1.29-1.8.x86_64",
-      "libncurses6@6.1-5.6.2.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "procps@3.3.15-7.19.1.x86_64",
     "Name": "procps",
     "Version": "3.3.15",
     "Release": "7.19.1",
@@ -2403,21 +1467,12 @@
     "SrcName": "procps",
     "SrcVersion": "3.3.15",
     "SrcRelease": "7.19.1",
-    "Licenses": [
-      "GPL-2.0-or-later AND LGPL-2.1-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libncurses6@6.1-5.6.2.x86_64",
-      "libprocps7@3.3.15-7.19.1.x86_64"
-    ],
+    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "rpm-config-SUSE@1-3.61.noarch",
     "Name": "rpm-config-SUSE",
     "Version": "1",
     "Release": "3.61",
@@ -2425,19 +1480,12 @@
     "SrcName": "rpm-config-SUSE",
     "SrcVersion": "1",
     "SrcRelease": "3.61",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "rpm-ndb@4.14.3-40.1.x86_64"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "rpm-ndb@4.14.3-40.1.x86_64",
     "Name": "rpm-ndb",
     "Version": "4.14.3",
     "Release": "40.1",
@@ -2445,37 +1493,12 @@
     "SrcName": "rpm-ndb",
     "SrcVersion": "4.14.3",
     "SrcRelease": "40.1",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "coreutils@8.32-3.2.1.x86_64",
-      "diffutils@3.6-4.3.1.x86_64",
-      "fillup@1.42-2.18.x86_64",
-      "glibc@2.31-9.3.2.x86_64",
-      "grep@3.1-4.3.12.x86_64",
-      "libacl1@2.2.52-4.3.1.x86_64",
-      "libbz2-1@1.0.6-5.11.1.x86_64",
-      "libcap2@2.26-4.6.1.x86_64",
-      "libdw1@0.168-4.5.3.x86_64",
-      "libelf1@0.168-4.5.3.x86_64",
-      "libgcrypt20@1.8.2-8.39.1.x86_64",
-      "liblua5_3-5@5.3.6-3.6.1.x86_64",
-      "liblzma5@5.2.3-4.3.1.x86_64",
-      "libmagic1@5.32-7.14.1.x86_64",
-      "libpopt0@1.16-3.22.x86_64",
-      "libselinux1@3.0-1.31.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64",
-      "libzstd1@1.4.4-1.6.1.x86_64",
-      "rpm-config-SUSE@1-3.61.noarch"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "sed@4.4-11.6.x86_64",
     "Name": "sed",
     "Version": "4.4",
     "Release": "11.6",
@@ -2483,22 +1506,12 @@
     "SrcName": "sed",
     "SrcVersion": "4.4",
     "SrcRelease": "11.6",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "info@6.5-4.17.x86_64",
-      "libacl1@2.2.52-4.3.1.x86_64",
-      "libselinux1@3.0-1.31.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "shadow@4.8.1-2.43.x86_64",
     "Name": "shadow",
     "Version": "4.8.1",
     "Release": "2.43",
@@ -2506,29 +1519,12 @@
     "SrcName": "shadow",
     "SrcVersion": "4.8.1",
     "SrcRelease": "2.43",
-    "Licenses": [
-      "BSD-3-Clause AND GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libacl1@2.2.52-4.3.1.x86_64",
-      "libattr1@2.4.47-2.19.x86_64",
-      "libaudit1@2.8.5-3.43.x86_64",
-      "libcrypt1@4.4.15-2.51.x86_64",
-      "libselinux1@3.0-1.31.x86_64",
-      "libsemanage1@3.0-1.27.x86_64",
-      "login_defs@4.8.1-2.43.noarch",
-      "pam@1.3.0-6.38.1.x86_64",
-      "permissions@20181225-23.6.1.x86_64",
-      "system-user-root@20190513-3.3.1.noarch"
-    ],
+    "License": "BSD-3-Clause AND GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "sles-release@15.3-55.4.1.x86_64",
     "Name": "sles-release",
     "Version": "15.3",
     "Release": "55.4.1",
@@ -2536,20 +1532,12 @@
     "SrcName": "sles-release",
     "SrcVersion": "15.3",
     "SrcRelease": "55.4.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "coreutils@8.32-3.2.1.x86_64",
-      "glibc@2.31-9.3.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "suse-build-key@12.0-8.16.1.noarch",
     "Name": "suse-build-key",
     "Version": "12.0",
     "Release": "8.16.1",
@@ -2557,20 +1545,12 @@
     "SrcName": "suse-build-key",
     "SrcVersion": "12.0",
     "SrcRelease": "8.16.1",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "coreutils@8.32-3.2.1.x86_64",
-      "gpg2@2.2.27-1.2.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "system-group-hardware@20170617-15.86.noarch",
     "Name": "system-group-hardware",
     "Version": "20170617",
     "Release": "15.86",
@@ -2578,20 +1558,12 @@
     "SrcName": "system-users",
     "SrcVersion": "20170617",
     "SrcRelease": "15.86",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "shadow@4.8.1-2.43.x86_64",
-      "sysuser-shadow@2.0-4.2.8.noarch"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "system-user-root@20190513-3.3.1.noarch",
     "Name": "system-user-root",
     "Version": "20190513",
     "Release": "3.3.1",
@@ -2599,16 +1571,12 @@
     "SrcName": "system-user-root",
     "SrcVersion": "20190513",
     "SrcRelease": "3.3.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "sysuser-shadow@2.0-4.2.8.noarch",
     "Name": "sysuser-shadow",
     "Version": "2.0",
     "Release": "4.2.8",
@@ -2616,19 +1584,12 @@
     "SrcName": "sysuser-tools",
     "SrcVersion": "2.0",
     "SrcRelease": "4.2.8",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "shadow@4.8.1-2.43.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "terminfo-base@6.1-5.6.2.x86_64",
     "Name": "terminfo-base",
     "Version": "6.1",
     "Release": "5.6.2",
@@ -2636,19 +1597,12 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "5.6.2",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "libncurses6@6.1-5.6.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "util-linux@2.36.2-4.5.1.x86_64",
     "Name": "util-linux",
     "Version": "2.36.2",
     "Release": "4.5.1",
@@ -2656,37 +1610,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.36.2",
     "SrcRelease": "4.5.1",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "info@6.5-4.17.x86_64",
-      "libaudit1@2.8.5-3.43.x86_64",
-      "libblkid1@2.36.2-4.5.1.x86_64",
-      "libcap-ng0@0.7.9-4.37.x86_64",
-      "libcrypt1@4.4.15-2.51.x86_64",
-      "libfdisk1@2.36.2-4.5.1.x86_64",
-      "libmount1@2.36.2-4.5.1.x86_64",
-      "libncurses6@6.1-5.6.2.x86_64",
-      "libreadline7@7.0-19.6.1.x86_64",
-      "libselinux1@3.0-1.31.x86_64",
-      "libsmartcols1@2.36.2-4.5.1.x86_64",
-      "libutempter0@1.1.6-3.42.x86_64",
-      "libuuid1@2.36.2-4.5.1.x86_64",
-      "libz1@1.2.11-3.21.1.x86_64",
-      "login_defs@4.8.1-2.43.noarch",
-      "pam@1.3.0-6.38.1.x86_64",
-      "permissions@20181225-23.6.1.x86_64",
-      "system-group-hardware@20170617-15.86.noarch"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }
   },
   {
-    "ID": "zypper@1.14.46-13.1.x86_64",
     "Name": "zypper",
     "Version": "1.14.46",
     "Release": "13.1",
@@ -2694,20 +1623,7 @@
     "SrcName": "zypper",
     "SrcVersion": "1.14.46",
     "SrcRelease": "13.1",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "SUSE LLC \u003chttps://www.suse.com/\u003e",
-    "DependsOn": [
-      "glibc@2.31-9.3.2.x86_64",
-      "libaugeas0@1.10.1-1.11.x86_64",
-      "libgcc_s1@10.3.0+git1587-1.6.4.x86_64",
-      "libreadline7@7.0-19.6.1.x86_64",
-      "libstdc++6@10.3.0+git1587-1.6.4.x86_64",
-      "libxml2-2@2.9.7-3.37.1.x86_64",
-      "libzypp@17.27.0-12.1.x86_64",
-      "procps@3.3.15-7.19.1.x86_64"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:df03f5ac688c255988c08ee67da08cae2f2697eb2dbbaba3afb0bf2da2ff69d7"
     }

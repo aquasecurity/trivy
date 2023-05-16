@@ -1,6 +1,5 @@
 [
   {
-    "ID": "acl@2.2.51-14.el7.x86_64",
     "Name": "acl",
     "Version": "2.2.51",
     "Release": "14.el7",
@@ -8,25 +7,12 @@
     "SrcName": "acl",
     "SrcVersion": "2.2.51",
     "SrcRelease": "14.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libattr@2.4.46-13.el7.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "audit-libs@2.8.5-4.el7.x86_64",
     "Name": "audit-libs",
     "Version": "2.8.5",
     "Release": "4.el7",
@@ -34,24 +20,12 @@
     "SrcName": "audit",
     "SrcVersion": "2.8.5",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libcap-ng@0.7.5-4.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "basesystem@10.0-7.el7.noarch",
     "Name": "basesystem",
     "Version": "10.0",
     "Release": "7.el7",
@@ -59,24 +33,12 @@
     "SrcName": "basesystem",
     "SrcVersion": "10.0",
     "SrcRelease": "7.el7",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "filesystem@3.2-25.el7.x86_64",
-      "setup@2.8.71-10.el7.noarch"
-    ],
+    "License": "Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "bash@4.2.46-33.el7.x86_64",
     "Name": "bash",
     "Version": "4.2.46",
     "Release": "33.el7",
@@ -84,24 +46,12 @@
     "SrcName": "bash",
     "SrcVersion": "4.2.46",
     "SrcRelease": "33.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "binutils@2.27-41.base.el7.x86_64",
     "Name": "binutils",
     "Version": "2.27",
     "Release": "41.base.el7",
@@ -109,26 +59,12 @@
     "SrcName": "binutils",
     "SrcVersion": "2.27",
     "SrcRelease": "41.base.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "bzip2-libs@1.0.6-13.el7.x86_64",
     "Name": "bzip2-libs",
     "Version": "1.0.6",
     "Release": "13.el7",
@@ -136,23 +72,12 @@
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6",
     "SrcRelease": "13.el7",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "ca-certificates@2018.2.22-70.0.el7_5.noarch",
     "Name": "ca-certificates",
     "Version": "2018.2.22",
     "Release": "70.0.el7_5",
@@ -160,25 +85,12 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "2018.2.22",
     "SrcRelease": "70.0.el7_5",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "p11-kit-trust@0.23.5-3.el7.x86_64",
-      "p11-kit@0.23.5-3.el7.x86_64"
-    ],
+    "License": "Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "chkconfig@1.7.4-1.el7.x86_64",
     "Name": "chkconfig",
     "Version": "1.7.4",
     "Release": "1.el7",
@@ -186,27 +98,12 @@
     "SrcName": "chkconfig",
     "SrcVersion": "1.7.4",
     "SrcRelease": "1.el7",
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "libsepol@2.5-10.el7.x86_64",
-      "popt@1.13-16.el7.x86_64"
-    ],
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "coreutils@8.22-24.el7.x86_64",
     "Name": "coreutils",
     "Version": "8.22",
     "Release": "24.el7",
@@ -214,32 +111,12 @@
     "SrcName": "coreutils",
     "SrcVersion": "8.22",
     "SrcRelease": "24.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "gmp@6.0.0-15.el7.x86_64",
-      "grep@2.20-3.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libattr@2.4.46-13.el7.x86_64",
-      "libcap@2.22-10.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "ncurses@5.9-14.20130511.el7_4.x86_64",
-      "openssl-libs@1.0.2k-19.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "cpio@2.11-27.el7.x86_64",
     "Name": "cpio",
     "Version": "2.11",
     "Release": "27.el7",
@@ -247,24 +124,12 @@
     "SrcName": "cpio",
     "SrcVersion": "2.11",
     "SrcRelease": "27.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "cracklib@2.9.0-11.el7.x86_64",
     "Name": "cracklib",
     "Version": "2.9.0",
     "Release": "11.el7",
@@ -272,26 +137,12 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.0",
     "SrcRelease": "11.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "gzip@1.5-10.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "cracklib-dicts@2.9.0-11.el7.x86_64",
     "Name": "cracklib-dicts",
     "Version": "2.9.0",
     "Release": "11.el7",
@@ -299,23 +150,12 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.0",
     "SrcRelease": "11.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "cracklib@2.9.0-11.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "cryptsetup-libs@2.0.3-5.el7.x86_64",
     "Name": "cryptsetup-libs",
     "Version": "2.0.3",
     "Release": "5.el7",
@@ -323,29 +163,12 @@
     "SrcName": "cryptsetup",
     "SrcVersion": "2.0.3",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "GPLv2+ and LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "device-mapper-libs@1.02.158-2.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "json-c@0.11-4.el7_0.x86_64",
-      "libblkid@2.23.2-61.el7.x86_64",
-      "libgcrypt@1.5.3-14.el7.x86_64",
-      "libgpg-error@1.12-3.el7.x86_64",
-      "libuuid@2.23.2-61.el7.x86_64"
-    ],
+    "License": "GPLv2+ and LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "curl@7.29.0-54.el7.x86_64",
     "Name": "curl",
     "Version": "7.29.0",
     "Release": "54.el7",
@@ -353,28 +176,12 @@
     "SrcName": "curl",
     "SrcVersion": "7.29.0",
     "SrcRelease": "54.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libcurl@7.29.0-54.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64",
-      "nss-util@3.44.0-3.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "cyrus-sasl-lib@2.1.26-23.el7.x86_64",
     "Name": "cyrus-sasl-lib",
     "Version": "2.1.26",
     "Release": "23.el7",
@@ -382,26 +189,12 @@
     "SrcName": "cyrus-sasl",
     "SrcVersion": "2.1.26",
     "SrcRelease": "23.el7",
-    "Licenses": [
-      "BSD with advertising"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "krb5-libs@1.15.1-37.el7_7.2.x86_64",
-      "libcom_err@1.42.9-16.el7.x86_64",
-      "libdb@5.3.21-25.el7.x86_64"
-    ],
+    "License": "BSD with advertising",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "dbus@1.10.24-13.el7_6.x86_64",
     "Name": "dbus",
     "Version": "1.10.24",
     "Release": "13.el7_6",
@@ -411,31 +204,12 @@
     "SrcVersion": "1.10.24",
     "SrcRelease": "13.el7_6",
     "SrcEpoch": 1,
-    "Licenses": [
-      "(GPLv2+ or AFL) and GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "bash@4.2.46-33.el7.x86_64",
-      "dbus-libs@1.10.24-13.el7_6.x86_64",
-      "expat@2.1.0-10.el7_3.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libcap-ng@0.7.5-4.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "systemd-libs@219-67.el7_7.1.x86_64",
-      "systemd@219-67.el7_7.1.x86_64"
-    ],
+    "License": "(GPLv2+ or AFL) and GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "dbus-glib@0.100-7.el7.x86_64",
     "Name": "dbus-glib",
     "Version": "0.100",
     "Release": "7.el7",
@@ -443,27 +217,12 @@
     "SrcName": "dbus-glib",
     "SrcVersion": "0.100",
     "SrcRelease": "7.el7",
-    "Licenses": [
-      "AFL and GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "chkconfig@1.7.4-1.el7.x86_64",
-      "dbus-libs@1.10.24-13.el7_6.x86_64",
-      "expat@2.1.0-10.el7_3.x86_64",
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "AFL and GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "dbus-libs@1.10.24-13.el7_6.x86_64",
     "Name": "dbus-libs",
     "Version": "1.10.24",
     "Release": "13.el7_6",
@@ -473,24 +232,12 @@
     "SrcVersion": "1.10.24",
     "SrcRelease": "13.el7_6",
     "SrcEpoch": 1,
-    "Licenses": [
-      "(GPLv2+ or AFL) and GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "systemd-libs@219-67.el7_7.1.x86_64"
-    ],
+    "License": "(GPLv2+ or AFL) and GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "dbus-python@1.1.1-9.el7.x86_64",
     "Name": "dbus-python",
     "Version": "1.1.1",
     "Release": "9.el7",
@@ -498,27 +245,12 @@
     "SrcName": "dbus-python",
     "SrcVersion": "1.1.1",
     "SrcRelease": "9.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "dbus-glib@0.100-7.el7.x86_64",
-      "dbus-libs@1.10.24-13.el7_6.x86_64",
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "device-mapper@1.02.158-2.el7.x86_64",
     "Name": "device-mapper",
     "Version": "1.02.158",
     "Release": "2.el7",
@@ -528,27 +260,12 @@
     "SrcVersion": "2.02.185",
     "SrcRelease": "2.el7",
     "SrcEpoch": 7,
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "device-mapper-libs@1.02.158-2.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "systemd@219-67.el7_7.1.x86_64",
-      "util-linux@2.23.2-61.el7.x86_64"
-    ],
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "device-mapper-libs@1.02.158-2.el7.x86_64",
     "Name": "device-mapper-libs",
     "Version": "1.02.158",
     "Release": "2.el7",
@@ -558,27 +275,12 @@
     "SrcVersion": "2.02.185",
     "SrcRelease": "2.el7",
     "SrcEpoch": 7,
-    "Licenses": [
-      "LGPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "device-mapper@1.02.158-2.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "libsepol@2.5-10.el7.x86_64",
-      "systemd-libs@219-67.el7_7.1.x86_64"
-    ],
+    "License": "LGPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "diffutils@3.3-5.el7.x86_64",
     "Name": "diffutils",
     "Version": "3.3",
     "Release": "5.el7",
@@ -586,25 +288,12 @@
     "SrcName": "diffutils",
     "SrcVersion": "3.3",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "info@5.1-5.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "dmidecode@3.2-3.el7.x86_64",
     "Name": "dmidecode",
     "Version": "3.2",
     "Release": "3.el7",
@@ -614,23 +303,12 @@
     "SrcVersion": "3.2",
     "SrcRelease": "3.el7",
     "SrcEpoch": 1,
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "dracut@033-564.el7.x86_64",
     "Name": "dracut",
     "Version": "033",
     "Release": "564.el7",
@@ -638,40 +316,12 @@
     "SrcName": "dracut",
     "SrcVersion": "033",
     "SrcRelease": "564.el7",
-    "Licenses": [
-      "GPLv2+ and LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "cpio@2.11-27.el7.x86_64",
-      "filesystem@3.2-25.el7.x86_64",
-      "findutils@4.5.11-6.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "grep@2.20-3.el7.x86_64",
-      "gzip@1.5-10.el7.x86_64",
-      "hardlink@1.0-19.el7.x86_64",
-      "kmod@20-25.el7.x86_64",
-      "kpartx@0.4.9-127.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "procps-ng@3.3.10-26.el7.x86_64",
-      "sed@4.2.2-5.el7.x86_64",
-      "systemd@219-67.el7_7.1.x86_64",
-      "tar@1.26-35.el7.x86_64",
-      "util-linux@2.23.2-61.el7.x86_64",
-      "xz@5.2.2-1.el7.x86_64"
-    ],
+    "License": "GPLv2+ and LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "elfutils-default-yama-scope@0.176-2.el7.noarch",
     "Name": "elfutils-default-yama-scope",
     "Version": "0.176",
     "Release": "2.el7",
@@ -679,24 +329,12 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.176",
     "SrcRelease": "2.el7",
-    "Licenses": [
-      "GPLv2+ or LGPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "systemd@219-67.el7_7.1.x86_64"
-    ],
+    "License": "GPLv2+ or LGPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "elfutils-libelf@0.176-2.el7.x86_64",
     "Name": "elfutils-libelf",
     "Version": "0.176",
     "Release": "2.el7",
@@ -704,24 +342,12 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.176",
     "SrcRelease": "2.el7",
-    "Licenses": [
-      "GPLv2+ or LGPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv2+ or LGPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "elfutils-libs@0.176-2.el7.x86_64",
     "Name": "elfutils-libs",
     "Version": "0.176",
     "Release": "2.el7",
@@ -729,28 +355,12 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.176",
     "SrcRelease": "2.el7",
-    "Licenses": [
-      "GPLv2+ or LGPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bzip2-libs@1.0.6-13.el7.x86_64",
-      "elfutils-default-yama-scope@0.176-2.el7.noarch",
-      "elfutils-libelf@0.176-2.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv2+ or LGPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "expat@2.1.0-10.el7_3.x86_64",
     "Name": "expat",
     "Version": "2.1.0",
     "Release": "10.el7_3",
@@ -758,23 +368,12 @@
     "SrcName": "expat",
     "SrcVersion": "2.1.0",
     "SrcRelease": "10.el7_3",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "file-libs@5.11-35.el7.x86_64",
     "Name": "file-libs",
     "Version": "5.11",
     "Release": "35.el7",
@@ -782,24 +381,12 @@
     "SrcName": "file",
     "SrcVersion": "5.11",
     "SrcRelease": "35.el7",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "filesystem@3.2-25.el7.x86_64",
     "Name": "filesystem",
     "Version": "3.2",
     "Release": "25.el7",
@@ -807,24 +394,12 @@
     "SrcName": "filesystem",
     "SrcVersion": "3.2",
     "SrcRelease": "25.el7",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "setup@2.8.71-10.el7.noarch"
-    ],
+    "License": "Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "findutils@4.5.11-6.el7.x86_64",
     "Name": "findutils",
     "Version": "4.5.11",
     "Release": "6.el7",
@@ -834,25 +409,12 @@
     "SrcVersion": "4.5.11",
     "SrcRelease": "6.el7",
     "SrcEpoch": 1,
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "gawk@4.0.2-4.el7_3.1.x86_64",
     "Name": "gawk",
     "Version": "4.0.2",
     "Release": "4.el7_3.1",
@@ -860,24 +422,12 @@
     "SrcName": "gawk",
     "SrcVersion": "4.0.2",
     "SrcRelease": "4.el7_3.1",
-    "Licenses": [
-      "GPLv3+ and GPL and LGPLv3+ and LGPL and BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv3+ and GPL and LGPLv3+ and LGPL and BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "gdb-gdbserver@7.6.1-115.el7.x86_64",
     "Name": "gdb-gdbserver",
     "Version": "7.6.1",
     "Release": "115.el7",
@@ -885,24 +435,12 @@
     "SrcName": "gdb",
     "SrcVersion": "7.6.1",
     "SrcRelease": "115.el7",
-    "Licenses": [
-      "GPLv3+ and GPLv3+ with exceptions and GPLv2+ and GPLv2+ with exceptions and GPL+ and LGPLv2+ and BSD and Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64"
-    ],
+    "License": "GPLv3+ and GPLv3+ with exceptions and GPLv2+ and GPLv2+ with exceptions and GPL+ and LGPLv2+ and BSD and Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "gdbm@1.10-8.el7.x86_64",
     "Name": "gdbm",
     "Version": "1.10",
     "Release": "8.el7",
@@ -910,23 +448,12 @@
     "SrcName": "gdbm",
     "SrcVersion": "1.10",
     "SrcRelease": "8.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "glib2@2.56.1-5.el7.x86_64",
     "Name": "glib2",
     "Version": "2.56.1",
     "Release": "5.el7",
@@ -934,31 +461,12 @@
     "SrcName": "glib2",
     "SrcVersion": "2.56.1",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libffi@3.0.13-18.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "libmount@2.23.2-61.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "pcre@8.32-17.el7.x86_64",
-      "shared-mime-info@1.8-4.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "glibc@2.17-292.el7.x86_64",
     "Name": "glibc",
     "Version": "2.17",
     "Release": "292.el7",
@@ -966,26 +474,12 @@
     "SrcName": "glibc",
     "SrcVersion": "2.17",
     "SrcRelease": "292.el7",
-    "Licenses": [
-      "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "basesystem@10.0-7.el7.noarch",
-      "glibc-common@2.17-292.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "nss-softokn-freebl@3.44.0-5.el7.x86_64"
-    ],
+    "License": "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "glibc-common@2.17-292.el7.x86_64",
     "Name": "glibc-common",
     "Version": "2.17",
     "Release": "292.el7",
@@ -993,26 +487,12 @@
     "SrcName": "glibc",
     "SrcVersion": "2.17",
     "SrcRelease": "292.el7",
-    "Licenses": [
-      "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "tzdata@2019b-1.el7.noarch"
-    ],
+    "License": "LGPLv2+ and LGPLv2+ with exceptions and GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "gmp@6.0.0-15.el7.x86_64",
     "Name": "gmp",
     "Version": "6.0.0",
     "Release": "15.el7",
@@ -1022,25 +502,12 @@
     "SrcVersion": "6.0.0",
     "SrcRelease": "15.el7",
     "SrcEpoch": 1,
-    "Licenses": [
-      "LGPLv3+ or GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "libstdc++@4.8.5-39.el7.x86_64"
-    ],
+    "License": "LGPLv3+ or GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "gnupg2@2.0.22-5.el7_5.x86_64",
     "Name": "gnupg2",
     "Version": "2.0.22",
     "Release": "5.el7_5",
@@ -1048,34 +515,12 @@
     "SrcName": "gnupg2",
     "SrcVersion": "2.0.22",
     "SrcRelease": "5.el7_5",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "bzip2-libs@1.0.6-13.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libassuan@2.1.0-3.el7.x86_64",
-      "libcurl@7.29.0-54.el7.x86_64",
-      "libgcrypt@1.5.3-14.el7.x86_64",
-      "libgpg-error@1.12-3.el7.x86_64",
-      "openldap@2.4.44-21.el7_6.x86_64",
-      "pinentry@0.8.1-17.el7.x86_64",
-      "pth@2.0.7-23.el7.x86_64",
-      "readline@6.2-11.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "gobject-introspection@1.56.1-1.el7.x86_64",
     "Name": "gobject-introspection",
     "Version": "1.56.1",
     "Release": "1.el7",
@@ -1083,25 +528,12 @@
     "SrcName": "gobject-introspection",
     "SrcVersion": "1.56.1",
     "SrcRelease": "1.el7",
-    "Licenses": [
-      "GPLv2+, LGPLv2+, MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libffi@3.0.13-18.el7.x86_64"
-    ],
+    "License": "GPLv2+, LGPLv2+, MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "gpgme@1.3.2-5.el7.x86_64",
     "Name": "gpgme",
     "Version": "1.3.2",
     "Release": "5.el7",
@@ -1109,26 +541,12 @@
     "SrcName": "gpgme",
     "SrcVersion": "1.3.2",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "gnupg2@2.0.22-5.el7_5.x86_64",
-      "libassuan@2.1.0-3.el7.x86_64",
-      "libgpg-error@1.12-3.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "grep@2.20-3.el7.x86_64",
     "Name": "grep",
     "Version": "2.20",
     "Release": "3.el7",
@@ -1136,25 +554,12 @@
     "SrcName": "grep",
     "SrcVersion": "2.20",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "pcre@8.32-17.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "gzip@1.5-10.el7.x86_64",
     "Name": "gzip",
     "Version": "1.5",
     "Release": "10.el7",
@@ -1162,25 +567,12 @@
     "SrcName": "gzip",
     "SrcVersion": "1.5",
     "SrcRelease": "10.el7",
-    "Licenses": [
-      "GPLv3+ and GFDL"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv3+ and GFDL",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "hardlink@1.0-19.el7.x86_64",
     "Name": "hardlink",
     "Version": "1.0",
     "Release": "19.el7",
@@ -1190,23 +582,12 @@
     "SrcVersion": "1.0",
     "SrcRelease": "19.el7",
     "SrcEpoch": 1,
-    "Licenses": [
-      "GPL+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPL+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "info@5.1-5.el7.x86_64",
     "Name": "info",
     "Version": "5.1",
     "Release": "5.el7",
@@ -1214,26 +595,12 @@
     "SrcName": "texinfo",
     "SrcVersion": "5.1",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "json-c@0.11-4.el7_0.x86_64",
     "Name": "json-c",
     "Version": "0.11",
     "Release": "4.el7_0",
@@ -1241,23 +608,12 @@
     "SrcName": "json-c",
     "SrcVersion": "0.11",
     "SrcRelease": "4.el7_0",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "keyutils-libs@1.5.8-3.el7.x86_64",
     "Name": "keyutils-libs",
     "Version": "1.5.8",
     "Release": "3.el7",
@@ -1265,23 +621,12 @@
     "SrcName": "keyutils",
     "SrcVersion": "1.5.8",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "GPLv2+ and LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv2+ and LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "kmod@20-25.el7.x86_64",
     "Name": "kmod",
     "Version": "20",
     "Release": "25.el7",
@@ -1289,29 +634,12 @@
     "SrcName": "kmod",
     "SrcVersion": "20",
     "SrcRelease": "25.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "diffutils@3.3-5.el7.x86_64",
-      "dracut@033-564.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "kmod-libs@20-25.el7.x86_64",
     "Name": "kmod-libs",
     "Version": "20",
     "Release": "25.el7",
@@ -1319,26 +647,12 @@
     "SrcName": "kmod",
     "SrcVersion": "20",
     "SrcRelease": "25.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "kpartx@0.4.9-127.el7.x86_64",
     "Name": "kpartx",
     "Version": "0.4.9",
     "Release": "127.el7",
@@ -1346,24 +660,12 @@
     "SrcName": "device-mapper-multipath",
     "SrcVersion": "0.4.9",
     "SrcRelease": "127.el7",
-    "Licenses": [
-      "GPL+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "device-mapper-libs@1.02.158-2.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPL+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "krb5-libs@1.15.1-37.el7_7.2.x86_64",
     "Name": "krb5-libs",
     "Version": "1.15.1",
     "Release": "37.el7_7.2",
@@ -1371,33 +673,12 @@
     "SrcName": "krb5",
     "SrcVersion": "1.15.1",
     "SrcRelease": "37.el7_7.2",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "gawk@4.0.2-4.el7_3.1.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "grep@2.20-3.el7.x86_64",
-      "keyutils-libs@1.5.8-3.el7.x86_64",
-      "libcom_err@1.42.9-16.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "libverto@0.2.5-4.el7.x86_64",
-      "openssl-libs@1.0.2k-19.el7.x86_64",
-      "sed@4.2.2-5.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libacl@2.2.51-14.el7.x86_64",
     "Name": "libacl",
     "Version": "2.2.51",
     "Release": "14.el7",
@@ -1405,24 +686,12 @@
     "SrcName": "acl",
     "SrcVersion": "2.2.51",
     "SrcRelease": "14.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libattr@2.4.46-13.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libassuan@2.1.0-3.el7.x86_64",
     "Name": "libassuan",
     "Version": "2.1.0",
     "Release": "3.el7",
@@ -1430,24 +699,12 @@
     "SrcName": "libassuan",
     "SrcVersion": "2.1.0",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "LGPLv2+ and GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libgpg-error@1.12-3.el7.x86_64"
-    ],
+    "License": "LGPLv2+ and GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libattr@2.4.46-13.el7.x86_64",
     "Name": "libattr",
     "Version": "2.4.46",
     "Release": "13.el7",
@@ -1455,23 +712,12 @@
     "SrcName": "attr",
     "SrcVersion": "2.4.46",
     "SrcRelease": "13.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libblkid@2.23.2-61.el7.x86_64",
     "Name": "libblkid",
     "Version": "2.23.2",
     "Release": "61.el7",
@@ -1479,26 +725,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.23.2",
     "SrcRelease": "61.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libuuid@2.23.2-61.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libcap@2.22-10.el7.x86_64",
     "Name": "libcap",
     "Version": "2.22",
     "Release": "10.el7",
@@ -1506,24 +738,12 @@
     "SrcName": "libcap",
     "SrcVersion": "2.22",
     "SrcRelease": "10.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libattr@2.4.46-13.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libcap-ng@0.7.5-4.el7.x86_64",
     "Name": "libcap-ng",
     "Version": "0.7.5",
     "Release": "4.el7",
@@ -1531,23 +751,12 @@
     "SrcName": "libcap-ng",
     "SrcVersion": "0.7.5",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libcom_err@1.42.9-16.el7.x86_64",
     "Name": "libcom_err",
     "Version": "1.42.9",
     "Release": "16.el7",
@@ -1555,23 +764,12 @@
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.42.9",
     "SrcRelease": "16.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libcurl@7.29.0-54.el7.x86_64",
     "Name": "libcurl",
     "Version": "7.29.0",
     "Release": "54.el7",
@@ -1579,33 +777,12 @@
     "SrcName": "curl",
     "SrcVersion": "7.29.0",
     "SrcRelease": "54.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "krb5-libs@1.15.1-37.el7_7.2.x86_64",
-      "libcom_err@1.42.9-16.el7.x86_64",
-      "libidn@1.28-4.el7.x86_64",
-      "libssh2@1.8.0-3.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64",
-      "nss-pem@1.0.3-7.el7.x86_64",
-      "nss-util@3.44.0-3.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64",
-      "openldap@2.4.44-21.el7_6.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libdb@5.3.21-25.el7.x86_64",
     "Name": "libdb",
     "Version": "5.3.21",
     "Release": "25.el7",
@@ -1613,23 +790,12 @@
     "SrcName": "libdb",
     "SrcVersion": "5.3.21",
     "SrcRelease": "25.el7",
-    "Licenses": [
-      "BSD and LGPLv2 and Sleepycat"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "BSD and LGPLv2 and Sleepycat",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libdb-utils@5.3.21-25.el7.x86_64",
     "Name": "libdb-utils",
     "Version": "5.3.21",
     "Release": "25.el7",
@@ -1637,24 +803,12 @@
     "SrcName": "libdb",
     "SrcVersion": "5.3.21",
     "SrcRelease": "25.el7",
-    "Licenses": [
-      "BSD and LGPLv2 and Sleepycat"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libdb@5.3.21-25.el7.x86_64"
-    ],
+    "License": "BSD and LGPLv2 and Sleepycat",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libffi@3.0.13-18.el7.x86_64",
     "Name": "libffi",
     "Version": "3.0.13",
     "Release": "18.el7",
@@ -1662,23 +816,12 @@
     "SrcName": "libffi",
     "SrcVersion": "3.0.13",
     "SrcRelease": "18.el7",
-    "Licenses": [
-      "MIT and Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "MIT and Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libgcc@4.8.5-39.el7.x86_64",
     "Name": "libgcc",
     "Version": "4.8.5",
     "Release": "39.el7",
@@ -1686,20 +829,12 @@
     "SrcName": "gcc",
     "SrcVersion": "4.8.5",
     "SrcRelease": "39.el7",
-    "Licenses": [
-      "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
+    "License": "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libgcrypt@1.5.3-14.el7.x86_64",
     "Name": "libgcrypt",
     "Version": "1.5.3",
     "Release": "14.el7",
@@ -1707,24 +842,12 @@
     "SrcName": "libgcrypt",
     "SrcVersion": "1.5.3",
     "SrcRelease": "14.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libgpg-error@1.12-3.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libgpg-error@1.12-3.el7.x86_64",
     "Name": "libgpg-error",
     "Version": "1.12",
     "Release": "3.el7",
@@ -1732,23 +855,12 @@
     "SrcName": "libgpg-error",
     "SrcVersion": "1.12",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libidn@1.28-4.el7.x86_64",
     "Name": "libidn",
     "Version": "1.28",
     "Release": "4.el7",
@@ -1756,24 +868,12 @@
     "SrcName": "libidn",
     "SrcVersion": "1.28",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "LGPLv2+ and GPLv3+ and GFDL"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2+ and GPLv3+ and GFDL",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libmount@2.23.2-61.el7.x86_64",
     "Name": "libmount",
     "Version": "2.23.2",
     "Release": "61.el7",
@@ -1781,26 +881,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.23.2",
     "SrcRelease": "61.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libblkid@2.23.2-61.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "libuuid@2.23.2-61.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libnl@1.1.4-3.el7.x86_64",
     "Name": "libnl",
     "Version": "1.1.4",
     "Release": "3.el7",
@@ -1808,23 +894,12 @@
     "SrcName": "libnl",
     "SrcVersion": "1.1.4",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "LGPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libpwquality@1.2.3-5.el7.x86_64",
     "Name": "libpwquality",
     "Version": "1.2.3",
     "Release": "5.el7",
@@ -1832,26 +907,12 @@
     "SrcName": "libpwquality",
     "SrcVersion": "1.2.3",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "BSD or GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "cracklib-dicts@2.9.0-11.el7.x86_64",
-      "cracklib@2.9.0-11.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "pam@1.1.8-22.el7.x86_64"
-    ],
+    "License": "BSD or GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libselinux@2.5-14.1.el7.x86_64",
     "Name": "libselinux",
     "Version": "2.5",
     "Release": "14.1.el7",
@@ -1859,25 +920,12 @@
     "SrcName": "libselinux",
     "SrcVersion": "2.5",
     "SrcRelease": "14.1.el7",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libsepol@2.5-10.el7.x86_64",
-      "pcre@8.32-17.el7.x86_64"
-    ],
+    "License": "Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libsemanage@2.5-14.el7.x86_64",
     "Name": "libsemanage",
     "Version": "2.5",
     "Release": "14.el7",
@@ -1885,28 +933,12 @@
     "SrcName": "libsemanage",
     "SrcVersion": "2.5",
     "SrcRelease": "14.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "bzip2-libs@1.0.6-13.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "libsepol@2.5-10.el7.x86_64",
-      "ustr@1.0.4-16.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libsepol@2.5-10.el7.x86_64",
     "Name": "libsepol",
     "Version": "2.5",
     "Release": "10.el7",
@@ -1914,24 +946,12 @@
     "SrcName": "libsepol",
     "SrcVersion": "2.5",
     "SrcRelease": "10.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libsmartcols@2.23.2-61.el7.x86_64",
     "Name": "libsmartcols",
     "Version": "2.23.2",
     "Release": "61.el7",
@@ -1939,23 +959,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.23.2",
     "SrcRelease": "61.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libssh2@1.8.0-3.el7.x86_64",
     "Name": "libssh2",
     "Version": "1.8.0",
     "Release": "3.el7",
@@ -1963,25 +972,12 @@
     "SrcName": "libssh2",
     "SrcVersion": "1.8.0",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "openssl-libs@1.0.2k-19.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libstdc++@4.8.5-39.el7.x86_64",
     "Name": "libstdc++",
     "Version": "4.8.5",
     "Release": "39.el7",
@@ -1989,24 +985,12 @@
     "SrcName": "gcc",
     "SrcVersion": "4.8.5",
     "SrcRelease": "39.el7",
-    "Licenses": [
-      "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64"
-    ],
+    "License": "GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libtasn1@4.10-1.el7.x86_64",
     "Name": "libtasn1",
     "Version": "4.10",
     "Release": "1.el7",
@@ -2014,23 +998,12 @@
     "SrcName": "libtasn1",
     "SrcVersion": "4.10",
     "SrcRelease": "1.el7",
-    "Licenses": [
-      "GPLv3+ and LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv3+ and LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libuser@0.60-9.el7.x86_64",
     "Name": "libuser",
     "Version": "0.60",
     "Release": "9.el7",
@@ -2038,28 +1011,12 @@
     "SrcName": "libuser",
     "SrcVersion": "0.60",
     "SrcRelease": "9.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "openldap@2.4.44-21.el7_6.x86_64",
-      "pam@1.1.8-22.el7.x86_64",
-      "popt@1.13-16.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libutempter@1.1.6-4.el7.x86_64",
     "Name": "libutempter",
     "Version": "1.1.6",
     "Release": "4.el7",
@@ -2067,25 +1024,12 @@
     "SrcName": "libutempter",
     "SrcVersion": "1.1.6",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "shadow-utils@4.6-5.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libuuid@2.23.2-61.el7.x86_64",
     "Name": "libuuid",
     "Version": "2.23.2",
     "Release": "61.el7",
@@ -2093,23 +1037,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.23.2",
     "SrcRelease": "61.el7",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libverto@0.2.5-4.el7.x86_64",
     "Name": "libverto",
     "Version": "0.2.5",
     "Release": "4.el7",
@@ -2117,23 +1050,12 @@
     "SrcName": "libverto",
     "SrcVersion": "0.2.5",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libxml2@2.9.1-6.el7_2.3.x86_64",
     "Name": "libxml2",
     "Version": "2.9.1",
     "Release": "6.el7_2.3",
@@ -2141,25 +1063,12 @@
     "SrcName": "libxml2",
     "SrcVersion": "2.9.1",
     "SrcRelease": "6.el7_2.3",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "libxml2-python@2.9.1-6.el7_2.3.x86_64",
     "Name": "libxml2-python",
     "Version": "2.9.1",
     "Release": "6.el7_2.3",
@@ -2167,28 +1076,12 @@
     "SrcName": "libxml2",
     "SrcVersion": "2.9.1",
     "SrcRelease": "6.el7_2.3",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libxml2@2.9.1-6.el7_2.3.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "lua@5.1.4-15.el7.x86_64",
     "Name": "lua",
     "Version": "5.1.4",
     "Release": "15.el7",
@@ -2196,25 +1089,12 @@
     "SrcName": "lua",
     "SrcVersion": "5.1.4",
     "SrcRelease": "15.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64",
-      "readline@6.2-11.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "lz4@1.7.5-3.el7.x86_64",
     "Name": "lz4",
     "Version": "1.7.5",
     "Release": "3.el7",
@@ -2222,23 +1102,12 @@
     "SrcName": "lz4",
     "SrcVersion": "1.7.5",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "GPLv2+ and BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv2+ and BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "ncurses@5.9-14.20130511.el7_4.x86_64",
     "Name": "ncurses",
     "Version": "5.9",
     "Release": "14.20130511.el7_4",
@@ -2246,24 +1115,12 @@
     "SrcName": "ncurses",
     "SrcVersion": "5.9",
     "SrcRelease": "14.20130511.el7_4",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "ncurses-base@5.9-14.20130511.el7_4.noarch",
     "Name": "ncurses-base",
     "Version": "5.9",
     "Release": "14.20130511.el7_4",
@@ -2271,20 +1128,12 @@
     "SrcName": "ncurses",
     "SrcVersion": "5.9",
     "SrcRelease": "14.20130511.el7_4",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "ncurses-libs@5.9-14.20130511.el7_4.x86_64",
     "Name": "ncurses-libs",
     "Version": "5.9",
     "Release": "14.20130511.el7_4",
@@ -2292,26 +1141,12 @@
     "SrcName": "ncurses",
     "SrcVersion": "5.9",
     "SrcRelease": "14.20130511.el7_4",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "libstdc++@4.8.5-39.el7.x86_64",
-      "ncurses-base@5.9-14.20130511.el7_4.noarch"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "nspr@4.21.0-1.el7.x86_64",
     "Name": "nspr",
     "Version": "4.21.0",
     "Release": "1.el7",
@@ -2319,23 +1154,12 @@
     "SrcName": "nspr",
     "SrcVersion": "4.21.0",
     "SrcRelease": "1.el7",
-    "Licenses": [
-      "MPLv2.0"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "MPLv2.0",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "nss@3.44.0-4.el7.x86_64",
     "Name": "nss",
     "Version": "3.44.0",
     "Release": "4.el7",
@@ -2343,29 +1167,12 @@
     "SrcName": "nss",
     "SrcVersion": "3.44.0",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "MPLv2.0"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64",
-      "nss-pem@1.0.3-7.el7.x86_64",
-      "nss-softokn@3.44.0-5.el7.x86_64",
-      "nss-sysinit@3.44.0-4.el7.x86_64",
-      "nss-util@3.44.0-3.el7.x86_64"
-    ],
+    "License": "MPLv2.0",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "nss-pem@1.0.3-7.el7.x86_64",
     "Name": "nss-pem",
     "Version": "1.0.3",
     "Release": "7.el7",
@@ -2373,26 +1180,12 @@
     "SrcName": "nss-pem",
     "SrcVersion": "1.0.3",
     "SrcRelease": "7.el7",
-    "Licenses": [
-      "MPLv1.1"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64",
-      "nss-util@3.44.0-3.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64"
-    ],
+    "License": "MPLv1.1",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "nss-softokn@3.44.0-5.el7.x86_64",
     "Name": "nss-softokn",
     "Version": "3.44.0",
     "Release": "5.el7",
@@ -2400,27 +1193,12 @@
     "SrcName": "nss-softokn",
     "SrcVersion": "3.44.0",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "MPLv2.0"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64",
-      "nss-softokn-freebl@3.44.0-5.el7.x86_64",
-      "nss-util@3.44.0-3.el7.x86_64",
-      "sqlite@3.7.17-8.el7.x86_64"
-    ],
+    "License": "MPLv2.0",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "nss-softokn-freebl@3.44.0-5.el7.x86_64",
     "Name": "nss-softokn-freebl",
     "Version": "3.44.0",
     "Release": "5.el7",
@@ -2428,26 +1206,12 @@
     "SrcName": "nss-softokn",
     "SrcVersion": "3.44.0",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "MPLv2.0"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64",
-      "nss-util@3.44.0-3.el7.x86_64"
-    ],
+    "License": "MPLv2.0",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "nss-sysinit@3.44.0-4.el7.x86_64",
     "Name": "nss-sysinit",
     "Version": "3.44.0",
     "Release": "4.el7",
@@ -2455,29 +1219,12 @@
     "SrcName": "nss",
     "SrcVersion": "3.44.0",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "MPLv2.0"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64",
-      "nss-util@3.44.0-3.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64",
-      "sed@4.2.2-5.el7.x86_64"
-    ],
+    "License": "MPLv2.0",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "nss-tools@3.44.0-4.el7.x86_64",
     "Name": "nss-tools",
     "Version": "3.44.0",
     "Release": "4.el7",
@@ -2485,28 +1232,12 @@
     "SrcName": "nss",
     "SrcVersion": "3.44.0",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "MPLv2.0"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64",
-      "nss-softokn@3.44.0-5.el7.x86_64",
-      "nss-util@3.44.0-3.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "MPLv2.0",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "nss-util@3.44.0-3.el7.x86_64",
     "Name": "nss-util",
     "Version": "3.44.0",
     "Release": "3.el7",
@@ -2514,24 +1245,12 @@
     "SrcName": "nss-util",
     "SrcVersion": "3.44.0",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "MPLv2.0"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64"
-    ],
+    "License": "MPLv2.0",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "openldap@2.4.44-21.el7_6.x86_64",
     "Name": "openldap",
     "Version": "2.4.44",
     "Release": "21.el7_6",
@@ -2539,33 +1258,12 @@
     "SrcName": "openldap",
     "SrcVersion": "2.4.44",
     "SrcRelease": "21.el7_6",
-    "Licenses": [
-      "OpenLDAP"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "cyrus-sasl-lib@2.1.26-23.el7.x86_64",
-      "findutils@4.5.11-6.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "nspr@4.21.0-1.el7.x86_64",
-      "nss-tools@3.44.0-4.el7.x86_64",
-      "nss-util@3.44.0-3.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64",
-      "openssl-libs@1.0.2k-19.el7.x86_64",
-      "rpm@4.11.3-40.el7.x86_64"
-    ],
+    "License": "OpenLDAP",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "openssl-libs@1.0.2k-19.el7.x86_64",
     "Name": "openssl-libs",
     "Version": "1.0.2k",
     "Release": "19.el7",
@@ -2575,27 +1273,12 @@
     "SrcVersion": "1.0.2k",
     "SrcRelease": "19.el7",
     "SrcEpoch": 1,
-    "Licenses": [
-      "OpenSSL"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "ca-certificates@2018.2.22-70.0.el7_5.noarch",
-      "glibc@2.17-292.el7.x86_64",
-      "krb5-libs@1.15.1-37.el7_7.2.x86_64",
-      "libcom_err@1.42.9-16.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "OpenSSL",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "p11-kit@0.23.5-3.el7.x86_64",
     "Name": "p11-kit",
     "Version": "0.23.5",
     "Release": "3.el7",
@@ -2603,24 +1286,12 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.5",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libffi@3.0.13-18.el7.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "p11-kit-trust@0.23.5-3.el7.x86_64",
     "Name": "p11-kit-trust",
     "Version": "0.23.5",
     "Release": "3.el7",
@@ -2628,28 +1299,12 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.5",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libffi@3.0.13-18.el7.x86_64",
-      "libtasn1@4.10-1.el7.x86_64",
-      "nss-softokn-freebl@3.44.0-5.el7.x86_64",
-      "p11-kit@0.23.5-3.el7.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "pam@1.1.8-22.el7.x86_64",
     "Name": "pam",
     "Version": "1.1.8",
     "Release": "22.el7",
@@ -2657,31 +1312,12 @@
     "SrcName": "pam",
     "SrcVersion": "1.1.8",
     "SrcRelease": "22.el7",
-    "Licenses": [
-      "BSD and GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "cracklib-dicts@2.9.0-11.el7.x86_64",
-      "cracklib@2.9.0-11.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libdb@5.3.21-25.el7.x86_64",
-      "libpwquality@1.2.3-5.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64"
-    ],
+    "License": "BSD and GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "passwd@0.79-5.el7.x86_64",
     "Name": "passwd",
     "Version": "0.79",
     "Release": "5.el7",
@@ -2689,29 +1325,12 @@
     "SrcName": "passwd",
     "SrcVersion": "0.79",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "BSD or GPL+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "libuser@0.60-9.el7.x86_64",
-      "pam@1.1.8-22.el7.x86_64",
-      "popt@1.13-16.el7.x86_64"
-    ],
+    "License": "BSD or GPL+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "pcre@8.32-17.el7.x86_64",
     "Name": "pcre",
     "Version": "8.32",
     "Release": "17.el7",
@@ -2719,25 +1338,12 @@
     "SrcName": "pcre",
     "SrcVersion": "8.32",
     "SrcRelease": "17.el7",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "libstdc++@4.8.5-39.el7.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "pinentry@0.8.1-17.el7.x86_64",
     "Name": "pinentry",
     "Version": "0.8.1",
     "Release": "17.el7",
@@ -2745,25 +1351,12 @@
     "SrcName": "pinentry",
     "SrcVersion": "0.8.1",
     "SrcRelease": "17.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "pkgconfig@0.27.1-4.el7.x86_64",
     "Name": "pkgconfig",
     "Version": "0.27.1",
     "Release": "4.el7",
@@ -2773,24 +1366,12 @@
     "SrcVersion": "0.27.1",
     "SrcRelease": "4.el7",
     "SrcEpoch": 1,
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "popt@1.13-16.el7.x86_64",
     "Name": "popt",
     "Version": "1.13",
     "Release": "16.el7",
@@ -2798,23 +1379,12 @@
     "SrcName": "popt",
     "SrcVersion": "1.13",
     "SrcRelease": "16.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "procps-ng@3.3.10-26.el7.x86_64",
     "Name": "procps-ng",
     "Version": "3.3.10",
     "Release": "26.el7",
@@ -2822,25 +1392,12 @@
     "SrcName": "procps-ng",
     "SrcVersion": "3.3.10",
     "SrcRelease": "26.el7",
-    "Licenses": [
-      "GPL+ and GPLv2 and GPLv2+ and GPLv3+ and LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64",
-      "systemd-libs@219-67.el7_7.1.x86_64"
-    ],
+    "License": "GPL+ and GPLv2 and GPLv2+ and GPLv3+ and LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "pth@2.0.7-23.el7.x86_64",
     "Name": "pth",
     "Version": "2.0.7",
     "Release": "23.el7",
@@ -2848,23 +1405,12 @@
     "SrcName": "pth",
     "SrcVersion": "2.0.7",
     "SrcRelease": "23.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "pygpgme@0.3-9.el7.x86_64",
     "Name": "pygpgme",
     "Version": "0.3",
     "Release": "9.el7",
@@ -2872,26 +1418,12 @@
     "SrcName": "pygpgme",
     "SrcVersion": "0.3",
     "SrcRelease": "9.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "gpgme@1.3.2-5.el7.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "pyliblzma@0.5.3-11.el7.x86_64",
     "Name": "pyliblzma",
     "Version": "0.5.3",
     "Release": "11.el7",
@@ -2899,26 +1431,12 @@
     "SrcName": "pyliblzma",
     "SrcVersion": "0.5.3",
     "SrcRelease": "11.el7",
-    "Licenses": [
-      "LGPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64"
-    ],
+    "License": "LGPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python@2.7.5-86.el7.x86_64",
     "Name": "python",
     "Version": "2.7.5",
     "Release": "86.el7",
@@ -2926,24 +1444,12 @@
     "SrcName": "python",
     "SrcVersion": "2.7.5",
     "SrcRelease": "86.el7",
-    "Licenses": [
-      "Python"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64"
-    ],
+    "License": "Python",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-backports@1.0-8.el7.x86_64",
     "Name": "python-backports",
     "Version": "1.0",
     "Release": "8.el7",
@@ -2951,23 +1457,12 @@
     "SrcName": "python-backports",
     "SrcVersion": "1.0",
     "SrcRelease": "8.el7",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-backports-ssl_match_hostname@3.5.0.1-1.el7.noarch",
     "Name": "python-backports-ssl_match_hostname",
     "Version": "3.5.0.1",
     "Release": "1.el7",
@@ -2975,25 +1470,12 @@
     "SrcName": "python-backports-ssl_match_hostname",
     "SrcVersion": "3.5.0.1",
     "SrcRelease": "1.el7",
-    "Licenses": [
-      "Python"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python-backports@1.0-8.el7.x86_64",
-      "python-ipaddress@1.0.16-2.el7.noarch",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "Python",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-chardet@2.2.1-3.el7.noarch",
     "Name": "python-chardet",
     "Version": "2.2.1",
     "Release": "3.el7",
@@ -3001,23 +1483,12 @@
     "SrcName": "python-chardet",
     "SrcVersion": "2.2.1",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "LGPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "LGPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-dateutil@1.5-7.el7.noarch",
     "Name": "python-dateutil",
     "Version": "1.5",
     "Release": "7.el7",
@@ -3025,24 +1496,12 @@
     "SrcName": "python-dateutil",
     "SrcVersion": "1.5",
     "SrcRelease": "7.el7",
-    "Licenses": [
-      "Python"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python@2.7.5-86.el7.x86_64",
-      "tzdata@2019b-1.el7.noarch"
-    ],
+    "License": "Python",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-decorator@3.4.0-3.el7.noarch",
     "Name": "python-decorator",
     "Version": "3.4.0",
     "Release": "3.el7",
@@ -3050,23 +1509,12 @@
     "SrcName": "python-decorator",
     "SrcVersion": "3.4.0",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-dmidecode@3.12.2-3.el7.x86_64",
     "Name": "python-dmidecode",
     "Version": "3.12.2",
     "Release": "3.el7",
@@ -3074,28 +1522,12 @@
     "SrcName": "python-dmidecode",
     "SrcVersion": "3.12.2",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libxml2-python@2.9.1-6.el7_2.3.x86_64",
-      "libxml2@2.9.1-6.el7_2.3.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-ethtool@0.8-8.el7.x86_64",
     "Name": "python-ethtool",
     "Version": "0.8",
     "Release": "8.el7",
@@ -3103,26 +1535,12 @@
     "SrcName": "python-ethtool",
     "SrcVersion": "0.8",
     "SrcRelease": "8.el7",
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libnl@1.1.4-3.el7.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-gobject-base@3.22.0-1.el7_4.1.x86_64",
     "Name": "python-gobject-base",
     "Version": "3.22.0",
     "Release": "1.el7_4.1",
@@ -3130,27 +1548,12 @@
     "SrcName": "pygobject3",
     "SrcVersion": "3.22.0",
     "SrcRelease": "1.el7_4.1",
-    "Licenses": [
-      "LGPLv2+ and MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "gobject-introspection@1.56.1-1.el7.x86_64",
-      "libffi@3.0.13-18.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "LGPLv2+ and MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-iniparse@0.4-9.el7.noarch",
     "Name": "python-iniparse",
     "Version": "0.4",
     "Release": "9.el7",
@@ -3158,23 +1561,12 @@
     "SrcName": "python-iniparse",
     "SrcVersion": "0.4",
     "SrcRelease": "9.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-inotify@0.9.4-4.el7.noarch",
     "Name": "python-inotify",
     "Version": "0.9.4",
     "Release": "4.el7",
@@ -3182,24 +1574,12 @@
     "SrcName": "python-inotify",
     "SrcVersion": "0.9.4",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-ipaddress@1.0.16-2.el7.noarch",
     "Name": "python-ipaddress",
     "Version": "1.0.16",
     "Release": "2.el7",
@@ -3207,23 +1587,12 @@
     "SrcName": "python-ipaddress",
     "SrcVersion": "1.0.16",
     "SrcRelease": "2.el7",
-    "Licenses": [
-      "Python"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "Python",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-kitchen@1.1.1-5.el7.noarch",
     "Name": "python-kitchen",
     "Version": "1.1.1",
     "Release": "5.el7",
@@ -3231,24 +1600,12 @@
     "SrcName": "python-kitchen",
     "SrcVersion": "1.1.1",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python-chardet@2.2.1-3.el7.noarch",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-libs@2.7.5-86.el7.x86_64",
     "Name": "python-libs",
     "Version": "2.7.5",
     "Release": "86.el7",
@@ -3256,34 +1613,12 @@
     "SrcName": "python",
     "SrcVersion": "2.7.5",
     "SrcRelease": "86.el7",
-    "Licenses": [
-      "Python"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "bzip2-libs@1.0.6-13.el7.x86_64",
-      "expat@2.1.0-10.el7_3.x86_64",
-      "gdbm@1.10-8.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libdb@5.3.21-25.el7.x86_64",
-      "libffi@3.0.13-18.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64",
-      "openssl-libs@1.0.2k-19.el7.x86_64",
-      "readline@6.2-11.el7.x86_64",
-      "sqlite@3.7.17-8.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "Python",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-pycurl@7.19.0-19.el7.x86_64",
     "Name": "python-pycurl",
     "Version": "7.19.0",
     "Release": "19.el7",
@@ -3291,27 +1626,12 @@
     "SrcName": "python-pycurl",
     "SrcVersion": "7.19.0",
     "SrcRelease": "19.el7",
-    "Licenses": [
-      "LGPLv2+ or MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "keyutils-libs@1.5.8-3.el7.x86_64",
-      "libcurl@7.29.0-54.el7.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "LGPLv2+ or MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-setuptools@0.9.8-7.el7.noarch",
     "Name": "python-setuptools",
     "Version": "0.9.8",
     "Release": "7.el7",
@@ -3319,24 +1639,12 @@
     "SrcName": "python-setuptools",
     "SrcVersion": "0.9.8",
     "SrcRelease": "7.el7",
-    "Licenses": [
-      "Python or ZPLv2.0"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python-backports-ssl_match_hostname@3.5.0.1-1.el7.noarch",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "Python or ZPLv2.0",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-six@1.9.0-2.el7.noarch",
     "Name": "python-six",
     "Version": "1.9.0",
     "Release": "2.el7",
@@ -3344,23 +1652,12 @@
     "SrcName": "python-six",
     "SrcVersion": "1.9.0",
     "SrcRelease": "2.el7",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-syspurpose@1.24.13-3.el7_7.x86_64",
     "Name": "python-syspurpose",
     "Version": "1.24.13",
     "Release": "3.el7_7",
@@ -3368,23 +1665,12 @@
     "SrcName": "subscription-manager",
     "SrcVersion": "1.24.13",
     "SrcRelease": "3.el7_7",
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "python-urlgrabber@3.10-9.el7.noarch",
     "Name": "python-urlgrabber",
     "Version": "3.10",
     "Release": "9.el7",
@@ -3392,24 +1678,12 @@
     "SrcName": "python-urlgrabber",
     "SrcVersion": "3.10",
     "SrcRelease": "9.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "python-pycurl@7.19.0-19.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "pyxattr@0.5.1-5.el7.x86_64",
     "Name": "pyxattr",
     "Version": "0.5.1",
     "Release": "5.el7",
@@ -3417,26 +1691,12 @@
     "SrcName": "pyxattr",
     "SrcVersion": "0.5.1",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libattr@2.4.46-13.el7.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "qrencode-libs@3.4.1-3.el7.x86_64",
     "Name": "qrencode-libs",
     "Version": "3.4.1",
     "Release": "3.el7",
@@ -3444,23 +1704,12 @@
     "SrcName": "qrencode",
     "SrcVersion": "3.4.1",
     "SrcRelease": "3.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "readline@6.2-11.el7.x86_64",
     "Name": "readline",
     "Version": "6.2",
     "Release": "11.el7",
@@ -3468,25 +1717,12 @@
     "SrcName": "readline",
     "SrcVersion": "6.2",
     "SrcRelease": "11.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "redhat-release-server@7.7-10.el7.x86_64",
     "Name": "redhat-release-server",
     "Version": "7.7",
     "Release": "10.el7",
@@ -3494,20 +1730,12 @@
     "SrcName": "redhat-release-server",
     "SrcVersion": "7.7",
     "SrcRelease": "10.el7",
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "rootfiles@8.1-11.el7.noarch",
     "Name": "rootfiles",
     "Version": "8.1",
     "Release": "11.el7",
@@ -3515,20 +1743,12 @@
     "SrcName": "rootfiles",
     "SrcVersion": "8.1",
     "SrcRelease": "11.el7",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
+    "License": "Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "rpm@4.11.3-40.el7.x86_64",
     "Name": "rpm",
     "Version": "4.11.3",
     "Release": "40.el7",
@@ -3536,39 +1756,12 @@
     "SrcName": "rpm",
     "SrcVersion": "4.11.3",
     "SrcRelease": "40.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "bash@4.2.46-33.el7.x86_64",
-      "bzip2-libs@1.0.6-13.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "curl@7.29.0-54.el7.x86_64",
-      "elfutils-libelf@0.176-2.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libcap@2.22-10.el7.x86_64",
-      "libdb@5.3.21-25.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "lua@5.1.4-15.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64",
-      "popt@1.13-16.el7.x86_64",
-      "rpm-libs@4.11.3-40.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "rpm-build-libs@4.11.3-40.el7.x86_64",
     "Name": "rpm-build-libs",
     "Version": "4.11.3",
     "Release": "40.el7",
@@ -3576,37 +1769,12 @@
     "SrcName": "rpm",
     "SrcVersion": "4.11.3",
     "SrcRelease": "40.el7",
-    "Licenses": [
-      "GPLv2+ and LGPLv2+ with exceptions"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "bzip2-libs@1.0.6-13.el7.x86_64",
-      "elfutils-libelf@0.176-2.el7.x86_64",
-      "file-libs@5.11-35.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libcap@2.22-10.el7.x86_64",
-      "libdb@5.3.21-25.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "lua@5.1.4-15.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64",
-      "popt@1.13-16.el7.x86_64",
-      "rpm-libs@4.11.3-40.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv2+ and LGPLv2+ with exceptions",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "rpm-libs@4.11.3-40.el7.x86_64",
     "Name": "rpm-libs",
     "Version": "4.11.3",
     "Release": "40.el7",
@@ -3614,36 +1782,12 @@
     "SrcName": "rpm",
     "SrcVersion": "4.11.3",
     "SrcRelease": "40.el7",
-    "Licenses": [
-      "GPLv2+ and LGPLv2+ with exceptions"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "bzip2-libs@1.0.6-13.el7.x86_64",
-      "elfutils-libelf@0.176-2.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libcap@2.22-10.el7.x86_64",
-      "libdb@5.3.21-25.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "lua@5.1.4-15.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64",
-      "popt@1.13-16.el7.x86_64",
-      "rpm@4.11.3-40.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv2+ and LGPLv2+ with exceptions",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "rpm-python@4.11.3-40.el7.x86_64",
     "Name": "rpm-python",
     "Version": "4.11.3",
     "Release": "40.el7",
@@ -3651,41 +1795,12 @@
     "SrcName": "rpm",
     "SrcVersion": "4.11.3",
     "SrcRelease": "40.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "bzip2-libs@1.0.6-13.el7.x86_64",
-      "elfutils-libelf@0.176-2.el7.x86_64",
-      "file-libs@5.11-35.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libcap@2.22-10.el7.x86_64",
-      "libdb@5.3.21-25.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "lua@5.1.4-15.el7.x86_64",
-      "nss@3.44.0-4.el7.x86_64",
-      "popt@1.13-16.el7.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64",
-      "rpm-build-libs@4.11.3-40.el7.x86_64",
-      "rpm-libs@4.11.3-40.el7.x86_64",
-      "rpm@4.11.3-40.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "sed@4.2.2-5.el7.x86_64",
     "Name": "sed",
     "Version": "4.2.2",
     "Release": "5.el7",
@@ -3693,25 +1808,12 @@
     "SrcName": "sed",
     "SrcVersion": "4.2.2",
     "SrcRelease": "5.el7",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "setup@2.8.71-10.el7.noarch",
     "Name": "setup",
     "Version": "2.8.71",
     "Release": "10.el7",
@@ -3719,23 +1821,12 @@
     "SrcName": "setup",
     "SrcVersion": "2.8.71",
     "SrcRelease": "10.el7",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "redhat-release-server@7.7-10.el7.x86_64"
-    ],
+    "License": "Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "shadow-utils@4.6-5.el7.x86_64",
     "Name": "shadow-utils",
     "Version": "4.6",
     "Release": "5.el7",
@@ -3745,30 +1836,12 @@
     "SrcVersion": "4.6",
     "SrcRelease": "5.el7",
     "SrcEpoch": 2,
-    "Licenses": [
-      "BSD and GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libattr@2.4.46-13.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "libsemanage@2.5-14.el7.x86_64",
-      "setup@2.8.71-10.el7.noarch"
-    ],
+    "License": "BSD and GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "shared-mime-info@1.8-4.el7.x86_64",
     "Name": "shared-mime-info",
     "Version": "1.8",
     "Release": "4.el7",
@@ -3776,27 +1849,12 @@
     "SrcName": "shared-mime-info",
     "SrcVersion": "1.8",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libxml2@2.9.1-6.el7_2.3.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "sqlite@3.7.17-8.el7.x86_64",
     "Name": "sqlite",
     "Version": "3.7.17",
     "Release": "8.el7",
@@ -3804,25 +1862,12 @@
     "SrcName": "sqlite",
     "SrcVersion": "3.7.17",
     "SrcRelease": "8.el7",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64",
-      "readline@6.2-11.el7.x86_64"
-    ],
+    "License": "Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "subscription-manager@1.24.13-3.el7_7.x86_64",
     "Name": "subscription-manager",
     "Version": "1.24.13",
     "Release": "3.el7_7",
@@ -3830,43 +1875,12 @@
     "SrcName": "subscription-manager",
     "SrcVersion": "1.24.13",
     "SrcRelease": "3.el7_7",
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "dbus-python@1.1.1-9.el7.x86_64",
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "gobject-introspection@1.56.1-1.el7.x86_64",
-      "python-dateutil@1.5-7.el7.noarch",
-      "python-decorator@3.4.0-3.el7.noarch",
-      "python-dmidecode@3.12.2-3.el7.x86_64",
-      "python-ethtool@0.8-8.el7.x86_64",
-      "python-gobject-base@3.22.0-1.el7_4.1.x86_64",
-      "python-iniparse@0.4-9.el7.noarch",
-      "python-inotify@0.9.4-4.el7.noarch",
-      "python-setuptools@0.9.8-7.el7.noarch",
-      "python-six@1.9.0-2.el7.noarch",
-      "python-syspurpose@1.24.13-3.el7_7.x86_64",
-      "python@2.7.5-86.el7.x86_64",
-      "subscription-manager-rhsm@1.24.13-3.el7_7.x86_64",
-      "systemd@219-67.el7_7.1.x86_64",
-      "usermode@1.111-6.el7.x86_64",
-      "virt-what@1.18-4.el7.x86_64",
-      "yum@3.4.3-163.el7.noarch"
-    ],
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "subscription-manager-rhsm@1.24.13-3.el7_7.x86_64",
     "Name": "subscription-manager-rhsm",
     "Version": "1.24.13",
     "Release": "3.el7_7",
@@ -3874,31 +1888,12 @@
     "SrcName": "subscription-manager",
     "SrcVersion": "1.24.13",
     "SrcRelease": "3.el7_7",
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "openssl-libs@1.0.2k-19.el7.x86_64",
-      "python-dateutil@1.5-7.el7.noarch",
-      "python-iniparse@0.4-9.el7.noarch",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python-six@1.9.0-2.el7.noarch",
-      "python@2.7.5-86.el7.x86_64",
-      "rpm-python@4.11.3-40.el7.x86_64",
-      "subscription-manager-rhsm-certificates@1.24.13-3.el7_7.x86_64"
-    ],
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "subscription-manager-rhsm-certificates@1.24.13-3.el7_7.x86_64",
     "Name": "subscription-manager-rhsm-certificates",
     "Version": "1.24.13",
     "Release": "3.el7_7",
@@ -3906,20 +1901,12 @@
     "SrcName": "subscription-manager",
     "SrcVersion": "1.24.13",
     "SrcRelease": "3.el7_7",
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "systemd@219-67.el7_7.1.x86_64",
     "Name": "systemd",
     "Version": "219",
     "Release": "67.el7_7.1",
@@ -3927,52 +1914,12 @@
     "SrcName": "systemd",
     "SrcVersion": "219",
     "SrcRelease": "67.el7_7.1",
-    "Licenses": [
-      "LGPLv2+ and MIT and GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "acl@2.2.51-14.el7.x86_64",
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "bash@4.2.46-33.el7.x86_64",
-      "bzip2-libs@1.0.6-13.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "cryptsetup-libs@2.0.3-5.el7.x86_64",
-      "dbus@1.10.24-13.el7_6.x86_64",
-      "diffutils@3.3-5.el7.x86_64",
-      "elfutils-libelf@0.176-2.el7.x86_64",
-      "elfutils-libs@0.176-2.el7.x86_64",
-      "gawk@4.0.2-4.el7_3.1.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "kmod-libs@20-25.el7.x86_64",
-      "kmod@20-25.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libblkid@2.23.2-61.el7.x86_64",
-      "libcap@2.22-10.el7.x86_64",
-      "libcurl@7.29.0-54.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "libgcrypt@1.5.3-14.el7.x86_64",
-      "libmount@2.23.2-61.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "lz4@1.7.5-3.el7.x86_64",
-      "pam@1.1.8-22.el7.x86_64",
-      "qrencode-libs@3.4.1-3.el7.x86_64",
-      "redhat-release-server@7.7-10.el7.x86_64",
-      "sed@4.2.2-5.el7.x86_64",
-      "systemd-libs@219-67.el7_7.1.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "LGPLv2+ and MIT and GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "systemd-libs@219-67.el7_7.1.x86_64",
     "Name": "systemd-libs",
     "Version": "219",
     "Release": "67.el7_7.1",
@@ -3980,32 +1927,12 @@
     "SrcName": "systemd",
     "SrcVersion": "219",
     "SrcRelease": "67.el7_7.1",
-    "Licenses": [
-      "LGPLv2+ and MIT"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "elfutils-libs@0.176-2.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libcap@2.22-10.el7.x86_64",
-      "libgcc@4.8.5-39.el7.x86_64",
-      "libgcrypt@1.5.3-14.el7.x86_64",
-      "libgpg-error@1.12-3.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "lz4@1.7.5-3.el7.x86_64",
-      "pam@1.1.8-22.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64"
-    ],
+    "License": "LGPLv2+ and MIT",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "tar@1.26-35.el7.x86_64",
     "Name": "tar",
     "Version": "1.26",
     "Release": "35.el7",
@@ -4015,26 +1942,12 @@
     "SrcVersion": "1.26",
     "SrcRelease": "35.el7",
     "SrcEpoch": 2,
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "tzdata@2019b-1.el7.noarch",
     "Name": "tzdata",
     "Version": "2019b",
     "Release": "1.el7",
@@ -4042,20 +1955,12 @@
     "SrcName": "tzdata",
     "SrcVersion": "2019b",
     "SrcRelease": "1.el7",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
+    "License": "Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "usermode@1.111-6.el7.x86_64",
     "Name": "usermode",
     "Version": "1.111",
     "Release": "6.el7",
@@ -4063,29 +1968,12 @@
     "SrcName": "usermode",
     "SrcVersion": "1.111",
     "SrcRelease": "6.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "libuser@0.60-9.el7.x86_64",
-      "pam@1.1.8-22.el7.x86_64",
-      "passwd@0.79-5.el7.x86_64",
-      "util-linux@2.23.2-61.el7.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "ustr@1.0.4-16.el7.x86_64",
     "Name": "ustr",
     "Version": "1.0.4",
     "Release": "16.el7",
@@ -4093,23 +1981,12 @@
     "SrcName": "ustr",
     "SrcVersion": "1.0.4",
     "SrcRelease": "16.el7",
-    "Licenses": [
-      "MIT or LGPLv2+ or BSD"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "MIT or LGPLv2+ or BSD",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "util-linux@2.23.2-61.el7.x86_64",
     "Name": "util-linux",
     "Version": "2.23.2",
     "Release": "61.el7",
@@ -4117,38 +1994,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.23.2",
     "SrcRelease": "61.el7",
-    "Licenses": [
-      "GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "audit-libs@2.8.5-4.el7.x86_64",
-      "bash@4.2.46-33.el7.x86_64",
-      "coreutils@8.22-24.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libblkid@2.23.2-61.el7.x86_64",
-      "libcap-ng@0.7.5-4.el7.x86_64",
-      "libmount@2.23.2-61.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "libsmartcols@2.23.2-61.el7.x86_64",
-      "libuser@0.60-9.el7.x86_64",
-      "libutempter@1.1.6-4.el7.x86_64",
-      "libuuid@2.23.2-61.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64",
-      "pam@1.1.8-22.el7.x86_64",
-      "systemd-libs@219-67.el7_7.1.x86_64",
-      "zlib@1.2.7-18.el7.x86_64"
-    ],
+    "License": "GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "vim-minimal@7.4.629-6.el7.x86_64",
     "Name": "vim-minimal",
     "Version": "7.4.629",
     "Release": "6.el7",
@@ -4158,26 +2009,12 @@
     "SrcVersion": "7.4.629",
     "SrcRelease": "6.el7",
     "SrcEpoch": 2,
-    "Licenses": [
-      "Vim"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64",
-      "libacl@2.2.51-14.el7.x86_64",
-      "libselinux@2.5-14.1.el7.x86_64",
-      "ncurses-libs@5.9-14.20130511.el7_4.x86_64"
-    ],
+    "License": "Vim",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "virt-what@1.18-4.el7.x86_64",
     "Name": "virt-what",
     "Version": "1.18",
     "Release": "4.el7",
@@ -4185,27 +2022,12 @@
     "SrcName": "virt-what",
     "SrcVersion": "1.18",
     "SrcRelease": "4.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "dmidecode@3.2-3.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "util-linux@2.23.2-61.el7.x86_64",
-      "which@2.20-7.el7.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "which@2.20-7.el7.x86_64",
     "Name": "which",
     "Version": "2.20",
     "Release": "7.el7",
@@ -4213,24 +2035,12 @@
     "SrcName": "which",
     "SrcVersion": "2.20",
     "SrcRelease": "7.el7",
-    "Licenses": [
-      "GPLv3"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "GPLv3",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "xz@5.2.2-1.el7.x86_64",
     "Name": "xz",
     "Version": "5.2.2",
     "Release": "1.el7",
@@ -4238,25 +2048,12 @@
     "SrcName": "xz",
     "SrcVersion": "5.2.2",
     "SrcRelease": "1.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "bash@4.2.46-33.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "xz-libs@5.2.2-1.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "xz-libs@5.2.2-1.el7.x86_64",
     "Name": "xz-libs",
     "Version": "5.2.2",
     "Release": "1.el7",
@@ -4264,23 +2061,12 @@
     "SrcName": "xz",
     "SrcVersion": "5.2.2",
     "SrcRelease": "1.el7",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "yum@3.4.3-163.el7.noarch",
     "Name": "yum",
     "Version": "3.4.3",
     "Release": "163.el7",
@@ -4288,33 +2074,12 @@
     "SrcName": "yum",
     "SrcVersion": "3.4.3",
     "SrcRelease": "163.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "cpio@2.11-27.el7.x86_64",
-      "diffutils@3.3-5.el7.x86_64",
-      "pygpgme@0.3-9.el7.x86_64",
-      "pyliblzma@0.5.3-11.el7.x86_64",
-      "python-iniparse@0.4-9.el7.noarch",
-      "python-urlgrabber@3.10-9.el7.noarch",
-      "python@2.7.5-86.el7.x86_64",
-      "pyxattr@0.5.1-5.el7.x86_64",
-      "rpm-python@4.11.3-40.el7.x86_64",
-      "rpm@4.11.3-40.el7.x86_64",
-      "yum-metadata-parser@1.1.4-10.el7.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "yum-metadata-parser@1.1.4-10.el7.x86_64",
     "Name": "yum-metadata-parser",
     "Version": "1.1.4",
     "Release": "10.el7",
@@ -4322,28 +2087,12 @@
     "SrcName": "yum-metadata-parser",
     "SrcVersion": "1.1.4",
     "SrcRelease": "10.el7",
-    "Licenses": [
-      "GPLv2"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glib2@2.56.1-5.el7.x86_64",
-      "glibc@2.17-292.el7.x86_64",
-      "libxml2@2.9.1-6.el7_2.3.x86_64",
-      "python-libs@2.7.5-86.el7.x86_64",
-      "python@2.7.5-86.el7.x86_64",
-      "sqlite@3.7.17-8.el7.x86_64"
-    ],
+    "License": "GPLv2",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "yum-plugin-ovl@1.1.31-52.el7.noarch",
     "Name": "yum-plugin-ovl",
     "Version": "1.1.31",
     "Release": "52.el7",
@@ -4351,23 +2100,12 @@
     "SrcName": "yum-utils",
     "SrcVersion": "1.1.31",
     "SrcRelease": "52.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "yum@3.4.3-163.el7.noarch"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "yum-utils@1.1.31-52.el7.noarch",
     "Name": "yum-utils",
     "Version": "1.1.31",
     "Release": "52.el7",
@@ -4375,26 +2113,12 @@
     "SrcName": "yum-utils",
     "SrcVersion": "1.1.31",
     "SrcRelease": "52.el7",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "libxml2-python@2.9.1-6.el7_2.3.x86_64",
-      "python-kitchen@1.1.1-5.el7.noarch",
-      "python@2.7.5-86.el7.x86_64",
-      "yum@3.4.3-163.el7.noarch"
-    ],
+    "License": "GPLv2+",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }
   },
   {
-    "ID": "zlib@1.2.7-18.el7.x86_64",
     "Name": "zlib",
     "Version": "1.2.7",
     "Release": "18.el7",
@@ -4402,17 +2126,7 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.7",
     "SrcRelease": "18.el7",
-    "Licenses": [
-      "zlib and Boost"
-    ],
-    "Maintainer": "Red Hat, Inc.",
-    "BuildInfo": {
-      "Nvr": "ubi7-container-7.7-140",
-      "Arch": "x86_64"
-    },
-    "DependsOn": [
-      "glibc@2.17-292.el7.x86_64"
-    ],
+    "License": "zlib and Boost",
     "Layer": {
       "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
     }

@@ -3,29 +3,26 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/fs/conda",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/fs/conda-41f3c2ea-96c5-4b9f-9dac-d2e3bf60debc",
   "creationInfo": {
     "licenseListVersion": "",
     "creators": [
       "Organization: aquasecurity",
       "Tool: trivy-dev"
     ],
-    "created": "2023-05-16T09:19:10Z"
+    "created": "2023-04-16T11:00:02Z"
   },
   "packages": [
     {
       "name": "conda-pkg",
       "SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
       "downloadLocation": "NONE",
-      "sourceInfo": "Conda",
-      "copyrightText": "",
-      "primaryPackagePurpose": "APPLICATION"
+      "primaryPackagePurpose": "APPLICATION",
+      "sourceInfo": "Conda"
     },
     {
       "name": "openssl",
       "SPDXID": "SPDXRef-Package-b1088cb4090e3a55",
       "versionInfo": "1.1.1q",
-      "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
       "licenseConcluded": "OpenSSL",
       "licenseDeclared": "OpenSSL",
@@ -38,6 +35,7 @@
         }
       ],
       "primaryPackagePurpose": "LIBRARY",
+      "supplier": "NOASSERTION",
       "files": [
         {
           "fileName": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json",
@@ -47,8 +45,7 @@
               "algorithm": "SHA1",
               "checksumValue": "237db0da53131e4548cb1181337fa0f420299e1f"
             }
-          ],
-          "copyrightText": ""
+          ]
         }
       ]
     },
@@ -56,11 +53,9 @@
       "name": "pip",
       "SPDXID": "SPDXRef-Package-6b677e82217fb5bd",
       "versionInfo": "22.2.2",
-      "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "MIT",
-      "copyrightText": "",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -69,6 +64,7 @@
         }
       ],
       "primaryPackagePurpose": "LIBRARY",
+      "supplier": "NOASSERTION",
       "files": [
         {
           "fileName": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json",
@@ -78,8 +74,7 @@
               "algorithm": "SHA1",
               "checksumValue": "a6a2db7668f1ad541d704369fc66c96a4415aa24"
             }
-          ],
-          "copyrightText": ""
+          ]
         }
       ]
     },
@@ -87,11 +82,10 @@
       "name": "testdata/fixtures/fs/conda",
       "SPDXID": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
       "downloadLocation": "NONE",
-      "copyrightText": "",
+      "primaryPackagePurpose": "SOURCE",
       "attributionTexts": [
         "SchemaVersion: 2"
-      ],
-      "primaryPackagePurpose": "SOURCE"
+      ]
     }
   ],
   "relationships": [

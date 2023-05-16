@@ -1,6 +1,5 @@
 [
   {
-    "ID": "bash@4.4.18-1.ph3.x86_64",
     "Name": "bash",
     "Version": "4.4.18",
     "Release": "1.ph3",
@@ -8,21 +7,13 @@
     "SrcName": "bash",
     "SrcVersion": "4.4.18",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "GPLv3"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64",
-      "ncurses-libs@6.1-1.ph3.x86_64",
-      "readline@7.0-2.ph3.x86_64"
-    ],
+    "License": "GPLv3",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "bzip2-libs@1.0.6-10.ph3.x86_64",
     "Name": "bzip2-libs",
     "Version": "1.0.6",
     "Release": "10.ph3",
@@ -30,19 +21,13 @@
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6",
     "SrcRelease": "10.ph3",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "ca-certificates@20190521-1.ph3.x86_64",
     "Name": "ca-certificates",
     "Version": "20190521",
     "Release": "1.ph3",
@@ -50,21 +35,13 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "20190521",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "Custom"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64",
-      "ca-certificates-pki@20190521-1.ph3.x86_64",
-      "openssl@1.0.2s-1.ph3.x86_64"
-    ],
+    "License": "Custom",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "ca-certificates-pki@20190521-1.ph3.x86_64",
     "Name": "ca-certificates-pki",
     "Version": "20190521",
     "Release": "1.ph3",
@@ -72,16 +49,13 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "20190521",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "Custom"
-    ],
-    "Maintainer": "VMware, Inc.",
+    "License": "Custom",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "curl@7.61.1-4.ph3.x86_64",
     "Name": "curl",
     "Version": "7.61.1",
     "Release": "4.ph3",
@@ -89,26 +63,13 @@
     "SrcName": "curl",
     "SrcVersion": "7.61.1",
     "SrcRelease": "4.ph3",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64",
-      "ca-certificates@20190521-1.ph3.x86_64",
-      "curl-libs@7.61.1-4.ph3.x86_64",
-      "glibc@2.28-3.ph3.x86_64",
-      "krb5@1.17-1.ph3.x86_64",
-      "libssh2@1.9.0-1.ph3.x86_64",
-      "openssl@1.0.2s-1.ph3.x86_64",
-      "zlib@1.2.11-1.ph3.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "curl-libs@7.61.1-4.ph3.x86_64",
     "Name": "curl-libs",
     "Version": "7.61.1",
     "Release": "4.ph3",
@@ -116,25 +77,13 @@
     "SrcName": "curl",
     "SrcVersion": "7.61.1",
     "SrcRelease": "4.ph3",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "ca-certificates-pki@20190521-1.ph3.x86_64",
-      "e2fsprogs-libs@1.44.3-2.ph3.x86_64",
-      "glibc@2.28-3.ph3.x86_64",
-      "krb5@1.17-1.ph3.x86_64",
-      "libssh2@1.9.0-1.ph3.x86_64",
-      "openssl@1.0.2s-1.ph3.x86_64",
-      "zlib@1.2.11-1.ph3.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "e2fsprogs-libs@1.44.3-2.ph3.x86_64",
     "Name": "e2fsprogs-libs",
     "Version": "1.44.3",
     "Release": "2.ph3",
@@ -142,19 +91,13 @@
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.44.3",
     "SrcRelease": "2.ph3",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "elfutils-libelf@0.176-1.ph3.x86_64",
     "Name": "elfutils-libelf",
     "Version": "0.176",
     "Release": "1.ph3",
@@ -162,20 +105,13 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.176",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "GPLv2+ or LGPLv3+"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64",
-      "zlib@1.2.11-1.ph3.x86_64"
-    ],
+    "License": "GPLv2+ or LGPLv3+",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "expat-libs@2.2.6-2.ph3.x86_64",
     "Name": "expat-libs",
     "Version": "2.2.6",
     "Release": "2.ph3",
@@ -183,19 +119,13 @@
     "SrcName": "expat",
     "SrcVersion": "2.2.6",
     "SrcRelease": "2.ph3",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "filesystem@1.1-4.ph3.x86_64",
     "Name": "filesystem",
     "Version": "1.1",
     "Release": "4.ph3",
@@ -203,16 +133,13 @@
     "SrcName": "filesystem",
     "SrcVersion": "1.1",
     "SrcRelease": "4.ph3",
-    "Licenses": [
-      "GPLv3"
-    ],
-    "Maintainer": "VMware, Inc.",
+    "License": "GPLv3",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "glibc@2.28-3.ph3.x86_64",
     "Name": "glibc",
     "Version": "2.28",
     "Release": "3.ph3",
@@ -220,33 +147,24 @@
     "SrcName": "glibc",
     "SrcVersion": "2.28",
     "SrcRelease": "3.ph3",
-    "Licenses": [
-      "LGPLv2+"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64",
-      "filesystem@1.1-4.ph3.x86_64"
-    ],
+    "License": "LGPLv2+",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "gpg-pubkey@66fd4949-4803fe57.",
     "Name": "gpg-pubkey",
     "Version": "66fd4949",
     "Release": "4803fe57",
     "Arch": "None",
-    "Licenses": [
-      "pubkey"
-    ],
+    "License": "pubkey",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "krb5@1.17-1.ph3.x86_64",
     "Name": "krb5",
     "Version": "1.17",
     "Release": "1.ph3",
@@ -254,22 +172,13 @@
     "SrcName": "krb5",
     "SrcVersion": "1.17",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64",
-      "e2fsprogs-libs@1.44.3-2.ph3.x86_64",
-      "glibc@2.28-3.ph3.x86_64",
-      "openssl@1.0.2s-1.ph3.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "libcap@2.25-8.ph3.x86_64",
     "Name": "libcap",
     "Version": "2.25",
     "Release": "8.ph3",
@@ -277,19 +186,13 @@
     "SrcName": "libcap",
     "SrcVersion": "2.25",
     "SrcRelease": "8.ph3",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "libdb@5.3.28-2.ph3.x86_64",
     "Name": "libdb",
     "Version": "5.3.28",
     "Release": "2.ph3",
@@ -297,19 +200,13 @@
     "SrcName": "libdb",
     "SrcVersion": "5.3.28",
     "SrcRelease": "2.ph3",
-    "Licenses": [
-      "BSD and LGPLv2 and Sleepycat"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "BSD and LGPLv2 and Sleepycat",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "libgcc@7.3.0-4.ph3.x86_64",
     "Name": "libgcc",
     "Version": "7.3.0",
     "Release": "4.ph3",
@@ -317,19 +214,13 @@
     "SrcName": "gcc",
     "SrcVersion": "7.3.0",
     "SrcRelease": "4.ph3",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "libsolv@0.6.26-5.ph3.x86_64",
     "Name": "libsolv",
     "Version": "0.6.26",
     "Release": "5.ph3",
@@ -337,23 +228,13 @@
     "SrcName": "libsolv",
     "SrcVersion": "0.6.26",
     "SrcRelease": "5.ph3",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64",
-      "expat-libs@2.2.6-2.ph3.x86_64",
-      "glibc@2.28-3.ph3.x86_64",
-      "libdb@5.3.28-2.ph3.x86_64",
-      "zlib@1.2.11-1.ph3.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "libssh2@1.9.0-1.ph3.x86_64",
     "Name": "libssh2",
     "Version": "1.9.0",
     "Release": "1.ph3",
@@ -361,21 +242,13 @@
     "SrcName": "libssh2",
     "SrcVersion": "1.9.0",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64",
-      "openssl@1.0.2s-1.ph3.x86_64",
-      "zlib@1.2.11-1.ph3.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "ncurses-libs@6.1-1.ph3.x86_64",
     "Name": "ncurses-libs",
     "Version": "6.1",
     "Release": "1.ph3",
@@ -383,19 +256,13 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "nspr@4.21-1.ph3.x86_64",
     "Name": "nspr",
     "Version": "4.21",
     "Release": "1.ph3",
@@ -403,20 +270,13 @@
     "SrcName": "nspr",
     "SrcVersion": "4.21",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "MPLv2.0"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64",
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "MPLv2.0",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "nss-libs@3.44-2.ph3.x86_64",
     "Name": "nss-libs",
     "Version": "3.44",
     "Release": "2.ph3",
@@ -424,21 +284,13 @@
     "SrcName": "nss",
     "SrcVersion": "3.44",
     "SrcRelease": "2.ph3",
-    "Licenses": [
-      "MPLv2.0"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64",
-      "nspr@4.21-1.ph3.x86_64",
-      "sqlite-libs@3.27.2-3.ph3.x86_64"
-    ],
+    "License": "MPLv2.0",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "openssl@1.0.2s-1.ph3.x86_64",
     "Name": "openssl",
     "Version": "1.0.2s",
     "Release": "1.ph3",
@@ -446,21 +298,13 @@
     "SrcName": "openssl",
     "SrcVersion": "1.0.2s",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "OpenSSL"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64",
-      "glibc@2.28-3.ph3.x86_64",
-      "libgcc@7.3.0-4.ph3.x86_64"
-    ],
+    "License": "OpenSSL",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "photon-release@3.0-3.ph3.noarch",
     "Name": "photon-release",
     "Version": "3.0",
     "Release": "3.ph3",
@@ -468,19 +312,13 @@
     "SrcName": "photon-release",
     "SrcVersion": "3.0",
     "SrcRelease": "3.ph3",
-    "Licenses": [
-      "Apache License"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64"
-    ],
+    "License": "Apache License",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "photon-repos@3.0-3.ph3.noarch",
     "Name": "photon-repos",
     "Version": "3.0",
     "Release": "3.ph3",
@@ -488,16 +326,13 @@
     "SrcName": "photon-repos",
     "SrcVersion": "3.0",
     "SrcRelease": "3.ph3",
-    "Licenses": [
-      "Apache License"
-    ],
-    "Maintainer": "VMware, Inc.",
+    "License": "Apache License",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "popt@1.16-5.ph3.x86_64",
     "Name": "popt",
     "Version": "1.16",
     "Release": "5.ph3",
@@ -505,19 +340,13 @@
     "SrcName": "popt",
     "SrcVersion": "1.16",
     "SrcRelease": "5.ph3",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "readline@7.0-2.ph3.x86_64",
     "Name": "readline",
     "Version": "7.0",
     "Release": "2.ph3",
@@ -525,20 +354,13 @@
     "SrcName": "readline",
     "SrcVersion": "7.0",
     "SrcRelease": "2.ph3",
-    "Licenses": [
-      "GPLv3+"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64",
-      "ncurses-libs@6.1-1.ph3.x86_64"
-    ],
+    "License": "GPLv3+",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "rpm-libs@4.14.2-4.ph3.x86_64",
     "Name": "rpm-libs",
     "Version": "4.14.2",
     "Release": "4.ph3",
@@ -546,28 +368,13 @@
     "SrcName": "rpm",
     "SrcVersion": "4.14.2",
     "SrcRelease": "4.ph3",
-    "Licenses": [
-      "GPLv2+"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bzip2-libs@1.0.6-10.ph3.x86_64",
-      "elfutils-libelf@0.176-1.ph3.x86_64",
-      "glibc@2.28-3.ph3.x86_64",
-      "libcap@2.25-8.ph3.x86_64",
-      "libdb@5.3.28-2.ph3.x86_64",
-      "libgcc@7.3.0-4.ph3.x86_64",
-      "nss-libs@3.44-2.ph3.x86_64",
-      "popt@1.16-5.ph3.x86_64",
-      "xz-libs@5.2.4-1.ph3.x86_64",
-      "zlib@1.2.11-1.ph3.x86_64"
-    ],
+    "License": "GPLv2+",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "sqlite-libs@3.27.2-3.ph3.x86_64",
     "Name": "sqlite-libs",
     "Version": "3.27.2",
     "Release": "3.ph3",
@@ -575,21 +382,13 @@
     "SrcName": "sqlite",
     "SrcVersion": "3.27.2",
     "SrcRelease": "3.ph3",
-    "Licenses": [
-      "Public Domain"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64",
-      "glibc@2.28-3.ph3.x86_64",
-      "zlib@1.2.11-1.ph3.x86_64"
-    ],
+    "License": "Public Domain",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "tdnf@2.0.0-10.ph3.x86_64",
     "Name": "tdnf",
     "Version": "2.0.0",
     "Release": "10.ph3",
@@ -597,25 +396,13 @@
     "SrcName": "tdnf",
     "SrcVersion": "2.0.0",
     "SrcRelease": "10.ph3",
-    "Licenses": [
-      "LGPLv2.1,GPLv2"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "bash@4.4.18-1.ph3.x86_64",
-      "curl-libs@7.61.1-4.ph3.x86_64",
-      "curl@7.61.1-4.ph3.x86_64",
-      "glibc@2.28-3.ph3.x86_64",
-      "libsolv@0.6.26-5.ph3.x86_64",
-      "rpm-libs@4.14.2-4.ph3.x86_64",
-      "tdnf-cli-libs@2.0.0-10.ph3.x86_64"
-    ],
+    "License": "LGPLv2.1,GPLv2",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "tdnf-cli-libs@2.0.0-10.ph3.x86_64",
     "Name": "tdnf-cli-libs",
     "Version": "2.0.0",
     "Release": "10.ph3",
@@ -623,21 +410,13 @@
     "SrcName": "tdnf",
     "SrcVersion": "2.0.0",
     "SrcRelease": "10.ph3",
-    "Licenses": [
-      "LGPLv2.1,GPLv2"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64",
-      "libsolv@0.6.26-5.ph3.x86_64",
-      "rpm-libs@4.14.2-4.ph3.x86_64"
-    ],
+    "License": "LGPLv2.1,GPLv2",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "toybox@0.7.7-1.ph3.x86_64",
     "Name": "toybox",
     "Version": "0.7.7",
     "Release": "1.ph3",
@@ -645,19 +424,13 @@
     "SrcName": "toybox",
     "SrcVersion": "0.7.7",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "BSD"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "BSD",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "xz-libs@5.2.4-1.ph3.x86_64",
     "Name": "xz-libs",
     "Version": "5.2.4",
     "Release": "1.ph3",
@@ -665,19 +438,13 @@
     "SrcName": "xz",
     "SrcVersion": "5.2.4",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "GPLv2+ and GPLv3+ and LGPLv2+"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "GPLv2+ and GPLv3+ and LGPLv2+",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
-    "ID": "zlib@1.2.11-1.ph3.x86_64",
     "Name": "zlib",
     "Version": "1.2.11",
     "Release": "1.ph3",
@@ -685,14 +452,9 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.11",
     "SrcRelease": "1.ph3",
-    "Licenses": [
-      "zlib"
-    ],
-    "Maintainer": "VMware, Inc.",
-    "DependsOn": [
-      "glibc@2.28-3.ph3.x86_64"
-    ],
+    "License": "zlib",
     "Layer": {
+      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   }
