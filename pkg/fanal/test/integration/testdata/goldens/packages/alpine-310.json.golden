@@ -39,6 +39,7 @@
     "ID": "apk-tools@2.10.4-r2",
     "Name": "apk-tools",
     "Version": "2.10.4-r2",
+    "Arch": "x86_64",
     "SrcName": "apk-tools",
     "SrcVersion": "2.10.4-r2",
     "Licenses": [
@@ -192,6 +193,7 @@
     "ID": "musl-utils@1.1.22-r3",
     "Name": "musl-utils",
     "Version": "1.1.22-r3",
+    "Arch": "x86_64",
     "SrcName": "musl",
     "SrcVersion": "1.1.22-r3",
     "Licenses": [
