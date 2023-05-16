@@ -320,8 +320,8 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.88.1 h1:zyQE7khEXotrtrDRaRQnAN1/OXdw5ZmttMJ04n42AQQ=
-github.com/aquasecurity/defsec v0.88.1/go.mod h1:+IF79zLDD0Lm+z+UH+cmGmIFZ8d/ZBcd8r1Xw3EDxZI=
+github.com/aquasecurity/defsec v0.88.2-0.20230516215146-673ff3afe374 h1:MJKx9/o4Z4Wej/wAM2Z6L78Nddi++b3UglIJLBI5DIY=
+github.com/aquasecurity/defsec v0.88.2-0.20230516215146-673ff3afe374/go.mod h1:JDXjPPX8F9YERSYkzr6VqA90Kru/kDAwCehcg0TH3Mk=
 github.com/aquasecurity/go-dep-parser v0.0.0-20230514135501-4adad90d3013 h1:W4aixCRckBRj9arjuVXRfRQjJ5+/qof7ZRgSsCH9zpA=
 github.com/aquasecurity/go-dep-parser v0.0.0-20230514135501-4adad90d3013/go.mod h1:bDhCMOPc4Fq7fRg05DNJklkdR+66BWnhf8rWVL+LiYk=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -509,6 +509,8 @@ github.com/blang/semver v3.1.0+incompatible/go.mod h1:kRBLl5iJ+tD4TcOOxsy/0fnweb
 github.com/blang/semver v3.5.1+incompatible/go.mod h1:kRBLl5iJ+tD4TcOOxsy/0fnwebNt5EWlYSAyrTnjyyk=
 github.com/bmatcuk/doublestar v1.3.4 h1:gPypJ5xD31uhX6Tf54sDPUOBXTqKH4c9aPY66CyQrS0=
 github.com/bmatcuk/doublestar v1.3.4/go.mod h1:wiQtGV+rzVYxB7WIlirSN++5HPtPlXEo9MEoZQC/PmE=
+github.com/bmatcuk/doublestar/v4 v4.6.0 h1:HTuxyug8GyFbRkrffIpzNCSK4luc0TY3wzXvzIZhEXc=
+github.com/bmatcuk/doublestar/v4 v4.6.0/go.mod h1:xBQ8jztBU6kakFMg+8WGxn0c6z1fTSPVIjEY1Wr7jzc=
 github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869/go.mod h1:Ekp36dRnpXw/yCqJaO+ZrUyxD+3VXMFFr56k5XYrpB4=
 github.com/bradleyjkemp/cupaloy/v2 v2.8.0 h1:any4BmKE+jGIaMpnU8YgH/I2LPiLBufr6oMMlVBbn9M=
 github.com/briandowns/spinner v1.23.0 h1:alDF2guRWqa/FOZZYWjlMIx2L6H0wyewPxo/CH4Pt2A=
