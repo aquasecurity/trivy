@@ -218,6 +218,10 @@ func (sw *SarifWriter) Write(report types.Report) error {
 	sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
 		"ROOTPATH": {URI: &rootPath},
 	}
+	sw.run.AddInvocation(true).
+		WithStartTimeUTC(report.StartTime).
+		WithEndTimeUTC(report.EndTime)
+
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
 }

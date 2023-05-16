@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/samber/lo"
@@ -92,6 +93,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
+						Invocations: []*sarif.Invocation{
+							{
+								StartTimeUTC:        &time.Time{},
+								EndTimeUTC:          &time.Time{},
+								ExecutionSuccessful: lo.ToPtr(true),
+							},
+						},
 						Tool: sarif.Tool{
 							Driver: &sarif.ToolComponent{
 								FullName:       lo.ToPtr("Trivy Vulnerability Scanner"),
@@ -217,6 +225,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
+						Invocations: []*sarif.Invocation{
+							{
+								StartTimeUTC:        &time.Time{},
+								EndTimeUTC:          &time.Time{},
+								ExecutionSuccessful: lo.ToPtr(true),
+							},
+						},
 						Tool: sarif.Tool{
 							Driver: &sarif.ToolComponent{
 								FullName:       lo.ToPtr("Trivy Vulnerability Scanner"),
@@ -357,6 +372,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
+						Invocations: []*sarif.Invocation{
+							{
+								StartTimeUTC:        &time.Time{},
+								EndTimeUTC:          &time.Time{},
+								ExecutionSuccessful: lo.ToPtr(true),
+							},
+						},
 						Tool: sarif.Tool{
 							Driver: &sarif.ToolComponent{
 								FullName:       lo.ToPtr("Trivy Vulnerability Scanner"),
@@ -432,6 +454,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
+						Invocations: []*sarif.Invocation{
+							{
+								StartTimeUTC:        &time.Time{},
+								EndTimeUTC:          &time.Time{},
+								ExecutionSuccessful: lo.ToPtr(true),
+							},
+						},
 						Tool: sarif.Tool{
 							Driver: &sarif.ToolComponent{
 								FullName:       lo.ToPtr("Trivy Vulnerability Scanner"),

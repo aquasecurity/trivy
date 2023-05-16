@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
@@ -25,6 +26,8 @@ type Report struct {
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
 	Metadata      Metadata            `json:",omitempty"`
 	Results       Results             `json:",omitempty"`
+	StartTime     time.Time           `json:"-"`
+	EndTime       time.Time           `json:"-"`
 
 	// SBOM
 	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON

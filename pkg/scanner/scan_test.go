@@ -205,6 +205,11 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				require.NoError(t, err, tt.name)
 			}
 
+			if tt.name == "happy path" {
+				tt.want.StartTime = got.StartTime
+				tt.want.EndTime = got.EndTime
+			}
+
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}

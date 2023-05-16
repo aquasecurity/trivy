@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
@@ -139,6 +140,7 @@ func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
 
 // ScanArtifact scans the artifacts and returns results
 func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
+	startTime := time.Now().UTC()
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("failed analysis: %w", err)
@@ -148,7 +150,6 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			log.Logger.Warnf("Failed to clean the artifact %q: %v", artifactInfo.Name, err)
 		}
 	}()
-
 	results, osFound, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
@@ -171,6 +172,8 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		SchemaVersion: report.SchemaVersion,
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
+		StartTime:     startTime,
+		EndTime:       time.Now().UTC(),
 		Metadata: types.Metadata{
 			OS: ptros,
 
