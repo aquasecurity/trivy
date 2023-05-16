@@ -2,6 +2,7 @@ package flag
 
 import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -44,6 +45,12 @@ var (
 		Value:      "",
 		Usage:      "unix domain socket path to use for docker scanning",
 	}
+	SourceFlag = Flag{
+		Name:       "image-src",
+		ConfigName: "image.source",
+		Value:      ftypes.AllImageSources.StringSlice(),
+		Usage:      "image source(s) to use, in priority order (docker,containerd,podman,remote)",
+	}
 )
 
 type ImageFlagGroup struct {
@@ -52,6 +59,7 @@ type ImageFlagGroup struct {
 	ScanRemovedPkgs     *Flag
 	Platform            *Flag
 	DockerHost          *Flag
+	ImageSources        *Flag
 }
 
 type ImageOptions struct {
@@ -60,6 +68,7 @@ type ImageOptions struct {
 	ScanRemovedPkgs     bool
 	Platform            ftypes.Platform
 	DockerHost          string
+	ImageSources        ftypes.ImageSources
 }
 
 func NewImageFlagGroup() *ImageFlagGroup {
@@ -69,6 +78,7 @@ func NewImageFlagGroup() *ImageFlagGroup {
 		ScanRemovedPkgs:     &ScanRemovedPkgsFlag,
 		Platform:            &PlatformFlag,
 		DockerHost:          &DockerHostFlag,
+		ImageSources:        &SourceFlag,
 	}
 }
 
@@ -83,6 +93,7 @@ func (f *ImageFlagGroup) Flags() []*Flag {
 		f.ScanRemovedPkgs,
 		f.Platform,
 		f.DockerHost,
+		f.ImageSources,
 	}
 }
 
@@ -90,6 +101,11 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 	scanners, err := parseScanners(getStringSlice(f.ImageConfigScanners), types.AllImageConfigScanners)
 	if err != nil {
 		return ImageOptions{}, xerrors.Errorf("unable to parse image config scanners: %w", err)
+	}
+
+	imageSources, err := parseImageSources(getStringSlice(f.ImageSources))
+	if err != nil {
+		return ImageOptions{}, xerrors.Errorf("unable to parse image sources: %w", err)
 	}
 
 	var platform ftypes.Platform
@@ -110,5 +126,18 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
 		Platform:            platform,
 		DockerHost:          getString(f.DockerHost),
+		ImageSources:        imageSources,
 	}, nil
+}
+
+func parseImageSources(srcs []string) (ftypes.ImageSources, error) {
+	var imageSources ftypes.ImageSources
+	for _, s := range srcs {
+		src := ftypes.ImageSource(s)
+		if !slices.Contains(ftypes.AllImageSources, src) {
+			return nil, xerrors.Errorf("unknown image source: %s", s)
+		}
+		imageSources = append(imageSources, src)
+	}
+	return imageSources, nil
 }

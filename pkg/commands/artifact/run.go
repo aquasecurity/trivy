@@ -24,7 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/report"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -343,7 +342,7 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 
 	// If vulnerability scanning and SBOM generation are disabled, it doesn't need to download the Java database.
 	if !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
-		!slices.Contains(report.SupportedSBOMFormats, opts.Format) {
+		!slices.Contains(pkgReport.SupportedSBOMFormats, opts.Format) {
 		return nil
 	}
 
@@ -503,7 +502,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// But we don't create client if vulnerability analysis is disabled and SBOM format is not used
 	// We need to disable jar analyzer to avoid errors
 	// TODO disable all languages that don't contain license information for this case
-	if !opts.Scanners.Enabled(types.VulnerabilityScanner) && !slices.Contains(report.SupportedSBOMFormats, opts.Format) {
+	if !opts.Scanners.Enabled(types.VulnerabilityScanner) && !slices.Contains(pkgReport.SupportedSBOMFormats, opts.Format) {
 		analyzers = append(analyzers, analyzer.TypeJar)
 	}
 
@@ -615,7 +614,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	// SPDX needs to calculate digests for package files
 	var fileChecksum bool
-	if opts.Format == report.FormatSPDXJSON || opts.Format == report.FormatSPDX {
+	if opts.Format == pkgReport.FormatSPDXJSON || opts.Format == pkgReport.FormatSPDX {
 		fileChecksum = true
 	}
 
@@ -652,6 +651,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 				DockerOptions: ftypes.DockerOptions{
 					Host: opts.DockerHost,
 				},
+				ImageSources: opts.ImageSources,
 			},
 
 			// For misconfiguration scanning

@@ -15,7 +15,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.30.2
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/defsec v0.88.1
-	github.com/aquasecurity/go-dep-parser v0.0.0-20230424082450-f8baca321fbf
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230514135501-4adad90d3013
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -24,7 +24,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-db v0.0.0-20230411140759-3c2ee2168575
+	github.com/aquasecurity/trivy-db v0.0.0-20230515061101-378ab9ed302c
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230420095211-019a895da295
 	github.com/aws/aws-sdk-go v1.44.245
@@ -73,7 +73,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0-rc2.0.20221020182949-4df8887994e8
 	github.com/openvex/go-vex v0.2.0
-	github.com/owenrumney/go-sarif/v2 v2.1.3
+	github.com/owenrumney/go-sarif/v2 v2.2.0
 	github.com/package-url/packageurl-go v0.1.1-0.20220428063043-89078438f170
 	github.com/samber/lo v1.38.1
 	github.com/saracen/walker v0.1.3
@@ -93,7 +93,6 @@ require (
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.7
 	go.uber.org/zap v1.24.0
-	golang.org/x/crypto v0.8.0
 	golang.org/x/exp v0.0.0-20230124195608-d38c7dcee874
 	golang.org/x/mod v0.10.0
 	golang.org/x/sync v0.1.0
@@ -354,6 +353,7 @@ require (
 	go.starlark.net v0.0.0-20200306205701-8dd3e2ee1dd5 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
+	golang.org/x/crypto v0.8.0 // indirect
 	golang.org/x/net v0.9.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect

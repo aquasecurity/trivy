@@ -154,7 +154,7 @@ func (r fileLicenseRenderer) setRows() {
 			}
 		} else {
 			row = []string{
-				string(l.Category), l.Severity, l.Name, l.Severity,
+				string(l.Category), l.Severity, l.Name, l.FilePath,
 			}
 		}
 		r.tableWriter.AddRow(row...)

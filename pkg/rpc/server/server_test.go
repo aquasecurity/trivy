@@ -6,7 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/assert"
@@ -206,7 +207,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 						Architecture:  "amd64",
 						Created: func() *timestamp.Timestamp {
 							d := time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC)
-							t, _ := ptypes.TimestampProto(d)
+							t := timestamppb.New(d)
 							return t
 						}(),
 						DockerVersion: "18.09",
@@ -237,7 +238,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 						SchemaVersion: 1,
 						Created: func() *timestamp.Timestamp {
 							d := time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC)
-							t, _ := ptypes.TimestampProto(d)
+							t := timestamppb.New(d)
 							return t
 						}(),
 					},
