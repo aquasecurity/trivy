@@ -18,6 +18,9 @@ import (
 )
 
 func TestDockerEngine(t *testing.T) {
+	if *update {
+		t.Skipf("This test doesn't update golden files")
+	}
 	tests := []struct {
 		name          string
 		imageTag      string
