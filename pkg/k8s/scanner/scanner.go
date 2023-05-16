@@ -184,7 +184,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) ([]report.R
 					ID:      fmt.Sprintf("%s:%s", name, version),
 					Name:    name,
 					Version: version,
-					Digest:  digest.NewDigestFromString("sha256", c.Digest),
+					Digest:  digest.NewDigestFromString(digest.SHA256, strings.ReplaceAll(c.Digest, "sha256:", "")),
 				},
 				)
 			}
