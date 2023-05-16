@@ -3,6 +3,7 @@ package rpm
 import (
 	"context"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"io"
 	"os"
 	"path/filepath"
@@ -145,6 +146,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			Licenses:        []string{pkg.License},
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
+			Digest:          digest.NewDigestFromString(digest.MD5, pkg.PackageDigest),
 		}
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)
