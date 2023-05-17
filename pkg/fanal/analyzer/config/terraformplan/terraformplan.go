@@ -4,10 +4,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"k8s.io/utils/strings/slices"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/misconf"
-	"k8s.io/utils/strings/slices"
 )
 
 const (
@@ -16,7 +17,6 @@ const (
 )
 
 var requiredExts = []string{
-	".json",
 	".tfplan.json",
 	".tf.json",
 }
