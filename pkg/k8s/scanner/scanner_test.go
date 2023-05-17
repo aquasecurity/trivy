@@ -137,12 +137,12 @@ func TestK8sClusterInfoReport(t *testing.T) {
 									Type:   "golang",
 									Packages: ftypes.Packages{
 										{
-											Name:    "containerd",
-											Version: "1.5.2",
-										},
-										{
 											Name:    "kubelet",
 											Version: "1.21.1",
+										},
+										{
+											Name:    "containerd",
+											Version: "1.5.2",
 										},
 									},
 								},

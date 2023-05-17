@@ -1,12 +1,14 @@
 package scanner
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"strings"
 
 	"golang.org/x/xerrors"
 
+	"github.com/Masterminds/semver"
 	ms "github.com/mitchellh/mapstructure"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -236,43 +238,46 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) ([]report.R
 					},
 				},
 			}
-			var name, version string
-			osParts := strings.Split(nf.OsImage, " ")
-			if len(osParts) == 2 {
-				name = strings.TrimSpace(osParts[0])
-				version = strings.TrimSpace(osParts[1])
+
+			osName, osVersion := osNameVersion(nf.OsImage)
+			if len(osName) > 0 && len(osVersion) > 0 {
 				metadata.OS = &ftypes.OS{
-					Family: strings.ToLower(name),
-					Name:   version,
+					Family: strings.ToLower(osName),
+					Name:   osVersion,
 				}
+			}
+			runtimeName, runtimeVersion := runtimeNameVersion(nf.ContainerRuntimeVersion)
+			golangPackages := ftypes.Packages{
+				{
+					Name:    "kubelet",
+					Version: sanitizedVersion(nf.KubeletVersion),
+				},
+			}
+			if len(runtimeName) > 0 && len(runtimeVersion) > 0 {
+				golangPackages = append(golangPackages, ftypes.Package{
+					Name:    runtimeName,
+					Version: runtimeVersion,
+				})
 			}
 			resources = append(resources, report.Resource{
 				Kind: artifact.Kind,
 				Name: artifact.Name,
 				Report: types.Report{
 					ArtifactName: nf.NodeName,
+					// @todo maybe concisure changeing node artifact type to container_image
 					ArtifactType: ftypes.ArtifactVM,
 					Metadata:     metadata,
 					Results: types.Results{
 						{
 							Target: osPackages,
 							Class:  types.ClassOSPkg,
-							Type:   strings.ToLower(name),
+							Type:   strings.ToLower(osName),
 						},
 						{
-							Target: nodeCoreComponents,
-							Class:  types.ClassLangPkg,
-							Type:   "golang",
-							Packages: ftypes.Packages{
-								{
-									Name:    "containerd",
-									Version: strings.Replace(nf.ContainerRuntimeVersion, "containerd://", "", -1),
-								},
-								{
-									Name:    "kubelet",
-									Version: sanitizedVersion(nf.KubeletVersion),
-								},
-							},
+							Target:   nodeCoreComponents,
+							Class:    types.ClassLangPkg,
+							Type:     "golang",
+							Packages: golangPackages,
 						},
 					},
 				},
@@ -287,4 +292,29 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) ([]report.R
 
 func sanitizedVersion(version string) string {
 	return strings.Replace(version, "v", "", -1)
+}
+
+func osNameVersion(name string) (string, string) {
+	var buffer bytes.Buffer
+	var v string
+	var err error
+	parts := strings.Split(name, " ")
+	for _, p := range parts {
+		_, err = semver.NewVersion(p)
+		if err != nil {
+			buffer.WriteString(p + " ")
+			continue
+		}
+		v = p
+		break
+	}
+	return strings.TrimSpace(buffer.String()), v
+}
+
+func runtimeNameVersion(name string) (string, string) {
+	parts := strings.Split(name, "://")
+	if len(parts) == 2 {
+		return parts[0], parts[1]
+	}
+	return "", ""
 }
