@@ -134,7 +134,6 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, xerrors.Errorf("fs filter error: %w", err)
 	} else if newfs == nil {
 		// Skip scanning if no relevant files are found
-		fmt.Println(">> nothing relevant found!")
 		return nil, nil
 	}
 
@@ -180,10 +179,7 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 		}
 		defer file.Close()
 
-		fmt.Println(">> path: ", path, "s.fileType: ", s.fileType)
-
 		if !s.hasFilePattern && !detection.IsType(path, rs, s.fileType) {
-			fmt.Println(">>>> !detection.IsType(path, rs, s.fileType)", !detection.IsType(path, rs, s.fileType))
 			return true, nil
 		}
 		foundRelevantFile = true
