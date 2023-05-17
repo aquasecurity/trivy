@@ -51,6 +51,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
+      --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-non-failures              include successes and exceptions, available with '--scanners config'
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
