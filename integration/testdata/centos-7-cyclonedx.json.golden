@@ -3,11 +3,7 @@
   "specVersion": "1.4",
   "version": 1,
   "metadata": {
-<<<<<<< HEAD
-    "timestamp": "2023-05-16T12:12:18+00:00",
-=======
-    "timestamp": "2023-05-15T09:50:02+00:00",
->>>>>>> main
+    "timestamp": "2023-05-17T11:49:41+00:00",
     "tools": [
       {
         "vendor": "aquasecurity",

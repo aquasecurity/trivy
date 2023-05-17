@@ -3,22 +3,14 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/fs/conda",
-<<<<<<< HEAD
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/fs/conda-139c87cb-e43f-4cc7-9c3b-c7e0256bfdb9",
-=======
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/fs/conda-f50748fc-93cb-48c4-87c5-25a03e4ddb00",
->>>>>>> main
+  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/fs/conda-65512e65-6e3c-4979-85ed-7d6cb26e3e24",
   "creationInfo": {
     "licenseListVersion": "",
     "creators": [
       "Organization: aquasecurity",
       "Tool: trivy-dev"
     ],
-<<<<<<< HEAD
-    "created": "2023-05-16T12:12:16Z"
-=======
-    "created": "2023-05-16T05:26:41Z"
->>>>>>> main
+    "created": "2023-05-17T11:49:37Z"
   },
   "packages": [
     {
@@ -115,12 +107,12 @@
     },
     {
       "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "relatedSpdxElement": "SPDXRef-Package-6b677e82217fb5bd",
+      "relatedSpdxElement": "SPDXRef-Package-b1088cb4090e3a55",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "relatedSpdxElement": "SPDXRef-Package-b1088cb4090e3a55",
+      "relatedSpdxElement": "SPDXRef-Package-6b677e82217fb5bd",
       "relationshipType": "CONTAINS"
     }
   ]
