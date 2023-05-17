@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// Note: the test required k8s (kind) cluster installed
+
 func Test_ExecuteK8sClusterScanVulns(t *testing.T) {
 	actual := new(bytes.Buffer)
 	commands.SetOut(actual)
