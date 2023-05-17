@@ -150,6 +150,7 @@ nav:
           - Triage: community/maintainer/triage.md
 theme:
   name: material
+  custom_dir: docs/overrides
   language: "en"
   logo: imgs/logo-white.svg
   features:
@@ -177,6 +178,7 @@ extra:
   version:
     method: mike
     provider: mike
+    default: latest
 
 plugins:
   - search
