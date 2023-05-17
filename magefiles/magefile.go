@@ -237,6 +237,22 @@ func (t Test) Integration() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
 }
 
+// K8sIntegration runs k8s integration tests
+func (t Test) K8sIntegration() error {
+	err := sh.RunWithV(ENV, "go", "install", "sigs.k8s.io/kind@v0.19.0")
+	if err != nil {
+		return err
+	}
+	err = sh.RunWithV(ENV, "kind", "create", "cluster")
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = sh.RunWithV(ENV, "kind", "delete", "cluster")
+	}()
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=integration", "./pkg/k8s/test/integration/...")
+}
+
 // Module runs Wasm integration tests
 func (t Test) Module() error {
 	mg.Deps(t.FixtureContainerImages, t.GenerateExampleModules)

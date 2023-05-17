@@ -14,6 +14,9 @@ import (
 // Note: the test required k8s (kind) cluster installed
 
 func Test_ExecuteK8sClusterScanVulns(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
 	actual := new(bytes.Buffer)
 	commands.SetOut(actual)
 	globalFlags := flag.NewGlobalFlagGroup()
