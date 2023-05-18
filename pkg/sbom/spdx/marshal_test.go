@@ -68,6 +68,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv3+"},
 								Maintainer:      "CentOS",
+								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
 							},
 						},
 					},
@@ -173,6 +174,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PackageSourceInfo:     "built package from: binutils 2.30-93.el8",
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageChecksums: []common.Checksum{
+							{
+								Algorithm: common.MD5,
+								Value:     "7459cec61bb4d1b0ca8107e25e0dd005",
+							},
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-73c871d73f3c8248"),
@@ -302,6 +309,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        1,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv2+"},
+								Digest:          "md5:483792b8b5f9eb8be7dc4407733118d0",
 							},
 						},
 					},
@@ -369,6 +377,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSourceInfo:     "built package from: acl 1:2.2.53-1.el8",
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						PackageChecksums: []common.Checksum{
+							{
+								Algorithm: common.MD5,
+								Value:     "483792b8b5f9eb8be7dc4407733118d0",
+							},
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),

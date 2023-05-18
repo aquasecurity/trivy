@@ -349,12 +349,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 
 	var checksum []spdx.Checksum
 	if pkg.Digest != "" && class == types.ClassOSPkg {
-		checksum = []spdx.Checksum{
-			{
-				Algorithm: common.ChecksumAlgorithm(pkg.Digest.Algorithm()),
-				Value:     pkg.Digest.Encoded(),
-			},
-		}
+		checksum = digestToSpdxFileChecksum(pkg.Digest)
 	}
 
 	return spdx.Package{
@@ -512,6 +507,8 @@ func digestToSpdxFileChecksum(d digest.Digest) []common.Checksum {
 		alg = spdx.SHA1
 	case digest.SHA256:
 		alg = spdx.SHA256
+	case digest.MD5:
+		alg = spdx.MD5
 	default:
 		return nil
 	}
