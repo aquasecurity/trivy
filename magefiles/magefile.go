@@ -243,14 +243,14 @@ func (t Test) K8sIntegration() error {
 	if err != nil {
 		return err
 	}
-	err = sh.RunWithV(ENV, "kind", "create", "cluster")
+	err = sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test")
 	if err != nil {
 		return err
 	}
 	defer func() {
-		_ = sh.RunWithV(ENV, "kind", "delete", "cluster")
+		_ = sh.RunWithV(ENV, "kind", "delete", "cluster", "--name", "kind-test")
 	}()
-	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=integration", "./pkg/k8s/test/integration/...")
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=k8s_integration", "./integration/...")
 }
 
 // Module runs Wasm integration tests

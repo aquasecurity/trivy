@@ -1,29 +1,20 @@
+//go:build k8s_integration
+
 package integration
 
 import (
-	"bytes"
 	"encoding/json"
-	"testing"
-
-	"github.com/aquasecurity/trivy/pkg/commands"
-	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"path/filepath"
+	"testing"
 )
 
 // Note: the test required k8s (kind) cluster installed
 
 func Test_ExecuteK8sClusterScanVulns(t *testing.T) {
-	if testing.Short() {
-		t.Skip()
-	}
-	actual := new(bytes.Buffer)
-	commands.SetOut(actual)
-	globalFlags := flag.NewGlobalFlagGroup()
-	rootCmd := commands.NewRootCommand("k8s-test", globalFlags)
-	k8s := commands.NewKubernetesCommand(globalFlags)
-	rootCmd.AddCommand(k8s)
-	rootCmd.SetArgs([]string{
+	osArgs := []string{
 		"k8s",
 		"cluster",
 		"--report",
@@ -33,14 +24,25 @@ func Test_ExecuteK8sClusterScanVulns(t *testing.T) {
 		"5m0s",
 		"--format",
 		"json",
-	})
-	err := rootCmd.Execute()
+		"--context",
+		"kind-kind-test",
+	}
+	// Set up the output file
+	outputFile := filepath.Join(t.TempDir(), "output.json")
+	osArgs = append(osArgs, []string{
+		"--output",
+		outputFile,
+	}...)
+
+	// Run Trivy
+	err := execute(osArgs)
 	assert.NoError(t, err)
 	var rpt report.ConsolidatedReport
+	actual, err := os.ReadFile(outputFile)
+	err = json.Unmarshal([]byte(actual), &rpt)
+	assert.NoError(t, err)
 	var hasVulnerabilitiesFinding bool
 	var hasMisconfigurationFinding bool
-	err = json.Unmarshal([]byte(actual.String()), &rpt)
-	assert.NoError(t, err)
 out:
 	for _, res := range rpt.Findings {
 		for _, res := range res.Results {
