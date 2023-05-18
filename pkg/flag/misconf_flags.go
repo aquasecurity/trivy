@@ -7,6 +7,12 @@ package flag
 //	  config-policy: "custom-policy/policy"
 //	  policy-namespaces: "user"
 var (
+	ResetPolicyBundleFlag = Flag{
+		Name:       "reset-policy-bundle",
+		ConfigName: "misconfiguration.reset-policy-bundle",
+		Value:      false,
+		Usage:      "remove policy bundle",
+	}
 	IncludeNonFailuresFlag = Flag{
 		Name:       "include-non-failures",
 		ConfigName: "misconfiguration.include-non-failures",
@@ -48,6 +54,7 @@ var (
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
 type MisconfFlagGroup struct {
 	IncludeNonFailures *Flag
+	ResetPolicyBundle  *Flag
 
 	// Values Files
 	HelmValues       *Flag
@@ -59,6 +66,7 @@ type MisconfFlagGroup struct {
 
 type MisconfOptions struct {
 	IncludeNonFailures bool
+	ResetPolicyBundle  bool
 
 	// Values Files
 	HelmValues       []string
@@ -71,6 +79,7 @@ type MisconfOptions struct {
 func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
 		IncludeNonFailures: &IncludeNonFailuresFlag,
+		ResetPolicyBundle:  &ResetPolicyBundleFlag,
 		HelmValues:         &HelmSetFlag,
 		HelmFileValues:     &HelmSetFileFlag,
 		HelmStringValues:   &HelmSetStringFlag,
@@ -86,6 +95,7 @@ func (f *MisconfFlagGroup) Name() string {
 func (f *MisconfFlagGroup) Flags() []*Flag {
 	return []*Flag{
 		f.IncludeNonFailures,
+		f.ResetPolicyBundle,
 		f.HelmValues,
 		f.HelmValueFiles,
 		f.HelmFileValues,
@@ -97,6 +107,7 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 	return MisconfOptions{
 		IncludeNonFailures: getBool(f.IncludeNonFailures),
+		ResetPolicyBundle:  getBool(f.ResetPolicyBundle),
 		HelmValues:         getStringSlice(f.HelmValues),
 		HelmValueFiles:     getStringSlice(f.HelmValueFiles),
 		HelmFileValues:     getStringSlice(f.HelmFileValues),

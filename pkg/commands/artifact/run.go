@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/aquasecurity/trivy/pkg/policy"
+
 	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
@@ -387,6 +389,18 @@ func (r *runner) initCache(opts flag.Options) error {
 		}
 		return SkipScan
 	}
+
+	if opts.ResetPolicyBundle {
+		c, err := policy.NewClient(fsutils.CacheDir(), true)
+		if err != nil {
+			return xerrors.Errorf("failed to instantiate policy client: %w", err)
+		}
+		if err := c.Clear(); err != nil {
+			return xerrors.Errorf("failed to remove the cache: %w", err)
+		}
+		return SkipScan
+	}
+
 	if opts.ClearCache {
 		defer cacheClient.Close()
 		if err = cacheClient.ClearArtifacts(); err != nil {
