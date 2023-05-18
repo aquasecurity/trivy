@@ -84,6 +84,11 @@ func (Tool) EasyJSON() error {
 	return sh.Run("go", "install", "github.com/mailru/easyjson/...@v0.7.7")
 }
 
+// Kind installs kind cluster
+func (Tool) Kind() error {
+	return sh.RunWithV(ENV, "go", "install", "sigs.k8s.io/kind@v0.19.0")
+}
+
 // Goyacc installs goyacc
 func (Tool) Goyacc() error {
 	if exists(filepath.Join(GOBIN, "goyacc")) {
@@ -239,18 +244,15 @@ func (t Test) Integration() error {
 
 // K8sIntegration runs k8s integration tests
 func (t Test) K8sIntegration() error {
-	err := sh.RunWithV(ENV, "go", "install", "sigs.k8s.io/kind@v0.19.0")
-	if err != nil {
-		return err
-	}
-	err = sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test")
+	mg.Deps(Tool{}.Kind)
+	err := sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test")
 	if err != nil {
 		return err
 	}
 	defer func() {
 		_ = sh.RunWithV(ENV, "kind", "delete", "cluster", "--name", "kind-test")
 	}()
-	err = sh.RunWithV(ENV, "kubectl", "apply", "-f", "./integration/testdata/fixtures/deployment/test_nginx.yaml")
+	err = sh.RunWithV(ENV, "kubectl", "apply", "-f", "./integration/testdata/fixtures/k8s/test_nginx.yaml")
 	if err != nil {
 		return err
 	}
