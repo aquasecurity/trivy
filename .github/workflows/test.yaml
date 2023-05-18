@@ -85,7 +85,7 @@ jobs:
         run: mage test:integration
 
   k8s-integration:
-    name: k8s Integration Test
+    name: K8s Integration Test
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
