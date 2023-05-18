@@ -24,6 +24,8 @@ func Test_ExecuteK8sClusterScanVulns(t *testing.T) {
 		"5m0s",
 		"--format",
 		"json",
+		"--components",
+		"workload",
 		"--context",
 		"kind-kind-test",
 	}
