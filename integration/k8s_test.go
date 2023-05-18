@@ -4,16 +4,25 @@ package integration
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/k8s/report"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/k8s/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// Note: the test required k8s (kind) cluster installed
+// Note: the test required k8s (kind) cluster installed.
+// "mage test:k8s" will run this test.
 
-func Test_ExecuteK8sClusterScanVulns(t *testing.T) {
+func TestK8s(t *testing.T) {
+	// Set up the output file
+	outputFile := filepath.Join(t.TempDir(), "output.json")
+
 	osArgs := []string{
 		"k8s",
 		"cluster",
@@ -28,37 +37,34 @@ func Test_ExecuteK8sClusterScanVulns(t *testing.T) {
 		"workload",
 		"--context",
 		"kind-kind-test",
-	}
-	// Set up the output file
-	outputFile := filepath.Join(t.TempDir(), "output.json")
-	osArgs = append(osArgs, []string{
 		"--output",
 		outputFile,
-	}...)
+	}
 
 	// Run Trivy
 	err := execute(osArgs)
-	assert.NoError(t, err)
-	var rpt report.ConsolidatedReport
-	actual, err := os.ReadFile(outputFile)
-	err = json.Unmarshal([]byte(actual), &rpt)
-	assert.NoError(t, err)
-	var hasVulnerabilitiesFinding bool
-	var hasMisconfigurationFinding bool
-out:
-	for _, res := range rpt.Findings {
-		for _, res := range res.Results {
-			if !hasMisconfigurationFinding && len(res.Misconfigurations) > 0 {
-				hasMisconfigurationFinding = true
-			}
-			if !hasVulnerabilitiesFinding && len(res.Vulnerabilities) > 0 {
-				hasVulnerabilitiesFinding = true
-			}
-			if hasMisconfigurationFinding && hasVulnerabilitiesFinding {
-				break out
-			}
-		}
-	}
-	assert.True(t, hasMisconfigurationFinding)
-	assert.True(t, hasVulnerabilitiesFinding)
+	require.NoError(t, err)
+
+	var got report.ConsolidatedReport
+	f, err := os.Open(outputFile)
+	require.NoError(t, err)
+	defer f.Close()
+
+	err = json.NewDecoder(f).Decode(&got)
+	require.NoError(t, err)
+
+	// Flatten findings
+	results := lo.FlatMap(got.Findings, func(resource report.Resource, _ int) []types.Result {
+		return resource.Results
+	})
+
+	// Has vulnerabilities
+	assert.True(t, lo.SomeBy(results, func(r types.Result) bool {
+		return len(r.Vulnerabilities) > 0
+	}))
+
+	// Has misconfigurations
+	assert.True(t, lo.SomeBy(results, func(r types.Result) bool {
+		return len(r.Misconfigurations) > 0
+	}))
 }

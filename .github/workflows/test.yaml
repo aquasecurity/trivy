@@ -97,7 +97,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Run k8s integration tests
-        run: mage test:k8sintegration
+        run: mage test:k8s
 
   module-test:
     name: Module Integration Test
