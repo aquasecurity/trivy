@@ -236,8 +236,6 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/CycloneDX/cyclonedx-go v0.7.0 h1:jNxp8hL7UpcvPDFXjY+Y1ibFtsW+e5zyF9QoSmhK/zg=
 github.com/CycloneDX/cyclonedx-go v0.7.0/go.mod h1:W5Z9w8pTTL+t+yG3PCiFRGlr8PUlE0pGWzKSJbsyXkg=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
-github.com/DmitriyLewen/go-rpmdb v0.0.0-20230516085837-f11fc7f6284b h1:h7J/Evf+KJHWb9Ku7jERFkKORA9SjoRfOYHJHRyOE4Y=
-github.com/DmitriyLewen/go-rpmdb v0.0.0-20230516085837-f11fc7f6284b/go.mod h1:9LQcoMCMQ9vrF7HcDtXfvqGO4+ddxFQ8+YF/0CVGDww=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
 github.com/MakeNowJust/heredoc v1.0.0 h1:cXCdzVdstXyiTqTvfqk9SDHpKNjxuom+DOlyEeQ4pzQ=
@@ -1199,6 +1197,8 @@ github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422 h1:PPPlUUq
 github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422/go.mod h1:ijAmSS4jErO6+KRzcK6ixsm3Vt96hMhJ+W+x+VmbrQA=
 github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075 h1:aC6MEAs3PE3lWD7lqrJfDxHd6hcced9R4JTZu85cJwU=
 github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075/go.mod h1:i4sF0l1fFnY1aiw08QQSwVAFxHEm311Me3WsU/X7nL0=
+github.com/knqyf263/go-rpmdb v0.0.0-20230517124904-b97c85e63254 h1:sWdRcroy0oENkvpa1jH7g8KyN7jBFsooMNlFrAvpI5I=
+github.com/knqyf263/go-rpmdb v0.0.0-20230517124904-b97c85e63254/go.mod h1:9LQcoMCMQ9vrF7HcDtXfvqGO4+ddxFQ8+YF/0CVGDww=
 github.com/knqyf263/nested v0.0.1 h1:Sv26CegUMhjt19zqbBKntjwESdxe5hxVPSk0+AKjdUc=
 github.com/knqyf263/nested v0.0.1/go.mod h1:zwhsIhMkBg90DTOJQvxPkKIypEHPYkgWHs4gybdlUmk=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=

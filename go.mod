@@ -56,7 +56,7 @@ require (
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422
 	github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075
-	github.com/knqyf263/go-rpmdb v0.0.0-20230301153543-ba94b245509b
+	github.com/knqyf263/go-rpmdb v0.0.0-20230517124904-b97c85e63254
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/magefile/mage v1.14.0
@@ -399,5 +399,3 @@ require (
 // v1.2.0 is taken from github.com/open-policy-agent/opa v0.42.0
 // v1.2.0 incompatible with github.com/docker/docker v23.0.0-rc.1+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.1.1
-
-replace github.com/knqyf263/go-rpmdb => github.com/DmitriyLewen/go-rpmdb v0.0.0-20230516085837-f11fc7f6284b
