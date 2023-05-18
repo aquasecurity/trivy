@@ -49,6 +49,9 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
 			// RUN instruction
 			createdBy = strings.ReplaceAll(h.CreatedBy, "/bin/sh -c", "RUN")
+		case strings.HasPrefix(h.CreatedBy, "USER"):
+			// USER instruction
+			createdBy = h.CreatedBy
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
 			// HEALTHCHECK instruction
 			var interval, timeout, startPeriod, retries, command string
