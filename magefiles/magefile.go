@@ -242,9 +242,10 @@ func (t Test) Integration() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
 }
 
-// K8sIntegration runs k8s integration tests
-func (t Test) K8sIntegration() error {
+// K8s runs k8s integration tests
+func (t Test) K8s() error {
 	mg.Deps(Tool{}.Kind)
+
 	err := sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test")
 	if err != nil {
 		return err
