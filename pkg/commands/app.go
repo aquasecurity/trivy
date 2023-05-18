@@ -807,6 +807,9 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	)
 	scanFlags.Scanners = &scanners
 
+	// required only SourceFlag
+	imageFlags := &flag.ImageFlagGroup{ImageSources: &flag.SourceFlag}
+
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
 	compliance.Usage += fmt.Sprintf(" (%s,%s, %s, %s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS, types.ComplianceK8sPSSBaseline, types.ComplianceK8sPSSRestricted)
@@ -816,6 +819,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
+		ImageFlagGroup:         imageFlags,
 		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),

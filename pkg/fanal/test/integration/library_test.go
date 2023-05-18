@@ -183,8 +183,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 	// Disable updating golden files because local images don't have compressed layer digests,
 	// and updating golden files in this function results in incomplete files.
 	if *update {
-		*update = false
-		defer func() { *update = true }()
+		t.Skipf("This test creates wrong golden file")
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

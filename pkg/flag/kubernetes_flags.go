@@ -69,40 +69,49 @@ var (
 		Value:      false,
 		Usage:      "fetch resources from all cluster namespaces",
 	}
+	NodeCollectorNamespace = Flag{
+		Name:       "node-collector-namespace",
+		ConfigName: "node.collector.namespace",
+		Value:      "trivy-temp",
+		Usage:      "specify the namespace in which the node-collector job should be deployed",
+	}
 )
 
 type K8sFlagGroup struct {
-	ClusterContext *Flag
-	Namespace      *Flag
-	KubeConfig     *Flag
-	Components     *Flag
-	K8sVersion     *Flag
-	Parallel       *Flag
-	Tolerations    *Flag
-	AllNamespaces  *Flag
+	ClusterContext         *Flag
+	Namespace              *Flag
+	KubeConfig             *Flag
+	Components             *Flag
+	K8sVersion             *Flag
+	Parallel               *Flag
+	Tolerations            *Flag
+	AllNamespaces          *Flag
+	NodeCollectorNamespace *Flag
 }
 
 type K8sOptions struct {
-	ClusterContext string
-	Namespace      string
-	KubeConfig     string
-	Components     []string
-	K8sVersion     string
-	Parallel       int
-	Tolerations    []corev1.Toleration
-	AllNamespaces  bool
+	ClusterContext         string
+	Namespace              string
+	KubeConfig             string
+	Components             []string
+	K8sVersion             string
+	Parallel               int
+	Tolerations            []corev1.Toleration
+	AllNamespaces          bool
+	NodeCollectorNamespace string
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
 	return &K8sFlagGroup{
-		ClusterContext: &ClusterContextFlag,
-		Namespace:      &K8sNamespaceFlag,
-		KubeConfig:     &KubeConfigFlag,
-		Components:     &ComponentsFlag,
-		K8sVersion:     &K8sVersionFlag,
-		Parallel:       &ParallelFlag,
-		Tolerations:    &TolerationsFlag,
-		AllNamespaces:  &AllNamespaces,
+		ClusterContext:         &ClusterContextFlag,
+		Namespace:              &K8sNamespaceFlag,
+		KubeConfig:             &KubeConfigFlag,
+		Components:             &ComponentsFlag,
+		K8sVersion:             &K8sVersionFlag,
+		Parallel:               &ParallelFlag,
+		Tolerations:            &TolerationsFlag,
+		AllNamespaces:          &AllNamespaces,
+		NodeCollectorNamespace: &NodeCollectorNamespace,
 	}
 }
 
@@ -120,6 +129,7 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.Parallel,
 		f.Tolerations,
 		f.AllNamespaces,
+		f.NodeCollectorNamespace,
 	}
 }
 
@@ -137,14 +147,15 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		}
 	}
 	return K8sOptions{
-		ClusterContext: getString(f.ClusterContext),
-		Namespace:      getString(f.Namespace),
-		KubeConfig:     getString(f.KubeConfig),
-		Components:     getStringSlice(f.Components),
-		K8sVersion:     getString(f.K8sVersion),
-		Parallel:       parallel,
-		Tolerations:    tolerations,
-		AllNamespaces:  getBool(f.AllNamespaces),
+		ClusterContext:         getString(f.ClusterContext),
+		Namespace:              getString(f.Namespace),
+		KubeConfig:             getString(f.KubeConfig),
+		Components:             getStringSlice(f.Components),
+		K8sVersion:             getString(f.K8sVersion),
+		Parallel:               parallel,
+		Tolerations:            tolerations,
+		AllNamespaces:          getBool(f.AllNamespaces),
+		NodeCollectorNamespace: getString(f.NodeCollectorNamespace),
 	}, nil
 }
 
