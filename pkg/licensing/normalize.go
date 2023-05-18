@@ -1,6 +1,7 @@
 package licensing
 
 import (
+	"regexp"
 	"strings"
 )
 
@@ -79,6 +80,17 @@ var mapping = map[string]string{
 	// Public Domain
 	"PUBLIC DOMAIN": Unlicense,
 }
+
+// Split licenses without considering "and"/"or"
+// examples:
+// 'GPL-1+,GPL-2' => {"GPL-1+", "GPL-2"}
+// 'GPL-1+ or Artistic or Artistic-dist' => {"GPL-1+", "Artistic", "Artistic-dist"}
+// 'LGPLv3+_or_GPLv2+' => {"LGPLv3+", "GPLv2"}
+// 'BSD-3-CLAUSE and GPL-2' => {"BSD-3-CLAUSE", "GPL-2"}
+// 'GPL-1+ or Artistic, and BSD-4-clause-POWERDOG' => {"GPL-1+", "Artistic", "BSD-4-clause-POWERDOG"}
+// var LicenseSplitRegexp = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
+
+var LicenseSplitRegexp = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
 
 func Normalize(name string) string {
 	if l, ok := mapping[strings.ToUpper(name)]; ok {
