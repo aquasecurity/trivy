@@ -250,6 +250,10 @@ func (t Test) K8sIntegration() error {
 	defer func() {
 		_ = sh.RunWithV(ENV, "kind", "delete", "cluster", "--name", "kind-test")
 	}()
+	err = sh.RunWithV(ENV, "kubectl", "apply", "-f", "./integration/testdata/fixtures/deployment/test_nginx.yaml")
+	if err != nil {
+		return err
+	}
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=k8s_integration", "./integration/...")
 }
 
