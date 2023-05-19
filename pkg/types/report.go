@@ -26,8 +26,8 @@ type Report struct {
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
 	Metadata      Metadata            `json:",omitempty"`
 	Results       Results             `json:",omitempty"`
-	StartTime     time.Time           `json:"-"`
-	EndTime       time.Time           `json:"-"`
+	StartTime     time.Time           `json:",omitempty"`
+	EndTime       time.Time           `json:",omitempty"`
 
 	// SBOM
 	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
