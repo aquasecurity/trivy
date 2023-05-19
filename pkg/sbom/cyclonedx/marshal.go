@@ -15,6 +15,7 @@ import (
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -120,7 +121,7 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range report.Results {
 		for _, vuln := range result.Vulnerabilities {
-			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.Ref)
+			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.PkgRef)
 			if err != nil {
 				return nil, err
 			}
@@ -206,7 +207,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		parents := ftypes.Packages(result.Packages).ParentDeps()
 
 		for _, pkg := range result.Packages {
-			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
+			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, result.Class, pkg)
 			if err != nil {
 				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
@@ -392,6 +393,9 @@ func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error)
 			component.BOMRef = p.ToString()
 			component.PackageURL = p.ToString()
 		}
+	case ftypes.ArtifactVM:
+		component.Type = cdx.ComponentTypeContainer
+		component.BOMRef = e.newUUID().String()
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
 		component.BOMRef = e.newUUID().String()
@@ -445,12 +449,24 @@ func (e *Marshaler) resultToCdxComponent(r types.Result, osFound *ftypes.OS) cdx
 	return component
 }
 
-func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
+func pkgToCdxComponent(pkgType string, meta types.Metadata, class types.ResultClass, pkg ftypes.Package) (cdx.Component, error) {
 	pu, err := purl.NewPackageURL(pkgType, meta, pkg)
 	if err != nil {
 		return cdx.Component{}, xerrors.Errorf("failed to new package purl: %w", err)
 	}
 	properties := cdxProperties(pkgType, pkg)
+	var hashes *[]cdx.Hash
+	if pkg.Digest != "" && class == types.ClassOSPkg {
+		if alg := cdxHashAlgorithm(pkg.Digest.Algorithm()); alg != "" {
+			hashes = &[]cdx.Hash{
+				{
+					Algorithm: alg,
+					Value:     pkg.Digest.Encoded(),
+				},
+			}
+		}
+
+	}
 	component := cdx.Component{
 		Type:       cdx.ComponentTypeLibrary,
 		Name:       pkg.Name,
@@ -458,6 +474,7 @@ func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) 
 		BOMRef:     pu.BOMRef(),
 		PackageURL: pu.ToString(),
 		Properties: properties,
+		Hashes:     hashes,
 	}
 
 	if len(pkg.Licenses) != 0 {
@@ -465,6 +482,12 @@ func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) 
 			return cdx.LicenseChoice{Expression: license}
 		})
 		component.Licenses = lo.ToPtr(cdx.Licenses(choices))
+	}
+
+	if pkg.Maintainer != "" {
+		component.Supplier = &cdx.OrganizationalEntity{
+			Name: pkg.Maintainer,
+		}
 	}
 
 	return component, nil
@@ -692,5 +715,19 @@ func cdxAffects(ref, version string) cdx.Affects {
 				// "AffectedVersions.Range" is not included, because it does not exist in DetectedVulnerability.
 			},
 		},
+	}
+}
+
+func cdxHashAlgorithm(algorithm digest.Algorithm) cdx.HashAlgorithm {
+	switch algorithm {
+	case digest.SHA1:
+		return cdx.HashAlgoSHA1
+	case digest.SHA256:
+		return cdx.HashAlgoSHA256
+	case digest.MD5:
+		return cdx.HashAlgoMD5
+	default:
+		log.Logger.Debugf("Unable to convert %q algorithm to CycloneDX format", algorithm)
+		return ""
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"compress/gzip"
 	"io"
-	"io/ioutil"
 	"os"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -39,6 +38,6 @@ func fileOpener(fileName string) func() (io.ReadCloser, error) {
 				return nil, xerrors.Errorf("failed to open gzip: %w", err)
 			}
 		}
-		return ioutil.NopCloser(r), nil
+		return io.NopCloser(r), nil
 	}
 }

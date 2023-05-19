@@ -12,14 +12,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/remote"
 )
 
-func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.RegistryOptions) (types.Image, error) {
-	desc, err := remote.Get(ctx, ref, option)
+func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error) {
+	// This function doesn't need cleanup
+	cleanup := func() {}
+
+	desc, err := remote.Get(ctx, ref, option.RegistryOptions)
 	if err != nil {
-		return nil, err
+		return nil, cleanup, err
 	}
 	img, err := desc.Image()
 	if err != nil {
-		return nil, err
+		return nil, cleanup, err
 	}
 
 	// Return v1.Image if the image is found in Docker Registry
@@ -28,7 +31,7 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		Image:      img,
 		ref:        implicitReference{ref: ref},
 		descriptor: desc,
-	}, nil
+	}, cleanup, nil
 
 }
 

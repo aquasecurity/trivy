@@ -88,6 +88,7 @@ trivy aws [flags]
       --policy-namespaces strings   Rego namespaces
       --region string               AWS Region to scan
       --report string               specify a report format for the output. (all,summary) (default "all")
+      --reset-policy-bundle         remove policy bundle
       --service strings             Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.
   -s, --severity string             severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
       --skip-policy-update          skip fetching rego policy updates

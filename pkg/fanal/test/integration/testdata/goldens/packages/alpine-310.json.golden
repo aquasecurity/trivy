@@ -15,7 +15,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:574d490311b68db01c0a3e44f5491be0cdc79250"
   },
   {
     "ID": "alpine-keys@2.1-r2",
@@ -29,7 +30,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:6dd672e2dabc14aa324cf9cd4553e98b69a769c1"
   },
   {
     "ID": "apk-tools@2.10.4-r2",
@@ -49,7 +51,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:e6393c9419776955346cddd70ad4ec66082a2705"
   },
   {
     "ID": "busybox@1.30.1-r2",
@@ -66,7 +69,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:9c244d7f4909bffcef4c67380b6aed145c41a232"
   },
   {
     "ID": "ca-certificates-cacert@20190108-r0",
@@ -81,7 +85,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:0d69933c7cd071e82acb24c6e4268e4752f7a3f7"
   },
   {
     "ID": "libc-utils@0.7.1-r0",
@@ -98,7 +103,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:1ff2cf7a0a53c1e83c8649f27b95aaa07bd4a83e"
   },
   {
     "ID": "libcrypto1.1@1.1.1c-r0",
@@ -115,7 +121,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:547053af84ac3667548b11b990d7b80ef23b9a3f"
   },
   {
     "ID": "libssl1.1@1.1.1c-r0",
@@ -133,7 +140,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:6f37a428d6f8de036a523d42e6b0c99288153c38"
   },
   {
     "ID": "libtls-standalone@2.9.1-r0",
@@ -153,7 +161,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:f149b608e1e33cfad61fbcf9e3fdb6494f7d691a"
   },
   {
     "ID": "musl@1.1.22-r3",
@@ -167,7 +176,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:d489e0f3fbb5548758f5ccd2c5a0cef70260ef62"
   },
   {
     "ID": "musl-utils@1.1.22-r3",
@@ -187,7 +197,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:8bb14c727be819d07a1e9d8b998dc94bde989205"
   },
   {
     "ID": "scanelf@1.2.3-r0",
@@ -204,7 +215,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:cb3059ce358cea0f5f78a0220a2980e6c4916a94"
   },
   {
     "ID": "ssl_client@1.30.1-r2",
@@ -222,7 +234,8 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:1f7afca8301f00cef8a9797124721d9f8c16f586"
   },
   {
     "ID": "zlib@1.2.11-r1",
@@ -239,6 +252,7 @@
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
-    }
+    },
+    "Digest": "sha1:bacb380dfa6f2f5e8dc366144f09b3181001cf76"
   }
 ]

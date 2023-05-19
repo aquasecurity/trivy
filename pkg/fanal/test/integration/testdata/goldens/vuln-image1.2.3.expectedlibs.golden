@@ -1965,13 +1965,13 @@
           "guzzlehttp/promises@v1.3.1",
           "guzzlehttp/psr7@1.5.2"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 9,
             "EndLine": 73
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "guzzlehttp/promises@v1.3.1",
@@ -1980,13 +1980,13 @@
         "Licenses": [
           "MIT"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 74,
             "EndLine": 124
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "guzzlehttp/psr7@1.5.2",
@@ -1999,13 +1999,13 @@
           "psr/http-message@1.0.1",
           "ralouphie/getallheaders@2.0.5"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 125,
             "EndLine": 191
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "laravel/installer@v2.0.1",
@@ -2020,13 +2020,13 @@
           "symfony/filesystem@v4.2.7",
           "symfony/process@v4.2.7"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 192,
             "EndLine": 237
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "pear/log@1.13.1",
@@ -2038,13 +2038,13 @@
         "DependsOn": [
           "pear/pear_exception@v1.0.0"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 238,
             "EndLine": 290
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "pear/pear_exception@v1.0.0",
@@ -2053,13 +2053,13 @@
         "Licenses": [
           "BSD-2-Clause"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 291,
             "EndLine": 345
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "psr/http-message@1.0.1",
@@ -2068,13 +2068,13 @@
         "Licenses": [
           "MIT"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 346,
             "EndLine": 395
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "ralouphie/getallheaders@2.0.5",
@@ -2083,13 +2083,13 @@
         "Licenses": [
           "MIT"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 396,
             "EndLine": 435
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "symfony/console@v4.2.7",
@@ -2102,13 +2102,13 @@
           "symfony/contracts@v1.0.2",
           "symfony/polyfill-mbstring@v1.11.0"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 436,
             "EndLine": 507
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "symfony/contracts@v1.0.2",
@@ -2117,13 +2117,13 @@
         "Licenses": [
           "MIT"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 508,
             "EndLine": 575
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "symfony/filesystem@v4.2.7",
@@ -2135,13 +2135,13 @@
         "DependsOn": [
           "symfony/polyfill-ctype@v1.11.0"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 576,
             "EndLine": 625
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "symfony/polyfill-ctype@v1.11.0",
@@ -2150,13 +2150,13 @@
         "Licenses": [
           "MIT"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 626,
             "EndLine": 683
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "symfony/polyfill-mbstring@v1.11.0",
@@ -2165,13 +2165,13 @@
         "Licenses": [
           "MIT"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 684,
             "EndLine": 742
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "symfony/process@v4.2.7",
@@ -2180,13 +2180,13 @@
         "Licenses": [
           "MIT"
         ],
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 743,
             "EndLine": 791
           }
-        ],
-        "Layer": {}
+        ]
       }
     ]
   },

@@ -37,11 +37,11 @@
           "ID": "jquery@3.3.9",
           "Name": "jquery",
           "Version": "3.3.9",
-          "Indirect": true,
-          "Layer": {},
           "Licenses": [
             "MIT"
           ],
+          "Indirect": true,
+          "Layer": {},
           "Locations": [
             {
               "StartLine": 11,
@@ -95,14 +95,14 @@
           "ID": "promise@8.0.3",
           "Name": "promise",
           "Version": "8.0.3",
+          "Licenses": [
+            "MIT"
+          ],
           "Indirect": true,
           "DependsOn": [
             "asap@2.0.6"
           ],
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 34,
@@ -132,6 +132,9 @@
           "ID": "react@16.8.6",
           "Name": "react",
           "Version": "16.8.6",
+          "Licenses": [
+            "MIT"
+          ],
           "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
@@ -140,9 +143,6 @@
             "scheduler@0.13.6"
           ],
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 52,
@@ -154,11 +154,11 @@
           "ID": "react-is@16.8.6",
           "Name": "react-is",
           "Version": "16.8.6",
-          "Indirect": true,
-          "Layer": {},
           "Licenses": [
             "MIT"
           ],
+          "Indirect": true,
+          "Layer": {},
           "Locations": [
             {
               "StartLine": 63,
@@ -170,15 +170,15 @@
           "ID": "redux@4.0.1",
           "Name": "redux",
           "Version": "4.0.1",
+          "Licenses": [
+            "MIT"
+          ],
           "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "symbol-observable@1.2.0"
           ],
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 68,

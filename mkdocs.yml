@@ -71,12 +71,12 @@ nav:
                   - Schemas: docs/scanner/misconfiguration/custom/schema.md
                   - Testing: docs/scanner/misconfiguration/custom/testing.md
                   - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
-                  - Examples: docs/scanner/misconfiguration/custom/examples.md
           - Secret: docs/scanner/secret.md
           - License: docs/scanner/license.md
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md
+          - Skipping Files: docs/configuration/skipping.md
           - Reporting: docs/configuration/reporting.md
           - Cache: docs/configuration/cache.md
           - DB: docs/configuration/db.md
@@ -87,6 +87,7 @@ nav:
                 - SBOM: docs/supply-chain/attestation/sbom.md
                 - Cosign Vulnerability Scan Record: docs/supply-chain/attestation/vuln.md
                 - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
+          - VEX: docs/supply-chain/vex.md
       - Compliance:
           - Reports:  docs/compliance/compliance.md
       - Advanced:
@@ -142,12 +143,14 @@ nav:
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
+          - Discussions: community/contribute/discussion.md
           - Pull Requests: community/contribute/pr.md
       - Maintainer:
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
 theme:
   name: material
+  custom_dir: docs/overrides
   language: "en"
   logo: imgs/logo-white.svg
   features:
@@ -175,6 +178,7 @@ extra:
   version:
     method: mike
     provider: mike
+    default: latest
 
 plugins:
   - search

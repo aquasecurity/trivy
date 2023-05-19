@@ -814,6 +814,9 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	)
 	scanFlags.Scanners = &scanners
 
+	// required only SourceFlag
+	imageFlags := &flag.ImageFlagGroup{ImageSources: &flag.SourceFlag}
+
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
 	compliance.Usage += fmt.Sprintf(" (%s,%s, %s, %s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS, types.ComplianceK8sPSSBaseline, types.ComplianceK8sPSSRestricted)
@@ -823,6 +826,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
+		ImageFlagGroup:         imageFlags,
 		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
@@ -1164,7 +1168,7 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset' and '--generate-default-config' don't conduct the subsequent scanning
 	if viper.GetBool(flag.ClearCacheFlag.ConfigName) || viper.GetBool(flag.DownloadDBOnlyFlag.ConfigName) ||
 		viper.GetBool(flag.ResetFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) ||
-		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) {
+		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetPolicyBundleFlag.ConfigName) {
 		return nil
 	}
 

@@ -41,6 +41,10 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							EmptyLayer: false,
 						},
 						{
+							CreatedBy:  `USER user`,
+							EmptyLayer: true,
+						},
+						{
 							CreatedBy:  `/bin/sh -c #(nop)  CMD [\"/bin/sh\"]`,
 							EmptyLayer: true,
 						},
@@ -52,28 +56,6 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 					FileType: "dockerfile",
 					FilePath: "Dockerfile",
 					Failures: types.MisconfResults{
-						types.MisconfResult{
-							Namespace: "builtin.dockerfile.DS002",
-							Query:     "data.builtin.dockerfile.DS002.deny",
-							Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
-							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS002",
-								AVDID:              "AVD-DS-0002",
-								Type:               "Dockerfile Security Check",
-								Title:              "Image user should not be 'root'",
-								Description:        "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
-								Severity:           "HIGH",
-								RecommendedActions: "Add 'USER <non root user name>' line to the Dockerfile",
-								References: []string{
-									"https://docs.docker." +
-										"com/develop/develop-images/dockerfile_best-practices/",
-								},
-							},
-							CauseMetadata: types.CauseMetadata{
-								Provider: "Dockerfile",
-								Service:  "general",
-							},
-						},
 						types.MisconfResult{
 							Namespace: "builtin.dockerfile.DS005",
 							Query:     "data.builtin.dockerfile.DS005.deny",
