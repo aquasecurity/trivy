@@ -3,11 +3,13 @@ package report
 import (
 	"bytes"
 	"testing"
+	"time"
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/flag"
 
 	"github.com/stretchr/testify/assert"
@@ -163,6 +165,8 @@ Scan Overview for AWS Account
       "config": {}
     }
   },
+  "StartTime": "0001-01-01T00:00:00Z",
+  "EndTime": "0001-01-01T00:00:00Z",
   "Results": [
     {
       "Target": "arn:aws:ec2:us-east-1:1234567890:instance1",
@@ -312,6 +316,7 @@ Scan Overview for AWS Account
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			clock.SetFakeTime(t, time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC))
 			report := New(
 				"AWS",
 				tt.options.AWSOptions.Account,

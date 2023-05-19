@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -196,6 +198,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			mockArtifact.ApplyInspectExpectation(tt.inspectExpectation)
 
 			s := NewScanner(d, mockArtifact)
+			clock.SetFakeTime(t, time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC))
 			got, err := s.ScanArtifact(context.Background(), tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -203,11 +206,6 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				return
 			} else {
 				require.NoError(t, err, tt.name)
-			}
-
-			if tt.name == "happy path" {
-				tt.want.StartTime = got.StartTime
-				tt.want.EndTime = got.EndTime
 			}
 
 			assert.Equal(t, tt.want, got, tt.name)
