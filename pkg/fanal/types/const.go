@@ -33,6 +33,7 @@ const (
 	Cocoapods  = "cocoapods"
 	Pub        = "pub"
 	Hex        = "hex"
+	Julia      = "julia"
 
 	// Config files
 	YAML           = "yaml"
@@ -83,4 +84,7 @@ const (
 	PubSpecLock = "pubspec.lock"
 
 	MixLock = "mix.lock"
+
+	JuliaProject  = "Project.toml"
+	JuliaManifest = "Manifest.toml"
 )
