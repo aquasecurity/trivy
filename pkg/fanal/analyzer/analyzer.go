@@ -3,7 +3,6 @@ package analyzer
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"regexp"
@@ -317,8 +316,6 @@ func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type,
 const separator = ":"
 
 func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
-	fmt.Println("NewAnalyzerGroup")
-	fmt.Printf("%v\n", opt)
 	groupName := opt.Group
 	if groupName == "" {
 		groupName = GroupBuiltin
@@ -471,7 +468,6 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 // The obtained results are merged into the "result".
 // This function may be called concurrently and must be thread-safe.
 func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, *mapfs.FS], result *AnalysisResult, opts AnalysisOptions) error {
-	fmt.Println("top level PostAnalyze")
 	for _, a := range ag.postAnalyzers {
 		fsys, ok := files.Load(a.Type())
 		if !ok {

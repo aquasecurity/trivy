@@ -29,7 +29,6 @@ import (
 )
 
 func init() {
-	fmt.Println("initing julia analyzer")
 	analyzer.RegisterPostAnalyzer(analyzer.TypeJulia, newJuliaAnalyzer)
 }
 
@@ -53,7 +52,6 @@ func newJuliaAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error)
 }
 
 func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	fmt.Println("julia PostAnalyze")
 	var apps []types.Application
 
 	required := func(path string, d fs.DirEntry) bool {
