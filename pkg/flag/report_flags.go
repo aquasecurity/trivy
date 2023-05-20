@@ -218,7 +218,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		var err error
 		var file *os.File
 
-		file, err := os.Create(output)
+		file, err = os.Create(output)
 		if err != nil {
 			return ReportOptions{}, xerrors.Errorf("failed to create an output file: %w", err)
 		}
