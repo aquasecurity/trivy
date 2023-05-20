@@ -142,6 +142,7 @@ language:
 - go
 - elixir
 - dart
+- julia
 
 vuln:
 
