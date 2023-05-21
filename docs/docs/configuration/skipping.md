@@ -79,7 +79,7 @@ This can be repeated for specifying multiple file patterns.
 
 A file pattern contains the analyzer it is used for, and the pattern itself, joined by a semicolon. For example:
 ```
---file-patterns "dockerfile:.*.docker" --file-patterns "yaml:deployment" --file-patterns "pip:requirements-.*\.txt"
+--file-patterns "dockerfile:.*.docker" --file-patterns "kubernetes:*.tpl" --file-patterns "pip:requirements-.*\.txt"
 ```
 
 The prefixes are listed [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go)
