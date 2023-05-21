@@ -3152,9 +3152,9 @@ The default file patterns are <a href="../../scanner/misconfiguration/custom/">h
 For example, it may be useful when your file name of Dockerfile doesn't match the default patterns.</p>
 <p>This can be repeated for specifying multiple file patterns.</p>
 <p>A file pattern contains the analyzer it is used for, and the pattern itself, joined by a semicolon. For example:
-<div class="highlight"><pre><span></span><code>--file-patterns &quot;dockerfile:.*.docker&quot; --file-patterns &quot;yaml:deployment&quot; --file-patterns &quot;pip:requirements-.*\.txt&quot;
+<div class="highlight"><pre><span></span><code>--file-patterns &quot;dockerfile:.*.docker&quot; --file-patterns &quot;kubernetes:*.tpl&quot; --file-patterns &quot;pip:requirements-.*\.txt&quot;
 </code></pre></div></p>
-<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/92f9e98d049b20f8e4b5727b4662cbcbc00c1bf7/pkg/fanal/analyzer/const.go">here</a></p>
+<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/92ed344e8ac688664dd6e6eac0f259a3032e5246/pkg/fanal/analyzer/const.go">here</a></p>
 
               
             </article>
