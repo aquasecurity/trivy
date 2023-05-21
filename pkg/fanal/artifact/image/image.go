@@ -14,6 +14,7 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -214,22 +215,19 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
-	done := make(chan struct{})
-	errCh := make(chan error)
-	limit := semaphore.New(a.artifactOption.Slow)
+
+	group, groupCtx := errgroup.WithContext(ctx)
+	concurrencyLimit := 5
+	if a.artifactOption.Slow {
+		concurrencyLimit = 1
+	}
+	group.SetLimit(concurrencyLimit)
 
 	var osFound types.OS
 	for _, k := range layerKeys {
-		if err := limit.Acquire(ctx, 1); err != nil {
-			return xerrors.Errorf("semaphore acquire: %w", err)
-		}
-
-		go func(ctx context.Context, layerKey string) {
-			defer func() {
-				limit.Release(1)
-				done <- struct{}{}
-			}()
-
+		layerKey := k
+		ctx := groupCtx
+		group.Go(func() error {
 			layer := layerKeyMap[layerKey]
 
 			// If it is a base layer, secret scanning should not be performed.
@@ -240,27 +238,27 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 
 			layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyzers)
 			if err != nil {
-				errCh <- xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
-				return
+				return xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 			}
 			if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
-				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
-				return
+				return xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 			}
 			if lo.IsNotEmpty(layerInfo.OS) {
 				osFound = layerInfo.OS
 			}
-		}(ctx, k)
+			return nil
+		})
+
+		if ctx.Err() != nil {
+			break
+		}
 	}
 
-	for range layerKeys {
-		select {
-		case <-done:
-		case err := <-errCh:
-			return err
-		case <-ctx.Done():
+	if err := group.Wait(); err != nil {
+		if ctx.Err() != nil {
 			return xerrors.Errorf("timeout: %w", ctx.Err())
 		}
+		return err
 	}
 
 	if missingImage != "" {
