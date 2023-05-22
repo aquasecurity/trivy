@@ -24,20 +24,21 @@ func main() {
 }
 
 func run() error {
-	// Trivy behaves as the specified plugin.
-	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
-		if !plugin.IsPredefined(runAsPlugin) {
-			return xerrors.Errorf("unknown plugin: %s", runAsPlugin)
-		}
-		if err := plugin.RunWithArgs(context.Background(), runAsPlugin, os.Args[1:]); err != nil {
-			return xerrors.Errorf("plugin error: %w", err)
-		}
-		return nil
+	runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN")
+
+	if runAsPlugin == "" {
+		app := commands.NewApp(version)
+		return app.Execute()
 	}
 
-	app := commands.NewApp(version)
-	if err := app.Execute(); err != nil {
-		return err
+	// Reaching this point means Trivy behaves as the specified plugin.
+	if !plugin.IsPredefined(runAsPlugin) {
+		return xerrors.Errorf("unknown plugin: %s", runAsPlugin)
 	}
+
+	if err := plugin.RunWithArgs(context.Background(), runAsPlugin, os.Args[1:]); err != nil {
+		return xerrors.Errorf("plugin error: %w", err)
+	}
+
 	return nil
 }
