@@ -2,6 +2,7 @@ package artifact
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -45,6 +46,7 @@ const (
 	TargetImageArchive   TargetKind = "archive"
 	TargetSBOM           TargetKind = "sbom"
 	TargetVM             TargetKind = "vm"
+	TargetArtifactReport TargetKind = "report"
 
 	devVersion = "dev"
 )
@@ -89,6 +91,8 @@ type Runner interface {
 	ScanSBOM(ctx context.Context, opts flag.Options) (types.Report, error)
 	// ScanVM scans VM
 	ScanVM(ctx context.Context, opts flag.Options) (types.Report, error)
+	// ScanReport updates a given report with the latest findings
+	ScanReport(ctx context.Context, opts flag.Options) (types.Report, error)
 	// Filter filter a report
 	Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error)
 	// Report a writes a report
@@ -202,6 +206,11 @@ func (r *runner) ScanRootfs(ctx context.Context, opts flag.Options) (types.Repor
 	return r.scanFS(ctx, opts)
 }
 
+func (r *runner) ScanReport(ctx context.Context, opts flag.Options) (types.Report, error) {
+
+	return r.scanReport(ctx, opts)
+}
+
 func (r *runner) scanFS(ctx context.Context, opts flag.Options) (types.Report, error) {
 	var s InitializeScanner
 	if opts.ServerAddr == "" {
@@ -213,6 +222,40 @@ func (r *runner) scanFS(ctx context.Context, opts flag.Options) (types.Report, e
 	}
 
 	return r.scanArtifact(ctx, opts, s)
+}
+
+func (r *runner) scanReport(ctx context.Context, opts flag.Options) (types.Report, error) {
+	//open report to object
+	//extract target from report and pass as param down here
+	var report types.Report
+
+	data, err := os.ReadFile(opts.Target)
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("read report error: %w", err)
+	}
+
+	err = json.Unmarshal(data, &report)
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("unmarshall error: %w", err)
+	}
+
+	scannerConfig, scanOptions, err := initScannerConfig(opts, r.cache)
+	if err != nil {
+		return types.Report{}, err
+	}
+
+	s, cleanup, err := reportStandaloneScanner(ctx, scannerConfig)
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
+	}
+	defer cleanup()
+
+	newReport, err := s.ScanNewVulnerabilities(ctx, scanOptions, report)
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("scan vulnerabilities failed: %w", err)
+	}
+
+	return newReport, nil
 }
 
 func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.Report, error) {
@@ -463,6 +506,10 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	case TargetVM:
 		if report, err = r.ScanVM(ctx, opts); err != nil {
 			return xerrors.Errorf("vm scan error: %w", err)
+		}
+	case TargetArtifactReport:
+		if report, err = r.ScanReport(ctx, opts); err != nil {
+			return xerrors.Errorf("scan report error: %w", err)
 		}
 	}
 

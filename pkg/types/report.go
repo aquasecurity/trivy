@@ -20,11 +20,12 @@ var Compliances = []string{
 
 // Report represents a scan result
 type Report struct {
-	SchemaVersion int                 `json:",omitempty"`
-	ArtifactName  string              `json:",omitempty"`
-	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
-	Metadata      Metadata            `json:",omitempty"`
-	Results       Results             `json:",omitempty"`
+	SchemaVersion  int                   `json:",omitempty"`
+	ArtifactName   string                `json:",omitempty"`
+	ArtifactType   ftypes.ArtifactType   `json:",omitempty"`
+	Metadata       Metadata              `json:",omitempty"`
+	Results        Results               `json:",omitempty"`
+	ArtifactDetail ftypes.ArtifactDetail `json:",omitempty"`
 
 	// SBOM
 	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON

@@ -64,7 +64,7 @@ func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 }
 
 // Scan scans the image
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, ftypes.OS, error) {
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, ftypes.OS, ftypes.ArtifactDetail, error) {
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Convert to the rpc struct
@@ -90,8 +90,13 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return err
 	})
 	if err != nil {
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
+		return nil, ftypes.OS{}, ftypes.ArtifactDetail{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), nil
+	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), ftypes.ArtifactDetail{}, nil
+}
+
+// ScanArtifactDetail scans the artifact
+func (s Scanner) ScanArtifactDetail(artifactDetail ftypes.ArtifactDetail, ctx context.Context, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
+	return nil, nil, nil
 }

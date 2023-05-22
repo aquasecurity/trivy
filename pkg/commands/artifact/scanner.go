@@ -29,6 +29,17 @@ func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.
 	return s, func() {}, nil
 }
 
+// reportStandaloneScanner initializes a report scanner in standalone mode
+// $ trivy report alpine_report.json
+func reportStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, err := initializeReportScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
+		conf.ArtifactOption)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize the report scanner: %w", err)
+	}
+	return s, func() {}, nil
+}
+
 // imageRemoteScanner initializes a container image scanner in client/server mode
 // $ trivy image --server localhost:4954 alpine:3.15
 func imageRemoteScanner(ctx context.Context, conf ScannerConfig) (
