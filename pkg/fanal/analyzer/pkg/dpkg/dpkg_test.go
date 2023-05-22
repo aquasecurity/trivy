@@ -1402,7 +1402,8 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := dpkgAnalyzer{}
+			a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
+			assert.NoError(t, err)
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
