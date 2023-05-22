@@ -97,6 +97,6 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 }
 
 // ScanArtifactDetail scans the artifact
-func (s Scanner) ScanArtifactDetail(artifactDetail ftypes.ArtifactDetail, ctx context.Context, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
+func (s Scanner) ScanArtifactDetail(artifactDetail ftypes.ArtifactDetail, ctx context.Context, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	return nil, nil, nil
 }
