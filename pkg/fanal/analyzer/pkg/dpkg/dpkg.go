@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -14,21 +15,31 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(&dpkgAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzer.TypeDpkg, newDpkgAnalyzer)
+}
+
+type dpkgAnalyzer struct{}
+
+func newDpkgAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	return &dpkgAnalyzer{}, nil
 }
 
 const (
 	analyzerVersion = 4
 
-	statusFile = "var/lib/dpkg/status"
-	statusDir  = "var/lib/dpkg/status.d/"
-	infoDir    = "var/lib/dpkg/info/"
+	statusFile    = "var/lib/dpkg/status"
+	statusDir     = "var/lib/dpkg/status.d/"
+	infoDir       = "var/lib/dpkg/info/"
+	availableFile = "var/lib/dpkg/available"
 )
 
 var (
@@ -36,19 +47,64 @@ var (
 	dpkgSrcCaptureRegexpNames = dpkgSrcCaptureRegexp.SubexpNames()
 )
 
-type dpkgAnalyzer struct{}
+func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+	var systemInstalledFiles []string
+	var packageInfos []types.PackageInfo
+	pkgsWithDigest := map[string]digest.Digest{}
 
-func (a dpkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	scanner := bufio.NewScanner(input.Content)
-	if a.isListFile(filepath.Split(input.FilePath)) {
-		return a.parseDpkgInfoList(scanner)
+	required := func(path string, d fs.DirEntry) bool {
+		return true
 	}
 
-	return a.parseDpkgStatus(input.FilePath, scanner)
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+		scanner := bufio.NewScanner(r)
+		switch {
+		// parse list files
+		case a.isListFile(filepath.Split(path)):
+			systemFiles, err := a.parseDpkgInfoList(scanner)
+			if err != nil {
+				return err
+			}
+			systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
+		// parse available file to get digest for packages
+		case path == availableFile:
+			var err error
+			pkgsWithDigest, err = a.parseDpkgAvailable(scanner)
+			if err != nil {
+				return err
+			}
+		// parse status files
+		default:
+			infos, err := a.parseDpkgStatus(path, scanner)
+			if err != nil {
+				return err
+			}
+			packageInfos = append(packageInfos, infos...)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("dpkg walk error: %w", err)
+	}
+
+	for _, pkgInfo := range packageInfos {
+		for i, pkg := range pkgInfo.Packages {
+			if p, ok := pkgsWithDigest[pkg.ID]; ok {
+				pkgInfo.Packages[i].Digest = p
+			}
+		}
+	}
+
+	return &analyzer.AnalysisResult{
+		PackageInfos:         packageInfos,
+		SystemInstalledFiles: systemInstalledFiles,
+	}, nil
+
 }
 
 // parseDpkgStatus parses /var/lib/dpkg/info/*.list
-func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) (*analyzer.AnalysisResult, error) {
+func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) ([]string, error) {
 	var installedFiles []string
 	var previous string
 	for scanner.Scan() {
@@ -76,13 +132,46 @@ func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) (*analyzer.Analy
 		return nil, xerrors.Errorf("scan error: %w", err)
 	}
 
-	return &analyzer.AnalysisResult{
-		SystemInstalledFiles: installedFiles,
-	}, nil
+	return installedFiles, nil
+}
+
+// parseDpkgAvailable parses /var/lib/dpkg/available
+func (a dpkgAnalyzer) parseDpkgAvailable(scanner *bufio.Scanner) (map[string]digest.Digest, error) {
+	pkgs := map[string]digest.Digest{}
+
+	var pkg types.Package
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			pkg.ID = a.pkgID(pkg.Name, pkg.Version)
+			if pkg.ID != "" && pkg.Digest != "" {
+				pkgs[pkg.ID] = pkg.Digest
+			}
+			pkg = types.Package{}
+		}
+		switch {
+		case strings.HasPrefix(line, "Package: "):
+			pkg.Name = strings.TrimSpace(strings.TrimPrefix(line, "Package: "))
+		case strings.HasPrefix(line, "Version: "):
+			pkg.Version = strings.TrimPrefix(line, "Version: ")
+		case strings.HasPrefix(line, "SHA256: "):
+			pkg.Digest = digest.NewDigestFromString(digest.SHA256, strings.TrimPrefix(line, "SHA256: "))
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, xerrors.Errorf("scan error: %w", err)
+	}
+
+	// past last package
+	pkg.ID = a.pkgID(pkg.Name, pkg.Version)
+	if pkg.ID != "" && pkg.Digest != "" {
+		pkgs[pkg.ID] = pkg.Digest
+	}
+	return pkgs, nil
 }
 
 // parseDpkgStatus parses /var/lib/dpkg/status or /var/lib/dpkg/status/*
-func (a dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) (*analyzer.AnalysisResult, error) {
+func (a dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) ([]types.PackageInfo, error) {
 	var pkg *types.Package
 	pkgs := map[string]*types.Package{}
 	pkgIDs := map[string]string{}
@@ -106,14 +195,12 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) (
 
 	a.consolidateDependencies(pkgs, pkgIDs)
 
-	return &analyzer.AnalysisResult{
-		PackageInfos: []types.PackageInfo{
-			{
-				FilePath: filePath,
-				Packages: lo.MapToSlice(pkgs, func(_ string, p *types.Package) types.Package {
-					return *p
-				}),
-			},
+	return []types.PackageInfo{
+		{
+			FilePath: filePath,
+			Packages: lo.MapToSlice(pkgs, func(_ string, p *types.Package) types.Package {
+				return *p
+			}),
 		},
 	}, nil
 }
@@ -218,7 +305,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 
 func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dir, fileName := filepath.Split(filePath)
-	if a.isListFile(dir, fileName) || filePath == statusFile {
+	if a.isListFile(dir, fileName) || filePath == statusFile || filePath == availableFile {
 		return true
 	}
 
