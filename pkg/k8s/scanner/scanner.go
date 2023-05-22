@@ -76,24 +76,24 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 			misconfig report.Resource
 		}
 
-	onItem := func(ctx context.Context, artifact *artifacts.Artifact) (scanResult, error) {
-		scanResults := scanResult{}
-		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
-			vulns, err := s.scanVulns(ctx, artifact)
-			if err != nil {
-				return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+		onItem := func(ctx context.Context, artifact *artifacts.Artifact) (scanResult, error) {
+			scanResults := scanResult{}
+			if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
+				vulns, err := s.scanVulns(ctx, artifact)
+				if err != nil {
+					return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+				}
+				scanResults.vulns = vulns
 			}
-			scanResults.vulns = vulns
-		}
-		if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
-			misconfig, err := s.scanMisconfigs(ctx, artifact)
-			if err != nil {
-				return scanResult{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
+			if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
+				misconfig, err := s.scanMisconfigs(ctx, artifact)
+				if err != nil {
+					return scanResult{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
+				}
+				scanResults.misconfig = misconfig
 			}
-			scanResults.misconfig = misconfig
+			return scanResults, nil
 		}
-		return scanResults, nil
-	}
 
 		onResult := func(result scanResult) error {
 			resources = append(resources, result.vulns...)
