@@ -102,17 +102,16 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		if err != nil {
 			return xerrors.Errorf("compliance report build error: %w", err)
 		}
+
 		return cr.Write(complianceReport, cr.Option{
-			Format: r.flagOpts.Format,
 			Report: r.flagOpts.ReportFormat,
-			Output: r.flagOpts.Output,
+			Output: r.flagOpts.Outputs[0],
 		})
 	}
 
-	if err := report.Write(rpt, report.Option{
-		Format:     r.flagOpts.Format,
+	if err = report.Write(rpt, report.Option{
 		Report:     r.flagOpts.ReportFormat,
-		Output:     r.flagOpts.Output,
+		Output:     r.flagOpts.Outputs[0],
 		Severities: r.flagOpts.Severities,
 		Components: r.flagOpts.Components,
 		Scanners:   r.flagOpts.ScanOptions.Scanners,
@@ -141,9 +140,14 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 //
 // e.g. $ trivy k8s pod myapp
 func validateReportArguments(opts flag.Options) error {
+	// TODO: support multiple outputs
+	if len(opts.Outputs) > 1 {
+		log.Logger.Warn("Multiple outputs are not supported in k8s scanning. Only the first output option is used.")
+	}
+
 	if opts.ReportFormat == "all" &&
 		!viper.IsSet("report") &&
-		opts.Format == "table" {
+		opts.Outputs[0].Format == "table" {
 
 		m := "All the results in the table format can mess up your terminal. Use \"--report all\" to tell Trivy to output it to your terminal anyway, or consider \"--report summary\" to show the summary output."
 

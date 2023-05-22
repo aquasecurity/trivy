@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/json"
 
-	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -17,6 +17,41 @@ var Compliances = []string{
 	ComplianceAWSCIS14,
 	ComplianceDockerCIS,
 }
+
+type Format string
+
+const (
+	FormatTable      Format = "table"
+	FormatJSON       Format = "json"
+	FormatTemplate   Format = "template"
+	FormatSarif      Format = "sarif"
+	FormatCycloneDX  Format = "cyclonedx"
+	FormatSPDX       Format = "spdx"
+	FormatSPDXJSON   Format = "spdx-json"
+	FormatGitHub     Format = "github"
+	FormatCosignVuln Format = "cosign-vuln"
+)
+
+var (
+	SupportedFormats = []Format{
+		FormatTable,
+		FormatJSON,
+		FormatTemplate,
+		FormatSarif,
+		FormatCycloneDX,
+		FormatSPDX,
+		FormatSPDXJSON,
+		FormatGitHub,
+		FormatCosignVuln,
+	}
+
+	SupportedSBOMFormats = []Format{
+		FormatCycloneDX,
+		FormatSPDX,
+		FormatSPDXJSON,
+		FormatGitHub,
+	}
+)
 
 // Report represents a scan result
 type Report struct {

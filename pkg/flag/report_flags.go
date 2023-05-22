@@ -1,17 +1,16 @@
 package flag
 
 import (
-	"io"
-	"os"
+	"fmt"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -26,8 +25,12 @@ var (
 		Name:       "format",
 		ConfigName: "format",
 		Shorthand:  "f",
-		Value:      report.FormatTable,
-		Usage:      "format (" + strings.Join(report.SupportedFormats, ", ") + ")",
+		Value:      string(types.FormatTable),
+		Usage: "format (" + strings.Join(
+			lo.Map(types.SupportedFormats, func(item types.Format, _ int) string {
+				return string(item)
+			}),
+			", ") + ")",
 	}
 	ReportFormatFlag = Flag{
 		Name:       "report",
@@ -82,7 +85,7 @@ var (
 		Name:       "output",
 		ConfigName: "output",
 		Shorthand:  "o",
-		Value:      "",
+		Value:      "stdout",
 		Usage:      "output file name",
 	}
 	SeverityFlag = Flag{
@@ -97,6 +100,12 @@ var (
 		ConfigName: "scan.compliance",
 		Value:      "",
 		Usage:      "compliance report to generate",
+	}
+	OutputsFlag = Flag{
+		Name:       "experimental-output",
+		ConfigName: "experimental-output",
+		Value:      "",
+		Usage:      "[EXPERIMENTAL] a list of outputs",
 	}
 )
 
@@ -115,21 +124,20 @@ type ReportFlagGroup struct {
 	Output         *Flag
 	Severity       *Flag
 	Compliance     *Flag
+	Outputs        *Flag
 }
 
 type ReportOptions struct {
-	Format         string
 	ReportFormat   string
-	Template       string
 	DependencyTree bool
 	ListAllPkgs    bool
 	IgnoreFile     string
 	ExitCode       int
 	ExitOnEOL      int
 	IgnorePolicy   string
-	Output         io.Writer
 	Severities     []dbTypes.Severity
 	Compliance     spec.ComplianceSpec
+	Outputs        types.Outputs
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -146,6 +154,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Output:         &OutputFlag,
 		Severity:       &SeverityFlag,
 		Compliance:     &ComplianceFlag,
+		Outputs:        &OutputsFlag,
 	}
 }
 
@@ -167,35 +176,47 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.Output,
 		f.Severity,
 		f.Compliance,
+		f.Outputs,
 	}
 }
 
-func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
-	format := getString(f.Format)
-	template := getString(f.Template)
+func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
-	output := getString(f.Output)
 
-	if format != "" && !slices.Contains(report.SupportedFormats, format) {
-		return ReportOptions{}, xerrors.Errorf("unknown format: %v", format)
+	fmt.Printf("%#v\n", getValue(f.Outputs))
+	outputs, err := parseOutputs(getStringSlice(f.Outputs))
+	if err != nil {
+		return ReportOptions{}, xerrors.Errorf("output error: %w", err)
+	} else if len(outputs) == 0 {
+		outputs = append(outputs, types.Output{
+			Format:   types.Format(getString(f.Format)),
+			Dest:     getString(f.Output),
+			Template: getString(f.Template),
+		})
 	}
 
-	if template != "" {
-		if format == "" {
-			log.Logger.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
-		} else if format != "template" {
-			log.Logger.Warnf("'--template' is ignored because '--format %s' is specified. Use '--template' option with '--format template' option.", format)
+	for _, output := range outputs {
+		if output.Format != "" && !slices.Contains(types.SupportedFormats, output.Format) {
+			return ReportOptions{}, xerrors.Errorf("unknown format: %s", output.Format)
 		}
-	} else {
-		if format == report.FormatTemplate {
-			log.Logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
+
+		if output.Template != "" {
+			if output.Format == "" {
+				log.Logger.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
+			} else if output.Format != "template" {
+				log.Logger.Warnf("'--template' is ignored because '--format %s' is specified. Use '--template' option with '--format template' option.", output.Format)
+			}
+		} else {
+			if output.Format == types.FormatTemplate {
+				log.Logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
+			}
 		}
 	}
 
 	// "--list-all-pkgs" option is unavailable with "--format table".
 	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
-	if listAllPkgs && format == report.FormatTable {
+	if listAllPkgs && outputs.Only(types.FormatTable) {
 		log.Logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
 	}
 
@@ -204,21 +225,14 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		log.Logger.Infof(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
 			`Note that it is the reverse of the usual dependency tree, which shows the packages that depend on the vulnerable package. ` +
 			`It supports limited package managers. Please see the document for the detail.`)
-		if format != report.FormatTable {
+		if !outputs.Contains(types.FormatTable) {
 			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
 	}
 
 	// Enable '--list-all-pkgs' if needed
-	if f.forceListAllPkgs(format, listAllPkgs, dependencyTree) {
+	if f.forceListAllPkgs(outputs, listAllPkgs, dependencyTree) {
 		listAllPkgs = true
-	}
-
-	if output != "" {
-		var err error
-		if out, err = os.Create(output); err != nil {
-			return ReportOptions{}, xerrors.Errorf("failed to create an output file: %w", err)
-		}
 	}
 
 	cs, err := loadComplianceTypes(getString(f.Compliance))
@@ -227,19 +241,52 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	}
 
 	return ReportOptions{
-		Format:         format,
 		ReportFormat:   getString(f.ReportFormat),
-		Template:       template,
 		DependencyTree: dependencyTree,
 		ListAllPkgs:    listAllPkgs,
 		IgnoreFile:     getString(f.IgnoreFile),
 		ExitCode:       getInt(f.ExitCode),
 		ExitOnEOL:      getInt(f.ExitOnEOL),
 		IgnorePolicy:   getString(f.IgnorePolicy),
-		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),
 		Compliance:     cs,
+		Outputs:        outputs,
 	}, nil
+}
+
+func parseOutputs(ss []string) (types.Outputs, error) {
+	var outputs types.Outputs
+
+	fmt.Println(ss)
+	for _, out := range ss {
+		var output types.Output
+		pairs := strings.Split(out, ",")
+		for _, pair := range pairs {
+			kv := strings.SplitN(pair, "=", 2)
+			if len(kv) != 2 {
+				return nil, xerrors.Errorf("invalid output format: %s", pair)
+			}
+
+			key, value := kv[0], kv[1]
+
+			switch key {
+			case "format":
+				output.Format = types.Format(value)
+			case "template":
+				output.Template = value
+			case "dest":
+				output.Dest = value
+			default:
+				log.Logger.Warnf("Invalid output key: %s", key)
+			}
+		}
+		if output.Format == "" {
+			return nil, xerrors.Errorf("'format' must be specified: %s", out)
+		}
+		outputs = append(outputs, output)
+	}
+
+	return outputs, nil
 }
 
 func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
@@ -255,13 +302,15 @@ func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 	return cs, nil
 }
 
-func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {
-	if slices.Contains(report.SupportedSBOMFormats, format) && !listAllPkgs {
-		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", report.SupportedSBOMFormats)
-		return true
+func (f *ReportFlagGroup) forceListAllPkgs(outputs types.Outputs, listAllPkgs, dependencyTree bool) bool {
+	for _, sbomFormat := range types.SupportedSBOMFormats {
+		if outputs.Contains(sbomFormat) && !listAllPkgs {
+			log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", types.SupportedSBOMFormats)
+			return true
+		}
 	}
-	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
-	if format == report.FormatSarif && !listAllPkgs {
+	// We need this flag to insert dependency locations into SARIF('Package' struct contains 'Locations')
+	if outputs.Contains(types.FormatSarif) && !listAllPkgs {
 		log.Logger.Debugf("Sarif format automatically enables '--list-all-pkgs' to get locations")
 		return true
 	}

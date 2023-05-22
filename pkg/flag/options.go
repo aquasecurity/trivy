@@ -2,12 +2,12 @@ package flag
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -17,7 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Flag struct {
@@ -110,14 +110,12 @@ type Options struct {
 
 // Align takes consistency of options
 func (o *Options) Align() {
-	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
-		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
-		o.Scanners = nil
-	}
-
-	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == report.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
-		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+	// Disable security scanning if all the specified formats are SBOM formats
+	if lo.Every(types.SupportedSBOMFormats, o.Outputs.Formats()) && !viper.IsSet(ScannersFlag.ConfigName) {
+		log.Logger.Info(`SBOM generation disables security scanning.`)
+		if o.Outputs.Contains(types.FormatCycloneDX) {
+			log.Logger.Info(`"Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+		}
 		o.Scanners = nil
 	}
 }
@@ -346,7 +344,6 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 func (f *Flags) Usages(cmd *cobra.Command) string {
 	var usages string
 	for _, group := range f.groups() {
-
 		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
 		lflags := cmd.LocalFlags()
 		for _, flag := range group.Flags() {
@@ -380,7 +377,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 }
 
 // nolint: gocyclo
-func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup, output io.Writer) (Options, error) {
+func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup) (Options, error) {
 	var err error
 	opts := Options{
 		AppVersion:    appVersion,
@@ -461,7 +458,7 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.ReportFlagGroup != nil {
-		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions(output)
+		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("report flag error: %w", err)
 		}

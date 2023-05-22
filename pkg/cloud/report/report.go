@@ -83,12 +83,13 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 		Results:      filtered,
 	}
 
-	switch opt.Format {
+	out := opt.Outputs[0]
+	switch out.Format {
 	case tableFormat:
 
 		// ensure color/formatting is disabled for pipes/non-pty
 		var useANSI bool
-		if opt.Output == os.Stdout {
+		if out.Stdout() {
 			if o, err := os.Stdout.Stat(); err == nil {
 				useANSI = (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 			}
@@ -97,33 +98,38 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 			tml.DisableFormatting()
 		}
 
+		// Set up the output writer, file or stdout
+		dest, err := out.Writer()
+		if err != nil {
+			return err
+		}
+		defer dest.Close()
+
 		switch {
 		case len(opt.Services) == 1 && opt.ARN == "":
-			if err := writeResourceTable(rep, filtered, opt.Output, opt.Services[0]); err != nil {
+			if err := writeResourceTable(rep, filtered, dest, opt.Services[0]); err != nil {
 				return err
 			}
 		case len(opt.Services) == 1 && opt.ARN != "":
-			if err := writeResultsForARN(rep, filtered, opt.Output, opt.Services[0], opt.ARN, opt.Severities); err != nil {
+			if err := writeResultsForARN(rep, filtered, dest, opt.Services[0], opt.ARN, opt.Severities); err != nil {
 				return err
 			}
 		default:
-			if err := writeServiceTable(rep, filtered, opt.Output); err != nil {
+			if err := writeServiceTable(rep, filtered, dest); err != nil {
 				return err
 			}
 		}
 
 		// render cache info
 		if fromCache {
-			_ = tml.Fprintf(opt.Output, "\n<blue>This scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.</blue>\n")
+			_ = tml.Fprintf(dest, "\n<blue>This scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.</blue>\n")
 		}
 
 		return nil
 	default:
 		return pkgReport.Write(base, pkgReport.Option{
-			Format:             opt.Format,
-			Output:             opt.Output,
+			Outputs:            types.Outputs{out},
 			Severities:         opt.Severities,
-			OutputTemplate:     opt.Template,
 			IncludeNonFailures: opt.IncludeNonFailures,
 			Trace:              opt.Trace,
 		})

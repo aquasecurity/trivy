@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -63,15 +62,6 @@ Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
 `
 )
-
-var (
-	outputWriter io.Writer = os.Stdout
-)
-
-// SetOut overrides the destination for messages
-func SetOut(out io.Writer) {
-	outputWriter = out
-}
 
 // NewApp is the factory method to return Trivy CLI
 func NewApp(version string) *cobra.Command {
@@ -157,8 +147,6 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
   $ trivy server`,
 		Args: cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SetOut(outputWriter)
-
 			// Set the Trivy version here so that we can override version printer.
 			cmd.Version = version
 
@@ -192,7 +180,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 			globalOptions := globalFlags.ToOptions()
 			if globalOptions.ShowVersion {
 				// Customize version output
-				showVersion(globalOptions.CacheDir, versionFormat, version, outputWriter)
+				showVersion(globalOptions.CacheDir, versionFormat, version)
 			} else {
 				return cmd.Help()
 			}
@@ -275,7 +263,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -333,7 +321,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := fsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := fsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := fsFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -391,7 +379,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := rootfsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := rootfsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := rootfsFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -445,7 +433,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := repoFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := repoFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := repoFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -501,7 +489,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := clientFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := clientFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := clientFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -541,7 +529,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := serverFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := serverFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := serverFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -602,7 +590,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := configFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := configFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := configFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -758,7 +746,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				}
 
 				repo := args[0]
-				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags)
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
@@ -782,7 +770,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				}
 
 				repo := args[0]
-				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags)
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
@@ -855,7 +843,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := k8sFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			opts, err := k8sFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			opts, err := k8sFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -918,7 +906,7 @@ The following services are supported:
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := awsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			opts, err := awsFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -982,7 +970,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := vmFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := vmFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := vmFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -1042,7 +1030,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := sbomFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := sbomFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := sbomFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -1070,7 +1058,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := globalFlags.ToOptions()
-			showVersion(options.CacheDir, versionFormat, cmd.Version, outputWriter)
+			showVersion(options.CacheDir, versionFormat, cmd.Version)
 
 			return nil
 		},
@@ -1085,7 +1073,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
-func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
+func showVersion(cacheDir, outputFormat, version string) {
 	var dbMeta *metadata.Metadata
 	var javadbMeta *metadata.Metadata
 
@@ -1125,7 +1113,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 			JavaDB:          javadbMeta,
 			PolicyBundle:    pbMeta,
 		})
-		fmt.Fprintln(outputWriter, string(b))
+		fmt.Println(string(b))
 	default:
 		output := fmt.Sprintf("Version: %s\n", version)
 		if dbMeta != nil {
@@ -1152,7 +1140,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
   DownloadedAt: %s
 `, pbMeta.Digest, pbMeta.DownloadedAt.UTC())
 		}
-		fmt.Fprintf(outputWriter, output)
+		fmt.Println(output)
 	}
 }
 

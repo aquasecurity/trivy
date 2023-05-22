@@ -1,7 +1,6 @@
 package report
 
 import (
-	"io"
 	"strings"
 	"sync"
 
@@ -21,51 +20,21 @@ import (
 
 const (
 	SchemaVersion = 2
-
-	FormatTable      = "table"
-	FormatJSON       = "json"
-	FormatTemplate   = "template"
-	FormatSarif      = "sarif"
-	FormatCycloneDX  = "cyclonedx"
-	FormatSPDX       = "spdx"
-	FormatSPDXJSON   = "spdx-json"
-	FormatGitHub     = "github"
-	FormatCosignVuln = "cosign-vuln"
 )
 
-var (
-	SupportedFormats = []string{
-		FormatTable,
-		FormatJSON,
-		FormatTemplate,
-		FormatSarif,
-		FormatCycloneDX,
-		FormatSPDX,
-		FormatSPDXJSON,
-		FormatGitHub,
-		FormatCosignVuln,
-	}
-)
-
-var (
-	SupportedSBOMFormats = []string{
-		FormatCycloneDX,
-		FormatSPDX,
-		FormatSPDXJSON,
-		FormatGitHub,
-	}
-)
+// Writer defines the result write operation
+type Writer interface {
+	Write(types.Report) error
+}
 
 type Option struct {
 	AppVersion string
 
-	Format         string
-	Report         string
-	Output         io.Writer
-	Tree           bool
-	Severities     []dbTypes.Severity
-	OutputTemplate string
-	Compliance     spec.ComplianceSpec
+	Outputs    types.Outputs
+	Report     string
+	Tree       bool
+	Severities []dbTypes.Severity
+	Compliance spec.ComplianceSpec
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -83,11 +52,27 @@ func Write(report types.Report, option Option) error {
 		return complianceWrite(report, option)
 	}
 
+	for _, output := range option.Outputs {
+		if err := write(report, output, option); err != nil {
+			return xerrors.Errorf("failed to write results: %w", err)
+		}
+	}
+	return nil
+}
+
+func write(report types.Report, output types.Output, option Option) error {
+	// Set up the output writer, file or stdout
+	dest, err := output.Writer()
+	if err != nil {
+		return err
+	}
+	defer dest.Close()
+
 	var writer Writer
-	switch option.Format {
-	case FormatTable:
+	switch output.Format {
+	case types.FormatTable:
 		writer = &table.Writer{
-			Output:               option.Output,
+			Output:               dest,
 			Severities:           option.Severities,
 			Tree:                 option.Tree,
 			ShowMessageOnce:      &sync.Once{},
@@ -96,46 +81,46 @@ func Write(report types.Report, option Option) error {
 			LicenseRiskThreshold: option.LicenseRiskThreshold,
 			IgnoredLicenses:      option.IgnoredLicenses,
 		}
-	case FormatJSON:
-		writer = &JSONWriter{Output: option.Output}
-	case FormatGitHub:
+	case types.FormatJSON:
+		writer = &JSONWriter{Output: dest}
+	case types.FormatGitHub:
 		writer = &github.Writer{
-			Output:  option.Output,
+			Output:  dest,
 			Version: option.AppVersion,
 		}
-	case FormatCycloneDX:
+	case types.FormatCycloneDX:
 		// TODO: support xml format option with cyclonedx writer
-		writer = cyclonedx.NewWriter(option.Output, option.AppVersion)
-	case FormatSPDX, FormatSPDXJSON:
-		writer = spdx.NewWriter(option.Output, option.AppVersion, option.Format)
-	case FormatTemplate:
+		writer = cyclonedx.NewWriter(dest, option.AppVersion)
+	case types.FormatSPDX, types.FormatSPDXJSON:
+		writer = spdx.NewWriter(dest, option.AppVersion, output.Format)
+	case types.FormatTemplate:
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
-		if strings.HasPrefix(option.OutputTemplate, "@") && strings.HasSuffix(option.OutputTemplate, "sarif.tpl") {
+		if strings.HasPrefix(output.Template, "@") && strings.HasSuffix(output.Template, "sarif.tpl") {
 			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			writer = &SarifWriter{
-				Output:  option.Output,
+				Output:  dest,
 				Version: option.AppVersion,
 			}
 			break
 		}
-		var err error
-		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
+		if writer, err = NewTemplateWriter(dest, output.Template); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
-	case FormatSarif:
+	case types.FormatSarif:
 		writer = &SarifWriter{
-			Output:  option.Output,
+			Output:  dest,
 			Version: option.AppVersion,
 		}
-	case FormatCosignVuln:
-		writer = predicate.NewVulnWriter(option.Output, option.AppVersion)
+	case types.FormatCosignVuln:
+		writer = predicate.NewVulnWriter(dest, option.AppVersion)
 	default:
-		return xerrors.Errorf("unknown format: %v", option.Format)
+		return xerrors.Errorf("unknown format: %v", output.Format)
 	}
 
-	if err := writer.Write(report); err != nil {
+	if err = writer.Write(report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
+
 	return nil
 }
 
@@ -145,14 +130,8 @@ func complianceWrite(report types.Report, opt Option) error {
 		return xerrors.Errorf("compliance report build error: %w", err)
 	}
 	return cr.Write(complianceReport, cr.Option{
-		Format:     opt.Format,
 		Report:     opt.Report,
-		Output:     opt.Output,
+		Output:     opt.Outputs[0], // TODO: support multiple outputs
 		Severities: opt.Severities,
 	})
-}
-
-// Writer defines the result write operation
-type Writer interface {
-	Write(types.Report) error
 }

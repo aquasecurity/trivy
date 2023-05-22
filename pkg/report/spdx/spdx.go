@@ -15,11 +15,11 @@ import (
 type Writer struct {
 	output    io.Writer
 	version   string
-	format    string
+	format    types.Format
 	marshaler *spdx.Marshaler
 }
 
-func NewWriter(output io.Writer, version string, spdxFormat string) Writer {
+func NewWriter(output io.Writer, version string, spdxFormat types.Format) Writer {
 	return Writer{
 		output:    output,
 		version:   version,
@@ -34,7 +34,7 @@ func (w Writer) Write(report types.Report) error {
 		return xerrors.Errorf("failed to marshal spdx: %w", err)
 	}
 
-	if w.format == "spdx-json" {
+	if w.format == types.FormatSPDXJSON {
 		if err := writeSPDXJson(spdxDoc, w.output); err != nil {
 			return xerrors.Errorf("failed to save spdx json: %w", err)
 		}

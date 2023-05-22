@@ -123,6 +123,12 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	log.Logger.Debug("Writing report to output...")
+
+	// TODO: support multiple outputs
+	if len(opt.Outputs) > 1 {
+		log.Logger.Warn("Multiple outputs are not supported in AWS scanning. Only the first output option is used.")
+	}
+
 	if opt.Compliance.Spec.ID != "" {
 		convertedResults := report.ConvertResults(results, cloud.ProviderAWS, opt.Services)
 		var crr []types.Results
@@ -136,9 +142,8 @@ func Run(ctx context.Context, opt flag.Options) error {
 		}
 
 		return cr.Write(complianceReport, cr.Option{
-			Format: opt.Format,
 			Report: opt.ReportFormat,
-			Output: opt.Output,
+			Output: opt.Outputs[0],
 		})
 	}
 

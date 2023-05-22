@@ -292,11 +292,9 @@ func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Rep
 func (r *runner) Report(opts flag.Options, report types.Report) error {
 	if err := pkgReport.Write(report, pkgReport.Option{
 		AppVersion:         opts.AppVersion,
-		Format:             opts.Format,
-		Output:             opts.Output,
+		Outputs:            opts.Outputs,
 		Tree:               opts.DependencyTree,
 		Severities:         opts.Severities,
-		OutputTemplate:     opts.Template,
 		IncludeNonFailures: opts.IncludeNonFailures,
 		Trace:              opts.Trace,
 		Report:             opts.ReportFormat,
@@ -344,7 +342,7 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 
 	// If vulnerability scanning and SBOM generation are disabled, it doesn't need to download the Java database.
 	if !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
-		!slices.Contains(pkgReport.SupportedSBOMFormats, opts.Format) {
+		!opts.Outputs.Some(types.SupportedSBOMFormats...) {
 		return nil
 	}
 
@@ -516,7 +514,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// But we don't create client if vulnerability analysis is disabled and SBOM format is not used
 	// We need to disable jar analyzer to avoid errors
 	// TODO disable all languages that don't contain license information for this case
-	if !opts.Scanners.Enabled(types.VulnerabilityScanner) && !slices.Contains(pkgReport.SupportedSBOMFormats, opts.Format) {
+	if !opts.Scanners.Enabled(types.VulnerabilityScanner) && !opts.Outputs.Some(types.SupportedSBOMFormats...) {
 		analyzers = append(analyzers, analyzer.TypeJar)
 	}
 
@@ -628,7 +626,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	// SPDX needs to calculate digests for package files
 	var fileChecksum bool
-	if opts.Format == pkgReport.FormatSPDXJSON || opts.Format == pkgReport.FormatSPDX {
+	if opts.Outputs.Some(types.FormatSPDXJSON, types.FormatSPDX) {
 		fileChecksum = true
 	}
 

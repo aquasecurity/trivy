@@ -2,7 +2,6 @@ package report
 
 import (
 	"fmt"
-	"io"
 	"strings"
 
 	"golang.org/x/exp/maps"
@@ -29,9 +28,8 @@ const (
 )
 
 type Option struct {
-	Format        string
 	Report        string
-	Output        io.Writer
+	Output        types.Output
 	Severities    []dbTypes.Severity
 	ColumnHeading []string
 	Scanners      types.Scanners
@@ -129,10 +127,17 @@ type Writer interface {
 func Write(report Report, option Option) error {
 	report.printErrors()
 
-	switch option.Format {
+	// Set up the output writer, file or stdout
+	dest, err := option.Output.Writer()
+	if err != nil {
+		return err
+	}
+	defer dest.Close()
+
+	switch option.Output.Format {
 	case jsonFormat:
 		jwriter := JSONWriter{
-			Output: option.Output,
+			Output: dest,
 			Report: option.Report,
 		}
 		return jwriter.Write(report)
@@ -141,12 +146,12 @@ func Write(report Report, option Option) error {
 
 		if option.Report == summaryReport {
 			target := fmt.Sprintf("Summary Report for %s", report.ClusterName)
-			table.RenderTarget(option.Output, target, table.IsOutputToTerminal(option.Output))
+			table.RenderTarget(dest, target, table.IsOutputToTerminal(dest))
 		}
 
 		for _, r := range separatedReports {
 			writer := &TableWriter{
-				Output:        option.Output,
+				Output:        dest,
 				Report:        option.Report,
 				Severities:    option.Severities,
 				ColumnHeading: ColumnHeading(option.Scanners, option.Components, r.columns),
@@ -159,7 +164,7 @@ func Write(report Report, option Option) error {
 
 		return nil
 	default:
-		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
+		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Output.Format)
 	}
 }
 

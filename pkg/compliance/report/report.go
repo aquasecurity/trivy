@@ -1,8 +1,6 @@
 package report
 
 import (
-	"io"
-
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 
 	"golang.org/x/xerrors"
@@ -21,9 +19,8 @@ const (
 )
 
 type Option struct {
-	Format        string
 	Report        string
-	Output        io.Writer
+	Output        types.Output
 	Severities    []dbTypes.Severity
 	ColumnHeading []string
 }
@@ -69,14 +66,24 @@ type Writer interface {
 
 // Write writes the results in the give format
 func Write(report *ComplianceReport, option Option) error {
-	switch option.Format {
+	// Set up the output writer, file or stdout
+	dest, err := option.Output.Writer()
+	if err != nil {
+		return err
+	}
+	defer dest.Close()
+
+	switch option.Output.Format {
 	case jsonFormat:
-		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
+		jwriter := JSONWriter{
+			Output: dest,
+			Report: option.Report,
+		}
 		return jwriter.Write(report)
 	case tableFormat:
 		if !report.empty() {
 			complianceWriter := &TableWriter{
-				Output:     option.Output,
+				Output:     dest,
 				Report:     option.Report,
 				Severities: option.Severities,
 			}
@@ -87,7 +94,7 @@ func Write(report *ComplianceReport, option Option) error {
 		}
 		return nil
 	default:
-		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
+		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Output.Format)
 	}
 }
 
