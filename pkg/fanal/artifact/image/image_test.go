@@ -46,6 +46,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"busybox@1.31.1-r9",
 				"musl@1.1.24-r2",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "alpine-keys@2.1-r2",
@@ -54,6 +55,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "alpine-keys",
 			SrcVersion: "2.1-r2",
 			Licenses:   []string{"MIT"},
+			Arch:       "x86_64",
 			Digest:     "sha1:64929f85b7f8b4adbb664d905410312936b79d9b",
 		},
 		{
@@ -70,6 +72,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 				"zlib@1.2.11-r3",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "busybox@1.31.1-r9",
@@ -82,6 +85,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "ca-certificates-cacert@20191127-r1",
@@ -93,6 +97,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"MPL-2.0",
 				"GPL-2.0",
 			},
+			Arch:   "x86_64",
 			Digest: "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
 		},
 		{
@@ -106,6 +111,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"musl-utils@1.1.24-r2",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "libcrypto1.1@1.1.1d-r3",
@@ -118,6 +124,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "libssl1.1@1.1.1d-r3",
@@ -131,6 +138,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"libcrypto1.1@1.1.1d-r3",
 				"musl@1.1.24-r2",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "libtls-standalone@2.9.1-r0",
@@ -146,6 +154,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"libssl1.1@1.1.1d-r3",
 				"musl@1.1.24-r2",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "musl@1.1.24-r2",
@@ -154,6 +163,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName:    "musl",
 			SrcVersion: "1.1.24-r2",
 			Licenses:   []string{"MIT"},
+			Arch:       "x86_64",
 			Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
 		},
 		{
@@ -172,6 +182,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 				"scanelf@1.2.4-r0",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "scanelf@1.2.4-r0",
@@ -184,6 +195,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "ssl_client@1.31.1-r9",
@@ -197,6 +209,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"libtls-standalone@2.9.1-r0",
 				"musl@1.1.24-r2",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:         "zlib@1.2.11-r3",
@@ -209,6 +222,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
+			Arch: "x86_64",
 		},
 	}
 
