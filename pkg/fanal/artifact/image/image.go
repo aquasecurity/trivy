@@ -14,7 +14,6 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
-	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -25,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 	"github.com/aquasecurity/trivy/pkg/syncx"
 )
@@ -216,49 +216,33 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
 
-	group, groupCtx := errgroup.WithContext(ctx)
-	concurrencyLimit := 5
-	if a.artifactOption.Slow {
-		concurrencyLimit = 1
-	}
-	group.SetLimit(concurrencyLimit)
-
 	var osFound types.OS
-	for _, k := range layerKeys {
-		layerKey := k
-		ctx := groupCtx
-		group.Go(func() error {
-			layer := layerKeyMap[layerKey]
+	workers := lo.Ternary(a.artifactOption.Slow, 1, 5)
+	p := parallel.NewPipeline(workers, false, layerKeys, func(ctx context.Context, layerKey string) (any, error) {
+		layer := layerKeyMap[layerKey]
 
-			// If it is a base layer, secret scanning should not be performed.
-			var disabledAnalyzers []analyzer.Type
-			if slices.Contains(baseDiffIDs, layer.DiffID) {
-				disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeSecret)
-			}
-
-			layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyzers)
-			if err != nil {
-				return xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
-			}
-			if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
-				return xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
-			}
-			if lo.IsNotEmpty(layerInfo.OS) {
-				osFound = layerInfo.OS
-			}
-			return nil
-		})
-
-		if ctx.Err() != nil {
-			break
+		// If it is a base layer, secret scanning should not be performed.
+		var disabledAnalyzers []analyzer.Type
+		if slices.Contains(baseDiffIDs, layer.DiffID) {
+			disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeSecret)
 		}
-	}
 
-	if err := group.Wait(); err != nil {
-		if ctx.Err() != nil {
-			return xerrors.Errorf("timeout: %w", ctx.Err())
+		layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyzers)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 		}
-		return err
+		if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
+			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
+		}
+		if lo.IsNotEmpty(layerInfo.OS) {
+			osFound = layerInfo.OS
+		}
+		return nil, nil
+
+	}, nil)
+
+	if err := p.Do(ctx); err != nil {
+		return xerrors.Errorf("pipeline error: %w", err)
 	}
 
 	if missingImage != "" {
@@ -268,7 +252,6 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	}
 
 	return nil
-
 }
 
 func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {

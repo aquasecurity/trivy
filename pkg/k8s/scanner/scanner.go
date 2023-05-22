@@ -54,7 +54,7 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 		misconfig report.Resource
 	}
 
-	onItem := func(artifact *artifacts.Artifact) (scanResult, error) {
+	onItem := func(ctx context.Context, artifact *artifacts.Artifact) (scanResult, error) {
 		scanResults := scanResult{}
 		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
 			vulns, err := s.scanVulns(ctx, artifact)
