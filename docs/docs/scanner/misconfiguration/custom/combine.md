@@ -30,7 +30,8 @@ In "combine" mode, the `deny` entrypoint must return an object with two keys
 : the message describing an issue
 
 !!! example
-    ```
+
+```rego
     deny[res] {
         resource := input[i].contents
         ... some logic ...
@@ -40,5 +41,5 @@ In "combine" mode, the `deny` entrypoint must return an object with two keys
     		"msg": "something bad",
     	}
     }
-    ```
+```
 
