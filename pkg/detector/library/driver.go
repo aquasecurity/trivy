@@ -68,6 +68,9 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.CondaPkg:
 		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, ErrSBOMSupportOnly
+	case ftypes.Julia:
+		log.Logger.Warn("Julia is supported for SBOM, not for vulnerability scanning")
+		return Driver{}, ErrSBOMSupportOnly
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}

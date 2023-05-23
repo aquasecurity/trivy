@@ -9,3 +9,9 @@ JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 [compat]
 JSON = "0.21"
 julia = "1.8"
+
+[extras]
+FastHistograms = "06971c4e-2824-4b19-bcf3-55442efb9bc7"
+
+[targets]
+test = ["FastHistograms"]

@@ -3,11 +3,11 @@ package julia
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
@@ -18,8 +18,6 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/aquasecurity/go-version/pkg/semver"
-	goversion "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -42,6 +40,20 @@ var requiredFiles = []string{
 type juliaAnalyzer struct {
 	lockParser godeptypes.Parser
 	comparer   compare.GenericComparer
+}
+
+type Project struct {
+	Name         string
+	UUID         string
+	Keywords     []string
+	License      string
+	Description  string `toml:"desc"`
+	Version      string
+	Authors      []string
+	Dependencies map[string]string `toml:"deps"`
+	Compat       map[string]string
+	Extras       map[string]string
+	Targets      map[string][]string
 }
 
 func newJuliaAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -67,13 +79,13 @@ func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 			return nil
 		}
 
-		// Parse Project.toml alongside Manifest.toml to identify the direct dependencies
-		if err = a.removeDevDependencies(input.FS, filepath.Dir(path), app); err != nil {
+		// Parse Project.toml alongside Manifest.toml to identify the direct dependencies. This mutates `app`.
+		if err = a.removeExtraDependencies(input.FS, filepath.Dir(path), app); err != nil {
 			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.JuliaProject), err)
 		}
+
 		sort.Sort(types.Packages(app.Libraries))
 		apps = append(apps, *app)
-
 		return nil
 	})
 	if err != nil {
@@ -102,14 +114,17 @@ func (a juliaAnalyzer) parseJuliaManifest(path string, r dio.ReadSeekerAt) (*typ
 	return language.Parse(types.Julia, path, r, a.lockParser)
 }
 
-func (a juliaAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
-	juliaTOMLPath := filepath.Join(dir, types.JuliaProject)
-	directDeps, err := a.parseJuliaProject(fsys, juliaTOMLPath)
+// Removes dependencies not specified as direct dependencies in the Project.toml file.
+// This is not strictly necessary, but given that test dependencies are in flux right now, this is future-proofing.
+// https://pkgdocs.julialang.org/v1/creating-packages/#target-based-test-specific-dependencies
+func (a juliaAnalyzer) removeExtraDependencies(fsys fs.FS, dir string, app *types.Application) error {
+	projectPath := filepath.Join(dir, types.JuliaProject)
+	project, err := parseJuliaProject(fsys, projectPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Julia: %s not found", juliaTOMLPath)
+		log.Logger.Debugf("Julia: %s not found", projectPath)
 		return nil
 	} else if err != nil {
-		return xerrors.Errorf("unable to parse %s: %w", juliaTOMLPath, err)
+		return xerrors.Errorf("unable to parse %s: %w", projectPath, err)
 	}
 
 	// Project.toml file can contain same libraries with different versions.
@@ -119,126 +134,64 @@ func (a juliaAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	})
 
 	// Identify direct dependencies
-	pkgs := map[string]types.Package{}
-	for uuid, constraint := range directDeps {
+	visited := map[string]types.Package{}
+	for _, uuid := range project.Dependencies {
+		// uuid is a direct dep since it's in the Project file. Search through Libraries to mark the matching one as a direct dep.
 		for _, pkg := range app.Libraries {
-			if pkg.ID != uuid {
+			// Check using prefix because pkg.ID is uuid@version
+			if !strings.HasPrefix(pkg.ID, uuid) {
 				continue
 			}
 
-			if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
-				log.Logger.Warnf("Unable to match Julia version: package: %s, error: %s", pkg.ID, err)
-				continue
-			} else if match {
-				// Mark as a direct dependency
-				pkg.Indirect = false
-				pkgs[pkg.ID] = pkg
-				break
-			}
+			// Mark as a direct dependency
+			pkg.Indirect = false
+			visited[pkg.ID] = pkg
+			break
 		}
 	}
 
-	// Walk indirect dependencies
-	// Since it starts from direct dependencies, devDependencies will not appear in this walk.
-	for _, pkg := range pkgs {
-		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
+	// Identify indirect dependencies
+	for _, pkg := range visited {
+		walkIndirectDependencies(pkg, pkgIDs, visited)
 	}
 
-	pkgSlice := maps.Values(pkgs)
-	sort.Sort(types.Packages(pkgSlice))
+	visitedPkgs := maps.Values(visited)
+	sort.Sort(types.Packages(visitedPkgs))
 
-	// Save only prod libraries
-	app.Libraries = pkgSlice
+	// Include only the packages we visited so that we don't include any deps from the [extras] section
+	app.Libraries = visitedPkgs
 	return nil
 }
 
-type juliaToml struct {
-	Name    string `toml:"name"`
-	UUID    string `toml:"uuid`
-	Version string `toml:"version"`
-	Deps    Deps   `toml:"deps"`
-	Compat  Compat `toml:"compat"`
-}
-
-type Deps map[string]string
-
-type Compat map[string]string
-
-func (a juliaAnalyzer) parseJuliaProject(fsys fs.FS, path string) (map[string]string, error) {
-	// Parse Project.toml
+// Parses Project.toml
+func parseJuliaProject(fsys fs.FS, path string) (Project, error) {
+	proj := Project{}
 	f, err := fsys.Open(path)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return proj, xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
-	tomlFile := juliaToml{}
-	deps := map[string]string{}
-	_, err = toml.NewDecoder(f).Decode(&tomlFile)
-	if err != nil {
-		return nil, xerrors.Errorf("toml decode error: %w", err)
+	if _, err = toml.NewDecoder(f).Decode(&proj); err != nil {
+		return proj, xerrors.Errorf("decode error: %w", err)
 	}
-
-	// Julia projects don't need to have dependencies, so ensure `Deps` is non-nil to avoid panics
-	dependencies := Deps{}
-	maps.Copy(dependencies, tomlFile.Deps)
-
-	// Julia projects don't need to have compat, so ensure `Compat` is non-nil to avoid panics
-	compat := Compat{}
-	maps.Copy(compat, tomlFile.Compat)
-
-	for depName, uuid := range dependencies {
-		// If there is no compat, use an empty specifier
-		deps[uuid] = ""
-
-		// Find the compat if it exists
-		for compatName, spec := range compat {
-			if depName == compatName {
-				deps[uuid] = spec
-			}
-		}
-	}
-
-	return deps, nil
+	return proj, nil
 }
 
-func (a juliaAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[string]types.Package, deps map[string]types.Package) {
-	for _, pkgID := range pkg.DependsOn {
-		if _, ok := deps[pkgID]; ok {
+// Marks all indirect dependencies as indirect. Starts from `rootPkg`. Visited deps are added to `visited`.
+func walkIndirectDependencies(rootPkg types.Package, allPkgIDs map[string]types.Package, visited map[string]types.Package) {
+	for _, pkgID := range rootPkg.DependsOn {
+		if _, ok := visited[pkgID]; ok {
 			continue
 		}
 
-		dep, ok := pkgIDs[pkgID]
+		dep, ok := allPkgIDs[pkgID]
 		if !ok {
 			continue
 		}
 
 		dep.Indirect = true
-		deps[dep.ID] = dep
-		a.walkIndirectDependencies(dep, pkgIDs, deps)
+		visited[dep.ID] = dep
+		walkIndirectDependencies(dep, allPkgIDs, visited)
 	}
-}
-
-// cf. https://doc.rust-lang.org/julia/reference/specifying-dependencies.html
-func (a juliaAnalyzer) matchVersion(currentVersion, constraint string) (bool, error) {
-	// `` == `^` - https://doc.rust-lang.org/julia/reference/specifying-dependencies.html#caret-requirements
-	// Add `^` for correct version comparison
-	//   - 1.2.3 -> ^1.2.3
-	//   - 1.2.* -> 1.2.*
-	//   - ^1.2  -> ^1.2
-	if _, err := goversion.Parse(constraint); err == nil {
-		constraint = fmt.Sprintf("^%s", constraint)
-	}
-
-	ver, err := semver.Parse(currentVersion)
-	if err != nil {
-		return false, xerrors.Errorf("version error (%s): %s", currentVersion, err)
-	}
-
-	c, err := semver.NewConstraints(constraint)
-	if err != nil {
-		return false, xerrors.Errorf("constraint error (%s): %s", currentVersion, err)
-	}
-
-	return c.Check(ver), nil
 }

@@ -108,6 +108,8 @@ func (p *PackageURL) PackageType() string {
 		return ftypes.Hex
 	case TypeDart: // TODO: replace with packageurl.TypeDart once they add it.
 		return ftypes.Pub
+	case packageurl.TypeJulia:
+		return ftypes.Julia
 	}
 	return p.Type
 }
