@@ -207,7 +207,6 @@ func (r *runner) ScanRootfs(ctx context.Context, opts flag.Options) (types.Repor
 }
 
 func (r *runner) ScanReport(ctx context.Context, opts flag.Options) (types.Report, error) {
-
 	return r.scanReport(ctx, opts)
 }
 

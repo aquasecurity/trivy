@@ -129,7 +129,7 @@ type Scanner struct {
 type Driver interface {
 	Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (
 		results types.Results, osFound ftypes.OS, details ftypes.ArtifactDetail, err error)
-	ScanArtifactDetail(artifactDetail ftypes.ArtifactDetail, ctx context.Context, options types.ScanOptions) (types.Results, *ftypes.OS, error)
+	ScanArtifactDetail(artifactDetail ftypes.ArtifactDetail, ctx context.Context, options types.ScanOptions) (types.Results, ftypes.OS, error)
 }
 
 // NewScanner is the factory method of Scanner
@@ -145,7 +145,7 @@ func (s Scanner) ScanNewVulnerabilities(ctx context.Context, options types.ScanO
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 
-	if osFound != nil && osFound.Eosl {
+	if osFound.Eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
 	}
@@ -155,7 +155,7 @@ func (s Scanner) ScanNewVulnerabilities(ctx context.Context, options types.ScanO
 		ArtifactName:  report.ArtifactName,
 		ArtifactType:  report.ArtifactType,
 		Metadata: types.Metadata{
-			OS: osFound,
+			OS: &osFound,
 
 			// Container image
 			ImageID:     report.Metadata.ImageID,

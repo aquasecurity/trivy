@@ -75,14 +75,13 @@ func initializeArchiveScanner(ctx context.Context, filePath string, artifactCach
 }
 
 // initializeReportScanner is for report scanning in standalone mode
-func initializeReportScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.Cache, artifactOption artifact.Option) (scanner.Scanner, error) {
-	v := _wireValue
-	applierApplier := applier.NewApplier(localArtifactCache, v...)
-	detector := ospkg.Detector{}
+func initializeReportScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, error) {
+	applierApplier := applier.NewApplier(localArtifactCache)
+	ospkgScanner := ospkg.NewScanner()
+	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	localScanner := local.NewScanner(applierApplier, detector, client)
-
+	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
 	scannerScanner := scanner.NewScanner(localScanner, new(artifact.MockArtifact))
 	return scannerScanner, nil
 }
