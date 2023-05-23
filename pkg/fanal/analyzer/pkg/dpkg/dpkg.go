@@ -50,17 +50,12 @@ var (
 func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var systemInstalledFiles []string
 	var packageInfos []types.PackageInfo
-	digests := map[string]digest.Digest{}
 
 	// parse `available` file to get digest for packages
-	f, err := input.FS.Open(availableFile)
-	if err == nil {
-		digests, err = a.parseDpkgAvailable(bufio.NewScanner(f))
-		if err != nil {
-			log.Logger.Debugf("Unable to parse %q file: %s", availableFile, err)
-		}
+	digests, err := a.parseDpkgAvailable(input.FS)
+	if err != nil {
+		log.Logger.Debugf("Unable to parse %q file: %s", availableFile, err)
 	}
-	defer f.Close()
 
 	required := func(path string, d fs.DirEntry) bool {
 		return path != availableFile
@@ -130,8 +125,15 @@ func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) ([]string, error
 }
 
 // parseDpkgAvailable parses /var/lib/dpkg/available
-func (a dpkgAnalyzer) parseDpkgAvailable(scanner *bufio.Scanner) (map[string]digest.Digest, error) {
+func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, error) {
+	f, err := fsys.Open(availableFile)
+	if err != nil {
+		return nil, xerrors.Errorf("file open error: %w", err)
+	}
+	defer f.Close()
+
 	pkgs := map[string]digest.Digest{}
+	scanner := bufio.NewScanner(f)
 
 	var pkg types.Package
 	for scanner.Scan() {
