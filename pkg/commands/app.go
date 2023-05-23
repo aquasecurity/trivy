@@ -498,15 +498,16 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	convertFlags := &flag.Flags{
-		ConvertFlagGroup: flag.NewConvertFlagGroup(),
-		ReportFlagGroup:  flag.NewReportFlagGroup(),
+		ScanFlagGroup:   &flag.ScanFlagGroup{},
+		ReportFlagGroup: flag.NewReportFlagGroup(),
 	}
 	cmd := &cobra.Command{
-		Use:     "convert [flags] REPORT_FILENAME",
+		Use:     "convert [flags] RESULT_JSON",
 		Aliases: []string{"conv"},
-		Short:   "convert json report",
+		GroupID: groupUtility,
+		Short:   "Convert Trivy JSON report into a different format",
 		Example: `  # report conversion
-  $ trivy convert --report summary result.json
+  $ trivy image --format json --output result.json --list-all-pkgs debian:11
   $ trivy convert --format cyclonedx --output result.cdx result.json
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -841,7 +842,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
-				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Registry())
+				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.RegistryOpts())
 			},
 		},
 		&cobra.Command{

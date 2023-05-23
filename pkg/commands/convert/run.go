@@ -2,54 +2,42 @@ package convert
 
 import (
 	"context"
-	"io/ioutil"
+	"encoding/json"
 	"os"
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Run(ctx context.Context, opts flag.Options) (err error) {
-	//open file
-	jsonFile, err := os.Open(opts.ConvertOptions.Source)
-	defer jsonFile.Close()
+	f, err := os.Open(opts.Target)
 	if err != nil {
-		return xerrors.Errorf("failed to open `%s`: %w", opts.Source, err)
+		return xerrors.Errorf("file open error: %w", err)
 	}
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	r, _ := report.Read(byteValue)
-	log.Logger.Debug("Filtering report")
-	r, err = report.Filter(ctx, r, types.ResultFilters{
-		Severities:         opts.Severities,
-		IgnoreUnfixed:      opts.IgnoreUnfixed,
-		IncludeNonFailures: opts.IncludeNonFailures,
-		IgnoredFile:        opts.IgnoreFile,
-		PolicyFile:         opts.IgnorePolicy,
-		IgnoredLicenses:    opts.IgnoredLicenses,
-	})
-	if err != nil {
-		return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+	defer f.Close()
+
+	var r types.Report
+	if err = json.NewDecoder(f).Decode(&r); err != nil {
+		return xerrors.Errorf("json decode error: %w", err)
 	}
+
+	if err = result.Filter(ctx, r, opts.FilterOpts()); err != nil {
+		return xerrors.Errorf("unable to filter results: %w", err)
+	}
+
 	log.Logger.Debug("Writing report to output...")
-	if err := report.Write(r, report.Option{
-		AppVersion:         opts.AppVersion,
-		Format:             opts.Format,
-		Output:             opts.Output,
-		Tree:               opts.DependencyTree,
-		Severities:         opts.Severities,
-		OutputTemplate:     opts.Template,
-		IncludeNonFailures: opts.IncludeNonFailures,
-		Trace:              opts.Trace,
-	}); err != nil {
+	if err = report.Write(r, opts.ReportOpts()); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	if opts.ExitCode != 0 && r.Results.Failed() {
-		os.Exit(opts.ExitCode)
-	}
+	operation.ExitOnEOL(opts, r.Metadata)
+	operation.Exit(opts, r.Results.Failed())
+
 	return nil
 }
