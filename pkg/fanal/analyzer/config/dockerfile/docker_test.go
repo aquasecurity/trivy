@@ -1,88 +1,10 @@
 package dockerfile
 
 import (
-	"context"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
-
-func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
-	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
-	}{
-		{
-			name:      "happy path",
-			inputFile: "testdata/Dockerfile.deployment",
-			want: &analyzer.AnalysisResult{
-				Files: map[types.HandlerType][]types.File{
-					types.MisconfPostHandler: {
-						{
-							Type: types.Dockerfile,
-							Path: "testdata/Dockerfile.deployment",
-							Content: []byte(`FROM foo
-COPY . /
-RUN echo hello
-`),
-						},
-					},
-				},
-			},
-		},
-		{
-			name:      "happy path with multi-stage",
-			inputFile: "testdata/Dockerfile.multistage",
-			want: &analyzer.AnalysisResult{
-				Files: map[types.HandlerType][]types.File{
-					types.MisconfPostHandler: {
-						{
-							Type: types.Dockerfile,
-							Path: "testdata/Dockerfile.multistage",
-							Content: []byte(`FROM foo AS build
-COPY . /
-RUN echo hello
-
-FROM scratch 
-COPY --from=build /bar /bar
-`),
-						},
-					},
-				},
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
-			require.NoError(t, err)
-			defer f.Close()
-
-			a := dockerConfigAnalyzer{}
-			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Content:  f,
-			})
-
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
 
 func Test_dockerConfigAnalyzer_Required(t *testing.T) {
 	tests := []struct {
@@ -148,11 +70,4 @@ func Test_dockerConfigAnalyzer_Required(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-
-func Test_dockerConfigAnalyzer_Type(t *testing.T) {
-	s := dockerConfigAnalyzer{}
-	want := analyzer.TypeDockerfile
-	got := s.Type()
-	assert.Equal(t, want, got)
 }

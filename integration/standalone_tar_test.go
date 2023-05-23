@@ -36,12 +36,110 @@ func TestTar(t *testing.T) {
 			golden: "testdata/alpine-39.json.golden",
 		},
 		{
+			name: "alpine 3.9 with skip dirs",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
+				SkipDirs: []string{
+					"/etc",
+				},
+			},
+			golden: "testdata/alpine-39-skip.json.golden",
+		},
+		{
+			name: "alpine 3.9 with skip files",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
+				SkipFiles: []string{
+					"/etc",
+					"/etc/TZ",
+					"/etc/alpine-release",
+					"/etc/apk",
+					"/etc/apk/arch",
+					"/etc/apk/keys",
+					"/etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+					"/etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+					"/etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+					"/etc/apk/protected_paths.d",
+					"/etc/apk/repositories",
+					"/etc/apk/world",
+					"/etc/conf.d",
+					"/etc/crontabs",
+					"/etc/crontabs/root",
+					"/etc/fstab",
+					"/etc/group",
+					"/etc/hostname",
+					"/etc/hosts",
+					"/etc/init.d",
+					"/etc/inittab",
+					"/etc/issue",
+					"/etc/logrotate.d",
+					"/etc/logrotate.d/acpid",
+					"/etc/modprobe.d",
+					"/etc/modprobe.d/aliases.conf",
+					"/etc/modprobe.d/blacklist.conf",
+					"/etc/modprobe.d/i386.conf",
+					"/etc/modprobe.d/kms.conf",
+					"/etc/modules",
+					"/etc/modules-load.d",
+					"/etc/motd",
+					"/etc/mtab",
+					"/etc/network",
+					"/etc/network/if-down.d",
+					"/etc/network/if-post-down.d",
+					"/etc/network/if-post-up.d",
+					"/etc/network/if-pre-down.d",
+					"/etc/network/if-pre-up.d",
+					"/etc/network/if-up.d",
+					"/etc/network/if-up.d/dad",
+					"/etc/opt",
+					"/etc/os-release",
+					"/etc/passwd",
+					"/etc/periodic",
+					"/etc/periodic/15min",
+					"/etc/periodic/daily",
+					"/etc/periodic/hourly",
+					"/etc/periodic/monthly",
+					"/etc/periodic/weekly",
+					"/etc/profile",
+					"/etc/profile.d",
+					"/etc/profile.d/color_prompt",
+					"/etc/protocols",
+					"/etc/securetty",
+					"/etc/services",
+					"/etc/shadow",
+					"/etc/shells",
+					"/etc/ssl",
+					"/etc/ssl/cert.pem",
+					"/etc/ssl/certs",
+					"/etc/ssl/ct_log_list.cnf",
+					"/etc/ssl/ct_log_list.cnf.dist",
+					"/etc/ssl/misc",
+					"/etc/ssl/misc/CA.pl",
+					"/etc/ssl/misc/tsget",
+					"/etc/ssl/misc/tsget.pl",
+					"/etc/ssl/openssl.cnf",
+					"/etc/ssl/openssl.cnf.dist",
+					"/etc/ssl/private",
+					"/etc/sysctl.conf",
+					"/etc/sysctl.d",
+					"/etc/sysctl.d/00-alpine.conf",
+					"/etc/udhcpd.conf",
+				},
+			},
+			golden: "testdata/alpine-39-skip.json.golden",
+		},
+		{
 			name: "alpine 3.9 with high and critical severity",
 			testArgs: args{
 				IgnoreUnfixed: true,
-				Severity:      []string{"HIGH", "CRITICAL"},
-				Format:        "json",
-				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+				Severity: []string{
+					"HIGH",
+					"CRITICAL",
+				},
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39-high-critical.json.golden",
 		},
@@ -49,9 +147,12 @@ func TestTar(t *testing.T) {
 			name: "alpine 3.9 with .trivyignore",
 			testArgs: args{
 				IgnoreUnfixed: false,
-				IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-14697"},
-				Format:        "json",
-				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+				IgnoreIDs: []string{
+					"CVE-2019-1549",
+					"CVE-2019-14697",
+				},
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39-ignore-cveids.json.golden",
 		},
@@ -263,7 +364,15 @@ func TestTar(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := []string{"--cache-dir", cacheDir, "image", "-q", "--format", tt.testArgs.Format, "--skip-update"}
+			osArgs := []string{
+				"--cache-dir",
+				cacheDir,
+				"image",
+				"-q",
+				"--format",
+				tt.testArgs.Format,
+				"--skip-update",
+			}
 
 			if tt.testArgs.IgnoreUnfixed {
 				osArgs = append(osArgs, "--ignore-unfixed")
@@ -281,7 +390,6 @@ func TestTar(t *testing.T) {
 				osArgs = append(osArgs, "--input", tt.testArgs.Input)
 			}
 
-			// TODO: test skip files/dirs
 			if len(tt.testArgs.SkipFiles) != 0 {
 				for _, skipFile := range tt.testArgs.SkipFiles {
 					osArgs = append(osArgs, "--skip-files", skipFile)
@@ -300,10 +408,183 @@ func TestTar(t *testing.T) {
 				outputFile = tt.golden
 			}
 
-			osArgs = append(osArgs, []string{"--output", outputFile}...)
+			osArgs = append(osArgs, []string{
+				"--output",
+				outputFile,
+			}...)
 
 			// Run Trivy
 			err := execute(osArgs)
+			require.NoError(t, err)
+
+			// Compare want and got
+			compareReports(t, tt.golden, outputFile)
+		})
+	}
+}
+
+func TestTarWithEnv(t *testing.T) {
+	type args struct {
+		IgnoreUnfixed bool
+		Severity      []string
+		Format        string
+		Input         string
+		SkipDirs      []string
+	}
+	tests := []struct {
+		name     string
+		testArgs args
+		golden   string
+	}{
+		{
+			name: "alpine 3.9 with skip dirs",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
+				SkipDirs: []string{
+					"/etc",
+				},
+			},
+			golden: "testdata/alpine-39-skip.json.golden",
+		},
+		{
+			name: "alpine 3.9 with high and critical severity",
+			testArgs: args{
+				IgnoreUnfixed: true,
+				Severity: []string{
+					"HIGH",
+					"CRITICAL",
+				},
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
+			},
+			golden: "testdata/alpine-39-high-critical.json.golden",
+		},
+		{
+			name: "debian buster/10 with --ignore-unfixed option",
+			testArgs: args{
+				IgnoreUnfixed: true,
+				Format:        "json",
+				Input:         "testdata/fixtures/images/debian-buster.tar.gz",
+			},
+			golden: "testdata/debian-buster-ignore-unfixed.json.golden",
+		},
+	}
+
+	// Set up testing DB
+	cacheDir := initDB(t)
+
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			osArgs := []string{"image"}
+
+			t.Setenv("TRIVY_FORMAT", tt.testArgs.Format)
+			t.Setenv("TRIVY_CACHE_DIR", cacheDir)
+			t.Setenv("TRIVY_QUIET", "true")
+			t.Setenv("TRIVY_SKIP_UPDATE", "true")
+
+			if tt.testArgs.IgnoreUnfixed {
+				t.Setenv("TRIVY_IGNORE_UNFIXED", "true")
+			}
+			if len(tt.testArgs.Severity) != 0 {
+				t.Setenv("TRIVY_SEVERITY", strings.Join(tt.testArgs.Severity, ","))
+			}
+			if tt.testArgs.Input != "" {
+				osArgs = append(osArgs, "--input", tt.testArgs.Input)
+			}
+
+			if len(tt.testArgs.SkipDirs) != 0 {
+				t.Setenv("TRIVY_SKIP_DIRS", strings.Join(tt.testArgs.SkipDirs, ","))
+			}
+
+			// Set up the output file
+			outputFile := filepath.Join(t.TempDir(), "output.json")
+
+			osArgs = append(osArgs, []string{
+				"--output",
+				outputFile,
+			}...)
+
+			// Run Trivy
+			err := execute(osArgs)
+			require.NoError(t, err)
+
+			// Compare want and got
+			compareReports(t, tt.golden, outputFile)
+		})
+	}
+}
+
+func TestTarWithConfigFile(t *testing.T) {
+	tests := []struct {
+		name       string
+		input      string
+		configFile string
+		golden     string
+	}{
+		{
+			name:  "alpine 3.9 with high and critical severity",
+			input: "testdata/fixtures/images/alpine-39.tar.gz",
+			configFile: `quiet: true
+format: json
+severity:
+  - HIGH
+  - CRITICAL
+vulnerability:
+  type:
+    - os
+cache:
+  dir: /should/be/overwritten
+`,
+			golden: "testdata/alpine-39-high-critical.json.golden",
+		},
+		{
+			name:  "debian buster/10 with --ignore-unfixed option",
+			input: "testdata/fixtures/images/debian-buster.tar.gz",
+			configFile: `quiet: true
+format: json
+vulnerability:
+  ignore-unfixed: true
+cache:
+  dir: /should/be/overwritten
+`,
+			golden: "testdata/debian-buster-ignore-unfixed.json.golden",
+		},
+	}
+
+	// Set up testing DB
+	cacheDir := initDB(t)
+
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			outputFile := filepath.Join(tmpDir, "output.json")
+			configPath := filepath.Join(tmpDir, "trivy.yaml")
+
+			err := os.WriteFile(configPath, []byte(tt.configFile), 0600)
+			require.NoError(t, err)
+
+			osArgs := []string{
+				"--cache-dir",
+				cacheDir,
+				"image",
+				"--skip-db-update",
+				"--config",
+				configPath,
+				"--input",
+				tt.input,
+				"--output",
+				outputFile,
+			}
+
+			// Run Trivy
+			err = execute(osArgs)
 			require.NoError(t, err)
 
 			// Compare want and got

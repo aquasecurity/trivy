@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/go-dep-parser/pkg/ruby/gemspec"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -25,13 +23,8 @@ var fileRegex = regexp.MustCompile(`.*/specifications/.+\.gemspec`)
 type gemspecLibraryAnalyzer struct{}
 
 func (a gemspecLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	p := gemspec.NewParser()
-	libs, deps, err := p.Parse(input.Content)
-	if err != nil {
-		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
-	}
-
-	return language.ToAnalysisResult(types.GemSpec, input.FilePath, input.FilePath, libs, deps), nil
+	return language.AnalyzePackage(types.GemSpec, input.FilePath, input.Content,
+		gemspec.NewParser(), input.Options.FileChecksum)
 }
 
 func (a gemspecLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {

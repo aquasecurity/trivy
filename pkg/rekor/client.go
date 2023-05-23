@@ -23,7 +23,7 @@ const (
 	uuidLen   = 64
 )
 
-var ErrOverGetEntriesLimit = xerrors.Errorf("Over get entries limit")
+var ErrOverGetEntriesLimit = xerrors.Errorf("over get entries limit")
 
 // EntryID is a hex-format string. The length of the string is 80 or 64.
 // If the length is 80, it consists of two elements, the TreeID and the UUID. If the length is 64,

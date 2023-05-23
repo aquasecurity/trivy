@@ -11,6 +11,7 @@ import (
 	flocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -33,7 +34,6 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
-	wire.Value([]image.Option(nil)), // optional functions
 	image.NewContainerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
@@ -64,6 +64,12 @@ var StandaloneSBOMSet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+// StandaloneVMSet binds vm dependencies
+var StandaloneVMSet = wire.NewSet(
+	vm.NewArtifact,
+	StandaloneSuperSet,
+)
+
 /////////////////
 // Client/Server
 /////////////////
@@ -82,16 +88,27 @@ var RemoteFilesystemSet = wire.NewSet(
 	RemoteSuperSet,
 )
 
+// RemoteRepositorySet binds repository dependencies for client/server mode
+var RemoteRepositorySet = wire.NewSet(
+	remote.NewArtifact,
+	RemoteSuperSet,
+)
+
 // RemoteSBOMSet binds sbom dependencies for client/server mode
 var RemoteSBOMSet = wire.NewSet(
 	sbom.NewArtifact,
 	RemoteSuperSet,
 )
 
+// RemoteVMSet binds vm dependencies for client/server mode
+var RemoteVMSet = wire.NewSet(
+	vm.NewArtifact,
+	RemoteSuperSet,
+)
+
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	aimage.NewArtifact,
-	wire.Value([]image.Option(nil)), // optional functions
 	image.NewContainerImage,
 	RemoteSuperSet,
 )
@@ -112,7 +129,7 @@ type Scanner struct {
 // Driver defines operations of scanner
 type Driver interface {
 	Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (
-		results types.Results, osFound *ftypes.OS, err error)
+		results types.Results, osFound ftypes.OS, err error)
 }
 
 // NewScanner is the factory method of Scanner
@@ -137,9 +154,12 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 
-	if osFound != nil && osFound.Eosl {
+	ptros := &osFound
+	if osFound.Detected() && osFound.Eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+	} else if !osFound.Detected() {
+		ptros = nil
 	}
 
 	// Layer makes sense only when scanning container images
@@ -152,7 +172,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{
-			OS: osFound,
+			OS: ptros,
 
 			// Container image
 			ImageID:     artifactInfo.ImageMetadata.ID,

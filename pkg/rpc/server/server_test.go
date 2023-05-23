@@ -6,7 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/assert"
@@ -53,10 +54,11 @@ func TestScanServer_Scan(t *testing.T) {
 			},
 			scanExpectation: scanner.DriverScanExpectation{
 				Args: scanner.DriverScanArgs{
-					CtxAnything: true,
-					Target:      "alpine:3.11",
-					ImageID:     "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					LayerIDs:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					CtxAnything:     true,
+					Target:          "alpine:3.11",
+					ImageID:         "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+					LayerIDs:        []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					OptionsAnything: true,
 				},
 				Returns: scanner.DriverScanReturns{
 					Results: types.Results{
@@ -90,7 +92,7 @@ func TestScanServer_Scan(t *testing.T) {
 							Type: "alpine",
 						},
 					},
-					OsFound: &ftypes.OS{
+					OsFound: ftypes.OS{
 						Family: "alpine",
 						Name:   "3.11",
 						Eosl:   true,
@@ -152,10 +154,11 @@ func TestScanServer_Scan(t *testing.T) {
 			},
 			scanExpectation: scanner.DriverScanExpectation{
 				Args: scanner.DriverScanArgs{
-					CtxAnything: true,
-					Target:      "alpine:3.11",
-					ImageID:     "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					LayerIDs:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					CtxAnything:     true,
+					Target:          "alpine:3.11",
+					ImageID:         "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+					LayerIDs:        []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					OptionsAnything: true,
 				},
 				Returns: scanner.DriverScanReturns{
 					Err: errors.New("error"),
@@ -204,7 +207,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 						Architecture:  "amd64",
 						Created: func() *timestamp.Timestamp {
 							d := time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC)
-							t, _ := ptypes.TimestampProto(d)
+							t := timestamppb.New(d)
 							return t
 						}(),
 						DockerVersion: "18.09",
@@ -235,7 +238,7 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 						SchemaVersion: 1,
 						Created: func() *timestamp.Timestamp {
 							d := time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC)
-							t, _ := ptypes.TimestampProto(d)
+							t := timestamppb.New(d)
 							return t
 						}(),
 					},
@@ -385,7 +388,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 						SchemaVersion: 1,
 						Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffID:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
-						OS: &ftypes.OS{
+						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
 						},

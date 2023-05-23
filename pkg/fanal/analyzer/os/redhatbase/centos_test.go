@@ -23,7 +23,7 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/centos/centos-release",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: "centos", Name: "7.6.1810"},
+				OS: types.OS{Family: "centos", Name: "7.6.1810"},
 			},
 		},
 		{
@@ -36,9 +36,8 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := centOSAnalyzer{}
 			f, err := os.Open(tt.inputFile)
-			defer f.Close()
-
 			require.NoError(t, err)
+			defer f.Close()
 			ctx := context.Background()
 
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{

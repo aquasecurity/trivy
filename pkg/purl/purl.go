@@ -2,6 +2,7 @@ package purl
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	cn "github.com/google/go-containerregistry/pkg/name"
@@ -9,7 +10,6 @@ import (
 	packageurl "github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -17,7 +17,9 @@ import (
 )
 
 const (
-	TypeOCI = "oci"
+	TypeAPK  = "apk" // not defined in github.com/package-url/packageurl-go
+	TypeOCI  = "oci"
+	TypeDart = "dart"
 )
 
 type PackageURL struct {
@@ -28,7 +30,7 @@ type PackageURL struct {
 func FromString(purl string) (*PackageURL, error) {
 	p, err := packageurl.FromString(purl)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse purl: %w", err)
+		return nil, xerrors.Errorf("failed to parse purl(%s): %w", purl, err)
 	}
 
 	return &PackageURL{
@@ -47,6 +49,11 @@ func (p *PackageURL) Package() *ftypes.Package {
 			pkg.Arch = q.Value
 		case "modularitylabel":
 			pkg.Modularitylabel = q.Value
+		case "epoch":
+			epoch, err := strconv.Atoi(q.Value)
+			if err == nil {
+				pkg.Epoch = epoch
+			}
 		}
 	}
 
@@ -54,13 +61,11 @@ func (p *PackageURL) Package() *ftypes.Package {
 		rpmVer := version.NewVersion(p.Version)
 		pkg.Release = rpmVer.Release()
 		pkg.Version = rpmVer.Version()
-		pkg.Epoch = rpmVer.Epoch()
 	}
 
-	// TODO: replace with packageurl.TypeApk once they add it.
-	// Return of packages without Namespace.
-	// OS packages does not have namespace.
-	if p.Namespace == "" || p.Type == packageurl.TypeRPM || p.Type == packageurl.TypeDebian || p.Type == string(analyzer.TypeApk) {
+	// Return packages without namespace.
+	// OS packages are not supposed to have namespace.
+	if p.Namespace == "" || p.IsOSPkg() {
 		return pkg
 	}
 
@@ -76,44 +81,57 @@ func (p *PackageURL) Package() *ftypes.Package {
 	return pkg
 }
 
-// AppType returns an application type in Trivy
-func (p *PackageURL) AppType() string {
+// PackageType returns an application type in Trivy
+func (p *PackageURL) PackageType() string {
 	switch p.Type {
 	case packageurl.TypeComposer:
-		return string(analyzer.TypeComposer)
+		return ftypes.Composer
 	case packageurl.TypeMaven:
-		return string(analyzer.TypeJar)
+		return ftypes.Jar
 	case packageurl.TypeGem:
-		return string(analyzer.TypeGemSpec)
+		return ftypes.GemSpec
+	case packageurl.TypeConda:
+		return ftypes.CondaPkg
 	case packageurl.TypePyPi:
-		return string(analyzer.TypePythonPkg)
+		return ftypes.PythonPkg
 	case packageurl.TypeGolang:
-		return string(analyzer.TypeGoBinary)
+		return ftypes.GoBinary
 	case packageurl.TypeNPM:
-		return string(analyzer.TypeNodePkg)
+		return ftypes.NodePkg
 	case packageurl.TypeCargo:
-		return string(analyzer.TypeRustBinary)
+		return ftypes.Cargo
 	case packageurl.TypeNuget:
-		return string(analyzer.TypeNuget)
+		return ftypes.NuGet
+	case packageurl.TypeSwift:
+		return ftypes.Cocoapods
+	case packageurl.TypeHex:
+		return ftypes.Hex
+	case TypeDart: // TODO: replace with packageurl.TypeDart once they add it.
+		return ftypes.Pub
 	}
 	return p.Type
 }
 
-func (purl PackageURL) BOMRef() string {
+func (p *PackageURL) IsOSPkg() bool {
+	return p.Type == TypeAPK || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
+}
+
+func (p *PackageURL) BOMRef() string {
 	// 'bom-ref' must be unique within BOM, but PURLs may conflict
 	// when the same packages are installed in an artifact.
 	// In that case, we prefer to make PURLs unique by adding file paths,
 	// rather than using UUIDs, even if it is not PURL technically.
 	// ref. https://cyclonedx.org/use-cases/#dependency-graph
-	if purl.FilePath != "" {
+	purl := p.PackageURL // so that it will not override the qualifiers below
+	if p.FilePath != "" {
 		purl.Qualifiers = append(purl.Qualifiers,
 			packageurl.Qualifier{
 				Key:   "file_path",
-				Value: purl.FilePath,
+				Value: p.FilePath,
 			},
 		)
 	}
-	return purl.PackageURL.String()
+	return purl.String()
 }
 
 // nolint: gocyclo
@@ -121,6 +139,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 	var qualifiers packageurl.Qualifiers
 	if metadata.OS != nil {
 		qualifiers = parseQualifier(pkg)
+		pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
 	}
 
 	ptype := purlType(t)
@@ -138,7 +157,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		if metadata.OS != nil {
 			namespace = metadata.OS.Family
 		}
-	case string(analyzer.TypeApk): // TODO: replace with packageurl.TypeApk once they add it.
+	case TypeAPK: // TODO: replace with packageurl.TypeApk once they add it.
 		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
 		if metadata.OS != nil {
 			namespace = metadata.OS.Family
@@ -288,20 +307,28 @@ func parseNpm(pkgName string) (string, string) {
 
 func purlType(t string) string {
 	switch t {
-	case string(analyzer.TypeJar), string(analyzer.TypePom):
+	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
 		return packageurl.TypeMaven
-	case string(analyzer.TypeBundler), string(analyzer.TypeGemSpec):
+	case ftypes.Bundler, ftypes.GemSpec:
 		return packageurl.TypeGem
-	case string(analyzer.TypeNuget), string(analyzer.TypeDotNetCore):
+	case ftypes.NuGet, ftypes.DotNetCore:
 		return packageurl.TypeNuget
-	case string(analyzer.TypePythonPkg), string(analyzer.TypePip), string(analyzer.TypePipenv), string(analyzer.TypePoetry):
+	case ftypes.CondaPkg:
+		return packageurl.TypeConda
+	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry:
 		return packageurl.TypePyPi
-	case string(analyzer.TypeGoBinary), string(analyzer.TypeGoMod):
+	case ftypes.GoBinary, ftypes.GoModule:
 		return packageurl.TypeGolang
-	case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn), string(analyzer.TypePnpm):
+	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm:
 		return packageurl.TypeNPM
+	case ftypes.Cocoapods:
+		return packageurl.TypeSwift
+	case ftypes.Hex:
+		return packageurl.TypeHex
+	case ftypes.Pub:
+		return TypeDart // TODO: replace with packageurl.TypeDart once they add it.
 	case os.Alpine:
-		return string(analyzer.TypeApk)
+		return TypeAPK
 	case os.Debian, os.Ubuntu:
 		return packageurl.TypeDebian
 	case os.RedHat, os.CentOS, os.Rocky, os.Alma,
@@ -320,6 +347,12 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "arch",
 			Value: pkg.Arch,
+		})
+	}
+	if pkg.Epoch != 0 {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "epoch",
+			Value: strconv.Itoa(pkg.Epoch),
 		})
 	}
 	return qualifiers

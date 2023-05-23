@@ -35,19 +35,27 @@ func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnH
 	}
 }
 
-func ColumnHeading(securityChecks []string, availableColumns []string) []string {
-	columns := []string{NamespaceColumn, ResourceColumn}
+func ColumnHeading(scanners types.Scanners, components, availableColumns []string) []string {
+	columns := []string{
+		NamespaceColumn,
+		ResourceColumn,
+	}
 	securityOptions := make(map[string]interface{}, 0)
 	//maintain column order (vuln,config,secret)
-	for _, check := range securityChecks {
+	for _, check := range scanners {
 		switch check {
-		case types.SecurityCheckVulnerability:
+		case types.VulnerabilityScanner:
 			securityOptions[VulnerabilitiesColumn] = nil
-		case types.SecurityCheckConfig:
-			securityOptions[MisconfigurationsColumn] = nil
-		case types.SecurityCheckSecret:
+		case types.MisconfigScanner:
+			if slices.Contains(components, workloadComponent) {
+				securityOptions[MisconfigurationsColumn] = nil
+			}
+			if slices.Contains(components, infraComponent) {
+				securityOptions[InfraAssessmentColumn] = nil
+			}
+		case types.SecretScanner:
 			securityOptions[SecretsColumn] = nil
-		case types.SecurityCheckRbac:
+		case types.RBACScanner:
 			securityOptions[RbacAssessmentColumn] = nil
 		}
 	}
@@ -71,8 +79,8 @@ func (s SummaryWriter) Write(report Report) error {
 		return xerrors.Errorf("failed to write summary report: %w", err)
 	}
 
-	if _, err := fmt.Fprintf(s.Output, "Summary Report for %s\n", consolidated.ClusterName); err != nil {
-		return xerrors.Errorf("failed to write summary report: %w", err)
+	if _, err := fmt.Fprintln(s.Output, report.name); err != nil {
+		return xerrors.Errorf("failed to write summary report title: %w", err)
 	}
 
 	t := table.New(s.Output)
@@ -89,17 +97,25 @@ func (s SummaryWriter) Write(report Report) error {
 		}
 		vCount, mCount, sCount := accumulateSeverityCounts(finding)
 		name := fmt.Sprintf("%s/%s", finding.Kind, finding.Name)
-		rowParts := []string{finding.Namespace, name}
+		rowParts := []string{
+			finding.Namespace,
+			name,
+		}
 
 		if slices.Contains(s.ColumnsHeading, VulnerabilitiesColumn) {
 			rowParts = append(rowParts, s.generateSummary(vCount)...)
 		}
-		if slices.Contains(s.ColumnsHeading, MisconfigurationsColumn) || slices.Contains(s.ColumnsHeading, RbacAssessmentColumn) {
+
+		if slices.Contains(s.ColumnsHeading, MisconfigurationsColumn) ||
+			slices.Contains(s.ColumnsHeading, RbacAssessmentColumn) ||
+			slices.Contains(s.ColumnsHeading, InfraAssessmentColumn) {
 			rowParts = append(rowParts, s.generateSummary(mCount)...)
 		}
+
 		if slices.Contains(s.ColumnsHeading, SecretsColumn) {
 			rowParts = append(rowParts, s.generateSummary(sCount)...)
 		}
+
 		t.AddRow(rowParts...)
 	}
 
@@ -130,9 +146,13 @@ func (s SummaryWriter) generateSummary(sevCount map[string]int) []string {
 }
 
 func getRequiredSeverities(requiredSevs []dbTypes.Severity) ([]string, []string) {
-	requiredSevOrder := []dbTypes.Severity{dbTypes.SeverityCritical,
-		dbTypes.SeverityHigh, dbTypes.SeverityMedium,
-		dbTypes.SeverityLow, dbTypes.SeverityUnknown}
+	requiredSevOrder := []dbTypes.Severity{
+		dbTypes.SeverityCritical,
+		dbTypes.SeverityHigh,
+		dbTypes.SeverityMedium,
+		dbTypes.SeverityLow,
+		dbTypes.SeverityUnknown,
+	}
 	var severities []string
 	var severityHeadings []string
 	for _, sev := range requiredSevOrder {
@@ -168,11 +188,20 @@ func accumulateSeverityCounts(finding Resource) (map[string]int, map[string]int,
 func configureHeader(s SummaryWriter, t *table.Table, columnHeading []string) {
 	sevCount := len(s.Severities)
 	if len(columnHeading) > 2 {
-		headerRow := []string{columnHeading[0], columnHeading[1]}
+		headerRow := []string{
+			columnHeading[0],
+			columnHeading[1],
+		}
 		//  vulnerabilities headings
 		count := len(columnHeading) - len(headerRow)
-		colSpan := []int{1, 1}
-		headerAlignment := []table.Alignment{table.AlignLeft, table.AlignLeft}
+		colSpan := []int{
+			1,
+			1,
+		}
+		headerAlignment := []table.Alignment{
+			table.AlignLeft,
+			table.AlignLeft,
+		}
 		for i := 0; i < count; i++ {
 			headerRow = append(headerRow, s.SeverityHeadings...)
 			colSpan = append(colSpan, sevCount)

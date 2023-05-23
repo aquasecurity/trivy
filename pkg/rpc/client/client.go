@@ -57,11 +57,14 @@ func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 		opt(o)
 	}
 
-	return Scanner{customHeaders: scannerOptions.CustomHeaders, client: o.rpcClient}
+	return Scanner{
+		customHeaders: scannerOptions.CustomHeaders,
+		client:        o.rpcClient,
+	}
 }
 
 // Scan scans the image
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, *ftypes.OS, error) {
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, ftypes.OS, error) {
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Convert to the rpc struct
@@ -79,7 +82,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
 				VulnType:          opts.VulnType,
-				SecurityChecks:    opts.SecurityChecks,
+				Scanners:          opts.Scanners.StringSlice(),
 				ListAllPackages:   opts.ListAllPackages,
 				LicenseCategories: licenseCategories,
 			},
@@ -87,7 +90,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return err
 	})
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
+		return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
 	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), nil

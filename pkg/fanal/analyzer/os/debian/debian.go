@@ -29,7 +29,7 @@ func (a debianOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 	for scanner.Scan() {
 		line := scanner.Text()
 		return &analyzer.AnalysisResult{
-			OS: &types.OS{Family: aos.Debian, Name: line},
+			OS: types.OS{Family: aos.Debian, Name: line},
 		}, nil
 	}
 	return nil, xerrors.Errorf("debian: %w", aos.AnalyzeOSError)

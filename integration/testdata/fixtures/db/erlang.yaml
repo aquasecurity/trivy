@@ -1,0 +1,10 @@
+- bucket: erlang::GitHub Security Advisory Erlang
+  pairs:
+    - bucket: phoenix
+      pairs:
+        - key: CVE-2022-42975
+          value:
+            PatchedVersions:
+              - 1.6.14
+            VulnerableVersions:
+              - "<= 1.6.14"

@@ -1,0 +1,13 @@
+{
+  "name": "90",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "js-tokens": "^2.0.0",
+    "scheduler": "0.13.6"
+  },
+  "devDependencies": {
+    "prop-types": "15.7.2"
+  }
+}

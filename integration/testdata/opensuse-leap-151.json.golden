@@ -62,6 +62,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "openSUSE-SU-2020:0062-1",
+          "PkgID": "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
           "PkgName": "libopenssl1_1",
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",
@@ -86,6 +87,7 @@
         },
         {
           "VulnerabilityID": "openSUSE-SU-2020:0062-1",
+          "PkgID": "openssl-1_1@1.1.0i-lp151.8.3.1.x86_64",
           "PkgName": "openssl-1_1",
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",

@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func convertResults(results scan.Results, provider string, scoped []string) map[string]ResultsAtTime {
+func ConvertResults(results scan.Results, provider string, scoped []string) map[string]ResultsAtTime {
 	convertedResults := make(map[string]ResultsAtTime)
 	resultsByServiceAndARN := make(map[string]map[string]scan.Results)
 	for _, result := range results {
@@ -74,6 +74,7 @@ func convertResults(results scan.Results, provider string, scoped []string) map[
 				arnResult.Misconfigurations = append(arnResult.Misconfigurations, types.DetectedMisconfiguration{
 					Type:        provider,
 					ID:          result.Rule().AVDID,
+					AVDID:       result.Rule().AVDID,
 					Title:       result.Rule().Summary,
 					Description: strings.TrimSpace(result.Rule().Explanation),
 					Message:     strings.TrimSpace(result.Description()),

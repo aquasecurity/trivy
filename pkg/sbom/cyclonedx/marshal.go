@@ -15,6 +15,7 @@ import (
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -23,7 +24,9 @@ import (
 )
 
 const (
-	Namespace = "aquasecurity:trivy:"
+	ToolVendor = "aquasecurity"
+	ToolName   = "trivy"
+	Namespace  = ToolVendor + ":" + ToolName + ":"
 
 	PropertySchemaVersion = "SchemaVersion"
 	PropertyType          = "Type"
@@ -37,6 +40,7 @@ const (
 	PropertyRepoTag    = "RepoTag"
 
 	// Package properties
+	PropertyPkgID           = "PkgID"
 	PropertyPkgType         = "PkgType"
 	PropertySrcName         = "SrcName"
 	PropertySrcVersion      = "SrcVersion"
@@ -117,7 +121,7 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range report.Results {
 		for _, vuln := range result.Vulnerabilities {
-			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.Ref)
+			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.PkgRef)
 			if err != nil {
 				return nil, err
 			}
@@ -157,7 +161,9 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	//      "bom-ref" : "urn:cdx:f08a6ccd-4dce-4759-bd84-c626675d60a7/1"
 	//    }
 	//  },
-	bom.Metadata.Component.BOMRef = fmt.Sprintf("%s/%d", report.CycloneDX.SerialNumber, report.CycloneDX.Version)
+	if report.CycloneDX.SerialNumber != "" { // bomRef is optional field - https://cyclonedx.org/docs/1.4/json/#metadata_component_bom-ref
+		bom.Metadata.Component.BOMRef = fmt.Sprintf("%s/%d", report.CycloneDX.SerialNumber, report.CycloneDX.Version)
+	}
 	return bom, nil
 }
 
@@ -166,8 +172,8 @@ func (e *Marshaler) cdxMetadata() *cdx.Metadata {
 		Timestamp: e.clock.Now().UTC().Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
-				Vendor:  "aquasecurity",
-				Name:    "trivy",
+				Vendor:  ToolVendor,
+				Name:    ToolName,
 				Version: e.appVersion,
 			},
 		},
@@ -175,6 +181,10 @@ func (e *Marshaler) cdxMetadata() *cdx.Metadata {
 }
 
 func externalRef(bomLink string, bomRef string) (string, error) {
+	// bomLink is optional field: https://cyclonedx.org/docs/1.4/json/#vulnerabilities_items_bom-ref
+	if bomLink == "" {
+		return bomRef, nil
+	}
 	if !strings.HasPrefix(bomLink, "urn:uuid:") {
 		return "", xerrors.Errorf("%q: %w", bomLink, ErrInvalidBOMLink)
 	}
@@ -182,22 +192,33 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 }
 
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
-	var components []cdx.Component
-	var dependencies []cdx.Dependency
-	var metadataDependencies []cdx.Dependency
+	components := make([]cdx.Component, 0) // To export an empty array in JSON
+	// we use map to avoid duplicate components
+	dependencies := map[string]cdx.Dependency{}
+	metadataDependencies := make([]string, 0) // To export an empty array in JSON
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
-		var componentDependencies []cdx.Dependency
+		pkgIDToRef := map[string]string{}
+		var directDepRefs []string
+
+		// Get dependency parents first
+		parents := ftypes.Packages(result.Packages).ParentDeps()
+
 		for _, pkg := range result.Packages {
-			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
+			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, result.Class, pkg)
 			if err != nil {
 				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
 			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
-			if _, ok := bomRefMap[pkgID]; !ok {
-				bomRefMap[pkgID] = pkgComponent.BOMRef
+			bomRefMap[pkgID] = pkgComponent.BOMRef
+			if pkg.ID != "" {
+				pkgIDToRef[pkg.ID] = pkgComponent.BOMRef
+			}
+			// This package is a direct dependency
+			if !pkg.Indirect || len(parents[pkg.ID]) == 0 {
+				directDepRefs = append(directDepRefs, pkgComponent.BOMRef)
 			}
 
 			// When multiple lock files have the same dependency with the same name and version,
@@ -216,13 +237,29 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 
 				// For components
 				// ref. https://cyclonedx.org/use-cases/#inventory
-				//
-				// TODO: All packages are flattened at the moment. We should construct dependency tree.
 				components = append(components, pkgComponent)
 			}
-
-			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
+
+		// Iterate packages again to build dependency graph
+		for _, pkg := range result.Packages {
+			deps := lo.FilterMap(pkg.DependsOn, func(dep string, _ int) (string, bool) {
+				if ref, ok := pkgIDToRef[dep]; ok {
+					return ref, true
+				}
+				return "", false
+			})
+			if len(deps) == 0 {
+				continue
+			}
+			sort.Strings(deps)
+			ref := pkgIDToRef[pkg.ID]
+			dependencies[ref] = cdx.Dependency{
+				Ref:          ref,
+				Dependencies: &deps,
+			}
+		}
+		sort.Strings(directDepRefs)
 
 		for _, vuln := range result.Vulnerabilities {
 			// Take a bom-ref
@@ -240,8 +277,8 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			}
 		}
 
-		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
-			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.RustBinary {
+		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
+			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
 			// If a package is language-specific package that isn't associated with a lock file,
 			// it will be a dependency of a component under "metadata".
 			// e.g.
@@ -252,7 +289,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			// ref. https://cyclonedx.org/use-cases/#inventory
 
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, componentDependencies...)
+			metadataDependencies = append(metadataDependencies, directDepRefs...)
 		} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
 			// If a package is OS package, it will be a dependency of "Operating System" component.
 			// e.g.
@@ -275,23 +312,29 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			components = append(components, resultComponent)
 
 			// Dependency graph from #2 to #3
-			dependencies = append(dependencies,
-				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
-			)
-
+			dependencies[resultComponent.BOMRef] = cdx.Dependency{
+				Ref:          resultComponent.BOMRef,
+				Dependencies: &directDepRefs,
+			}
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
+			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
 		}
 	}
+
 	vulns := maps.Values(vulnMap)
 	sort.Slice(vulns, func(i, j int) bool {
 		return vulns[i].ID > vulns[j].ID
 	})
 
-	dependencies = append(dependencies,
-		cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies},
-	)
-	return &components, &dependencies, &vulns, nil
+	dependencies[bomRef] = cdx.Dependency{
+		Ref:          bomRef,
+		Dependencies: &metadataDependencies,
+	}
+	dependencyList := maps.Values(dependencies)
+	sort.Slice(dependencyList, func(i, j int) bool {
+		return dependencyList[i].Ref < dependencyList[j].Ref
+	})
+	return &components, &dependencyList, &vulns, nil
 }
 
 func packageID(target, pkgName, pkgVersion, pkgFilePath string) string {
@@ -306,6 +349,9 @@ func toCdxVulnerability(bomRef string, vuln types.DetectedVulnerability) cdx.Vul
 		CWEs:        cwes(vuln.CweIDs),
 		Description: vuln.Description,
 		Advisories:  cdxAdvisories(vuln.References),
+	}
+	if vuln.FixedVersion != "" {
+		v.Recommendation = fmt.Sprintf("Upgrade %s to version %s", vuln.PkgName, vuln.FixedVersion)
 	}
 	if vuln.PublishedDate != nil {
 		v.Published = vuln.PublishedDate.Format(timeLayout)
@@ -347,6 +393,9 @@ func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error)
 			component.BOMRef = p.ToString()
 			component.PackageURL = p.ToString()
 		}
+	case ftypes.ArtifactVM:
+		component.Type = cdx.ComponentTypeContainer
+		component.BOMRef = e.newUUID().String()
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
 		component.BOMRef = e.newUUID().String()
@@ -400,12 +449,24 @@ func (e *Marshaler) resultToCdxComponent(r types.Result, osFound *ftypes.OS) cdx
 	return component
 }
 
-func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
+func pkgToCdxComponent(pkgType string, meta types.Metadata, class types.ResultClass, pkg ftypes.Package) (cdx.Component, error) {
 	pu, err := purl.NewPackageURL(pkgType, meta, pkg)
 	if err != nil {
 		return cdx.Component{}, xerrors.Errorf("failed to new package purl: %w", err)
 	}
 	properties := cdxProperties(pkgType, pkg)
+	var hashes *[]cdx.Hash
+	if pkg.Digest != "" && class == types.ClassOSPkg {
+		if alg := cdxHashAlgorithm(pkg.Digest.Algorithm()); alg != "" {
+			hashes = &[]cdx.Hash{
+				{
+					Algorithm: alg,
+					Value:     pkg.Digest.Encoded(),
+				},
+			}
+		}
+
+	}
 	component := cdx.Component{
 		Type:       cdx.ComponentTypeLibrary,
 		Name:       pkg.Name,
@@ -413,6 +474,7 @@ func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) 
 		BOMRef:     pu.BOMRef(),
 		PackageURL: pu.ToString(),
 		Properties: properties,
+		Hashes:     hashes,
 	}
 
 	if len(pkg.Licenses) != 0 {
@@ -420,6 +482,12 @@ func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) 
 			return cdx.LicenseChoice{Expression: license}
 		})
 		component.Licenses = lo.ToPtr(cdx.Licenses(choices))
+	}
+
+	if pkg.Maintainer != "" {
+		component.Supplier = &cdx.OrganizationalEntity{
+			Name: pkg.Maintainer,
+		}
 	}
 
 	return component, nil
@@ -430,15 +498,46 @@ func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
 		name  string
 		value string
 	}{
-		{PropertyPkgType, pkgType},
-		{PropertyFilePath, pkg.FilePath},
-		{PropertySrcName, pkg.SrcName},
-		{PropertySrcVersion, pkg.SrcVersion},
-		{PropertySrcRelease, pkg.SrcRelease},
-		{PropertySrcEpoch, strconv.Itoa(pkg.SrcEpoch)},
-		{PropertyModularitylabel, pkg.Modularitylabel},
-		{PropertyLayerDigest, pkg.Layer.Digest},
-		{PropertyLayerDiffID, pkg.Layer.DiffID},
+		{
+			PropertyPkgID,
+			pkg.ID,
+		},
+		{
+			PropertyPkgType,
+			pkgType,
+		},
+		{
+			PropertyFilePath,
+			pkg.FilePath,
+		},
+		{
+			PropertySrcName,
+			pkg.SrcName,
+		},
+		{
+			PropertySrcVersion,
+			pkg.SrcVersion,
+		},
+		{
+			PropertySrcRelease,
+			pkg.SrcRelease,
+		},
+		{
+			PropertySrcEpoch,
+			strconv.Itoa(pkg.SrcEpoch),
+		},
+		{
+			PropertyModularitylabel,
+			pkg.Modularitylabel,
+		},
+		{
+			PropertyLayerDigest,
+			pkg.Layer.Digest,
+		},
+		{
+			PropertyLayerDiffID,
+			pkg.Layer.DiffID,
+		},
 	}
 
 	var properties []cdx.Property
@@ -495,7 +594,7 @@ func cwes(cweIDs []string) *[]int {
 }
 
 func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
-	var rates []cdx.VulnerabilityRating
+	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
 	for sourceID, severity := range vulnerability.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
 		if cvss, ok := vulnerability.CVSS[sourceID]; ok {
@@ -616,5 +715,19 @@ func cdxAffects(ref, version string) cdx.Affects {
 				// "AffectedVersions.Range" is not included, because it does not exist in DetectedVulnerability.
 			},
 		},
+	}
+}
+
+func cdxHashAlgorithm(algorithm digest.Algorithm) cdx.HashAlgorithm {
+	switch algorithm {
+	case digest.SHA1:
+		return cdx.HashAlgoSHA1
+	case digest.SHA256:
+		return cdx.HashAlgoSHA256
+	case digest.MD5:
+		return cdx.HashAlgoMD5
+	default:
+		log.Logger.Debugf("Unable to convert %q algorithm to CycloneDX format", algorithm)
+		return ""
 	}
 }

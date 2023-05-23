@@ -2,7 +2,9 @@ package log
 
 import (
 	"os"
+	"runtime"
 
+	xlog "github.com/masahiro331/go-xfs-filesystem/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/xerrors"
@@ -36,6 +38,9 @@ func InitLogger(debug, disable bool) (err error) {
 	// Set logger for fanal
 	flog.SetLogger(Logger)
 
+	// Set logger for go-xfs-filesystem
+	xlog.SetLogger(Logger)
+
 	return nil
 
 }
@@ -54,6 +59,12 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 		return zapcore.DebugLevel < lvl && lvl < zapcore.ErrorLevel
 	})
 
+	encoderLevel := zapcore.CapitalColorLevelEncoder
+	// when running on Windows, don't log with color
+	if runtime.GOOS == "windows" {
+		encoderLevel = zapcore.CapitalLevelEncoder
+	}
+
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "Time",
 		LevelKey:       "Level",
@@ -61,7 +72,7 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 		CallerKey:      "Caller",
 		MessageKey:     "Msg",
 		StacktraceKey:  "St",
-		EncodeLevel:    zapcore.CapitalColorLevelEncoder,
+		EncodeLevel:    encoderLevel,
 		EncodeTime:     zapcore.ISO8601TimeEncoder,
 		EncodeDuration: zapcore.StringDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,

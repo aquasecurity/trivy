@@ -4,9 +4,9 @@ metadata:
   name: evil-pod
 spec:
   containers:
-    - command: ["sh", "-c", "echo 'Hello' && sleep 1h"]
+    - command: [ "sh", "-c", "echo 'Hello' && sleep 1h" ]
       image: evil
       name: evil1
-    - command: ["sh", "-c", "echo 'Hello' && sleep 1h"]
+    - command: [ "sh", "-c", "echo 'Hello' && sleep 1h" ]
       image: evil
       name: evil2

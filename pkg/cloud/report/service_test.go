@@ -177,6 +177,7 @@ Scan Overview for AWS Account
         {
           "Type": "AWS",
           "ID": "AVD-AWS-9999",
+          "AVDID": "AVD-AWS-9999",
           "Title": "Do not use bad stuff",
           "Description": "Bad stuff is... bad",
           "Message": "instance is bad",
@@ -212,6 +213,7 @@ Scan Overview for AWS Account
         {
           "Type": "AWS",
           "ID": "AVD-AWS-9999",
+          "AVDID": "AVD-AWS-9999",
           "Title": "Do not use bad stuff",
           "Description": "Bad stuff is... bad",
           "Message": "something failed",
@@ -247,6 +249,7 @@ Scan Overview for AWS Account
         {
           "Type": "AWS",
           "ID": "AVD-AWS-9999",
+          "AVDID": "AVD-AWS-9999",
           "Title": "Do not use bad stuff",
           "Description": "Bad stuff is... bad",
           "Message": "something else failed",
@@ -270,6 +273,7 @@ Scan Overview for AWS Account
         {
           "Type": "AWS",
           "ID": "AVD-AWS-9999",
+          "AVDID": "AVD-AWS-9999",
           "Title": "Do not use bad stuff",
           "Description": "Bad stuff is... bad",
           "Message": "something else failed again",

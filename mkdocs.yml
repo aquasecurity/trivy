@@ -10,7 +10,7 @@ nav:
   - Getting Started: 
       - Overview: index.md
       - Installation: getting-started/installation.md
-      - Quick Start: getting-started/quickstart.md
+      - FAQ: getting-started/faq.md
   - Tutorials:
       - Overview: tutorials/overview.md   
       - CI/CD:
@@ -23,82 +23,73 @@ nav:
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
           - Azure: tutorials/integrations/azure-devops.md
-      - Signing:
-          - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
       - Kubernetes:
           - Cluster Scanning: tutorials/kubernetes/cluster-scanning.md
           - Kyverno: tutorials/kubernetes/kyverno.md
           - GitOps: tutorials/kubernetes/gitops.md
-      - Additional Resources: 
+      - Signing:
+          - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
+      - Shell:
+          - Completion: tutorials/shell/shell-completion.md
+      - Additional Resources:
           - Additional Resources: tutorials/additional-resources/references.md
           - Community References: tutorials/additional-resources/community.md
           - CKS Reference: tutorials/additional-resources/cks.md
-  - CLI:
+  - Docs:
       - Overview: docs/index.md
-      - Vulnerability:
-          - Scanning:
-              - Overview: docs/vulnerability/scanning/index.md
-              - Container Image: docs/vulnerability/scanning/image.md
-              - Filesystem: docs/vulnerability/scanning/filesystem.md
-              - Rootfs: docs/vulnerability/scanning/rootfs.md
-              - Git Repository: docs/vulnerability/scanning/git-repository.md
-          - Detection:
-              - OS Packages: docs/vulnerability/detection/os.md
-              - Language-specific Packages: docs/vulnerability/detection/language.md
-              - Data Sources: docs/vulnerability/detection/data-source.md
-              - Supported: docs/vulnerability/detection/supported.md
-          - Examples:
-              - Vulnerability Filtering: docs/vulnerability/examples/filter.md
-              - Report Formats: docs/vulnerability/examples/report.md
-              - Vulnerability DB: docs/vulnerability/examples/db.md
-              - Cache: docs/vulnerability/examples/cache.md
-              - Others: docs/vulnerability/examples/others.md
-          - Distributions: docs/vulnerability/distributions.md
-          - Languages:
-              - Go: docs/vulnerability/languages/golang.md
-      - Misconfiguration:
-          - Scanning: docs/misconfiguration/scanning.md
-          - Policy:
-              - Built-in Policies: docs/misconfiguration/policy/builtin.md
-              - Exceptions: docs/misconfiguration/policy/exceptions.md
-          - Custom Policies:
-              - Overview: docs/misconfiguration/custom/index.md
-              - Data: docs/misconfiguration/custom/data.md
-              - Combine: docs/misconfiguration/custom/combine.md
-              - Testing: docs/misconfiguration/custom/testing.md
-              - Debugging Policies: docs/misconfiguration/custom/debug.md
-              - Examples: docs/misconfiguration/custom/examples.md
-          - Options:
-              - Policy: docs/misconfiguration/options/policy.md
-              - Filtering: docs/misconfiguration/options/filter.md
-              - Report Formats: docs/misconfiguration/options/report.md
-              - Value Overrides: docs/misconfiguration/options/values.md
-              - Others: docs/misconfiguration/options/others.md
-          - Comparison:
-              - vs Conftest: docs/misconfiguration/comparison/conftest.md
-              - vs tfsec: docs/misconfiguration/comparison/tfsec.md
-              - vs cfsec: docs/misconfiguration/comparison/cfsec.md
-      - Secret:
-          - Scanning: docs/secret/scanning.md
-          - Configuration: docs/secret/configuration.md
-          - Examples: docs/secret/examples.md
-      - License:
-            - Scanning: docs/licenses/scanning.md
-      - Kubernetes:
-          - CLI:
-              - Scanning: docs/kubernetes/cli/scanning.md
-          - Operator:
-              - Overview: docs/kubernetes/operator/index.md
-      - Cloud:
-          - AWS: docs/cloud/aws/scanning.md
-      - SBOM:
-          - Overview: docs/sbom/index.md
-          - CycloneDX: docs/sbom/cyclonedx.md
-          - SPDX: docs/sbom/spdx.md
-      - Attestation:
-          - SBOM: docs/attestation/sbom.md
-          - Cosign Vulnerability Scan Record: docs/attestation/vuln.md
-          - SBOM Attestation in Rekor: docs/attestation/rekor.md
+      - Target:
+          Container Image: docs/target/container_image.md
+          Filesystem: docs/target/filesystem.md
+          Rootfs: docs/target/rootfs.md
+          Git Repository: docs/target/git-repository.md
+          Virtual Machine Image: docs/target/vm.md
+          Kubernetes: docs/target/kubernetes.md
+          AWS: docs/target/aws.md
+          SBOM: docs/target/sbom.md
+      - Scanner:
+          - Vulnerability:
+              - Overview: docs/scanner/vulnerability/index.md
+              - OS Packages: docs/scanner/vulnerability/os.md
+              - Language-specific Packages:
+                  - Overview: docs/scanner/vulnerability/language/index.md
+                  - Go: docs/scanner/vulnerability/language/golang.md
+                  - Java: docs/scanner/vulnerability/language/java.md
+                  - Node.js: docs/scanner/vulnerability/language/nodejs.md
+                  - PHP: docs/scanner/vulnerability/language/php.md
+                  - Python: docs/scanner/vulnerability/language/python.md
+                  - Rust: docs/scanner/vulnerability/language/rust.md
+          - Misconfiguration:
+              - Overview: docs/scanner/misconfiguration/index.md
+              - Policy:
+                  - Built-in Policies: docs/scanner/misconfiguration/policy/builtin.md
+                  - Exceptions: docs/scanner/misconfiguration/policy/exceptions.md
+              - Custom Policies:
+                  - Overview: docs/scanner/misconfiguration/custom/index.md
+                  - Data: docs/scanner/misconfiguration/custom/data.md
+                  - Combine: docs/scanner/misconfiguration/custom/combine.md
+                  - Selectors: docs/scanner/misconfiguration/custom/selectors.md
+                  - Schemas: docs/scanner/misconfiguration/custom/schema.md
+                  - Testing: docs/scanner/misconfiguration/custom/testing.md
+                  - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
+          - Secret: docs/scanner/secret.md
+          - License: docs/scanner/license.md
+      - Configuration:
+          - Overview: docs/configuration/index.md
+          - Filtering: docs/configuration/filtering.md
+          - Skipping Files: docs/configuration/skipping.md
+          - Reporting: docs/configuration/reporting.md
+          - Cache: docs/configuration/cache.md
+          - DB: docs/configuration/db.md
+          - Others: docs/configuration/others.md
+      - Supply Chain:
+          - SBOM: docs/supply-chain/sbom.md
+          - Attestation:
+                - SBOM: docs/supply-chain/attestation/sbom.md
+                - Cosign Vulnerability Scan Record: docs/supply-chain/attestation/vuln.md
+                - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
+          - VEX: docs/supply-chain/vex.md
+      - Compliance:
+          - Reports:  docs/compliance/compliance.md
       - Advanced:
           - Modules: docs/advanced/modules.md
           - Plugins: docs/advanced/plugins.md
@@ -106,9 +97,6 @@ nav:
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
               - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
-              - OCI Image: docs/advanced/container/oci.md
-              - Podman: docs/advanced/container/podman.md
-              - containerd: docs/advanced/container/containerd.md
               - Private Docker Registries:
                   - Overview: docs/advanced/private-registries/index.md
                   - Docker Hub: docs/advanced/private-registries/docker-hub.md
@@ -117,35 +105,52 @@ nav:
                   - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
                   - Self-Hosted: docs/advanced/private-registries/self.md
       - References:
-          - Customization:
-              - Environment variables: docs/references/customization/envs.md
-              - Config file: docs/references/customization/config-file.md
-          - CLI:
-              - Overview: docs/references/cli/index.md
-              - Image: docs/references/cli/image.md
-              - Config: docs/references/cli/config.md
-              - Filesystem: docs/references/cli/fs.md
-              - Rootfs: docs/references/cli/rootfs.md
-              - Repository: docs/references/cli/repo.md
-              - Client: docs/references/cli/client.md
-              - Server: docs/references/cli/server.md
-              - Plugin: docs/references/cli/plugin.md
-              - SBOM: docs/references/cli/sbom.md
-              - Module: docs/references/cli/module.md
+          - Configuration:
+              - CLI:
+                  - Overview: docs/references/configuration/cli/trivy.md
+                  - AWS: docs/references/configuration/cli/trivy_aws.md
+                  - Config: docs/references/configuration/cli/trivy_config.md
+                  - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
+                  - Image: docs/references/configuration/cli/trivy_image.md
+                  - Kubernetes: docs/references/configuration/cli/trivy_kubernetes.md
+                  - Module: docs/references/configuration/cli/trivy_module.md
+                  - Module Install: docs/references/configuration/cli/trivy_module_install.md
+                  - Module Uninstall: docs/references/configuration/cli/trivy_module_uninstall.md
+                  - Plugin: docs/references/configuration/cli/trivy_plugin.md
+                  - Plugin Info: docs/references/configuration/cli/trivy_plugin_info.md
+                  - Plugin Install: docs/references/configuration/cli/trivy_plugin_install.md
+                  - Plugin List: docs/references/configuration/cli/trivy_plugin_list.md
+                  - Plugin Run: docs/references/configuration/cli/trivy_plugin_run.md
+                  - Plugin Uninstall: docs/references/configuration/cli/trivy_plugin_uninstall.md
+                  - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
+                  - Repository: docs/references/configuration/cli/trivy_repository.md
+                  - Rootfs: docs/references/configuration/cli/trivy_rootfs.md
+                  - SBOM: docs/references/configuration/cli/trivy_sbom.md
+                  - Server: docs/references/configuration/cli/trivy_server.md
+                  - Version: docs/references/configuration/cli/trivy_version.md
+                  - VM: docs/references/configuration/cli/trivy_vm.md
+              - Config file: docs/references/configuration/config-file.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Ecosystem: ecosystem/tools.md
+  - Ecosystem: 
+    - Overview: ecosystem/index.md
+    - CI/CD: ecosystem/cicd.md
+    - IDE and Dev tools: ecosystem/ide.md
+    - Production and Clouds: ecosystem/prod.md
+    - Security Management: ecosystem/security.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
+          - Discussions: community/contribute/discussion.md
           - Pull Requests: community/contribute/pr.md
       - Maintainer:
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
 theme:
   name: material
+  custom_dir: docs/overrides
   language: "en"
   logo: imgs/logo-white.svg
   features:
@@ -173,6 +178,7 @@ extra:
   version:
     method: mike
     provider: mike
+    default: latest
 
 plugins:
   - search

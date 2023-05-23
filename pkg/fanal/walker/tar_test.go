@@ -3,6 +3,7 @@ package walker_test
 import (
 	"errors"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -31,7 +32,7 @@ func TestLayerTar_Walk(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				return nil
 			},
@@ -40,7 +41,7 @@ func TestLayerTar_Walk(t *testing.T) {
 		},
 		{
 			name:      "skip file",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			fields: fields{
 				skipFiles: []string{"/app/myweb/index.html"},
 			},
@@ -55,9 +56,9 @@ func TestLayerTar_Walk(t *testing.T) {
 		},
 		{
 			name:      "skip dir",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			fields: fields{
-				skipDirs: []string{"/app/"},
+				skipDirs: []string{"/app"},
 			},
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				if strings.HasPrefix(filePath, "app") {
@@ -82,7 +83,7 @@ func TestLayerTar_Walk(t *testing.T) {
 			f, err := os.Open("testdata/test.tar")
 			require.NoError(t, err)
 
-			w := walker.NewLayerTar(tt.fields.skipFiles, tt.fields.skipDirs)
+			w := walker.NewLayerTar(tt.fields.skipFiles, tt.fields.skipDirs, true)
 
 			gotOpqDirs, gotWhFiles, err := w.Walk(f, tt.analyzeFn)
 			if tt.wantErr != "" {

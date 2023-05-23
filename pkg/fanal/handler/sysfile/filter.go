@@ -36,6 +36,9 @@ var (
 		// python
 		types.PythonPkg,
 
+		// conda
+		types.CondaPkg,
+
 		// node.js
 		types.NodePkg,
 

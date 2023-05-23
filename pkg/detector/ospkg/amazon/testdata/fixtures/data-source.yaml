@@ -15,3 +15,8 @@
         ID: "amazon"
         Name: "Amazon Linux Security Center"
         URL: "https://alas.aws.amazon.com/"
+    - key: amazon linux 2023
+      value:
+        ID: "amazon"
+        Name: "Amazon Linux Security Center"
+        URL: "https://alas.aws.amazon.com/"

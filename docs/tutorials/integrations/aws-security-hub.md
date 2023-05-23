@@ -1,6 +1,6 @@
 # AWS Security Hub
 
-<img src="../../imgs/Security-Hub.jpeg" alt="security-hub" width=50 height=50 />
+![Amazon Security Hub](../../imgs/Security-Hub.jpeg){ width=50 }
 
 ## Upload findings to Security Hub
 
@@ -59,7 +59,7 @@ $ trivy image --format template --template "@your-asff.tpl" -o report.asff golan
 ```
 
 ## Reference
-https://aws.amazon.com/blogs/security/how-to-build-ci-cd-pipeline-container-vulnerability-scanning-trivy-and-aws-security-hub/
+[aws.amazon.com/blogs/security/how-to-build-ci-cd-pipeline-container-vulnerability-scanning-trivy-and-aws-security-hub/](https://aws.amazon.com/blogs/security/how-to-build-ci-cd-pipeline-container-vulnerability-scanning-trivy-and-aws-security-hub/)
 
 [asff]: https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html
 [asff-syntax]: https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-syntax.html

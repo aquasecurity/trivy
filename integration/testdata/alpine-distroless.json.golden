@@ -50,6 +50,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2022-24765",
+          "PkgID": "git@2.35.1-r2",
           "PkgName": "git",
           "InstalledVersion": "2.35.1-r2",
           "FixedVersion": "2.35.2-r0",

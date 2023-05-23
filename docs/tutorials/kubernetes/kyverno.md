@@ -50,7 +50,7 @@ spec:
 
 ### Apply the policy to your Kubernetes cluster
 
-Ensure that you have Kyverno already deployed and running on your cluster -- for instance throught he Kyverno Helm Chart.
+Ensure that you have Kyverno already deployed and running on your cluster -- for instance through he Kyverno Helm Chart.
 
 Next, apply the above policy:
 ```

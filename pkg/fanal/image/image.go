@@ -9,98 +9,45 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-type options struct {
-	dockerd    bool
-	podman     bool
-	containerd bool
-	remote     bool
+type imageSourceFunc func(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error)
+
+var imageSourceFuncs = map[types.ImageSource]imageSourceFunc{
+	types.ContainerdImageSource: tryContainerdDaemon,
+	types.PodmanImageSource:     tryPodmanDaemon,
+	types.DockerImageSource:     tryDockerDaemon,
+	types.RemoteImageSource:     tryRemote,
 }
 
-type Option func(*options)
-
-func DisableDockerd() Option {
-	return func(opts *options) {
-		opts.dockerd = false
-	}
-}
-
-func DisablePodman() Option {
-	return func(opts *options) {
-		opts.podman = false
-	}
-}
-
-func DisableContainerd() Option {
-	return func(opts *options) {
-		opts.containerd = false
-	}
-}
-
-func DisableRemote() Option {
-	return func(opts *options) {
-		opts.remote = false
-	}
-}
-
-func NewContainerImage(ctx context.Context, imageName string, option types.DockerOption, opts ...Option) (types.Image, func(), error) {
-	o := &options{
-		dockerd:    true,
-		podman:     true,
-		containerd: true,
-		remote:     true,
-	}
-	for _, opt := range opts {
-		opt(o)
+func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions) (types.Image, func(), error) {
+	if len(opt.ImageSources) == 0 {
+		return nil, func() {}, xerrors.New("no image sources supplied")
 	}
 
 	var errs error
 	var nameOpts []name.Option
-	if option.NonSSL {
+	if opt.RegistryOptions.Insecure {
 		nameOpts = append(nameOpts, name.Insecure)
 	}
+
 	ref, err := name.ParseReference(imageName, nameOpts...)
 	if err != nil {
 		return nil, func() {}, xerrors.Errorf("failed to parse the image name: %w", err)
 	}
 
-	// Try accessing Docker Daemon
-	if o.dockerd {
-		img, cleanup, err := tryDockerDaemon(imageName, ref)
-		if err == nil {
-			// Return v1.Image if the image is found in Docker Engine
-			return img, cleanup, nil
+	for _, src := range opt.ImageSources {
+		trySrc, ok := imageSourceFuncs[src]
+		if !ok {
+			log.Logger.Warnf("Unknown image source: '%s'", src)
+			continue
 		}
-		errs = multierror.Append(errs, err)
-	}
 
-	// Try accessing Podman
-	if o.podman {
-		img, cleanup, err := tryPodmanDaemon(imageName)
+		img, cleanup, err := trySrc(ctx, imageName, ref, opt)
 		if err == nil {
-			// Return v1.Image if the image is found in Podman
+			// Return v1.Image if the image is found
 			return img, cleanup, nil
-		}
-		errs = multierror.Append(errs, err)
-	}
-
-	// Try containerd
-	if o.containerd {
-		img, cleanup, err := tryContainerdDaemon(ctx, imageName)
-		if err == nil {
-			// Return v1.Image if the image is found in containerd
-			return img, cleanup, nil
-		}
-		errs = multierror.Append(errs, err)
-	}
-
-	// Try accessing Docker Registry
-	if o.remote {
-		img, err := tryRemote(ctx, imageName, ref, option)
-		if err == nil {
-			// Return v1.Image if the image is found in a remote registry
-			return img, func() {}, nil
 		}
 		errs = multierror.Append(errs, err)
 	}

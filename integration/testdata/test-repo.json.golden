@@ -1,0 +1,97 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "https://github.com/knqyf263/trivy-ci-test",
+  "ArtifactType": "repository",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "Cargo.lock",
+      "Class": "lang-pkgs",
+      "Type": "cargo",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-15542",
+          "PkgID": "ammonia@1.9.0",
+          "PkgName": "ammonia",
+          "InstalledVersion": "1.9.0",
+          "FixedVersion": "\u003e= 2.1.0",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15542",
+          "DataSource": {
+            "Name": "RustSec Advisory Database",
+            "URL": "https://github.com/RustSec/advisory-db"
+          },
+          "Title": "Uncontrolled recursion leads to abort in HTML serialization",
+          "Description": "An issue was discovered in the ammonia crate before 2.1.0 for Rust. There is uncontrolled recursion during HTML DOM tree serialization.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-674"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V2Score": 5,
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://crates.io/crates/ammonia",
+            "https://github.com/rust-ammonia/ammonia/blob/master/CHANGELOG.md#210",
+            "https://rustsec.org/advisories/RUSTSEC-2019-0001.html"
+          ],
+          "PublishedDate": "2019-08-26T18:15:00Z",
+          "LastModifiedDate": "2020-08-24T17:37:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-38193",
+          "PkgID": "ammonia@1.9.0",
+          "PkgName": "ammonia",
+          "InstalledVersion": "1.9.0",
+          "FixedVersion": "\u003e= 3.1.0, \u003e= 2.1.3, \u003c 3.0.0",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-38193",
+          "DataSource": {
+            "Name": "RustSec Advisory Database",
+            "URL": "https://github.com/RustSec/advisory-db"
+          },
+          "Title": "Incorrect handling of embedded SVG and MathML leads to mutation XSS",
+          "Description": "An issue was discovered in the ammonia crate before 3.1.0 for Rust. XSS can occur because the parsing differences for HTML, SVG, and MathML are mishandled, a similar issue to CVE-2020-26870.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-79"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+              "V2Score": 4.3,
+              "V3Score": 6.1
+            }
+          },
+          "References": [
+            "https://crates.io/crates/ammonia",
+            "https://github.com/rust-ammonia/ammonia/pull/142",
+            "https://raw.githubusercontent.com/rustsec/advisory-db/main/crates/ammonia/RUSTSEC-2021-0074.md",
+            "https://rustsec.org/advisories/RUSTSEC-2021-0074.html"
+          ],
+          "PublishedDate": "2021-08-08T06:15:00Z",
+          "LastModifiedDate": "2021-08-16T16:37:00Z"
+        }
+      ]
+    }
+  ]
+}

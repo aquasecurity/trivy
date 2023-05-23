@@ -54,6 +54,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-18276",
+          "PkgID": "bash@5.0-4",
           "PkgName": "bash",
           "InstalledVersion": "5.0-4",
           "Layer": {
@@ -106,6 +107,7 @@
           "VendorIDs": [
             "DSA-4613-1"
           ],
+          "PkgID": "libidn2-0@2.0.5-1",
           "PkgName": "libidn2-0",
           "InstalledVersion": "2.0.5-1",
           "FixedVersion": "2.0.5-1+deb10u1",

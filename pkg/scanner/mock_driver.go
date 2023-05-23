@@ -5,8 +5,9 @@ package scanner
 import (
 	"context"
 
-	fanaltypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	mock "github.com/stretchr/testify/mock"
+
+	fanaltypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	types "github.com/aquasecurity/trivy/pkg/types"
 )
@@ -31,7 +32,7 @@ type DriverScanArgs struct {
 
 type DriverScanReturns struct {
 	Results types.Results
-	OsFound *fanaltypes.OS
+	OsFound fanaltypes.OS
 	Err     error
 }
 
@@ -77,7 +78,7 @@ func (_m *MockDriver) ApplyScanExpectations(expectations []DriverScanExpectation
 }
 
 // Scan provides a mock function with given fields: ctx, target, imageID, layerIDs, options
-func (_m *MockDriver) Scan(ctx context.Context, target string, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *fanaltypes.OS, error) {
+func (_m *MockDriver) Scan(ctx context.Context, target string, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, fanaltypes.OS, error) {
 	ret := _m.Called(ctx, target, artifactKey, blobKeys, options)
 
 	var r0 types.Results
@@ -89,12 +90,12 @@ func (_m *MockDriver) Scan(ctx context.Context, target string, artifactKey strin
 		}
 	}
 
-	var r1 *fanaltypes.OS
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, []string, types.ScanOptions) *fanaltypes.OS); ok {
+	var r1 fanaltypes.OS
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, []string, types.ScanOptions) fanaltypes.OS); ok {
 		r1 = rf(ctx, target, artifactKey, blobKeys, options)
 	} else {
 		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*fanaltypes.OS)
+			r1 = ret.Get(1).(fanaltypes.OS)
 		}
 	}
 

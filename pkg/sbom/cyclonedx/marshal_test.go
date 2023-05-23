@@ -57,6 +57,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   fos.CentOS,
 						Packages: []ftypes.Package{
 							{
+								ID:              "binutils@2.30-93.el8",
 								Name:            "binutils",
 								Version:         "2.30",
 								Release:         "93.el8",
@@ -68,6 +69,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        0,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv3+"},
+								Maintainer:      "CentOS",
+								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -122,12 +125,17 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
+								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
 							},
 							{
+								ID:      "actioncontroller@7.0.0",
 								Name:    "actioncontroller",
 								Version: "7.0.0",
+								DependsOn: []string{
+									"actionpack@7.0.0",
+								},
 							},
 						},
 					},
@@ -137,6 +145,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
+								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
 							},
@@ -148,8 +157,20 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.DotNetCore,
 						Packages: []ftypes.Package{
 							{
+								ID:      "Newtonsoft.Json@9.0.1",
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",
+							},
+						},
+					},
+					{
+						Target: "usr/local/bin/tfsec",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.GoBinary,
+						Packages: []ftypes.Package{
+							{
+								Name:    "golang.org/x/crypto",
+								Version: "v0.0.0-20210421170649-83a5a9bb288b",
 							},
 						},
 					},
@@ -158,7 +179,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -213,7 +234,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 							cdx.LicenseChoice{Expression: "GPLv3+"},
 						},
 						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+						Supplier: &cdx.OrganizationalEntity{
+							Name: "CentOS",
+						},
 						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "binutils@2.30-93.el8",
+							},
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "centos",
@@ -229,6 +257,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:SrcRelease",
 								Value: "93.el8",
+							},
+						},
+						Hashes: &[]cdx.Hash{
+							{
+								Algorithm: cdx.HashAlgoMD5,
+								Value:     "7459cec61bb4d1b0ca8107e25e0dd005",
 							},
 						},
 					},
@@ -256,6 +290,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageURL: "pkg:gem/actionpack@7.0.0",
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.0",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "bundler",
 							},
@@ -268,6 +306,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Version:    "7.0.0",
 						PackageURL: "pkg:gem/actioncontroller@7.0.0",
 						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actioncontroller@7.0.0",
+							},
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "bundler",
@@ -314,6 +356,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageURL: "pkg:nuget/Newtonsoft.Json@9.0.1",
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "Newtonsoft.Json@9.0.1",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "dotnet-core",
 							},
@@ -335,58 +381,82 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						BOMRef:     "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "golang.org/x/crypto",
+						Version:    "v0.0.0-20210421170649-83a5a9bb288b",
+						PackageURL: "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "gobinary",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000006",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "usr/local/bin/tfsec",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "gobinary",
+							},
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+						},
+					},
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
-							},
+						Dependencies: &[]string{
+							"pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:gem/actionpack@7.0.0",
-							},
-							{
-								Ref: "pkg:gem/actioncontroller@7.0.0",
-							},
+						Dependencies: &[]string{
+							"pkg:gem/actioncontroller@7.0.0",
+							"pkg:gem/actionpack@7.0.0",
 						},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:gem/actionpack@7.0.0",
-							},
+						Dependencies: &[]string{
+							"pkg:gem/actionpack@7.0.0",
 						},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000005",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:nuget/Newtonsoft.Json@9.0.1",
-							},
+						Dependencies: &[]string{
+							"pkg:nuget/Newtonsoft.Json@9.0.1",
+						},
+					},
+					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
+						Dependencies: &[]string{
+							"pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						},
+					},
+					{
+						Ref: "pkg:gem/actioncontroller@7.0.0",
+						Dependencies: &[]string{
+							"pkg:gem/actionpack@7.0.0",
 						},
 					},
 					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-							},
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-							},
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000004",
-							},
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000005",
-							},
+						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000002",
+							"3ff14136-e09f-4df9-80ea-000000000003",
+							"3ff14136-e09f-4df9-80ea-000000000004",
+							"3ff14136-e09f-4df9-80ea-000000000005",
+							"3ff14136-e09f-4df9-80ea-000000000006",
 						},
 					},
 				},
@@ -485,6 +555,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   fos.CentOS,
 						Packages: []ftypes.Package{
 							{
+								ID:              "acl@2.2.53-1.el8",
 								Name:            "acl",
 								Version:         "2.2.53",
 								Release:         "1.el8",
@@ -496,6 +567,25 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        1,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv2+"},
+								DependsOn: []string{
+									"glibc@2.28-151.el8",
+								},
+								Digest: "md5:483792b8b5f9eb8be7dc4407733118d0",
+							},
+							{
+								ID:              "glibc@2.28-151.el8",
+								Name:            "glibc",
+								Version:         "2.28",
+								Release:         "151.el8",
+								Epoch:           0,
+								Arch:            "aarch64",
+								SrcName:         "glibc",
+								SrcVersion:      "2.28",
+								SrcRelease:      "151.el8",
+								SrcEpoch:        0,
+								Modularitylabel: "",
+								Licenses:        []string{"GPLv2+"},
+								Digest:          "md5:969b3c9231627022f8bf7ac70de807a1",
 							},
 						},
 					},
@@ -505,6 +595,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.GemSpec,
 						Packages: []ftypes.Package{
 							{
+								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
 								Layer: ftypes.Layer{
@@ -513,6 +604,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								FilePath: "tools/project-john/specifications/actionpack.gemspec",
 							},
 							{
+								ID:      "actionpack@7.0.1",
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Layer: ftypes.Layer{
@@ -613,7 +705,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -652,15 +744,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:  "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "acl",
-						Version: "1:2.2.53-1.el8",
+						Version: "2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{Expression: "GPLv2+"},
 						},
-						PackageURL: "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "acl@2.2.53-1.el8",
+							},
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "centos",
@@ -680,6 +776,50 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:SrcEpoch",
 								Value: "1",
+							},
+						},
+						Hashes: &[]cdx.Hash{
+							{
+								Algorithm: cdx.HashAlgoMD5,
+								Value:     "483792b8b5f9eb8be7dc4407733118d0",
+							},
+						},
+					},
+					{
+						BOMRef:  "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+						Type:    cdx.ComponentTypeLibrary,
+						Name:    "glibc",
+						Version: "2.28-151.el8",
+						Licenses: &cdx.Licenses{
+							cdx.LicenseChoice{Expression: "GPLv2+"},
+						},
+						PackageURL: "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "glibc@2.28-151.el8",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "centos",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcName",
+								Value: "glibc",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcVersion",
+								Value: "2.28",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcRelease",
+								Value: "151.el8",
+							},
+						},
+						Hashes: &[]cdx.Hash{
+							{
+								Algorithm: cdx.HashAlgoMD5,
+								Value:     "969b3c9231627022f8bf7ac70de807a1",
 							},
 						},
 					},
@@ -707,6 +847,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageURL: "pkg:gem/actionpack@7.0.0",
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.0",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "gemspec",
 							},
@@ -728,6 +872,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageURL: "pkg:gem/actionpack@7.0.1",
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.1",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "gemspec",
 							},
@@ -744,25 +892,25 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
-							},
+						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
+						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000003",
+							"pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+							"pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 						},
 					},
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-							},
-							{
-								Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
-							},
-							{
-								Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
-							},
+						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
+						Dependencies: &[]string{
+							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+							// Trivy is unable to identify the direct OS packages as of today.
+							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+						},
+					},
+					{
+						Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+						Dependencies: &[]string{
+							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
 					},
 				},
@@ -773,6 +921,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							Name: string(vulnerability.RubySec),
 							URL:  "https://github.com/rubysec/ruby-advisory-db",
 						},
+						Recommendation: "Upgrade actionpack to version ~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 						Ratings: &[]cdx.VulnerabilityRating{
 							{
 								Source: &cdx.Source{
@@ -866,7 +1015,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -923,19 +1072,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:gem/actioncable@6.1.4.1",
-							},
+						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
+						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000003",
 						},
 					},
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-							},
+						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
+						Dependencies: &[]string{
+							"pkg:gem/actioncable@6.1.4.1",
 						},
 					},
 				},
@@ -954,6 +1099,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.NodePkg,
 						Packages: []ftypes.Package{
 							{
+								ID:       "ruby-typeprof@0.20.1",
 								Name:     "ruby-typeprof",
 								Version:  "0.20.1",
 								Licenses: []string{"MIT"},
@@ -969,7 +1115,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1005,6 +1151,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "ruby-typeprof@0.20.1",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "node-pkg",
 							},
@@ -1023,10 +1173,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
-							},
+						Dependencies: &[]string{
+							"pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 						},
 					},
 				},
@@ -1043,7 +1191,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1067,12 +1215,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 				},
-				Components:      new([]cdx.Component),
+				Components:      lo.ToPtr([]cdx.Component{}),
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: new([]cdx.Dependency),
+						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
 			},
@@ -1092,7 +1240,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
 			got, err := marshaler.Marshal(tt.inputReport)
 			require.NoError(t, err)
-
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -1166,7 +1313,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 								VulnerabilityID:  "CVE-2018-20623",
 								PkgName:          "binutils",
 								InstalledVersion: "2.30-93.el8",
-								Ref:              "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								PkgRef:           "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 								},
@@ -1213,7 +1360,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:       "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:   "CycloneDX",
-				SpecVersion: "1.4",
+				SpecVersion: cdx.SpecVersion1_4,
 				Version:     1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -1286,6 +1433,164 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 						Affects: &[]cdx.Affects{
 							{
 								Ref: "urn:cdx:f08a6ccd-4dce-4759-bd84-c626675d60a7/1#pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Range: &[]cdx.AffectedVersions{
+									{
+										Version: "2.30-93.el8",
+										Status:  cdx.VulnerabilityStatusAffected,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path for cyclonedx scan without SerialNumber",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "cyclonedx.json",
+				ArtifactType:  ftypes.ArtifactCycloneDX,
+				Metadata: types.Metadata{
+					Size: 1024,
+					OS: &ftypes.OS{
+						Family: fos.CentOS,
+						Name:   "8.3.2011",
+						Eosl:   true,
+					},
+					ImageID:     "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+					RepoTags:    []string{"rails:latest"},
+					DiffIDs:     []string{"sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a"},
+					RepoDigests: []string{"rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
+					ImageConfig: v1.ConfigFile{
+						Architecture: "arm64",
+					},
+				},
+				CycloneDX: &ftypes.CycloneDX{
+					Version: 1,
+					Metadata: ftypes.Metadata{
+						Component: ftypes.Component{
+							Type: ftypes.ComponentType(cdx.ComponentTypeApplication),
+							Name: "centos:8",
+						},
+					},
+				},
+				Results: types.Results{
+					{
+						Target: "rails:latest (centos 8.3.2011)",
+						Class:  types.ClassOSPkg,
+						Type:   fos.CentOS,
+						Packages: []ftypes.Package{
+							{
+								Name:            "binutils",
+								Ref:             "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Version:         "2.30",
+								Release:         "93.el8",
+								Epoch:           0,
+								Arch:            "aarch64",
+								SrcName:         "binutils",
+								SrcVersion:      "2.30",
+								SrcRelease:      "93.el8",
+								SrcEpoch:        0,
+								Modularitylabel: "",
+								Licenses:        []string{"GPLv3+"},
+							},
+						},
+					},
+					{
+						Target: "rails:latest (centos 8.3.2011)",
+						Class:  types.ClassOSPkg,
+						Type:   fos.CentOS,
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2018-20623",
+								PkgName:          "binutils",
+								InstalledVersion: "2.30-93.el8",
+								PkgRef:           "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
+								},
+								SeveritySource: vulnerability.RedHatOVAL,
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2018-20623",
+								DataSource: &dtypes.DataSource{
+									ID:   vulnerability.RedHatOVAL,
+									Name: "Red Hat OVAL v2",
+									URL:  "https://www.redhat.com/security/data/oval/v2/",
+								},
+								Vulnerability: dtypes.Vulnerability{
+									Title:          "binutils: Use-after-free in the error function",
+									Description:    "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
+									Severity:       dtypes.SeverityMedium.String(),
+									VendorSeverity: dtypes.VendorSeverity{},
+									CweIDs:         []string{"CWE-416"},
+									CVSS: dtypes.VendorCVSS{
+										vulnerability.NVD: dtypes.CVSS{
+											V2Vector: "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+											V2Score:  4.3,
+											V3Score:  5.5,
+										},
+										vulnerability.RedHatOVAL: dtypes.CVSS{
+											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+											V3Score:  5.3,
+										},
+									},
+									References: []string{
+										"http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
+										"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
+									},
+									PublishedDate:    lo.ToPtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &cdx.BOM{
+				XMLNS:       "http://cyclonedx.org/schema/bom/1.4",
+				BOMFormat:   "CycloneDX",
+				SpecVersion: cdx.SpecVersion1_4,
+				Version:     1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30+00:00",
+					Tools: &[]cdx.Tool{
+						{
+							Name:    "trivy",
+							Vendor:  "aquasecurity",
+							Version: "dev",
+						},
+					},
+					Component: &cdx.Component{
+						Name: "centos:8",
+						Type: cdx.ComponentTypeApplication,
+					},
+				},
+				Vulnerabilities: &[]cdx.Vulnerability{
+					{
+						ID: "CVE-2018-20623",
+						Source: &cdx.Source{
+							Name: string(vulnerability.RedHatOVAL),
+							URL:  "https://www.redhat.com/security/data/oval/v2/",
+						},
+						Ratings: lo.ToPtr([]cdx.VulnerabilityRating{}),
+						CWEs: &[]int{
+							416,
+						},
+						Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
+						Advisories: &[]cdx.Advisory{
+							{
+								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
+							},
+							{
+								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
+							},
+						},
+						Published: "2018-12-31T19:29:00+00:00",
+						Updated:   "2019-10-31T01:15:00+00:00",
+						Affects: &[]cdx.Affects{
+							{
+								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "2.30-93.el8",

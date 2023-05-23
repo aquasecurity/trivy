@@ -9,8 +9,9 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 
-	"github.com/liamg/tml"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
+
+	"github.com/aquasecurity/tml"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -33,7 +34,7 @@ type misconfigRenderer struct {
 }
 
 func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, trace, includeNonFailures bool, ansi bool) *misconfigRenderer {
-	width, _, err := terminal.GetSize(0)
+	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
 	}
@@ -53,7 +54,7 @@ func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, tr
 
 func (r *misconfigRenderer) Render() string {
 	target := fmt.Sprintf("%s (%s)", r.result.Target, r.result.Type)
-	renderTarget(r.w, target, r.ansi)
+	RenderTarget(r.w, target, r.ansi)
 
 	total, summaries := summarize(r.severities, r.countSeverities())
 

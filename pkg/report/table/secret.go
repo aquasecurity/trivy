@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/liamg/tml"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
+
+	"github.com/aquasecurity/tml"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -22,7 +23,7 @@ type secretRenderer struct {
 }
 
 func NewSecretRenderer(target string, secrets []types.SecretFinding, ansi bool, severities []dbTypes.Severity) *secretRenderer {
-	width, _, err := terminal.GetSize(0)
+	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
 	}
@@ -41,7 +42,7 @@ func NewSecretRenderer(target string, secrets []types.SecretFinding, ansi bool, 
 
 func (r *secretRenderer) Render() string {
 	target := r.target + " (secrets)"
-	renderTarget(r.w, target, r.ansi)
+	RenderTarget(r.w, target, r.ansi)
 
 	severityCount := r.countSeverities()
 	total, summaries := summarize(r.severities, severityCount)

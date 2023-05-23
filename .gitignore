@@ -25,6 +25,7 @@ thumbs.db
 # test fixtures
 coverage.txt
 integration/testdata/fixtures/images
+integration/testdata/fixtures/vm-images
 
 # SBOMs generated during CI
 /bom.json
@@ -34,3 +35,7 @@ dist
 
 # WebAssembly
 *.wasm
+
+# Signing
+gpg.key
+cmd/trivy/trivy

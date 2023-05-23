@@ -24,28 +24,26 @@ const (
 	MisconfigurationsColumn = "Misconfigurations"
 	SecretsColumn           = "Secrets"
 	RbacAssessmentColumn    = "RBAC Assessment"
+	InfraAssessmentColumn   = "Kubernetes Infra Assessment"
 )
 
 func WorkloadColumns() []string {
 	return []string{VulnerabilitiesColumn, MisconfigurationsColumn, SecretsColumn}
 }
+
 func RoleColumns() []string {
 	return []string{RbacAssessmentColumn}
+}
+
+func InfraColumns() []string {
+	return []string{InfraAssessmentColumn}
 }
 
 func (tw TableWriter) Write(report Report) error {
 	switch tw.Report {
 	case allReport:
 		t := pkgReport.Writer{Output: tw.Output, Severities: tw.Severities, ShowMessageOnce: &sync.Once{}}
-		for _, r := range report.Vulnerabilities {
-			if r.Report.Results.Failed() {
-				err := t.Write(r.Report)
-				if err != nil {
-					return err
-				}
-			}
-		}
-		for _, r := range report.Misconfigurations {
+		for _, r := range report.Resources {
 			if r.Report.Results.Failed() {
 				err := t.Write(r.Report)
 				if err != nil {

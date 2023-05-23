@@ -1,5 +1,7 @@
 package analyzer
 
+import "github.com/aquasecurity/defsec/pkg/detection"
+
 type Type string
 
 const (
@@ -20,6 +22,7 @@ const (
 	TypeRedHatBase Type = "redhat"
 	TypeSUSE       Type = "suse"
 	TypeUbuntu     Type = "ubuntu"
+	TypeUbuntuESM  Type = "ubuntu-esm"
 
 	// OS Package
 	TypeApk         Type = "apk"
@@ -61,6 +64,9 @@ const (
 	TypeNuget      Type = "nuget"
 	TypeDotNetCore Type = "dotnet-core"
 
+	// Conda
+	TypeCondaPkg Type = "conda-pkg"
+
 	// Python
 	TypePythonPkg Type = "python-pkg"
 	TypePip       Type = "pip"
@@ -74,20 +80,36 @@ const (
 	// C/C++
 	TypeConanLock Type = "conan-lock"
 
+	// Elixir
+	TypeMixLock Type = "mix-lock"
+
+	// Swift
+	TypeCocoaPods Type = "cocoapods"
+
+	// Dart
+	TypePubSpecLock Type = "pubspec-lock"
+
+	// ============
+	// Non-packaged
+	// ============
+	TypeExecutable Type = "executable"
+
 	// ============
 	// Image Config
 	// ============
-	TypeApkCommand Type = "apk-command"
+	TypeApkCommand        Type = "apk-command"
+	TypeHistoryDockerfile Type = "history-dockerfile"
+	TypeImageConfigSecret Type = "image-config-secret"
 
 	// =================
 	// Structured Config
 	// =================
-	TypeYaml           Type = "yaml"
-	TypeJSON           Type = "json"
-	TypeDockerfile     Type = "dockerfile"
-	TypeTerraform      Type = "terraform"
-	TypeCloudFormation Type = "cloudFormation"
-	TypeHelm           Type = "helm"
+	TypeAzureARM       Type = Type(detection.FileTypeAzureARM)
+	TypeCloudFormation Type = Type(detection.FileTypeCloudFormation)
+	TypeDockerfile     Type = Type(detection.FileTypeDockerfile)
+	TypeHelm           Type = Type(detection.FileTypeHelm)
+	TypeKubernetes     Type = Type(detection.FileTypeKubernetes)
+	TypeTerraform      Type = Type(detection.FileTypeTerraform)
 
 	// ========
 	// License
@@ -109,28 +131,93 @@ const (
 var (
 	// TypeOSes has all OS-related analyzers
 	TypeOSes = []Type{
-		TypeOSRelease, TypeAlpine, TypeAmazon, TypeCBLMariner, TypeDebian, TypePhoton, TypeCentOS,
-		TypeRocky, TypeAlma, TypeFedora, TypeOracle, TypeRedHatBase, TypeSUSE, TypeUbuntu,
-		TypeApk, TypeDpkg, TypeDpkgLicense, TypeRpm, TypeRpmqa,
+		TypeOSRelease,
+		TypeAlpine,
+		TypeAmazon,
+		TypeCBLMariner,
+		TypeDebian,
+		TypePhoton,
+		TypeCentOS,
+		TypeRocky,
+		TypeAlma,
+		TypeFedora,
+		TypeOracle,
+		TypeRedHatBase,
+		TypeSUSE,
+		TypeUbuntu,
+		TypeApk,
+		TypeDpkg,
+		TypeDpkgLicense,
+		TypeRpm,
+		TypeRpmqa,
 		TypeApkRepo,
 	}
 
 	// TypeLanguages has all language analyzers
 	TypeLanguages = []Type{
-		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom, TypeGradleLock,
-		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetCore,
-		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary, TypeConanLock,
+		TypeBundler,
+		TypeGemSpec,
+		TypeCargo,
+		TypeComposer,
+		TypeJar,
+		TypePom,
+		TypeGradleLock,
+		TypeNpmPkgLock,
+		TypeNodePkg,
+		TypeYarn,
+		TypePnpm,
+		TypeNuget,
+		TypeDotNetCore,
+		TypeCondaPkg,
+		TypePythonPkg,
+		TypePip,
+		TypePipenv,
+		TypePoetry,
+		TypeGoBinary,
+		TypeGoMod,
+		TypeRustBinary,
+		TypeConanLock,
+		TypeCocoaPods,
+		TypePubSpecLock,
+		TypeMixLock,
 	}
 
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{
-		TypeBundler, TypeNpmPkgLock, TypeYarn,
-		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeConanLock, TypeGradleLock,
+		TypeBundler,
+		TypeNpmPkgLock,
+		TypeYarn,
+		TypePnpm,
+		TypePip,
+		TypePipenv,
+		TypePoetry,
+		TypeGoMod,
+		TypePom,
+		TypeConanLock,
+		TypeGradleLock,
+		TypeCocoaPods,
+		TypePubSpecLock,
+		TypeMixLock,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
-	TypeIndividualPkgs = []Type{TypeGemSpec, TypeNodePkg, TypePythonPkg, TypeGoBinary, TypeJar, TypeRustBinary}
+	TypeIndividualPkgs = []Type{
+		TypeGemSpec,
+		TypeNodePkg,
+		TypeCondaPkg,
+		TypePythonPkg,
+		TypeGoBinary,
+		TypeJar,
+		TypeRustBinary,
+	}
 
 	// TypeConfigFiles has all config file analyzers
-	TypeConfigFiles = []Type{TypeYaml, TypeJSON, TypeDockerfile, TypeTerraform, TypeCloudFormation, TypeHelm}
+	TypeConfigFiles = []Type{
+		TypeAzureARM,
+		TypeCloudFormation,
+		TypeDockerfile,
+		TypeHelm,
+		TypeKubernetes,
+		TypeTerraform,
+	}
 )

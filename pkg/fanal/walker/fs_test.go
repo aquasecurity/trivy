@@ -16,8 +16,9 @@ import (
 
 func TestDir_Walk(t *testing.T) {
 	type fields struct {
-		skipFiles []string
-		skipDirs  []string
+		skipFiles   []string
+		skipDirs    []string
+		errCallback walker.ErrorCallback
 	}
 	tests := []struct {
 		name      string
@@ -59,12 +60,25 @@ func TestDir_Walk(t *testing.T) {
 			name:    "skip dir",
 			rootDir: "testdata/fs/",
 			fields: fields{
-				skipDirs: []string{"/testdata/fs/app/"},
+				skipDirs: []string{"/testdata/fs/app"},
 			},
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				if strings.HasPrefix(filePath, "testdata/fs/app") {
 					assert.Fail(t, "skip dirs error", "%s should be skipped", filePath)
 				}
+				return nil
+			},
+		},
+		{
+			name:    "ignore all errors",
+			rootDir: "testdata/fs/nosuch",
+			fields: fields{
+				errCallback: func(pathname string, err error) error {
+					return nil
+				},
+			},
+			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+				// Ignore errors
 				return nil
 			},
 		},
@@ -79,7 +93,7 @@ func TestDir_Walk(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			w := walker.NewFS(tt.fields.skipFiles, tt.fields.skipDirs)
+			w := walker.NewFS(tt.fields.skipFiles, tt.fields.skipDirs, true, tt.fields.errCallback)
 
 			err := w.Walk(tt.rootDir, tt.analyzeFn)
 			if tt.wantErr != "" {

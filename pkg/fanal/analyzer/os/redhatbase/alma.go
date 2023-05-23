@@ -35,7 +35,7 @@ func (a almaOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 		switch strings.ToLower(result[1]) {
 		case "alma", "almalinux", "alma linux":
 			return &analyzer.AnalysisResult{
-				OS: &types.OS{Family: aos.Alma, Name: result[2]},
+				OS: types.OS{Family: aos.Alma, Name: result[2]},
 			}, nil
 		}
 	}

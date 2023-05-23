@@ -54,6 +54,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-5481",
+          "PkgID": "curl@7.61.1-11.91.amzn1.x86_64",
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-11.91.amzn1",
           "FixedVersion": "7.61.1-12.93.amzn1",

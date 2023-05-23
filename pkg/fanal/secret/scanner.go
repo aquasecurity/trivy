@@ -341,6 +341,7 @@ type Match struct {
 func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	// Global allowed paths
 	if s.AllowPath(args.FilePath) {
+		log.Logger.Debugf("Skipped secret scanning on %q matching allowed paths", args.FilePath)
 		return types.Secret{
 			FilePath: args.FilePath,
 		}
@@ -355,11 +356,13 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	for _, rule := range s.Rules {
 		// Check if the file path should be scanned by this rule
 		if !rule.MatchPath(args.FilePath) {
+			log.Logger.Debugf("Skipped secret scanning on %q as non-compliant to the rule %q", args.FilePath, rule.ID)
 			continue
 		}
 
 		// Check if the file path should be allowed
 		if rule.AllowPath(args.FilePath) {
+			log.Logger.Debugf("Skipped secret scanning on %q as allowed", args.FilePath)
 			continue
 		}
 
@@ -459,31 +462,30 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 		lineEnd += start
 	}
 
-	match := string(content[start:end])
-	matchLine := string(content[lineStart:lineEnd])
-	if len(matchLine) > 100 {
-		truncatedLineStart := lo.Ternary(start-30 < 0, 0, start-30)
-		truncatedLineEnd := lo.Ternary(end+20 > len(content), len(content), end+20)
-		matchLine = string(content[truncatedLineStart:truncatedLineEnd])
+	if lineEnd-lineStart > 100 {
+		lineStart = lo.Ternary(start-30 < 0, 0, start-30)
+		lineEnd = lo.Ternary(end+20 > len(content), len(content), end+20)
 	}
-	endLineNum := startLineNum + strings.Count(match, string(lineSep))
+	matchLine := string(content[lineStart:lineEnd])
+	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
 
 	var code types.Code
 
-	lines := strings.Split(string(content), string(lineSep))
+	lines := bytes.Split(content, lineSep)
 	codeStart := lo.Ternary(startLineNum-secretHighlightRadius < 0, 0, startLineNum-secretHighlightRadius)
 	codeEnd := lo.Ternary(endLineNum+secretHighlightRadius > len(lines), len(lines), endLineNum+secretHighlightRadius)
 
 	rawLines := lines[codeStart:codeEnd]
 	var foundFirst bool
 	for i, rawLine := range rawLines {
+		strRawLine := string(rawLine)
 		realLine := codeStart + i
 		inCause := realLine >= startLineNum && realLine <= endLineNum
 		code.Lines = append(code.Lines, types.Line{
 			Number:      codeStart + i + 1,
-			Content:     rawLine,
+			Content:     strRawLine,
 			IsCause:     inCause,
-			Highlighted: rawLine,
+			Highlighted: strRawLine,
 			FirstCause:  !foundFirst && inCause,
 			LastCause:   false,
 		})

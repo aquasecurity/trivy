@@ -59,11 +59,15 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			family = aos.SLES
 		case "photon":
 			family = aos.Photon
+		case "wolfi":
+			family = aos.Wolfi
+		case "chainguard":
+			family = aos.Chainguard
 		}
 
 		if family != "" && versionID != "" {
 			return &analyzer.AnalysisResult{
-				OS: &types.OS{Family: family, Name: versionID},
+				OS: types.OS{Family: family, Name: versionID},
 			}, nil
 		}
 	}

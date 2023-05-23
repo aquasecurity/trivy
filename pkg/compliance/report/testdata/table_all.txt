@@ -1,0 +1,52 @@
+
+Deployment/metrics-server (kubernetes)
+======================================
+Tests: 1 (SUCCESSES: 1, FAILURES: 0, EXCEPTIONS: 0)
+Failures: 0 ()
+
+MEDIUM: Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.allowPrivilegeEscalation' to false
+════════════════════════════════════════
+A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.
+
+See https://avd.aquasec.com/misconfig/ksv001
+────────────────────────────────────────
+ Deployment/metrics-server:132-140
+────────────────────────────────────────
+ 132 ┌                 - image: rancher/metrics-server:v0.3.6
+ 133 │                   imagePullPolicy: IfNotPresent
+ 134 │                   name: metrics-server
+ 135 │                   resources: {}
+ 136 │                   terminationMessagePath: /dev/termination-log
+ 137 │                   terminationMessagePolicy: File
+ 138 │                   volumeMounts:
+ 139 │                     - mountPath: /tmp
+ 140 └                       name: tmp-dir
+────────────────────────────────────────
+
+
+
+Deployment/metrics-server (kubernetes)
+======================================
+Tests: 1 (SUCCESSES: 1, FAILURES: 0, EXCEPTIONS: 0)
+Failures: 0 ()
+
+LOW: Container 'metrics-server' of Deployment 'metrics-server' should add 'ALL' to 'securityContext.capabilities.drop'
+════════════════════════════════════════
+The container should drop all default capabilities and add only those that are needed for its execution.
+
+See https://avd.aquasec.com/misconfig/ksv003
+────────────────────────────────────────
+ Deployment/metrics-server:132-140
+────────────────────────────────────────
+ 132 ┌                 - image: rancher/metrics-server:v0.3.6
+ 133 │                   imagePullPolicy: IfNotPresent
+ 134 │                   name: metrics-server
+ 135 │                   resources: {}
+ 136 │                   terminationMessagePath: /dev/termination-log
+ 137 │                   terminationMessagePolicy: File
+ 138 │                   volumeMounts:
+ 139 │                     - mountPath: /tmp
+ 140 └                       name: tmp-dir
+────────────────────────────────────────
+
+

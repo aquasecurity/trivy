@@ -55,6 +55,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-1549",
+          "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -114,6 +115,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-1551",
+          "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
@@ -183,6 +185,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-1549",
+          "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -242,6 +245,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-1551",
+          "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",

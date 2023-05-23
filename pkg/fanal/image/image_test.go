@@ -54,13 +54,12 @@ func TestNewDockerImage(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    types.DockerOption
+		option    types.ImageOptions
 	}
 	tests := []struct {
 		name            string
 		args            args
 		wantID          string
-		wantLayerIDs    []string
 		wantConfigFile  *v1.ConfigFile
 		wantRepoTags    []string
 		wantRepoDigests []string
@@ -72,7 +71,6 @@ func TestNewDockerImage(t *testing.T) {
 				imageName: "alpine:3.11",
 			},
 			wantID:       "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-			wantLayerIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
 			wantRepoTags: []string{"alpine:3.11"},
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
@@ -117,7 +115,6 @@ func TestNewDockerImage(t *testing.T) {
 				imageName: "a187dde48cd2",
 			},
 			wantID:       "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-			wantLayerIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
 			wantRepoTags: []string{"alpine:3.11"},
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
@@ -162,60 +159,6 @@ func TestNewDockerImage(t *testing.T) {
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 			},
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
-			wantLayerIDs: []string{"sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
-			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
-			wantRepoDigests: []string{
-				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
-			},
-			wantConfigFile: &v1.ConfigFile{
-				Architecture:  "amd64",
-				Container:     "7f4a36a667d138b079b5ff059485ff65bfbb5ebc48f24a89f983b918e73f4f28",
-				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
-				DockerVersion: "18.06.1-ce",
-				History: []v1.History{
-					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 551172402, time.UTC)},
-						CreatedBy:  "/bin/sh -c #(nop) ADD file:d48cac34fac385cbc1de6adfdd88300f76f9bbe346cd17e64fd834d042a98326 in / ",
-						EmptyLayer: false,
-					},
-					{
-						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
-						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
-						Comment:    "",
-						EmptyLayer: true,
-					},
-				},
-				OS: "linux",
-
-				RootFS: v1.RootFS{
-					Type: "layers", DiffIDs: []v1.Hash{
-						{
-							Algorithm: "sha256",
-							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
-						},
-					},
-				},
-				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
-					Cmd:         []string{"/bin/sh"},
-					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
-					ArgsEscaped: true,
-				},
-				OSVersion: "",
-			},
-		},
-		{
-			name: "happy path with insecure Docker Registry",
-			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.DockerOption{
-					UserName:              "test",
-					Password:              "test",
-					NonSSL:                true,
-					InsecureSkipTLSVerify: true,
-				},
-			},
-			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
-			wantLayerIDs: []string{"sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
 			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
 			wantRepoDigests: []string{
 				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
@@ -245,10 +188,71 @@ func TestNewDockerImage(t *testing.T) {
 					DiffIDs: []v1.Hash{
 						{
 							Algorithm: "sha256",
-							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
+							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
+						},
 					},
 				},
-				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+				Config: v1.Config{
+					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+					Cmd:         []string{"/bin/sh"},
+					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
+					ArgsEscaped: true,
+				},
+				OSVersion: "",
+			},
+		},
+		{
+			name: "happy path with insecure Docker Registry",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						Credentials: []types.Credential{
+							{
+								Username: "test",
+								Password: "test",
+							},
+						},
+						Insecure: true,
+					},
+				},
+			},
+			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
+			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
+			wantRepoDigests: []string{
+				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
+			},
+			wantConfigFile: &v1.ConfigFile{
+				Architecture:  "amd64",
+				Container:     "7f4a36a667d138b079b5ff059485ff65bfbb5ebc48f24a89f983b918e73f4f28",
+				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+				DockerVersion: "18.06.1-ce",
+				History: []v1.History{
+					{
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 551172402, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop) ADD file:d48cac34fac385cbc1de6adfdd88300f76f9bbe346cd17e64fd834d042a98326 in / ",
+						EmptyLayer: false,
+					},
+					{
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+						Comment:    "",
+						EmptyLayer: true,
+					},
+				},
+				OS: "linux",
+
+				RootFS: v1.RootFS{
+					Type: "layers",
+					DiffIDs: []v1.Hash{
+						{
+							Algorithm: "sha256",
+							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
+						},
+					},
+				},
+				Config: v1.Config{
+					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
 					Cmd:         []string{"/bin/sh"},
 					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
 					ArgsEscaped: true,
@@ -272,6 +276,7 @@ func TestNewDockerImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.args.option.ImageSources = types.AllImageSources
 			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
@@ -288,10 +293,6 @@ func TestNewDockerImage(t *testing.T) {
 			gotConfigFile, err := img.ConfigFile()
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantConfigFile, gotConfigFile)
-
-			gotLayerIDs, err := img.LayerIDs()
-			require.NoError(t, err)
-			assert.Equal(t, tt.wantLayerIDs, gotLayerIDs)
 
 			gotRepoTags := img.RepoTags()
 			assert.Equal(t, tt.wantRepoTags, gotRepoTags)
@@ -333,7 +334,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    types.DockerOption
+		option    types.ImageOptions
 	}
 	tests := []struct {
 		name    string
@@ -345,11 +346,16 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with private Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.DockerOption{
-					UserName:              "test",
-					Password:              "testpass",
-					NonSSL:                true,
-					InsecureSkipTLSVerify: true,
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						Credentials: []types.Credential{
+							{
+								Username: "test",
+								Password: "testpass",
+							},
+						},
+						Insecure: true,
+					},
 				},
 			},
 		},
@@ -357,9 +363,11 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.DockerOption{
-					RegistryToken: registryToken,
-					NonSSL:        true,
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						RegistryToken: registryToken,
+						Insecure:      true,
+					},
 				},
 			},
 		},
@@ -374,9 +382,11 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "sad path with invalid registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.11", serverAddr),
-				option: types.DockerOption{
-					RegistryToken: registryToken + "invalid",
-					NonSSL:        true,
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						RegistryToken: registryToken + "invalid",
+						Insecure:      true,
+					},
 				},
 			},
 			wantErr: "signature is invalid",
@@ -384,6 +394,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.args.option.ImageSources = types.AllImageSources
 			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
@@ -489,6 +500,60 @@ func TestNewArchiveImage(t *testing.T) {
 			// archive doesn't support RepoTags and RepoDigests
 			assert.Empty(t, img.RepoTags())
 			assert.Empty(t, img.RepoDigests())
+		})
+	}
+}
+
+func TestDockerPlatformArguments(t *testing.T) {
+	tr := setupPrivateRegistry()
+	defer tr.Close()
+
+	serverAddr := tr.Listener.Addr().String()
+
+	type args struct {
+		option types.ImageOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    v1.Image
+		wantErr string
+	}{
+		{
+			name: "happy path with valid platform",
+			args: args{
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						Credentials: []types.Credential{
+							{
+								Username: "test",
+								Password: "testpass",
+							},
+						},
+						Insecure: true,
+						Platform: types.Platform{
+							Platform: &v1.Platform{
+								Architecture: "arm",
+								OS:           "linux",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
+			tt.args.option.ImageSources = types.AllImageSources
+			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
+			defer cleanup()
+
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr, err)
+			} else {
+				assert.NoError(t, err)
+			}
 		})
 	}
 }

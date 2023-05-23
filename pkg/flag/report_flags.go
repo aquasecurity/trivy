@@ -9,9 +9,11 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // e.g. config yaml:
@@ -25,7 +27,7 @@ var (
 		ConfigName: "format",
 		Shorthand:  "f",
 		Value:      report.FormatTable,
-		Usage:      "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln)",
+		Usage:      "format (" + strings.Join(report.SupportedFormats, ", ") + ")",
 	}
 	ReportFormatFlag = Flag{
 		Name:       "report",
@@ -44,7 +46,7 @@ var (
 		Name:       "dependency-tree",
 		ConfigName: "dependency-tree",
 		Value:      false,
-		Usage:      "show dependency origin tree (EXPERIMENTAL)",
+		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
 	}
 	ListAllPkgsFlag = Flag{
 		Name:       "list-all-pkgs",
@@ -70,6 +72,12 @@ var (
 		Value:      0,
 		Usage:      "specify exit code when any security issues are found",
 	}
+	ExitOnEOLFlag = Flag{
+		Name:       "exit-on-eol",
+		ConfigName: "exit-on-eol",
+		Value:      0,
+		Usage:      "exit with the specified code when the OS reaches end of service/life",
+	}
 	OutputFlag = Flag{
 		Name:       "output",
 		ConfigName: "output",
@@ -84,6 +92,12 @@ var (
 		Value:      strings.Join(dbTypes.SeverityNames, ","),
 		Usage:      "severities of security issues to be displayed (comma separated)",
 	}
+	ComplianceFlag = Flag{
+		Name:       "compliance",
+		ConfigName: "scan.compliance",
+		Value:      "",
+		Usage:      "compliance report to generate",
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -97,8 +111,10 @@ type ReportFlagGroup struct {
 	IgnoreFile     *Flag
 	IgnorePolicy   *Flag
 	ExitCode       *Flag
+	ExitOnEOL      *Flag
 	Output         *Flag
 	Severity       *Flag
+	Compliance     *Flag
 }
 
 type ReportOptions struct {
@@ -109,9 +125,11 @@ type ReportOptions struct {
 	ListAllPkgs    bool
 	IgnoreFile     string
 	ExitCode       int
+	ExitOnEOL      int
 	IgnorePolicy   string
 	Output         io.Writer
 	Severities     []dbTypes.Severity
+	Compliance     spec.ComplianceSpec
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -124,8 +142,10 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		IgnoreFile:     &IgnoreFileFlag,
 		IgnorePolicy:   &IgnorePolicyFlag,
 		ExitCode:       &ExitCodeFlag,
+		ExitOnEOL:      &ExitOnEOLFlag,
 		Output:         &OutputFlag,
 		Severity:       &SeverityFlag,
+		Compliance:     &ComplianceFlag,
 	}
 }
 
@@ -134,8 +154,20 @@ func (f *ReportFlagGroup) Name() string {
 }
 
 func (f *ReportFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreFile,
-		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity}
+	return []*Flag{
+		f.Format,
+		f.ReportFormat,
+		f.Template,
+		f.DependencyTree,
+		f.ListAllPkgs,
+		f.IgnoreFile,
+		f.IgnorePolicy,
+		f.ExitCode,
+		f.ExitOnEOL,
+		f.Output,
+		f.Severity,
+		f.Compliance,
+	}
 }
 
 func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
@@ -144,6 +176,10 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
 	output := getString(f.Output)
+
+	if format != "" && !slices.Contains(report.SupportedFormats, format) {
+		return ReportOptions{}, xerrors.Errorf("unknown format: %v", format)
+	}
 
 	if template != "" {
 		if format == "" {
@@ -165,7 +201,9 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 
 	// "--dependency-tree" option is available only with "--format table".
 	if dependencyTree {
-		log.Logger.Infof(`"--dependency-tree" only shows dependencies for "package-lock.json" files`)
+		log.Logger.Infof(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
+			`Note that it is the reverse of the usual dependency tree, which shows the packages that depend on the vulnerable package. ` +
+			`It supports limited package managers. Please see the document for the detail.`)
 		if format != report.FormatTable {
 			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
@@ -183,6 +221,11 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		}
 	}
 
+	cs, err := loadComplianceTypes(getString(f.Compliance))
+	if err != nil {
+		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
+	}
+
 	return ReportOptions{
 		Format:         format,
 		ReportFormat:   getString(f.ReportFormat),
@@ -191,15 +234,35 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		ListAllPkgs:    listAllPkgs,
 		IgnoreFile:     getString(f.IgnoreFile),
 		ExitCode:       getInt(f.ExitCode),
+		ExitOnEOL:      getInt(f.ExitOnEOL),
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),
+		Compliance:     cs,
 	}, nil
+}
+
+func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
+	if len(compliance) > 0 && !slices.Contains(types.Compliances, compliance) && !strings.HasPrefix(compliance, "@") {
+		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
+	}
+
+	cs, err := spec.GetComplianceSpec(compliance)
+	if err != nil {
+		return spec.ComplianceSpec{}, xerrors.Errorf("spec loading from file system error: %w", err)
+	}
+
+	return cs, nil
 }
 
 func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {
 	if slices.Contains(report.SupportedSBOMFormats, format) && !listAllPkgs {
 		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", report.SupportedSBOMFormats)
+		return true
+	}
+	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
+	if format == report.FormatSarif && !listAllPkgs {
+		log.Logger.Debugf("Sarif format automatically enables '--list-all-pkgs' to get locations")
 		return true
 	}
 	if dependencyTree && !listAllPkgs {

@@ -7,3 +7,6 @@ CVE-2022-0003 exp:9999-01-01 key2:value2
 
 # misconfigurations
 ID100
+
+# secrets
+generic-unwanted-rule

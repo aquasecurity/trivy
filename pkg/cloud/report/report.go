@@ -6,18 +6,12 @@ import (
 	"sort"
 	"time"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"github.com/liamg/tml"
-
-	"github.com/aquasecurity/trivy/pkg/flag"
-
-	"github.com/aquasecurity/trivy/pkg/report"
-
-	"github.com/aquasecurity/trivy/pkg/result"
-
 	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/tml"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -43,7 +37,7 @@ func New(provider, accountID, region string, defsecResults scan.Results, scopedS
 	return &Report{
 		Provider:        provider,
 		AccountID:       accountID,
-		Results:         convertResults(defsecResults, provider, scopedServices),
+		Results:         ConvertResults(defsecResults, provider, scopedServices),
 		ServicesInScope: scopedServices,
 		Region:          region,
 	}
@@ -70,17 +64,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	for _, resultsAtTime := range rep.Results {
 		for _, res := range resultsAtTime.Results {
 			resCopy := res
-			if err := result.Filter(
-				ctx,
-				&resCopy,
-				types.ResultFilters{
-					Severities:         opt.Severities,
-					IgnoreUnfixed:      false,
-					IncludeNonFailures: false,
-					IgnoredFile:        "",
-					PolicyFile:         "",
-					IgnoredLicenses:    nil,
-				}); err != nil {
+			if err := result.FilterResult(ctx, &resCopy, result.FilterOption{Severities: opt.Severities}); err != nil {
 				return err
 			}
 			sort.Slice(resCopy.Misconfigurations, func(i, j int) bool {
@@ -135,7 +119,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		return nil
 	default:
-		return report.Write(base, pkgReport.Option{
+		return pkgReport.Write(base, pkgReport.Option{
 			Format:             opt.Format,
 			Output:             opt.Output,
 			Severities:         opt.Severities,

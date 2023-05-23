@@ -28,7 +28,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 				Content:  strings.NewReader(`Amazon Linux AMI release 2018.03`),
 			},
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Amazon,
 					Name:   "AMI release 2018.03",
 				},
@@ -41,7 +41,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 				Content:  strings.NewReader(`Amazon Linux release 2 (Karoo)`),
 			},
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Amazon,
 					Name:   "2 (Karoo)",
 				},
@@ -54,9 +54,22 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 				Content:  strings.NewReader(`Amazon Linux release 2022 (Amazon Linux)`),
 			},
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Amazon,
 					Name:   "2022 (Amazon Linux)",
+				},
+			},
+		},
+		{
+			name: "happy path amazon linux 2023",
+			input: analyzer.AnalysisInput{
+				FilePath: "usr/lib/system-release",
+				Content:  strings.NewReader(`Amazon Linux release 2023 (Amazon Linux)`),
+			},
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: aos.Amazon,
+					Name:   "2023 (Amazon Linux)",
 				},
 			},
 		},

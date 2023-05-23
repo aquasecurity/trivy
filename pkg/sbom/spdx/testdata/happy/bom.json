@@ -3,7 +3,7 @@
 	"creationInfo": {
 		"created": "2022-09-12T17:02:46.826609Z",
 		"creators": [
-			"Tool: trivy",
+			"Tool: trivy-dev",
 			"Organization: aquasecurity"
 		]
 	},
@@ -167,7 +167,7 @@
 	"relationships": [
 		{
 			"relatedSpdxElement": "SPDXRef-ContainerImage-b5d81cde5f95c8fc",
-			"relationshipType": "DESCRIBE",
+			"relationshipType": "DESCRIBES",
 			"spdxElementId": "SPDXRef-DOCUMENT"
 		},
 		{

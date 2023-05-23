@@ -1,91 +1,132 @@
 package image
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
-	"strings"
+	"path/filepath"
 
-	"github.com/in-toto/in-toto-golang/in_toto"
+	"github.com/google/go-containerregistry/pkg/name"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/attestation"
+	sbomatt "github.com/aquasecurity/trivy/pkg/attestation/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/rekor"
+	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var errNoSBOMFound = xerrors.New("remote SBOM not found")
 
+type inspectRemoteSBOM func(context.Context) (ftypes.ArtifactReference, error)
+
 func (a Artifact) retrieveRemoteSBOM(ctx context.Context) (ftypes.ArtifactReference, error) {
-	for _, sbomFrom := range a.artifactOption.SBOMSources {
-		switch sbomFrom {
+	for _, sbomSource := range a.artifactOption.SBOMSources {
+		var inspect inspectRemoteSBOM
+		switch sbomSource {
+		case types.SBOMSourceOCI:
+			inspect = a.inspectOCIReferrerSBOM
 		case types.SBOMSourceRekor:
-			ref, err := a.inspectSBOMAttestation(ctx)
-			if errors.Is(err, errNoSBOMFound) {
-				// Try the next SBOM source
-				continue
-			} else if err != nil {
-				return ftypes.ArtifactReference{}, xerrors.Errorf("Rekor attestation searching error: %w", err)
-			}
-			// Found SBOM
-			log.Logger.Infof("Found SBOM (%s) attestation in Rekor", ref.Type)
-			return ref, nil
+			inspect = a.inspectRekorSBOMAttestation
+		default:
+			// Never reach here as the "--sbom-sources" values are validated beforehand
+			continue
 		}
+
+		ref, err := inspect(ctx)
+		if errors.Is(err, errNoSBOMFound) {
+			// Try the next SBOM source
+			log.Logger.Debugf("No SBOM found in the source: %s", sbomSource)
+			continue
+		} else if err != nil {
+			return ftypes.ArtifactReference{}, xerrors.Errorf("SBOM searching error: %w", err)
+		}
+		return ref, nil
 	}
 	return ftypes.ArtifactReference{}, errNoSBOMFound
 }
 
-func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactReference, error) {
-	digest, err := repoDigest(a.image)
+func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context) (ftypes.ArtifactReference, error) {
+	digest, err := repoDigest(a.image, a.artifactOption.Insecure)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("repo digest error: %w", err)
 	}
 
-	client, err := rekor.NewClient(a.artifactOption.RekorURL)
+	// Fetch referrers
+	index, err := remote.Referrers(ctx, digest, a.artifactOption.ImageOption.RegistryOptions)
 	if err != nil {
-		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
+		return ftypes.ArtifactReference{}, xerrors.Errorf("unable to fetch referrers: %w", err)
 	}
-
-	entryIDs, err := client.Search(ctx, digest)
-	if err != nil {
-		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
-	} else if len(entryIDs) == 0 {
-		return ftypes.ArtifactReference{}, errNoSBOMFound
-	}
-
-	log.Logger.Debugf("Found matching Rekor entries: %s", entryIDs)
-
-	for _, ids := range lo.Chunk[rekor.EntryID](entryIDs, rekor.MaxGetEntriesLimit) {
-		entries, err := client.GetEntries(ctx, ids)
+	for _, m := range lo.FromPtr(index).Manifests {
+		// Unsupported artifact type
+		if !slices.Contains(oci.SupportedSBOMArtifactTypes, m.ArtifactType) {
+			continue
+		}
+		res, err := a.parseReferrer(ctx, digest.Context().String(), m)
 		if err != nil {
-			return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get entries: %w", err)
+			log.Logger.Warnf("Error with SBOM via OCI referrers (%s): %s", m.Digest.String(), err)
+			continue
 		}
-
-		for _, entry := range entries {
-			ref, err := a.inspectRekorRecord(ctx, entry)
-			if errors.Is(err, errNoSBOMFound) {
-				continue
-			} else if err != nil {
-				return ftypes.ArtifactReference{}, xerrors.Errorf("rekor record inspection error: %w", err)
-			}
-			return ref, nil
-		}
+		return res, nil
 	}
 	return ftypes.ArtifactReference{}, errNoSBOMFound
 }
 
-func (a Artifact) inspectRekorRecord(ctx context.Context, entry rekor.Entry) (ftypes.ArtifactReference, error) {
-
-	// TODO: Trivy SBOM should take precedence
-	raw, err := a.parseStatement(entry)
+func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descriptor) (ftypes.ArtifactReference, error) {
+	const fileName string = "referrer.sbom"
+	repoName := fmt.Sprintf("%s@%s", repo, desc.Digest)
+	referrer, err := oci.NewArtifact(repoName, true, a.artifactOption.ImageOption.RegistryOptions)
 	if err != nil {
-		return ftypes.ArtifactReference{}, err
+		return ftypes.ArtifactReference{}, xerrors.Errorf("OCI error: %w", err)
+	}
+
+	tmpDir, err := os.MkdirTemp("", "trivy-sbom-*")
+	if err != nil {
+		return ftypes.ArtifactReference{}, xerrors.Errorf("mkdir temp error: %w", err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	// Download SBOM to local filesystem
+	if err = referrer.Download(ctx, tmpDir, oci.DownloadOption{
+		MediaType: desc.ArtifactType,
+		Filename:  fileName,
+	}); err != nil {
+		return ftypes.ArtifactReference{}, xerrors.Errorf("SBOM download error: %w", err)
+	}
+
+	res, err := a.inspectSBOMFile(ctx, filepath.Join(tmpDir, fileName))
+	if err != nil {
+		return res, xerrors.Errorf("SBOM error: %w", err)
+	}
+
+	// Found SBOM
+	log.Logger.Infof("Found SBOM (%s) in the OCI referrers", res.Type)
+
+	return res, nil
+}
+
+func (a Artifact) inspectRekorSBOMAttestation(ctx context.Context) (ftypes.ArtifactReference, error) {
+	digest, err := repoDigest(a.image, a.artifactOption.Insecure)
+	if err != nil {
+		return ftypes.ArtifactReference{}, xerrors.Errorf("repo digest error: %w", err)
+	}
+
+	client, err := sbomatt.NewRekor(a.artifactOption.RekorURL)
+	if err != nil {
+		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
+	}
+
+	raw, err := client.RetrieveSBOM(ctx, digest.DigestStr())
+	if errors.Is(err, sbomatt.ErrNoSBOMAttestation) {
+		return ftypes.ArtifactReference{}, errNoSBOMFound
+	} else if err != nil {
+		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to retrieve SBOM attestation: %w", err)
 	}
 
 	f, err := os.CreateTemp("", "sbom-*")
@@ -95,13 +136,24 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, entry rekor.Entry) (ft
 	defer os.Remove(f.Name())
 
 	if _, err = f.Write(raw); err != nil {
-		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to write statement: %w", err)
+		return ftypes.ArtifactReference{}, xerrors.Errorf("copy error: %w", err)
 	}
 	if err = f.Close(); err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to close %s: %w", f.Name(), err)
 	}
+	res, err := a.inspectSBOMFile(ctx, f.Name())
+	if err != nil {
+		return res, xerrors.Errorf("SBOM error: %w", err)
+	}
 
-	ar, err := sbom.NewArtifact(f.Name(), a.cache, a.artifactOption)
+	// Found SBOM
+	log.Logger.Infof("Found SBOM (%s) in Rekor (%s)", res.Type, a.artifactOption.RekorURL)
+
+	return res, nil
+}
+
+func (a Artifact) inspectSBOMFile(ctx context.Context, filePath string) (ftypes.ArtifactReference, error) {
+	ar, err := sbom.NewArtifact(filePath, a.cache, a.artifactOption)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to new artifact: %w", err)
 	}
@@ -115,39 +167,22 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, entry rekor.Entry) (ft
 	return results, nil
 }
 
-func (a Artifact) parseStatement(entry rekor.Entry) (json.RawMessage, error) {
-	// Skip base64-encoded attestation
-	if bytes.HasPrefix(entry.Statement, []byte(`eyJ`)) {
-		return nil, errNoSBOMFound
-	}
-
-	// Parse statement of in-toto attestation
-	var raw json.RawMessage
-	statement := &in_toto.Statement{
-		Predicate: &attestation.CosignPredicate{
-			Data: &raw, // Extract CycloneDX or SPDX
-		},
-	}
-	if err := json.Unmarshal(entry.Statement, &statement); err != nil {
-		return nil, xerrors.Errorf("attestation parse error: %w", err)
-	}
-
-	// TODO: add support for SPDX
-	if statement.PredicateType != in_toto.PredicateCycloneDX {
-		return nil, xerrors.Errorf("unsupported predicate type %s: %w", statement.PredicateType, errNoSBOMFound)
-	}
-	return raw, nil
-}
-
-func repoDigest(img ftypes.Image) (string, error) {
+func repoDigest(img ftypes.Image, insecure bool) (name.Digest, error) {
 	repoNameFull := img.Name()
-	repoName, _, _ := strings.Cut(repoNameFull, ":")
+	ref, err := name.ParseReference(repoNameFull)
+	if err != nil {
+		return name.Digest{}, xerrors.Errorf("image name parse error: %w", err)
+	}
 
 	for _, rd := range img.RepoDigests() {
-		if name, d, found := strings.Cut(rd, "@"); found && name == repoName {
-			return d, nil
+		opts := lo.Ternary(insecure, []name.Option{name.Insecure}, nil)
+		digest, err := name.NewDigest(rd, opts...)
+		if err != nil {
+			continue
+		}
+		if ref.Context().String() == digest.Context().String() {
+			return digest, nil
 		}
 	}
-	return "", xerrors.Errorf("no repo digest found: %w", errNoSBOMFound)
-
+	return name.Digest{}, xerrors.Errorf("no repo digest found: %w", errNoSBOMFound)
 }

@@ -1,9 +1,5 @@
 package flag
 
-import (
-	"github.com/aquasecurity/trivy/pkg/log"
-)
-
 // e.g. config yaml:
 //
 //	rego:
@@ -15,8 +11,7 @@ var (
 		Name:       "skip-policy-update",
 		ConfigName: "rego.skip-policy-update",
 		Value:      false,
-		Usage:      "deprecated",
-		Deprecated: true,
+		Usage:      "skip fetching rego policy updates",
 	}
 	TraceFlag = Flag{
 		Name:       "trace",
@@ -29,24 +24,33 @@ var (
 		ConfigName: "rego.policy",
 		Value:      []string{},
 		Usage:      "specify paths to the Rego policy files directory, applying config files",
+		Aliases: []Alias{
+			{Name: "policy"},
+		},
 	}
 	ConfigDataFlag = Flag{
 		Name:       "config-data",
 		ConfigName: "rego.data",
 		Value:      []string{},
 		Usage:      "specify paths from which data for the Rego policies will be recursively loaded",
+		Aliases: []Alias{
+			{Name: "data"},
+		},
 	}
 	PolicyNamespaceFlag = Flag{
 		Name:       "policy-namespaces",
 		ConfigName: "rego.namespaces",
 		Value:      []string{},
 		Usage:      "Rego namespaces",
+		Aliases: []Alias{
+			{Name: "namespaces"},
+		},
 	}
 )
 
 // RegoFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
 type RegoFlagGroup struct {
-	SkipPolicyUpdate *Flag // deprecated
+	SkipPolicyUpdate *Flag
 	Trace            *Flag
 	PolicyPaths      *Flag
 	DataPaths        *Flag
@@ -54,7 +58,7 @@ type RegoFlagGroup struct {
 }
 
 type RegoOptions struct {
-	SkipPolicyUpdate bool // deprecated
+	SkipPolicyUpdate bool
 	Trace            bool
 	PolicyPaths      []string
 	DataPaths        []string
@@ -86,10 +90,6 @@ func (f *RegoFlagGroup) Flags() []*Flag {
 }
 
 func (f *RegoFlagGroup) ToOptions() (RegoOptions, error) {
-	skipPolicyUpdateFlag := getBool(f.SkipPolicyUpdate)
-	if skipPolicyUpdateFlag {
-		log.Logger.Warn("'--skip-policy-update' is no longer necessary as the built-in policies are embedded into the binary")
-	}
 	return RegoOptions{
 		SkipPolicyUpdate: getBool(f.SkipPolicyUpdate),
 		Trace:            getBool(f.Trace),

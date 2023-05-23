@@ -1,11 +1,12 @@
 package flag
 
 import (
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
 
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 var (
@@ -45,7 +46,7 @@ var (
 		Name:       "insecure",
 		ConfigName: "insecure",
 		Value:      false,
-		Usage:      "allow insecure server connections when using TLS",
+		Usage:      "allow insecure server connections",
 		Persistent: true,
 	}
 	TimeoutFlag = Flag{
@@ -58,7 +59,7 @@ var (
 	CacheDirFlag = Flag{
 		Name:       "cache-dir",
 		ConfigName: "cache.dir",
-		Value:      utils.DefaultCacheDir(),
+		Value:      fsutils.CacheDir(),
 		Usage:      "cache directory",
 		Persistent: true,
 	}
@@ -109,7 +110,16 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 }
 
 func (f *GlobalFlagGroup) flags() []*Flag {
-	return []*Flag{f.ConfigFile, f.ShowVersion, f.Quiet, f.Debug, f.Insecure, f.Timeout, f.CacheDir, f.GenerateDefaultConfig}
+	return []*Flag{
+		f.ConfigFile,
+		f.ShowVersion,
+		f.Quiet,
+		f.Debug,
+		f.Insecure,
+		f.Timeout,
+		f.CacheDir,
+		f.GenerateDefaultConfig,
+	}
 }
 
 func (f *GlobalFlagGroup) AddFlags(cmd *cobra.Command) {
@@ -128,12 +138,15 @@ func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 }
 
 func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
+	// Keep TRIVY_NON_SSL for backward compatibility
+	insecure := getBool(f.Insecure) || os.Getenv("TRIVY_NON_SSL") != ""
+
 	return GlobalOptions{
 		ConfigFile:            getString(f.ConfigFile),
 		ShowVersion:           getBool(f.ShowVersion),
 		Quiet:                 getBool(f.Quiet),
 		Debug:                 getBool(f.Debug),
-		Insecure:              getBool(f.Insecure),
+		Insecure:              insecure,
 		Timeout:               getDuration(f.Timeout),
 		CacheDir:              getString(f.CacheDir),
 		GenerateDefaultConfig: getBool(f.GenerateDefaultConfig),

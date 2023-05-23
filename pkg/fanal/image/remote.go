@@ -2,49 +2,27 @@ package image
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
-	"net/http"
 	"strings"
 
-	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/image/token"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/remote"
 )
 
-func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.DockerOption) (types.Image, error) {
-	var remoteOpts []remote.Option
-	if option.InsecureSkipTLSVerify {
-		t := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		remoteOpts = append(remoteOpts, remote.WithTransport(t))
-	}
+func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error) {
+	// This function doesn't need cleanup
+	cleanup := func() {}
 
-	domain := ref.Context().RegistryStr()
-	auth := token.GetToken(ctx, domain, option)
-
-	if auth.Username != "" && auth.Password != "" {
-		remoteOpts = append(remoteOpts, remote.WithAuth(&auth))
-	} else if option.RegistryToken != "" {
-		bearer := authn.Bearer{Token: option.RegistryToken}
-		remoteOpts = append(remoteOpts, remote.WithAuth(&bearer))
-	} else {
-		remoteOpts = append(remoteOpts, remote.WithAuthFromKeychain(authn.DefaultKeychain))
-	}
-
-	desc, err := remote.Get(ref, remoteOpts...)
+	desc, err := remote.Get(ctx, ref, option.RegistryOptions)
 	if err != nil {
-		return nil, err
+		return nil, cleanup, err
 	}
-
 	img, err := desc.Image()
 	if err != nil {
-		return nil, err
+		return nil, cleanup, err
 	}
 
 	// Return v1.Image if the image is found in Docker Registry
@@ -53,7 +31,7 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		Image:      img,
 		ref:        implicitReference{ref: ref},
 		descriptor: desc,
-	}, nil
+	}, cleanup, nil
 
 }
 
@@ -70,10 +48,6 @@ func (img remoteImage) Name() string {
 
 func (img remoteImage) ID() (string, error) {
 	return ID(img)
-}
-
-func (img remoteImage) LayerIDs() ([]string, error) {
-	return LayerIDs(img)
 }
 
 func (img remoteImage) RepoTags() []string {

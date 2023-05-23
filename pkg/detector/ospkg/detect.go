@@ -8,6 +8,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/mariner"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
@@ -16,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -40,6 +42,8 @@ var (
 		fos.OpenSUSELeap: suse.NewScanner(suse.OpenSUSE),
 		fos.SLES:         suse.NewScanner(suse.SUSEEnterpriseLinux),
 		fos.Photon:       photon.NewScanner(),
+		fos.Wolfi:        wolfi.NewScanner(),
+		fos.Chainguard:   chainguard.NewScanner(),
 	}
 )
 
@@ -54,11 +58,8 @@ type Driver interface {
 	IsSupportedVersion(string, string) bool
 }
 
-// Detector implements Operation
-type Detector struct{}
-
 // Detect detects the vulnerabilities
-func (d Detector) Detect(_, osFamily, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
+func Detect(_, osFamily, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver, err := newDriver(osFamily)
 	if err != nil {
 		return nil, false, ErrUnsupportedOS
