@@ -3,7 +3,6 @@ package image
 import (
 	"context"
 	"errors"
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"io"
 	"io/fs"
 	"os"
@@ -21,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
