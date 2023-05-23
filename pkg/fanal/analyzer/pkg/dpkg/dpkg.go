@@ -52,19 +52,22 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	var packageInfos []types.PackageInfo
 	digests := map[string]digest.Digest{}
 
-	if f, err := input.FS.Open(availableFile); err == nil {
-		// parse `available` file to get digest for packages
+	// parse `available` file to get digest for packages
+	f, err := input.FS.Open(availableFile)
+	if err == nil {
 		digests, err = a.parseDpkgAvailable(bufio.NewScanner(f))
 		if err != nil {
 			log.Logger.Debugf("Unable to parse %q file: %s", availableFile, err)
 		}
 	}
+	defer f.Close()
 
 	required := func(path string, d fs.DirEntry) bool {
 		return path != availableFile
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	// parse other files
+	err = fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
 		scanner := bufio.NewScanner(r)
 		// parse list files
 		if a.isListFile(filepath.Split(path)) {
@@ -138,6 +141,7 @@ func (a dpkgAnalyzer) parseDpkgAvailable(scanner *bufio.Scanner) (map[string]dig
 			if pkg.ID != "" && pkg.Digest != "" {
 				pkgs[pkg.ID] = pkg.Digest
 			}
+			// clear pkg to save new package
 			pkg = types.Package{}
 		}
 		switch {
@@ -153,7 +157,7 @@ func (a dpkgAnalyzer) parseDpkgAvailable(scanner *bufio.Scanner) (map[string]dig
 		return nil, xerrors.Errorf("scan error: %w", err)
 	}
 
-	// past last package
+	// Add the last file
 	pkg.ID = a.pkgID(pkg.Name, pkg.Version)
 	if pkg.ID != "" && pkg.Digest != "" {
 		pkgs[pkg.ID] = pkg.Digest
