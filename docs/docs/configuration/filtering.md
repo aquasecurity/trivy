@@ -334,69 +334,77 @@ Total: 7 (UNKNOWN: 0, LOW: 1, MEDIUM: 1, HIGH: 3, CRITICAL: 2)
 Trivy supports Open Policy Agent (OPA) to filter vulnerabilities.
 You can specify a Rego file with `--ignore-policy` option.
 
-The Rego package name must be `trivy` and it must include a rule called `ignore` which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the `input` variable. The structure of each vulnerability input is the same as for the Trivy JSON output.  
-There is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`. For more info about the helper functions, look at the library [here][helper]
+The Rego package name must be `trivy` and it must include a rule called `ignore` which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the `input` variable. 
 
-To get started, see the [example policy][policy].
+The structure of each vulnerability input is the same as for the Trivy JSON result output.  
+
+For instance, if we want to create an `--ignore-policy` option for the following container image `centos:7`, you can first create the json output of the Trivy vulnerability scan:
+
+```bash
+$ trivy image -o result.json -f json centos:7
+```
+
+<details>
+<summary>JSON Result section</summary>
+```bash
+"Results": [
+    {
+      "Target": "centos:7 (centos 7.9.2009)",
+      "Class": "os-pkgs",
+      "Type": "centos",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2015-5186",
+          "PkgID": "audit-libs@2.8.5-4.el7.x86_64",
+          "PkgName": "audit-libs",
+          "InstalledVersion": "2.8.5-4.el7",
+          "Layer": {
+            "Digest": "sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc",
+            "DiffID": "sha256:174f5685490326fc0a1c0f5570b8663732189b327007e47ff13d2ca59673db02"
+          },
+          "SeveritySource": "redhat",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2015-5186",
+          "Title": "log terminal emulator escape sequences handling",
+          "Description": "Audit before 2.4.4 in Linux does not sanitize escape characters in filenames.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-20"
+          ],
+
+```
+</details>
+
+Next, you can see the JSON result output of the scan in the result.json file. In the file, you will find an array called `Result`. This will list all the Vulnerabilities and based on this information we can create the ignore policy:
+
+```bash
+package trivy
+
+import data.lib.trivy
+
+default ignore = false
+
+ignore {
+	input.CweIDs[_] == "CWE-20"
+}
+```
+
+The policy can then be passed into the Trivy command throgh the `--ignore-policy` flag:
 
 ```bash
 $ trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
 ```
 
-<details>
-<summary>Result</summary>
+This will remove the CVE with the specified `CweIDs` from the Trivy scan output.
 
-```bash
-centos:7 (centos 7.9.2009)
-==========================
-Total: 9 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 4, CRITICAL: 5)
+For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`. More info about the helper functions are in the library [here][helper].
 
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
-|   LIBRARY    | VULNERABILITY ID | SEVERITY | INSTALLED VERSION |   FIXED VERSION   |                  TITLE                  |
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
-| glib2        | CVE-2015-8385    | HIGH     | 2.56.1-7.el7      |                   | pcre: buffer overflow caused            |
-|              |                  |          |                   |                   | by named forward reference              |
-|              |                  |          |                   |                   | to duplicate group number...            |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2015-8385    |
-+              +------------------+          +                   +-------------------+-----------------------------------------+
-|              | CVE-2016-3191    |          |                   |                   | pcre: workspace overflow for            |
-|              |                  |          |                   |                   | (*ACCEPT) with deeply nested            |
-|              |                  |          |                   |                   | parentheses (8.39/13, 10.22/12)         |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2016-3191    |
-+              +------------------+          +                   +-------------------+-----------------------------------------+
-|              | CVE-2021-27219   |          |                   | 2.56.1-9.el7_9    | glib: integer overflow in               |
-|              |                  |          |                   |                   | g_bytes_new function on                 |
-|              |                  |          |                   |                   | 64-bit platforms due to an...           |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2021-27219   |
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
-| glibc        | CVE-2019-1010022 | CRITICAL | 2.17-317.el7      |                   | glibc: stack guard protection bypass    |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2019-1010022 |
-+--------------+                  +          +                   +-------------------+                                         +
-| glibc-common |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-+--------------+------------------+          +-------------------+-------------------+-----------------------------------------+
-| nss          | CVE-2021-43527   |          | 3.53.1-3.el7_9    | 3.67.0-4.el7_9    | nss: Memory corruption in               |
-|              |                  |          |                   |                   | decodeECorDsaSignature with             |
-|              |                  |          |                   |                   | DSA signatures (and RSA-PSS)            |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2021-43527   |
-+--------------+                  +          +                   +                   +                                         +
-| nss-sysinit  |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-+--------------+                  +          +                   +                   +                                         +
-| nss-tools    |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
-| openssl-libs | CVE-2020-1971    | HIGH     | 1:1.0.2k-19.el7   | 1:1.0.2k-21.el7_9 | openssl: EDIPARTYNAME                   |
-|              |                  |          |                   |                   | NULL pointer de-reference               |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2020-1971    |
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
+To get started, see the [example policy][policy].
+
+Additionally, it is possible to pass in Rego policies to misconfiguration scans. Currently, this feature is part of the `trivy fs` scans:
+
 ```
-
-</details>
+trivy fs --security-checks config --ignore-policy ./custom-policies/ignore/basic-two.rego ./bad_iac
+```
 
 [helper]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go
 [policy]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/contrib/example_policy

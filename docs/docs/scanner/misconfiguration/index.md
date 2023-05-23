@@ -2,6 +2,25 @@
 Trivy provides built-in policies to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
 In addition to built-in policies, you can write your own custom policies, as you can see [here][custom].
 
+## Overview of policies in Trivy
+Generally, policies define
+
+- best practices in configuration files
+- common security issues
+- regulations
+
+Policies are used as part of Trivy's misconfiguration scans. When performing a misconfiguration scan, Trivy will be given
+
+1. The target resource (file or directory) that has to be scanned
+2. The policies that Trivy should evaluate during the scan.
+
+Based on the policies provided, Trivy will evaluate the security issues in the configuration file and produce a scan output.
+
+Users have the option to define two types of policies:
+
+1. The [custom policies](./custom/index.md) that Trivy should use to scan the resource for misconfiguration. These will be used by Trivy in the misconfiguration scan in addition to our [built-in policies.](./policy/builtin.md)
+2. Policies to define the scan output. These are applied after Trivy has completed the scan but before the scan results are displayed. For further details, please view documentation on [filtering the scan output.](../../configuration/filtering.md)
+
 ## Quick start
 
 Simply specify a directory containing IaC files such as Terraform, CloudFormation, Azure ARM templates, Helm Charts and Dockerfile.
