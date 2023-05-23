@@ -140,6 +140,14 @@ func Test_juliaAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
+		{
+			// If there are no libs, `toApplication` makes the app nil. Not sure why but this is the expected behavior.
+			name: "no deps",
+			dir:  "testdata/no_deps",
+			want: &analyzer.AnalysisResult{
+				Applications: nil,
+			},
+		},
 	}
 
 	for _, tt := range tests {
