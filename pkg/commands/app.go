@@ -62,6 +62,11 @@ Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
 
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
 `
+
+	groupScanning   = "scanning"
+	groupManagement = "management"
+	groupUtility    = "utility"
+	groupPlugin     = "plugin"
 )
 
 var (
@@ -77,6 +82,22 @@ func SetOut(out io.Writer) {
 func NewApp(version string) *cobra.Command {
 	globalFlags := flag.NewGlobalFlagGroup()
 	rootCmd := NewRootCommand(version, globalFlags)
+	rootCmd.AddGroup(
+		&cobra.Group{
+			ID:    groupScanning,
+			Title: "Scanning Commands",
+		},
+		&cobra.Group{
+			ID:    groupManagement,
+			Title: "Management Commands",
+		},
+		&cobra.Group{
+			ID:    groupUtility,
+			Title: "Utility Commands",
+		},
+	)
+	rootCmd.SetCompletionCommandGroupID(groupUtility)
+	rootCmd.SetHelpCommandGroupID(groupUtility)
 	rootCmd.AddCommand(
 		NewImageCommand(globalFlags),
 		NewFilesystemCommand(globalFlags),
@@ -93,7 +114,14 @@ func NewApp(version string) *cobra.Command {
 		NewAWSCommand(globalFlags),
 		NewVMCommand(globalFlags),
 	)
-	rootCmd.AddCommand(loadPluginCommands()...)
+
+	if plugins := loadPluginCommands(); len(plugins) > 0 {
+		rootCmd.AddGroup(&cobra.Group{
+			ID:    groupPlugin,
+			Title: "Plugin Commands",
+		})
+		rootCmd.AddCommand(plugins...)
+	}
 
 	return rootCmd
 }
@@ -108,8 +136,9 @@ func loadPluginCommands() []*cobra.Command {
 	for _, p := range plugins {
 		p := p
 		cmd := &cobra.Command{
-			Use:   fmt.Sprintf("%s [flags]", p.Name),
-			Short: p.Usage,
+			Use:     fmt.Sprintf("%s [flags]", p.Name),
+			Short:   p.Usage,
+			GroupID: groupPlugin,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if err = p.Run(cmd.Context(), args); err != nil {
 					return xerrors.Errorf("plugin error: %w", err)
@@ -239,6 +268,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "image [flags] IMAGE_NAME",
 		Aliases: []string{"i"},
+		GroupID: groupScanning,
 		Short:   "Scan a container image",
 		Example: `  # Scan a container image
   $ trivy image python:3.4-alpine
@@ -317,6 +347,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "filesystem [flags] PATH",
 		Aliases: []string{"fs"},
+		GroupID: groupScanning,
 		Short:   "Scan local filesystem",
 		Example: `  # Scan a local project including language-specific files
   $ trivy fs /path/to/your_project
@@ -371,8 +402,9 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "rootfs [flags] ROOTDIR",
-		Short: "Scan rootfs",
+		Use:     "rootfs [flags] ROOTDIR",
+		Short:   "Scan rootfs",
+		GroupID: groupScanning,
 		Example: `  # Scan unpacked filesystem
   $ docker export $(docker create alpine:3.10.2) | tar -C /tmp/rootfs -xvf -
   $ trivy rootfs /tmp/rootfs
@@ -432,6 +464,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "repository [flags] REPO_URL",
 		Aliases: []string{"repo"},
+		GroupID: groupScanning,
 		Short:   "Scan a remote repository",
 		Example: `  # Scan your remote git repository
   $ trivy repo https://github.com/knqyf263/trivy-ci-test`,
@@ -529,6 +562,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "server [flags]",
 		Aliases: []string{"s"},
+		GroupID: groupUtility,
 		Short:   "Server mode",
 		Example: `  # Run a server
   $ trivy server
@@ -591,6 +625,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "config [flags] DIR",
 		Aliases: []string{"conf"},
+		GroupID: groupScanning,
 		Short:   "Scan config files for misconfigurations",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := configFlags.Bind(cmd); err != nil {
@@ -629,6 +664,7 @@ func NewPluginCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "plugin subcommand",
 		Aliases:       []string{"p"},
+		GroupID:       groupManagement,
 		Short:         "Manage plugins",
 		SilenceErrors: true,
 		SilenceUsage:  true,
@@ -734,6 +770,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "module subcommand",
 		Aliases:       []string{"m"},
+		GroupID:       groupManagement,
 		Short:         "Manage modules",
 		SilenceErrors: true,
 		SilenceUsage:  true,
@@ -831,6 +868,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
 		Aliases: []string{"k8s"},
+		GroupID: groupScanning,
 		Short:   "[EXPERIMENTAL] Scan kubernetes cluster",
 		Example: `  # cluster scanning
   $ trivy k8s --report summary cluster
@@ -892,6 +930,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "aws [flags]",
 		Aliases: []string{},
+		GroupID: groupScanning,
 		Args:    cobra.ExactArgs(0),
 		Short:   "[EXPERIMENTAL] Scan AWS account",
 		Long: fmt.Sprintf(`Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
@@ -965,6 +1004,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "vm [flags] VM_IMAGE",
 		Aliases: []string{},
+		GroupID: groupScanning,
 		Short:   "[EXPERIMENTAL] Scan a virtual machine image",
 		Example: `  # Scan your AWS AMI
   $ trivy vm --scanners vuln ami:${your_ami_id}
@@ -1021,8 +1061,9 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "sbom [flags] SBOM_PATH",
-		Short: "Scan SBOM for vulnerabilities",
+		Use:     "sbom [flags] SBOM_PATH",
+		Short:   "Scan SBOM for vulnerabilities",
+		GroupID: groupScanning,
 		Example: `  # Scan CycloneDX and show the result in tables
   $ trivy sbom /path/to/report.cdx
 
@@ -1065,9 +1106,10 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	var versionFormat string
 	cmd := &cobra.Command{
-		Use:   "version [flags]",
-		Short: "Print the version",
-		Args:  cobra.NoArgs,
+		Use:     "version [flags]",
+		Short:   "Print the version",
+		GroupID: groupUtility,
+		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := globalFlags.ToOptions()
 			showVersion(options.CacheDir, versionFormat, cmd.Version, outputWriter)
