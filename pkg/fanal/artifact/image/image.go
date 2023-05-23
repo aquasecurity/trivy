@@ -3,6 +3,7 @@ package image
 import (
 	"context"
 	"errors"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"io"
 	"io/fs"
 	"os"
@@ -503,7 +504,7 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) [
 		return nil
 	}
 
-	baseImageIndex := GuessBaseImageIndex(configFile.History)
+	baseImageIndex := image.GuessBaseImageIndex(configFile.History)
 
 	// Diff IDs don't include empty layers, so the index is different from histories
 	var diffIDIndex int
@@ -526,32 +527,4 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) [
 		diffIDIndex++
 	}
 	return baseDiffIDs
-}
-
-func GuessBaseImageIndex(histories []v1.History) int {
-	baseImageIndex := -1
-	var foundNonEmpty bool
-	for i := len(histories) - 1; i >= 0; i-- {
-		h := histories[i]
-
-		// Skip the last CMD, ENTRYPOINT, etc.
-		if !foundNonEmpty {
-			if h.EmptyLayer {
-				continue
-			}
-			foundNonEmpty = true
-		}
-
-		if !h.EmptyLayer {
-			continue
-		}
-
-		// Detect CMD instruction in base image
-		if strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)  CMD") ||
-			strings.HasPrefix(h.CreatedBy, "CMD") { // BuildKit
-			baseImageIndex = i
-			break
-		}
-	}
-	return baseImageIndex
 }
