@@ -1649,6 +1649,14 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#supported-formats" class="md-nav__link">
+    Supported Formats
+  </a>
+  
+    <nav class="md-nav" aria-label="Supported Formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#table-default" class="md-nav__link">
     Table (Default)
   </a>
@@ -1667,22 +1675,22 @@ You're not viewing the latest version.
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#json" class="md-nav__link">
     JSON
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#sarif" class="md-nav__link">
     SARIF
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#template" class="md-nav__link">
     Template
   </a>
@@ -1742,10 +1750,22 @@ You're not viewing the latest version.
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#sbom" class="md-nav__link">
     SBOM
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting" class="md-nav__link">
+    Converting
   </a>
   
 </li>
@@ -3059,6 +3079,14 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#supported-formats" class="md-nav__link">
+    Supported Formats
+  </a>
+  
+    <nav class="md-nav" aria-label="Supported Formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#table-default" class="md-nav__link">
     Table (Default)
   </a>
@@ -3077,22 +3105,22 @@ You're not viewing the latest version.
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#json" class="md-nav__link">
     JSON
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#sarif" class="md-nav__link">
     SARIF
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#template" class="md-nav__link">
     Template
   </a>
@@ -3152,10 +3180,22 @@ You're not viewing the latest version.
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#sbom" class="md-nav__link">
     SBOM
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting" class="md-nav__link">
+    Converting
   </a>
   
 </li>
@@ -3175,6 +3215,7 @@ You're not viewing the latest version.
 
 
 <h1 id="reporting">Reporting</h1>
+<h2 id="supported-formats">Supported Formats</h2>
 <p>Trivy supports the following formats:</p>
 <ul>
 <li>Table</li>
@@ -3183,7 +3224,7 @@ You're not viewing the latest version.
 <li>Template</li>
 <li>SBOM</li>
 </ul>
-<h2 id="table-default">Table (Default)</h2>
+<h3 id="table-default">Table (Default)</h3>
 <table>
 <thead>
 <tr>
@@ -3212,7 +3253,7 @@ You're not viewing the latest version.
 </table>
 <div class="highlight"><pre><span></span><code>$ trivy image -f table golang:1.12-alpine
 </code></pre></div>
-<h3 id="show-origins-of-vulnerable-dependencies">Show origins of vulnerable dependencies</h3>
+<h4 id="show-origins-of-vulnerable-dependencies">Show origins of vulnerable dependencies</h4>
 <table>
 <thead>
 <tr>
@@ -3324,7 +3365,7 @@ Lower levels show how those vulnerabilities are introduced.
 In the example above <strong>axios@0.21.4</strong> included in the project directly depends on the vulnerable <strong>follow-redirects@1.14.6</strong>.
 Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included through chain of dependencies that is added by <strong>cra-append-sw@2.7.0</strong>.</p>
 <p>Then, you can try to update <strong>axios@0.21.4</strong> and <strong>cra-append-sw@2.7.0</strong> to resolve vulnerabilities in <strong>follow-redirects@1.14.6</strong> and <strong>glob-parent@3.1.0</strong>.</p>
-<h2 id="json">JSON</h2>
+<h3 id="json">JSON</h3>
 <table>
 <thead>
 <tr>
@@ -3471,7 +3512,7 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 </details>
 
 <p><code>VulnerabilityID</code>, <code>PkgName</code>, <code>InstalledVersion</code>, and <code>Severity</code> in <code>Vulnerabilities</code> are always filled with values, but other fields might be empty.</p>
-<h2 id="sarif">SARIF</h2>
+<h3 id="sarif">SARIF</h3>
 <table>
 <thead>
 <tr>
@@ -3502,7 +3543,7 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 <div class="highlight"><pre><span></span><code>$ trivy image --format sarif -o report.sarif  golang:1.12-alpine
 </code></pre></div>
 <p>This SARIF file can be uploaded to GitHub code scanning results, and there is a <a href="https://github.com/aquasecurity/trivy-action">Trivy GitHub Action</a> for automating this process.</p>
-<h2 id="template">Template</h2>
+<h3 id="template">Template</h3>
 <table>
 <thead>
 <tr>
@@ -3529,7 +3570,7 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 </tr>
 </tbody>
 </table>
-<h3 id="custom-template">Custom Template</h3>
+<h4 id="custom-template">Custom Template</h4>
 <div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;{{ range . }} {{ .Target }} {{ end }}&quot; golang:1.12-alpine
 </code></pre></div>
 <details>
@@ -3552,13 +3593,13 @@ As an example you can summarize the different classes of issues:</p>
 </details>
 
 <p>For other features of sprig, see the official <a href="http://masterminds.github.io/sprig/">sprig</a> documentation.</p>
-<h3 id="load-templates-from-a-file">Load templates from a file</h3>
+<h4 id="load-templates-from-a-file">Load templates from a file</h4>
 <p>You can load templates from a file prefixing the template path with an @.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;@/path/to/template&quot; golang:1.12-alpine
 </code></pre></div>
-<h3 id="default-templates">Default Templates</h3>
+<h4 id="default-templates">Default Templates</h4>
 <p>If Trivy is installed using rpm then default templates can be found at <code>/usr/local/share/trivy/templates</code>.</p>
-<h4 id="junit">JUnit</h4>
+<h5 id="junit">JUnit</h5>
 <table>
 <thead>
 <tr>
@@ -3588,7 +3629,7 @@ As an example you can summarize the different classes of issues:</p>
 <p>In the following example using the template <code>junit.tpl</code> XML can be generated.
 <div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;@contrib/junit.tpl&quot; -o junit-report.xml  golang:1.12-alpine
 </code></pre></div></p>
-<h4 id="asff">ASFF</h4>
+<h5 id="asff">ASFF</h5>
 <table>
 <thead>
 <tr>
@@ -3616,7 +3657,7 @@ As an example you can summarize the different classes of issues:</p>
 </tbody>
 </table>
 <p>Trivy also supports an <a href="../../../tutorials/integrations/aws-security-hub/">ASFF template for reporting findings to AWS Security Hub</a></p>
-<h4 id="html">HTML</h4>
+<h5 id="html">HTML</h5>
 <table>
 <thead>
 <tr>
@@ -3648,8 +3689,29 @@ As an example you can summarize the different classes of issues:</p>
 <p>The following example shows use of default HTML template when Trivy is installed using rpm.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;@/usr/local/share/trivy/templates/html.tpl&quot; -o report.html golang:1.12-alpine
 </code></pre></div>
-<h2 id="sbom">SBOM</h2>
+<h3 id="sbom">SBOM</h3>
 <p>See <a href="../../supply-chain/sbom/">here</a> for details.</p>
+<h2 id="converting">Converting</h2>
+<p>To generate multiple reports, you can generate the JSON report first and convert it to other formats with the <code>convert</code> subcommand.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --format json -o result.json --list-all-pkgs debian:11
+$ trivy convert --format cyclonedx --output result.cdx result.json
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that if you want to convert to a format that requires a list of packages, 
+such as SBOM, you need to add the <code>--list-all-pkgs</code> flag when outputting in JSON.</p>
+</div>
+<p><a href="../filtering/">Filtering options</a> such as <code>--severity</code> are also available with <code>convert</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Output all severities in JSON</span>
+$ trivy image --format json -o result.json --list-all-pkgs debian:11
+
+<span class="c1"># Output only critical issues in table format</span>
+$ trivy convert --format table --severity CRITICAL result.json
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>JSON reports from "trivy aws" and "trivy k8s" are not yet supported.</p>
+</div>
 
               
             </article>
