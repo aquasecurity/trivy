@@ -7,7 +7,7 @@ contact_links:
     url: https://github.com/aquasecurity/trivy/discussions/new?category=bugs
     about: Report bugs
   - name: Enhance documentation
-    url: https://github.com/aquasecurity/trivy/discussions/new?category=docs
+    url: https://github.com/aquasecurity/trivy/discussions/new?category=documentation
     about: Make suggestions to the documentation
   - name: Request a feature enhancement
     url: https://github.com/aquasecurity/trivy/discussions/new?category=ideas
