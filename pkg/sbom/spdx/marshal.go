@@ -139,6 +139,9 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 	)
 
 	for _, result := range r.Results {
+		if len(result.Packages) == 0 {
+			continue
+		}
 		parentPackage, err := m.resultToSpdxPackage(result, r.Metadata.OS, pkgDownloadLocation)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse result: %w", err)

@@ -19,6 +19,7 @@ import (
 	javadb "github.com/aquasecurity/trivy-java-db/pkg/db"
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -106,6 +107,7 @@ func NewApp(version string) *cobra.Command {
 		NewClientCommand(globalFlags),
 		NewServerCommand(globalFlags),
 		NewConfigCommand(globalFlags),
+		NewConvertCommand(globalFlags),
 		NewPluginCommand(),
 		NewModuleCommand(globalFlags),
 		NewKubernetesCommand(globalFlags),
@@ -494,6 +496,47 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
+func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	convertFlags := &flag.Flags{
+		ScanFlagGroup:   &flag.ScanFlagGroup{},
+		ReportFlagGroup: flag.NewReportFlagGroup(),
+	}
+	cmd := &cobra.Command{
+		Use:     "convert [flags] RESULT_JSON",
+		Aliases: []string{"conv"},
+		GroupID: groupUtility,
+		Short:   "Convert Trivy JSON report into a different format",
+		Example: `  # report conversion
+  $ trivy image --format json --output result.json --list-all-pkgs debian:11
+  $ trivy convert --format cyclonedx --output result.cdx result.json
+`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := convertFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := convertFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			opts, err := convertFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+
+			return convert.Run(cmd.Context(), opts)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	convertFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, convertFlags.Usages(cmd)))
+
+	return cmd
+}
+
 // NewClientCommand returns the 'client' subcommand that is deprecated
 func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	remoteFlags := flag.NewClientFlags()
@@ -799,7 +842,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
-				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Registry())
+				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.RegistryOpts())
 			},
 		},
 		&cobra.Command{

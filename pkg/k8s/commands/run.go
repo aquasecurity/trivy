@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
@@ -120,7 +121,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	cmd.Exit(r.flagOpts, rpt.Failed())
+	operation.Exit(r.flagOpts, rpt.Failed())
 
 	return nil
 }

@@ -19,7 +19,7 @@ const (
 	tableFormat = "table"
 )
 
-// Report represents a kubernetes scan report
+// Report represents an AWS scan report
 type Report struct {
 	Provider        string
 	AccountID       string
