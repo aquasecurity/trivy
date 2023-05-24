@@ -157,17 +157,13 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		}
 	}
 	exludeNodeLabels := make(map[string]string)
-	if f.ExcludeNodes != nil {
-		exludeNodes := getStringSlice(f.ExcludeNodes)
-		if len(exludeNodes) > 0 {
-			for _, exludeNodeValue := range exludeNodes {
-				excludeNodeParts := strings.Split(exludeNodeValue, ":")
-				if len(excludeNodeParts) != 2 {
-					return K8sOptions{}, fmt.Errorf("exclude node %s must be a key:value", exludeNodeValue)
-				}
-				exludeNodeLabels[excludeNodeParts[0]] = excludeNodeParts[1]
-			}
+	exludeNodes := getStringSlice(f.ExcludeNodes)
+	for _, exludeNodeValue := range exludeNodes {
+		excludeNodeParts := strings.Split(exludeNodeValue, ":")
+		if len(excludeNodeParts) != 2 {
+			return K8sOptions{}, fmt.Errorf("exclude node %s must be a key:value", exludeNodeValue)
 		}
+		exludeNodeLabels[excludeNodeParts[0]] = excludeNodeParts[1]
 	}
 
 	return K8sOptions{
