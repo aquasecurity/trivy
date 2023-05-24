@@ -40,7 +40,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
-      --exclude-node strings              indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
+      --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
   -f, --format string                     format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")

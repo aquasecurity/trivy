@@ -76,8 +76,8 @@ var (
 		Usage:      "specify the namespace in which the node-collector job should be deployed",
 	}
 	ExcludeNodes = Flag{
-		Name:       "exclude-node",
-		ConfigName: "exclude.node",
+		Name:       "exclude-nodes",
+		ConfigName: "exclude.nodes",
 		Value:      []string{},
 		Usage:      "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)",
 	}
