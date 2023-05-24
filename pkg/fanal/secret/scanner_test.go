@@ -527,6 +527,37 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantMultiLine := types.SecretFinding{
+		RuleID:    "multi-line-secret",
+		Category:  "general",
+		Title:     "Generic Rule",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "***************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "123",
+					Highlighted: "123",
+				},
+				{
+					Number:      2,
+					Content:     "***************",
+					Highlighted: "***************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "123",
+					Highlighted: "123",
+				},
+			},
+		},
+	}
 
 	tests := []struct {
 		name          string
@@ -749,6 +780,21 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: "testdata/asymmetric-private-key.txt",
 				Findings: []types.SecretFinding{wantFindingAsymmSecretKey},
+			},
+		},
+		{
+			name:          "begin/end line symbols without multi-line mode",
+			configPath:    filepath.Join("testdata", "multi-line-off.yaml"),
+			inputFilePath: "testdata/multi-line.txt",
+			want:          types.Secret{},
+		},
+		{
+			name:          "begin/end line symbols with multi-line mode",
+			configPath:    filepath.Join("testdata", "multi-line-on.yaml"),
+			inputFilePath: "testdata/multi-line.txt",
+			want: types.Secret{
+				FilePath: "testdata/multi-line.txt",
+				Findings: []types.SecretFinding{wantMultiLine},
 			},
 		},
 	}
