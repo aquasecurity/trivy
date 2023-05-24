@@ -761,6 +761,69 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path secret",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "secret",
+				ArtifactType:  ftypes.ArtifactFilesystem,
+				Results: types.Results{
+					{
+						Target: "key.pem",
+						Class:  types.ClassSecret,
+						Secrets: []ftypes.SecretFinding{
+							{
+								RuleID:    "private-key",
+								Category:  "AsymmetricPrivateKey",
+								Severity:  "HIGH",
+								Title:     "Asymmetric Private Key",
+								StartLine: 1,
+								EndLine:   1,
+							},
+						},
+					},
+				},
+			},
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "secret",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/secret-3ff14136-e09f-4df9-80ea-000000000001",
+
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
+				},
+				Packages: []*spdx.Package{
+					{
+						PackageName:             "secret",
+						PackageSPDXIdentifier:   "Filesystem-5c08d34162a2c5d3",
+						PackageDownloadLocation: "NONE",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+					},
+				},
+				Relationships: []*spdx.Relationship{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-5c08d34162a2c5d3"},
+						Relationship: "DESCRIBES",
+					},
+				},
+			},
+		},
 	}
 
 	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
