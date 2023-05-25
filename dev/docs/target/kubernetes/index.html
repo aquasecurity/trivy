@@ -3325,6 +3325,9 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
 <p>Or, to filter for all other checks besides the infra checks, you can:</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s cluster --report summary --components=workload --scanners=config # scan all components besides infra
 </code></pre></div>
+<p>If you wish to exclude nodes from being scanned, you can use the flag <code>--exclude-nodes</code> with the node labels</p>
+<div class="highlight"><pre><span></span><code>trivy k8s cluster --report summary --exclude-nodes kubernetes.io/arch:arm6
+</code></pre></div>
 <h3 id="compliance">Compliance</h3>
 <p>This section describes Kubernetes specific compliance reports.
 For an overview of Trivy's Compliance feature, including working with custom compliance, check out the <a href="../../compliance/compliance/">Compliance documentation</a>.</p>
