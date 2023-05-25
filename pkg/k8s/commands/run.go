@@ -121,6 +121,11 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
+	log.Logger.Warnf("unfixed vulnerabilities:")
+	for _, result := range rpt.Results {
+		log.Logger.Warnf("%v", result.WarnedVulnerabilities)
+	}
+
 	operation.Exit(r.flagOpts, rpt.Failed())
 
 	return nil

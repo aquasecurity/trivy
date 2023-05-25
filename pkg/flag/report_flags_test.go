@@ -220,6 +220,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			viper.Set(flag.DependencyTreeFlag.ConfigName, tt.fields.dependencyTree)
 			viper.Set(flag.ListAllPkgsFlag.ConfigName, tt.fields.listAllPkgs)
 			viper.Set(flag.IgnoreFileFlag.ConfigName, tt.fields.ignoreFile)
+			viper.Set(flag.WarnUnfixedFlag.ConfigName, tt.fields.warnUnfixed)
 			viper.Set(flag.IgnoreUnfixedFlag.ConfigName, tt.fields.ignoreUnfixed)
 			viper.Set(flag.IgnorePolicyFlag.ConfigName, tt.fields.ignorePolicy)
 			viper.Set(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)

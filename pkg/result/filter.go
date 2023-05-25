@@ -29,6 +29,7 @@ const (
 
 type FilterOption struct {
 	Severities         []dbTypes.Severity
+	WarnUnfixed        bool
 	IgnoreUnfixed      bool
 	IncludeNonFailures bool
 	IgnoreFile         string
@@ -56,7 +57,7 @@ func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
 func FilterResult(ctx context.Context, result *types.Result, opt FilterOption) error {
 	ignoredIDs := getIgnoredIDs(opt.IgnoreFile)
 
-	filteredVulns := filterVulnerabilities(result.Vulnerabilities, opt.Severities, opt.IgnoreUnfixed, ignoredIDs, opt.VEXPath)
+	filteredVulns, warnedVulns := filterVulnerabilities(result.Vulnerabilities, opt.Severities, opt.IgnoreUnfixed, opt.WarnUnfixed, ignoredIDs, opt.VEXPath)
 	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, opt.Severities, opt.IncludeNonFailures, ignoredIDs)
 	result.Secrets = filterSecrets(result.Secrets, opt.Severities, ignoredIDs)
 	result.Licenses = filterLicenses(result.Licenses, opt.Severities, opt.IgnoreLicenses)
@@ -71,6 +72,7 @@ func FilterResult(ctx context.Context, result *types.Result, opt FilterOption) e
 	sort.Sort(types.BySeverity(filteredVulns))
 
 	result.Vulnerabilities = filteredVulns
+	result.WarnedVulnerabilities = warnedVulns
 	result.Misconfigurations = filteredMisconfs
 	result.MisconfSummary = misconfSummary
 
@@ -98,8 +100,9 @@ func filterByVEX(report types.Report, opt FilterOption) error {
 }
 
 func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity, ignoreUnfixed bool,
-	ignoredIDs []string, vexPath string) []types.DetectedVulnerability {
+	warnUnfixed bool, ignoredIDs []string, vexPath string) ([]types.DetectedVulnerability, []types.DetectedVulnerability) {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
+	warnedVulns := make(map[string]types.DetectedVulnerability)
 
 	for _, vuln := range vulns {
 		if vuln.Severity == "" {
@@ -109,6 +112,10 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 		for _, s := range severities {
 			if s.String() != vuln.Severity {
 				continue
+			}
+
+			if warnUnfixed && vuln.FixedVersion == "" {
+				uniqVulns[key] = vuln
 			}
 
 			// Ignore unfixed vulnerabilities
@@ -127,7 +134,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			break
 		}
 	}
-	return maps.Values(uniqVulns)
+	return maps.Values(uniqVulns), maps.Values(warnedVulns)
 }
 
 func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,

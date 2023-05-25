@@ -73,6 +73,7 @@ type Result struct {
 	Class             ResultClass                `json:"Class,omitempty"`
 	Type              string                     `json:"Type,omitempty"`
 	Packages          []ftypes.Package           `json:"Packages,omitempty"`
+	WarnedVulnerabilities   []DetectedVulnerability    `json:"WarnedVulnerabilities,omitempty"`
 	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
@@ -86,6 +87,10 @@ func (r *Result) MarshalJSON() ([]byte, error) {
 	// It would be noisy to users, so it should be removed from the JSON output.
 	for i := range r.Vulnerabilities {
 		r.Vulnerabilities[i].VendorSeverity = nil
+	}
+
+	for i := range r.WarnedVulnerabilities {
+		r.WarnedVulnerabilities[i].VendorSeverity = nil
 	}
 
 	// remove the Highlighted attribute from the json results
@@ -105,7 +110,7 @@ func (r *Result) MarshalJSON() ([]byte, error) {
 }
 
 func (r *Result) IsEmpty() bool {
-	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
+	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.WarnedVulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
 		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0
 }
 
