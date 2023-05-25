@@ -73,6 +73,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --reset                             remove all caches and database
       --reset-policy-bundle               remove policy bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
+      --scan-all-dirs                     scan all dirs recursively
       --scanners string                   comma-separated list of what security issues to detect (vuln,config,secret,license) (default "vuln,config,secret,rbac")
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
   -s, --severity string                   severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
