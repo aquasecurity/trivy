@@ -15,6 +15,11 @@ trivy image [flags] IMAGE_NAME
   # Scan a container image from a tar archive
   $ trivy image --input ruby-3.1.tar
 
+  # Scan an OCI imag from a local layout referenced by tag or digest
+  $ trivy image --input alpine:3.15
+
+  $ trivy image --input alpine@sha256:82389ea44e50c696aba18393b168a833929506f5b29b9d75eb817acceb6d54ba
+
   # Filter by severities
   $ trivy image --severity HIGH,CRITICAL alpine:3.15
 
