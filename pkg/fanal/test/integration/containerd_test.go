@@ -798,7 +798,7 @@ func TestContainerd_PullImage(t *testing.T) {
 	containerdC := startContainerd(t, ctx, tmpDir)
 	defer containerdC.Terminate(ctx)
 
-	cli, err := containerd.New(socketPath, containerd.WithPlatform(platforms.Only(platforms.DefaultSpec())))
+	cli, err := containerd.New(socketPath, containerd.WithDefaultPlatform(platforms.Only(platforms.DefaultSpec())))
 	require.NoError(t, err)
 	defer cli.Close()
 
