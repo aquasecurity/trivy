@@ -64,11 +64,17 @@ func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
 		if err != nil {
 			return nil, xerrors.Errorf("error getting image manifest: %w", err)
 		}
-		if manifest.Config.Platform == nil {
+
+		ps, err := images.Platforms(ctx, img.ContentStore(), manifest.Config)
+		if err != nil {
+			return nil, xerrors.Errorf("error getting image platforms: %w", err)
+		}
+
+		if len(ps) == 0 {
 			return nil, xerrors.New("no platform")
 		}
 
-		platOpts := archive.WithPlatform(platforms.OnlyStrict(*manifest.Config.Platform))
+		platOpts := archive.WithPlatform(platforms.OnlyStrict(ps[0]))
 		pr, pw := io.Pipe()
 		go func() {
 			pw.CloseWithError(archive.Export(ctx, client.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
