@@ -60,9 +60,9 @@ func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
 		target := img.Target()
 		manifestOpts := archive.WithManifest(target)
 
-		manifest, err := images.Manifest(ctxWithNamespace, img.ContentStore(), target, img.Platform())
+		manifest, err := images.Manifest(ctx, img.ContentStore(), target, img.Platform())
 		if err != nil {
-			return nil, xerrors.New("error getting image manifest: %w", err)
+			return nil, xerrors.Errorf("error getting image manifest: %w", err)
 		}
 		if manifest.Config.Platform == nil {
 			return nil, xerrors.New("no platform")
