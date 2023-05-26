@@ -14,7 +14,6 @@ import (
 	"github.com/containerd/containerd/content"
 	"github.com/containerd/containerd/images/archive"
 	"github.com/containerd/containerd/namespaces"
-	"github.com/containerd/containerd/platforms"
 	refdocker "github.com/containerd/containerd/reference/docker"
 	api "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -57,7 +56,7 @@ func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
 		}
 		imgOpts := archive.WithImage(client.ImageService(), ref[0])
 		manifestOpts := archive.WithManifest(img.Target())
-		platOpts := archive.WithPlatform(platforms.DefaultStrict())
+		platOpts := archive.WithPlatform(img.Platform())
 		pr, pw := io.Pipe()
 		go func() {
 			pw.CloseWithError(archive.Export(ctx, client.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
