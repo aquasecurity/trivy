@@ -57,7 +57,11 @@ func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
 		}
 		imgOpts := archive.WithImage(client.ImageService(), ref[0])
 		manifestOpts := archive.WithManifest(img.Target())
-		platOpts := archive.WithPlatform(platforms.OnlyStrict(img.Spec().Platform))
+		spec, err := img.Spec(ctx)
+		if err != nil {
+			return nil, xerrors.Errorf("impossible to retrieve specs: %v", err)
+		}
+		platOpts := archive.WithPlatform(platforms.OnlyStrict(spec.Platform))
 		pr, pw := io.Pipe()
 		go func() {
 			pw.CloseWithError(archive.Export(ctx, client.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
