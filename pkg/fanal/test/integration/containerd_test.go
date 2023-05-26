@@ -31,7 +31,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/containerd/containerd/platforms"
 )
 
 func configureTestDataPaths(t *testing.T, namespace string) (string, string) {
@@ -813,10 +812,9 @@ func TestContainerd_PullImage(t *testing.T) {
 				c.Close()
 			}()
 
-			ctrdImg, err := cli.Pull(ctx, tt.imageName, containerd.WithPlatform(platforms.DefaultString()))
+			_, err = cli.Pull(ctx, tt.imageName)
 			require.NoError(t, err)
 
-			t.Logf("image platform: %+v, current platform: %s", ctrdImg.Platform(), platforms.DefaultString())
 			// Enable only containerd
 			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, types.ImageOptions{
 				ImageSources: types.ImageSources{types.ContainerdImageSource},
