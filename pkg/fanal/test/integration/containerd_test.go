@@ -813,9 +813,10 @@ func TestContainerd_PullImage(t *testing.T) {
 				c.Close()
 			}()
 
-			_, err = cli.Pull(ctx, tt.imageName, containerd.WithPlatformMatcher(platforms.DefaultStrict()))
+			ctrdImg, err = cli.Pull(ctx, tt.imageName, containerd.WithPlatform(platforms.DefaultString()))
 			require.NoError(t, err)
 
+			t.Logf("image platform: %+v, current platform: %s", ctrdImg.Platform(), platforms.DefaultString())
 			// Enable only containerd
 			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, types.ImageOptions{
 				ImageSources: types.ImageSources{types.ContainerdImageSource},
