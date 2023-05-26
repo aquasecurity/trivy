@@ -31,6 +31,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/containerd/containerd/platforms"
 )
 
 func configureTestDataPaths(t *testing.T, namespace string) (string, string) {
@@ -797,7 +798,7 @@ func TestContainerd_PullImage(t *testing.T) {
 	containerdC := startContainerd(t, ctx, tmpDir)
 	defer containerdC.Terminate(ctx)
 
-	cli, err := containerd.New(socketPath)
+	cli, err := containerd.New(socketPath, containerd.WithPlatform(platforms.Only(platforms.DefaultSpec())))
 	require.NoError(t, err)
 	defer cli.Close()
 
