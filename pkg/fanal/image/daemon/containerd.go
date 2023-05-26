@@ -56,15 +56,8 @@ func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
 			return nil, xerrors.New("no image reference")
 		}
 		imgOpts := archive.WithImage(client.ImageService(), ref[0])
-		config, err := img.Config(ctx)
-		if err != nil {
-			return nil, xerrors.Errorf("error while retrieving image config: %v", err)
-		}
-		if config.Platform == nil {
-			return nil, xerrors.New("no config platform")
-		}
 		manifestOpts := archive.WithManifest(img.Target())
-		platOpts := archive.WithPlatform(platforms.OnlyStrict(*config.Platform))
+		platOpts := archive.WithPlatform(platforms.OnlyStrict(img.Spec().Platform))
 		pr, pw := io.Pipe()
 		go func() {
 			pw.CloseWithError(archive.Export(ctx, client.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
