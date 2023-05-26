@@ -813,7 +813,7 @@ func TestContainerd_PullImage(t *testing.T) {
 				c.Close()
 			}()
 
-			ctrdImg, err = cli.Pull(ctx, tt.imageName, containerd.WithPlatform(platforms.DefaultString()))
+			ctrdImg, err := cli.Pull(ctx, tt.imageName, containerd.WithPlatform(platforms.DefaultString()))
 			require.NoError(t, err)
 
 			t.Logf("image platform: %+v, current platform: %s", ctrdImg.Platform(), platforms.DefaultString())
