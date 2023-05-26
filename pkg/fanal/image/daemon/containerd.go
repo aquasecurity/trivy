@@ -12,6 +12,7 @@ import (
 
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/content"
+	"github.com/containerd/containerd/images"
 	"github.com/containerd/containerd/images/archive"
 	"github.com/containerd/containerd/namespaces"
 	"github.com/containerd/containerd/platforms"
@@ -56,12 +57,18 @@ func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
 			return nil, xerrors.New("no image reference")
 		}
 		imgOpts := archive.WithImage(client.ImageService(), ref[0])
-		manifestOpts := archive.WithManifest(img.Target())
-		spec, err := img.Spec(ctx)
+		target := img.Target()
+		manifestOpts := archive.WithManifest(target)
+
+		manifest, err := images.Manifest(ctxWithNamespace, img.ContentStore(), target, img.Platform())
 		if err != nil {
-			return nil, xerrors.Errorf("impossible to retrieve specs: %v", err)
+			return nil, xerrors.New("error getting image manifest: %w", err)
 		}
-		platOpts := archive.WithPlatform(platforms.OnlyStrict(spec.Platform))
+		if manifest.Config.Platform == nil {
+			return nil, xerrors.New("no platform")
+		}
+
+		platOpts := archive.WithPlatform(platforms.OnlyStrict(*manifest.Config.Platform))
 		pr, pw := io.Pipe()
 		go func() {
 			pw.CloseWithError(archive.Export(ctx, client.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
