@@ -138,4 +138,38 @@ var (
 		{ID: "uri-js@4.4.1", DependsOn: []string{"punycode@2.1.1"}},
 		{ID: "verror@1.10.0", DependsOn: []string{"assert-plus@1.0.0", "core-util-is@1.0.2", "extsprintf@1.3.0"}},
 	}
+
+	// docker run --name node --rm -it node@sha256:710a2c192ca426e03e4f3ec1869e5c29db855eb6969b74e6c50fd270ffccd3f1 sh
+	// npm install -g pnpm@8.5.1
+	// mkdir /temp && cd /temp
+	// npm install lodash@4.17.21
+	// cd ./node_modules/lodash/
+	// npm pack
+	// mkdir -p /app/foo/bar && cd /app
+	// cp /temp/node_modules/lodash/lodash-4.17.21.tgz /app/foo/bar/lodash.tgz
+	// npm install ./foo/bar/lodash.tgz
+	// pnpm update
+	// pnpm add https://github.com/debug-js/debug/tarball/4.3.4
+	// pnpm add https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5
+	// pnpm list --prod --depth 10 | grep -E -o "\S+\s+[0-9]+(\.[0-9]+)+$" | awk '{printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\", Indirect: false},\n")}' | sort -u
+	pnpmArchives = []types.Library{
+		{ID: "debug@4.3.4", Name: "debug", Version: "4.3.4", Indirect: false},
+		{ID: "is-negative@2.0.1", Name: "is-negative", Version: "2.0.1", Indirect: false},
+		{ID: "lodash@4.17.21", Name: "lodash", Version: "4.17.21", Indirect: false},
+		{ID: "ms@2.1.2", Name: "ms", Version: "2.1.2", Indirect: true},
+	}
+
+	pnpmArchivesDeps = []types.Dependency{
+		{
+			ID:        "debug@4.3.4",
+			DependsOn: []string{"ms@2.1.2"},
+		},
+	}
+
+	// docker run --name node --rm -it node@sha256:710a2c192ca426e03e4f3ec1869e5c29db855eb6969b74e6c50fd270ffccd3f1 sh
+	// npm install -g pnpm@8.5.1
+	// pnpm add promise@8.1.0 jquery@3.6.0
+	// pnpm list --prod --depth 10 | grep -E -o "\S+\s+[0-9]+(\.[0-9]+)+$" | awk '{printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\", Indirect: true},\n")}' | sort -u
+	pnpmV6     = pnpmNormal
+	pnpmV6Deps = pnpmNormalDeps
 )
