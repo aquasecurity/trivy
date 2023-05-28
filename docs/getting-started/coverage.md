@@ -1,6 +1,10 @@
 # Scanning Coverage
 
-## Programming languages
+Trivy can detect security issues in many different platforms and languages. This page gives a general overview of that coverage, and can help answer the frequently asked question "Does Trivy support X?". For more detailed information about the specific features and options, check the relevant scanner documentation.
+
+## Vulnerabilities & SBOM
+
+### Programming languages
 Trivy detects code dependencies for the purpose of SBOM generation and vulnerability detection. The following programming languages have some level of support:
 
 - Ruby
@@ -18,7 +22,7 @@ Trivy detects code dependencies for the purpose of SBOM generation and vulnerabi
 
 Some features might be not be universally supported. For a full supportability matrix, [see here](../docs/scanner/vulnerability/language/index.md).
 
-## OS
+### OS
 Trivy detects installed packages for the purpose of vulnerability detection. The following package managers are supported:
 
 - Alpine Linux
