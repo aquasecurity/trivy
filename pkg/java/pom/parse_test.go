@@ -316,6 +316,29 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "exclusions with wildcards",
+			inputFile: filepath.Join("testdata", "wildcard-exclusions", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				{
+					Name:    "com.example:wildcard-exclusions",
+					Version: "4.0.0",
+				},
+				{
+					Name:    "org.example:example-dependency",
+					Version: "1.2.3",
+				},
+				{
+					Name:    "org.example:example-dependency2",
+					Version: "2.3.4",
+				},
+				{
+					Name:    "org.example:example-nested",
+					Version: "3.3.3",
+				},
+			},
+		},
+		{
 			name:      "multi module",
 			inputFile: filepath.Join("testdata", "multi-module", "pom.xml"),
 			local:     true,

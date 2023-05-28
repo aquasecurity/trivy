@@ -355,7 +355,7 @@ func (p *parser) mergeDependencies(parent, child []artifact, exclusions map[stri
 	unique := map[string]struct{}{}
 
 	for _, d := range append(parent, child...) {
-		if _, ok := exclusions[d.Name()]; ok {
+		if excludeDep(exclusions, d) {
 			continue
 		}
 		if _, ok := unique[d.Name()]; ok {
@@ -366,6 +366,22 @@ func (p *parser) mergeDependencies(parent, child []artifact, exclusions map[stri
 	}
 
 	return deps
+}
+
+func excludeDep(exclusions map[string]struct{}, art artifact) bool {
+	if _, ok := exclusions[art.Name()]; ok {
+		return true
+	}
+	// Maven can use "*" in GroupID and ArtifactID fields to exclude dependencies
+	// https://maven.apache.org/pom.html#exclusions
+	for exlusion := range exclusions {
+		// exclusion format - "<groupID>:<artifactID>"
+		e := strings.Split(exlusion, ":")
+		if (e[0] == art.GroupID || e[0] == "*") && (e[1] == art.ArtifactID || e[1] == "*") {
+			return true
+		}
+	}
+	return false
 }
 
 func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResult, error) {
