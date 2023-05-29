@@ -3,6 +3,7 @@ package scanner
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"strings"
 
 	"github.com/aquasecurity/defsec/pkg/framework"
@@ -14,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 type AWSScanner struct {
@@ -77,6 +79,14 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 	policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
 	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
+	scannerOpts = append(scannerOpts, options.ScannerWithPolicyFilesystem(nil))
+
+	dataFS, dataPaths, err := createDataFS(option.RegoOptions.DataPaths)
+	if err != nil {
+		log.Logger.Errorf("Could not load config data: %s", err)
+	}
+	scannerOpts = append(scannerOpts, options.ScannerWithDataDirs(dataPaths...))
+	scannerOpts = append(scannerOpts, options.ScannerWithDataFilesystem(dataFS))
 
 	if len(option.RegoOptions.PolicyNamespaces) > 0 {
 		scannerOpts = append(
@@ -132,6 +142,31 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	return defsecResults, len(included) > 0, nil
+}
+
+func createDataFS(dataPaths []string) (fs.FS, []string, error) {
+	fsys := mapfs.New()
+	//k8sVersion := "a"
+	// Create a virtual file for Kubernetes scanning
+	//if k8sVersion != "" {
+	//	if err := fsys.MkdirAll("system", 0700); err != nil {
+	//		return nil, nil, err
+	//	}
+	//	data := []byte(fmt.Sprintf(`{"k8s": {"version": "%s"}}`, k8sVersion))
+	//	if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0600); err != nil {
+	//		return nil, nil, err
+	//	}
+	//}
+	for _, path := range dataPaths {
+		if err := fsys.CopyFilesUnder(path); err != nil {
+			return nil, nil, err
+		}
+	}
+
+	// data paths are no longer needed as fs.FS contains only needed files now.
+	dataPaths = []string{"."}
+
+	return fsys, dataPaths, nil
 }
 
 type defsecLogger struct {
