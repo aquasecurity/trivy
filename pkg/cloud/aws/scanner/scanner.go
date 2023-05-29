@@ -79,7 +79,6 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 	policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
 	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
-	scannerOpts = append(scannerOpts, options.ScannerWithPolicyFilesystem(nil))
 
 	dataFS, dataPaths, err := createDataFS(option.RegoOptions.DataPaths)
 	if err != nil {
