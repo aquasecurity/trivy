@@ -14,15 +14,14 @@ func tryOCI(fileName string) (v1.Image, error) {
 
 	// Check if tag is specified in input
 	// e.g. /path/to/oci:0.0.1
-	if strings.Contains(fileName, "@") {
-		splitFileName := strings.SplitN(fileName, "@", 2)
-		inputFileName = splitFileName[0]
-		inputRef = splitFileName[1]
-	} else if strings.Contains(fileName, ":") {
-		splitFileName := strings.SplitN(fileName, ":", 2)
-		inputFileName = splitFileName[0]
-		inputRef = splitFileName[1]
-	} else {
+
+	inputFileName, inputRef, found := strings.Cut(fileName, "@")
+
+	if !found {
+		inputFileName, inputRef, found = strings.Cut(fileName, ":")
+	}
+
+	if !found {
 		inputFileName = fileName
 		inputRef = ""
 	}
