@@ -73,7 +73,7 @@ var (
 const (
 	quote       = `["']?`
 	connect     = `\s*(:|=>|=)\s*`
-	startSecret = `(^|\s+)`
+	startSecret = `(^|\W+)`
 	endSecret   = `(\s+|$)`
 
 	aws = `(aws)?_?`
@@ -95,7 +95,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAWS,
 		Severity:        "CRITICAL",
 		Title:           "AWS Access Key ID",
-		Regex:           MustCompile(fmt.Sprintf(`%s(?P<secret>(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})%s%s`, quote, quote, endSecret)),
+		Regex:           MustCompile(fmt.Sprintf(`%s%s(?P<secret>(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})%s%s`, startSecret, quote, quote, endSecret)),
 		SecretGroupName: "secret",
 		Keywords:        []string{"AKIA", "AGPA", "AIDA", "AROA", "AIPA", "ANPA", "ANVA", "ASIA"},
 	},

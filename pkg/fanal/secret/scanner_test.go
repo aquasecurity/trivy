@@ -430,6 +430,11 @@ func TestSecretScanner(t *testing.T) {
 					FirstCause:  true,
 					LastCause:   true,
 				},
+				{
+					Number:      4,
+					Content:     "MAKEDRIEMQGEVLENLPNATFRVKLENGHVVLGYISGKMRMHYIRILPGDKAKIAMTPYDLSRARIIFRAK",
+					Highlighted: "MAKEDRIEMQGEVLENLPNATFRVKLENGHVVLGYISGKMRMHYIRILPGDKAKIAMTPYDLSRARIIFRAK",
+				},
 			},
 		},
 	}
