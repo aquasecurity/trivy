@@ -77,7 +77,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		log.Logger.Debug("Policies successfully loaded from disk")
 		policyPaths = append(policyPaths, downloadedPolicyPaths...)
 		scannerOpts = append(scannerOpts,
-			options.ScannerWithEmbeddedPolicies(false))
+			options.ScannerWithEmbeddedPolicies(true))
 	}
 
 	policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
@@ -91,8 +91,6 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	if len(policyPaths) > 0 {
 		scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
 	}
-	//scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
-	//scannerOpts = append(scannerOpts, options.ScannerWithPolicyFilesystem(nil))
 
 	dataFS, dataPaths, err := createDataFS(option.RegoOptions.DataPaths)
 	if err != nil {
@@ -181,17 +179,7 @@ func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
 
 func createDataFS(dataPaths []string) (fs.FS, []string, error) {
 	fsys := mapfs.New()
-	//k8sVersion := "a"
-	// Create a virtual file for Kubernetes scanning
-	//if k8sVersion != "" {
-	//	if err := fsys.MkdirAll("system", 0700); err != nil {
-	//		return nil, nil, err
-	//	}
-	//	data := []byte(fmt.Sprintf(`{"k8s": {"version": "%s"}}`, k8sVersion))
-	//	if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0600); err != nil {
-	//		return nil, nil, err
-	//	}
-	//}
+
 	for _, path := range dataPaths {
 		if err := fsys.CopyFilesUnder(path); err != nil {
 			return nil, nil, err
