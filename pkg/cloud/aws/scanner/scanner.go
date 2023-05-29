@@ -3,9 +3,7 @@ package scanner
 import (
 	"context"
 	"fmt"
-	"golang.org/x/xerrors"
 	"io/fs"
-	"path/filepath"
 	"strings"
 
 	"github.com/aquasecurity/defsec/pkg/framework"
@@ -77,20 +75,12 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		log.Logger.Debug("Policies successfully loaded from disk")
 		policyPaths = append(policyPaths, downloadedPolicyPaths...)
 		scannerOpts = append(scannerOpts,
-			options.ScannerWithEmbeddedPolicies(true))
+			options.ScannerWithEmbeddedPolicies(false))
 	}
 
 	policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
-	policyFS, policyPaths, err := createPolicyFS(option.RegoOptions.PolicyPaths)
-	if err != nil {
-		log.Logger.Errorf("Could not load config data: %s", err)
-	}
-	if policyFS != nil {
-		scannerOpts = append(scannerOpts, options.ScannerWithPolicyFilesystem(policyFS))
-	}
-	if len(policyPaths) > 0 {
-		scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
-	}
+
+	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
 
 	dataFS, dataPaths, err := createDataFS(option.RegoOptions.DataPaths)
 	if err != nil {
@@ -155,31 +145,8 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	return defsecResults, len(included) > 0, nil
 }
 
-func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
-	if len(policyPaths) == 0 {
-		return nil, nil, nil
-	}
-
-	mfs := mapfs.New()
-	for _, p := range policyPaths {
-		abs, err := filepath.Abs(p)
-		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to derive absolute path from '%s': %w", p, err)
-		}
-		if err = mfs.CopyFilesUnder(abs); err != nil {
-			return nil, nil, xerrors.Errorf("mapfs file copy error: %w", err)
-		}
-	}
-
-	// policy paths are no longer needed as fs.FS contains only needed files now.
-	policyPaths = []string{"."}
-
-	return mfs, policyPaths, nil
-}
-
 func createDataFS(dataPaths []string) (fs.FS, []string, error) {
 	fsys := mapfs.New()
-
 	for _, path := range dataPaths {
 		if err := fsys.CopyFilesUnder(path); err != nil {
 			return nil, nil, err
