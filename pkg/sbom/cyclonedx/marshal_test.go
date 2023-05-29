@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
+
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -76,6 +78,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2018-20623",
+								PkgID:            "binutils@2.30-93.el8",
 								PkgName:          "binutils",
 								InstalledVersion: "2.30-93.el8",
 								Layer: ftypes.Layer{
@@ -125,14 +128,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
-								ID:      "actionpack@7.0.0",
-								Name:    "actionpack",
-								Version: "7.0.0",
+								ID:       "actionpack@7.0.0",
+								Name:     "actionpack",
+								Version:  "7.0.0",
+								Indirect: false,
 							},
 							{
-								ID:      "actioncontroller@7.0.0",
-								Name:    "actioncontroller",
-								Version: "7.0.0",
+								ID:       "actioncontroller@7.0.0",
+								Name:     "actioncontroller",
+								Version:  "7.0.0",
+								Indirect: false,
 								DependsOn: []string{
 									"actionpack@7.0.0",
 								},
@@ -198,12 +203,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:       "rails:latest",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:SchemaVersion",
-								Value: "2",
-							},
-							{
-								Name:  "aquasecurity:trivy:Size",
-								Value: "1024",
+								Name:  "aquasecurity:trivy:DiffID",
+								Value: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 							},
 							{
 								Name:  "aquasecurity:trivy:ImageID",
@@ -214,17 +215,165 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Value: "rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177",
 							},
 							{
-								Name:  "aquasecurity:trivy:DiffID",
-								Value: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
-							},
-							{
 								Name:  "aquasecurity:trivy:RepoTag",
 								Value: "rails:latest",
+							},
+							{
+								Name:  "aquasecurity:trivy:SchemaVersion",
+								Value: "2",
+							},
+							{
+								Name:  "aquasecurity:trivy:Size",
+								Value: "1024",
 							},
 						},
 					},
 				},
 				Components: &[]cdx.Component{
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000002",
+						Type:    cdx.ComponentTypeOS,
+						Name:    "centos",
+						Version: "8.3.2011",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "os-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "centos",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "app/subproject/Gemfile.lock",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "bundler",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000004",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "app/Gemfile.lock",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "bundler",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000005",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "app/datacollector.deps.json",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "dotnet-core",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000006",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "usr/local/bin/tfsec",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "gobinary",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:gem/actioncontroller@7.0.0",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actioncontroller",
+						Version:    "7.0.0",
+						PackageURL: "pkg:gem/actioncontroller@7.0.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actioncontroller@7.0.0",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "bundler",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:gem/actionpack@7.0.0",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actionpack",
+						Version:    "7.0.0",
+						PackageURL: "pkg:gem/actionpack@7.0.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.0",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "bundler",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "golang.org/x/crypto",
+						Version:    "v0.0.0-20210421170649-83a5a9bb288b",
+						PackageURL: "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "gobinary",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:nuget/Newtonsoft.Json@9.0.1",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "Newtonsoft.Json",
+						Version:    "9.0.1",
+						PackageURL: "pkg:nuget/Newtonsoft.Json@9.0.1",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "Newtonsoft.Json@9.0.1",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "dotnet-core",
+							},
+						},
+					},
 					{
 						BOMRef:  "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 						Type:    cdx.ComponentTypeLibrary,
@@ -251,162 +400,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Value: "binutils",
 							},
 							{
-								Name:  "aquasecurity:trivy:SrcVersion",
-								Value: "2.30",
-							},
-							{
 								Name:  "aquasecurity:trivy:SrcRelease",
 								Value: "93.el8",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcVersion",
+								Value: "2.30",
 							},
 						},
 						Hashes: &[]cdx.Hash{
 							{
 								Algorithm: cdx.HashAlgoMD5,
 								Value:     "7459cec61bb4d1b0ca8107e25e0dd005",
-							},
-						},
-					},
-					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000002",
-						Type:    cdx.ComponentTypeOS,
-						Name:    "centos",
-						Version: "8.3.2011",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:Type",
-								Value: "centos",
-							},
-							{
-								Name:  "aquasecurity:trivy:Class",
-								Value: "os-pkgs",
-							},
-						},
-					},
-					{
-						BOMRef:     "pkg:gem/actionpack@7.0.0",
-						Type:       cdx.ComponentTypeLibrary,
-						Name:       "actionpack",
-						Version:    "7.0.0",
-						PackageURL: "pkg:gem/actionpack@7.0.0",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:PkgID",
-								Value: "actionpack@7.0.0",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "bundler",
-							},
-						},
-					},
-					{
-						BOMRef:     "pkg:gem/actioncontroller@7.0.0",
-						Type:       cdx.ComponentTypeLibrary,
-						Name:       "actioncontroller",
-						Version:    "7.0.0",
-						PackageURL: "pkg:gem/actioncontroller@7.0.0",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:PkgID",
-								Value: "actioncontroller@7.0.0",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "bundler",
-							},
-						},
-					},
-					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
-						Type:    cdx.ComponentTypeApplication,
-						Name:    "app/subproject/Gemfile.lock",
-						Version: "",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:Type",
-								Value: "bundler",
-							},
-							{
-								Name:  "aquasecurity:trivy:Class",
-								Value: "lang-pkgs",
-							},
-						},
-					},
-					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000004",
-						Type:    cdx.ComponentTypeApplication,
-						Name:    "app/Gemfile.lock",
-						Version: "",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:Type",
-								Value: "bundler",
-							},
-							{
-								Name:  "aquasecurity:trivy:Class",
-								Value: "lang-pkgs",
-							},
-						},
-					},
-					{
-						BOMRef:     "pkg:nuget/Newtonsoft.Json@9.0.1",
-						Type:       cdx.ComponentTypeLibrary,
-						Name:       "Newtonsoft.Json",
-						Version:    "9.0.1",
-						PackageURL: "pkg:nuget/Newtonsoft.Json@9.0.1",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:PkgID",
-								Value: "Newtonsoft.Json@9.0.1",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "dotnet-core",
-							},
-						},
-					},
-					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000005",
-						Type:    cdx.ComponentTypeApplication,
-						Name:    "app/datacollector.deps.json",
-						Version: "",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:Type",
-								Value: "dotnet-core",
-							},
-							{
-								Name:  "aquasecurity:trivy:Class",
-								Value: "lang-pkgs",
-							},
-						},
-					},
-					{
-						BOMRef:     "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
-						Type:       cdx.ComponentTypeLibrary,
-						Name:       "golang.org/x/crypto",
-						Version:    "v0.0.0-20210421170649-83a5a9bb288b",
-						PackageURL: "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "gobinary",
-							},
-						},
-					},
-					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000006",
-						Type:    cdx.ComponentTypeApplication,
-						Name:    "usr/local/bin/tfsec",
-						Version: "",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:Type",
-								Value: "gobinary",
-							},
-							{
-								Name:  "aquasecurity:trivy:Class",
-								Value: "lang-pkgs",
 							},
 						},
 					},
@@ -450,6 +455,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						Ref:          "pkg:gem/actionpack@7.0.0",
+						Dependencies: lo.ToPtr([]string(nil)),
+					},
+					{
+						Ref:          "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						Dependencies: lo.ToPtr([]string(nil)),
+					},
+					{
+						Ref:          "pkg:nuget/Newtonsoft.Json@9.0.1",
+						Dependencies: lo.ToPtr([]string(nil)),
+					},
+					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000002",
@@ -458,6 +475,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"3ff14136-e09f-4df9-80ea-000000000005",
 							"3ff14136-e09f-4df9-80ea-000000000006",
 						},
+					},
+					{
+						Ref:          "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+						Dependencies: lo.ToPtr([]string(nil)),
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -616,6 +637,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2022-23633",
+								PkgID:            "actionpack@7.0.0",
 								PkgName:          "actionpack",
 								PkgPath:          "tools/project-john/specifications/actionpack.gemspec",
 								InstalledVersion: "7.0.0",
@@ -658,6 +680,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 							{
 								VulnerabilityID:  "CVE-2022-23633",
+								PkgID:            "actionpack@7.0.1",
 								PkgName:          "actionpack",
 								PkgPath:          "tools/project-doe/specifications/actionpack.gemspec",
 								InstalledVersion: "7.0.1",
@@ -724,14 +747,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:       "centos:latest",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:SchemaVersion",
-								Value: "2",
-							},
-							{
-								Name:  "aquasecurity:trivy:Size",
-								Value: "1024",
-							},
-							{
 								Name:  "aquasecurity:trivy:ImageID",
 								Value: "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
 							},
@@ -739,10 +754,84 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:  "aquasecurity:trivy:RepoTag",
 								Value: "centos:latest",
 							},
+							{
+								Name:  "aquasecurity:trivy:SchemaVersion",
+								Value: "2",
+							},
+							{
+								Name:  "aquasecurity:trivy:Size",
+								Value: "1024",
+							},
 						},
 					},
 				},
 				Components: &[]cdx.Component{
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
+						Type:    cdx.ComponentTypeOS,
+						Name:    fos.CentOS,
+						Version: "8.3.2011",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "os-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "centos",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actionpack",
+						Version:    "7.0.0",
+						PackageURL: "pkg:gem/actionpack@7.0.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "tools/project-john/specifications/actionpack.gemspec",
+							},
+							{
+								Name:  "aquasecurity:trivy:LayerDiffID",
+								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.0",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "gemspec",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actionpack",
+						Version:    "7.0.1",
+						PackageURL: "pkg:gem/actionpack@7.0.1",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "tools/project-doe/specifications/actionpack.gemspec",
+							},
+							{
+								Name:  "aquasecurity:trivy:LayerDiffID",
+								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.1",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "gemspec",
+							},
+						},
+					},
 					{
 						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						Type:    cdx.ComponentTypeLibrary,
@@ -762,20 +851,20 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Value: "centos",
 							},
 							{
-								Name:  "aquasecurity:trivy:SrcName",
-								Value: "acl",
+								Name:  "aquasecurity:trivy:SrcEpoch",
+								Value: "1",
 							},
 							{
-								Name:  "aquasecurity:trivy:SrcVersion",
-								Value: "2.2.53",
+								Name:  "aquasecurity:trivy:SrcName",
+								Value: "acl",
 							},
 							{
 								Name:  "aquasecurity:trivy:SrcRelease",
 								Value: "1.el8",
 							},
 							{
-								Name:  "aquasecurity:trivy:SrcEpoch",
-								Value: "1",
+								Name:  "aquasecurity:trivy:SrcVersion",
+								Value: "2.2.53",
 							},
 						},
 						Hashes: &[]cdx.Hash{
@@ -808,84 +897,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Value: "glibc",
 							},
 							{
-								Name:  "aquasecurity:trivy:SrcVersion",
-								Value: "2.28",
-							},
-							{
 								Name:  "aquasecurity:trivy:SrcRelease",
 								Value: "151.el8",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcVersion",
+								Value: "2.28",
 							},
 						},
 						Hashes: &[]cdx.Hash{
 							{
 								Algorithm: cdx.HashAlgoMD5,
 								Value:     "969b3c9231627022f8bf7ac70de807a1",
-							},
-						},
-					},
-					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
-						Type:    cdx.ComponentTypeOS,
-						Name:    fos.CentOS,
-						Version: "8.3.2011",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:Type",
-								Value: "centos",
-							},
-							{
-								Name:  "aquasecurity:trivy:Class",
-								Value: "os-pkgs",
-							},
-						},
-					},
-					{
-						BOMRef:     "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
-						Type:       cdx.ComponentTypeLibrary,
-						Name:       "actionpack",
-						Version:    "7.0.0",
-						PackageURL: "pkg:gem/actionpack@7.0.0",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:PkgID",
-								Value: "actionpack@7.0.0",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "gemspec",
-							},
-							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "tools/project-john/specifications/actionpack.gemspec",
-							},
-							{
-								Name:  "aquasecurity:trivy:LayerDiffID",
-								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
-							},
-						},
-					},
-					{
-						BOMRef:     "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
-						Type:       cdx.ComponentTypeLibrary,
-						Name:       "actionpack",
-						Version:    "7.0.1",
-						PackageURL: "pkg:gem/actionpack@7.0.1",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:PkgID",
-								Value: "actionpack@7.0.1",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "gemspec",
-							},
-							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "tools/project-doe/specifications/actionpack.gemspec",
-							},
-							{
-								Name:  "aquasecurity:trivy:LayerDiffID",
-								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 							},
 						},
 					},
@@ -908,10 +931,22 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						Ref:          "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						Dependencies: lo.ToPtr([]string(nil)),
+					},
+					{
+						Ref:          "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						Dependencies: lo.ToPtr([]string(nil)),
+					},
+					{
 						Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						Dependencies: &[]string{
 							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
+					},
+					{
+						Ref:          "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+						Dependencies: lo.ToPtr([]string(nil)),
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -1041,6 +1076,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000003",
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "Gemfile.lock",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "bundler",
+							},
+						},
+					},
+					{
 						BOMRef:     "pkg:gem/actioncable@6.1.4.1",
 						Type:       "library",
 						Name:       "actioncable",
@@ -1050,21 +1100,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "bundler",
-							},
-						},
-					},
-					{
-						BOMRef: "3ff14136-e09f-4df9-80ea-000000000003",
-						Type:   cdx.ComponentTypeApplication,
-						Name:   "Gemfile.lock",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:Type",
-								Value: "bundler",
-							},
-							{
-								Name:  "aquasecurity:trivy:Class",
-								Value: "lang-pkgs",
 							},
 						},
 					},
@@ -1082,6 +1117,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Dependencies: &[]string{
 							"pkg:gem/actioncable@6.1.4.1",
 						},
+					},
+					{
+						Ref:          "pkg:gem/actioncable@6.1.4.1",
+						Dependencies: lo.ToPtr([]string(nil)),
 					},
 				},
 			},
@@ -1151,20 +1190,20 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:PkgID",
-								Value: "ruby-typeprof@0.20.1",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "node-pkg",
-							},
-							{
 								Name:  "aquasecurity:trivy:FilePath",
 								Value: "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
 							},
 							{
 								Name:  "aquasecurity:trivy:LayerDiffID",
 								Value: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "ruby-typeprof@0.20.1",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "node-pkg",
 							},
 						},
 					},
@@ -1176,6 +1215,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Dependencies: &[]string{
 							"pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 						},
+					},
+					{
+						Ref:          "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+						Dependencies: lo.ToPtr([]string(nil)),
 					},
 				},
 			},
@@ -1220,7 +1263,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: lo.ToPtr([]string(nil)),
 					},
 				},
 			},
@@ -1237,7 +1280,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
 			}
 
-			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
+			marshaler := cyclonedx.NewMarshaler("dev", core.WithClock(clock), core.WithNewUUID(newUUID))
 			got, err := marshaler.Marshal(tt.inputReport)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
@@ -1615,7 +1658,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
 			}
 
-			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
+			marshaler := cyclonedx.NewMarshaler("dev", core.WithClock(clock), core.WithNewUUID(newUUID))
 			got, err := marshaler.MarshalVulnerabilities(tt.inputReport)
 			require.NoError(t, err)
 
