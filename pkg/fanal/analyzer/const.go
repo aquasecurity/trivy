@@ -110,6 +110,7 @@ const (
 	TypeHelm           Type = Type(detection.FileTypeHelm)
 	TypeKubernetes     Type = Type(detection.FileTypeKubernetes)
 	TypeTerraform      Type = Type(detection.FileTypeTerraform)
+	TypeTerraformPlan  Type = Type(detection.FileTypeTerraformPlan)
 
 	// ========
 	// License
