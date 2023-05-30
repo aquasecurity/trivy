@@ -4,7 +4,7 @@ site_description: A Simple and Comprehensive Vulnerability Scanner for Container
 docs_dir: docs/
 repo_name: GitHub
 repo_url: https://github.com/aquasecurity/trivy
-edit_uri: ""
+edit_uri: "blob/main/docs/"
 
 nav:
   - Getting Started: 
@@ -157,7 +157,11 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - navigation.footer
+    - content.action.edit
     - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
 
 markdown_extensions:
   - pymdownx.highlight
@@ -179,6 +183,13 @@ extra:
     method: mike
     provider: mike
     default: latest
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/AquaTrivy
+    - icon: fontawesome/brands/github
+      link: https://github.com/aquasecurity/trivy
+    - icon: fontawesome/brands/slack
+      link: https://github.com/aquasecurity/trivy
 
 plugins:
   - search
