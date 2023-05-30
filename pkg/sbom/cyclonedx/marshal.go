@@ -1,6 +1,7 @@
 package cyclonedx
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -12,6 +13,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -142,16 +144,17 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 
 	// Group vulnerabilities by package ID
 	vulns := lo.GroupBy(result.Vulnerabilities, func(v types.DetectedVulnerability) string {
-		return v.PkgID
+		return lo.Ternary(v.PkgID == "", fmt.Sprintf("%s@%s", v.PkgName, v.InstalledVersion), v.PkgID)
 	})
 
 	// Create package map
 	pkgs := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, Package) {
-		return pkg.ID, Package{
+		pkgID := lo.Ternary(pkg.ID == "", fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)), pkg.ID)
+		return pkgID, Package{
 			Type:            result.Type,
 			Metadata:        metadata,
 			Package:         pkg,
-			Vulnerabilities: vulns[pkg.ID],
+			Vulnerabilities: vulns[pkgID],
 		}
 	})
 
