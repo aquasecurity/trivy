@@ -4,15 +4,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
-
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -38,9 +38,6 @@ const (
 	PropertyFilePath        = "FilePath"
 	PropertyLayerDigest     = "LayerDigest"
 	PropertyLayerDiffID     = "LayerDiffID"
-
-	// https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
-	timeLayout = "2006-01-02T15:04:05+00:00"
 )
 
 var (
@@ -66,6 +63,23 @@ func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 	}
 
 	return e.core.Marshal(root), nil
+}
+
+func (e *Marshaler) marshalReport(r types.Report) (*core.Component, error) {
+	// Metadata component
+	root, err := e.rootComponent(r)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range r.Results {
+		components, err := e.marshalResult(r.Metadata, result)
+		if err != nil {
+			return nil, err
+		}
+		root.Components = append(root.Components, components...)
+	}
+	return root, nil
 }
 
 func (e *Marshaler) marshalResult(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
@@ -149,11 +163,11 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 		}
 
 		// Recursive packages from direct dependencies
-		component, err := e.marshalPackage(pkg, pkgs, map[string]*core.Component{})
-		if err != nil {
+		if component, err := e.marshalPackage(pkg, pkgs, map[string]*core.Component{}); err != nil {
 			return nil, nil
+		} else if component != nil {
+			directComponents = append(directComponents, component)
 		}
-		directComponents = append(directComponents, component)
 	}
 
 	return directComponents, nil
@@ -185,30 +199,13 @@ func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, compone
 			continue
 		}
 
-		child, err := e.marshalPackage(childPkg, pkgs, components)
-		if err != nil {
+		if child, err := e.marshalPackage(childPkg, pkgs, components); err != nil {
 			return nil, xerrors.Errorf("failed to parse pkg: %w", err)
+		} else if child != nil {
+			component.Components = append(component.Components, child)
 		}
-		component.Components = append(component.Components, child)
 	}
 	return component, nil
-}
-
-func (e *Marshaler) marshalReport(r types.Report) (*core.Component, error) {
-	// Metadata component
-	root, err := e.rootComponent(r)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, result := range r.Results {
-		components, err := e.marshalResult(r.Metadata, result)
-		if err != nil {
-			return nil, err
-		}
-		root.Components = append(root.Components, components...)
-	}
-	return root, nil
 }
 
 func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
