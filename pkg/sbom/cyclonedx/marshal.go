@@ -185,8 +185,8 @@ type Package struct {
 
 func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, components map[string]*core.Component,
 ) (*core.Component, error) {
-	if _, ok := components[pkg.ID]; ok {
-		return nil, nil
+	if c, ok := components[pkg.ID]; ok {
+		return c, nil
 	}
 
 	component, err := pkgComponent(pkg)
@@ -202,11 +202,11 @@ func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, compone
 			continue
 		}
 
-		if child, err := e.marshalPackage(childPkg, pkgs, components); err != nil {
+		child, err := e.marshalPackage(childPkg, pkgs, components)
+		if err != nil {
 			return nil, xerrors.Errorf("failed to parse pkg: %w", err)
-		} else if child != nil {
-			component.Components = append(component.Components, child)
 		}
+		component.Components = append(component.Components, child)
 	}
 	return component, nil
 }
