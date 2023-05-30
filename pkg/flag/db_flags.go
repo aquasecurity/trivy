@@ -7,6 +7,7 @@ import (
 )
 
 const defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
+const defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
 
 var (
 	ResetFlag = Flag{
@@ -29,7 +30,7 @@ var (
 		Aliases: []Alias{
 			{
 				Name:       "skip-update",
-				Deprecated: true, // --security-update was renamed to --skip-db-update
+				Deprecated: true, // --skip-update was renamed to --skip-db-update
 			},
 		},
 	}
@@ -57,6 +58,12 @@ var (
 		Value:      defaultDBRepository,
 		Usage:      "OCI repository to retrieve trivy-db from",
 	}
+	JavaDBRepositoryFlag = Flag{
+		Name:       "java-db-repository",
+		ConfigName: "db.java-repository",
+		Value:      defaultJavaDBRepository,
+		Usage:      "OCI repository to retrieve trivy-java-db from",
+	}
 	LightFlag = Flag{
 		Name:       "light",
 		ConfigName: "db.light",
@@ -75,6 +82,7 @@ type DBFlagGroup struct {
 	SkipJavaDBUpdate   *Flag
 	NoProgress         *Flag
 	DBRepository       *Flag
+	JavaDBRepository   *Flag
 	Light              *Flag // deprecated
 }
 
@@ -86,6 +94,7 @@ type DBOptions struct {
 	SkipJavaDBUpdate   bool
 	NoProgress         bool
 	DBRepository       string
+	JavaDBRepository   string
 	Light              bool // deprecated
 }
 
@@ -100,6 +109,7 @@ func NewDBFlagGroup() *DBFlagGroup {
 		Light:              &LightFlag,
 		NoProgress:         &NoProgressFlag,
 		DBRepository:       &DBRepositoryFlag,
+		JavaDBRepository:   &JavaDBRepositoryFlag,
 	}
 }
 
@@ -116,6 +126,7 @@ func (f *DBFlagGroup) Flags() []*Flag {
 		f.SkipJavaDBUpdate,
 		f.NoProgress,
 		f.DBRepository,
+		f.JavaDBRepository,
 		f.Light,
 	}
 }
@@ -146,5 +157,6 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		Light:              light,
 		NoProgress:         getBool(f.NoProgress),
 		DBRepository:       getString(f.DBRepository),
+		JavaDBRepository:   getString(f.JavaDBRepository),
 	}, nil
 }

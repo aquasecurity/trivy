@@ -63,12 +63,7 @@ func (a packagingAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	}
 
 	p := packaging.NewParser()
-	libs, deps, err := p.Parse(r)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to parse %s: %w", input.FilePath, err)
-	}
-
-	return language.ToAnalysisResult(types.PythonPkg, input.FilePath, input.FilePath, libs, deps), nil
+	return language.AnalyzePackage(types.PythonPkg, input.FilePath, r, p, input.Options.FileChecksum)
 }
 
 func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSeekerAt, error) {

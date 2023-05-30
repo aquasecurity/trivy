@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/reusable-release.yaml
     with:
       goreleaser_config: goreleaser.yml
-      goreleaser_options: '--rm-dist --timeout 90m'
+      goreleaser_options: '--clean --timeout 90m'
     secrets: inherit
 
   deploy-packages:
@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
 
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v3.3.1
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}

@@ -60,6 +60,9 @@ const (
 
 	// Wolfi is done
 	Wolfi = "wolfi"
+
+	// Chainguard is done
+	Chainguard = "chainguard"
 )
 
 var AnalyzeOSError = xerrors.New("unable to analyze OS information")

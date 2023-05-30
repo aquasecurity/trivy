@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -17,8 +16,9 @@ import (
 
 func TestDir_Walk(t *testing.T) {
 	type fields struct {
-		skipFiles []string
-		skipDirs  []string
+		skipFiles   []string
+		skipDirs    []string
+		errCallback walker.ErrorCallback
 	}
 	tests := []struct {
 		name      string
@@ -29,7 +29,7 @@ func TestDir_Walk(t *testing.T) {
 	}{
 		{
 			name:    "happy path",
-			rootDir: filepath.Join("testdata", "fs"),
+			rootDir: "testdata/fs",
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				if filePath == "testdata/fs/bar" {
 					got, err := opener()
@@ -45,7 +45,7 @@ func TestDir_Walk(t *testing.T) {
 		},
 		{
 			name:    "skip file",
-			rootDir: filepath.Join("testdata", "fs"),
+			rootDir: "testdata/fs",
 			fields: fields{
 				skipFiles: []string{"testdata/fs/bar"},
 			},
@@ -70,8 +70,21 @@ func TestDir_Walk(t *testing.T) {
 			},
 		},
 		{
+			name:    "ignore all errors",
+			rootDir: "testdata/fs/nosuch",
+			fields: fields{
+				errCallback: func(pathname string, err error) error {
+					return nil
+				},
+			},
+			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+				// Ignore errors
+				return nil
+			},
+		},
+		{
 			name:    "sad path",
-			rootDir: filepath.Join("testdata", "fs"),
+			rootDir: "testdata/fs",
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				return errors.New("error")
 			},
@@ -80,7 +93,7 @@ func TestDir_Walk(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			w := walker.NewFS(tt.fields.skipFiles, tt.fields.skipDirs, true)
+			w := walker.NewFS(tt.fields.skipFiles, tt.fields.skipDirs, true, tt.fields.errCallback)
 
 			err := w.Walk(tt.rootDir, tt.analyzeFn)
 			if tt.wantErr != "" {

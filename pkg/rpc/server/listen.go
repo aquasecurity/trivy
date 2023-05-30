@@ -16,8 +16,9 @@ import (
 	dbFile "github.com/deepfactor-io/trivy/pkg/db"
 	dbc "github.com/deepfactor-io/trivy/pkg/db"
 	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/log"
-	"github.com/deepfactor-io/trivy/pkg/utils"
+	"github.com/deepfactor-io/trivy/pkg/utils/fsutils"
 	rpcCache "github.com/deepfactor-io/trivy/rpc/cache"
 	rpcScanner "github.com/deepfactor-io/trivy/rpc/scanner"
 )
@@ -32,31 +33,35 @@ type Server struct {
 	token        string
 	tokenHeader  string
 	dbRepository string
+
+	// For OCI registries
+	types.RegistryOptions
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository string) Server {
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository string, opt types.RegistryOptions) Server {
 	return Server{
-		appVersion:   appVersion,
-		addr:         addr,
-		cacheDir:     cacheDir,
-		token:        token,
-		tokenHeader:  tokenHeader,
-		dbRepository: dbRepository,
+		appVersion:      appVersion,
+		addr:            addr,
+		cacheDir:        cacheDir,
+		token:           token,
+		tokenHeader:     tokenHeader,
+		dbRepository:    dbRepository,
+		RegistryOptions: opt,
 	}
 }
 
 // ListenAndServe starts Trivy server
-func (s Server) ListenAndServe(serverCache cache.Cache, insecure, skipDBUpdate bool) error {
+func (s Server) ListenAndServe(serverCache cache.Cache, skipDBUpdate bool) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, insecure, dbc.WithDBRepository(s.dbRepository)))
+		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, dbc.WithDBRepository(s.dbRepository)))
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)
-			if err := worker.update(ctx, s.appVersion, s.cacheDir, skipDBUpdate, dbUpdateWg, requestWg); err != nil {
+			if err := worker.update(ctx, s.appVersion, s.cacheDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {
 				log.Logger.Errorf("%+v\n", err)
 			}
 		}
@@ -121,7 +126,7 @@ func newDBWorker(dbClient dbFile.Operation) dbWorker {
 }
 
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
-	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup) error {
+	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
 	log.Logger.Debug("Check for DB update...")
 	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, skipDBUpdate)
 	if err != nil {
@@ -131,20 +136,20 @@ func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 	}
 
 	log.Logger.Info("Updating DB...")
-	if err = w.hotUpdate(ctx, cacheDir, dbUpdateWg, requestWg); err != nil {
+	if err = w.hotUpdate(ctx, cacheDir, dbUpdateWg, requestWg, opt); err != nil {
 		return xerrors.Errorf("failed DB hot update: %w", err)
 	}
 	return nil
 }
 
-func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, requestWg *sync.WaitGroup) error {
+func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
 	tmpDir, err := os.MkdirTemp("", "db")
 	if err != nil {
 		return xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	if err = w.dbClient.Download(ctx, tmpDir); err != nil {
+	if err = w.dbClient.Download(ctx, tmpDir, opt); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
@@ -160,12 +165,12 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 
 	// Copy trivy.db
-	if _, err = utils.CopyFile(db.Path(tmpDir), db.Path(cacheDir)); err != nil {
+	if _, err = fsutils.CopyFile(db.Path(tmpDir), db.Path(cacheDir)); err != nil {
 		return xerrors.Errorf("failed to copy the database file: %w", err)
 	}
 
 	// Copy metadata.json
-	if _, err = utils.CopyFile(metadata.Path(tmpDir), metadata.Path(cacheDir)); err != nil {
+	if _, err = fsutils.CopyFile(metadata.Path(tmpDir), metadata.Path(cacheDir)); err != nil {
 		return xerrors.Errorf("failed to copy the metadata file: %w", err)
 	}
 

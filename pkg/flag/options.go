@@ -15,6 +15,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
+	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/log"
 	"github.com/deepfactor-io/trivy/pkg/report"
 )
@@ -66,7 +67,9 @@ type Flags struct {
 	K8sFlagGroup           *K8sFlagGroup
 	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
+	ModuleFlagGroup        *ModuleFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
+	RegistryFlagGroup      *RegistryFlagGroup
 	RegoFlagGroup          *RegoFlagGroup
 	RepoFlagGroup          *RepoFlagGroup
 	ReportFlagGroup        *ReportFlagGroup
@@ -87,6 +90,8 @@ type Options struct {
 	K8sOptions
 	LicenseOptions
 	MisconfOptions
+	ModuleOptions
+	RegistryOptions
 	RegoOptions
 	RemoteOptions
 	RepoOptions
@@ -123,6 +128,17 @@ func (o *Options) Align() {
 	}
 }
 
+// Registry returns options for OCI registries
+func (o *Options) Registry() ftypes.RegistryOptions {
+	return ftypes.RegistryOptions{
+		Credentials:   o.Credentials,
+		RegistryToken: o.RegistryToken,
+		Insecure:      o.Insecure,
+		Platform:      o.Platform,
+		AWSRegion:     o.AWSOptions.Region,
+	}
+}
+
 func addFlag(cmd *cobra.Command, flag *Flag) {
 	if flag == nil || flag.Name == "" {
 		return
@@ -145,6 +161,8 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:
 		flags.DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+	case float64:
+		flags.Float64P(flag.Name, flag.Shorthand, v, flag.Usage)
 	}
 
 	if flag.Deprecated {
@@ -162,14 +180,13 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 	}
 
 	// Bind CLI flags
-	if flag.Persistent {
-		if err := viper.BindPFlag(flag.ConfigName, cmd.PersistentFlags().Lookup(flag.Name)); err != nil {
-			return xerrors.Errorf("bind flag error: %w", err)
-		}
-	} else {
-		if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
-			return xerrors.Errorf("bind flag error: %w", err)
-		}
+	f := cmd.Flags().Lookup(flag.Name)
+	if f == nil {
+		// Lookup local persistent flags
+		f = cmd.PersistentFlags().Lookup(flag.Name)
+	}
+	if err := viper.BindPFlag(flag.ConfigName, f); err != nil {
+		return xerrors.Errorf("bind flag error: %w", err)
 	}
 
 	// Bind environmental variable
@@ -225,6 +242,10 @@ func getInt(flag *Flag) int {
 	return cast.ToInt(getValue(flag))
 }
 
+func getFloat(flag *Flag) float64 {
+	return cast.ToFloat64(getValue(flag))
+}
+
 func getBool(flag *Flag) bool {
 	return cast.ToBool(getValue(flag))
 }
@@ -269,6 +290,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.DBFlagGroup != nil {
 		groups = append(groups, f.DBFlagGroup)
 	}
+	if f.RegistryFlagGroup != nil {
+		groups = append(groups, f.RegistryFlagGroup)
+	}
 	if f.ImageFlagGroup != nil {
 		groups = append(groups, f.ImageFlagGroup)
 	}
@@ -280,6 +304,9 @@ func (f *Flags) groups() []FlagGroup {
 	}
 	if f.MisconfFlagGroup != nil {
 		groups = append(groups, f.MisconfFlagGroup)
+	}
+	if f.ModuleFlagGroup != nil {
+		groups = append(groups, f.ModuleFlagGroup)
 	}
 	if f.SecretFlagGroup != nil {
 		groups = append(groups, f.SecretFlagGroup)
@@ -396,7 +423,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.K8sFlagGroup != nil {
-		opts.K8sOptions = f.K8sFlagGroup.ToOptions()
+		opts.K8sOptions, err = f.K8sFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("k8s flag error: %w", err)
+		}
 	}
 
 	if f.LicenseFlagGroup != nil {
@@ -410,6 +440,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 		}
 	}
 
+	if f.ModuleFlagGroup != nil {
+		opts.ModuleOptions = f.ModuleFlagGroup.ToOptions()
+	}
+
 	if f.RegoFlagGroup != nil {
 		opts.RegoOptions, err = f.RegoFlagGroup.ToOptions()
 		if err != nil {
@@ -419,6 +453,13 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.RemoteFlagGroup != nil {
 		opts.RemoteOptions = f.RemoteFlagGroup.ToOptions()
+	}
+
+	if f.RegistryFlagGroup != nil {
+		opts.RegistryOptions, err = f.RegistryFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("registry flag error: %w", err)
+		}
 	}
 
 	if f.RepoFlagGroup != nil {

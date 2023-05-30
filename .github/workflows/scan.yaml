@@ -13,11 +13,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Trivy vulnerability scanner and create GitHub issues
-        uses: knqyf263/trivy-issue-action@v0.0.4
+        uses: knqyf263/trivy-issue-action@v0.0.5
         with:
           assignee: knqyf263
           severity: CRITICAL
-          skip-dirs: integration,examples
+          skip-dirs: integration,examples,pkg
           label: kind/security
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

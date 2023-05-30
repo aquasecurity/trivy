@@ -29,6 +29,7 @@ resources:
 rbac:
   create: true
   pspEnabled: false
+  pspAnnotations: {}
 
 podSecurityContext:
   runAsUser: 65534
@@ -93,12 +94,12 @@ trivy:
   # NOTE: When this is set the previous parameters are ignored.
   #
   # registryCredentialsExistingSecret: name-of-existing-secret
-  # skipUpdate the flag to enable or disable Trivy DB downloads from GitHub
+  # skipDBUpdate the flag to enable or disable Trivy DB downloads from GitHub
   #
   # You might want to enable this flag in test or CI/CD environments to avoid GitHub rate limiting issues.
   # If the flag is enabled you have to manually download the `trivy.db` file and mount it in the
   # `/home/scanner/.cache/trivy/db/trivy.db` path (see `cacheDir`).
-  skipUpdate: false
+  skipDBUpdate: false
   # OCI repository to retrieve the trivy vulnerability database from
   dbRepository: ghcr.io/aquasecurity/trivy-db
   # Trivy supports filesystem and redis as caching backend
@@ -114,6 +115,7 @@ trivy:
       enabled: false
       url: ""  # e.g. redis://redis.redis.svc:6379
       ttl: ""  # e.g 3600s, 24h
+      tls: false
   serviceAccount:
     annotations: {}
       # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME

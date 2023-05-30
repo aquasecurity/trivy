@@ -6,18 +6,13 @@ import (
 	"sort"
 	"time"
 
-	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
-
-	"github.com/aquasecurity/tml"
-
-	"github.com/deepfactor-io/trivy/pkg/flag"
-
-	"github.com/deepfactor-io/trivy/pkg/report"
-
-	"github.com/deepfactor-io/trivy/pkg/result"
-
 	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/tml"
+	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/flag"
+	"github.com/deepfactor-io/trivy/pkg/report"
 	pkgReport "github.com/deepfactor-io/trivy/pkg/report"
+	"github.com/deepfactor-io/trivy/pkg/result"
 	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
@@ -70,16 +65,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	for _, resultsAtTime := range rep.Results {
 		for _, res := range resultsAtTime.Results {
 			resCopy := res
-			if err := result.Filter(
-				ctx,
-				&resCopy,
-				opt.Severities,
-				false,
-				false,
-				"",
-				"",
-				nil,
-			); err != nil {
+			if err := result.FilterResult(ctx, &resCopy, result.FilterOption{Severities: opt.Severities}); err != nil {
 				return err
 			}
 			sort.Slice(resCopy.Misconfigurations, func(i, j int) bool {

@@ -4,6 +4,10 @@ apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: {{ include "trivy.fullname" . }}
+  {{- with .Values.rbac.pspAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
 {{ include "trivy.labels" . | indent 4 }}
 spec:

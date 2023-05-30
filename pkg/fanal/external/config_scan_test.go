@@ -8,8 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/deepfactor-io/trivy/pkg/fanal/external"
-	_ "github.com/deepfactor-io/trivy/pkg/fanal/handler/misconf"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
+
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/config/all"
 )
 
 func TestConfigScanner_Scan(t *testing.T) {
