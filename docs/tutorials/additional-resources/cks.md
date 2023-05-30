@@ -7,7 +7,7 @@ The [Certified Kubernetes Security Specialist (CKS) Exam](https://training.linux
 - [Trivy Video overview (short)][overview]
 - [Example questions from the exam][exam]
 - [More example questions][questions]
-- [CKS exam study guide](study-guide)
+- [CKS exam study guide][study-guide]
 - [Docker Image Vulnerabilities & Trivy Image Scanning Demo | K21Academy](https://youtu.be/gHz10UsEdys)
 
 ### Aqua Security Blog posts to learn more
