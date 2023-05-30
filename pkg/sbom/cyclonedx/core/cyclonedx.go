@@ -210,17 +210,17 @@ func (c *CycloneDX) Components(uniq map[string]*cdx.Component) *[]cdx.Component 
 }
 
 func (c *CycloneDX) Dependencies(uniq map[string]*[]string) *[]cdx.Dependency {
-	// Convert components from map to slice and sort by BOM-Ref
-	components := lo.MapToSlice(uniq, func(bomRef string, value *[]string) cdx.Dependency {
+	// Convert dependencies from map to slice and sort by BOM-Ref
+	dependencies := lo.MapToSlice(uniq, func(bomRef string, value *[]string) cdx.Dependency {
 		return cdx.Dependency{
 			Ref:          bomRef,
 			Dependencies: value,
 		}
 	})
-	sort.Slice(components, func(i, j int) bool {
-		return components[i].Ref < components[j].Ref
+	sort.Slice(dependencies, func(i, j int) bool {
+		return dependencies[i].Ref < dependencies[j].Ref
 	})
-	return &components
+	return &dependencies
 }
 
 func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.Vulnerability {
