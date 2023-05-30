@@ -82,6 +82,21 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "inherit project properties from parent",
+			inputFile: filepath.Join("testdata", "project-version-from-parent", "child", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				{
+					Name:    "com.example:child",
+					Version: "2.0.0",
+				},
+				{
+					Name:    "org.example:example-api",
+					Version: "2.0.0",
+				},
+			},
+		},
+		{
 			name:      "inherit properties in parent depManagement with import scope",
 			inputFile: filepath.Join("testdata", "inherit-props", "base", "pom.xml"),
 			local:     true,

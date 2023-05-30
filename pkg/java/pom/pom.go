@@ -37,6 +37,11 @@ func (p pom) projectProperties() map[string]string {
 	val := reflect.ValueOf(p.content).Elem()
 	props := p.listProperties(val)
 
+	// "version" and "groupId" elements could be inherited from parent.
+	// https://maven.apache.org/pom.html#inheritance
+	props["groupId"] = p.content.GroupId
+	props["version"] = p.content.Version
+
 	// https://maven.apache.org/pom.html#properties
 	projectProperties := map[string]string{}
 	for k, v := range props {
