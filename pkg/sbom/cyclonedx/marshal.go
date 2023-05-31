@@ -59,7 +59,7 @@ func NewMarshaler(version string, opts ...core.Option) *Marshaler {
 // Marshal converts the Trivy report to the CycloneDX format
 func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 	// Convert
-	root, err := e.marshalReport(report)
+	root, err := e.MarshalReport(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
@@ -67,7 +67,7 @@ func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 	return e.core.Marshal(root), nil
 }
 
-func (e *Marshaler) marshalReport(r types.Report) (*core.Component, error) {
+func (e *Marshaler) MarshalReport(r types.Report) (*core.Component, error) {
 	// Metadata component
 	root, err := e.rootComponent(r)
 	if err != nil {
