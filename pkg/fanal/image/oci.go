@@ -10,17 +10,20 @@ import (
 )
 
 func tryOCI(fileName string) (v1.Image, error) {
-	var inputTag, inputFileName string
+	var inputRef, inputFileName string
 
 	// Check if tag is specified in input
 	// e.g. /path/to/oci:0.0.1
-	if strings.Contains(fileName, ":") {
-		splitFileName := strings.SplitN(fileName, ":", 2)
-		inputFileName = splitFileName[0]
-		inputTag = splitFileName[1]
-	} else {
+
+	inputFileName, inputRef, found := strings.Cut(fileName, "@")
+
+	if !found {
+		inputFileName, inputRef, found = strings.Cut(fileName, ":")
+	}
+
+	if !found {
 		inputFileName = fileName
-		inputTag = ""
+		inputRef = ""
 	}
 
 	lp, err := layout.FromPath(inputFileName)
@@ -43,15 +46,16 @@ func tryOCI(fileName string) (v1.Image, error) {
 	}
 
 	// Support image having tag separated by : , otherwise support first image
-	return getOCIImage(m, index, inputTag)
+	return getOCIImage(m, index, inputRef)
 }
 
-func getOCIImage(m *v1.IndexManifest, index v1.ImageIndex, inputTag string) (v1.Image, error) {
+func getOCIImage(m *v1.IndexManifest, index v1.ImageIndex, inputRef string) (v1.Image, error) {
 	for _, manifest := range m.Manifests {
 		annotation := manifest.Annotations
 		tag := annotation[ispec.AnnotationRefName]
-		if inputTag == "" || // always select the first digest
-			tag == inputTag {
+		if inputRef == "" || // always select the first digest
+			tag == inputRef ||
+			manifest.Digest.String() == inputRef {
 			h := manifest.Digest
 			if manifest.MediaType.IsIndex() {
 				childIndex, err := index.ImageIndex(h)
@@ -74,5 +78,5 @@ func getOCIImage(m *v1.IndexManifest, index v1.ImageIndex, inputTag string) (v1.
 		}
 	}
 
-	return nil, xerrors.New("invalid OCI image tag")
+	return nil, xerrors.New("invalid OCI image ref")
 }
