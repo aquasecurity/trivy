@@ -167,6 +167,25 @@ var (
 			FilePath: "testdata/nested.jar/META-INF/jars/nested2.jar/META-INF/jars/nested3.jar",
 		},
 	}
+
+	// manually created
+	wantDuplicatesJar = []types.Library{
+		{
+			Name:     "io.quarkus.gizmo:gizmo",
+			Version:  "1.1.1.Final",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar",
+		},
+		{
+			Name:     "log4j:log4j",
+			Version:  "1.2.16",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar/jars/log4j-1.2.16.jar",
+		},
+		{
+			Name:     "log4j:log4j",
+			Version:  "1.2.17",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar/jars/log4j-1.2.17.jar",
+		},
+	}
 )
 
 type apiResponse struct {
@@ -230,6 +249,11 @@ func TestParse(t *testing.T) {
 			file: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
 			want: wantFatjar,
 		},
+		{
+			name: "duplicate libraries",
+			file: "testdata/io.quarkus.gizmo.gizmo-1.1.1.Final.jar",
+			want: wantDuplicatesJar,
+		},
 	}
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -249,6 +273,17 @@ func TestParse(t *testing.T) {
 					GroupID:    "org.springframework",
 					ArtifactID: "spring-core",
 					Version:    "5.3.3",
+				},
+			}
+		case strings.Contains(r.URL.Query().Get("q"), "Gizmo"):
+			res.Response.NumFound = 0
+		case strings.Contains(r.URL.Query().Get("q"), "85d30c06026afd9f5be26da3194d4698c447a904"):
+			res.Response.Docs = []doc{
+				{
+					ID:         "io.quarkus.gizmo.gizmo",
+					GroupID:    "io.quarkus.gizmo",
+					ArtifactID: "gizmo",
+					Version:    "1.1.1.Final",
 				},
 			}
 		case strings.Contains(r.URL.Query().Get("q"), "heuristic"):
