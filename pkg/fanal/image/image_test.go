@@ -447,7 +447,7 @@ func TestNewArchiveImage(t *testing.T) {
 			args: args{
 				fileName: "../test/testdata/test_image_tag.oci:0.0.0",
 			},
-			wantErr: "invalid OCI image tag",
+			wantErr: "invalid OCI image ref",
 		},
 		{
 			name: "sad path, oci image not found",
