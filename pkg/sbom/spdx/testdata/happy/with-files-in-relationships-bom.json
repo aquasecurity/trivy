@@ -8,7 +8,7 @@
     "licenseListVersion": "",
     "creators": [
       "Organization: aquasecurity",
-      "Tool: trivy-0.36.2-107-gb0c591ef"
+      "Tool: trivy-dev"
     ],
     "created": "2023-05-31T05:58:45Z"
   },
