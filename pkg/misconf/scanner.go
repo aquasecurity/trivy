@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -199,7 +198,6 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	opts := []options.ScannerOption{
 		options.ScannerWithSkipRequiredCheck(true),
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
-		options.ScannerWithDebug(os.Stdout),
 	}
 
 	policyFS, policyPaths, err := createPolicyFS(opt.PolicyPaths)

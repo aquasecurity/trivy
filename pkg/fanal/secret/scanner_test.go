@@ -214,8 +214,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      3,
-					Content:     "\"aws_account_ID\":'**************'",
-					Highlighted: "\"aws_account_ID\":'**************'",
+					Content:     "\"aws_account_ID\":'1234-5678-9123'",
+					Highlighted: "\"aws_account_ID\":'1234-5678-9123'",
 				},
 			},
 		},
@@ -402,37 +402,6 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
-	wantFinding10 := types.SecretFinding{
-		RuleID:    "aws-account-id",
-		Category:  secret.CategoryAWS,
-		Title:     "AWS Account ID",
-		Severity:  "HIGH",
-		StartLine: 3,
-		EndLine:   3,
-		Match:     `"aws_account_ID":'**************'`,
-		Code: types.Code{
-			Lines: []types.Line{
-				{
-					Number:      1,
-					Content:     "'AWS_secret_KEY'=\"****************************************\"",
-					Highlighted: "'AWS_secret_KEY'=\"****************************************\"",
-				},
-				{
-					Number:      2,
-					Content:     "AWS_ACCESS_KEY_ID=********************",
-					Highlighted: "AWS_ACCESS_KEY_ID=********************",
-				},
-				{
-					Number:      3,
-					Content:     "\"aws_account_ID\":'**************'",
-					Highlighted: "\"aws_account_ID\":'**************'",
-					IsCause:     true,
-					FirstCause:  true,
-					LastCause:   true,
-				},
-			},
-		},
-	}
 	wantFindingAsymmetricPrivateKeyJson := types.SecretFinding{
 		RuleID:    "private-key",
 		Category:  secret.CategoryAsymmetricPrivateKey,
@@ -580,7 +549,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "aws-secrets.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "aws-secrets.txt"),
-				Findings: []types.SecretFinding{wantFinding5, wantFinding10, wantFinding9},
+				Findings: []types.SecretFinding{wantFinding5, wantFinding9},
 			},
 		},
 		{

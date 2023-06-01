@@ -109,15 +109,6 @@ var builtinRules = []Rule{
 		Keywords:        []string{"key"},
 	},
 	{
-		ID:              "aws-account-id",
-		Category:        CategoryAWS,
-		Severity:        "HIGH",
-		Title:           "AWS Account ID",
-		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s%saccount_?(id)?%s%s%s(?P<secret>[0-9]{4}\-?[0-9]{4}\-?[0-9]{4})%s%s`, startSecret, quote, aws, quote, connect, quote, quote, endSecret)),
-		SecretGroupName: "secret",
-		Keywords:        []string{"account"},
-	},
-	{
 		ID:       "github-pat",
 		Category: CategoryGitHub,
 		Title:    "GitHub Personal Access Token",
