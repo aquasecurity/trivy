@@ -401,18 +401,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 						},
-						Files: []*spdx.File{
-							{
-								FileSPDXIdentifier: "File-fa42187221d0d0a8",
-								FileName:           "tools/project-doe/specifications/actionpack.gemspec",
-								Checksums: []spdx.Checksum{
-									{
-										Algorithm: spdx.SHA1,
-										Value:     "413f98442c83808042b5d1d2611a346b999bdca5",
-									},
-								},
-							},
-						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
@@ -432,18 +420,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PackageAttributionTexts: []string{
 							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
-						},
-						Files: []*spdx.File{
-							{
-								FileSPDXIdentifier: "File-6a540784b0dc6d55",
-								FileName:           "tools/project-john/specifications/actionpack.gemspec",
-								Checksums: []spdx.Checksum{
-									{
-										Algorithm: spdx.SHA1,
-										Value:     "d2f9f9aed5161f6e4116a3f9573f41cd832f137c",
-									},
-								},
-							},
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
@@ -475,6 +451,28 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 				},
+				Files: []*spdx.File{
+					{
+						FileSPDXIdentifier: "File-6a540784b0dc6d55",
+						FileName:           "tools/project-john/specifications/actionpack.gemspec",
+						Checksums: []spdx.Checksum{
+							{
+								Algorithm: spdx.SHA1,
+								Value:     "d2f9f9aed5161f6e4116a3f9573f41cd832f137c",
+							},
+						},
+					},
+					{
+						FileSPDXIdentifier: "File-fa42187221d0d0a8",
+						FileName:           "tools/project-doe/specifications/actionpack.gemspec",
+						Checksums: []spdx.Checksum{
+							{
+								Algorithm: spdx.SHA1,
+								Value:     "413f98442c83808042b5d1d2611a346b999bdca5",
+							},
+						},
+					},
+				},
 				Relationships: []*spdx.Relationship{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
@@ -502,8 +500,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Relationship: "CONTAINS",
 					},
 					{
+						RefA:         spdx.DocElementID{ElementRefID: "Package-d5443dbcbba0dbd4"},
+						RefB:         spdx.DocElementID{ElementRefID: "File-6a540784b0dc6d55"},
+						Relationship: "CONTAINS",
+					},
+					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-13fe667a0805e6b7"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Package-13fe667a0805e6b7"},
+						RefB:         spdx.DocElementID{ElementRefID: "File-fa42187221d0d0a8"},
 						Relationship: "CONTAINS",
 					},
 				},
@@ -684,14 +692,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"LayerDiffID: sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 						},
-						Files: []*spdx.File{
-							{
-								FileName:           "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
-								FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
-							},
-						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+					},
+				},
+				Files: []*spdx.File{
+					{
+						FileName:           "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
+						FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -708,6 +716,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-24f8a80152e2c0fc"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-daedb173cfd43058"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Package-daedb173cfd43058"},
+						RefB:         spdx.DocElementID{ElementRefID: "File-a52825a3e5bc6dfe"},
 						Relationship: "CONTAINS",
 					},
 				},

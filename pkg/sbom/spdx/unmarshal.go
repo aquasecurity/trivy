@@ -72,6 +72,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	var osPkgs []ftypes.Package
 	apps := map[common.ElementID]*ftypes.Application{}
 	packageSPDXIdentifierMap := createPackageSPDXIdentifierMap(spdxDocument.Packages)
+	packageFilePaths := getPackageFilePaths(spdxDocument)
 
 	relationships := lo.Filter(spdxDocument.Relationships, func(rel *v2_3.Relationship, _ int) bool {
 		// Skip the DESCRIBES relationship.
@@ -104,7 +105,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 			s.SBOM.OS = parseOS(*pkgB)
 		// Relationship: OS => OS package
 		case isOperatingSystem(pkgA.PackageSPDXIdentifier):
-			pkg, _, err := parsePkg(*pkgB)
+			pkg, _, err := parsePkg(*pkgB, packageFilePaths)
 			if errors.Is(err, errUnknownPackageFormat) {
 				continue
 			} else if err != nil {
@@ -122,7 +123,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 				apps[pkgA.PackageSPDXIdentifier] = app
 			}
 
-			lib, _, err := parsePkg(*pkgB)
+			lib, _, err := parsePkg(*pkgB, packageFilePaths)
 			if errors.Is(err, errUnknownPackageFormat) {
 				continue
 			} else if err != nil {
@@ -163,7 +164,7 @@ func (s *SPDX) parsePackages(spdxDocument *spdx.Document) error {
 	)
 
 	for _, p := range spdxDocument.Packages {
-		pkg, pkgType, err := parsePkg(*p)
+		pkg, pkgType, err := parsePkg(*p, nil)
 		if errors.Is(err, errUnknownPackageFormat) {
 			continue
 		} else if err != nil {
@@ -197,12 +198,24 @@ func createPackageSPDXIdentifierMap(packages []*spdx.Package) map[string]*spdx.P
 	return ret
 }
 
+func createFileSPDXIdentifierMap(files []*spdx.File) map[string]*spdx.File {
+	ret := make(map[string]*spdx.File)
+	for _, file := range files {
+		ret[string(file.FileSPDXIdentifier)] = file
+	}
+	return ret
+}
+
 func isOperatingSystem(elementID spdx.ElementID) bool {
 	return strings.HasPrefix(string(elementID), ElementOperatingSystem)
 }
 
 func isApplication(elementID spdx.ElementID) bool {
 	return strings.HasPrefix(string(elementID), ElementApplication)
+}
+
+func isFile(elementID spdx.ElementID) bool {
+	return strings.HasPrefix(string(elementID), ElementFile)
 }
 
 func initApplication(pkg spdx.Package) *ftypes.Application {
@@ -224,7 +237,7 @@ func parseOS(pkg spdx.Package) ftypes.OS {
 	}
 }
 
-func parsePkg(spdxPkg spdx.Package) (*ftypes.Package, string, error) {
+func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes.Package, string, error) {
 	pkg, pkgType, err := parseExternalReferences(spdxPkg.PackageExternalReferences)
 	if err != nil {
 		return nil, "", xerrors.Errorf("external references error: %w", err)
@@ -241,9 +254,9 @@ func parsePkg(spdxPkg spdx.Package) (*ftypes.Package, string, error) {
 			return nil, "", xerrors.Errorf("failed to parse source info: %w", err)
 		}
 	}
-	for _, f := range spdxPkg.Files {
-		pkg.FilePath = f.FileName
-		break // Take the first file name
+
+	if path, ok := packageFilePaths[string(spdxPkg.PackageSPDXIdentifier)]; ok {
+		pkg.FilePath = path
 	}
 
 	pkg.ID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyPkgID)
@@ -294,4 +307,31 @@ func parseSourceInfo(pkgType, sourceInfo string) (epoch int, name, ver, rel stri
 		ver = ss[1]
 	}
 	return epoch, name, ver, rel, nil
+}
+
+// getPackageFilePaths parses Relationships and finds filepaths for packages
+func getPackageFilePaths(spdxDocument *spdx.Document) map[string]string {
+	packageFilePaths := map[string]string{}
+	fileSPDXIdentifierMap := createFileSPDXIdentifierMap(spdxDocument.Files)
+	for _, rel := range spdxDocument.Relationships {
+		if rel.Relationship != common.TypeRelationshipContains && rel.Relationship != "CONTAIN" {
+			// Skip the DESCRIBES relationship.
+			continue
+		}
+
+		// hasFiles field is deprecated
+		// https://github.com/spdx/tools-golang/issues/171
+		// hasFiles values converted in Relationships
+		// https://github.com/spdx/tools-golang/pull/201
+		if isFile(rel.RefB.ElementRefID) {
+			file, ok := fileSPDXIdentifierMap[string(rel.RefB.ElementRefID)]
+			if ok {
+				// Save filePaths for packages
+				// Insert filepath will be later
+				packageFilePaths[string(rel.RefA.ElementRefID)] = file.FileName
+			}
+			continue
+		}
+	}
+	return packageFilePaths
 }

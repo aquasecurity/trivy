@@ -315,7 +315,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			var cdx cyclonedx.CycloneDX
+			var cdx cyclonedx.BOM
 			err = json.NewDecoder(f).Decode(&cdx)
 			if tt.wantErr != "" {
 				require.Error(t, err)

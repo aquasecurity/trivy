@@ -178,6 +178,10 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 		return bom.Relationships[i].RefB.ElementRefID < bom.Relationships[j].RefB.ElementRefID
 	})
 
+	sort.Slice(bom.Files, func(i, j int) bool {
+		return bom.Files[i].FileSPDXIdentifier < bom.Files[j].FileSPDXIdentifier
+	})
+
 	// We don't compare values which change each time an SBOM is generated
 	bom.CreationInfo.Created = ""
 	bom.DocumentNamespace = ""
