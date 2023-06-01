@@ -22,7 +22,9 @@ const version = 1
 
 var requiredSuffixes = []string{
 	".spdx",
+	".spdx.json",
 	".cdx",
+	".cdx.json",
 }
 
 type sbomAnalyzer struct{}
