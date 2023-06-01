@@ -45,6 +45,33 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			wantErr: require.NoError,
 		},
 		{
+			name: "valid cdx file",
+			file: "testdata/cdx.json",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Jar,
+						FilePath: "opt/bitnami/bin/elasticsearch",
+						Libraries: []types.Package{
+							{
+								FilePath: "opt/bitnami/modules/apm/elastic-apm-agent-1.36.0.jar",
+								Name:     "co.elastic.apm:apm-agent",
+								Version:  "1.36.0",
+								Ref:      "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
+							},
+							{
+								FilePath: "opt/bitnami/modules/apm/elastic-apm-agent-1.36.0.jar",
+								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
+								Version:  "1.36.0",
+								Ref:      "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+							},
+						},
+					},
+				},
+			},
+			wantErr: require.NoError,
+		},
+		{
 			name:    "invalid spdx file",
 			file:    "testdata/invalid_spdx.json",
 			want:    nil,

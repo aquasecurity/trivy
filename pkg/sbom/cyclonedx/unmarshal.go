@@ -370,6 +370,8 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 			pkg.Modularitylabel = value
 		case PropertyLayerDiffID:
 			pkg.Layer.DiffID = value
+		case PropertyFilePath:
+			pkg.FilePath = value
 		}
 	}
 
