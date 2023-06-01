@@ -13,7 +13,6 @@ import (
 	"github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
-	"github.com/spdx/tools-golang/spdx/v2/v2_3"
 	"github.com/spdx/tools-golang/tagvalue"
 	"golang.org/x/xerrors"
 
@@ -74,7 +73,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	packageSPDXIdentifierMap := createPackageSPDXIdentifierMap(spdxDocument.Packages)
 	packageFilePaths := getPackageFilePaths(spdxDocument)
 
-	relationships := lo.Filter(spdxDocument.Relationships, func(rel *v2_3.Relationship, _ int) bool {
+	relationships := lo.Filter(spdxDocument.Relationships, func(rel *spdx.Relationship, _ int) bool {
 		// Skip the DESCRIBES relationship.
 		return rel.Relationship != common.TypeRelationshipDescribe && rel.Relationship != "DESCRIBE"
 	})
