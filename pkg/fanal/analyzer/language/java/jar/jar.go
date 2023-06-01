@@ -92,10 +92,6 @@ func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Po
 }
 
 func (a *javaLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	// Bitnami images have SBOMs inside, so there is no need to analyze JAR files.
-	if strings.HasPrefix(filePath, "opt/bitnami") {
-		return false
-	}
 	ext := filepath.Ext(filePath)
 	for _, required := range requiredExtensions {
 		if strings.EqualFold(ext, required) {

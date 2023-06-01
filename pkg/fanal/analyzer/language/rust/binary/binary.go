@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"os"
-	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -33,11 +32,7 @@ func (a rustBinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Ana
 	return res, nil
 }
 
-func (a rustBinaryLibraryAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
-	// Bitnami images have SBOMs inside, so there is no need to analyze Rust binaries.
-	if strings.HasPrefix(filePath, "opt/bitnami") {
-		return false
-	}
+func (a rustBinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
 	return utils.IsExecutable(fileInfo)
 }
 
