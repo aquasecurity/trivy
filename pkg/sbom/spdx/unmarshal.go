@@ -256,6 +256,9 @@ func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes
 
 	if path, ok := packageFilePaths[string(spdxPkg.PackageSPDXIdentifier)]; ok {
 		pkg.FilePath = path
+	} else if len(spdxPkg.Files) > 0 {
+		// Take the first file name
+		pkg.FilePath = spdxPkg.Files[0].FileName
 	}
 
 	pkg.ID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyPkgID)
