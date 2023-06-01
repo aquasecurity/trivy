@@ -3041,11 +3041,6 @@ because Trivy relies on custom properties in SBOM for accurate scanning.</p>
 </div>
 <div class="highlight"><pre><span></span><code>$ trivy sbom /path/to/cyclonedx.json
 </code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you want to generate a CycloneDX report from a CycloneDX input, please be aware that the output stores references to your original CycloneDX report and contains only detected vulnerabilities, not components.
-The report is called <a href="https://cyclonedx.org/capabilities/sbom/">BOV</a>.</p>
-</div>
 <h2 id="spdx">SPDX</h2>
 <p>Trivy supports the SPDX SBOM as an input.</p>
 <p>The following SPDX formats are supported:</p>
