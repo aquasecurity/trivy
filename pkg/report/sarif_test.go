@@ -89,7 +89,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0-rtm.5.json",
+				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -214,7 +214,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0-rtm.5.json",
+				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -354,7 +354,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0-rtm.5.json",
+				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -429,7 +429,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "no vulns",
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0-rtm.5.json",
+				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{

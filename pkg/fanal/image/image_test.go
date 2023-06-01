@@ -276,6 +276,7 @@ func TestNewDockerImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.args.option.ImageSources = types.AllImageSources
 			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
@@ -393,6 +394,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.args.option.ImageSources = types.AllImageSources
 			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
@@ -445,7 +447,7 @@ func TestNewArchiveImage(t *testing.T) {
 			args: args{
 				fileName: "../test/testdata/test_image_tag.oci:0.0.0",
 			},
-			wantErr: "invalid OCI image tag",
+			wantErr: "invalid OCI image ref",
 		},
 		{
 			name: "sad path, oci image not found",
@@ -529,7 +531,12 @@ func TestDockerPlatformArguments(t *testing.T) {
 							},
 						},
 						Insecure: true,
-						Platform: "arm/linux",
+						Platform: types.Platform{
+							Platform: &v1.Platform{
+								Architecture: "arm",
+								OS:           "linux",
+							},
+						},
 					},
 				},
 			},
@@ -538,13 +545,12 @@ func TestDockerPlatformArguments(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
-
+			tt.args.option.ImageSources = types.AllImageSources
 			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {
-				assert.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, err)
+				assert.ErrorContains(t, err, tt.wantErr, err)
 			} else {
 				assert.NoError(t, err)
 			}

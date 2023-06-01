@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/misconf"
@@ -40,7 +41,9 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 		return nil, nil
 	}
 	dockerfile := new(bytes.Buffer)
-	for _, h := range input.Config.History {
+	baseLayerIndex := image.GuessBaseImageIndex(input.Config.History)
+	for i := baseLayerIndex + 1; i < len(input.Config.History); i++ {
+		h := input.Config.History[i]
 		var createdBy string
 		switch {
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)"):
@@ -49,6 +52,9 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
 			// RUN instruction
 			createdBy = strings.ReplaceAll(h.CreatedBy, "/bin/sh -c", "RUN")
+		case strings.HasPrefix(h.CreatedBy, "USER"):
+			// USER instruction
+			createdBy = h.CreatedBy
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
 			// HEALTHCHECK instruction
 			var interval, timeout, startPeriod, retries, command string

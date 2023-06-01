@@ -222,3 +222,11 @@ func (c *Client) GetMetadata() (*Metadata, error) {
 
 	return &meta, nil
 }
+
+func (c *Client) Clear() error {
+	log.Logger.Info("Removing policy bundle...")
+	if err := os.RemoveAll(c.policyDir); err != nil {
+		return xerrors.Errorf("failed to remove policy bundle: %w", err)
+	}
+	return nil
+}

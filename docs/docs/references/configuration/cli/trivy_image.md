@@ -61,6 +61,7 @@ trivy image [flags] IMAGE_NAME
       --ignored-licenses strings         specify a list of license to ignore
       --ignorefile string                specify .trivyignore file (default ".trivyignore")
       --image-config-scanners string     comma-separated list of what security issues to detect on container image configurations (config,secret)
+      --image-src strings                image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-non-failures             include successes and exceptions, available with '--scanners config'
       --input string                     input file path instead of image name
       --java-db-repository string        OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
@@ -83,6 +84,7 @@ trivy image [flags] IMAGE_NAME
       --removed-pkgs                     detect vulnerabilities of removed packages (only for Alpine)
       --report string                    specify a format for the compliance report. (default "summary")
       --reset                            remove all caches and database
+      --reset-policy-bundle              remove policy bundle
       --sbom-sources strings             [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                 comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
       --secret-config string             specify a path to config file for secret scanning (default "trivy-secret.yaml")
@@ -100,7 +102,7 @@ trivy image [flags] IMAGE_NAME
       --token-header string              specify a header name for token in client/server mode (default "Trivy-Token")
       --trace                            enable more verbose trace output for custom queries
       --username strings                 username. Comma-separated usernames allowed.
-      --vuln-type string                 comma-separated list of vulnerability types (os,library) (default "os,library")
+      --vuln-type strings                comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 
 ### Options inherited from parent commands

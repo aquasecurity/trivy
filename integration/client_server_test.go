@@ -402,6 +402,9 @@ func TestClientServerWithFormat(t *testing.T) {
 }
 
 func TestClientServerWithCycloneDX(t *testing.T) {
+	if *update {
+		t.Skipf("This test doesn't use golden files")
+	}
 	tests := []struct {
 		name                  string
 		args                  csArgs

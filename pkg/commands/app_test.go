@@ -81,41 +81,70 @@ Policy Bundle:
 `
 	jsonOutput := `{"Version":"test","VulnerabilityDB":{"Version":2,"NextUpdate":"2022-03-02T12:07:07.99504023Z","UpdatedAt":"2022-03-02T06:07:07.99504083Z","DownloadedAt":"2022-03-02T10:03:38.383312Z"},"JavaDB":{"Version":1,"NextUpdate":"2023-03-17T00:47:02.774253254Z","UpdatedAt":"2023-03-14T00:47:02.774253754Z","DownloadedAt":"2023-03-14T03:04:55.058541039Z"},"PolicyBundle":{"Digest":"sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd","DownloadedAt":"2023-03-01T17:06:08.191725-08:00"}}
 `
-
 	tests := []struct {
 		name      string
 		arguments []string // 1st argument is path to trivy binaries
 		want      string
 	}{
 		{
-			name:      "happy path. '-v' flag is used",
-			arguments: []string{"-v", "--cache-dir", "testdata"},
-			want:      tableOutput,
+			name: "happy path. '-v' flag is used",
+			arguments: []string{
+				"-v",
+				"--cache-dir",
+				"testdata",
+			},
+			want: tableOutput,
 		},
 		{
-			name:      "happy path. '-version' flag is used",
-			arguments: []string{"--version", "--cache-dir", "testdata"},
-			want:      tableOutput,
+			name: "happy path. '-version' flag is used",
+			arguments: []string{
+				"--version",
+				"--cache-dir",
+				"testdata",
+			},
+			want: tableOutput,
 		},
 		{
-			name:      "happy path. 'version' command is used",
-			arguments: []string{"--cache-dir", "testdata", "version"},
-			want:      tableOutput,
+			name: "happy path. 'version' command is used",
+			arguments: []string{
+				"--cache-dir",
+				"testdata",
+				"version",
+			},
+			want: tableOutput,
 		},
 		{
-			name:      "happy path. 'version', '--format json' flags are used",
-			arguments: []string{"--cache-dir", "testdata", "version", "--format", "json"},
-			want:      jsonOutput,
+			name: "happy path. 'version', '--format json' flags are used",
+			arguments: []string{
+				"--cache-dir",
+				"testdata",
+				"version",
+				"--format",
+				"json",
+			},
+			want: jsonOutput,
 		},
 		{
-			name:      "happy path. '-v', '--format json' flags are used",
-			arguments: []string{"--cache-dir", "testdata", "-v", "--format", "json"},
-			want:      jsonOutput,
+			name: "happy path. '-v', '--format json' flags are used",
+			arguments: []string{
+				"--cache-dir",
+				"testdata",
+				"-v",
+				"--format",
+				"json",
+			},
+			want: jsonOutput,
 		},
 		{
-			name:      "happy path. '--version', '--format json' flags are used",
-			arguments: []string{"--cache-dir", "testdata", "--version", "--format", "json"},
-			want:      jsonOutput,
+			name: "happy path. '--version', '--format json' flags are used",
+			arguments: []string{
+				"--cache-dir",
+				"testdata",
+				"--version",
+				"--format",
+				"json",
+			},
+			want: jsonOutput,
 		},
 	}
 

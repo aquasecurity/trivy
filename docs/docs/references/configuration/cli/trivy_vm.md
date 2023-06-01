@@ -56,6 +56,7 @@ trivy vm [flags] VM_IMAGE
       --redis-tls                   enable redis TLS with public certificates, if using redis as cache backend
       --rekor-url string            [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --reset                       remove all caches and database
+      --reset-policy-bundle         remove policy bundle
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings            comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
       --secret-config string        specify a path to config file for secret scanning (default "trivy-secret.yaml")
@@ -70,7 +71,7 @@ trivy vm [flags] VM_IMAGE
       --tf-vars strings             specify paths to override the Terraform tfvars files
       --token string                for authentication in client/server mode
       --token-header string         specify a header name for token in client/server mode (default "Trivy-Token")
-      --vuln-type string            comma-separated list of vulnerability types (os,library) (default "os,library")
+      --vuln-type strings           comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 
 ### Options inherited from parent commands

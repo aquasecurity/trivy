@@ -56,7 +56,7 @@ Will skip all subdirectories of the testdata directory.
 Trivy also supports the [globstar](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching) pattern matching. 
 
 ```bash
-$ trivy image --skip-files "**/foo"``` image:tag
+$ trivy image --skip-files "**/foo" image:tag
 ```
 
 Will skip the file `foo` that happens to be nested under any parent(s). 
@@ -79,7 +79,7 @@ This can be repeated for specifying multiple file patterns.
 
 A file pattern contains the analyzer it is used for, and the pattern itself, joined by a semicolon. For example:
 ```
---file-patterns "dockerfile:.*.docker" --file-patterns "yaml:deployment" --file-patterns "pip:requirements-.*\.txt"
+--file-patterns "dockerfile:.*.docker" --file-patterns "kubernetes:*.tpl" --file-patterns "pip:requirements-.*\.txt"
 ```
 
 The prefixes are listed [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go)

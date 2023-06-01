@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a false detection
+    url: https://github.com/aquasecurity/trivy/discussions/new?category=false-detection
+    about: Report false positives/negatives
+  - name: Report a bug
+    url: https://github.com/aquasecurity/trivy/discussions/new?category=bugs
+    about: Report bugs
+  - name: Enhance documentation
+    url: https://github.com/aquasecurity/trivy/discussions/new?category=documentation
+    about: Make suggestions to the documentation
+  - name: Request a feature enhancement
+    url: https://github.com/aquasecurity/trivy/discussions/new?category=ideas
+    about: Share ideas for new features
+  - name: Ask the community for help
+    url: https://github.com/aquasecurity/trivy/discussions/new?category=q-a
+    about: Ask questions and discuss with other community members

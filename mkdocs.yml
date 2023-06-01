@@ -4,7 +4,7 @@ site_description: A Simple and Comprehensive Vulnerability Scanner for Container
 docs_dir: docs/
 repo_name: GitHub
 repo_url: https://github.com/aquasecurity/trivy
-edit_uri: ""
+edit_uri: "blob/main/docs/"
 
 nav:
   - Getting Started: 
@@ -71,7 +71,6 @@ nav:
                   - Schemas: docs/scanner/misconfiguration/custom/schema.md
                   - Testing: docs/scanner/misconfiguration/custom/testing.md
                   - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
-                  - Examples: docs/scanner/misconfiguration/custom/examples.md
           - Secret: docs/scanner/secret.md
           - License: docs/scanner/license.md
       - Configuration:
@@ -144,19 +143,25 @@ nav:
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
+          - Discussions: community/contribute/discussion.md
           - Pull Requests: community/contribute/pr.md
       - Maintainer:
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
 theme:
   name: material
+  custom_dir: docs/overrides
   language: "en"
   logo: imgs/logo-white.svg
   features:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - navigation.footer
+    - content.action.edit
     - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
 
 markdown_extensions:
   - pymdownx.highlight
@@ -177,6 +182,14 @@ extra:
   version:
     method: mike
     provider: mike
+    default: latest
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/AquaTrivy
+    - icon: fontawesome/brands/github
+      link: https://github.com/aquasecurity/trivy
+    - icon: fontawesome/brands/slack
+      link: https://github.com/aquasecurity/trivy
 
 plugins:
   - search

@@ -341,6 +341,9 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 	}
 
 	pkg := p.Package()
+	// Trivy's marshall loses case-sensitivity in PURL used in SBOM for packages (Go, Npm, PyPI),
+	// so we have to use an original package name
+	pkg.Name = component.Name
 	pkg.Ref = component.BOMRef
 
 	for _, license := range lo.FromPtr(component.Licenses) {

@@ -103,11 +103,14 @@ trivy k8s --report summary cluster
 
 `tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
 
----
+## Community
 
 Trivy is an [Aqua Security][aquasec] open source project.  
 Learn about our open source work and portfolio [here][oss].  
 Contact us about any matter by opening a GitHub Discussion [here][discussions]
+Join our [Slack community][slack] to stay up to date with community efforts.
+
+Please ensure to abide by our [Code of Conduct][code-of-conduct] during all interactions.
 
 [test]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml
 [test-img]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml/badge.svg
@@ -122,6 +125,8 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [homepage]: https://trivy.dev
 [docs]: https://aquasecurity.github.io/trivy
 [pronunciation]: #how-to-pronounce-the-name-trivy
+[slack]: https://slack.aquasec.com
+[code-of-conduct]: https://github.com/aquasecurity/community/blob/main/CODE_OF_CONDUCT.md
 
 [Installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [Ecosystem]: https://aquasecurity.github.io/trivy/latest/ecosystem/

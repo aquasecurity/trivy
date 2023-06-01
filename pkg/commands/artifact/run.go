@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/viper"
@@ -24,7 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -272,15 +271,7 @@ func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initialize
 
 func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error) {
 	// Filter results
-	err := result.Filter(ctx, report, result.FilterOption{
-		Severities:         opts.Severities,
-		IgnoreUnfixed:      opts.IgnoreUnfixed,
-		IncludeNonFailures: opts.IncludeNonFailures,
-		IgnoreFile:         opts.IgnoreFile,
-		PolicyFile:         opts.IgnorePolicy,
-		IgnoreLicenses:     opts.IgnoredLicenses,
-		VEXPath:            opts.VEXPath,
-	})
+	err := result.Filter(ctx, report, opts.FilterOpts())
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("filtering error: %w", err)
 	}
@@ -289,18 +280,7 @@ func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Rep
 }
 
 func (r *runner) Report(opts flag.Options, report types.Report) error {
-	if err := pkgReport.Write(report, pkgReport.Option{
-		AppVersion:         opts.AppVersion,
-		Format:             opts.Format,
-		Output:             opts.Output,
-		Tree:               opts.DependencyTree,
-		Severities:         opts.Severities,
-		OutputTemplate:     opts.Template,
-		IncludeNonFailures: opts.IncludeNonFailures,
-		Trace:              opts.Trace,
-		Report:             opts.ReportFormat,
-		Compliance:         opts.Compliance,
-	}); err != nil {
+	if err := pkgReport.Write(report, opts.ReportOpts()); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -319,7 +299,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 
 	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
-	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.Registry()); err != nil {
+	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.RegistryOpts()); err != nil {
 		return err
 	}
 
@@ -343,7 +323,7 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 
 	// If vulnerability scanning and SBOM generation are disabled, it doesn't need to download the Java database.
 	if !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
-		!slices.Contains(report.SupportedSBOMFormats, opts.Format) {
+		!slices.Contains(pkgReport.SupportedSBOMFormats, opts.Format) {
 		return nil
 	}
 
@@ -388,6 +368,18 @@ func (r *runner) initCache(opts flag.Options) error {
 		}
 		return SkipScan
 	}
+
+	if opts.ResetPolicyBundle {
+		c, err := policy.NewClient(fsutils.CacheDir(), true)
+		if err != nil {
+			return xerrors.Errorf("failed to instantiate policy client: %w", err)
+		}
+		if err := c.Clear(); err != nil {
+			return xerrors.Errorf("failed to remove the cache: %w", err)
+		}
+		return SkipScan
+	}
+
 	if opts.ClearCache {
 		defer cacheClient.Close()
 		if err = cacheClient.ClearArtifacts(); err != nil {
@@ -462,8 +454,8 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return xerrors.Errorf("report error: %w", err)
 	}
 
-	exitOnEOL(opts, report.Metadata)
-	Exit(opts, report.Results.Failed())
+	operation.ExitOnEOL(opts, report.Metadata)
+	operation.Exit(opts, report.Results.Failed())
 
 	return nil
 }
@@ -503,7 +495,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// But we don't create client if vulnerability analysis is disabled and SBOM format is not used
 	// We need to disable jar analyzer to avoid errors
 	// TODO disable all languages that don't contain license information for this case
-	if !opts.Scanners.Enabled(types.VulnerabilityScanner) && !slices.Contains(report.SupportedSBOMFormats, opts.Format) {
+	if !opts.Scanners.Enabled(types.VulnerabilityScanner) && !slices.Contains(pkgReport.SupportedSBOMFormats, opts.Format) {
 		analyzers = append(analyzers, analyzer.TypeJar)
 	}
 
@@ -550,7 +542,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		Scanners:            opts.Scanners,
 		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
-		Platform:            opts.Platform,            // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
@@ -616,7 +607,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	// SPDX needs to calculate digests for package files
 	var fileChecksum bool
-	if opts.Format == report.FormatSPDXJSON || opts.Format == report.FormatSPDX {
+	if opts.Format == pkgReport.FormatSPDXJSON || opts.Format == pkgReport.FormatSPDX {
 		fileChecksum = true
 	}
 
@@ -642,18 +633,18 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RepoTag:           opts.RepoTag,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
-			Platform:          opts.Platform,
-			DockerHost:        opts.DockerHost,
-			Slow:              opts.Slow,
-			AWSRegion:         opts.Region,
-			FileChecksum:      fileChecksum,
+			//Platform:          opts.Platform,
+			Slow:         opts.Slow,
+			AWSRegion:    opts.Region,
+			FileChecksum: fileChecksum,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{
-				RegistryOptions: opts.Registry(),
+				RegistryOptions: opts.RegistryOpts(),
 				DockerOptions: ftypes.DockerOptions{
 					Host: opts.DockerHost,
 				},
+				ImageSources: opts.ImageSources,
 			},
 
 			// For misconfiguration scanning
@@ -690,19 +681,6 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	return report, nil
-}
-
-func Exit(opts flag.Options, failedResults bool) {
-	if opts.ExitCode != 0 && failedResults {
-		os.Exit(opts.ExitCode)
-	}
-}
-
-func exitOnEOL(opts flag.Options, m types.Metadata) {
-	if opts.ExitOnEOL != 0 && m.OS != nil && m.OS.Eosl {
-		log.Logger.Errorf("Detected EOL OS: %s %s", m.OS.Family, m.OS.Name)
-		os.Exit(opts.ExitOnEOL)
-	}
 }
 
 func canonicalVersion(ver string) string {

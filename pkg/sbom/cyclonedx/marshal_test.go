@@ -70,6 +70,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv3+"},
 								Maintainer:      "CentOS",
+								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -256,6 +257,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:SrcRelease",
 								Value: "93.el8",
+							},
+						},
+						Hashes: &[]cdx.Hash{
+							{
+								Algorithm: cdx.HashAlgoMD5,
+								Value:     "7459cec61bb4d1b0ca8107e25e0dd005",
 							},
 						},
 					},
@@ -563,6 +570,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								DependsOn: []string{
 									"glibc@2.28-151.el8",
 								},
+								Digest: "md5:483792b8b5f9eb8be7dc4407733118d0",
 							},
 							{
 								ID:              "glibc@2.28-151.el8",
@@ -577,6 +585,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        0,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv2+"},
+								Digest:          "md5:969b3c9231627022f8bf7ac70de807a1",
 							},
 						},
 					},
@@ -769,6 +778,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Value: "1",
 							},
 						},
+						Hashes: &[]cdx.Hash{
+							{
+								Algorithm: cdx.HashAlgoMD5,
+								Value:     "483792b8b5f9eb8be7dc4407733118d0",
+							},
+						},
 					},
 					{
 						BOMRef:  "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
@@ -799,6 +814,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:SrcRelease",
 								Value: "151.el8",
+							},
+						},
+						Hashes: &[]cdx.Hash{
+							{
+								Algorithm: cdx.HashAlgoMD5,
+								Value:     "969b3c9231627022f8bf7ac70de807a1",
 							},
 						},
 					},

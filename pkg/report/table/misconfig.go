@@ -9,7 +9,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 
 	"github.com/aquasecurity/tml"
 
@@ -34,7 +34,7 @@ type misconfigRenderer struct {
 }
 
 func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, trace, includeNonFailures bool, ansi bool) *misconfigRenderer {
-	width, _, err := terminal.GetSize(0)
+	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
 	}

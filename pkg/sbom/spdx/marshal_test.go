@@ -68,6 +68,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv3+"},
 								Maintainer:      "CentOS",
+								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
 							},
 						},
 					},
@@ -173,6 +174,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PackageSourceInfo:     "built package from: binutils 2.30-93.el8",
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageChecksums: []common.Checksum{
+							{
+								Algorithm: common.MD5,
+								Value:     "7459cec61bb4d1b0ca8107e25e0dd005",
+							},
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-73c871d73f3c8248"),
@@ -302,6 +309,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        1,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv2+"},
+								Digest:          "md5:483792b8b5f9eb8be7dc4407733118d0",
 							},
 						},
 					},
@@ -369,6 +377,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSourceInfo:     "built package from: acl 1:2.2.53-1.el8",
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						PackageChecksums: []common.Checksum{
+							{
+								Algorithm: common.MD5,
+								Value:     "483792b8b5f9eb8be7dc4407733118d0",
+							},
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),
@@ -742,6 +756,69 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-70f34983067dba86"},
+						Relationship: "DESCRIBES",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path secret",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "secret",
+				ArtifactType:  ftypes.ArtifactFilesystem,
+				Results: types.Results{
+					{
+						Target: "key.pem",
+						Class:  types.ClassSecret,
+						Secrets: []ftypes.SecretFinding{
+							{
+								RuleID:    "private-key",
+								Category:  "AsymmetricPrivateKey",
+								Severity:  "HIGH",
+								Title:     "Asymmetric Private Key",
+								StartLine: 1,
+								EndLine:   1,
+							},
+						},
+					},
+				},
+			},
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "secret",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/secret-3ff14136-e09f-4df9-80ea-000000000001",
+
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
+				},
+				Packages: []*spdx.Package{
+					{
+						PackageName:             "secret",
+						PackageSPDXIdentifier:   "Filesystem-5c08d34162a2c5d3",
+						PackageDownloadLocation: "NONE",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+					},
+				},
+				Relationships: []*spdx.Relationship{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-5c08d34162a2c5d3"},
 						Relationship: "DESCRIBES",
 					},
 				},

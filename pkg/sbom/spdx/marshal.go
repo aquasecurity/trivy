@@ -139,6 +139,9 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 	)
 
 	for _, result := range r.Results {
+		if len(result.Packages) == 0 {
+			continue
+		}
 		parentPackage, err := m.resultToSpdxPackage(result, r.Metadata.OS, pkgDownloadLocation)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse result: %w", err)
@@ -346,6 +349,12 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 			Supplier:     pkg.Maintainer,
 		}
 	}
+
+	var checksum []spdx.Checksum
+	if pkg.Digest != "" && class == types.ClassOSPkg {
+		checksum = digestToSpdxFileChecksum(pkg.Digest)
+	}
+
 	return spdx.Package{
 		PackageName:             pkg.Name,
 		PackageVersion:          utils.FormatVersion(pkg),
@@ -363,6 +372,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 		PackageAttributionTexts:   attrTexts,
 		PrimaryPackagePurpose:     PackagePurposeLibrary,
 		PackageSupplier:           supplier,
+		PackageChecksums:          checksum,
 		Files:                     files,
 	}, nil
 }
@@ -500,6 +510,8 @@ func digestToSpdxFileChecksum(d digest.Digest) []common.Checksum {
 		alg = spdx.SHA1
 	case digest.SHA256:
 		alg = spdx.SHA256
+	case digest.MD5:
+		alg = spdx.MD5
 	default:
 		return nil
 	}

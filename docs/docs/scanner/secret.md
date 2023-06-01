@@ -95,6 +95,9 @@ Trivy tries to load `trivy-secret.yaml` in the current directory by default.
 If the file doesn't exist, only built-in rules are used.
 You can customize the config file path via the `--secret-config` flag.
 
+!!! warning
+    Trivy uses [Golang regexp package](https://pkg.go.dev/regexp/syntax#hdr-Syntax). To use `^` and `$` as simbols of begin and end of line use multi-line mode -`(?m)`.
+
 ### Custom Rules
 Trivy allows defining custom rules.
 

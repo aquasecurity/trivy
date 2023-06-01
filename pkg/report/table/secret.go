@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 
 	"github.com/aquasecurity/tml"
 
@@ -23,7 +23,7 @@ type secretRenderer struct {
 }
 
 func NewSecretRenderer(target string, secrets []types.SecretFinding, ansi bool, severities []dbTypes.Severity) *secretRenderer {
-	width, _, err := terminal.GetSize(0)
+	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
 	}
