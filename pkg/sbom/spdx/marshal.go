@@ -138,6 +138,8 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 		relationShip(DocumentSPDXIdentifier, rootPkg.PackageSPDXIdentifier, RelationShipDescribe),
 	)
 
+	var spdxFiles []*spdx.File
+
 	for _, result := range r.Results {
 		if len(result.Packages) == 0 {
 			continue
@@ -160,6 +162,16 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 			relationShips = append(relationShips,
 				relationShip(parentPackage.PackageSPDXIdentifier, spdxPackage.PackageSPDXIdentifier, RelationShipContains),
 			)
+			files, err := m.pkgFiles(pkg)
+			if err != nil {
+				return nil, xerrors.Errorf("package file error: %w", err)
+			}
+			spdxFiles = append(spdxFiles, files...)
+			for _, file := range files {
+				relationShips = append(relationShips,
+					relationShip(spdxPackage.PackageSPDXIdentifier, file.FileSPDXIdentifier, RelationShipContains),
+				)
+			}
 		}
 	}
 
@@ -184,6 +196,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 		},
 		Packages:      toPackages(packages),
 		Relationships: relationShips,
+		Files:         spdxFiles,
 	}, nil
 }
 
@@ -337,11 +350,6 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 	attrTexts = appendAttributionText(attrTexts, PropertyLayerDigest, pkg.Layer.Digest)
 	attrTexts = appendAttributionText(attrTexts, PropertyLayerDiffID, pkg.Layer.DiffID)
 
-	files, err := m.pkgFiles(pkg)
-	if err != nil {
-		return spdx.Package{}, xerrors.Errorf("package file error: %w", err)
-	}
-
 	supplier := &spdx.Supplier{Supplier: PackageSupplierNoAssertion}
 	if pkg.Maintainer != "" {
 		supplier = &spdx.Supplier{
@@ -373,7 +381,6 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 		PrimaryPackagePurpose:     PackagePurposeLibrary,
 		PackageSupplier:           supplier,
 		PackageChecksums:          checksum,
-		Files:                     files,
 	}, nil
 }
 

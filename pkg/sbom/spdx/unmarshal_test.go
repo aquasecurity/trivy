@@ -111,6 +111,69 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path for bom with hasFiles field",
+			inputFile: "testdata/happy/with-hasfiles-bom.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: "node-pkg",
+						Libraries: []ftypes.Package{
+							{
+								ID:       "yargs-parser@21.1.1",
+								Name:     "yargs-parser",
+								Version:  "21.1.1",
+								Licenses: []string{"ISC"},
+								Ref:      "pkg:npm/yargs-parser@21.1.1",
+								FilePath: "node_modules/yargs-parser/package.json",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path for bom with hasFiles field",
+			inputFile: "testdata/happy/with-hasfiles-bom.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: "node-pkg",
+						Libraries: []ftypes.Package{
+							{
+								ID:       "yargs-parser@21.1.1",
+								Name:     "yargs-parser",
+								Version:  "21.1.1",
+								Licenses: []string{"ISC"},
+								Ref:      "pkg:npm/yargs-parser@21.1.1",
+								FilePath: "node_modules/yargs-parser/package.json",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path for bom files in relationships",
+			inputFile: "testdata/happy/with-files-in-relationships-bom.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: "node-pkg",
+						Libraries: []ftypes.Package{
+							{
+								ID:       "yargs-parser@21.1.1",
+								Name:     "yargs-parser",
+								Version:  "21.1.1",
+								Licenses: []string{"ISC"},
+								Ref:      "pkg:npm/yargs-parser@21.1.1",
+								FilePath: "node_modules/yargs-parser/package.json",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path for unrelated bom",
 			inputFile: "testdata/happy/unrelated-bom.json",
 			want: types.SBOM{
