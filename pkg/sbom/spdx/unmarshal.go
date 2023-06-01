@@ -265,7 +265,7 @@ func getPackageFilePaths(spdxDocument *spdx.Document) map[string]string {
 	packageFilePaths := map[string]string{}
 	fileSPDXIdentifierMap := createFileSPDXIdentifierMap(spdxDocument.Files)
 	for _, rel := range spdxDocument.Relationships {
-		if rel.Relationship == common.TypeRelationshipDescribe || rel.Relationship == "DESCRIBE" {
+		if rel.Relationship != common.TypeRelationshipContains && rel.Relationship != "CONTAIN" {
 			// Skip the DESCRIBES relationship.
 			continue
 		}
