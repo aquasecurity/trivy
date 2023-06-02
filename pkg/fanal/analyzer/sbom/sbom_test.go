@@ -94,3 +94,44 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 		})
 	}
 }
+
+func Test_packagingAnalyzer_Required(t *testing.T) {
+	tests := []struct {
+		name     string
+		filePath string
+		want     bool
+	}{
+		{
+			name:     "cdx",
+			filePath: "/test/result.cdx",
+			want:     true,
+		},
+		{
+			name:     "spdx",
+			filePath: "/test/result.spdx",
+			want:     true,
+		},
+		{
+			name:     "cdx.json",
+			filePath: "/test/result.cdx.json",
+			want:     true,
+		},
+		{
+			name:     "spdx.json",
+			filePath: "/test/result.spdx.json",
+			want:     true,
+		},
+		{
+			name:     "json",
+			filePath: "/test/result.json",
+			want:     false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := sbomAnalyzer{}
+			got := a.Required(tt.filePath, nil)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

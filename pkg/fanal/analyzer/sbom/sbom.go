@@ -4,10 +4,8 @@ import (
 	"context"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -70,7 +68,12 @@ func (a sbomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 }
 
 func (a sbomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return slices.Contains(requiredSuffixes, filepath.Ext(filePath))
+	for _, suffix := range requiredSuffixes {
+		if strings.HasSuffix(filePath, suffix) {
+			return true
+		}
+	}
+	return false
 }
 
 func (a sbomAnalyzer) Type() analyzer.Type {
