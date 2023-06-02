@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sbom-generation" class="md-skip">
+        <a href="#sbom" class="md-skip">
           Skip to content
         </a>
       
@@ -1740,20 +1740,28 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#generating" class="md-nav__link">
+    Generating
+  </a>
+  
+    <nav class="md-nav" aria-label="Generating">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#cli-commands" class="md-nav__link">
     CLI commands
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#supported-packages" class="md-nav__link">
     Supported packages
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#formats" class="md-nav__link">
     Formats
   </a>
@@ -1777,6 +1785,18 @@ You're not viewing the latest version.
         
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scanning" class="md-nav__link">
+    Scanning
+  </a>
   
 </li>
       
@@ -2305,6 +2325,20 @@ You're not viewing the latest version.
     <li class="md-nav__item">
       <a href="../../references/configuration/cli/trivy_config/" class="md-nav__link">
         Config
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/configuration/cli/trivy_convert/" class="md-nav__link">
+        Convert
       </a>
     </li>
   
@@ -2998,20 +3032,28 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#generating" class="md-nav__link">
+    Generating
+  </a>
+  
+    <nav class="md-nav" aria-label="Generating">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#cli-commands" class="md-nav__link">
     CLI commands
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#supported-packages" class="md-nav__link">
     Supported packages
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#formats" class="md-nav__link">
     Formats
   </a>
@@ -3037,6 +3079,18 @@ You're not viewing the latest version.
     </nav>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scanning" class="md-nav__link">
+    Scanning
+  </a>
+  
+</li>
       
     </ul>
   
@@ -3056,13 +3110,14 @@ You're not viewing the latest version.
 
 
 
-<h1 id="sbom-generation">SBOM generation</h1>
+<h1 id="sbom">SBOM</h1>
+<h2 id="generating">Generating</h2>
 <p>Trivy can generate the following SBOM formats.</p>
 <ul>
 <li><a href="#cyclonedx">CycloneDX</a></li>
 <li><a href="#spdx">SPDX</a></li>
 </ul>
-<h2 id="cli-commands">CLI commands</h2>
+<h3 id="cli-commands">CLI commands</h3>
 <p>To generate SBOM, you can use the <code>--format</code> option for each subcommand such as <code>image</code>, <code>fs</code> and <code>vm</code>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format spdx-json --output result.json alpine:3.15
 </code></pre></div>
@@ -3226,7 +3281,7 @@ You're not viewing the latest version.
 
 </details>
 
-<h2 id="supported-packages">Supported packages</h2>
+<h3 id="supported-packages">Supported packages</h3>
 <p>Trivy supports the following packages.</p>
 <ul>
 <li><a href="../../scanner/vulnerability/os/">OS packages</a></li>
@@ -3258,8 +3313,8 @@ You're not viewing the latest version.
 </tr>
 </tbody>
 </table>
-<h2 id="formats">Formats</h2>
-<h3 id="cyclonedx">CycloneDX</h3>
+<h3 id="formats">Formats</h3>
+<h4 id="cyclonedx">CycloneDX</h4>
 <p>Trivy can generate SBOM in the <a href="https://cyclonedx.org/">CycloneDX</a> format.
 Note that XML format is not supported at the moment.</p>
 <p>You can use the regular subcommands (like <code>image</code>, <code>fs</code> and <code>rootfs</code>) and specify <code>cyclonedx</code> with the <code>--format</code> option.</p>
@@ -3494,7 +3549,7 @@ Note that XML format is not supported at the moment.</p>
 <p>If you want to include vulnerabilities, you can enable vulnerability scanning via <code>--scanners vuln</code>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --scanners vuln --format cyclonedx --output result.json alpine:3.15
 </code></pre></div>
-<h3 id="spdx">SPDX</h3>
+<h4 id="spdx">SPDX</h4>
 <p>Trivy can generate SBOM in the <a href="https://spdx.dev/wp-content/uploads/sites/41/2020/08/SPDX-specification-2-2.pdf">SPDX</a> format.</p>
 <p>You can use the regular subcommands (like <code>image</code>, <code>fs</code> and <code>rootfs</code>) and specify <code>spdx</code> with the <code>--format</code> option.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format spdx --output result.spdx alpine:3.15
@@ -3780,6 +3835,57 @@ PackageLicenseDeclared: GPL-2.0-only
 
 </details>
 
+<h2 id="scanning">Scanning</h2>
+<p>Trivy can take SBOM documents as input for scanning.
+See <a href="../../target/sbom/">here</a> for more details.</p>
+<p>Also, Trivy searches for SBOM files in container images.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image bitnami/elasticsearch:8.7.1
+</code></pre></div>
+<p>For example, <a href="https://github.com/bitnami/containers">Bitnami images</a> contain SBOM files in <code>/opt/bitnami</code> directory.
+Trivy automatically detects the SBOM files and uses them for scanning.
+It is enabled in the following targets.</p>
+<table>
+<thead>
+<tr>
+<th align="center">Target</th>
+<th align="center">Enabled</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Container Image</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Filesystem</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">Rootfs</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Git Repository</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">VM Image</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Kubernetes</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">AWS</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">SBOM</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
 <div class="footnote">
 <hr />
 <ol>

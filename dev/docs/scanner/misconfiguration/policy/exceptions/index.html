@@ -2294,6 +2294,20 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
+      <a href="../../../../references/configuration/cli/trivy_convert/" class="md-nav__link">
+        Convert
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../../references/configuration/cli/trivy_filesystem/" class="md-nav__link">
         Filesystem
       </a>
@@ -3032,7 +3046,7 @@ exception[ns] {
 </code></pre></div>
 </div>
 <p>This example exempts all built-in policies for Kubernetes.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/48b2e15c2383241963f7bf749d7e4416c33bd4f7/examples/misconf/namespace-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/9ef01133c8205f90a9733cba5e3396a5ecebb9b6/examples/misconf/namespace-exception">an example</a>.</p>
 <h2 id="rule-based-exceptions">Rule-based exceptions</h2>
 <p>There are some cases where you need more flexibility and granularity in defining which cases to exempt.
 Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.</p>
@@ -3084,7 +3098,7 @@ exception[rules] {
 </div>
 <p>This exception is applied to <a href="https://github.com/aquasecurity/defsec/blob/master/internal/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego">KSV012</a> in defsec.
 You can get the package names in the <a href="https://github.com/aquasecurity/defsec/">defsec repository</a> or the JSON output from Trivy.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/48b2e15c2383241963f7bf749d7e4416c33bd4f7/examples/misconf/rule-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/9ef01133c8205f90a9733cba5e3396a5ecebb9b6/examples/misconf/rule-exception">an example</a>.</p>
 
               
             </article>
