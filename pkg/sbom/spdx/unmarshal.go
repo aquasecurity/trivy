@@ -315,12 +315,12 @@ func parseSourceInfo(pkgType, sourceInfo string) (epoch int, name, ver, rel stri
 func getPackageFilePaths(spdxDocument *spdx.Document) map[string]string {
 	packageFilePaths := map[string]string{}
 	fileSPDXIdentifierMap := createFileSPDXIdentifierMap(spdxDocument.Files)
-	relationships := lo.Filter(spdxDocument.Relationships, func(rel *spdx.Relationship, _ int) bool {
-		// Get only the CONTAIN relationships.
-		return rel.Relationship != common.TypeRelationshipContains && rel.Relationship != "CONTAIN"
-	})
+	for _, rel := range spdxDocument.Relationships {
+		if rel.Relationship != common.TypeRelationshipContains && rel.Relationship != "CONTAIN" {
+			// Skip the DESCRIBES relationship.
+			continue
+		}
 
-	for _, rel := range relationships {
 		// hasFiles field is deprecated
 		// https://github.com/spdx/tools-golang/issues/171
 		// hasFiles values converted in Relationships
