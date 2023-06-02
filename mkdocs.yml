@@ -38,14 +38,14 @@ nav:
   - Docs:
       - Overview: docs/index.md
       - Target:
-          Container Image: docs/target/container_image.md
-          Filesystem: docs/target/filesystem.md
-          Rootfs: docs/target/rootfs.md
-          Git Repository: docs/target/git-repository.md
-          Virtual Machine Image: docs/target/vm.md
-          Kubernetes: docs/target/kubernetes.md
-          AWS: docs/target/aws.md
-          SBOM: docs/target/sbom.md
+          - Container Image: docs/target/container_image.md
+          - Filesystem: docs/target/filesystem.md
+          - Rootfs: docs/target/rootfs.md
+          - Git Repository: docs/target/git-repository.md
+          - Virtual Machine Image: docs/target/vm.md
+          - Kubernetes: docs/target/kubernetes.md
+          - AWS: docs/target/aws.md
+          - SBOM: docs/target/sbom.md
       - Scanner:
           - Vulnerability:
               - Overview: docs/scanner/vulnerability/index.md
@@ -110,6 +110,7 @@ nav:
                   - Overview: docs/references/configuration/cli/trivy.md
                   - AWS: docs/references/configuration/cli/trivy_aws.md
                   - Config: docs/references/configuration/cli/trivy_config.md
+                  - Convert: docs/references/configuration/cli/trivy_convert.md
                   - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
                   - Image: docs/references/configuration/cli/trivy_image.md
                   - Kubernetes: docs/references/configuration/cli/trivy_kubernetes.md
