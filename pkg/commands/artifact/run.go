@@ -187,8 +187,9 @@ func (r *runner) ScanImage(ctx context.Context, opts flag.Options) (types.Report
 }
 
 func (r *runner) ScanFilesystem(ctx context.Context, opts flag.Options) (types.Report, error) {
-	// Disable the individual package scanning
+	// Disable scanning of individual package and SBOM files
 	opts.DisabledAnalyzers = append(opts.DisabledAnalyzers, analyzer.TypeIndividualPkgs...)
+	opts.DisabledAnalyzers = append(opts.DisabledAnalyzers, analyzer.TypeSBOM)
 
 	return r.scanFS(ctx, opts)
 }
@@ -217,8 +218,9 @@ func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.R
 	// Do not scan OS packages
 	opts.VulnType = []string{types.VulnTypeLibrary}
 
-	// Disable the OS analyzers and individual package analyzers
+	// Disable the OS analyzers, individual package analyzers and SBOM analyzer
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
+	opts.DisabledAnalyzers = append(opts.DisabledAnalyzers, analyzer.TypeSBOM)
 
 	var s InitializeScanner
 	if opts.ServerAddr == "" {
