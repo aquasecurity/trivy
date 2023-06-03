@@ -69,7 +69,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 		}
 
 		// Build filesystem for post analysis
-		if err := a.buildFS(tmpDir, filePath, info, opener, files); err != nil {
+		if err := a.buildFS(tmpDir, path, info, opener, files); err != nil {
 			return xerrors.Errorf("failed to build filesystem: %w", err)
 		}
 
