@@ -60,6 +60,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("mkdir temp error: %w", err)
 	}
+	defer os.RemoveAll(tmpDir)
 
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
 	err = a.walker.Walk(r, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
