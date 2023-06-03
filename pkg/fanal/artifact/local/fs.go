@@ -47,6 +47,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 		Slow:                 opt.Slow,
 		FilePatterns:         opt.FilePatterns,
 		DisabledAnalyzers:    opt.DisabledAnalyzers,
+		MisconfScannerOption: opt.MisconfScannerOption,
 		SecretScannerOption:  opt.SecretScannerOption,
 		LicenseScannerOption: opt.LicenseScannerOption,
 	})
@@ -55,9 +56,10 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}
 
 	return Artifact{
-		rootPath:       filepath.Clean(rootPath),
-		cache:          c,
-		walker:         walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs), opt.Slow),
+		rootPath: filepath.Clean(rootPath),
+		cache:    c,
+		walker: walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs),
+			opt.Slow, opt.WalkOption.ErrorCallback),
 		analyzer:       a,
 		handlerManager: handlerManager,
 
@@ -168,14 +170,15 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion:   types.BlobJSONSchemaVersion,
-		OS:              result.OS,
-		Repository:      result.Repository,
-		PackageInfos:    result.PackageInfos,
-		Applications:    result.Applications,
-		Secrets:         result.Secrets,
-		Licenses:        result.Licenses,
-		CustomResources: result.CustomResources,
+		SchemaVersion:     types.BlobJSONSchemaVersion,
+		OS:                result.OS,
+		Repository:        result.Repository,
+		PackageInfos:      result.PackageInfos,
+		Applications:      result.Applications,
+		Misconfigurations: result.Misconfigurations,
+		Secrets:           result.Secrets,
+		Licenses:          result.Licenses,
+		CustomResources:   result.CustomResources,
 	}
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
@@ -239,7 +242,9 @@ func (a Artifact) buildFS(dir, filePath string, info os.FileInfo, files *syncx.M
 
 	// Create fs.FS for each post-analyzer that wants to analyze the current file
 	for _, at := range atypes {
-		mfs, _ := files.LoadOrStore(at, mapfs.New())
+		// Since filesystem scanning may require access outside the specified path, (e.g. Terraform modules)
+		// it allows "../" access with "WithUnderlyingRoot".
+		mfs, _ := files.LoadOrStore(at, mapfs.New(mapfs.WithUnderlyingRoot(dir)))
 		if d := filepath.Dir(filePath); d != "." {
 			if err := mfs.MkdirAll(d, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
 				return xerrors.Errorf("mapfs mkdir error: %w", err)

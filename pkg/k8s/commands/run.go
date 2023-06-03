@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
@@ -36,7 +37,7 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	defer cancel()
 
 	defer func() {
-		if xerrors.Is(err, context.DeadlineExceeded) {
+		if errors.Is(err, context.DeadlineExceeded) {
 			log.Logger.Warn("Increase --timeout value")
 		}
 	}()
@@ -95,10 +96,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 
 	if r.flagOpts.Compliance.Spec.ID != "" {
 		var scanResults []types.Results
-		for _, rss := range rpt.Vulnerabilities {
-			scanResults = append(scanResults, rss.Results)
-		}
-		for _, rss := range rpt.Misconfigurations {
+		for _, rss := range rpt.Resources {
 			scanResults = append(scanResults, rss.Results)
 		}
 		complianceReport, err := cr.BuildComplianceReport(scanResults, r.flagOpts.Compliance)
@@ -123,7 +121,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	cmd.Exit(r.flagOpts, rpt.Failed())
+	operation.Exit(r.flagOpts, rpt.Failed())
 
 	return nil
 }

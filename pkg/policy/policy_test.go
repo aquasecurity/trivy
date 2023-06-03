@@ -116,7 +116,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			}, nil)
 
 			// Mock OCI artifact
-			art, err := oci.NewArtifact("repo", true, ftypes.RemoteOptions{}, oci.WithImage(img))
+			art, err := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
 			c, err := policy.NewClient(tt.cacheDir, true, policy.WithOCIArtifact(art))
@@ -257,7 +257,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			art, err := oci.NewArtifact("repo", true, ftypes.RemoteOptions{}, oci.WithImage(img))
+			art, err := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
 			c, err := policy.NewClient(tmpDir, true, policy.WithOCIArtifact(art), policy.WithClock(tt.clock))
@@ -361,7 +361,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			}, nil)
 
 			// Mock OCI artifact
-			art, err := oci.NewArtifact("repo", true, ftypes.RemoteOptions{}, oci.WithImage(img))
+			art, err := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
 			c, err := policy.NewClient(tempDir, true, policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
@@ -387,4 +387,14 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func TestClient_Clear(t *testing.T) {
+	cacheDir := t.TempDir()
+	err := os.MkdirAll(filepath.Join(cacheDir, "policy"), 0755)
+	require.NoError(t, err)
+
+	c, err := policy.NewClient(cacheDir, true)
+	require.NoError(t, err)
+	require.NoError(t, c.Clear())
 }

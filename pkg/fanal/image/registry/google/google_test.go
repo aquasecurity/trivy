@@ -13,23 +13,21 @@ import (
 func TestCheckOptions(t *testing.T) {
 	var tests = map[string]struct {
 		domain  string
-		opt     types.RemoteOptions
+		opt     types.RegistryOptions
 		gcr     *Registry
 		wantErr error
 	}{
 		"InvalidURL": {
 			domain:  "alpine:3.9",
-			opt:     types.RemoteOptions{},
 			wantErr: types.InvalidURLPattern,
 		},
 		"NoOption": {
 			domain: "gcr.io",
-			opt:    types.RemoteOptions{},
 			gcr:    &Registry{domain: "gcr.io"},
 		},
 		"CredOption": {
 			domain: "gcr.io",
-			opt:    types.RemoteOptions{GCPCredPath: "/path/to/file.json"},
+			opt:    types.RegistryOptions{GCPCredPath: "/path/to/file.json"},
 			gcr: &Registry{
 				domain: "gcr.io",
 				Store:  store.NewGCRCredStore("/path/to/file.json"),

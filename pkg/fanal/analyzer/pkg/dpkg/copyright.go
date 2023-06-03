@@ -5,7 +5,7 @@ import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
+	"path"
 	"regexp"
 	"strings"
 
@@ -32,7 +32,8 @@ var (
 
 // dpkgLicenseAnalyzer parses copyright files and detect licenses
 type dpkgLicenseAnalyzer struct {
-	licenseFull bool
+	licenseFull               bool
+	classifierConfidenceLevel float64
 }
 
 // Analyze parses /usr/share/doc/*/copyright files
@@ -48,8 +49,7 @@ func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 		if _, err = input.Content.Seek(0, io.SeekStart); err != nil {
 			return nil, xerrors.Errorf("seek error: %w", err)
 		}
-
-		licenseFile, err := licensing.Classify(input.FilePath, input.Content)
+		licenseFile, err := licensing.Classify(input.FilePath, input.Content, a.classifierConfidenceLevel)
 		if err != nil {
 			return nil, xerrors.Errorf("license classification error: %w", err)
 		}
@@ -124,11 +124,18 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.Licens
 
 func (a *dpkgLicenseAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 	a.licenseFull = opt.LicenseScannerOption.Full
+	a.classifierConfidenceLevel = opt.LicenseScannerOption.ClassifierConfidenceLevel
 	return nil
 }
 
 func (a *dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasPrefix(filePath, "usr/share/doc/") && filepath.Base(filePath) == "copyright"
+	// To exclude files from subfolders
+	// e.g. usr/share/doc/ca-certificates/examples/ca-certificates-local/debian/copyright
+	match, err := path.Match("usr/share/doc/*/copyright", filePath)
+	if err != nil {
+		return false
+	}
+	return match
 }
 
 func (a *dpkgLicenseAnalyzer) Type() analyzer.Type {

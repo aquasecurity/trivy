@@ -54,7 +54,7 @@ func TestNewDockerImage(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    types.RemoteOptions
+		option    types.ImageOptions
 	}
 	tests := []struct {
 		name            string
@@ -205,14 +205,16 @@ func TestNewDockerImage(t *testing.T) {
 			name: "happy path with insecure Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
-					Credentials: []types.Credential{
-						{
-							Username: "test",
-							Password: "test",
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						Credentials: []types.Credential{
+							{
+								Username: "test",
+								Password: "test",
+							},
 						},
+						Insecure: true,
 					},
-					Insecure: true,
 				},
 			},
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
@@ -274,6 +276,7 @@ func TestNewDockerImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.args.option.ImageSources = types.AllImageSources
 			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
@@ -331,7 +334,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    types.RemoteOptions
+		option    types.ImageOptions
 	}
 	tests := []struct {
 		name    string
@@ -343,14 +346,16 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with private Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
-					Credentials: []types.Credential{
-						{
-							Username: "test",
-							Password: "testpass",
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						Credentials: []types.Credential{
+							{
+								Username: "test",
+								Password: "testpass",
+							},
 						},
+						Insecure: true,
 					},
-					Insecure: true,
 				},
 			},
 		},
@@ -358,9 +363,11 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
-					RegistryToken: registryToken,
-					Insecure:      true,
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						RegistryToken: registryToken,
+						Insecure:      true,
+					},
 				},
 			},
 		},
@@ -375,9 +382,11 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "sad path with invalid registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.11", serverAddr),
-				option: types.RemoteOptions{
-					RegistryToken: registryToken + "invalid",
-					Insecure:      true,
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						RegistryToken: registryToken + "invalid",
+						Insecure:      true,
+					},
 				},
 			},
 			wantErr: "signature is invalid",
@@ -385,6 +394,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.args.option.ImageSources = types.AllImageSources
 			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
@@ -437,7 +447,7 @@ func TestNewArchiveImage(t *testing.T) {
 			args: args{
 				fileName: "../test/testdata/test_image_tag.oci:0.0.0",
 			},
-			wantErr: "invalid OCI image tag",
+			wantErr: "invalid OCI image ref",
 		},
 		{
 			name: "sad path, oci image not found",
@@ -501,7 +511,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 	serverAddr := tr.Listener.Addr().String()
 
 	type args struct {
-		option types.RemoteOptions
+		option types.ImageOptions
 	}
 	tests := []struct {
 		name    string
@@ -512,15 +522,22 @@ func TestDockerPlatformArguments(t *testing.T) {
 		{
 			name: "happy path with valid platform",
 			args: args{
-				option: types.RemoteOptions{
-					Credentials: []types.Credential{
-						{
-							Username: "test",
-							Password: "testpass",
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						Credentials: []types.Credential{
+							{
+								Username: "test",
+								Password: "testpass",
+							},
+						},
+						Insecure: true,
+						Platform: types.Platform{
+							Platform: &v1.Platform{
+								Architecture: "arm",
+								OS:           "linux",
+							},
 						},
 					},
-					Insecure: true,
-					Platform: "arm/linux",
 				},
 			},
 		},
@@ -528,13 +545,12 @@ func TestDockerPlatformArguments(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
-
+			tt.args.option.ImageSources = types.AllImageSources
 			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {
-				assert.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, err)
+				assert.ErrorContains(t, err, tt.wantErr, err)
 			} else {
 				assert.NoError(t, err)
 			}

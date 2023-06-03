@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/google/go-containerregistry/pkg/name"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"net/http/httptest"
@@ -62,7 +63,7 @@ func TestGet(t *testing.T) {
 	type args struct {
 		imageName string
 		config    string
-		option    types.RemoteOptions
+		option    types.RegistryOptions
 	}
 	tests := []struct {
 		name    string
@@ -74,7 +75,7 @@ func TestGet(t *testing.T) {
 			name: "single credential",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
 							Username: "test",
@@ -89,7 +90,7 @@ func TestGet(t *testing.T) {
 			name: "multiple credential",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
 							Username: "foo",
@@ -109,7 +110,7 @@ func TestGet(t *testing.T) {
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				config:    fmt.Sprintf(`{"auths": {"%s": {"auth": %q}}}`, serverAddr, encode("test", "testpass")),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Insecure: true,
 				},
 			},
@@ -118,7 +119,7 @@ func TestGet(t *testing.T) {
 			name: "platform",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
 							Username: "test",
@@ -126,15 +127,43 @@ func TestGet(t *testing.T) {
 						},
 					},
 					Insecure: true,
-					Platform: "*/amd64",
+					Platform: types.Platform{
+						Platform: &v1.Platform{
+							OS:           "",
+							Architecture: "amd64",
+						},
+					},
 				},
 			},
+		},
+		{
+			name: "force platform",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					Insecure: true,
+					Platform: types.Platform{
+						Force: true,
+						Platform: &v1.Platform{
+							OS:           "windows",
+							Architecture: "amd64",
+						},
+					},
+				},
+			},
+			wantErr: "the specified platform not found",
 		},
 		{
 			name: "bad credential",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
 							Username: "foo",
@@ -151,7 +180,7 @@ func TestGet(t *testing.T) {
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				config:    fmt.Sprintf(`{"auths": {"%s": {"auth": %q}}}`, serverAddr, encode("foo", "bar")),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Insecure: true,
 				},
 			},

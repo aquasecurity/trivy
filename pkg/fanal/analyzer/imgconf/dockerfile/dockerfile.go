@@ -9,7 +9,9 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
@@ -20,11 +22,11 @@ func init() {
 }
 
 type historyAnalyzer struct {
-	scanner misconf.Scanner
+	scanner *misconf.Scanner
 }
 
 func newHistoryAnalyzer(opts analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnalyzer, error) {
-	s, err := misconf.NewScanner(opts.FilePatterns, opts.MisconfScannerOption)
+	s, err := misconf.NewDockerfileScanner(opts.FilePatterns, opts.MisconfScannerOption)
 	if err != nil {
 		return nil, xerrors.Errorf("misconfiguration scanner error: %w", err)
 	}
@@ -39,7 +41,9 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 		return nil, nil
 	}
 	dockerfile := new(bytes.Buffer)
-	for _, h := range input.Config.History {
+	baseLayerIndex := image.GuessBaseImageIndex(input.Config.History)
+	for i := baseLayerIndex + 1; i < len(input.Config.History); i++ {
+		h := input.Config.History[i]
 		var createdBy string
 		switch {
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)"):
@@ -48,6 +52,9 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
 			// RUN instruction
 			createdBy = strings.ReplaceAll(h.CreatedBy, "/bin/sh -c", "RUN")
+		case strings.HasPrefix(h.CreatedBy, "USER"):
+			// USER instruction
+			createdBy = h.CreatedBy
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
 			// HEALTHCHECK instruction
 			var interval, timeout, startPeriod, retries, command string
@@ -70,15 +77,12 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
 
-	files := []types.File{
-		{
-			Type:    types.Dockerfile,
-			Path:    "Dockerfile",
-			Content: dockerfile.Bytes(),
-		},
+	fsys := mapfs.New()
+	if err := fsys.WriteVirtualFile("Dockerfile", dockerfile.Bytes(), 0600); err != nil {
+		return nil, xerrors.Errorf("mapfs write error: %w", err)
 	}
 
-	misconfs, err := a.scanner.Scan(ctx, files)
+	misconfs, err := a.scanner.Scan(ctx, fsys)
 	if err != nil {
 		return nil, xerrors.Errorf("history scan error: %w", err)
 	}

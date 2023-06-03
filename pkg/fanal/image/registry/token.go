@@ -23,7 +23,7 @@ func init() {
 }
 
 type Registry interface {
-	CheckOptions(domain string, option types.RemoteOptions) error
+	CheckOptions(domain string, option types.RegistryOptions) error
 	GetCredential(ctx context.Context) (string, string, error)
 }
 
@@ -31,7 +31,7 @@ func RegisterRegistry(registry Registry) {
 	registries = append(registries, registry)
 }
 
-func GetToken(ctx context.Context, domain string, opt types.RemoteOptions) (auth authn.Basic) {
+func GetToken(ctx context.Context, domain string, opt types.RegistryOptions) (auth authn.Basic) {
 	// check registry which particular to get credential
 	for _, registry := range registries {
 		err := registry.CheckOptions(domain, opt)

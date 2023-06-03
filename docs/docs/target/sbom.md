@@ -28,10 +28,6 @@ Trivy supports CycloneDX as an input.
 $ trivy sbom /path/to/cyclonedx.json
 ```
 
-!!! note
-    If you want to generate a CycloneDX report from a CycloneDX input, please be aware that the output stores references to your original CycloneDX report and contains only detected vulnerabilities, not components.
-    The report is called [BOV](https://cyclonedx.org/capabilities/sbom/).
-
 ## SPDX
 Trivy supports the SPDX SBOM as an input.
 
@@ -89,7 +85,7 @@ Total: 5 (UNKNOWN: 0, LOW: 0, MEDIUM: 2, HIGH: 2, CRITICAL: 1)
 You can also scan an SBOM attestation.
 In the following example, [Cosign](https://github.com/sigstore/cosign) gets an attestation and Trivy scans it.
 You must create CycloneDX-type attestation before trying the example.
-To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the [SBOM attestation page](../attestation/sbom.md#sign-with-a-local-key-pair).
+To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the [SBOM attestation page](../supply-chain/attestation/sbom.md#sign-with-a-local-key-pair).
 
 ```bash
 $ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> > sbom.cdx.intoto.jsonl

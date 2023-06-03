@@ -13,7 +13,6 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	dbc "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -35,19 +34,19 @@ type Server struct {
 	dbRepository string
 
 	// For OCI registries
-	types.RemoteOptions
+	types.RegistryOptions
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository string, opt types.RemoteOptions) Server {
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository string, opt types.RegistryOptions) Server {
 	return Server{
-		appVersion:    appVersion,
-		addr:          addr,
-		cacheDir:      cacheDir,
-		token:         token,
-		tokenHeader:   tokenHeader,
-		dbRepository:  dbRepository,
-		RemoteOptions: opt,
+		appVersion:      appVersion,
+		addr:            addr,
+		cacheDir:        cacheDir,
+		token:           token,
+		tokenHeader:     tokenHeader,
+		dbRepository:    dbRepository,
+		RegistryOptions: opt,
 	}
 }
 
@@ -61,7 +60,7 @@ func (s Server) ListenAndServe(serverCache cache.Cache, skipDBUpdate bool) error
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)
-			if err := worker.update(ctx, s.appVersion, s.cacheDir, skipDBUpdate, dbUpdateWg, requestWg, s.RemoteOptions); err != nil {
+			if err := worker.update(ctx, s.appVersion, s.cacheDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {
 				log.Logger.Errorf("%+v\n", err)
 			}
 		}
@@ -118,15 +117,15 @@ func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 }
 
 type dbWorker struct {
-	dbClient dbFile.Operation
+	dbClient dbc.Operation
 }
 
-func newDBWorker(dbClient dbFile.Operation) dbWorker {
+func newDBWorker(dbClient dbc.Operation) dbWorker {
 	return dbWorker{dbClient: dbClient}
 }
 
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
-	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RemoteOptions) error {
+	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
 	log.Logger.Debug("Check for DB update...")
 	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, skipDBUpdate)
 	if err != nil {
@@ -142,7 +141,7 @@ func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 	return nil
 }
 
-func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RemoteOptions) error {
+func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
 	tmpDir, err := os.MkdirTemp("", "db")
 	if err != nil {
 		return xerrors.Errorf("failed to create a temp dir: %w", err)

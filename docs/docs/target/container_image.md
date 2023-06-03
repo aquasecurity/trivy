@@ -22,7 +22,7 @@ By default, vulnerability and secret scanning are enabled, and you can configure
 It is enabled by default.
 You can simply specify your image name (and a tag).
 It detects known vulnerabilities in your container image.
-See [here](../vulnerability/scanning.md) for the detail.
+See [here](../scanner/vulnerability/index.md) for the detail.
 
 ```
 $ trivy image [YOUR_IMAGE_NAME]
@@ -63,7 +63,7 @@ $ trivy image --scanners vuln [YOUR_IMAGE_NAME]
 
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
-As mentioned [here](../misconfiguration/scanning.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
+As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
 If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners config`.
 
 ```
@@ -72,7 +72,7 @@ $ trivy image --scanners config [YOUR_IMAGE_NAME]
 
 ### Secrets
 It is enabled by default.
-See [here](../secret/scanning.md) for the detail.
+See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy image [YOUR_IMAGE_NAME]
@@ -80,7 +80,7 @@ $ trivy image [YOUR_IMAGE_NAME]
 
 ### Licenses
 It is disabled by default.
-See [here](../licenses/scanning.md) for the detail.
+See [here](../scanner/license.md) for the detail.
 
 ```shell
 $ trivy image --scanners license [YOUR_IMAGE_NAME]
@@ -104,7 +104,7 @@ You can enable them with `--image-config-scanners`.
 ### Misconfigurations
 Trivy detects misconfigurations on the configuration of container images.
 The image config is converted into Dockerfile and Trivy handles it as Dockerfile.
-See [here](../misconfiguration/scanning.md) for the detail of Dockerfile scanning.
+See [here](../scanner/misconfiguration/index.md) for the detail of Dockerfile scanning.
 
 It is disabled by default.
 You can enable it with `--image-config-scanners config`.
@@ -165,7 +165,7 @@ See https://avd.aquasec.com/misconfig/ds026
 Trivy detects secrets on the configuration of container images.
 The image config is converted into JSON and Trivy scans the file for secrets.
 It is especially useful for environment variables that are likely to have credentials by accident.
-See [here](../secret/scanning.md) for the detail.
+See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy image --image-config-scanners secret [YOUR_IMAGE_NAME]
@@ -224,6 +224,23 @@ GitHub Personal Access Token
     You can see environment variables with `docker inspect`.
 
 ## Supported
+
+Trivy will look for the specified image in a series of locations. By default, it
+will first look in the local Docker Engine, then Containerd, Podman, and
+finally container registry.
+
+This behavior can be modified with the `--image-src` flag. For example, the
+command
+
+```bash
+trivy image --image-src podman,containerd alpine:3.7.3
+```
+
+Will first search in Podman. If the image is found there, it will be scanned
+and the results returned. If the image is not found in Podman, then Trivy will
+search in Containerd. If the image is not found there either, the scan will
+fail and no more image sources will be searched.
+
 ### Docker Engine
 Trivy tries to looks for the specified image in your local Docker Engine.
 It will be skipped if Docker Engine is not running locally.
@@ -375,12 +392,21 @@ $ skopeo copy docker-daemon:alpine:3.11 oci:/path/to/alpine
 $ trivy image --input /path/to/alpine
 ```
 
+Referencing specific images can be done by their tag or by their manifest digest:
+```
+# Referenced by tag
+$ trivy image --input /path/to/alpine:3.15
+
+# Referenced by digest
+$ trivy image --input /path/to/alpine@sha256:82389ea44e50c696aba18393b168a833929506f5b29b9d75eb817acceb6d54ba
+```
+
 ## SBOM
 Trivy supports the generation of Software Bill of Materials (SBOM) for container images and the search for SBOMs during vulnerability scanning.
 
 ### Generation
 Trivy can generate SBOM for container images.
-See [here](../sbom/index.md) for the detail.
+See [here](../supply-chain/sbom.md) for the detail.
 
 ### Discovery
 Trivy can search for Software Bill of Materials (SBOMs) that reference container images.
@@ -408,7 +434,7 @@ Total: 17 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 9, CRITICAL: 3)
 ```
 
 The OCI Registry utilizes the [Referrers API](https://github.com/opencontainers/distribution-spec/blob/main/spec.md#listing-referrers).
-For more information about Rekor, please refer to [its documentation](../attestation/rekor.md).
+For more information about Rekor, please refer to [its documentation](../supply-chain/attestation/rekor.md).
 
 ## Compliance
 
@@ -482,3 +508,9 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 
 </details>
 
+### Configure Docker daemon socket to connect to.
+You can configure Docker daemon socket with `DOCKER_HOST` or `--docker-host`.
+
+```shell
+$ trivy image --docker-host tcp://127.0.0.1:2375 YOUR_IMAGE
+```

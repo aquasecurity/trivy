@@ -50,30 +50,27 @@ type gomodAnalyzer struct {
 
 	// go.mod/go.sum in dependencies
 	leafModParser godeptypes.Parser
+
+	licenseClassifierConfidenceLevel float64
 }
 
-func newGoModAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &gomodAnalyzer{
-		modParser:     mod.NewParser(true), // Only the root module should replace
-		sumParser:     sum.NewParser(),
-		leafModParser: mod.NewParser(false),
+		modParser:                        mod.NewParser(true), // Only the root module should replace
+		sumParser:                        sum.NewParser(),
+		leafModParser:                    mod.NewParser(false),
+		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
 	}, nil
 }
 
 func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
-	err := fs.WalkDir(input.FS, ".", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		} else if !d.Type().IsRegular() {
-			return nil
-		}
 
-		dir, file := filepath.Split(path)
-		if file != types.GoMod {
-			return nil
-		}
+	required := func(path string, d fs.DirEntry) bool {
+		return filepath.Base(path) == types.GoMod
+	}
 
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
 		// Parse go.mod
 		gomod, err := parse(input.FS, path, a.modParser)
 		if err != nil {
@@ -84,7 +81,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 
 		if lessThanGo117(gomod) {
 			// e.g. /app/go.mod => /app/go.sum
-			sumPath := filepath.Join(dir, types.GoSum)
+			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
 			gosum, err := parse(input.FS, sumPath, a.sumParser)
 			if err != nil && !errors.Is(err, fs.ErrNotExist) {
 				return xerrors.Errorf("parse error: %w", err)
@@ -152,7 +149,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			modDir := filepath.Join(modPath, fmt.Sprintf("%s@v%s", normalizeModName(lib.Name), lib.Version))
 
 			// Collect licenses
-			if licenseNames, err := findLicense(modDir); err != nil {
+			if licenseNames, err := findLicense(modDir, a.licenseClassifierConfidenceLevel); err != nil {
 				return xerrors.Errorf("license error: %w", err)
 			} else {
 				// Cache the detected licenses
@@ -263,7 +260,7 @@ func mergeGoSum(gomod, gosum *types.Application) {
 	gomod.Libraries = maps.Values(uniq)
 }
 
-func findLicense(dir string) ([]string, error) {
+func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error) {
 	var license *types.LicenseFile
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -281,7 +278,7 @@ func findLicense(dir string) ([]string, error) {
 		}
 		defer f.Close()
 
-		l, err := licensing.Classify(path, f)
+		l, err := licensing.Classify(path, f, classifierConfidenceLevel)
 		if err != nil {
 			return xerrors.Errorf("license classify error: %w", err)
 		}

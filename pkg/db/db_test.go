@@ -219,7 +219,7 @@ func TestClient_Download(t *testing.T) {
 			}, nil)
 
 			// Mock OCI artifact
-			opt := ftypes.RemoteOptions{
+			opt := ftypes.RegistryOptions{
 				Insecure: false,
 			}
 			art, err := oci.NewArtifact("db", true, opt, oci.WithImage(img))

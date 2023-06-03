@@ -71,7 +71,7 @@ func TestClassifier_FullClassify(t *testing.T) {
 			require.NoError(t, err)
 			defer contentFile.Close()
 
-			got, err := licensing.Classify(tt.filePath, contentFile)
+			got, err := licensing.Classify(tt.filePath, contentFile, 0.9)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

@@ -44,6 +44,7 @@ var (
 		"3.15": time.Date(2023, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.16": time.Date(2024, 5, 23, 23, 59, 59, 0, time.UTC),
 		"3.17": time.Date(2024, 11, 22, 23, 59, 59, 0, time.UTC),
+		"3.18": time.Date(2025, 5, 9, 23, 59, 59, 0, time.UTC),
 		"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 )
@@ -130,7 +131,7 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
-				Ref:              pkg.Ref,
+				PkgRef:           pkg.Ref,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
 			})

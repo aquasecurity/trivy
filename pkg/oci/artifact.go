@@ -51,17 +51,17 @@ type Artifact struct {
 	quiet      bool
 
 	// For OCI registries
-	types.RemoteOptions
+	types.RegistryOptions
 
 	image v1.Image // For testing
 }
 
 // NewArtifact returns a new artifact
-func NewArtifact(repo string, quiet bool, remoteOpt types.RemoteOptions, opts ...Option) (*Artifact, error) {
+func NewArtifact(repo string, quiet bool, registryOpt types.RegistryOptions, opts ...Option) (*Artifact, error) {
 	art := &Artifact{
-		repository:    repo,
-		quiet:         quiet,
-		RemoteOptions: remoteOpt,
+		repository:      repo,
+		quiet:           quiet,
+		RegistryOptions: registryOpt,
 	}
 
 	for _, o := range opts {
@@ -70,7 +70,7 @@ func NewArtifact(repo string, quiet bool, remoteOpt types.RemoteOptions, opts ..
 	return art, nil
 }
 
-func (a *Artifact) populate(ctx context.Context, opt types.RemoteOptions) error {
+func (a *Artifact) populate(ctx context.Context, opt types.RegistryOptions) error {
 	if a.image != nil {
 		return nil
 	}
@@ -96,7 +96,7 @@ type DownloadOption struct {
 }
 
 func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption) error {
-	if err := a.populate(ctx, a.RemoteOptions); err != nil {
+	if err := a.populate(ctx, a.RegistryOptions); err != nil {
 		return err
 	}
 
@@ -191,7 +191,7 @@ func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir s
 }
 
 func (a *Artifact) Digest(ctx context.Context) (string, error) {
-	if err := a.populate(ctx, a.RemoteOptions); err != nil {
+	if err := a.populate(ctx, a.RegistryOptions); err != nil {
 		return "", err
 	}
 

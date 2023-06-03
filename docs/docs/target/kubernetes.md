@@ -283,6 +283,12 @@ Or, to filter for all other checks besides the infra checks, you can:
 $ trivy k8s cluster --report summary --components=workload --scanners=config # scan all components besides infra
 ```
 
+If you wish to exclude nodes from being scanned, you can use the flag `--exclude-nodes` with the node labels
+
+```
+trivy k8s cluster --report summary --exclude-nodes kubernetes.io/arch:arm6
+```
+
 ### Compliance
 This section describes Kubernetes specific compliance reports.
 For an overview of Trivy's Compliance feature, including working with custom compliance, check out the [Compliance documentation](../compliance/compliance.md).

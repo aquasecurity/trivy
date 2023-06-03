@@ -18,6 +18,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
 )
 
 type Flag struct {
@@ -122,14 +123,42 @@ func (o *Options) Align() {
 	}
 }
 
-// Remote returns options for OCI registries
-func (o *Options) Remote() ftypes.RemoteOptions {
-	return ftypes.RemoteOptions{
+// RegistryOpts returns options for OCI registries
+func (o *Options) RegistryOpts() ftypes.RegistryOptions {
+	return ftypes.RegistryOptions{
 		Credentials:   o.Credentials,
 		RegistryToken: o.RegistryToken,
 		Insecure:      o.Insecure,
 		Platform:      o.Platform,
 		AWSRegion:     o.AWSOptions.Region,
+	}
+}
+
+// FilterOpts returns options for filtering
+func (o *Options) FilterOpts() result.FilterOption {
+	return result.FilterOption{
+		Severities:         o.Severities,
+		IgnoreUnfixed:      o.IgnoreUnfixed,
+		IncludeNonFailures: o.IncludeNonFailures,
+		IgnoreFile:         o.IgnoreFile,
+		PolicyFile:         o.IgnorePolicy,
+		IgnoreLicenses:     o.IgnoredLicenses,
+		VEXPath:            o.VEXPath,
+	}
+}
+
+func (o *Options) ReportOpts() report.Option {
+	return report.Option{
+		AppVersion:         o.AppVersion,
+		Format:             o.Format,
+		Output:             o.Output,
+		Tree:               o.DependencyTree,
+		Severities:         o.Severities,
+		OutputTemplate:     o.Template,
+		IncludeNonFailures: o.IncludeNonFailures,
+		Trace:              o.Trace,
+		Report:             o.ReportFormat,
+		Compliance:         o.Compliance,
 	}
 }
 
@@ -155,6 +184,8 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:
 		flags.DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+	case float64:
+		flags.Float64P(flag.Name, flag.Shorthand, v, flag.Usage)
 	}
 
 	if flag.Deprecated {
@@ -232,6 +263,10 @@ func getStringSlice(flag *Flag) []string {
 
 func getInt(flag *Flag) int {
 	return cast.ToInt(getValue(flag))
+}
+
+func getFloat(flag *Flag) float64 {
+	return cast.ToFloat64(getValue(flag))
 }
 
 func getBool(flag *Flag) bool {
