@@ -10,19 +10,16 @@ In this section you will find an aggregation of the different ways to install Tr
     Add repository setting to `/etc/yum.repos.d`.
 
     ``` bash
-    RELEASE_VERSION=$(grep -Po '(?<=VERSION_ID=")[0-9]' /etc/os-release)
-    cat << EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
+    sudo tee /etc/yum.repos.d/trivy.repo << 'EOF'
     [trivy]
     name=Trivy repository
-    baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$RELEASE_VERSION/\$basearch/
+    baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
     gpgcheck=1
     enabled=1
     gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
     EOF
-    sudo yum -y update
-    sudo yum -y install trivy
+    sudo dnf install -y trivy`
     ```
-
 === "RPM"
 
     ``` bash
