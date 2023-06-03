@@ -2,8 +2,11 @@ package vm
 
 import (
 	"context"
+	"errors"
 	"io"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -15,7 +18,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
+	"github.com/aquasecurity/trivy/pkg/syncx"
 )
 
 type Type string
@@ -44,13 +49,30 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	limit := semaphore.New(a.artifactOption.Slow)
 	result := analyzer.NewAnalysisResult()
 
+	opts := analyzer.AnalysisOptions{
+		Offline:      a.artifactOption.Offline,
+		FileChecksum: a.artifactOption.FileChecksum,
+	}
+	// Prepare filesystem for post analysis
+	files := new(syncx.Map[analyzer.Type, *mapfs.FS])
+
+	tmpDir, err := os.MkdirTemp("", "vm-partitions-*")
+	if err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("mkdir temp error: %w", err)
+	}
+
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
-	err := a.walker.Walk(r, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
+	err = a.walker.Walk(r, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		path := strings.TrimPrefix(filePath, "/")
 		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)
 		}
+
+		// Build filesystem for post analysis
+		if err := a.buildFS(tmpDir, filePath, info, opener, files); err != nil {
+			return xerrors.Errorf("failed to build filesystem: %w", err)
+		}
+
 		return nil
 	})
 
@@ -59,6 +81,11 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("walk vm error: %w", err)
+	}
+
+	// Post-analysis
+	if err = a.analyzer.PostAnalyze(ctx, files, result, opts); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
 	result.Sort()
@@ -136,4 +163,53 @@ func detectType(target string) Type {
 	default:
 		return TypeFile
 	}
+}
+
+// buildFS creates filesystem for post analysis
+func (a Storage) buildFS(tmpDir, filePath string, info os.FileInfo, opener analyzer.Opener,
+	files *syncx.Map[analyzer.Type, *mapfs.FS]) error {
+	// Get all post-analyzers that want to analyze the file
+	atypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+	if len(atypes) == 0 {
+		return nil
+	}
+
+	// Create a temporary file to which the file in the filesystem of the vm will be copied
+	// so that all the files will not be loaded into memory
+	f, err := os.CreateTemp(tmpDir, "vm-file-*")
+	if err != nil {
+		return xerrors.Errorf("create temp error: %w", err)
+	}
+	defer f.Close()
+
+	// Open a file in the filesystem of the vm
+	r, err := opener()
+	if err != nil {
+		return xerrors.Errorf("file open error: %w", err)
+	}
+	defer r.Close()
+
+	// Copy file content into the temporary file
+	if _, err = io.Copy(f, r); err != nil {
+		return xerrors.Errorf("copy error: %w", err)
+	}
+
+	if err = os.Chmod(f.Name(), info.Mode()); err != nil {
+		return xerrors.Errorf("chmod error: %w", err)
+	}
+
+	// Create fs.FS for each post-analyzer that wants to analyze the current file
+	for _, at := range atypes {
+		fsys, _ := files.LoadOrStore(at, mapfs.New())
+		if dir := filepath.Dir(filePath); dir != "." {
+			if err := fsys.MkdirAll(dir, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
+				return xerrors.Errorf("mapfs mkdir error: %w", err)
+			}
+		}
+		err = fsys.WriteFile(filePath, f.Name())
+		if err != nil {
+			return xerrors.Errorf("mapfs write error: %w", err)
+		}
+	}
+	return nil
 }
