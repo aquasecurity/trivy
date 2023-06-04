@@ -33,6 +33,7 @@ const (
 	Cocoapods  = "cocoapods"
 	Pub        = "pub"
 	Hex        = "hex"
+	Oci        = "oci"
 
 	// Config files
 	YAML           = "yaml"

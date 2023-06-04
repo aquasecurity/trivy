@@ -343,3 +343,12 @@ Trivy has a native [Kubernetes Operator][operator] which continuously scans your
 [operator]: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/
 [crd]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
 [trivy-operator]: https://aquasecurity.github.io/trivy-operator/latest
+
+## SBOM
+
+Trivy supports the generation of Kubernetes Bill of Materials (KBOM) for kubernetes cluster control plane components, node components and addons.
+
+### Generation
+
+Trivy can generate KBOM in cyclonedx format for kubernetes cluster core components .
+See [here](../supply-chain/sbom.md) for the detail.

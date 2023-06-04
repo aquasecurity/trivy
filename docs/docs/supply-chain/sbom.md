@@ -8,7 +8,7 @@ Trivy can generate the following SBOM formats.
 - [SPDX](#spdx)
 
 ### CLI commands
-To generate SBOM, you can use the `--format` option for each subcommand such as `image`, `fs` and `vm`.
+To generate SBOM, you can use the `--format` option for each subcommand such as `image`, `fs`, `vm` and `k8s`(support cyclonedx format only).
 
 ```
 $ trivy image --format spdx-json --output result.json alpine:3.15
@@ -17,6 +17,12 @@ $ trivy image --format spdx-json --output result.json alpine:3.15
 
 ```
 $ trivy fs --format cyclonedx --output result.json /app/myproject
+```
+
+#### Kubernetes sbom refer as kbom , produce the k8s core components (Control Plane Components, Node Components and Addons) bill of material
+
+```
+trivy k8s cluster --format cyclonedx --output result.json
 ```
 
 <details>

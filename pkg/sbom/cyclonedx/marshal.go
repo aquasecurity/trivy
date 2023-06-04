@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	k8s "github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -59,7 +60,7 @@ func NewMarshaler(version string, opts ...core.Option) *Marshaler {
 // Marshal converts the Trivy report to the CycloneDX format
 func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 	// Convert
-	root, err := e.MarshalReport(report)
+	root, err := MarshalReport(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
@@ -67,15 +68,19 @@ func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 	return e.core.Marshal(root), nil
 }
 
-func (e *Marshaler) MarshalReport(r types.Report) (*core.Component, error) {
+func (e *Marshaler) MarshalKbom(report k8s.Report) (*cdx.BOM, error) {
+	return e.core.Marshal(report.RootComponent), nil
+}
+
+func MarshalReport(r types.Report) (*core.Component, error) {
 	// Metadata component
-	root, err := e.rootComponent(r)
+	root, err := rootComponent(r)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, result := range r.Results {
-		components, err := e.marshalResult(r.Metadata, result)
+		components, err := marshalResult(r.Metadata, result)
 		if err != nil {
 			return nil, err
 		}
@@ -84,9 +89,9 @@ func (e *Marshaler) MarshalReport(r types.Report) (*core.Component, error) {
 	return root, nil
 }
 
-func (e *Marshaler) marshalResult(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
+func marshalResult(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
 	if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
-		result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
+		result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg || result.Type == ftypes.Oci {
 		// If a package is language-specific package that isn't associated with a lock file,
 		// it will be a dependency of a component under "metadata".
 		// e.g.
@@ -97,7 +102,7 @@ func (e *Marshaler) marshalResult(metadata types.Metadata, result types.Result) 
 		// ref. https://cyclonedx.org/use-cases/#inventory
 
 		// Dependency graph from #1 to #2
-		components, err := e.marshalPackages(metadata, result)
+		components, err := marshalPackages(metadata, result)
 		if err != nil {
 			return nil, err
 		}
@@ -121,10 +126,10 @@ func (e *Marshaler) marshalResult(metadata types.Metadata, result types.Result) 
 		//       -> etc.
 
 		// #2
-		appComponent := e.resultComponent(result, metadata.OS)
+		appComponent := resultComponent(result, metadata.OS)
 
 		// #3
-		components, err := e.marshalPackages(metadata, result)
+		components, err := marshalPackages(metadata, result)
 		if err != nil {
 			return nil, err
 		}
@@ -138,7 +143,7 @@ func (e *Marshaler) marshalResult(metadata types.Metadata, result types.Result) 
 	return nil, nil
 }
 
-func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
+func marshalPackages(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
 	// Get dependency parents first
 	parents := ftypes.Packages(result.Packages).ParentDeps()
 
@@ -166,7 +171,7 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 		}
 
 		// Recursive packages from direct dependencies
-		if component, err := e.marshalPackage(pkg, pkgs, map[string]*core.Component{}); err != nil {
+		if component, err := marshalPackage(pkg, pkgs, map[string]*core.Component{}); err != nil {
 			return nil, nil
 		} else if component != nil {
 			directComponents = append(directComponents, component)
@@ -183,7 +188,7 @@ type Package struct {
 	Vulnerabilities []types.DetectedVulnerability
 }
 
-func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, components map[string]*core.Component,
+func marshalPackage(pkg Package, pkgs map[string]Package, components map[string]*core.Component,
 ) (*core.Component, error) {
 	if c, ok := components[pkg.ID]; ok {
 		return c, nil
@@ -202,7 +207,7 @@ func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, compone
 			continue
 		}
 
-		child, err := e.marshalPackage(childPkg, pkgs, components)
+		child, err := marshalPackage(childPkg, pkgs, components)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse pkg: %w", err)
 		}
@@ -211,7 +216,7 @@ func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, compone
 	return component, nil
 }
 
-func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
+func rootComponent(r types.Report) (*core.Component, error) {
 	root := &core.Component{
 		Name: r.ArtifactName,
 	}
@@ -234,6 +239,8 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 
 	case ftypes.ArtifactVM:
 		root.Type = cdx.ComponentTypeContainer
+	case ftypes.KubernetesPod:
+		root.Type = cdx.ComponentTypeApplication
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		root.Type = cdx.ComponentTypeApplication
 	}
@@ -257,7 +264,7 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 	return root, nil
 }
 
-func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Component {
+func resultComponent(r types.Result, osFound *ftypes.OS) *core.Component {
 	component := &core.Component{
 		Name: r.Target,
 		Properties: map[string]string{
@@ -302,9 +309,12 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		PropertyLayerDigest:     pkg.Layer.Digest,
 		PropertyLayerDiffID:     pkg.Layer.DiffID,
 	}
-
+	compType := cdx.ComponentTypeLibrary
+	if pkg.Type == purl.TypeOCI {
+		compType = cdx.ComponentTypeContainer
+	}
 	return &core.Component{
-		Type:            cdx.ComponentTypeLibrary,
+		Type:            compType,
 		Name:            pkg.Name,
 		Version:         pu.Version,
 		PackageURL:      &pu,
