@@ -67,8 +67,8 @@ func (c *CompositeFS) Write(filePath string, info os.FileInfo, opener Opener) er
 	}
 
 	// Create fs.FS for each post-analyzer that wants to analyze the current file
-	for _, a := range analyzers {
-		analyzerFS, _ := c.files.LoadOrStore(a.Type(), mapfs.New())
+	for _, a := range atypes {
+		analyzerFS, _ := c.files.LoadOrStore(a, mapfs.New())
 		if dir := filepath.Dir(filePath); dir != "." {
 			if err = analyzerFS.MkdirAll(dir, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
 				return xerrors.Errorf("mapfs mkdir error: %w", err)
