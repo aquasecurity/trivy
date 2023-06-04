@@ -4,9 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
-	"io/fs"
 	"os"
-	"path/filepath"
 	"reflect"
 	"strings"
 	"sync"
@@ -24,10 +22,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
-	"github.com/aquasecurity/trivy/pkg/syncx"
 )
 
 type Artifact struct {
@@ -274,12 +270,11 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	limit := semaphore.New(a.artifactOption.Slow)
 
 	// Prepare filesystem for post analysis
-	files := new(syncx.Map[analyzer.Type, *mapfs.FS])
-	tmpDir, err := os.MkdirTemp("", "layers-*")
+	composite, err := a.analyzer.PostAnalyzerFS()
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("mkdir temp error: %w", err)
+		return types.BlobInfo{}, xerrors.Errorf("unable to get post analysis filesystem: %w", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer composite.Cleanup()
 
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
@@ -288,8 +283,8 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		}
 
 		// Build filesystem for post analysis
-		if err = a.buildFS(tmpDir, filePath, info, opener, files); err != nil {
-			return xerrors.Errorf("failed to build filesystem: %w", err)
+		if err = composite.Write(filePath, info, opener); err != nil {
+			return xerrors.Errorf("failed to write a file: %w", err)
 		}
 
 		return nil
@@ -302,7 +297,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	wg.Wait()
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, files, result, opts); err != nil {
+	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
@@ -335,55 +330,6 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	}
 
 	return blobInfo, nil
-}
-
-// buildFS creates filesystem for post analysis
-func (a Artifact) buildFS(tmpDir, filePath string, info os.FileInfo, opener analyzer.Opener,
-	files *syncx.Map[analyzer.Type, *mapfs.FS]) error {
-	// Get all post-analyzers that want to analyze the file
-	atypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
-	if len(atypes) == 0 {
-		return nil
-	}
-
-	// Create a temporary file to which the file in the layer will be copied
-	// so that all the files will not be loaded into memory
-	f, err := os.CreateTemp(tmpDir, "layer-file-*")
-	if err != nil {
-		return xerrors.Errorf("create temp error: %w", err)
-	}
-	defer f.Close()
-
-	// Open a file in the layer
-	r, err := opener()
-	if err != nil {
-		return xerrors.Errorf("file open error: %w", err)
-	}
-	defer r.Close()
-
-	// Copy file content into the temporary file
-	if _, err = io.Copy(f, r); err != nil {
-		return xerrors.Errorf("copy error: %w", err)
-	}
-
-	if err = os.Chmod(f.Name(), info.Mode()); err != nil {
-		return xerrors.Errorf("chmod error: %w", err)
-	}
-
-	// Create fs.FS for each post-analyzer that wants to analyze the current file
-	for _, at := range atypes {
-		fsys, _ := files.LoadOrStore(at, mapfs.New())
-		if dir := filepath.Dir(filePath); dir != "." {
-			if err := fsys.MkdirAll(dir, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
-				return xerrors.Errorf("mapfs mkdir error: %w", err)
-			}
-		}
-		err = fsys.WriteFile(filePath, f.Name())
-		if err != nil {
-			return xerrors.Errorf("mapfs write error: %w", err)
-		}
-	}
-	return nil
 }
 
 func (a Artifact) diffIDs(configFile *v1.ConfigFile) []string {

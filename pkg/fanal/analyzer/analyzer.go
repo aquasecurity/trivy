@@ -19,9 +19,7 @@ import (
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/misconf"
-	"github.com/aquasecurity/trivy/pkg/syncx"
 )
 
 var (
@@ -467,9 +465,9 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 // and passes it to the respective post-analyzer.
 // The obtained results are merged into the "result".
 // This function may be called concurrently and must be thread-safe.
-func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, *mapfs.FS], result *AnalysisResult, opts AnalysisOptions) error {
+func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeFS, result *AnalysisResult, opts AnalysisOptions) error {
 	for _, a := range ag.postAnalyzers {
-		fsys, ok := files.Load(a.Type())
+		fsys, ok := compositeFS.Get(a.Type())
 		if !ok {
 			continue
 		}
@@ -502,6 +500,11 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, 
 		result.Merge(res)
 	}
 	return nil
+}
+
+// PostAnalyzerFS returns a composite filesystem that contains multiple filesystems for each post-analyzer
+func (ag AnalyzerGroup) PostAnalyzerFS() (*CompositeFS, error) {
+	return NewCompositeFS(ag)
 }
 
 func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {
