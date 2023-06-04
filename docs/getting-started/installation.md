@@ -18,7 +18,7 @@ In this section you will find an aggregation of the different ways to install Tr
     enabled=1
     gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
     EOF
-    sudo dnf install -y trivy`
+    sudo dnf install -y trivy
     ```
 === "RPM"
 
