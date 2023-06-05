@@ -172,4 +172,36 @@ var (
 	// pnpm list --prod --depth 10 | grep -E -o "\S+\s+[0-9]+(\.[0-9]+)+$" | awk '{printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\", Indirect: true},\n")}' | sort -u
 	pnpmV6     = pnpmNormal
 	pnpmV6Deps = pnpmNormalDeps
+
+	// docker run --name node --rm -it node@sha256:710a2c192ca426e03e4f3ec1869e5c29db855eb6969b74e6c50fd270ffccd3f1 sh
+	// npm install -g pnpm@8.5.1
+	// pnpm add react@18.1.0 redux@4.2.0
+	// pnpm add -D mocha@10.0.0
+	// pnpm list --prod --depth 10 | grep -E -o "\S+\s+[0-9]+(\.[0-9]+)+$" | awk '{printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\", Indirect: true},\n")}' | sort -u
+	pnpmV6WithDev = []types.Library{
+		{ID: "@babel/runtime@7.22.3", Name: "@babel/runtime", Version: "7.22.3", Indirect: true},
+		{ID: "js-tokens@4.0.0", Name: "js-tokens", Version: "4.0.0", Indirect: true},
+		{ID: "loose-envify@1.4.0", Name: "loose-envify", Version: "1.4.0", Indirect: true},
+		{ID: "react@18.1.0", Name: "react", Version: "18.1.0", Indirect: false},
+		{ID: "redux@4.2.0", Name: "redux", Version: "4.2.0", Indirect: false},
+		{ID: "regenerator-runtime@0.13.11", Name: "regenerator-runtime", Version: "0.13.11", Indirect: true},
+	}
+	pnpmV6WithDevDeps = []types.Dependency{
+		{
+			ID:        "@babel/runtime@7.22.3",
+			DependsOn: []string{"regenerator-runtime@0.13.11"},
+		},
+		{
+			ID:        "loose-envify@1.4.0",
+			DependsOn: []string{"js-tokens@4.0.0"},
+		},
+		{
+			ID:        "react@18.1.0",
+			DependsOn: []string{"loose-envify@1.4.0"},
+		},
+		{
+			ID:        "redux@4.2.0",
+			DependsOn: []string{"@babel/runtime@7.22.3"},
+		},
+	}
 )

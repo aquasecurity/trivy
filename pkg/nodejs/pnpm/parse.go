@@ -38,7 +38,7 @@ type LockFile struct {
 	Specifiers           map[string]string      `yaml:"specifiers,omitempty"`
 	Dependencies         map[string]any         `yaml:"dependencies,omitempty"`
 	OptionalDependencies map[string]string      `yaml:"optionalDependencies,omitempty"`
-	DevDependencies      map[string]string      `yaml:"devDependencies,omitempty"`
+	DevDependencies      map[string]any         `yaml:"devDependencies,omitempty"`
 	Packages             map[string]PackageInfo `yaml:"packages,omitempty"`
 }
 
