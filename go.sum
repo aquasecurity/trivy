@@ -1263,6 +1263,8 @@ github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd h1:Y30E
 github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd/go.mod h1:5f7mCJGW9cJb8SDn3z8qodGxpMCOo8d/2nls/tiwRrw=
 github.com/masahiro331/go-xfs-filesystem v0.0.0-20221225060805-c02764233454 h1:XHFL/6QXvGlsBZ6xZvLPSsQW5QIzrOnNUKgkjRo7KWo=
 github.com/masahiro331/go-xfs-filesystem v0.0.0-20221225060805-c02764233454/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20230605065530-679b545dae23 h1:wEmjQVak2vHseCSX8iJbOuphLSoT3/cTGZ5RF0G1+zE=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20230605065530-679b545dae23/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
 github.com/matryer/is v1.2.0 h1:92UTHpy8CDwaJ08GqLDzhhuixiBUUD1p3AU6PHddz4A=
 github.com/matryer/is v1.2.0/go.mod h1:2fLPjFQM9rhQ15aVEtbuwhJinnOqrmgXPNdZsdwlWXA=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
