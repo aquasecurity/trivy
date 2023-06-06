@@ -16,7 +16,7 @@ var (
 	ScanAllDirsFlag = Flag{
 		Name:       "scan-all-dirs",
 		ConfigName: "misconfiguration.scan-all-dirs",
-		Value:      false,
+		Value:      true,
 		Usage:      "scan all dirs recursively",
 	}
 	IncludeNonFailuresFlag = Flag{

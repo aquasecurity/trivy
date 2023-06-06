@@ -332,11 +332,14 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = &reportFormat
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
+	misconfFlagGroup := flag.NewMisconfFlagGroup()
+	misconfFlagGroup.ScanAllDirs = nil // disable `--scan-all-dirs`
+
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		MisconfFlagGroup:       misconfFlagGroup,
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
@@ -996,10 +999,13 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 
+	misconfFlagGroup := flag.NewMisconfFlagGroup()
+	misconfFlagGroup.ScanAllDirs = nil // disable `--scan-all-dirs`
+
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		MisconfFlagGroup:       misconfFlagGroup,
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
