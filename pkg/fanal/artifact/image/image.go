@@ -283,7 +283,12 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		}
 
 		// Build filesystem for post analysis
-		if err = composite.Write(filePath, info, opener); err != nil {
+		tmpFilePath, err := composite.CopyFileToTemp(opener, info)
+		if err != nil {
+			return xerrors.Errorf("failed to copy file to temp: %w", err)
+		}
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+		if err = composite.CreateLink(analyzerTypes, filePath, tmpFilePath, false); err != nil {
 			return xerrors.Errorf("failed to write a file: %w", err)
 		}
 
