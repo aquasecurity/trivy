@@ -18,7 +18,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
-	"github.com/aquasecurity/trivy/pkg/syncx"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/java/jar"
@@ -608,10 +607,12 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 			require.NoError(t, err)
 
 			// Create a virtual filesystem
-			files := new(syncx.Map[analyzer.Type, *mapfs.FS])
+			composite, err := analyzer.NewCompositeFS(analyzer.AnalyzerGroup{})
+			require.NoError(t, err)
+
 			mfs := mapfs.New()
 			require.NoError(t, mfs.CopyFilesUnder(tt.dir))
-			files.Store(tt.analyzerType, mfs)
+			composite.Set(tt.analyzerType, mfs)
 
 			if tt.analyzerType == analyzer.TypeJar {
 				// init java-trivy-db with skip update
@@ -620,7 +621,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 
 			ctx := context.Background()
 			got := new(analyzer.AnalysisResult)
-			err = a.PostAnalyze(ctx, files, got, analyzer.AnalysisOptions{})
+			err = a.PostAnalyze(ctx, composite, got, analyzer.AnalysisOptions{})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
