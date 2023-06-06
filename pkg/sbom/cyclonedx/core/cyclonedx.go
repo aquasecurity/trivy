@@ -141,7 +141,7 @@ func (c *CycloneDX) MarshalComponent(component *Component, components map[string
 		}
 	}
 
-	var dependencies []string
+	dependencies := make([]string, 0) // Components that do not have their own dependencies must be declared as empty elements
 	for _, child := range component.Components {
 		childComponent := c.MarshalComponent(child, components, deps, vulns)
 		dependencies = append(dependencies, childComponent.BOMRef)
