@@ -650,10 +650,92 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "relative paths",
+			fields: fields{
+				dir: "./testdata/misconfig/terraform/relative-paths/child",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/terraform/rego"},
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobIDAnything: true,
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: 2,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: types.Terraform,
+								FilePath: "../parent/main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.three",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+							{
+								FileType: types.Terraform,
+								FilePath: "main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.one",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+							{
+								FileType: types.Terraform,
+								FilePath: "nested/main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.two",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/misconfig/terraform/relative-paths/child",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:188f1cdbfc19f60baca159afbc34c05d48c65d3bec5826530363fe81799ee5ad",
+				ID:   "sha256:9c5c0038bf41e03f878ed27c569b93198a16b0d975e7fca4e90aa2a4eaf87402",
 				BlobIDs: []string{
-					"sha256:188f1cdbfc19f60baca159afbc34c05d48c65d3bec5826530363fe81799ee5ad",
+					"sha256:9c5c0038bf41e03f878ed27c569b93198a16b0d975e7fca4e90aa2a4eaf87402",
 				},
 			},
 		},
