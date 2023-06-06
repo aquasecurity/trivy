@@ -19,7 +19,8 @@ $ trivy image --format spdx-json --output result.json alpine:3.15
 $ trivy fs --format cyclonedx --output result.json /app/myproject
 ```
 
-#### Kubernetes sbom refer as kbom , produce the k8s core components (Control Plane Components, Node Components and Addons) bill of material
+Kubernetes sbom i.e. kbom
+Kubernetes sbom referred to as kbom, produces the k8s core components (Control Plane Components, Node Components and Addons) bill of material.
 
 ```
 trivy k8s cluster --format cyclonedx --output result.json
