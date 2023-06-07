@@ -13,7 +13,7 @@ import (
 func Detect(libType string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	driver, err := NewDriver(libType)
 	if err != nil {
-		if errors.Is(err, ErrSBOMSupportOnly) {
+		if errors.Is(err, ErrSBOMSupportOnly) || errors.Is(err, ErrUnsupportedType) {
 			return nil, nil
 		}
 		return nil, xerrors.Errorf("failed to initialize a driver: %w", err)

@@ -20,6 +20,7 @@ import (
 )
 
 var ErrSBOMSupportOnly = xerrors.New("SBOM support only")
+var ErrUnsupportedType = xerrors.New("Unsupported type")
 
 // NewDriver returns a driver according to the library type
 func NewDriver(libType string) (Driver, error) {
@@ -69,7 +70,8 @@ func NewDriver(libType string) (Driver, error) {
 		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, ErrSBOMSupportOnly
 	default:
-		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
+		log.Logger.Warnf("The %s library type is not supported. Skipping vulnerability detection", libType)
+		return Driver{}, ErrUnsupportedType
 	}
 	return Driver{
 		ecosystem: ecosystem,
