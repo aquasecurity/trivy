@@ -48,9 +48,8 @@ func Write(k8sreport report.Report, option report.Option) error {
 
 		return nil
 	case rp.FormatCycloneDX:
-
 		w := cyclonedx.NewWriter(option.Output, option.APIVersion)
-		return w.WriteKbom(k8sreport)
+		return w.WriteCoreComponents(k8sreport.RootComponent)
 	}
 	return nil
 }

@@ -103,7 +103,7 @@ func (c Cache) ClearDB() (err error) {
 // ClearArtifacts clears the artifact cache
 func (c Cache) ClearArtifacts() error {
 	log.Logger.Info("Removing artifact caches...")
-	if err := c.Clear(); err != nil {
+	if err := c.Clear(); err != nil { //nolint:typecheck
 		return xerrors.Errorf("failed to remove the cache: %w", err)
 	}
 	return nil

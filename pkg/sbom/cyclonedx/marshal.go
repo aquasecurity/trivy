@@ -11,7 +11,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	k8s "github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -60,7 +59,7 @@ func NewMarshaler(version string, opts ...core.Option) *Marshaler {
 // Marshal converts the Trivy report to the CycloneDX format
 func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 	// Convert
-	root, err := MarshalReport(report)
+	root, err := e.MarshalReport(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
@@ -68,19 +67,19 @@ func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 	return e.core.Marshal(root), nil
 }
 
-func (e *Marshaler) MarshalKbom(report k8s.Report) (*cdx.BOM, error) {
-	return e.core.Marshal(report.RootComponent), nil
+func (e *Marshaler) MarshalCoreComponent(component *core.Component) (*cdx.BOM, error) {
+	return e.core.Marshal(component), nil
 }
 
-func MarshalReport(r types.Report) (*core.Component, error) {
+func (e *Marshaler) MarshalReport(r types.Report) (*core.Component, error) {
 	// Metadata component
-	root, err := rootComponent(r)
+	root, err := e.rootComponent(r)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, result := range r.Results {
-		components, err := marshalResult(r.Metadata, result)
+		components, err := e.marshalResult(r.Metadata, result)
 		if err != nil {
 			return nil, err
 		}
@@ -89,9 +88,9 @@ func MarshalReport(r types.Report) (*core.Component, error) {
 	return root, nil
 }
 
-func marshalResult(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
+func (e *Marshaler) marshalResult(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
 	if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
-		result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg || result.Type == ftypes.Oci {
+		result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
 		// If a package is language-specific package that isn't associated with a lock file,
 		// it will be a dependency of a component under "metadata".
 		// e.g.
@@ -102,7 +101,7 @@ func marshalResult(metadata types.Metadata, result types.Result) ([]*core.Compon
 		// ref. https://cyclonedx.org/use-cases/#inventory
 
 		// Dependency graph from #1 to #2
-		components, err := marshalPackages(metadata, result)
+		components, err := e.marshalPackages(metadata, result)
 		if err != nil {
 			return nil, err
 		}
@@ -126,10 +125,10 @@ func marshalResult(metadata types.Metadata, result types.Result) ([]*core.Compon
 		//       -> etc.
 
 		// #2
-		appComponent := resultComponent(result, metadata.OS)
+		appComponent := e.resultComponent(result, metadata.OS)
 
 		// #3
-		components, err := marshalPackages(metadata, result)
+		components, err := e.marshalPackages(metadata, result)
 		if err != nil {
 			return nil, err
 		}
@@ -143,7 +142,7 @@ func marshalResult(metadata types.Metadata, result types.Result) ([]*core.Compon
 	return nil, nil
 }
 
-func marshalPackages(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
+func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
 	// Get dependency parents first
 	parents := ftypes.Packages(result.Packages).ParentDeps()
 
@@ -171,7 +170,7 @@ func marshalPackages(metadata types.Metadata, result types.Result) ([]*core.Comp
 		}
 
 		// Recursive packages from direct dependencies
-		if component, err := marshalPackage(pkg, pkgs, map[string]*core.Component{}); err != nil {
+		if component, err := e.marshalPackage(pkg, pkgs, map[string]*core.Component{}); err != nil {
 			return nil, nil
 		} else if component != nil {
 			directComponents = append(directComponents, component)
@@ -188,7 +187,7 @@ type Package struct {
 	Vulnerabilities []types.DetectedVulnerability
 }
 
-func marshalPackage(pkg Package, pkgs map[string]Package, components map[string]*core.Component,
+func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, components map[string]*core.Component,
 ) (*core.Component, error) {
 	if c, ok := components[pkg.ID]; ok {
 		return c, nil
@@ -207,7 +206,7 @@ func marshalPackage(pkg Package, pkgs map[string]Package, components map[string]
 			continue
 		}
 
-		child, err := marshalPackage(childPkg, pkgs, components)
+		child, err := e.marshalPackage(childPkg, pkgs, components)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse pkg: %w", err)
 		}
@@ -216,7 +215,7 @@ func marshalPackage(pkg Package, pkgs map[string]Package, components map[string]
 	return component, nil
 }
 
-func rootComponent(r types.Report) (*core.Component, error) {
+func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 	root := &core.Component{
 		Name: r.ArtifactName,
 	}
@@ -239,8 +238,6 @@ func rootComponent(r types.Report) (*core.Component, error) {
 
 	case ftypes.ArtifactVM:
 		root.Type = cdx.ComponentTypeContainer
-	case ftypes.KubernetesPod:
-		root.Type = cdx.ComponentTypeApplication
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		root.Type = cdx.ComponentTypeApplication
 	}
@@ -264,7 +261,7 @@ func rootComponent(r types.Report) (*core.Component, error) {
 	return root, nil
 }
 
-func resultComponent(r types.Result, osFound *ftypes.OS) *core.Component {
+func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Component {
 	component := &core.Component{
 		Name: r.Target,
 		Properties: map[string]string{
@@ -309,12 +306,9 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		PropertyLayerDigest:     pkg.Layer.Digest,
 		PropertyLayerDiffID:     pkg.Layer.DiffID,
 	}
-	compType := cdx.ComponentTypeLibrary
-	if pkg.Type == purl.TypeOCI {
-		compType = cdx.ComponentTypeContainer
-	}
+
 	return &core.Component{
-		Type:            compType,
+		Type:            cdx.ComponentTypeLibrary,
 		Name:            pkg.Name,
 		Version:         pu.Version,
 		PackageURL:      &pu,

@@ -179,9 +179,6 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
 	case packageurl.TypeOCI:
-		if len(metadata.RepoDigests) == 0 && len(pkg.Digest) > 0 {
-			metadata.RepoDigests = append(metadata.RepoTags, fmt.Sprintf("%s@%s", pkg.Name, string(pkg.Digest)))
-		}
 		purl, err := parseOCI(metadata)
 		if err != nil {
 			return PackageURL{}, err
@@ -206,6 +203,10 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 		return packageurl.PackageURL{}, xerrors.Errorf("failed to parse digest: %w", err)
 	}
 
+	return OciPurl(digest, metadata.ImageConfig.Architecture), nil
+}
+
+func OciPurl(digest cn.Digest, arch string) packageurl.PackageURL {
 	name := strings.ToLower(digest.RepositoryStr())
 	index := strings.LastIndex(name, "/")
 	if index != -1 {
@@ -218,11 +219,11 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 		},
 		packageurl.Qualifier{
 			Key:   "arch",
-			Value: metadata.ImageConfig.Architecture,
+			Value: arch,
 		},
 	}
 
-	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
+	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, "")
 }
 
 func parseApk(fos *ftypes.OS) packageurl.Qualifiers {

@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	k8s "github.com/aquasecurity/trivy/pkg/k8s/report"
+
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -1291,116 +1291,111 @@ func TestMarshaler_Marshal(t *testing.T) {
 	}
 }
 
-func TestMarshaler_Kbom(t *testing.T) {
-	var directDepRefs []string
+func TestMarshaler_CoreComponent(t *testing.T) {
+	noDepRefs := []string{}
 	tests := []struct {
-		name        string
-		inputReport k8s.Report
-		want        *cdx.BOM
+		name          string
+		rootComponent *core.Component
+		want          *cdx.BOM
 	}{
 		{
 			name: "marshal kbom",
-			inputReport: k8s.Report{
-				RootComponent: &core.Component{
-					Type: cdx.ComponentTypeContainer,
-					Name: "test-cluster",
-					Components: []*core.Component{
-						{
-							Type: cdx.ComponentTypeApplication,
-							Name: "kube-apiserver-kind-control-plane",
-							Properties: map[string]string{
-								"SchemaVersion": "0",
-							},
-							Components: []*core.Component{
-								{
-									Type:    cdx.ComponentTypeContainer,
-									Name:    "k8s.gcr.io/kube-apiserver",
-									Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-									PackageURL: &purl.PackageURL{
-										packageurl.PackageURL{
-											Type:    "oci",
-											Name:    "kube-apiserver",
-											Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-											Qualifiers: packageurl.Qualifiers{
-												{
-													Key:   "repository_url",
-													Value: "k8s.gcr.io/kube-apiserver",
-												},
-												{
-													Key: "arch",
-												},
+			rootComponent: &core.Component{
+				Type: cdx.ComponentTypeContainer,
+				Name: "test-cluster",
+				Components: []*core.Component{
+					{
+						Type: cdx.ComponentTypeApplication,
+						Name: "kube-apiserver-kind-control-plane",
+						Properties: map[string]string{
+							"control_plane_components": "kube-apiserver",
+						},
+						Components: []*core.Component{
+							{
+								Type:    cdx.ComponentTypeContainer,
+								Name:    "k8s.gcr.io/kube-apiserver",
+								Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
+								PackageURL: &purl.PackageURL{
+									PackageURL: packageurl.PackageURL{
+										Type:    "oci",
+										Name:    "kube-apiserver",
+										Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "repository_url",
+												Value: "k8s.gcr.io/kube-apiserver",
+											},
+											{
+												Key: "arch",
 											},
 										},
-										"",
 									},
-									Hashes: []digest.Digest{"sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f"},
-									Properties: map[string]string{
-										"PkgID":   "k8s.gcr.io/kube-apiserver:1.21.1",
-										"PkgType": "oci",
-									},
+								},
+								Hashes: []digest.Digest{"sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f"},
+								Properties: map[string]string{
+									"PkgID":   "k8s.gcr.io/kube-apiserver:1.21.1",
+									"PkgType": "oci",
 								},
 							},
 						},
-						{
-							Type: cdx.ComponentTypeContainer,
-							Name: "kind-control-plane",
-							Properties: map[string]string{
-								"architecture":     "arm64",
-								"host_name":        "kind-control-plane",
-								"kernel_version":   "6.2.13-300.fc38.aarch64",
-								"node_role":        "master",
-								"operating_system": "linux",
-							},
-							Components: []*core.Component{
-								{
-									Type:    cdx.ComponentTypeOS,
-									Name:    "ubuntu",
-									Version: "21.04",
-									Properties: map[string]string{
-										"Class": "os-pkgs",
-										"Type":  "ubuntu",
-									},
+					},
+					{
+						Type: cdx.ComponentTypeContainer,
+						Name: "kind-control-plane",
+						Properties: map[string]string{
+							"architecture":     "arm64",
+							"host_name":        "kind-control-plane",
+							"kernel_version":   "6.2.13-300.fc38.aarch64",
+							"node_role":        "master",
+							"operating_system": "linux",
+						},
+						Components: []*core.Component{
+							{
+								Type:    cdx.ComponentTypeOS,
+								Name:    "ubuntu",
+								Version: "21.04",
+								Properties: map[string]string{
+									"Class": "os-pkgs",
+									"Type":  "ubuntu",
 								},
-								{
-									Type: cdx.ComponentTypeApplication,
-									Name: "node-core-components",
-									Properties: map[string]string{
-										"Class": "lang-pkgs",
-										"Type":  "golang",
-									},
-									Components: []*core.Component{
-										{
-											Type:    cdx.ComponentTypeLibrary,
-											Name:    "kubelet",
-											Version: "1.21.1",
-											Properties: map[string]string{
-												"PkgType": "golang",
-											},
-											PackageURL: &purl.PackageURL{
-												packageurl.PackageURL{
-													Type:       "golang",
-													Name:       "kubelet",
-													Version:    "1.21.1",
-													Qualifiers: packageurl.Qualifiers{},
-												},
-												"",
+							},
+							{
+								Type: cdx.ComponentTypeApplication,
+								Name: "node-core-components",
+								Properties: map[string]string{
+									"Class": "lang-pkgs",
+									"Type":  "golang",
+								},
+								Components: []*core.Component{
+									{
+										Type:    cdx.ComponentTypeLibrary,
+										Name:    "kubelet",
+										Version: "1.21.1",
+										Properties: map[string]string{
+											"PkgType": "golang",
+										},
+										PackageURL: &purl.PackageURL{
+											PackageURL: packageurl.PackageURL{
+												Type:       "golang",
+												Name:       "kubelet",
+												Version:    "1.21.1",
+												Qualifiers: packageurl.Qualifiers{},
 											},
 										},
-										{
-											Type:    cdx.ComponentTypeLibrary,
-											Name:    "containerd",
-											Version: "1.5.2",
-											Properties: map[string]string{
-												"PkgType": "golang",
-											},
-											PackageURL: &purl.PackageURL{
-												packageurl.PackageURL{
-													Type:       "golang",
-													Name:       "containerd",
-													Version:    "1.5.2",
-													Qualifiers: packageurl.Qualifiers{},
-												},
-												"",
+									},
+									{
+										Type:    cdx.ComponentTypeLibrary,
+										Name:    "containerd",
+										Version: "1.5.2",
+										Properties: map[string]string{
+											"PkgType": "golang",
+										},
+										PackageURL: &purl.PackageURL{
+											PackageURL: packageurl.PackageURL{
+												Type:       "golang",
+												Name:       "containerd",
+												Version:    "1.5.2",
+												Qualifiers: packageurl.Qualifiers{},
 											},
 										},
 									},
@@ -1410,6 +1405,7 @@ func TestMarshaler_Kbom(t *testing.T) {
 					},
 				},
 			},
+
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
@@ -1440,8 +1436,8 @@ func TestMarshaler_Kbom(t *testing.T) {
 						Name:   "kube-apiserver-kind-control-plane",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:SchemaVersion",
-								Value: "0",
+								Name:  "aquasecurity:trivy:control_plane_components",
+								Value: "kube-apiserver",
 							},
 						},
 					},
@@ -1574,7 +1570,7 @@ func TestMarshaler_Kbom(t *testing.T) {
 					},
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000005",
-						Dependencies: &directDepRefs,
+						Dependencies: &noDepRefs,
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
@@ -1585,15 +1581,15 @@ func TestMarshaler_Kbom(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:golang/containerd@1.5.2",
-						Dependencies: &directDepRefs,
+						Dependencies: &noDepRefs,
 					},
 					{
 						Ref:          "pkg:golang/kubelet@1.21.1",
-						Dependencies: &directDepRefs,
+						Dependencies: &noDepRefs,
 					},
 					{
 						Ref:          "pkg:oci/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver&arch=",
-						Dependencies: &directDepRefs,
+						Dependencies: &noDepRefs,
 					},
 				},
 			},
@@ -1609,7 +1605,7 @@ func TestMarshaler_Kbom(t *testing.T) {
 				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
 			}
 			marshaler := cyclonedx.NewMarshaler("dev", core.WithClock(clock), core.WithNewUUID(newUUID))
-			got, err := marshaler.MarshalKbom(tt.inputReport)
+			got, err := marshaler.MarshalCoreComponent(tt.rootComponent)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

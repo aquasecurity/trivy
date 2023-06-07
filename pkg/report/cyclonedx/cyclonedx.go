@@ -6,8 +6,8 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"golang.org/x/xerrors"
 
-	rep "github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -35,8 +35,8 @@ func (w Writer) Write(report types.Report) error {
 	return w.encodeBom(bom)
 }
 
-func (w Writer) WriteKbom(report rep.Report) error {
-	bom, err := w.marshaler.MarshalKbom(report)
+func (w Writer) WriteCoreComponents(component *core.Component) error {
+	bom, err := w.marshaler.MarshalCoreComponent(component)
 	if err != nil {
 		return xerrors.Errorf("CycloneDX marshal error: %w", err)
 	}

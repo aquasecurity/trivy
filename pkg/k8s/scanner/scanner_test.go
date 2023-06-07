@@ -8,7 +8,6 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
-	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/package-url/packageurl-go"
 
@@ -44,6 +43,9 @@ func TestK8sClusterInfoReport(t *testing.T) {
 							"Version":    "v1.21.1",
 						},
 						},
+						"Properties": map[string]string{
+							"control_plane_components": "kube-apiserver",
+						},
 						"Name":      "kube-apiserver-kind-control-plane",
 						"Namespace": "kube-system",
 					},
@@ -52,16 +54,19 @@ func TestK8sClusterInfoReport(t *testing.T) {
 					Kind: "NodeInfo",
 					Name: "kind-control-plane",
 					RawResource: map[string]interface{}{
-						"Architecture":            "arm64",
 						"ContainerRuntimeVersion": "containerd://1.5.2",
 						"Hostname":                "kind-control-plane",
-						"KernelVersion":           "6.2.13-300.fc38.aarch64",
 						"KubeProxyVersion":        "6.2.13-300.fc38.aarch64",
 						"KubeletVersion":          "v1.21.1",
 						"NodeName":                "kind-control-plane",
-						"NodeRole":                "master",
-						"OperatingSystem":         "linux",
 						"OsImage":                 "Ubuntu 21.04",
+						"Properties": map[string]string{
+							"architecture":     "arm64",
+							"host_name":        "kind-control-plane",
+							"kernel_version":   "6.2.15-300.fc38.aarch64",
+							"node_role":        "master",
+							"operating_system": "linux",
+						},
 					},
 				},
 			},
@@ -73,7 +78,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 						Type: cdx.ComponentTypeApplication,
 						Name: "kube-apiserver-kind-control-plane",
 						Properties: map[string]string{
-							"SchemaVersion": "0",
+							"control_plane_components": "kube-apiserver",
 						},
 						Components: []*core.Component{
 							{
@@ -81,7 +86,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 								Name:    "k8s.gcr.io/kube-apiserver",
 								Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
 								PackageURL: &purl.PackageURL{
-									packageurl.PackageURL{
+									PackageURL: packageurl.PackageURL{
 										Type:    "oci",
 										Name:    "kube-apiserver",
 										Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
@@ -95,9 +100,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 											},
 										},
 									},
-									"",
 								},
-								Hashes: []digest.Digest{"sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f"},
 								Properties: map[string]string{
 									"PkgID":   "k8s.gcr.io/kube-apiserver:1.21.1",
 									"PkgType": "oci",
@@ -111,7 +114,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 						Properties: map[string]string{
 							"architecture":     "arm64",
 							"host_name":        "kind-control-plane",
-							"kernel_version":   "6.2.13-300.fc38.aarch64",
+							"kernel_version":   "6.2.15-300.fc38.aarch64",
 							"node_role":        "master",
 							"operating_system": "linux",
 						},
@@ -141,13 +144,12 @@ func TestK8sClusterInfoReport(t *testing.T) {
 											"PkgType": "golang",
 										},
 										PackageURL: &purl.PackageURL{
-											packageurl.PackageURL{
+											PackageURL: packageurl.PackageURL{
 												Type:       "golang",
 												Name:       "kubelet",
 												Version:    "1.21.1",
 												Qualifiers: packageurl.Qualifiers{},
 											},
-											"",
 										},
 									},
 									{
@@ -158,13 +160,12 @@ func TestK8sClusterInfoReport(t *testing.T) {
 											"PkgType": "golang",
 										},
 										PackageURL: &purl.PackageURL{
-											packageurl.PackageURL{
+											PackageURL: packageurl.PackageURL{
 												Type:       "golang",
 												Name:       "containerd",
 												Version:    "1.5.2",
 												Qualifiers: packageurl.Qualifiers{},
 											},
-											"",
 										},
 									},
 								},

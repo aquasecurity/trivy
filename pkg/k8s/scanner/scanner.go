@@ -10,30 +10,24 @@ import (
 
 	"github.com/Masterminds/semver"
 	ms "github.com/mitchellh/mapstructure"
+	"github.com/package-url/packageurl-go"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	cn "github.com/google/go-containerregistry/pkg/name"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/bom"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/digest"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/parallel"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	rep "github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
-)
-
-const (
-	pod                = "PodInfo"
-	nodeInfo           = "NodeInfo"
-	osPackages         = "os-packages"
-	nodeCoreComponents = "node-core-components"
 )
 
 type Scanner struct {
@@ -177,6 +171,15 @@ func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifact
 	return report.CreateResource(artifact, r, nil), nil
 }
 
+const (
+	golang             = "golang"
+	oci                = "oci"
+	kubelet            = "kubelet"
+	pod                = "PodInfo"
+	nodeInfo           = "NodeInfo"
+	nodeCoreComponents = "node-core-components"
+)
+
 func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName string) (*core.Component, error) {
 	coreComponents := make([]*core.Component, 0)
 	for _, artifact := range allArtifact {
@@ -187,97 +190,45 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 			if err != nil {
 				return nil, err
 			}
-			packages := make(ftypes.Packages, 0)
-			repoDigest := make([]string, 0)
+			imageComponents := make([]*core.Component, 0)
 			for _, c := range comp.Containers {
 				name := fmt.Sprintf("%s/%s", c.Registry, c.Repository)
+				cDigest := c.Digest
+				if strings.Index(c.Digest, string(digest.SHA256)) == -1 {
+					cDigest = fmt.Sprintf("%s:%s", string(digest.SHA256), cDigest)
+				}
+				imageDigest, err := cn.NewDigest(fmt.Sprintf("%s@%s", name, cDigest))
+				if err != nil {
+					return nil, xerrors.Errorf("failed to parse digest: %w", err)
+				}
+				imagePurl := purl.PackageURL{PackageURL: purl.OciPurl(imageDigest, "")}
 				version := sanitizedVersion(c.Version)
-				packages = append(packages, ftypes.Package{
-					ID:      fmt.Sprintf("%s:%s", name, version),
-					Name:    name,
-					Version: version,
-					Digest:  digest.NewDigestFromString(digest.SHA256, strings.ReplaceAll(c.Digest, "sha256:", "")),
-				},
-				)
-			}
-			podReport := types.Report{
-				ArtifactName: comp.Name,
-				ArtifactType: ftypes.KubernetesPod,
-				Metadata: types.Metadata{
-					RepoDigests: repoDigest,
-				},
-				Results: types.Results{
-					{
-						Target:   "containers",
-						Type:     "oci",
-						Class:    types.ClassK8sComponents,
-						Packages: packages,
+
+				imageComponents = append(imageComponents, &core.Component{
+					PackageURL: &imagePurl,
+					Type:       cdx.ComponentTypeContainer,
+					Name:       name,
+					Version:    cDigest,
+					Properties: map[string]string{
+						"PkgID":   fmt.Sprintf("%s:%s", name, version),
+						"PkgType": oci,
 					},
-				},
+				})
 			}
-			podComp, err := cyclonedx.MarshalReport(podReport)
-			if err != nil {
-				return &core.Component{}, err
+			rootComponent := &core.Component{
+				Name:       comp.Name,
+				Type:       cdx.ComponentTypeApplication,
+				Properties: comp.Properties,
+				Components: imageComponents,
 			}
-			coreComponents = append(coreComponents, podComp)
+			coreComponents = append(coreComponents, rootComponent)
 		case nodeInfo:
 			var nf bom.NodeInfo
 			err := ms.Decode(artifact.RawResource, &nf)
 			if err != nil {
 				return nil, err
 			}
-			metadata := types.Metadata{}
-			osName, osVersion := osNameVersion(nf.OsImage)
-			if len(osName) > 0 && len(osVersion) > 0 {
-				metadata.OS = &ftypes.OS{
-					Family: strings.ToLower(osName),
-					Name:   osVersion,
-				}
-			}
-			runtimeName, runtimeVersion := runtimeNameVersion(nf.ContainerRuntimeVersion)
-			golangPackages := ftypes.Packages{
-				{
-					Name:    "kubelet",
-					Version: sanitizedVersion(nf.KubeletVersion),
-				},
-			}
-			if len(runtimeName) > 0 && len(runtimeVersion) > 0 {
-				golangPackages = append(golangPackages, ftypes.Package{
-					Name:    runtimeName,
-					Version: runtimeVersion,
-				})
-			}
-			nodeReport := types.Report{
-				ArtifactName: nf.NodeName,
-				// @todo maybe concisure changeing node artifact type to container_image
-				ArtifactType: ftypes.ArtifactVM,
-				Metadata:     metadata,
-				Results: types.Results{
-					{
-						Target: osPackages,
-						Class:  types.ClassOSPkg,
-						Type:   strings.ToLower(osName),
-					},
-					{
-						Target:   nodeCoreComponents,
-						Class:    types.ClassLangPkg,
-						Type:     "golang",
-						Packages: golangPackages,
-					},
-				},
-			}
-			properties := map[string]string{
-				"node_role":        nf.NodeRole,
-				"host_name":        nf.Hostname,
-				"kernel_version":   nf.KernelVersion,
-				"operating_system": nf.OperatingSystem,
-				"architecture":     nf.Architecture,
-			}
-			nodeComponent, err := cyclonedx.MarshalReport(nodeReport)
-			if err != nil {
-				return nil, err
-			}
-			nodeComponent.Properties = properties
+			nodeComponent := nodeComponent(nf)
 			coreComponents = append(coreComponents, nodeComponent)
 		default:
 			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
@@ -309,7 +260,7 @@ func osNameVersion(name string) (string, string) {
 		v = p
 		break
 	}
-	return strings.TrimSpace(buffer.String()), v
+	return strings.ToLower(strings.TrimSpace(buffer.String())), v
 }
 
 func runtimeNameVersion(name string) (string, string) {
@@ -318,4 +269,68 @@ func runtimeNameVersion(name string) (string, string) {
 		return parts[0], parts[1]
 	}
 	return "", ""
+}
+
+func nodeComponent(nf bom.NodeInfo) *core.Component {
+	osName, osVersion := osNameVersion(nf.OsImage)
+	runtimeName, runtimeVersion := runtimeNameVersion(nf.ContainerRuntimeVersion)
+	kubeletVersion := sanitizedVersion(nf.KubeletVersion)
+	return &core.Component{
+		Type:       cdx.ComponentTypeContainer,
+		Name:       nf.NodeName,
+		Properties: nf.Properties,
+		Components: []*core.Component{
+			{
+				Type:    cdx.ComponentTypeOS,
+				Name:    osName,
+				Version: osVersion,
+				Properties: map[string]string{
+					"Class": types.ClassOSPkg,
+					"Type":  osName,
+				},
+			},
+			{
+				Type: cdx.ComponentTypeApplication,
+				Name: nodeCoreComponents,
+				Properties: map[string]string{
+					"Class": types.ClassLangPkg,
+					"Type":  golang,
+				},
+				Components: []*core.Component{
+					{
+						Type:    cdx.ComponentTypeLibrary,
+						Name:    kubelet,
+						Version: kubeletVersion,
+						Properties: map[string]string{
+							"PkgType": golang,
+						},
+						PackageURL: &purl.PackageURL{
+							PackageURL: packageurl.PackageURL{
+								Type:       golang,
+								Name:       kubelet,
+								Version:    kubeletVersion,
+								Qualifiers: packageurl.Qualifiers{},
+							},
+						},
+					},
+					{
+						Type:    cdx.ComponentTypeLibrary,
+						Name:    runtimeName,
+						Version: runtimeVersion,
+						Properties: map[string]string{
+							"PkgType": golang,
+						},
+						PackageURL: &purl.PackageURL{
+							PackageURL: packageurl.PackageURL{
+								Type:       golang,
+								Name:       runtimeName,
+								Version:    runtimeVersion,
+								Qualifiers: packageurl.Qualifiers{},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
 }
