@@ -67,7 +67,7 @@ func NewDriver(libType string) (Driver, bool) {
 		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, false
 	default:
-		log.Logger.Warnf("The %s library type is not supported. Skipping vulnerability detection", libType)
+		log.Logger.Warnf("The %q library type is not supported for vulnerability scanning", libType)
 		return Driver{}, false
 	}
 	return Driver{
