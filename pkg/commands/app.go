@@ -249,15 +249,12 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance.Usage += fmt.Sprintf(" (%s)", types.ComplianceDockerCIS)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
-	misconfFlagGroup := flag.NewMisconfFlagGroup()
-	misconfFlagGroup.ScanAllDirs = nil // disable `--scan-all-dirs`
-
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       misconfFlagGroup,
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
@@ -332,14 +329,11 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = &reportFormat
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
-	misconfFlagGroup := flag.NewMisconfFlagGroup()
-	misconfFlagGroup.ScanAllDirs = nil // disable `--scan-all-dirs`
-
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       misconfFlagGroup,
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
@@ -392,14 +386,11 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
-	misconfFlagGroup := flag.NewMisconfFlagGroup()
-	misconfFlagGroup.ScanAllDirs = nil // disable `--scan-all-dirs`
-
 	rootfsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       misconfFlagGroup,
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
@@ -454,14 +445,11 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
 	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
-	misconfFlagGroup := flag.NewMisconfFlagGroup()
-	misconfFlagGroup.ScanAllDirs = nil // disable `--scan-all-dirs`
-
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       misconfFlagGroup,
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
@@ -865,15 +853,12 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
-	misconfFlagGroup := flag.NewMisconfFlagGroup()
-	misconfFlagGroup.ScanAllDirs = nil // disable `--scan-all-dirs`
-
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		ImageFlagGroup:         imageFlags,
 		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
-		MisconfFlagGroup:       misconfFlagGroup,
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          scanFlags,
@@ -932,13 +917,10 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
-	misconfFlagGroup := flag.NewMisconfFlagGroup()
-	misconfFlagGroup.ScanAllDirs = nil // disable `--scan-all-dirs`
-
 	awsFlags := &flag.Flags{
 		AWSFlagGroup:     flag.NewAWSFlagGroup(),
 		CloudFlagGroup:   flag.NewCloudFlagGroup(),
-		MisconfFlagGroup: misconfFlagGroup,
+		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:    flag.NewRegoFlagGroup(),
 		ReportFlagGroup:  reportFlagGroup,
 	}
@@ -999,13 +981,10 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 
-	misconfFlagGroup := flag.NewMisconfFlagGroup()
-	misconfFlagGroup.ScanAllDirs = nil // disable `--scan-all-dirs`
-
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
-		MisconfFlagGroup:       misconfFlagGroup,
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,

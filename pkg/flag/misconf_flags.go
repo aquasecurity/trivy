@@ -13,12 +13,6 @@ var (
 		Value:      false,
 		Usage:      "remove policy bundle",
 	}
-	ScanAllDirsFlag = Flag{
-		Name:       "scan-all-dirs",
-		ConfigName: "misconfiguration.scan-all-dirs",
-		Value:      true,
-		Usage:      "scan all dirs recursively",
-	}
 	IncludeNonFailuresFlag = Flag{
 		Name:       "include-non-failures",
 		ConfigName: "misconfiguration.include-non-failures",
@@ -61,7 +55,6 @@ var (
 type MisconfFlagGroup struct {
 	IncludeNonFailures *Flag
 	ResetPolicyBundle  *Flag
-	ScanAllDirs        *Flag
 
 	// Values Files
 	HelmValues       *Flag
@@ -74,7 +67,6 @@ type MisconfFlagGroup struct {
 type MisconfOptions struct {
 	IncludeNonFailures bool
 	ResetPolicyBundle  bool
-	ScanAllDirs        bool
 
 	// Values Files
 	HelmValues       []string
@@ -88,7 +80,6 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
 		IncludeNonFailures: &IncludeNonFailuresFlag,
 		ResetPolicyBundle:  &ResetPolicyBundleFlag,
-		ScanAllDirs:        &ScanAllDirsFlag,
 		HelmValues:         &HelmSetFlag,
 		HelmFileValues:     &HelmSetFileFlag,
 		HelmStringValues:   &HelmSetStringFlag,
@@ -105,7 +96,6 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 	return []*Flag{
 		f.IncludeNonFailures,
 		f.ResetPolicyBundle,
-		f.ScanAllDirs,
 		f.HelmValues,
 		f.HelmValueFiles,
 		f.HelmFileValues,
@@ -118,7 +108,6 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 	return MisconfOptions{
 		IncludeNonFailures: getBool(f.IncludeNonFailures),
 		ResetPolicyBundle:  getBool(f.ResetPolicyBundle),
-		ScanAllDirs:        getBool(f.ScanAllDirs),
 		HelmValues:         getStringSlice(f.HelmValues),
 		HelmValueFiles:     getStringSlice(f.HelmValueFiles),
 		HelmFileValues:     getStringSlice(f.HelmFileValues),

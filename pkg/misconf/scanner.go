@@ -45,7 +45,6 @@ type ScannerOption struct {
 	PolicyPaths             []string
 	DataPaths               []string
 	DisableEmbeddedPolicies bool
-	ScanAllDirs             bool
 
 	HelmValues       []string
 	HelmValueFiles   []string
@@ -252,7 +251,7 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 		opts = append(opts, tfscanner.ScannerWithTFVarsPaths(scannerOption.TerraformTFVars...))
 	}
 
-	opts = append(opts, tfscanner.ScannerWithAllDirectories(scannerOption.ScanAllDirs))
+	opts = append(opts, tfscanner.ScannerWithAllDirectories(true))
 
 	return opts
 }
