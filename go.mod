@@ -65,7 +65,7 @@ require (
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20221225060520-c150f5eacfe1
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd
-	github.com/masahiro331/go-xfs-filesystem v0.0.0-20230607133937-db911ccda97c
+	github.com/masahiro331/go-xfs-filesystem v0.0.0-20230608043311-a335f4599b70
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/moby/buildkit v0.11.5
 	github.com/open-policy-agent/opa v0.45.0
