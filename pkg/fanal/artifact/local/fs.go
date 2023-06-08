@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -52,7 +53,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}
 
 	return Artifact{
-		rootPath: filepath.Clean(rootPath),
+		rootPath: filepath.ToSlash(filepath.Clean(rootPath)),
 		cache:    c,
 		walker: walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs),
 			opt.Slow, opt.WalkOption.ErrorCallback),
@@ -139,7 +140,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		// When the directory is the same as the filePath, a file was given
 		// instead of a directory, rewrite the file path and directory in this case.
 		if filePath == "." {
-			dir, filePath = filepath.Split(a.rootPath)
+			dir, filePath = path.Split(a.rootPath)
 		}
 
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
@@ -153,7 +154,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		}
 
 		// Build filesystem for post analysis
-		if err = composite.CreateLink(analyzerTypes, filePath, filepath.Join(dir, filePath), true); err != nil {
+		if err = composite.CreateLink(analyzerTypes, dir, filePath, filepath.Join(dir, filePath)); err != nil {
 			return xerrors.Errorf("failed to create link: %w", err)
 		}
 

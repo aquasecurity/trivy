@@ -370,7 +370,7 @@ func ResultsToMisconf(configType string, scannerName string, results scan.Result
 		if !ok {
 			misconf = types.Misconfiguration{
 				FileType: configType,
-				FilePath: filePath,
+				FilePath: filepath.ToSlash(filePath), // defsec return OS-aware path
 			}
 		}
 
