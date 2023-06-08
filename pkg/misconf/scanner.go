@@ -259,6 +259,8 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 		opts = append(opts, tfscanner.ScannerWithTFVarsPaths(scannerOption.TerraformTFVars...))
 	}
 
+	opts = append(opts, tfscanner.ScannerWithAllDirectories(true))
+
 	return opts
 }
 
@@ -368,7 +370,7 @@ func ResultsToMisconf(configType string, scannerName string, results scan.Result
 		if !ok {
 			misconf = types.Misconfiguration{
 				FileType: configType,
-				FilePath: filePath,
+				FilePath: filepath.ToSlash(filePath), // defsec return OS-aware path
 			}
 		}
 

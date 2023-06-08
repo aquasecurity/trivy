@@ -293,7 +293,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		if err != nil {
 			return xerrors.Errorf("failed to copy file to temp: %w", err)
 		}
-		if err = composite.CreateLink(analyzerTypes, filePath, tmpFilePath, false); err != nil {
+		if err = composite.CreateLink(analyzerTypes, "", filePath, tmpFilePath); err != nil {
 			return xerrors.Errorf("failed to write a file: %w", err)
 		}
 

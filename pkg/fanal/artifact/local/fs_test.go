@@ -353,6 +353,17 @@ func TestBuildPathsToSkip(t *testing.T) {
 	}
 }
 
+var policyMetadata = types.PolicyMetadata{
+	ID:                 "TEST001",
+	AVDID:              "AVD-TEST-0001",
+	Type:               "Terraform Security Check",
+	Title:              "Test policy",
+	Description:        "This is a test policy.",
+	Severity:           "LOW",
+	RecommendedActions: "Have a cup of tea.",
+	References:         []string{"https://trivy.dev/"},
+}
+
 func TestTerraformMisconfigurationScan(t *testing.T) {
 	type fields struct {
 		dir string
@@ -367,13 +378,13 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 		{
 			name: "single failure",
 			fields: fields{
-				dir: "./testdata/misconfig/terraform/single-failure/src",
+				dir: "./testdata/misconfig/terraform/single-failure",
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/terraform/single-failure/rego"},
+					PolicyPaths: []string{"./testdata/misconfig/terraform/rego"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -387,19 +398,10 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 								FilePath: "main.tf",
 								Failures: types.MisconfResults{
 									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "Terraform Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
 										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.asd",
 											Provider:  "Generic",
@@ -416,24 +418,24 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/misconfig/terraform/single-failure/src",
+				Name: "testdata/misconfig/terraform/single-failure",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:6988beec13a8762e6bd83c7dc84771acb8adb04431be3180cb6aa09d133fb80d",
+				ID:   "sha256:51123b27efc62be0db21fad4ccaf0839850f9f9162d225c6bd9d0e94089b2d8b",
 				BlobIDs: []string{
-					"sha256:6988beec13a8762e6bd83c7dc84771acb8adb04431be3180cb6aa09d133fb80d",
+					"sha256:51123b27efc62be0db21fad4ccaf0839850f9f9162d225c6bd9d0e94089b2d8b",
 				},
 			},
 		},
 		{
 			name: "multiple failures",
 			fields: fields{
-				dir: "./testdata/misconfig/terraform/multiple-failures/src",
+				dir: "./testdata/misconfig/terraform/multiple-failures",
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/terraform/multiple-failures/rego"},
+					PolicyPaths: []string{"./testdata/misconfig/terraform/rego"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -447,19 +449,10 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 								FilePath: "main.tf",
 								Failures: types.MisconfResults{
 									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "Terraform Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
 										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.one",
 											Provider:  "Generic",
@@ -469,19 +462,10 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										},
 									},
 									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "Terraform Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
 										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.two",
 											Provider:  "Generic",
@@ -497,19 +481,10 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 								FilePath: "more.tf",
 								Failures: types.MisconfResults{
 									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "Terraform Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
 										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.three",
 											Provider:  "Generic",
@@ -526,24 +501,24 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/misconfig/terraform/multiple-failures/src",
+				Name: "testdata/misconfig/terraform/multiple-failures",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:89dacc9d8c0f17c7d101adfbfa30085ad1031f9e45f0a74cb2252aefe1437fe5",
+				ID:   "sha256:e5159ce9589ca0fd714cbbb757628fffff31229a52310ea151ae1410be5f1f1b",
 				BlobIDs: []string{
-					"sha256:89dacc9d8c0f17c7d101adfbfa30085ad1031f9e45f0a74cb2252aefe1437fe5",
+					"sha256:e5159ce9589ca0fd714cbbb757628fffff31229a52310ea151ae1410be5f1f1b",
 				},
 			},
 		},
 		{
 			name: "no results",
 			fields: fields{
-				dir: "./testdata/misconfig/terraform/no-results/src",
+				dir: "./testdata/misconfig/terraform/no-results",
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/terraform/no-results/rego"},
+					PolicyPaths: []string{"./testdata/misconfig/terraform/rego"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -556,24 +531,24 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/misconfig/terraform/no-results/src",
+				Name: "testdata/misconfig/terraform/no-results",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:5cafcecda4322751d7b281d9546f5789a46d82d19cc2adab614122d2ce3420b9",
+				ID:   "sha256:0c31a344fe889e279aecf743d801ae5d40ee2841a45ed7820114c1094c41a966",
 				BlobIDs: []string{
-					"sha256:5cafcecda4322751d7b281d9546f5789a46d82d19cc2adab614122d2ce3420b9",
+					"sha256:0c31a344fe889e279aecf743d801ae5d40ee2841a45ed7820114c1094c41a966",
 				},
 			},
 		},
 		{
 			name: "passed",
 			fields: fields{
-				dir: "./testdata/misconfig/terraform/passed/src",
+				dir: "./testdata/misconfig/terraform/passed",
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/terraform/passed/rego"},
+					PolicyPaths: []string{"./testdata/misconfig/terraform/rego"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -587,18 +562,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 								FilePath: ".",
 								Successes: types.MisconfResults{
 									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "Terraform Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										PolicyMetadata: policyMetadata,
 										CauseMetadata: types.CauseMetadata{
 											Provider: "Generic",
 											Service:  "general",
@@ -612,24 +578,24 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/misconfig/terraform/passed/src",
+				Name: "testdata/misconfig/terraform/passed",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:e54f0c7ded39cf2cd57271293cdd4e5d11a591e6f30ce518050b358e4cd6f48d",
+				ID:   "sha256:4e2b9cba04625f1d9cc57f74640d039779b0ee176e958aaea37883e03842056d",
 				BlobIDs: []string{
-					"sha256:e54f0c7ded39cf2cd57271293cdd4e5d11a591e6f30ce518050b358e4cd6f48d",
+					"sha256:4e2b9cba04625f1d9cc57f74640d039779b0ee176e958aaea37883e03842056d",
 				},
 			},
 		},
 		{
 			name: "multiple failures busted relative paths",
 			fields: fields{
-				dir: "./testdata/misconfig/terraform/busted-relative-paths/src/child/main.tf",
+				dir: "./testdata/misconfig/terraform/busted-relative-paths/child/main.tf",
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/terraform/busted-relative-paths/rego"},
+					PolicyPaths: []string{"./testdata/misconfig/terraform/rego"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
@@ -643,19 +609,10 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 								FilePath: "main.tf",
 								Failures: types.MisconfResults{
 									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "Terraform Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
 										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.one",
 											Provider:  "Generic",
@@ -665,19 +622,10 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										},
 									},
 									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "Terraform Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
 										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.two",
 											Provider:  "Generic",
@@ -694,11 +642,100 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/misconfig/terraform/busted-relative-paths/src/child/main.tf",
+				Name: "testdata/misconfig/terraform/busted-relative-paths/child/main.tf",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:188f1cdbfc19f60baca159afbc34c05d48c65d3bec5826530363fe81799ee5ad",
+				ID:   "sha256:aacaabaaef04916bc31b5200617a07ca5c92a4eab1b94783cde06cc4b24412d2",
 				BlobIDs: []string{
-					"sha256:188f1cdbfc19f60baca159afbc34c05d48c65d3bec5826530363fe81799ee5ad",
+					"sha256:aacaabaaef04916bc31b5200617a07ca5c92a4eab1b94783cde06cc4b24412d2",
+				},
+			},
+		},
+		{
+			name: "relative paths",
+			fields: fields{
+				dir: "./testdata/misconfig/terraform/relative-paths/child",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/terraform/rego"},
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobIDAnything: true,
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: 2,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: types.Terraform,
+								FilePath: "../parent/main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.three",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+							{
+								FileType: types.Terraform,
+								FilePath: "main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.one",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+							{
+								FileType: types.Terraform,
+								FilePath: "nested/main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										Message:        "Empty bucket name!",
+										PolicyMetadata: policyMetadata,
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.two",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/misconfig/terraform/relative-paths/child",
+				Type: types.ArtifactFilesystem,
+				ID:   "sha256:9c5c0038bf41e03f878ed27c569b93198a16b0d975e7fca4e90aa2a4eaf87402",
+				BlobIDs: []string{
+					"sha256:9c5c0038bf41e03f878ed27c569b93198a16b0d975e7fca4e90aa2a4eaf87402",
 				},
 			},
 		},
