@@ -147,9 +147,14 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 
-		// Build filesystem for post analysis
+		// Skip post analysis if the file is not required
 		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
-		if err = composite.CreateLink(analyzerTypes, dir, filePath, path.Join(dir, filePath)); err != nil {
+		if len(analyzerTypes) == 0 {
+			return nil
+		}
+
+		// Build filesystem for post analysis
+		if err = composite.CreateLink(analyzerTypes, dir, filePath, filepath.Join(dir, filePath)); err != nil {
 			return xerrors.Errorf("failed to create link: %w", err)
 		}
 
