@@ -75,7 +75,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 			return xerrors.Errorf("failed to copy file to temp: %w", err)
 		}
 
-		if err = composite.CreateLink(analyzerTypes, path, tmpFilePath, false); err != nil {
+		if err = composite.CreateLink(analyzerTypes, "", path, tmpFilePath); err != nil {
 			return xerrors.Errorf("failed to write a file: %w", err)
 		}
 
