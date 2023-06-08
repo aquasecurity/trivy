@@ -16,7 +16,6 @@ builds:
       - windows
     goarch:
       - amd64
-      - 386
       - arm
       - arm64
       - s390x
@@ -24,15 +23,11 @@ builds:
     goarm:
       - 7
     ignore:
-      - goos: darwin
-        goarch: 386
       # modernc.org/sqlite doesn't support the following pairs
       - goos: freebsd
         goarch: arm
       - goos: freebsd
         goarch: arm64
-      - goos: windows
-        goarch: 386
       - goos: windows
         goarch: arm
       - goos: windows
@@ -66,7 +61,6 @@ nfpms:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- title .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
-      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE
@@ -91,7 +85,6 @@ archives:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
-      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE
