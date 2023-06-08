@@ -259,6 +259,8 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 		opts = append(opts, tfscanner.ScannerWithTFVarsPaths(scannerOption.TerraformTFVars...))
 	}
 
+	opts = append(opts, tfscanner.ScannerWithAllDirectories(true))
+
 	return opts
 }
 
