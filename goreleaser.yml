@@ -1,6 +1,6 @@
 project_name: trivy
 builds:
-  - id: build
+  - id: build-linux
     main: cmd/trivy/main.go
     binary: trivy
     ldflags:
@@ -11,7 +11,6 @@ builds:
       - CGO_ENABLED=0
     goos:
       - linux
-      - freebsd
     goarch:
       - amd64
       - arm64
@@ -19,12 +18,20 @@ builds:
       - ppc64le
     goarm:
       - 7
-    ignore:
-      # modernc.org/sqlite doesn't support the following pairs
-      - goos: freebsd
-        goarch: arm
-      - goos: freebsd
-        goarch: arm64
+  - id: build-bsd
+    main: cmd/trivy/main.go
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - freebsd
+    goarch:
+      # modernc.org/sqlite doesn't support freebsd/arm64, etc.
+      - amd64
   - id: build-macos
     main: cmd/trivy/main.go
     binary: trivy
@@ -81,7 +88,6 @@ nfpms:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- title .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
-      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE
@@ -106,7 +112,6 @@ archives:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
-      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE

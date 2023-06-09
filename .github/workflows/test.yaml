@@ -150,9 +150,9 @@ jobs:
         if [ "${{ matrix.operating-system }}" == "windows-latest" ]; then
           echo "id=build-windows" >> $GITHUB_OUTPUT
         elif [ "${{ matrix.operating-system }}" == "macos-latest" ]; then
-          echo "id=build-macos" >> $GITHUB_OUTPUT
+          echo "id=build-macos,build-bsd" >> $GITHUB_OUTPUT
         else
-          echo "id=build" >> $GITHUB_OUTPUT
+          echo "id=build-linux" >> $GITHUB_OUTPUT
         fi
 
     - name: Run GoReleaser
