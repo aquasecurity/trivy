@@ -148,15 +148,15 @@ jobs:
       shell: bash
       run: |
         if [ "${{ matrix.operating-system }}" == "windows-latest" ]; then
-          echo "id=build-windows" >> $GITHUB_OUTPUT
+          echo "id=--id build-windows" >> $GITHUB_OUTPUT
         elif [ "${{ matrix.operating-system }}" == "macos-latest" ]; then
-          echo "id=build-macos,build-bsd" >> $GITHUB_OUTPUT
+          echo "id=--id build-macos --id build-bsd" >> $GITHUB_OUTPUT
         else
-          echo "id=build-linux" >> $GITHUB_OUTPUT
+          echo "id=--id build-linux" >> $GITHUB_OUTPUT
         fi
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v4
       with:
         version: v1.16.2
-        args: build --snapshot --clean --timeout 90m --id ${{ steps.goreleaser_id.outputs.id }}
+        args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}
