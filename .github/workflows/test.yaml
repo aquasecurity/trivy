@@ -156,4 +156,5 @@ jobs:
         version: v1.16.2
         args: release --skip-sign --snapshot --clean --skip-publish --timeout 90m
       env:
+        GH_USER: ${{ env.GH_USER }}
         GPG_FILE: "nogpg.key"
