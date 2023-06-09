@@ -49,7 +49,7 @@ jobs:
 
       - name: Create rpm repository
         env:
-          GH_USER: ${{ env.GH_USER }}
+          GH_USER: ${{ github.repository_owner }}
         run: ci/deploy-rpm.sh
 
       - name: Import GPG key
