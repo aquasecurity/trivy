@@ -101,7 +101,7 @@ archives:
 brews:
   -
     tap:
-      owner: {{ .Env.GH_USER }}
+      owner: "{{ .Env.GH_USER }}"
       name: homebrew-trivy
     homepage: "https://github.com/{{ .Env.GH_USER }}/trivy"
     description: "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues"
