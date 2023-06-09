@@ -156,5 +156,7 @@ jobs:
         version: v1.16.2
         args: release --skip-sign --snapshot --clean --skip-publish --timeout 90m
       env:
+        AWS_USER: ${{ secrets.ECR_ACCESS_KEY_ID }}
+        DOCKER_USER: ${{ secrets.DOCKERHUB_USER }}
         GH_USER: ${{ env.GH_USER }}
         GPG_FILE: "nogpg.key"
