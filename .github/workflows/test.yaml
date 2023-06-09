@@ -160,5 +160,3 @@ jobs:
       with:
         version: v1.16.2
         args: build --snapshot --clean --timeout 90m --id ${{ steps.goreleaser_id.outputs.id }}
-      env:
-        GPG_FILE: "nogpg.key"
