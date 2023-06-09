@@ -48,6 +48,8 @@ jobs:
           git config --global user.name "Teppei Fukuda"
 
       - name: Create rpm repository
+        env:
+          GH_USER: ${{ env.GH_USER }}
         run: ci/deploy-rpm.sh
 
       - name: Import GPG key
