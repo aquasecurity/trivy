@@ -2,15 +2,10 @@
 
 This tutorial is focused on ways Trivy can scan Terraform IaC configuration files. 
 
+A video tutorial on Terraform Misconfiguration scans can be found on the [Aqua Open Source YouTube account.](https://youtu.be/BWp5JLXkbBc)
+
 **A note to tfsec users** 
-We have been consolidating all of our scanning-related efforts in one place, and that is Trivy. Over the past year, tfsec has laid the foundations to Trivy's IaC & misconfigurations scanning capabilities, including Terraform scanning, which has been natively supported in Trivy for a long time now. 
-Going forward we want to encourage the tfsec community to transition over to Trivy. Moving to Trivy gives you the same excellent Terraform scanning engine, with some extra benefits: 
-
-- Access to more languages and features in the same tool. 
-- Access to more integrations with tools and services through the rich ecosystem around Trivy. 
-- Commercially supported by Aqua as well as by a the passionate Trivy community. 
-
-Furthermore, Trivy can already check [AWS services for misconfiguration](https://aquasecurity.github.io/trivy/latest/docs/target/aws/). We are currently in the process of merging [Cloudsploit](https://github.com/aquasecurity/cloudsploit) checks into Trivy so that Trivy will be able to perform more checks on cloud provider resources. 
+We have been consolidating all of our scanning-related efforts in one place, and that is Trivy. You can read more on the decision in the [tfsec discussions.](https://github.com/aquasecurity/tfsec/discussions/1994)
 
 ## Trivy Config Command 
 
@@ -33,13 +28,14 @@ The `trivy config` command is used like any other Trivy command. You can find th
 
 ### Prerequisites 
 Install Trivy on your local machines. The documentation provides several [different installation options.](https://aquasecurity.github.io/trivy/latest/getting-started/installation/) 
-This tutorial will use this example [Terraform tutorial]() for terraform misconfiguration scanning with Trivy. 
+This tutorial will use this example [Terraform tutorial](https://github.com/Cloud-Native-Security/trivy-demo/tree/main/bad_iac/terraform) for terraform misconfiguration scanning with Trivy. 
+
 Git clone the tutorial and cd into the directory: 
 ``` 
-git clone https://github.com/Cloud-Native-Security/terraform-and-argocd 
-cd terraform-and-argocd 
+git clone git@github.com:Cloud-Native-Security/trivy-demo.git
+cd bad_iac/terraform
 ``` 
-In this case, the folder only containes Terraform configuration files. However, you could scan a directory that contains several different configurations e.g. Kubernetes YAML manifests, Dockerfile, and Terraform. In this case, Trivy detects the different configuration files and applies the right rules automatically. 
+In this case, the folder only containes Terraform configuration files. However, you could scan a directory that contains several different configurations e.g. Kubernetes YAML manifests, Dockerfile, and Terraform. Trivy will then detect the different configuration files and apply the right rules automatically. 
 
 ## Different types of `trivy config` scans 
 
@@ -49,9 +45,10 @@ General Terraform scan with trivy:
 ``` 
 trivy config <specify the directory> 
 ``` 
+
 So if we are already in the directory that we want to scan: 
 ``` 
-trivy config terraform-infra 
+trivy config ./ 
 ``` 
 ### Specify the scan format 
 The `--format` flag changes the way that Trivy displays the scan result: 
@@ -60,13 +57,15 @@ JSON:
 ```
 trivy config -f json terraform-infra 
 ``` 
+
 Sarif: 
 ``` 
 trivy config -f sarif terraform-infra 
 ``` 
+
 ### Specifying the output location 
 
-The `--output` flag specifies the file location in which the scan result should be saved to: 
+The `--output` flag specifies the file location in which the scan result should be saved: 
 
 JSON: 
 ``` 
@@ -75,7 +74,7 @@ trivy config -f json -o example.json terraform-infra
 
 Sarif: 
 ``` 
-trivy config -f sarif-o example.sarif terraform-infra 
+trivy config -f sarif -o example.sarif terraform-infra 
 ``` 
 
 ### Defining the severity of misconfiguration 
@@ -91,7 +90,7 @@ trivy config --severity CRITICAL, MEDIUM terraform-infra
 You can pass tf-vars files to Trivy to override default values found in the Terraform HCL code. More information are provided [in the documentation.](https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/options/values/) 
 
 ``` 
-trivy conf --tf-vars dev.terraform.tfvars ./terraform-infra 
+trivy conf --tf-vars terraform.tfvars ./
 ``` 
 ### Custom Policy 
 
@@ -99,13 +98,34 @@ We have lots of example in the [documentation](https://aquasecurity.github.io/tr
 
 ## Secret scans and vulnerability scans as part of misconfiguration scans 
 
-The trivy config` command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your `trivy fs` scan that you would like to scan you terraform files for exposed secrets through an additional flag: 
+The `trivy config` command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your `trivy fs` scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: 
 
 ```
-trivy fs --scanners secret ./terraform-infra 
+trivy fs --scanners secret,config ./
 ```
 
 The `trivy config` command is a sub-command of the `trivy fs` command. You can learn more about this command in the [documentation.](https://aquasecurity.github.io/trivy/latest/docs/target/filesystem/) 
+
+## Scan the Terraform Plan file
+
+Instead of scanning your different Terraform resources individually, you could also scan your terraform plan output for misconfiguration. [Here](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/examples/#terraform-plan) is the link to the documentation.
+
+First, create a terraform plan and save it to a file:
+```
+terraform plan --out tfplan.binary
+```
+
+Next, convert the file into json format:
+```
+terraform show -json tfplan.binary > tfplan.json
+```
+
+Lastly, scan the file with the `trivy config` command:
+```
+trivy config ./tfplan.json
+```
+
+Note that you need to be able to create a terraform init and plan without any errors. 
 
 ## Using Trivy in your CI/CD pipeline 
 Similar to tfsec, Trivy can be used either on local developer machines or integrated into your CI/CD pipeline. There are several steps available for different pipelines, including GitHub Actions, Circle CI, GitLab, Travis and more in the tutorials section of the documentation: [https://aquasecurity.github.io/trivy/latest/tutorials/integrations/ ](https://aquasecurity.github.io/trivy/latest/tutorials/integrations/) 
