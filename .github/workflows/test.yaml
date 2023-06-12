@@ -1,8 +1,6 @@
 name: Test
 on:
   push:
-    branches:
-      - main
     paths-ignore:
       - '**.md'
       - 'docs/**'
