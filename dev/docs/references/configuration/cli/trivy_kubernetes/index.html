@@ -3140,11 +3140,13 @@ You're not viewing the latest version.
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
       --parallel int                      number (between 1-20) of goroutines enabled for parallel scanning (default 5)
+      --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --policy-namespaces strings         Rego namespaces
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
+      --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default &quot;https://rekor.sigstore.dev&quot;)
       --report string                     specify a report format for the output. (all,summary) (default &quot;all&quot;)
       --reset                             remove all caches and database
@@ -3163,6 +3165,7 @@ You're not viewing the latest version.
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace                             enable more verbose trace output for custom queries
+      --username strings                  username. Comma-separated usernames allowed.
       --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 </code></pre></div>
 <h3 id="options-inherited-from-parent-commands">Options inherited from parent commands</h3>
