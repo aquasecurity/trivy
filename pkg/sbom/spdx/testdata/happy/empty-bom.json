@@ -3,7 +3,7 @@
 	"creationInfo": {
 		"created": "2022-09-12T17:03:35.840861Z",
 		"creators": [
-			"Tool: trivy",
+			"Tool: trivy-dev",
 			"Organization: aquasecurity"
 		]
 	},

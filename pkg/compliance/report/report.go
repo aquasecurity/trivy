@@ -3,6 +3,8 @@ package report
 import (
 	"io"
 
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -40,7 +42,7 @@ type ControlCheckResult struct {
 	ID            string
 	Name          string
 	Description   string
-	DefaultStatus spec.ControlStatus `json:",omitempty"`
+	DefaultStatus defsecTypes.ControlStatus `json:",omitempty"`
 	Severity      string
 	Results       types.Results
 }
@@ -94,7 +96,7 @@ func (r ComplianceReport) empty() bool {
 }
 
 // buildControlCheckResults create compliance results data
-func buildControlCheckResults(checksMap map[string]types.Results, controls []spec.Control) []*ControlCheckResult {
+func buildControlCheckResults(checksMap map[string]types.Results, controls []defsecTypes.Control) []*ControlCheckResult {
 	complianceResults := make([]*ControlCheckResult, 0)
 	for _, control := range controls {
 		var results types.Results
@@ -114,7 +116,7 @@ func buildControlCheckResults(checksMap map[string]types.Results, controls []spe
 }
 
 // buildComplianceReportResults create compliance results data
-func buildComplianceReportResults(checksMap map[string]types.Results, spec spec.Spec) *ComplianceReport {
+func buildComplianceReportResults(checksMap map[string]types.Results, spec defsecTypes.Spec) *ComplianceReport {
 	controlCheckResult := buildControlCheckResults(checksMap, spec.Controls)
 	return &ComplianceReport{
 		ID:               spec.ID,

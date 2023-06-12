@@ -40,11 +40,10 @@ type Option struct {
 
 // Report represents a kubernetes scan report
 type Report struct {
-	SchemaVersion     int `json:",omitempty"`
-	ClusterName       string
-	Vulnerabilities   []Resource `json:",omitempty"`
-	Misconfigurations []Resource `json:",omitempty"`
-	name              string
+	SchemaVersion int `json:",omitempty"`
+	ClusterName   string
+	Resources     []Resource `json:",omitempty"`
+	name          string
 }
 
 // ConsolidatedReport represents a kubernetes scan report with consolidated findings
@@ -74,18 +73,11 @@ func (r Resource) fullname() string {
 
 // Failed returns whether the k8s report includes any vulnerabilities or misconfigurations
 func (r Report) Failed() bool {
-	for _, v := range r.Vulnerabilities {
+	for _, v := range r.Resources {
 		if v.Results.Failed() {
 			return true
 		}
 	}
-
-	for _, m := range r.Misconfigurations {
-		if m.Results.Failed() {
-			return true
-		}
-	}
-
 	return false
 }
 
@@ -96,12 +88,16 @@ func (r Report) consolidate() ConsolidatedReport {
 	}
 
 	index := make(map[string]Resource)
-
-	for _, m := range r.Misconfigurations {
-		index[m.fullname()] = m
+	vulnerabilities := make([]Resource, 0)
+	for _, m := range r.Resources {
+		if vulnerabilitiesOrSecretResource(m) {
+			vulnerabilities = append(vulnerabilities, m)
+		} else {
+			index[m.fullname()] = m
+		}
 	}
 
-	for _, v := range r.Vulnerabilities {
+	for _, v := range vulnerabilities {
 		key := v.fullname()
 
 		if res, ok := index[key]; ok {
@@ -181,13 +177,19 @@ func separateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 	workloadMisconfig := make([]Resource, 0)
 	infraMisconfig := make([]Resource, 0)
 	rbacAssessment := make([]Resource, 0)
+	workloadVulnerabilities := make([]Resource, 0)
+	workloadResource := make([]Resource, 0)
+	for _, resource := range k8sReport.Resources {
+		if vulnerabilitiesOrSecretResource(resource) {
+			workloadVulnerabilities = append(workloadVulnerabilities, resource)
+			continue
+		}
 
-	for _, misConfig := range k8sReport.Misconfigurations {
 		switch {
-		case scanners.Enabled(types.RBACScanner) && rbacResource(misConfig):
-			rbacAssessment = append(rbacAssessment, misConfig)
-		case infraResource(misConfig):
-			workload, infra := splitInfraAndWorkloadResources(misConfig)
+		case scanners.Enabled(types.RBACScanner) && rbacResource(resource):
+			rbacAssessment = append(rbacAssessment, resource)
+		case infraResource(resource):
+			workload, infra := splitInfraAndWorkloadResources(resource)
 
 			if slices.Contains(components, infraComponent) {
 				infraMisconfig = append(infraMisconfig, infra)
@@ -197,27 +199,27 @@ func separateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 				workloadMisconfig = append(workloadMisconfig, workload)
 			}
 
-		case scanners.Enabled(types.MisconfigScanner) && !rbacResource(misConfig):
+		case scanners.Enabled(types.MisconfigScanner) && !rbacResource(resource):
 			if slices.Contains(components, workloadComponent) {
-				workloadMisconfig = append(workloadMisconfig, misConfig)
+				workloadMisconfig = append(workloadMisconfig, resource)
 			}
 		}
 	}
 
 	r := make([]reports, 0)
-
+	workloadResource = append(workloadResource, workloadVulnerabilities...)
+	workloadResource = append(workloadResource, workloadMisconfig...)
 	if shouldAddWorkloadReport(scanners) {
 		workloadReport := Report{
-			SchemaVersion:     0,
-			ClusterName:       k8sReport.ClusterName,
-			Misconfigurations: workloadMisconfig,
-			Vulnerabilities:   k8sReport.Vulnerabilities,
-			name:              "Workload Assessment",
+			SchemaVersion: 0,
+			ClusterName:   k8sReport.ClusterName,
+			Resources:     workloadResource,
+			name:          "Workload Assessment",
 		}
 
 		if (slices.Contains(components, workloadComponent) &&
 			len(workloadMisconfig) > 0) ||
-			len(k8sReport.Vulnerabilities) > 0 {
+			len(workloadVulnerabilities) > 0 {
 			r = append(r, reports{
 				report:  workloadReport,
 				columns: WorkloadColumns(),
@@ -228,10 +230,10 @@ func separateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 	if scanners.Enabled(types.RBACScanner) && len(rbacAssessment) > 0 {
 		r = append(r, reports{
 			report: Report{
-				SchemaVersion:     0,
-				ClusterName:       k8sReport.ClusterName,
-				Misconfigurations: rbacAssessment,
-				name:              "RBAC Assessment",
+				SchemaVersion: 0,
+				ClusterName:   k8sReport.ClusterName,
+				Resources:     rbacAssessment,
+				name:          "RBAC Assessment",
 			},
 			columns: RoleColumns(),
 		})
@@ -243,10 +245,10 @@ func separateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 
 		r = append(r, reports{
 			report: Report{
-				SchemaVersion:     0,
-				ClusterName:       k8sReport.ClusterName,
-				Misconfigurations: infraMisconfig,
-				name:              "Infra Assessment",
+				SchemaVersion: 0,
+				ClusterName:   k8sReport.ClusterName,
+				Resources:     infraMisconfig,
+				name:          "Infra Assessment",
 			},
 			columns: InfraColumns(),
 		})
@@ -292,15 +294,9 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 }
 
 func (r Report) printErrors() {
-	for _, resource := range r.Vulnerabilities {
+	for _, resource := range r.Resources {
 		if resource.Error != "" {
-			log.Logger.Errorf("Error during vulnerabilities scan: %s", resource.Error)
-		}
-	}
-
-	for _, resource := range r.Misconfigurations {
-		if resource.Error != "" {
-			log.Logger.Errorf("Error during misconfiguration scan: %s", resource.Error)
+			log.Logger.Errorf("Error during vulnerabilities or misconfiguration scan: %s", resource.Error)
 		}
 	}
 }
@@ -365,4 +361,8 @@ func copyResult(r types.Result, misconfigs []types.DetectedMisconfiguration) typ
 
 func shouldAddWorkloadReport(scanners types.Scanners) bool {
 	return scanners.AnyEnabled(types.MisconfigScanner, types.VulnerabilityScanner, types.SecretScanner)
+}
+
+func vulnerabilitiesOrSecretResource(resource Resource) bool {
+	return len(resource.Results) > 0 && (len(resource.Results[0].Vulnerabilities) > 0 || len(resource.Results[0].Secrets) > 0)
 }

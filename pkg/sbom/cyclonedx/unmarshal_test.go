@@ -89,6 +89,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
+								FilePath: "app/gradle/target/gradle.lockfile",
 							},
 						},
 					},
@@ -102,6 +103,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
+								FilePath: "app/maven/target/child-project-1.0.jar",
 							},
 						},
 					},
@@ -116,6 +118,50 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+								},
+								FilePath: "app/app/package.json",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path with infinity loop",
+			inputFile: "testdata/happy/infinite-loop-bom.json",
+			want: types.SBOM{
+				OS: ftypes.OS{
+					Family: "ubuntu",
+					Name:   "22.04",
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: []ftypes.Package{
+							{
+								ID:         "libc6@2.35-0ubuntu3.1",
+								Name:       "libc6",
+								Version:    "2.35-0ubuntu3.1",
+								SrcName:    "glibc",
+								SrcVersion: "2.35",
+								SrcRelease: "0ubuntu3.1",
+								Licenses:   []string{"LGPL-2.1", "GPL-2.0", "GFDL-1.3"},
+								Ref:        "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466",
+								},
+							},
+							{
+								ID:         "libcrypt1@1:4.4.27-1",
+								Name:       "libcrypt1",
+								Version:    "4.4.27-1",
+								Epoch:      1,
+								SrcName:    "libxcrypt",
+								SrcVersion: "4.4.27",
+								SrcRelease: "1",
+								SrcEpoch:   1,
+								Ref:        "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1&distro=ubuntu-22.04",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466",
 								},
 							},
 						},
@@ -272,7 +318,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			var cdx cyclonedx.CycloneDX
+			var cdx cyclonedx.BOM
 			err = json.NewDecoder(f).Decode(&cdx)
 			if tt.wantErr != "" {
 				require.Error(t, err)

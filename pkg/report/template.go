@@ -35,8 +35,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		}
 		outputTemplate = string(buf)
 	}
-	var templateFuncMap template.FuncMap
-	templateFuncMap = sprig.GenericFuncMap()
+	var templateFuncMap template.FuncMap = sprig.GenericFuncMap()
 	templateFuncMap["escapeXML"] = func(input string) string {
 		escaped := &bytes.Buffer{}
 		if err := xml.EscapeText(escaped, []byte(input)); err != nil {

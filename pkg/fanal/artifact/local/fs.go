@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -40,8 +41,10 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 
 	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
 		Group:                opt.AnalyzerGroup,
+		Slow:                 opt.Slow,
 		FilePatterns:         opt.FilePatterns,
 		DisabledAnalyzers:    opt.DisabledAnalyzers,
+		MisconfScannerOption: opt.MisconfScannerOption,
 		SecretScannerOption:  opt.SecretScannerOption,
 		LicenseScannerOption: opt.LicenseScannerOption,
 	})
@@ -50,9 +53,10 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}
 
 	return Artifact{
-		rootPath:       filepath.Clean(rootPath),
-		cache:          c,
-		walker:         walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs), opt.Slow),
+		rootPath: filepath.ToSlash(filepath.Clean(rootPath)),
+		cache:    c,
+		walker: walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs),
+			opt.Slow, opt.WalkOption.ErrorCallback),
 		analyzer:       a,
 		handlerManager: handlerManager,
 
@@ -119,20 +123,41 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Slow)
+	opts := analyzer.AnalysisOptions{
+		Offline:      a.artifactOption.Offline,
+		FileChecksum: a.artifactOption.FileChecksum,
+	}
 
-	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		directory := a.rootPath
+	// Prepare filesystem for post analysis
+	composite, err := a.analyzer.PostAnalyzerFS()
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to prepare filesystem for post analysis: %w", err)
+	}
+
+	err = a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+		dir := a.rootPath
 
 		// When the directory is the same as the filePath, a file was given
 		// instead of a directory, rewrite the file path and directory in this case.
 		if filePath == "." {
-			directory, filePath = filepath.Split(a.rootPath)
+			dir, filePath = path.Split(a.rootPath)
 		}
 
-		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
-		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, directory, filePath, info, opener, nil, opts); err != nil {
+		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
+
+		// Skip post analysis if the file is not required
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+		if len(analyzerTypes) == 0 {
+			return nil
+		}
+
+		// Build filesystem for post analysis
+		if err = composite.CreateLink(analyzerTypes, dir, filePath, filepath.Join(dir, filePath)); err != nil {
+			return xerrors.Errorf("failed to create link: %w", err)
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -142,18 +167,24 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	// Wait for all the goroutine to finish.
 	wg.Wait()
 
+	// Post-analysis
+	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("post analysis error: %w", err)
+	}
+
 	// Sort the analysis result for consistent results
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion:   types.BlobJSONSchemaVersion,
-		OS:              result.OS,
-		Repository:      result.Repository,
-		PackageInfos:    result.PackageInfos,
-		Applications:    result.Applications,
-		Secrets:         result.Secrets,
-		Licenses:        result.Licenses,
-		CustomResources: result.CustomResources,
+		SchemaVersion:     types.BlobJSONSchemaVersion,
+		OS:                result.OS,
+		Repository:        result.Repository,
+		PackageInfos:      result.PackageInfos,
+		Applications:      result.Applications,
+		Misconfigurations: result.Misconfigurations,
+		Secrets:           result.Secrets,
+		Licenses:          result.Licenses,
+		CustomResources:   result.CustomResources,
 	}
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {

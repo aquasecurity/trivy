@@ -29,7 +29,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
+					BlobID: "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -99,6 +99,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
+										FilePath: "app/maven/target/child-project-1.0.jar",
 									},
 								},
 							},
@@ -114,6 +115,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
+										FilePath: "app/app/package.json",
 									},
 								},
 							},
@@ -125,9 +127,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
+				ID:   "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 				BlobIDs: []string{
-					"sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
+					"sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 				},
 			},
 		},
@@ -136,7 +138,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
+					BlobID: "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -206,6 +208,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
+										FilePath: "app/maven/target/child-project-1.0.jar",
 									},
 								},
 							},
@@ -221,6 +224,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
+										FilePath: "app/app/package.json",
 									},
 								},
 							},
@@ -232,9 +236,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
+				ID:   "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 				BlobIDs: []string{
-					"sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
+					"sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 				},
 			},
 		},
@@ -248,7 +252,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "os-only-bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:05a4e94bb5503e437108210c90849a977ea0b9b83e4e8606aabc9647b2a5256c",
+					BlobID: "sha256:033dc76e6daf7d8ba439d678dc7e33400687098f3e9f563f6975adf4eb440eee",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{

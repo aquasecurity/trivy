@@ -6,18 +6,20 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
-
-	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
+	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	javadb "github.com/aquasecurity/trivy-java-db/pkg/db"
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -25,6 +27,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -32,6 +35,8 @@ import (
 type VersionInfo struct {
 	Version         string             `json:",omitempty"`
 	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
+	JavaDB          *metadata.Metadata `json:",omitempty"`
+	PolicyBundle    *policy.Metadata   `json:",omitempty"`
 }
 
 const (
@@ -58,6 +63,11 @@ Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
 
 Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
 `
+
+	groupScanning   = "scanning"
+	groupManagement = "management"
+	groupUtility    = "utility"
+	groupPlugin     = "plugin"
 )
 
 var (
@@ -73,6 +83,22 @@ func SetOut(out io.Writer) {
 func NewApp(version string) *cobra.Command {
 	globalFlags := flag.NewGlobalFlagGroup()
 	rootCmd := NewRootCommand(version, globalFlags)
+	rootCmd.AddGroup(
+		&cobra.Group{
+			ID:    groupScanning,
+			Title: "Scanning Commands",
+		},
+		&cobra.Group{
+			ID:    groupManagement,
+			Title: "Management Commands",
+		},
+		&cobra.Group{
+			ID:    groupUtility,
+			Title: "Utility Commands",
+		},
+	)
+	rootCmd.SetCompletionCommandGroupID(groupUtility)
+	rootCmd.SetHelpCommandGroupID(groupUtility)
 	rootCmd.AddCommand(
 		NewImageCommand(globalFlags),
 		NewFilesystemCommand(globalFlags),
@@ -81,6 +107,7 @@ func NewApp(version string) *cobra.Command {
 		NewClientCommand(globalFlags),
 		NewServerCommand(globalFlags),
 		NewConfigCommand(globalFlags),
+		NewConvertCommand(globalFlags),
 		NewPluginCommand(),
 		NewModuleCommand(globalFlags),
 		NewKubernetesCommand(globalFlags),
@@ -89,7 +116,14 @@ func NewApp(version string) *cobra.Command {
 		NewAWSCommand(globalFlags),
 		NewVMCommand(globalFlags),
 	)
-	rootCmd.AddCommand(loadPluginCommands()...)
+
+	if plugins := loadPluginCommands(); len(plugins) > 0 {
+		rootCmd.AddGroup(&cobra.Group{
+			ID:    groupPlugin,
+			Title: "Plugin Commands",
+		})
+		rootCmd.AddCommand(plugins...)
+	}
 
 	return rootCmd
 }
@@ -104,8 +138,9 @@ func loadPluginCommands() []*cobra.Command {
 	for _, p := range plugins {
 		p := p
 		cmd := &cobra.Command{
-			Use:   fmt.Sprintf("%s [flags]", p.Name),
-			Short: p.Usage,
+			Use:     fmt.Sprintf("%s [flags]", p.Name),
+			Short:   p.Usage,
+			GroupID: groupPlugin,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if err = p.Run(cmd.Context(), args); err != nil {
 					return xerrors.Errorf("plugin error: %w", err)
@@ -161,7 +196,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 			// viper.BindPFlag cannot be called in init().
 			// cf. https://github.com/spf13/cobra/issues/875
 			//     https://github.com/spf13/viper/issues/233
-			if err := globalFlags.Bind(cmd.Root()); err != nil {
+			if err := globalFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
 
@@ -222,7 +257,9 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
@@ -233,6 +270,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "image [flags] IMAGE_NAME",
 		Aliases: []string{"i"},
+		GroupID: groupScanning,
 		Short:   "Scan a container image",
 		Example: `  # Scan a container image
   $ trivy image python:3.4-alpine
@@ -288,16 +326,19 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.Compliance = nil   // disable '--compliance'
-	reportFlagGroup.ExitOnEOSL = nil   // disable '--exit-on-eosl'
+	reportFormat := flag.ReportFormatFlag
+	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFlagGroup.ReportFormat = &reportFormat
+	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
@@ -308,6 +349,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "filesystem [flags] PATH",
 		Aliases: []string{"fs"},
+		GroupID: groupScanning,
 		Short:   "Scan local filesystem",
 		Example: `  # Scan a local project including language-specific files
   $ trivy fs /path/to/your_project
@@ -351,7 +393,9 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
@@ -360,8 +404,9 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "rootfs [flags] ROOTDIR",
-		Short: "Scan rootfs",
+		Use:     "rootfs [flags] ROOTDIR",
+		Short:   "Scan rootfs",
+		GroupID: groupScanning,
 		Example: `  # Scan unpacked filesystem
   $ docker export $(docker create alpine:3.10.2) | tar -C /tmp/rootfs -xvf -
   $ trivy rootfs /tmp/rootfs
@@ -400,13 +445,15 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
-	reportFlagGroup.ExitOnEOSL = nil   // disable '--exit-on-eosl'
+	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
@@ -419,6 +466,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "repository [flags] REPO_URL",
 		Aliases: []string{"repo"},
+		GroupID: groupScanning,
 		Short:   "Scan a remote repository",
 		Example: `  # Scan your remote git repository
   $ trivy repo https://github.com/knqyf263/trivy-ci-test`,
@@ -448,6 +496,47 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
+func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	convertFlags := &flag.Flags{
+		ScanFlagGroup:   &flag.ScanFlagGroup{},
+		ReportFlagGroup: flag.NewReportFlagGroup(),
+	}
+	cmd := &cobra.Command{
+		Use:     "convert [flags] RESULT_JSON",
+		Aliases: []string{"conv"},
+		GroupID: groupUtility,
+		Short:   "Convert Trivy JSON report into a different format",
+		Example: `  # report conversion
+  $ trivy image --format json --output result.json --list-all-pkgs debian:11
+  $ trivy convert --format cyclonedx --output result.cdx result.json
+`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := convertFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := convertFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			opts, err := convertFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+
+			return convert.Run(cmd.Context(), opts)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	convertFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, convertFlags.Usages(cmd)))
+
+	return cmd
+}
+
 // NewClientCommand returns the 'client' subcommand that is deprecated
 func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	remoteFlags := flag.NewClientFlags()
@@ -464,6 +553,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		RemoteFlagGroup:        remoteFlags,
 		ReportFlagGroup:        flag.NewReportFlagGroup(),
@@ -505,14 +595,17 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	serverFlags := &flag.Flags{
-		CacheFlagGroup:  flag.NewCacheFlagGroup(),
-		DBFlagGroup:     flag.NewDBFlagGroup(),
-		RemoteFlagGroup: flag.NewServerFlags(),
+		CacheFlagGroup:    flag.NewCacheFlagGroup(),
+		DBFlagGroup:       flag.NewDBFlagGroup(),
+		ModuleFlagGroup:   flag.NewModuleFlagGroup(),
+		RemoteFlagGroup:   flag.NewServerFlags(),
+		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
 		Use:     "server [flags]",
 		Aliases: []string{"s"},
+		GroupID: groupUtility,
 		Short:   "Server mode",
 		Example: `  # Run a server
   $ trivy server
@@ -546,9 +639,10 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
 	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
-	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
-	reportFlagGroup.Compliance = nil     // disable '--compliance'
-	reportFlagGroup.ExitOnEOSL = nil     // disable '--exit-on-eosl'
+	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
+	reportFormat := flag.ReportFormatFlag
+	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFlagGroup.ReportFormat = &reportFormat
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
@@ -558,16 +652,23 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	configFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RegoFlagGroup:    flag.NewRegoFlagGroup(),
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    scanFlags,
+		CacheFlagGroup:    flag.NewCacheFlagGroup(),
+		MisconfFlagGroup:  flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:   flag.NewModuleFlagGroup(),
+		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
+		RegoFlagGroup:     flag.NewRegoFlagGroup(),
+		K8sFlagGroup: &flag.K8sFlagGroup{
+			// disable unneeded flags
+			K8sVersion: &flag.K8sVersionFlag,
+		},
+		ReportFlagGroup: reportFlagGroup,
+		ScanFlagGroup:   scanFlags,
 	}
 
 	cmd := &cobra.Command{
 		Use:     "config [flags] DIR",
 		Aliases: []string{"conf"},
+		GroupID: groupScanning,
 		Short:   "Scan config files for misconfigurations",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := configFlags.Bind(cmd); err != nil {
@@ -606,6 +707,7 @@ func NewPluginCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "plugin subcommand",
 		Aliases:       []string{"p"},
+		GroupID:       groupManagement,
 		Short:         "Manage plugins",
 		SilenceErrors: true,
 		SilenceUsage:  true,
@@ -704,9 +806,14 @@ func NewPluginCommand() *cobra.Command {
 }
 
 func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	moduleFlags := &flag.Flags{
+		ModuleFlagGroup: flag.NewModuleFlagGroup(),
+	}
+
 	cmd := &cobra.Command{
 		Use:           "module subcommand",
 		Aliases:       []string{"m"},
+		GroupID:       groupManagement,
 		Short:         "Manage modules",
 		SilenceErrors: true,
 		SilenceUsage:  true,
@@ -719,14 +826,23 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"i"},
 			Short:   "Install a module",
 			Args:    cobra.ExactArgs(1),
+			PreRunE: func(cmd *cobra.Command, args []string) error {
+				if err := moduleFlags.Bind(cmd); err != nil {
+					return xerrors.Errorf("flag bind error: %w", err)
+				}
+				return nil
+			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if len(args) != 1 {
 					return cmd.Help()
 				}
 
 				repo := args[0]
-				opts := globalFlags.ToOptions()
-				return module.Install(cmd.Context(), repo, opts.Quiet, opts.Insecure)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				if err != nil {
+					return xerrors.Errorf("flag error: %w", err)
+				}
+				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.RegistryOpts())
 			},
 		},
 		&cobra.Command{
@@ -734,16 +850,27 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"u"},
 			Short:   "Uninstall a module",
 			Args:    cobra.ExactArgs(1),
+			PreRunE: func(cmd *cobra.Command, args []string) error {
+				if err := moduleFlags.Bind(cmd); err != nil {
+					return xerrors.Errorf("flag bind error: %w", err)
+				}
+				return nil
+			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if len(args) != 1 {
 					return cmd.Help()
 				}
 
 				repo := args[0]
-				return module.Uninstall(cmd.Context(), repo)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				if err != nil {
+					return xerrors.Errorf("flag error: %w", err)
+				}
+				return module.Uninstall(cmd.Context(), opts.ModuleDir, repo)
 			},
 		},
 	)
+	moduleFlags.AddFlags(cmd)
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	return cmd
 }
@@ -760,27 +887,32 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	)
 	scanFlags.Scanners = &scanners
 
+	// required only SourceFlag
+	imageFlags := &flag.ImageFlagGroup{ImageSources: &flag.SourceFlag}
+
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s,%s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS)
+	compliance.Usage += fmt.Sprintf(" (%s,%s, %s, %s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS, types.ComplianceK8sPSSBaseline, types.ComplianceK8sPSSRestricted)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOSL = nil         // disable '--exit-on-eosl'
+	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
+		ImageFlagGroup:         imageFlags,
 		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
-		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          scanFlags,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
 		Aliases: []string{"k8s"},
+		GroupID: groupScanning,
 		Short:   "[EXPERIMENTAL] Scan kubernetes cluster",
 		Example: `  # cluster scanning
   $ trivy k8s --report summary cluster
@@ -827,7 +959,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance := flag.ComplianceFlag
 	compliance.Usage += fmt.Sprintf(" (%s, %s)", types.ComplianceAWSCIS12, types.ComplianceAWSCIS14)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOSL = nil         // disable '--exit-on-eosl'
+	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
 	awsFlags := &flag.Flags{
 		AWSFlagGroup:     flag.NewAWSFlagGroup(),
@@ -842,6 +974,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "aws [flags]",
 		Aliases: []string{},
+		GroupID: groupScanning,
 		Args:    cobra.ExactArgs(0),
 		Short:   "[EXPERIMENTAL] Scan AWS account",
 		Long: fmt.Sprintf(`Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
@@ -895,8 +1028,8 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
-		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
@@ -915,6 +1048,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "vm [flags] VM_IMAGE",
 		Aliases: []string{},
+		GroupID: groupScanning,
 		Short:   "[EXPERIMENTAL] Scan a virtual machine image",
 		Example: `  # Scan your AWS AMI
   $ trivy vm --scanners vuln ami:${your_ami_id}
@@ -971,13 +1105,11 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "sbom [flags] SBOM_PATH",
-		Short: "Scan SBOM for vulnerabilities",
+		Use:     "sbom [flags] SBOM_PATH",
+		Short:   "Scan SBOM for vulnerabilities",
+		GroupID: groupScanning,
 		Example: `  # Scan CycloneDX and show the result in tables
   $ trivy sbom /path/to/report.cdx
-
-  # Scan CycloneDX and generate a CycloneDX report
-  $ trivy sbom --format cyclonedx /path/to/report.cdx
 
   # Scan CycloneDX-type attestation and show the result in tables
   $ trivy sbom /path/to/report.cdx.intoto.jsonl
@@ -1015,9 +1147,10 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	var versionFormat string
 	cmd := &cobra.Command{
-		Use:   "version [flags]",
-		Short: "Print the version",
-		Args:  cobra.NoArgs,
+		Use:     "version [flags]",
+		Short:   "Print the version",
+		GroupID: groupUtility,
+		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := globalFlags.ToOptions()
 			showVersion(options.CacheDir, versionFormat, cmd.Version, outputWriter)
@@ -1037,6 +1170,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
 	var dbMeta *metadata.Metadata
+	var javadbMeta *metadata.Metadata
 
 	mc := metadata.NewClient(cacheDir)
 	meta, _ := mc.Get() // nolint: errcheck
@@ -1049,11 +1183,30 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 		}
 	}
 
+	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
+	metaJava, _ := mcJava.Get() // nolint: errcheck
+	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
+		javadbMeta = &metadata.Metadata{
+			Version:      metaJava.Version,
+			NextUpdate:   metaJava.NextUpdate.UTC(),
+			UpdatedAt:    metaJava.UpdatedAt.UTC(),
+			DownloadedAt: metaJava.DownloadedAt.UTC(),
+		}
+	}
+
+	var pbMeta *policy.Metadata
+	pc, err := policy.NewClient(cacheDir, false)
+	if pc != nil && err == nil {
+		pbMeta, _ = pc.GetMetadata()
+	}
+
 	switch outputFormat {
 	case "json":
 		b, _ := json.Marshal(VersionInfo{
 			Version:         version,
 			VulnerabilityDB: dbMeta,
+			JavaDB:          javadbMeta,
+			PolicyBundle:    pbMeta,
 		})
 		fmt.Fprintln(outputWriter, string(b))
 	default:
@@ -1066,6 +1219,22 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
   DownloadedAt: %s
 `, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
 		}
+
+		if javadbMeta != nil {
+			output += fmt.Sprintf(`Java DB:
+  Version: %d
+  UpdatedAt: %s
+  NextUpdate: %s
+  DownloadedAt: %s
+`, javadbMeta.Version, javadbMeta.UpdatedAt.UTC(), javadbMeta.NextUpdate.UTC(), javadbMeta.DownloadedAt.UTC())
+		}
+
+		if pbMeta != nil {
+			output += fmt.Sprintf(`Policy Bundle:
+  Digest: %s
+  DownloadedAt: %s
+`, pbMeta.Digest, pbMeta.DownloadedAt.UTC())
+		}
 		fmt.Fprintf(outputWriter, output)
 	}
 }
@@ -1074,7 +1243,7 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset' and '--generate-default-config' don't conduct the subsequent scanning
 	if viper.GetBool(flag.ClearCacheFlag.ConfigName) || viper.GetBool(flag.DownloadDBOnlyFlag.ConfigName) ||
 		viper.GetBool(flag.ResetFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) ||
-		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) {
+		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) || viper.GetBool(flag.ResetPolicyBundleFlag.ConfigName) {
 		return nil
 	}
 

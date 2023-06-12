@@ -14,6 +14,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -130,6 +131,13 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			}
 		}
 
+		// RPM DB uses MD5 digest
+		// https://rpm-software-management.github.io/rpm/manual/tags.html#signatures-and-digests
+		var d digest.Digest
+		if pkg.SigMD5 != "" {
+			d = digest.NewDigestFromString(digest.MD5, pkg.SigMD5)
+		}
+
 		p := types.Package{
 			ID:              fmt.Sprintf("%s@%s-%s.%s", pkg.Name, pkg.Version, pkg.Release, pkg.Arch),
 			Name:            pkg.Name,
@@ -145,6 +153,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			Licenses:        []string{pkg.License},
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
+			Digest:          d,
 		}
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)

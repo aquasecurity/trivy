@@ -6,6 +6,7 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 )
 
@@ -90,6 +91,9 @@ type Package struct {
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
 
+	// This is required when using SPDX formats. Otherwise, it will be empty.
+	Digest digest.Digest `json:",omitempty"`
+
 	// lines from the lock file where the dependency is written
 	Locations []Location `json:",omitempty"`
 }
@@ -128,6 +132,24 @@ func (pkgs Packages) Less(i, j int) bool {
 		return pkgs[i].Version < pkgs[j].Version
 	}
 	return pkgs[i].FilePath < pkgs[j].FilePath
+}
+
+// ParentDeps returns a map where the keys are package IDs and the values are the packages
+// that depend on the respective package ID (parent dependencies).
+func (pkgs Packages) ParentDeps() map[string]Packages {
+	parents := make(map[string]Packages)
+	for _, pkg := range pkgs {
+		for _, dependOn := range pkg.DependsOn {
+			parents[dependOn] = append(parents[dependOn], pkg)
+		}
+	}
+
+	for k, v := range parents {
+		parents[k] = lo.UniqBy(v, func(pkg Package) string {
+			return pkg.ID
+		})
+	}
+	return parents
 }
 
 type SrcPackage struct {

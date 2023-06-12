@@ -214,8 +214,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      3,
-					Content:     "\"aws_account_ID\":'**************'",
-					Highlighted: "\"aws_account_ID\":'**************'",
+					Content:     "\"aws_account_ID\":'1234-5678-9123'",
+					Highlighted: "\"aws_account_ID\":'1234-5678-9123'",
 				},
 			},
 		},
@@ -402,37 +402,6 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
-	wantFinding10 := types.SecretFinding{
-		RuleID:    "aws-account-id",
-		Category:  secret.CategoryAWS,
-		Title:     "AWS Account ID",
-		Severity:  "HIGH",
-		StartLine: 3,
-		EndLine:   3,
-		Match:     `"aws_account_ID":'**************'`,
-		Code: types.Code{
-			Lines: []types.Line{
-				{
-					Number:      1,
-					Content:     "'AWS_secret_KEY'=\"****************************************\"",
-					Highlighted: "'AWS_secret_KEY'=\"****************************************\"",
-				},
-				{
-					Number:      2,
-					Content:     "AWS_ACCESS_KEY_ID=********************",
-					Highlighted: "AWS_ACCESS_KEY_ID=********************",
-				},
-				{
-					Number:      3,
-					Content:     "\"aws_account_ID\":'**************'",
-					Highlighted: "\"aws_account_ID\":'**************'",
-					IsCause:     true,
-					FirstCause:  true,
-					LastCause:   true,
-				},
-			},
-		},
-	}
 	wantFindingAsymmetricPrivateKeyJson := types.SecretFinding{
 		RuleID:    "private-key",
 		Category:  secret.CategoryAsymmetricPrivateKey,
@@ -527,6 +496,37 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantMultiLine := types.SecretFinding{
+		RuleID:    "multi-line-secret",
+		Category:  "general",
+		Title:     "Generic Rule",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "***************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "123",
+					Highlighted: "123",
+				},
+				{
+					Number:      2,
+					Content:     "***************",
+					Highlighted: "***************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "123",
+					Highlighted: "123",
+				},
+			},
+		},
+	}
 
 	tests := []struct {
 		name          string
@@ -549,11 +549,12 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "aws-secrets.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "aws-secrets.txt"),
-				Findings: []types.SecretFinding{wantFinding5, wantFinding10, wantFinding9},
+				Findings: []types.SecretFinding{wantFinding5, wantFinding9},
 			},
 		},
 		{
 			name:          "find Asymmetric Private Key secrets",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "asymmetric-private-secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "asymmetric-private-secret.txt"),
@@ -562,6 +563,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "find Alibaba AccessKey ID txt",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: "testdata/alibaba-access-key-id.txt",
 			want: types.Secret{
 				FilePath: "testdata/alibaba-access-key-id.txt",
@@ -570,6 +572,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "find Asymmetric Private Key secrets json",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
@@ -610,7 +613,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "should find ghp builtin secret",
-			configPath:    "",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
@@ -673,6 +676,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "skip examples file",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "example-secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "example-secret.txt"),
@@ -716,6 +720,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "truncate long line",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "long-line-secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "long-line-secret.txt"),
@@ -733,16 +738,32 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "invalid aws secrets",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "invalid-aws-secrets.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "asymmetric file",
-			configPath:    "",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: "testdata/asymmetric-private-key.txt",
 			want: types.Secret{
 				FilePath: "testdata/asymmetric-private-key.txt",
 				Findings: []types.SecretFinding{wantFindingAsymmSecretKey},
+			},
+		},
+		{
+			name:          "begin/end line symbols without multi-line mode",
+			configPath:    filepath.Join("testdata", "multi-line-off.yaml"),
+			inputFilePath: "testdata/multi-line.txt",
+			want:          types.Secret{},
+		},
+		{
+			name:          "begin/end line symbols with multi-line mode",
+			configPath:    filepath.Join("testdata", "multi-line-on.yaml"),
+			inputFilePath: "testdata/multi-line.txt",
+			want: types.Secret{
+				FilePath: "testdata/multi-line.txt",
+				Findings: []types.SecretFinding{wantMultiLine},
 			},
 		},
 	}

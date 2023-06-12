@@ -35,6 +35,8 @@ Scanners (what Trivy can find there):
 - Sensitive information and secrets
 - Software licenses
 
+Trivy supports most popular programming languages, operating systems, and platforms. For a complete list, see the [Scanning Coverage] page.
+
 To learn more, go to the [Trivy homepage][homepage] for feature highlights, or to the [Documentation site][Docs] for detailed information.
 
 ## Quick Start
@@ -108,13 +110,6 @@ trivy k8s --report summary cluster
 </figure>
 
 </details>
-
-## FAQ
-
-### How to pronounce the name "Trivy"?
-
-`tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
-
 ---
 
 Trivy is an [Aqua Security][aquasec] open source project.  
@@ -124,6 +119,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [Ecosystem]: ./ecosystem/index.md
 [Installation]: getting-started/installation.md
 [pronunciation]: #how-to-pronounce-the-name-trivy
+[Scanning Coverage]: getting-started/coverage.md
 
 [aquasec]: https://aquasec.com
 [oss]: https://www.aquasec.com/products/open-source-projects/

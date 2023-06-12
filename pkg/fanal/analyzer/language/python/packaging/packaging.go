@@ -6,7 +6,6 @@ import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -63,12 +62,7 @@ func (a packagingAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	}
 
 	p := packaging.NewParser()
-	libs, deps, err := p.Parse(r)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to parse %s: %w", input.FilePath, err)
-	}
-
-	return language.ToAnalysisResult(types.PythonPkg, input.FilePath, input.FilePath, libs, deps), nil
+	return language.AnalyzePackage(types.PythonPkg, input.FilePath, r, p, input.Options.FileChecksum)
 }
 
 func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSeekerAt, error) {
@@ -104,9 +98,6 @@ func (a packagingAnalyzer) open(file *zip.File) (dio.ReadSeekerAt, error) {
 }
 
 func (a packagingAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	// For Windows
-	filePath = filepath.ToSlash(filePath)
-
 	for _, r := range requiredFiles {
 		if strings.HasSuffix(filePath, r) {
 			return true

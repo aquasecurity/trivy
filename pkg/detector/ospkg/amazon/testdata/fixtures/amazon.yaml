@@ -19,3 +19,10 @@
         - key: CVE-2021-44228
           value:
             FixedVersion: "2.15.0-1.amzn2022.0.1"
+- bucket: amazon linux 2023
+  pairs:
+    - bucket: protobuf
+      pairs:
+        - key: CVE-2022-1941
+          value:
+            FixedVersion: "3.19.6-1.amzn2023.0.1"

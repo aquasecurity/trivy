@@ -1,0 +1,86 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "2023-05-31T04:56:43Z",
+    "creators": [
+      "Tool: trivy-dev",
+      "Organization: aquasecurity"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentDescribes": [
+    "SPDXRef-Filesystem-13b142ca391a006e"
+  ],
+  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/app-ab9e166e-7229-4d03-947e-8ffc9c60cf6f",
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-51bb5f929ef68877",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "69e70ec702f9df4ff64024b5fdea4644f1ce6c97"
+        }
+      ],
+      "fileName": "node_modules/yargs-parser/package.json"
+    }
+  ],
+  "name": "app",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Application-24f8a80152e2c0fc",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "name": "node-pkg",
+      "sourceInfo": "Node.js"
+    },
+    {
+      "SPDXID": "SPDXRef-Filesystem-13b142ca391a006e",
+      "attributionTexts": [
+        "SchemaVersion: 2"
+      ],
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "name": "app"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-c3508825bf3861d8",
+      "attributionTexts": [
+        "PkgID: yargs-parser@21.1.1"
+      ],
+      "downloadLocation": "NONE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:npm/yargs-parser@21.1.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "hasFiles": [
+        "SPDXRef-File-51bb5f929ef68877"
+      ],
+      "licenseConcluded": "ISC",
+      "licenseDeclared": "ISC",
+      "name": "yargs-parser",
+      "versionInfo": "21.1.1"
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-Filesystem-13b142ca391a006e",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Application-24f8a80152e2c0fc",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-Filesystem-13b142ca391a006e"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-c3508825bf3861d8",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-Application-24f8a80152e2c0fc"
+    }
+  ],
+  "spdxVersion": "SPDX-2.2"
+}

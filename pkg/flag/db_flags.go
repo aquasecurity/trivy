@@ -30,7 +30,7 @@ var (
 		Aliases: []Alias{
 			{
 				Name:       "skip-update",
-				Deprecated: true, // --security-update was renamed to --skip-db-update
+				Deprecated: true, // --skip-update was renamed to --skip-db-update
 			},
 		},
 	}

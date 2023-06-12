@@ -30,7 +30,7 @@
               "StartLine": 2,
               "EndLine": 2
             }
-         ]
+          ]
         },
         {
           "ID": "jason@1.4.0",
@@ -42,7 +42,7 @@
               "StartLine": 3,
               "EndLine": 3
             }
-         ]
+          ]
         },
         {
           "ID": "phoenix@1.6.13",
@@ -54,7 +54,7 @@
               "StartLine": 4,
               "EndLine": 4
             }
-         ]
+          ]
         },
         {
           "ID": "phoenix_html@3.2.0",
@@ -66,7 +66,7 @@
               "StartLine": 5,
               "EndLine": 5
             }
-         ]
+          ]
         },
         {
           "ID": "phoenix_pubsub@2.1.1",
@@ -78,7 +78,7 @@
               "StartLine": 6,
               "EndLine": 6
             }
-         ]
+          ]
         },
         {
           "ID": "phoenix_template@1.0.0",
@@ -90,7 +90,7 @@
               "StartLine": 7,
               "EndLine": 7
             }
-         ]
+          ]
         },
         {
           "ID": "phoenix_view@2.0.1",
@@ -102,7 +102,7 @@
               "StartLine": 8,
               "EndLine": 8
             }
-         ]
+          ]
         },
         {
           "ID": "plug@1.14.0",
@@ -114,7 +114,7 @@
               "StartLine": 9,
               "EndLine": 9
             }
-         ]
+          ]
         },
         {
           "ID": "plug_crypto@1.2.3",
@@ -126,7 +126,7 @@
               "StartLine": 10,
               "EndLine": 10
             }
-         ]
+          ]
         },
         {
           "ID": "telemetry@1.1.0",
@@ -138,14 +138,14 @@
               "StartLine": 11,
               "EndLine": 11
             }
-         ]
+          ]
         }
       ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2022-42975",
-          "PkgName": "phoenix",
           "PkgID": "phoenix@1.6.13",
+          "PkgName": "phoenix",
           "InstalledVersion": "1.6.13",
           "FixedVersion": "1.6.14",
           "Layer": {},

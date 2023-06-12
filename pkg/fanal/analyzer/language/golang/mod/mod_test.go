@@ -2,7 +2,7 @@ package mod
 
 import (
 	"context"
-	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,32 +11,42 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 func Test_gomodAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		filePath  string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name  string
+		files []string
+		want  *analyzer.AnalysisResult
 	}{
 		{
-			name:      "go.mod",
-			filePath:  "testdata/go.mod",
-			inputFile: "testdata/normal_go.mod",
+			name: "happy",
+			files: []string{
+				"testdata/happy/mod",
+				"testdata/happy/sum",
+			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.GoModule,
-						FilePath: "testdata/go.mod",
+						FilePath: "go.mod",
 						Libraries: []types.Package{
 							{
+								ID:      "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
 								Name:    "github.com/aquasecurity/go-dep-parser",
 								Version: "0.0.0-20220406074731-71021a481237",
+								Licenses: []string{
+									"MIT",
+								},
+								DependsOn: []string{
+									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								},
 							},
 							{
-								Name: "golang.org/x/xerrors", Version: "0.0.0-20200804184101-5ec99f83aff1",
+								ID:       "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+								Name:     "golang.org/x/xerrors",
+								Version:  "0.0.0-20200804184101-5ec99f83aff1",
 								Indirect: true,
 							},
 						},
@@ -45,65 +55,113 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "go.sum",
-			filePath:  "testdata/go.sum",
-			inputFile: "testdata/normal_go.sum",
+			name: "wrong go.mod from `pkg`",
+			files: []string{
+				"testdata/wrong-gomod-in-pkg/mod",
+			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.GoModule,
-						FilePath: "testdata/go.sum",
+						FilePath: "go.mod",
 						Libraries: []types.Package{
-							{Name: "github.com/BurntSushi/toml", Version: "0.3.1"},
-							{Name: "github.com/cpuguy83/go-md2man/v2", Version: "2.0.0-20190314233015-f79a8a8ca69d"},
-							{Name: "github.com/davecgh/go-spew", Version: "1.1.0"},
-							{Name: "github.com/pmezard/go-difflib", Version: "1.0.0"},
-							{Name: "github.com/russross/blackfriday/v2", Version: "2.0.1"},
-							{Name: "github.com/shurcooL/sanitized_anchor_name", Version: "1.0.0"},
-							{Name: "github.com/stretchr/objx", Version: "0.1.0"},
-							{Name: "github.com/stretchr/testify", Version: "1.7.0"},
-							{Name: "github.com/urfave/cli", Version: "1.22.5"},
-							{Name: "golang.org/x/xerrors", Version: "0.0.0-20200804184101-5ec99f83aff1"},
-							{Name: "gopkg.in/check.v1", Version: "0.0.0-20161208181325-20d25e280405"},
-							{Name: "gopkg.in/yaml.v2", Version: "2.2.2"},
-							{Name: "gopkg.in/yaml.v3", Version: "3.0.0-20200313102051-9f266ea9e77c"},
+							{
+								ID:      "github.com/sad/sad@v0.0.1",
+								Name:    "github.com/sad/sad",
+								Version: "0.0.1",
+							},
 						},
 					},
 				},
 			},
 		},
 		{
-			name:      "sad go.mod",
-			filePath:  "testdata/go.mod",
-			inputFile: "testdata/sad_go.mod",
-			wantErr:   "unknown directive",
+			name: "less than 1.17",
+			files: []string{
+				"testdata/merge/mod",
+				"testdata/merge/sum",
+			},
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "go.mod",
+						Libraries: []types.Package{
+							{
+								ID:      "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
+								Name:    "github.com/aquasecurity/go-dep-parser",
+								Version: "0.0.0-20230219131432-590b1dfb6edd",
+								DependsOn: []string{
+									"github.com/BurntSushi/toml@v0.3.1",
+								},
+							},
+							{
+								ID:       "github.com/BurntSushi/toml@v0.3.1",
+								Name:     "github.com/BurntSushi/toml",
+								Version:  "0.3.1",
+								Indirect: true,
+								Licenses: []string{
+									"MIT",
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 		{
-			name:      "sad go.sum",
-			filePath:  "testdata/go.sum",
-			inputFile: "testdata/sad_go.sum",
-			want:      nil,
+			name: "no go.sum",
+			files: []string{
+				"testdata/merge/mod",
+			},
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "go.mod",
+						Libraries: []types.Package{
+							{
+								ID:        "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
+								Name:      "github.com/aquasecurity/go-dep-parser",
+								Version:   "0.0.0-20230219131432-590b1dfb6edd",
+								DependsOn: []string{},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "sad go.mod",
+			files: []string{
+				"testdata/sad/mod",
+			},
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
+		t.Setenv("GOPATH", "testdata")
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
+			a, err := newGoModAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
-			defer f.Close()
 
-			a := gomodAnalyzer{}
-			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: tt.filePath,
-				Content:  f,
-			})
-
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
+			mfs := mapfs.New()
+			for _, file := range tt.files {
+				// Since broken go.mod files bothers IDE, we should use other file names than "go.mod" and "go.sum".
+				if filepath.Base(file) == "mod" {
+					require.NoError(t, mfs.WriteFile("go.mod", file))
+				} else if filepath.Base(file) == "sum" {
+					require.NoError(t, mfs.WriteFile("go.sum", file))
+				}
 			}
-			if got != nil {
+
+			ctx := context.Background()
+			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
+				FS: mfs,
+			})
+			assert.NoError(t, err)
+
+			if len(got.Applications) > 0 {
 				slices.SortFunc(got.Applications[0].Libraries, func(a, b types.Package) bool {
 					return a.Name < b.Name
 				})
