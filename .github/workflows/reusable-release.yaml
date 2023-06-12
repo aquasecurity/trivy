@@ -12,9 +12,6 @@ on:
         required: false
         type: string
 
-env:
-  GH_USER: "aqua-bot"
-
 jobs:
   release:
     name: Release
@@ -49,7 +46,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ env.GH_USER }}
+          username: ${{ vars.GH_PUSHER }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to ECR
@@ -87,8 +84,8 @@ jobs:
           version: v1.16.2
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
-          GH_USER: ${{ env.GH_USER }}
-          AWS_USER: ${{ env.AWS_ALIAS }}
+          GH_USER: ${{ vars.GHCR_USER }}
+          AWS_USER: ${{ vars.AWS_ALIAS }}
           DOCKER_USER: ${{ secrets.DOCKERHUB_USER }}
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
@@ -111,7 +108,7 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USER }}/trivy:canary
-            ghcr.io/${{ env.GH_USER }}/trivy:canary
+            ghcr.io/${{ vars.GHCR_USER }}/trivy:canary
             public.ecr.aws/${{ env.AWS_ALIAS }}/trivy:canary
 
       - name: Cache Trivy binaries
