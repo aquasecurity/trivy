@@ -1,12 +1,11 @@
-name: license
+name: license/cla
 on:
   merge_group:
 
-# This workflow is used to bypass the required status checks.
+# This workflow is used to bypass the required status checks in merge queue.
 # cf. https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/troubleshooting-required-status-checks
 jobs:
-  build:
-    name: cla
+  cla:
     runs-on: ubuntu-latest
     steps:
       - run: 'echo "No test required"'
