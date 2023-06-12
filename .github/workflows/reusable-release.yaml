@@ -24,7 +24,7 @@ jobs:
       contents: read  # Not required for public repositories, but for clarity
     steps:
       - name: Cosign install
-        uses: sigstore/cosign-installer@204a51a57a74d190b284a0ce69b44bc37201f343
+        uses: sigstore/cosign-installer@ef0e9691595ea19ec990a46b1a591dcafe568f34
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -67,7 +67,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Generate SBOM
-        uses: CycloneDX/gh-gomod-generate-sbom@v1
+        uses: CycloneDX/gh-gomod-generate-sbom@v2
         with:
           args: mod -licenses -json -output bom.json
           version: ^v1
