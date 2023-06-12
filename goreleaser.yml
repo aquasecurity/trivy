@@ -1,6 +1,38 @@
 project_name: trivy
 builds:
-  -
+  - id: build-linux
+    main: cmd/trivy/main.go
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - s390x
+      - ppc64le
+    goarm:
+      - 7
+  - id: build-bsd
+    main: cmd/trivy/main.go
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - freebsd
+    goarch:
+      # modernc.org/sqlite doesn't support freebsd/arm64, etc.
+      - amd64
+  - id: build-macos
     main: cmd/trivy/main.go
     binary: trivy
     ldflags:
@@ -11,31 +43,26 @@ builds:
       - CGO_ENABLED=0
     goos:
       - darwin
-      - linux
-      - freebsd
+    goarch:
+      - amd64
+      - arm64
+    goarm:
+      - 7
+  - id: build-windows
+    main: cmd/trivy/main.go
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
       - windows
     goarch:
       - amd64
-      - arm
-      - arm64
-      - s390x
-      - ppc64le
     goarm:
       - 7
-    ignore:
-      # modernc.org/sqlite doesn't support the following pairs
-      - goos: freebsd
-        goarch: arm
-      - goos: freebsd
-        goarch: arm64
-      - goos: windows
-        goarch: arm
-      - goos: windows
-        goarch: arm64
-      - goos: windows
-        goarch: s390x
-      - goos: windows
-        goarch: ppc64le
 
 release:
     extra_files:
@@ -73,7 +100,7 @@ nfpms:
          key_file: '{{ .Env.GPG_FILE }}'
 
 archives:
-  -
+  - id: archive
     format: tar.gz
     name_template: >-
       {{ .ProjectName }}_{{ .Version }}_
