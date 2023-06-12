@@ -70,7 +70,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Generate SBOM
-        uses: CycloneDX/gh-gomod-generate-sbom@v1
+        uses: CycloneDX/gh-gomod-generate-sbom@v2
         with:
           args: mod -licenses -json -output bom.json
           version: ^v1
