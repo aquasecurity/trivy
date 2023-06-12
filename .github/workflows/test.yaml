@@ -156,7 +156,7 @@ jobs:
         version: v1.16.2
         args: release --skip-sign --snapshot --clean --skip-publish --timeout 90m
       env:
-        AWS_USER: "aws-tester"
-        DOCKER_USER: "docker-tester"
-        GH_USER: ${{ github.repository_owner }}
+        GH_USER: ${{ env.GH_USER }}
+        AWS_USER: ${{ env.AWS_ALIAS }}
+        DOCKER_USER: ${{ secrets.DOCKERHUB_USER }}
         GPG_FILE: "nogpg.key"
