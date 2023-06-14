@@ -3,6 +3,7 @@ package remote
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"net"
 	"net/http"
 	"time"
@@ -26,7 +27,16 @@ type Descriptor = remote.Descriptor
 // Get is a wrapper of google/go-containerregistry/pkg/v1/remote.Get
 // so that it can try multiple authentication methods.
 func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
-	transport := httpTransport(option.Insecure)
+	var transport *http.Transport
+	if len(option.ClientCert) != 0 && len(option.ClientKey) != 0 {
+		var err error
+		transport, err = httpTransportWithMtls(option.Insecure, option.ClientCert, option.ClientKey)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		transport = httpTransport(option.Insecure)
+	}
 
 	var errs error
 	// Try each authentication method until it succeeds
@@ -122,6 +132,20 @@ func httpTransport(insecure bool) *http.Transport {
 	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure}
 
 	return tr
+}
+
+func httpTransportWithMtls(insecure bool, clientCert []byte, clientKey []byte) (*http.Transport, error) {
+	tr := httpTransport(insecure)
+	caCertPool, err := x509.SystemCertPool()
+	cert, err := tls.X509KeyPair(clientCert, clientKey)
+	if err != nil {
+		return nil, err
+	}
+	tr.TLSClientConfig = &tls.Config{
+		RootCAs:      caCertPool,
+		Certificates: []tls.Certificate{cert},
+	}
+	return tr, nil
 }
 
 func authOptions(ctx context.Context, ref name.Reference, option types.RegistryOptions) []remote.Option {
