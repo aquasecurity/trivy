@@ -95,7 +95,17 @@ func (p pom) listProperties(val reflect.Value) map[string]string {
 }
 
 func (p pom) artifact() artifact {
-	return newArtifact(p.content.GroupId, p.content.ArtifactId, p.content.Version, p.content.Properties)
+	return newArtifact(p.content.GroupId, p.content.ArtifactId, p.content.Version, p.joinLicenses(), p.content.Properties)
+}
+
+func (p pom) joinLicenses() string {
+	var licenses []string
+	for _, license := range p.content.Licenses.License {
+		if license.Name != "" {
+			licenses = append(licenses, license.Name)
+		}
+	}
+	return strings.Join(licenses, ", ")
 }
 
 func (p pom) repositories() []string {
@@ -113,7 +123,12 @@ type pomXML struct {
 	GroupId    string    `xml:"groupId"`
 	ArtifactId string    `xml:"artifactId"`
 	Version    string    `xml:"version"`
-	Modules    struct {
+	Licenses   struct {
+		License []struct {
+			Name string `xml:"name"`
+		} `xml:"license"`
+	} `xml:"licenses"`
+	Modules struct {
 		Text   string   `xml:",chardata"`
 		Module []string `xml:"module"`
 	} `xml:"modules"`

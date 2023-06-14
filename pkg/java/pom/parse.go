@@ -114,7 +114,7 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		libs              []types.Library
 		deps              []types.Dependency
 		rootDepManagement []pomDependency
-		uniqArtifacts     = map[string]version{}
+		uniqArtifacts     = map[string]artifact{}
 	)
 
 	// Iterate direct and transitive dependencies
@@ -136,8 +136,8 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		}
 
 		// For soft requirements, skip dependency resolution that has already been resolved.
-		if v, ok := uniqArtifacts[art.Name()]; ok {
-			if !v.shouldOverride(art.Version) {
+		if uniqueArt, ok := uniqArtifacts[art.Name()]; ok {
+			if !uniqueArt.Version.shouldOverride(art.Version) {
 				continue
 			}
 		}
@@ -169,15 +169,19 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		// Offline mode may be missing some fields.
 		if !art.IsEmpty() {
 			// Override the version
-			uniqArtifacts[art.Name()] = art.Version
+			uniqArtifacts[art.Name()] = artifact{
+				Version: art.Version,
+				License: art.License,
+			}
 		}
 	}
 
 	// Convert to []types.Library
-	for name, ver := range uniqArtifacts {
+	for name, art := range uniqArtifacts {
 		libs = append(libs, types.Library{
 			Name:    name,
-			Version: ver.String(),
+			Version: art.Version.String(),
+			License: art.License,
 		})
 	}
 
@@ -336,7 +340,7 @@ func (p *parser) resolveDepManagement(props map[string]string, depManagement []p
 	// Managed dependencies with a scope of "import" should be processed after other managed dependencies.
 	// cf. https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies
 	for _, imp := range imports {
-		art := newArtifact(imp.GroupID, imp.ArtifactID, imp.Version, props)
+		art := newArtifact(imp.GroupID, imp.ArtifactID, imp.Version, "", props)
 		result, err := p.resolve(art, nil)
 		if err != nil {
 			continue
@@ -386,7 +390,7 @@ func excludeDep(exclusions map[string]struct{}, art artifact) bool {
 
 func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResult, error) {
 	// Pass nil properties so that variables in <parent> are not evaluated.
-	target := newArtifact(parent.GroupId, parent.ArtifactId, parent.Version, nil)
+	target := newArtifact(parent.GroupId, parent.ArtifactId, parent.Version, "", nil)
 	if target.IsEmpty() {
 		return analysisResult{}, nil
 	}
