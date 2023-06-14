@@ -8,7 +8,7 @@ Trivy can generate the following SBOM formats.
 - [SPDX](#spdx)
 
 ### CLI commands
-To generate SBOM, you can use the `--format` option for each subcommand such as `image`, `fs`, `vm` and `k8s`(support cyclonedx format only).
+To generate SBOM, you can use the `--format` option for each subcommand such as `image`, `fs` and `vm`.
 
 ```
 $ trivy image --format spdx-json --output result.json alpine:3.15
