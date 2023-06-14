@@ -203,10 +203,6 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 		return packageurl.PackageURL{}, xerrors.Errorf("failed to parse digest: %w", err)
 	}
 
-	return OciPurl(digest, metadata.ImageConfig.Architecture), nil
-}
-
-func OciPurl(digest cn.Digest, arch string) packageurl.PackageURL {
 	name := strings.ToLower(digest.RepositoryStr())
 	index := strings.LastIndex(name, "/")
 	if index != -1 {
@@ -219,11 +215,11 @@ func OciPurl(digest cn.Digest, arch string) packageurl.PackageURL {
 		},
 		packageurl.Qualifier{
 			Key:   "arch",
-			Value: arch,
+			Value: metadata.ImageConfig.Architecture,
 		},
 	}
 
-	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, "")
+	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 }
 
 func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
