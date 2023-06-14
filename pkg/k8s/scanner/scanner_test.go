@@ -13,6 +13,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 
+	cyc "github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 
 	"github.com/stretchr/testify/assert"
@@ -102,8 +103,8 @@ func TestK8sClusterInfoReport(t *testing.T) {
 									},
 								},
 								Properties: map[string]string{
-									"PkgID":   "k8s.gcr.io/kube-apiserver:1.21.1",
-									"PkgType": "oci",
+									cyc.PropertyPkgID:   "k8s.gcr.io/kube-apiserver:1.21.1",
+									cyc.PropertyPkgType: "oci",
 								},
 							},
 						},
@@ -157,7 +158,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										Name:    "containerd",
 										Version: "1.5.2",
 										Properties: map[string]string{
-											"PkgType": "golang",
+											cyc.PropertyPkgType: "golang",
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{

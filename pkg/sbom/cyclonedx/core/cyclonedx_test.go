@@ -24,7 +24,7 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 		want          *cdx.BOM
 	}{
 		{
-			name: "marshal kbom",
+			name: "marshal CoreComponent",
 			rootComponent: &core.Component{
 				Type: cdx.ComponentTypeContainer,
 				Name: "test-cluster",

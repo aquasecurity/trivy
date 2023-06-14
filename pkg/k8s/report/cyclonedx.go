@@ -14,6 +14,7 @@ type CycloneDXWriter struct {
 	marshaler *core.CycloneDX
 }
 
+// NewCycloneDXWriter constract new CycloneDXWriter
 func NewCycloneDXWriter(output io.Writer, format cdx.BOMFileFormat, appVersion string, opts ...core.Option) CycloneDXWriter {
 	encoder := cdx.NewBOMEncoder(output, format)
 	encoder.SetPretty(true)
