@@ -15,31 +15,23 @@ import (
 )
 
 type PackageResolution struct {
-	Integrity string `yaml:"integrity"`
-	Tarball   string `yaml:"tarball,omitempty"`
+	Tarball string `yaml:"tarball,omitempty"`
 }
 
 type PackageInfo struct {
-	Resolution           PackageResolution `yaml:"resolution"`
-	Engines              map[string]string `yaml:"engines,omitempty"`
-	Specifiers           map[string]string `yaml:"specifiers,omitempty"`
-	Dependencies         map[string]string `yaml:"dependencies,omitempty"`
-	OptionalDependencies map[string]string `yaml:"optionalDependencies,omitempty"`
-	DevDependencies      map[string]string `yaml:"devDependencies,omitempty"`
-	IsDev                bool              `yaml:"dev,omitempty"`
-	IsOptional           bool              `yaml:"optional,omitempty"`
-	Name                 string            `yaml:"name,omitempty"`
-	Version              string            `yaml:"version,omitempty"`
+	Resolution      PackageResolution `yaml:"resolution"`
+	Dependencies    map[string]string `yaml:"dependencies,omitempty"`
+	DevDependencies map[string]string `yaml:"devDependencies,omitempty"`
+	IsDev           bool              `yaml:"dev,omitempty"`
+	Name            string            `yaml:"name,omitempty"`
+	Version         string            `yaml:"version,omitempty"`
 }
 
 type LockFile struct {
-	LockfileVersion      any                    `yaml:"lockfileVersion"`
-	Importers            map[string]PackageInfo `yaml:"importers,omitempty"`
-	Specifiers           map[string]string      `yaml:"specifiers,omitempty"`
-	Dependencies         map[string]any         `yaml:"dependencies,omitempty"`
-	OptionalDependencies map[string]string      `yaml:"optionalDependencies,omitempty"`
-	DevDependencies      map[string]any         `yaml:"devDependencies,omitempty"`
-	Packages             map[string]PackageInfo `yaml:"packages,omitempty"`
+	LockfileVersion any                    `yaml:"lockfileVersion"`
+	Dependencies    map[string]any         `yaml:"dependencies,omitempty"`
+	DevDependencies map[string]any         `yaml:"devDependencies,omitempty"`
+	Packages        map[string]PackageInfo `yaml:"packages,omitempty"`
 }
 
 type Parser struct{}
