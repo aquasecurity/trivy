@@ -7,7 +7,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -29,14 +28,6 @@ func NewWriter(output io.Writer, appVersion string) Writer {
 // Write writes the results in CycloneDX format
 func (w Writer) Write(report types.Report) error {
 	bom, err := w.marshaler.Marshal(report)
-	if err != nil {
-		return xerrors.Errorf("CycloneDX marshal error: %w", err)
-	}
-	return w.encodeBom(bom)
-}
-
-func (w Writer) WriteCoreComponents(component *core.Component) error {
-	bom, err := w.marshaler.MarshalCoreComponent(component)
 	if err != nil {
 		return xerrors.Errorf("CycloneDX marshal error: %w", err)
 	}

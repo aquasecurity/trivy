@@ -8,23 +8,25 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/Masterminds/semver"
 	ms "github.com/mitchellh/mapstructure"
 	"github.com/package-url/packageurl-go"
 
+	"github.com/aquasecurity/go-version/pkg/version"
+
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	cn "github.com/google/go-containerregistry/pkg/name"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/bom"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/digest"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	rep "github.com/aquasecurity/trivy/pkg/report"
+	cyc "github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -197,21 +199,25 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 				if strings.Index(c.Digest, string(digest.SHA256)) == -1 {
 					cDigest = fmt.Sprintf("%s:%s", string(digest.SHA256), cDigest)
 				}
-				imageDigest, err := cn.NewDigest(fmt.Sprintf("%s@%s", name, cDigest))
-				if err != nil {
-					return nil, xerrors.Errorf("failed to parse digest: %w", err)
-				}
-				imagePurl := purl.PackageURL{PackageURL: purl.OciPurl(imageDigest, "")}
 				version := sanitizedVersion(c.Version)
 
+				imagePURL, err := purl.NewPackageURL(purl.TypeOCI, types.Metadata{
+					RepoDigests: []string{
+						fmt.Sprintf("%s@%s", name, cDigest),
+					},
+				}, ftypes.Package{})
+
+				if err != nil {
+					return nil, xerrors.Errorf("failed to create PURL: %w", err)
+				}
 				imageComponents = append(imageComponents, &core.Component{
-					PackageURL: &imagePurl,
+					PackageURL: &imagePURL,
 					Type:       cdx.ComponentTypeContainer,
 					Name:       name,
 					Version:    cDigest,
 					Properties: map[string]string{
-						"PkgID":   fmt.Sprintf("%s:%s", name, version),
-						"PkgType": oci,
+						cyc.PropertyPkgID:   fmt.Sprintf("%s:%s", name, version),
+						cyc.PropertyPkgType: oci,
 					},
 				})
 			}
@@ -228,8 +234,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 			if err != nil {
 				return nil, err
 			}
-			nodeComponent := nodeComponent(nf)
-			coreComponents = append(coreComponents, nodeComponent)
+			coreComponents = append(coreComponents, nodeComponent(nf))
 		default:
 			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
 		}
@@ -243,7 +248,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 }
 
 func sanitizedVersion(version string) string {
-	return strings.Replace(version, "v", "", -1)
+	return strings.TrimPrefix(version, "v")
 }
 
 func osNameVersion(name string) (string, string) {
@@ -252,7 +257,7 @@ func osNameVersion(name string) (string, string) {
 	var err error
 	parts := strings.Split(name, " ")
 	for _, p := range parts {
-		_, err = semver.NewVersion(p)
+		_, err = version.Parse(p)
 		if err != nil {
 			buffer.WriteString(p + " ")
 			continue
@@ -302,15 +307,10 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Name:    kubelet,
 						Version: kubeletVersion,
 						Properties: map[string]string{
-							"PkgType": golang,
+							cyc.PropertyPkgType: golang,
 						},
 						PackageURL: &purl.PackageURL{
-							PackageURL: packageurl.PackageURL{
-								Type:       golang,
-								Name:       kubelet,
-								Version:    kubeletVersion,
-								Qualifiers: packageurl.Qualifiers{},
-							},
+							PackageURL: *packageurl.NewPackageURL(golang, "", kubelet, kubeletVersion, packageurl.Qualifiers{}, ""),
 						},
 					},
 					{
@@ -318,15 +318,10 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Name:    runtimeName,
 						Version: runtimeVersion,
 						Properties: map[string]string{
-							"PkgType": golang,
+							cyc.PropertyPkgType: golang,
 						},
 						PackageURL: &purl.PackageURL{
-							PackageURL: packageurl.PackageURL{
-								Type:       golang,
-								Name:       runtimeName,
-								Version:    runtimeVersion,
-								Qualifiers: packageurl.Qualifiers{},
-							},
+							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
 						},
 					},
 				},

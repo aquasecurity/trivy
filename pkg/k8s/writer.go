@@ -5,8 +5,9 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 
+	cdx "github.com/CycloneDX/cyclonedx-go"
+
 	rp "github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 )
 
@@ -48,8 +49,8 @@ func Write(k8sreport report.Report, option report.Option) error {
 
 		return nil
 	case rp.FormatCycloneDX:
-		w := cyclonedx.NewWriter(option.Output, option.APIVersion)
-		return w.WriteCoreComponents(k8sreport.RootComponent)
+		w := report.NewCycloneDXWriter(option.Output, cdx.BOMFileFormatJSON, option.APIVersion)
+		return w.Write(k8sreport.RootComponent)
 	}
 	return nil
 }

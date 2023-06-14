@@ -67,10 +67,6 @@ func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 	return e.core.Marshal(root), nil
 }
 
-func (e *Marshaler) MarshalCoreComponent(component *core.Component) (*cdx.BOM, error) {
-	return e.core.Marshal(component), nil
-}
-
 func (e *Marshaler) MarshalReport(r types.Report) (*core.Component, error) {
 	// Metadata component
 	root, err := e.rootComponent(r)

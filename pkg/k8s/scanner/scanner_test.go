@@ -190,15 +190,11 @@ func TestK8sClusterInfoReport(t *testing.T) {
 	}
 }
 
-type coreComponents []*core.Component
-
-func (a coreComponents) Len() int           { return len(a) }
-func (a coreComponents) Less(i, j int) bool { return a[i].Name < a[j].Name }
-func (a coreComponents) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-
 func sortNodeComponents(component *core.Component) {
 	nodeComp := findComponentByName(component, "node-core-components")
-	sort.Sort(coreComponents(nodeComp.Components))
+	sort.Slice(nodeComp.Components, func(i, j int) bool {
+		return nodeComp.Components[i].Name < nodeComp.Components[j].Name
+	})
 }
 
 func findComponentByName(component *core.Component, compName string) *core.Component {
@@ -210,4 +206,40 @@ func findComponentByName(component *core.Component, compName string) *core.Compo
 		fComp = findComponentByName(comp, compName)
 	}
 	return fComp
+}
+
+func TestTestOsNameVersion(t *testing.T) {
+	tests := []struct {
+		name        string
+		nameVersion string
+		compName    string
+		compVersion string
+	}{
+
+		{
+			name:        "valid version",
+			nameVersion: "ubuntu 20.04",
+			compName:    "ubuntu",
+			compVersion: "20.04",
+		},
+		{
+			name:        "valid sem version",
+			nameVersion: "ubuntu 20.04.1",
+			compName:    "ubuntu",
+			compVersion: "20.04.1",
+		},
+		{
+			name:        "non valid version",
+			nameVersion: "ubuntu",
+			compName:    "ubuntu",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			name, version := osNameVersion(tt.nameVersion)
+			assert.Equal(t, name, tt.compName)
+			assert.Equal(t, version, tt.compVersion)
+		})
+	}
 }
