@@ -113,7 +113,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -353,7 +353,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -554,7 +554,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -652,7 +652,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -748,7 +748,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -811,7 +811,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
