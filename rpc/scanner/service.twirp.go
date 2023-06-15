@@ -6,7 +6,7 @@ package scanner
 import context "context"
 import fmt "fmt"
 import http "net/http"
-import ioutil "io/ioutil"
+import io "io"
 import json "encoding/json"
 import strconv "strconv"
 import strings "strings"
@@ -437,7 +437,7 @@ func (s *scannerServer) serveScanProtobuf(ctx context.Context, resp http.Respons
 		return
 	}
 
-	buf, err := ioutil.ReadAll(req.Body)
+	buf, err := io.ReadAll(req.Body)
 	if err != nil {
 		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
 		return
@@ -756,7 +756,7 @@ func errorFromResponse(resp *http.Response) twirp.Error {
 		return twirpErrorFromIntermediary(statusCode, msg, location)
 	}
 
-	respBodyBytes, err := ioutil.ReadAll(resp.Body)
+	respBodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return wrapInternal(err, "failed to read server error response body")
 	}
@@ -962,7 +962,7 @@ func doProtobufRequest(ctx context.Context, client HTTPClient, hooks *twirp.Clie
 		return ctx, errorFromResponse(resp)
 	}
 
-	respBodyBytes, err := ioutil.ReadAll(resp.Body)
+	respBodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return ctx, wrapInternal(err, "failed to read response body")
 	}

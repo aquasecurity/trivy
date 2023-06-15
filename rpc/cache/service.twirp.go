@@ -3,26 +3,40 @@
 
 package cache
 
-import context "context"
-import fmt "fmt"
-import http "net/http"
-import ioutil "io/ioutil"
-import json "encoding/json"
-import strconv "strconv"
-import strings "strings"
+import (
+	context "context"
+	fmt "fmt"
 
-import protojson "google.golang.org/protobuf/encoding/protojson"
-import proto "google.golang.org/protobuf/proto"
-import twirp "github.com/twitchtv/twirp"
-import ctxsetters "github.com/twitchtv/twirp/ctxsetters"
+	http "net/http"
 
-import google_protobuf2 "google.golang.org/protobuf/types/known/emptypb"
+	io "io"
 
-import bytes "bytes"
-import errors "errors"
-import io "io"
-import path "path"
-import url "net/url"
+	json "encoding/json"
+
+	strconv "strconv"
+
+	strings "strings"
+
+	protojson "google.golang.org/protobuf/encoding/protojson"
+
+	proto "google.golang.org/protobuf/proto"
+
+	twirp "github.com/twitchtv/twirp"
+
+	ctxsetters "github.com/twitchtv/twirp/ctxsetters"
+
+	google_protobuf2 "google.golang.org/protobuf/types/known/emptypb"
+
+	bytes "bytes"
+
+	errors "errors"
+
+	io "io"
+
+	path "path"
+
+	url "net/url"
+)
 
 // Version compatibility assertion.
 // If the constant is not defined in the package, that likely means
@@ -736,7 +750,7 @@ func (s *cacheServer) servePutArtifactProtobuf(ctx context.Context, resp http.Re
 		return
 	}
 
-	buf, err := ioutil.ReadAll(req.Body)
+	buf, err := io.ReadAll(req.Body)
 	if err != nil {
 		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
 		return
@@ -916,7 +930,7 @@ func (s *cacheServer) servePutBlobProtobuf(ctx context.Context, resp http.Respon
 		return
 	}
 
-	buf, err := ioutil.ReadAll(req.Body)
+	buf, err := io.ReadAll(req.Body)
 	if err != nil {
 		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
 		return
@@ -1096,7 +1110,7 @@ func (s *cacheServer) serveMissingBlobsProtobuf(ctx context.Context, resp http.R
 		return
 	}
 
-	buf, err := ioutil.ReadAll(req.Body)
+	buf, err := io.ReadAll(req.Body)
 	if err != nil {
 		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
 		return
@@ -1276,7 +1290,7 @@ func (s *cacheServer) serveDeleteBlobsProtobuf(ctx context.Context, resp http.Re
 		return
 	}
 
-	buf, err := ioutil.ReadAll(req.Body)
+	buf, err := io.ReadAll(req.Body)
 	if err != nil {
 		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
 		return
@@ -1595,7 +1609,7 @@ func errorFromResponse(resp *http.Response) twirp.Error {
 		return twirpErrorFromIntermediary(statusCode, msg, location)
 	}
 
-	respBodyBytes, err := ioutil.ReadAll(resp.Body)
+	respBodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return wrapInternal(err, "failed to read server error response body")
 	}
@@ -1801,7 +1815,7 @@ func doProtobufRequest(ctx context.Context, client HTTPClient, hooks *twirp.Clie
 		return ctx, errorFromResponse(resp)
 	}
 
-	respBodyBytes, err := ioutil.ReadAll(resp.Body)
+	respBodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return ctx, wrapInternal(err, "failed to read response body")
 	}
