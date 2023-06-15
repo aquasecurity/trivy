@@ -403,6 +403,4 @@ require (
 // v1.2.0 incompatible with github.com/docker/docker v23.0.0-rc.1+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.1.1
 
-replace github.com/google/go-containerregistry => github.com/google/go-containerregistry v0.14.0
-
 replace k8s.io/kubectl => k8s.io/kubectl v0.26.3
