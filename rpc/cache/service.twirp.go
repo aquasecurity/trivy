@@ -9,8 +9,6 @@ import (
 
 	http "net/http"
 
-	io "io"
-
 	json "encoding/json"
 
 	strconv "strconv"
