@@ -1,0 +1,9 @@
+{
+  "name": "yarn-classic-licenses",
+  "version": "1.0.0",
+  "packageManager": "yarn@1.22.19",
+  "dependencies": {
+    "@esbuild/darwin-arm64": "0.18.2",
+    "is-odd": "^3.0.1"
+  }
+}

@@ -1,10 +1,12 @@
 package yarn
 
 import (
+	"archive/zip"
 	"context"
 	"errors"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 
@@ -60,10 +62,25 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 			return nil
 		}
 
+		// Find all licenses from package.json files under node_modules or .yarn dirs
+		licenses, err := a.findLicenses(input.FS, path)
+		if err != nil {
+			log.Logger.Errorf("Unable to collect licenses: %s", err)
+			licenses = map[string]string{}
+		}
+
 		// Parse package.json alongside yarn.lock to remove dev dependencies
 		if err = a.removeDevDependencies(input.FS, filepath.Dir(path), app); err != nil {
 			log.Logger.Warnf("Unable to parse %q to remove dev dependencies: %s", filepath.Join(filepath.Dir(path), types.NpmPkg), err)
 		}
+
+		// Fill licenses
+		for i, lib := range app.Libraries {
+			if license, ok := licenses[lib.ID]; ok {
+				app.Libraries[i].Licenses = []string{license}
+			}
+		}
+
 		apps = append(apps, *app)
 
 		return nil
@@ -176,4 +193,155 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map
 
 	// Merge dependencies and optionalDependencies
 	return lo.Assign(pkg.Dependencies, pkg.OptionalDependencies), nil
+}
+
+type licenses map[string]string
+
+func (a yarnAnalyzer) findLicenses(fsys fs.FS, lockPath string) (licenses, error) {
+	dir := filepath.Dir(lockPath)
+
+	nodeModulesPath := path.Join(dir, "node_modules")
+
+	if _, err := fs.Stat(fsys, nodeModulesPath); errors.Is(err, fs.ErrNotExist) {
+		// try to find for yarn v2+
+		return a.findLicensesForYarn(fsys, dir)
+	} else if err != nil {
+		return nil, xerrors.Errorf("unable to parse %q: %w", nodeModulesPath, err)
+	}
+
+	return a.findLicensesForYarnClassic(fsys, nodeModulesPath)
+}
+
+func (a yarnAnalyzer) findLicensesForYarnClassic(fsys fs.FS, path string) (licenses, error) {
+	// Parse package.json
+	required := func(path string, _ fs.DirEntry) bool {
+		return filepath.Base(path) == types.NpmPkg
+	}
+
+	// Traverse node_modules dir and find licenses
+	// Note that fs.FS is always slashed regardless of the platform,
+	// and path.Join should be used rather than filepath.Join.
+	licenses := licenses{}
+	err := fsutils.WalkDir(fsys, path, required, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+		pkg, err := a.packageJsonParser.Parse(r)
+		if err != nil {
+			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
+		}
+
+		licenses[pkg.ID] = pkg.License
+		return nil
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("walk error: %w", err)
+	}
+	return licenses, nil
+}
+
+func (a yarnAnalyzer) findLicensesForYarn(fsys fs.FS, root string) (licenses, error) {
+	yarnDir := path.Join(root, ".yarn")
+	if _, err := fs.Stat(fsys, yarnDir); errors.Is(err, fs.ErrNotExist) {
+		return nil, nil
+	} else if err != nil {
+		return nil, xerrors.Errorf("unable to parse %q: %w", yarnDir, err)
+	}
+
+	licenses := licenses{}
+
+	if err := a.extractLicensesFromUnplugged(fsys, yarnDir, licenses); err != nil {
+		return nil, err
+	}
+	if err := a.extractLicensesFromCache(fsys, yarnDir, licenses); err != nil {
+		return nil, err
+	}
+
+	return licenses, nil
+}
+
+func (a yarnAnalyzer) extractLicensesFromUnplugged(fsys fs.FS, root string, licenses licenses) error {
+	// `unplugged` hold machine-specific build artifacts
+
+	// Parse package.json
+	required := func(path string, _ fs.DirEntry) bool {
+		return filepath.Base(path) == types.NpmPkg
+	}
+
+	unpluggedPath := path.Join(root, "unplugged")
+	if _, err := fs.Stat(fsys, unpluggedPath); err != nil {
+		return nil
+	}
+
+	// Traverse .yarn/unplugged dir and find licenses
+	err := fsutils.WalkDir(fsys, unpluggedPath, required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+		pkg, err := a.packageJsonParser.Parse(r)
+		if err != nil {
+			return xerrors.Errorf("unable to parse %q: %w", path, err)
+		}
+
+		licenses[pkg.ID] = pkg.License
+		return nil
+	})
+	if err != nil {
+		return xerrors.Errorf("walk error: %w", err)
+	}
+
+	return nil
+}
+
+func (a yarnAnalyzer) extractLicensesFromCache(fsys fs.FS, root string, licenses map[string]string) error {
+	cachePath := path.Join(root, "cache")
+	if _, err := fs.Stat(fsys, cachePath); err != nil {
+		return nil
+	}
+
+	// Traverse .yarn/cache dir and find licenses in zip files
+	err := fs.WalkDir(fsys, cachePath, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		} else if !d.Type().IsRegular() || filepath.Ext(path) != ".zip" {
+			return nil
+		}
+
+		zf, err := fsys.Open(path)
+		if err != nil {
+			return xerrors.Errorf("file open error: %w", err)
+		}
+		file, ok := zf.(dio.ReadSeekCloserAt)
+		if !ok {
+			return xerrors.Errorf("type assertion error: %w", err)
+		}
+		defer zf.Close()
+
+		fi, err := zf.Stat()
+		if err != nil {
+			return xerrors.Errorf("file stat error: %w", err)
+		}
+
+		r, err := zip.NewReader(file, fi.Size())
+		if err != nil {
+			return xerrors.Errorf("zip reader error: %w", err)
+		}
+
+		for _, f := range r.File {
+			if filepath.Base(f.Name) != types.NpmPkg {
+				continue
+			}
+			pkgFile, err := f.Open()
+			if err != nil {
+				return xerrors.Errorf("file open error: %w", err)
+			}
+			pkg, err := a.packageJsonParser.Parse(pkgFile)
+			if err != nil {
+				return xerrors.Errorf("unable to parse %q: %w", path, err)
+			}
+			licenses[pkg.ID] = pkg.License
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return xerrors.Errorf("walk error: %w", err)
+	}
+
+	return nil
 }

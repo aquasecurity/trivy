@@ -230,6 +230,114 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			dir:  "testdata/unsupported_protocol",
 			want: &analyzer.AnalysisResult{},
 		},
+		// yarn set version 3.4.1
+		// yarn add @esbuild/darwin-arm64@0.18.2 is-odd@3.0.1
+		{
+			name: "parse licenses (yarn v2+)",
+			dir:  "testdata/yarn-licenses",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Yarn,
+						FilePath: "yarn.lock",
+						Libraries: []types.Package{
+							{
+								ID:       "@esbuild/darwin-arm64@0.18.2",
+								Name:     "@esbuild/darwin-arm64",
+								Version:  "0.18.2",
+								Licenses: []string{"MIT"},
+								Locations: []types.Location{
+									{
+										StartLine: 8,
+										EndLine:   14,
+									},
+								},
+							},
+							{
+								ID:       "is-number@6.0.0",
+								Name:     "is-number",
+								Version:  "6.0.0",
+								Licenses: []string{"MIT"},
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 16,
+										EndLine:   21,
+									},
+								},
+							},
+							{
+								ID:        "is-odd@3.0.1",
+								Name:      "is-odd",
+								Version:   "3.0.1",
+								Licenses:  []string{"MIT"},
+								DependsOn: []string{"is-number@6.0.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 23,
+										EndLine:   30,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		// yarn set version 1.22.19
+		// yarn add @esbuild/darwin-arm64@0.18.2 is-odd@3.0.1
+		{
+			name: "parse licenses (yarn classic)",
+			dir:  "testdata/yarn-classic-licenses",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Yarn,
+						FilePath: "yarn.lock",
+						Libraries: []types.Package{
+							{
+								ID:       "@esbuild/darwin-arm64@0.18.2",
+								Name:     "@esbuild/darwin-arm64",
+								Version:  "0.18.2",
+								Licenses: []string{"MIT"},
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   8,
+									},
+								},
+							},
+							{
+								ID:       "is-number@6.0.0",
+								Name:     "is-number",
+								Version:  "6.0.0",
+								Licenses: []string{"MIT"},
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 10,
+										EndLine:   13,
+									},
+								},
+							},
+							{
+								ID:        "is-odd@3.0.1",
+								Name:      "is-odd",
+								Version:   "3.0.1",
+								Licenses:  []string{"MIT"},
+								DependsOn: []string{"is-number@6.0.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 15,
+										EndLine:   20,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
