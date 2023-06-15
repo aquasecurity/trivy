@@ -329,6 +329,7 @@ func (a yarnAnalyzer) extractLicensesFromCache(fsys fs.FS, root string, licenses
 			if err != nil {
 				return xerrors.Errorf("file open error: %w", err)
 			}
+			defer pkgFile.Close()
 			pkg, err := a.packageJsonParser.Parse(pkgFile)
 			if err != nil {
 				return xerrors.Errorf("unable to parse %q: %w", path, err)
