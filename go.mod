@@ -2,8 +2,6 @@ module github.com/deepfactor-io/trivy
 
 go 1.19
 
-replace github.com/deepfactor-io/go-dep-parser => ../go-dep-parser
-
 require (
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.28
@@ -35,9 +33,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.7
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/deepfactor-io/go-dep-parser v0.0.0-20230301065959-5938764525fd
 	github.com/cheggaaa/pb/v3 v3.1.2
 	github.com/containerd/containerd v1.7.0
+	github.com/deepfactor-io/go-dep-parser v0.0.0-20230615053739-827d207b27f9
 	github.com/docker/docker v23.0.3+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.14.1

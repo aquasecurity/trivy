@@ -26,7 +26,7 @@ func defaultCacheDir() string {
 	if err != nil {
 		tmpDir = os.TempDir()
 	}
-	return filepath.Join(tmpDir, "trivy")
+	return filepath.Join(tmpDir, "deepfactor")
 }
 
 // CacheDir returns the directory used for caching
