@@ -63,7 +63,11 @@ func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context) (ftypes.ArtifactRe
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("unable to fetch referrers: %w", err)
 	}
-	for _, m := range lo.FromPtr(index).Manifests {
+	manifest, err := index.IndexManifest()
+	if err != nil {
+		return ftypes.ArtifactReference{}, xerrors.Errorf("unable to get manifest: %w", err)
+	}
+	for _, m := range lo.FromPtr(manifest).Manifests {
 		// Unsupported artifact type
 		if !slices.Contains(oci.SupportedSBOMArtifactTypes, m.ArtifactType) {
 			continue
