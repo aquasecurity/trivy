@@ -176,7 +176,7 @@ func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifact
 const (
 	golang             = "golang"
 	oci                = "oci"
-	kubelet            = "kubelet"
+	kubelet            = "k8s.io/kubelet"
 	pod                = "PodInfo"
 	nodeInfo           = "NodeInfo"
 	nodeCoreComponents = "node-core-components"
@@ -271,7 +271,16 @@ func osNameVersion(name string) (string, string) {
 func runtimeNameVersion(name string) (string, string) {
 	parts := strings.Split(name, "://")
 	if len(parts) == 2 {
-		return parts[0], parts[1]
+		name := parts[0]
+		switch parts[0] {
+		case "cri-o":
+			name = "github.com/cri-o/cri-o"
+		case "containerd":
+			name = "github.com/containerd/containerd"
+		case "cri-dockerd":
+			name = "github.com/Mirantis/cri-dockerd"
+		}
+		return name, parts[1]
 	}
 	return "", ""
 }

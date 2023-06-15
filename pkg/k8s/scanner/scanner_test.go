@@ -139,7 +139,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 								Components: []*core.Component{
 									{
 										Type:    cdx.ComponentTypeLibrary,
-										Name:    "kubelet",
+										Name:    "k8s.io/kubelet",
 										Version: "1.21.1",
 										Properties: map[string]string{
 											"PkgType": "golang",
@@ -147,7 +147,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
 												Type:       "golang",
-												Name:       "kubelet",
+												Name:       "k8s.io/kubelet",
 												Version:    "1.21.1",
 												Qualifiers: packageurl.Qualifiers{},
 											},
@@ -155,7 +155,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 									},
 									{
 										Type:    cdx.ComponentTypeLibrary,
-										Name:    "containerd",
+										Name:    "github.com/containerd/containerd",
 										Version: "1.5.2",
 										Properties: map[string]string{
 											cyc.PropertyPkgType: "golang",
@@ -163,7 +163,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
 												Type:       "golang",
-												Name:       "containerd",
+												Name:       "github.com/containerd/containerd",
 												Version:    "1.5.2",
 												Qualifiers: packageurl.Qualifiers{},
 											},
