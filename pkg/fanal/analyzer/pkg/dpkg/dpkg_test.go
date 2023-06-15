@@ -2,29 +2,29 @@ package dpkg
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"os"
+	"path/filepath"
 	"sort"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name     string
-		testFile string
-		filePath string
-		want     *analyzer.AnalysisResult
-		wantErr  bool
+		name string
+		// testFiles contains path in testdata and path in OS
+		// e.g. tar.list => var/lib/dpkg/info/tar.list
+		testFiles map[string]string
+		want      *analyzer.AnalysisResult
+		wantErr   bool
 	}{
 		{
-			name:     "valid",
-			testFile: "./testdata/dpkg",
-			filePath: "var/lib/dpkg/status",
+			name:      "valid",
+			testFiles: map[string]string{"./testdata/dpkg": "var/lib/dpkg/status"},
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
@@ -1203,9 +1203,8 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:     "corrupsed",
-			testFile: "./testdata/corrupsed",
-			filePath: "var/lib/dpkg/status",
+			name:      "corrupsed",
+			testFiles: map[string]string{"./testdata/corrupsed": "var/lib/dpkg/status"},
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
@@ -1262,9 +1261,8 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:     "only apt",
-			testFile: "./testdata/dpkg_apt",
-			filePath: "var/lib/dpkg/status",
+			name:      "only apt",
+			testFiles: map[string]string{"./testdata/dpkg_apt": "var/lib/dpkg/status"},
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
@@ -1279,9 +1277,47 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:     "info list",
-			testFile: "./testdata/bash.list",
-			filePath: "var/lib/dpkg/info/tar.list",
+			name: "happy path with digests",
+			testFiles: map[string]string{
+				"./testdata/digest-status":    "var/lib/dpkg/status",
+				"./testdata/digest-available": "var/lib/dpkg/available",
+			},
+			want: &analyzer.AnalysisResult{
+				PackageInfos: []types.PackageInfo{
+					{
+						FilePath: "var/lib/dpkg/status",
+						Packages: []types.Package{
+							{
+								ID:         "sed@4.4-2",
+								Name:       "sed",
+								Version:    "4.4",
+								Release:    "2",
+								SrcName:    "sed",
+								SrcVersion: "4.4",
+								SrcRelease: "2",
+								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
+							},
+							{
+								ID:         "tar@1.34+dfsg-1",
+								Name:       "tar",
+								Version:    "1.34+dfsg",
+								Release:    "1",
+								SrcName:    "tar",
+								SrcVersion: "1.34+dfsg",
+								SrcRelease: "1",
+								Maintainer: "Janos Lenart <ocsi@debian.org>",
+								Arch:       "amd64",
+								Digest:     "sha256:bd8e963c6edcf1c806df97cd73560794c347aa94b9aaaf3b88eea585bb2d2f3c",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "info list",
+			testFiles: map[string]string{"./testdata/tar.list": "var/lib/dpkg/info/tar.list"},
 			want: &analyzer.AnalysisResult{
 				SystemInstalledFiles: []string{
 					"/bin/tar",
@@ -1305,23 +1341,28 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.testFile)
-			require.NoError(t, err)
-			defer f.Close()
-
-			a := dpkgAnalyzer{}
+			a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
+			assert.NoError(t, err)
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: tt.filePath,
-				Content:  f,
+
+			mfs := mapfs.New()
+			for testPath, osPath := range tt.testFiles {
+				err = mfs.MkdirAll(filepath.Dir(osPath), os.ModePerm)
+				assert.NoError(t, err)
+				err = mfs.WriteFile(osPath, testPath)
+				assert.NoError(t, err)
+			}
+
+			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
+				FS: mfs,
 			})
+			assert.NoError(t, err)
 
 			// Sort the result for consistency
 			for i := range got.PackageInfos {
 				sort.Sort(got.PackageInfos[i].Packages)
 			}
 
-			assert.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -1349,6 +1390,11 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "available file",
+			filePath: "var/lib/dpkg/available",
+			want:     true,
+		},
+		{
 			name:     "sad path",
 			filePath: "var/lib/dpkg/status/bash.list",
 			want:     false,
@@ -1356,7 +1402,8 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := dpkgAnalyzer{}
+			a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
+			assert.NoError(t, err)
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})

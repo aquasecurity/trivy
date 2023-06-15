@@ -89,6 +89,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
+								FilePath: "app/gradle/target/gradle.lockfile",
 							},
 						},
 					},
@@ -102,6 +103,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
+								FilePath: "app/maven/target/child-project-1.0.jar",
 							},
 						},
 					},
@@ -117,6 +119,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
+								FilePath: "app/app/package.json",
 							},
 						},
 					},
@@ -315,7 +318,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			var cdx cyclonedx.CycloneDX
+			var cdx cyclonedx.BOM
 			err = json.NewDecoder(f).Decode(&cdx)
 			if tt.wantErr != "" {
 				require.Error(t, err)

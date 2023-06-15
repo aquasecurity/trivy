@@ -26,6 +26,7 @@ func TestParseApkInfo(t *testing.T) {
 					SrcName:    "musl",
 					SrcVersion: "1.1.14-r10",
 					Licenses:   []string{"MIT"},
+					Arch:       "x86_64",
 					Digest:     "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
 				},
 				{
@@ -36,6 +37,7 @@ func TestParseApkInfo(t *testing.T) {
 					SrcVersion: "1.24.2-r9",
 					Licenses:   []string{"GPL-2.0"},
 					DependsOn:  []string{"musl@1.1.14-r10"},
+					Arch:       "x86_64",
 					Digest:     "sha1:ca124719267cd0bedc2f4cb850a286ac13f0ad44",
 				},
 				{
@@ -46,6 +48,7 @@ func TestParseApkInfo(t *testing.T) {
 					SrcVersion: "3.0.3-r0",
 					Licenses:   []string{"GPL-2.0"},
 					DependsOn:  []string{"busybox@1.24.2-r9", "musl@1.1.14-r10"},
+					Arch:       "x86_64",
 					Digest:     "sha1:a214896150411d72dd1fafdb32d1c6c4855cccfa",
 				},
 				{
@@ -55,6 +58,7 @@ func TestParseApkInfo(t *testing.T) {
 					SrcName:    "alpine-keys",
 					SrcVersion: "1.1-r0",
 					Licenses:   []string{"GPL-3.0"},
+					Arch:       "x86_64",
 					Digest:     "sha1:4def7ffaee6aeba700c1d62570326f75cbb8fa25",
 				},
 				{
@@ -65,6 +69,7 @@ func TestParseApkInfo(t *testing.T) {
 					SrcVersion: "1.2.8-r2",
 					Licenses:   []string{"Zlib"},
 					DependsOn:  []string{"musl@1.1.14-r10"},
+					Arch:       "x86_64",
 					Digest:     "sha1:efd04d34d40aa8eb331480127364c27a8ba760ef",
 				},
 				{
@@ -75,6 +80,7 @@ func TestParseApkInfo(t *testing.T) {
 					SrcVersion: "1.0.2h-r1",
 					Licenses:   []string{"openssl"},
 					DependsOn:  []string{"musl@1.1.14-r10", "zlib@1.2.8-r2"},
+					Arch:       "x86_64",
 					Digest:     "sha1:65c860ff8f103b664f40ba849a3f5a51c69c8beb",
 				},
 				{
@@ -89,6 +95,7 @@ func TestParseApkInfo(t *testing.T) {
 						"libcrypto1.0@1.0.2h-r1",
 						"musl@1.1.14-r10",
 					},
+					Arch: "x86_64",
 				},
 				{
 					ID:         "apk-tools@2.6.7-r0",
@@ -104,6 +111,7 @@ func TestParseApkInfo(t *testing.T) {
 						"musl@1.1.14-r10",
 						"zlib@1.2.8-r2",
 					},
+					Arch: "x86_64",
 				},
 				{
 					ID:         "scanelf@1.1.6-r0",
@@ -114,6 +122,7 @@ func TestParseApkInfo(t *testing.T) {
 					Licenses:   []string{"GPL-2.0"},
 					Digest:     "sha1:f9bab817c5ad93e92a6218bc0f7596b657c02d90",
 					DependsOn:  []string{"musl@1.1.14-r10"},
+					Arch:       "x86_64",
 				},
 				{
 					ID:         "musl-utils@1.1.14-r10",
@@ -127,6 +136,7 @@ func TestParseApkInfo(t *testing.T) {
 						"musl@1.1.14-r10",
 						"scanelf@1.1.6-r0",
 					},
+					Arch: "x86_64",
 				},
 				{
 					ID:         "libc-utils@0.7-r0",
@@ -137,6 +147,7 @@ func TestParseApkInfo(t *testing.T) {
 					Licenses:   []string{"GPL-3.0"},
 					Digest:     "sha1:9055bc7afd76cf2672198042f72fc4a5ed4fa961",
 					DependsOn:  []string{"musl-utils@1.1.14-r10"},
+					Arch:       "x86_64",
 				},
 				{
 					ID:         "pkgconf@1.6.0-r0",
@@ -147,6 +158,7 @@ func TestParseApkInfo(t *testing.T) {
 					Licenses:   []string{"ISC"},
 					Digest:     "sha1:e6242ac29589c8a84a4b179b491ea7c29fce66a9",
 					DependsOn:  []string{"musl@1.1.14-r10"},
+					Arch:       "x86_64",
 				},
 
 				{
@@ -158,6 +170,7 @@ func TestParseApkInfo(t *testing.T) {
 					Licenses:   []string{"Public-Domain"},
 					Digest:     "sha1:1464946c3a5f0dd5a67ca1af930fc17af7a74474",
 					DependsOn:  []string{"musl@1.1.14-r10"},
+					Arch:       "x86_64",
 				},
 
 				{
@@ -172,6 +185,7 @@ func TestParseApkInfo(t *testing.T) {
 						"pkgconf@1.6.0-r0",
 						"sqlite-libs@3.26.0-r3",
 					},
+					Arch: "x86_64",
 				},
 			},
 			wantFiles: []string{

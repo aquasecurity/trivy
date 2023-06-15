@@ -3,6 +3,7 @@
     "ID": "alpine-baselayout@3.1.2-r0",
     "Name": "alpine-baselayout",
     "Version": "3.1.2-r0",
+    "Arch": "x86_64",
     "SrcName": "alpine-baselayout",
     "SrcVersion": "3.1.2-r0",
     "Licenses": [
@@ -22,6 +23,7 @@
     "ID": "alpine-keys@2.1-r2",
     "Name": "alpine-keys",
     "Version": "2.1-r2",
+    "Arch": "x86_64",
     "SrcName": "alpine-keys",
     "SrcVersion": "2.1-r2",
     "Licenses": [
@@ -37,6 +39,7 @@
     "ID": "apk-tools@2.10.4-r2",
     "Name": "apk-tools",
     "Version": "2.10.4-r2",
+    "Arch": "x86_64",
     "SrcName": "apk-tools",
     "SrcVersion": "2.10.4-r2",
     "Licenses": [
@@ -58,6 +61,7 @@
     "ID": "busybox@1.30.1-r2",
     "Name": "busybox",
     "Version": "1.30.1-r2",
+    "Arch": "x86_64",
     "SrcName": "busybox",
     "SrcVersion": "1.30.1-r2",
     "Licenses": [
@@ -76,6 +80,7 @@
     "ID": "ca-certificates-cacert@20190108-r0",
     "Name": "ca-certificates-cacert",
     "Version": "20190108-r0",
+    "Arch": "x86_64",
     "SrcName": "ca-certificates",
     "SrcVersion": "20190108-r0",
     "Licenses": [
@@ -92,6 +97,7 @@
     "ID": "libc-utils@0.7.1-r0",
     "Name": "libc-utils",
     "Version": "0.7.1-r0",
+    "Arch": "x86_64",
     "SrcName": "libc-dev",
     "SrcVersion": "0.7.1-r0",
     "Licenses": [
@@ -110,6 +116,7 @@
     "ID": "libcrypto1.1@1.1.1c-r0",
     "Name": "libcrypto1.1",
     "Version": "1.1.1c-r0",
+    "Arch": "x86_64",
     "SrcName": "openssl",
     "SrcVersion": "1.1.1c-r0",
     "Licenses": [
@@ -128,6 +135,7 @@
     "ID": "libssl1.1@1.1.1c-r0",
     "Name": "libssl1.1",
     "Version": "1.1.1c-r0",
+    "Arch": "x86_64",
     "SrcName": "openssl",
     "SrcVersion": "1.1.1c-r0",
     "Licenses": [
@@ -147,6 +155,7 @@
     "ID": "libtls-standalone@2.9.1-r0",
     "Name": "libtls-standalone",
     "Version": "2.9.1-r0",
+    "Arch": "x86_64",
     "SrcName": "libtls-standalone",
     "SrcVersion": "2.9.1-r0",
     "Licenses": [
@@ -168,6 +177,7 @@
     "ID": "musl@1.1.22-r3",
     "Name": "musl",
     "Version": "1.1.22-r3",
+    "Arch": "x86_64",
     "SrcName": "musl",
     "SrcVersion": "1.1.22-r3",
     "Licenses": [
@@ -183,6 +193,7 @@
     "ID": "musl-utils@1.1.22-r3",
     "Name": "musl-utils",
     "Version": "1.1.22-r3",
+    "Arch": "x86_64",
     "SrcName": "musl",
     "SrcVersion": "1.1.22-r3",
     "Licenses": [
@@ -204,6 +215,7 @@
     "ID": "scanelf@1.2.3-r0",
     "Name": "scanelf",
     "Version": "1.2.3-r0",
+    "Arch": "x86_64",
     "SrcName": "pax-utils",
     "SrcVersion": "1.2.3-r0",
     "Licenses": [
@@ -222,6 +234,7 @@
     "ID": "ssl_client@1.30.1-r2",
     "Name": "ssl_client",
     "Version": "1.30.1-r2",
+    "Arch": "x86_64",
     "SrcName": "busybox",
     "SrcVersion": "1.30.1-r2",
     "Licenses": [
@@ -241,6 +254,7 @@
     "ID": "zlib@1.2.11-r1",
     "Name": "zlib",
     "Version": "1.2.11-r1",
+    "Arch": "x86_64",
     "SrcName": "zlib",
     "SrcVersion": "1.2.11-r1",
     "Licenses": [

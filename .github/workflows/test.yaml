@@ -1,8 +1,6 @@
 name: Test
 on:
   push:
-    branches:
-      - main
     paths-ignore:
       - '**.md'
       - 'docs/**'
@@ -14,6 +12,7 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
+  merge_group:
 jobs:
   test:
     name: Test
@@ -39,7 +38,7 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v3.4.0
+        uses: golangci/golangci-lint-action@v3.6.0
         with:
           version: v1.52
           args: --deadline=30m
@@ -126,22 +125,34 @@ jobs:
         run: |
           mage test:module
 
+  vm-test:
+    name: VM Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v2.1.1
+        with:
+          aqua_version: v1.25.0
+      - name: Run vm integration tests
+        run: |
+          mage test:vm
+
   build-test:
     name: Build Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-
-    - name: Set up Docker Buildx
-      id: buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Show available Docker Buildx platforms
-      run: echo ${{ steps.buildx.outputs.platforms }}
-
     - name: Checkout
       uses: actions/checkout@v3
 
@@ -150,10 +161,20 @@ jobs:
       with:
         go-version-file: go.mod
 
+    - name: Determine GoReleaser ID
+      id: goreleaser_id
+      shell: bash
+      run: |
+        if [ "${{ matrix.operating-system }}" == "windows-latest" ]; then
+          echo "id=--id build-windows" >> $GITHUB_OUTPUT
+        elif [ "${{ matrix.operating-system }}" == "macos-latest" ]; then
+          echo "id=--id build-macos --id build-bsd" >> $GITHUB_OUTPUT
+        else
+          echo "id=--id build-linux" >> $GITHUB_OUTPUT
+        fi
+
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v4
       with:
         version: v1.16.2
-        args: release --skip-sign --snapshot --clean --skip-publish --timeout 90m
-      env:
-        GPG_FILE: "nogpg.key"
+        args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}

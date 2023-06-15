@@ -28,10 +28,6 @@ Trivy supports CycloneDX as an input.
 $ trivy sbom /path/to/cyclonedx.json
 ```
 
-!!! note
-    If you want to generate a CycloneDX report from a CycloneDX input, please be aware that the output stores references to your original CycloneDX report and contains only detected vulnerabilities, not components.
-    The report is called [BOV](https://cyclonedx.org/capabilities/sbom/).
-
 ## SPDX
 Trivy supports the SPDX SBOM as an input.
 

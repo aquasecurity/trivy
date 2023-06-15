@@ -40,6 +40,7 @@ const (
 	JSON           = "json"
 	Dockerfile     = "dockerfile"
 	Terraform      = "terraform"
+	TerraformPlan  = "terraformplan"
 	CloudFormation = "cloudformation"
 	Kubernetes     = "kubernetes"
 	Ansible        = "ansible"

@@ -75,6 +75,12 @@ var (
 		Value:      "trivy-temp",
 		Usage:      "specify the namespace in which the node-collector job should be deployed",
 	}
+	ExcludeNodes = Flag{
+		Name:       "exclude-nodes",
+		ConfigName: "exclude.nodes",
+		Value:      []string{},
+		Usage:      "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)",
+	}
 )
 
 type K8sFlagGroup struct {
@@ -87,6 +93,7 @@ type K8sFlagGroup struct {
 	Tolerations            *Flag
 	AllNamespaces          *Flag
 	NodeCollectorNamespace *Flag
+	ExcludeNodes           *Flag
 }
 
 type K8sOptions struct {
@@ -99,6 +106,7 @@ type K8sOptions struct {
 	Tolerations            []corev1.Toleration
 	AllNamespaces          bool
 	NodeCollectorNamespace string
+	ExcludeNodes           map[string]string
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
@@ -112,6 +120,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		Tolerations:            &TolerationsFlag,
 		AllNamespaces:          &AllNamespaces,
 		NodeCollectorNamespace: &NodeCollectorNamespace,
+		ExcludeNodes:           &ExcludeNodes,
 	}
 }
 
@@ -130,6 +139,7 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.Tolerations,
 		f.AllNamespaces,
 		f.NodeCollectorNamespace,
+		f.ExcludeNodes,
 	}
 }
 
@@ -146,6 +156,16 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 			return K8sOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
 		}
 	}
+	exludeNodeLabels := make(map[string]string)
+	exludeNodes := getStringSlice(f.ExcludeNodes)
+	for _, exludeNodeValue := range exludeNodes {
+		excludeNodeParts := strings.Split(exludeNodeValue, ":")
+		if len(excludeNodeParts) != 2 {
+			return K8sOptions{}, fmt.Errorf("exclude node %s must be a key:value", exludeNodeValue)
+		}
+		exludeNodeLabels[excludeNodeParts[0]] = excludeNodeParts[1]
+	}
+
 	return K8sOptions{
 		ClusterContext:         getString(f.ClusterContext),
 		Namespace:              getString(f.Namespace),
@@ -156,6 +176,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		Tolerations:            tolerations,
 		AllNamespaces:          getBool(f.AllNamespaces),
 		NodeCollectorNamespace: getString(f.NodeCollectorNamespace),
+		ExcludeNodes:           exludeNodeLabels,
 	}, nil
 }
 
