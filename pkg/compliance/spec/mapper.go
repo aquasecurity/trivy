@@ -35,6 +35,10 @@ func MapSpecCheckIDToFilteredResults(result types.Result, checkIDs map[types.Sca
 			Misconfigurations: []types.DetectedMisconfiguration{m},
 		})
 	}
+
+	// Evaluate custom IDs
+	mapCustomIDsToFilteredResults(result, checkIDs, mapCheckByID)
+
 	return mapCheckByID
 }
 

@@ -17,7 +17,7 @@ $ trivy repo [YOUR_REPO_URL]
 ### Vulnerabilities
 It is enabled by default.
 Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
-See [here](../vulnerability/scanning.md) for the detail.
+See [here](../scanner/vulnerability/index.md) for the detail.
 
 ```
 $ trivy repo https://github.com/knqyf263/trivy-ci-test
@@ -166,7 +166,7 @@ Total: 20 (UNKNOWN: 3, LOW: 0, MEDIUM: 7, HIGH: 5, CRITICAL: 5)
 
 ### Misconfigurations
 It is disabled by default and can be enabled with `--scanners config`.
-See [here](../misconfiguration/scanning.md) for the detail.
+See [here](../scanner/misconfiguration/index.md) for the detail.
 
 ```shell
 $ trivy repo --scanners config [YOUR_REPO_URL]
@@ -174,7 +174,7 @@ $ trivy repo --scanners config [YOUR_REPO_URL]
 
 ### Secrets
 It is enabled by default.
-See [here](../secret/scanning.md) for the detail.
+See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy repo [YOUR_REPO_URL]
@@ -182,7 +182,7 @@ $ trivy repo [YOUR_REPO_URL]
 
 ### Licenses
 It is disabled by default.
-See [here](../licenses/scanning.md) for the detail.
+See [here](../scanner/license.md) for the detail.
 
 ```shell
 $ trivy repo --scanners license [YOUR_REPO_URL]
@@ -190,7 +190,7 @@ $ trivy repo --scanners license [YOUR_REPO_URL]
 
 ## SBOM generation
 Trivy can generate SBOM for git repositories.
-See [here](../sbom/index.md) for the detail.
+See [here](../supply-chain/sbom.md) for the detail.
 
 ## References
 ### Scanning a Branch
@@ -221,6 +221,8 @@ $ trivy repo --tag <tag-name> <repo-name>
 In order to scan private GitHub or GitLab repositories, the environment variable `GITHUB_TOKEN` or `GITLAB_TOKEN` must be set, respectively, with a valid token that has access to the private repository being scanned.
 
 The `GITHUB_TOKEN` environment variable will take precedence over `GITLAB_TOKEN`, so if a private GitLab repository will be scanned, then `GITHUB_TOKEN` must be unset.
+
+You can find how to generate your GitHub Token in the following [GitHub documentation.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 
 For example:
 

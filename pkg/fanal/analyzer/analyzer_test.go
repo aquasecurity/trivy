@@ -16,14 +16,21 @@ import (
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 	aos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/javadb"
+	"github.com/deepfactor-io/trivy/pkg/mapfs"
+	"github.com/deepfactor-io/trivy/pkg/syncx"
 
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/imgconf/apk"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/java/jar"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/python/poetry"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/ruby/bundler"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os/ubuntu"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/pkg/apk"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/repo/apk"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/handler/all"
+
+	_ "modernc.org/sqlite"
 )
 
 func TestAnalysisResult_Merge(t *testing.T) {
@@ -369,8 +376,31 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/app/Gemfile.lock",
 						Libraries: []types.Package{
 							{
-								Name:    "actioncable",
-								Version: "5.2.3",
+								ID:       "actioncable@5.2.3",
+								Name:     "actioncable",
+								Version:  "5.2.3",
+								Indirect: false,
+								DependsOn: []string{
+									"actionpack@5.2.3",
+								},
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   4,
+									},
+								},
+							},
+							{
+								ID:       "actionpack@5.2.3",
+								Name:     "actionpack",
+								Version:  "5.2.3",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 6,
+										EndLine:   6,
+									},
+								},
 							},
 						},
 					},
@@ -407,8 +437,31 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/app/Gemfile-dev.lock",
 						Libraries: []types.Package{
 							{
-								Name:    "actioncable",
-								Version: "5.2.3",
+								ID:       "actioncable@5.2.3",
+								Name:     "actioncable",
+								Version:  "5.2.3",
+								Indirect: false,
+								DependsOn: []string{
+									"actionpack@5.2.3",
+								},
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   4,
+									},
+								},
+							},
+							{
+								ID:       "actionpack@5.2.3",
+								Name:     "actionpack",
+								Version:  "5.2.3",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 6,
+										EndLine:   6,
+									},
+								},
 							},
 						},
 					},
@@ -501,21 +554,101 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 	}
 }
 
+func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
+	tests := []struct {
+		name         string
+		dir          string
+		analyzerType analyzer.Type
+		want         *analyzer.AnalysisResult
+	}{
+		{
+			name:         "jars with invalid jar",
+			dir:          "testdata/post-apps/jar/",
+			analyzerType: analyzer.TypeJar,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     string(analyzer.TypeJar),
+						FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
+						Libraries: []types.Package{
+							{
+								Name:     "com.fasterxml.jackson.core:jackson-annotations",
+								Version:  "2.15.0-rc2",
+								FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:         "poetry files with invalid file",
+			dir:          "testdata/post-apps/poetry/",
+			analyzerType: analyzer.TypePoetry,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     string(analyzer.TypePoetry),
+						FilePath: "testdata/post-apps/poetry/happy/poetry.lock",
+						Libraries: []types.Package{
+							{
+								ID:      "certifi@2022.12.7",
+								Name:    "certifi",
+								Version: "2022.12.7",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
+			require.NoError(t, err)
+
+			// Create a virtual filesystem
+			files := new(syncx.Map[analyzer.Type, *mapfs.FS])
+			mfs := mapfs.New()
+			require.NoError(t, mfs.CopyFilesUnder(tt.dir))
+			files.Store(tt.analyzerType, mfs)
+
+			if tt.analyzerType == analyzer.TypeJar {
+				// init java-trivy-db with skip update
+				javadb.Init("./language/java/jar/testdata", "ghcr.io/aquasecurity/trivy-java-db", true, false, false)
+			}
+
+			ctx := context.Background()
+			got := new(analyzer.AnalysisResult)
+			err = a.PostAnalyze(ctx, files, got, analyzer.AnalysisOptions{})
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 	tests := []struct {
 		name     string
 		disabled []analyzer.Type
-		want     map[string]int
+		want     analyzer.Versions
 	}{
 		{
 			name:     "happy path",
 			disabled: []analyzer.Type{},
-			want: map[string]int{
-				"alpine":   1,
-				"apk-repo": 1,
-				"apk":      2,
-				"bundler":  1,
-				"ubuntu":   1,
+			want: analyzer.Versions{
+				Analyzers: map[string]int{
+					"alpine":     1,
+					"apk-repo":   1,
+					"apk":        2,
+					"bundler":    1,
+					"ubuntu":     1,
+					"ubuntu-esm": 1,
+				},
+				PostAnalyzers: map[string]int{
+					"jar":    1,
+					"poetry": 1,
+				},
 			},
 		},
 		{
@@ -524,10 +657,17 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 				analyzer.TypeAlpine,
 				analyzer.TypeApkRepo,
 				analyzer.TypeUbuntu,
+				analyzer.TypeUbuntuESM,
+				analyzer.TypeJar,
 			},
-			want: map[string]int{
-				"apk":     2,
-				"bundler": 1,
+			want: analyzer.Versions{
+				Analyzers: map[string]int{
+					"apk":     2,
+					"bundler": 1,
+				},
+				PostAnalyzers: map[string]int{
+					"poetry": 1,
+				},
 			},
 		},
 	}

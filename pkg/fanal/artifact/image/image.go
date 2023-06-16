@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"io"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"sync"
@@ -21,7 +23,9 @@ import (
 	"github.com/deepfactor-io/trivy/pkg/fanal/log"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/fanal/walker"
+	"github.com/deepfactor-io/trivy/pkg/mapfs"
 	"github.com/deepfactor-io/trivy/pkg/semaphore"
+	"github.com/deepfactor-io/trivy/pkg/syncx"
 )
 
 type Artifact struct {
@@ -49,8 +53,10 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 
 	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
 		Group:                opt.AnalyzerGroup,
+		Slow:                 opt.Slow,
 		FilePatterns:         opt.FilePatterns,
 		DisabledAnalyzers:    opt.DisabledAnalyzers,
+		MisconfScannerOption: opt.MisconfScannerOption,
 		SecretScannerOption:  opt.SecretScannerOption,
 		LicenseScannerOption: opt.LicenseScannerOption,
 	})
@@ -234,7 +240,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 
 			layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyers)
 			if err != nil {
-				errCh <- xerrors.Errorf("failed to analyze layer: %s : %w", layerInfo.DiffID, err)
+				errCh <- xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 				return
 			}
 			if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
@@ -280,15 +286,32 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	var wg sync.WaitGroup
 	var terminateWalk bool
 	var terminateError string
-	opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
+	opts := analyzer.AnalysisOptions{
+		Offline:      a.artifactOption.Offline,
+		FileChecksum: a.artifactOption.FileChecksum,
+	}
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Slow)
+
+	// Prepare filesystem for post analysis
+	files := new(syncx.Map[analyzer.Type, *mapfs.FS])
+	tmpDir, err := os.MkdirTemp("", "layers-*")
+	if err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("mkdir temp error: %w", err)
+	}
+	defer os.RemoveAll(tmpDir)
 
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, &terminateWalk, &terminateError, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
+
+		// Build filesystem for post analysis
+		if err = a.buildFS(tmpDir, filePath, info, opener, files); err != nil {
+			return xerrors.Errorf("failed to build filesystem: %w", err)
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -302,23 +325,29 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		return types.BlobInfo{}, errors.New(terminateError)
 	}
 
+	// Post-analysis
+	if err = a.analyzer.PostAnalyze(ctx, files, result, opts); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
+	}
+
 	// Sort the analysis result for consistent results
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion:   types.BlobJSONSchemaVersion,
-		Digest:          layerDigest,
-		DiffID:          layerInfo.DiffID,
-		CreatedBy:       layerInfo.CreatedBy,
-		OpaqueDirs:      opqDirs,
-		WhiteoutFiles:   whFiles,
-		OS:              result.OS,
-		Repository:      result.Repository,
-		PackageInfos:    result.PackageInfos,
-		Applications:    result.Applications,
-		Secrets:         result.Secrets,
-		Licenses:        result.Licenses,
-		CustomResources: result.CustomResources,
+		SchemaVersion:     types.BlobJSONSchemaVersion,
+		Digest:            layerDigest,
+		DiffID:            layerInfo.DiffID,
+		CreatedBy:         layerInfo.CreatedBy,
+		OpaqueDirs:        opqDirs,
+		WhiteoutFiles:     whFiles,
+		OS:                result.OS,
+		Repository:        result.Repository,
+		PackageInfos:      result.PackageInfos,
+		Applications:      result.Applications,
+		Misconfigurations: result.Misconfigurations,
+		Secrets:           result.Secrets,
+		Licenses:          result.Licenses,
+		CustomResources:   result.CustomResources,
 
 		// For Red Hat
 		BuildInfo: result.BuildInfo,
@@ -330,6 +359,55 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	}
 
 	return blobInfo, nil
+}
+
+// buildFS creates filesystem for post analysis
+func (a Artifact) buildFS(tmpDir, filePath string, info os.FileInfo, opener analyzer.Opener,
+	files *syncx.Map[analyzer.Type, *mapfs.FS]) error {
+	// Get all post-analyzers that want to analyze the file
+	atypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+	if len(atypes) == 0 {
+		return nil
+	}
+
+	// Create a temporary file to which the file in the layer will be copied
+	// so that all the files will not be loaded into memory
+	f, err := os.CreateTemp(tmpDir, "layer-file-*")
+	if err != nil {
+		return xerrors.Errorf("create temp error: %w", err)
+	}
+	defer f.Close()
+
+	// Open a file in the layer
+	r, err := opener()
+	if err != nil {
+		return xerrors.Errorf("file open error: %w", err)
+	}
+	defer r.Close()
+
+	// Copy file content into the temporary file
+	if _, err = io.Copy(f, r); err != nil {
+		return xerrors.Errorf("copy error: %w", err)
+	}
+
+	if err = os.Chmod(f.Name(), info.Mode()); err != nil {
+		return xerrors.Errorf("chmod error: %w", err)
+	}
+
+	// Create fs.FS for each post-analyzer that wants to analyze the current file
+	for _, at := range atypes {
+		fsys, _ := files.LoadOrStore(at, mapfs.New())
+		if dir := filepath.Dir(filePath); dir != "." {
+			if err := fsys.MkdirAll(dir, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
+				return xerrors.Errorf("mapfs mkdir error: %w", err)
+			}
+		}
+		err = fsys.WriteFile(filePath, f.Name())
+		if err != nil {
+			return xerrors.Errorf("mapfs write error: %w", err)
+		}
+	}
+	return nil
 }
 
 func (a Artifact) diffIDs(configFile *v1.ConfigFile) []string {

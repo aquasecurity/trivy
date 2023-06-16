@@ -20,10 +20,14 @@ import (
 	aos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
 	"github.com/deepfactor-io/trivy/pkg/fanal/log"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/mapfs"
+	"github.com/deepfactor-io/trivy/pkg/misconf"
+	"github.com/deepfactor-io/trivy/pkg/syncx"
 )
 
 var (
-	analyzers = map[Type]analyzer{}
+	analyzers     = map[Type]analyzer{}
+	postAnalyzers = map[Type]postAnalyzerInitialize{}
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("unknown OS")
@@ -40,8 +44,10 @@ var (
 // AnalyzerOptions is used to initialize analyzers
 type AnalyzerOptions struct {
 	Group                Group
+	Slow                 bool
 	FilePatterns         []string
 	DisabledAnalyzers    []Type
+	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  SecretScannerOption
 	LicenseScannerOption LicenseScannerOption
 }
@@ -52,7 +58,8 @@ type SecretScannerOption struct {
 
 type LicenseScannerOption struct {
 	// Use license classifier to get better results though the classification is expensive.
-	Full bool
+	Full                      bool
+	ClassifierConfidenceLevel float64
 }
 
 ////////////////
@@ -71,6 +78,13 @@ type analyzer interface {
 	Required(filePath string, info os.FileInfo) bool
 }
 
+type PostAnalyzer interface {
+	Type() Type
+	Version() int
+	PostAnalyze(ctx context.Context, input PostAnalysisInput) (*AnalysisResult, error)
+	Required(filePath string, info os.FileInfo) bool
+}
+
 ////////////////////
 // Analyzer group //
 ////////////////////
@@ -80,7 +94,19 @@ type Group string
 const GroupBuiltin Group = "builtin"
 
 func RegisterAnalyzer(analyzer analyzer) {
+	if _, ok := analyzers[analyzer.Type()]; ok {
+		log.Logger.Fatalf("analyzer %s is registered twice", analyzer.Type())
+	}
 	analyzers[analyzer.Type()] = analyzer
+}
+
+type postAnalyzerInitialize func(options AnalyzerOptions) (PostAnalyzer, error)
+
+func RegisterPostAnalyzer(t Type, initializer postAnalyzerInitialize) {
+	if _, ok := postAnalyzers[t]; ok {
+		log.Logger.Fatalf("analyzer %s is registered twice", t)
+	}
+	postAnalyzers[t] = initializer
 }
 
 // DeregisterAnalyzer is mainly for testing
@@ -97,8 +123,9 @@ type CustomGroup interface {
 type Opener func() (dio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
-	analyzers    []analyzer
-	filePatterns map[Type][]*regexp.Regexp
+	analyzers     []analyzer
+	postAnalyzers []PostAnalyzer
+	filePatterns  map[Type][]*regexp.Regexp
 }
 
 ///////////////////////////
@@ -114,8 +141,14 @@ type AnalysisInput struct {
 	Options AnalysisOptions
 }
 
+type PostAnalysisInput struct {
+	FS      fs.FS
+	Options AnalysisOptions
+}
+
 type AnalysisOptions struct {
-	Offline bool
+	Offline      bool
+	FileChecksum bool
 }
 
 type AnalysisResult struct {
@@ -124,12 +157,10 @@ type AnalysisResult struct {
 	Repository           *types.Repository
 	PackageInfos         []types.PackageInfo
 	Applications         []types.Application
+	Misconfigurations    []types.Misconfiguration
 	Secrets              []types.Secret
 	Licenses             []types.LicenseFile
 	SystemInstalledFiles []string // A list of files installed by OS package manager
-
-	// Files holds necessary file contents for the respective post-handler
-	Files map[types.HandlerType][]types.File
 
 	// Digests contains SHA-256 digests of unpackaged files
 	// used to search for SBOM attestation.
@@ -145,14 +176,13 @@ type AnalysisResult struct {
 
 func NewAnalysisResult() *AnalysisResult {
 	result := new(AnalysisResult)
-	result.Files = map[types.HandlerType][]types.File{}
 	return result
 }
 
 func (r *AnalysisResult) isEmpty() bool {
 	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
-		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
-		r.BuildInfo == nil && len(r.Files) == 0 && len(r.Digests) == 0 && len(r.CustomResources) == 0
+		len(r.Misconfigurations) == 0 && len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
+		r.BuildInfo == nil && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
 
 func (r *AnalysisResult) Sort() {
@@ -184,11 +214,10 @@ func (r *AnalysisResult) Sort() {
 		return r.CustomResources[i].FilePath < r.CustomResources[j].FilePath
 	})
 
-	for _, files := range r.Files {
-		sort.Slice(files, func(i, j int) bool {
-			return files[i].Path < files[j].Path
-		})
-	}
+	// Misconfigurations
+	sort.Slice(r.Misconfigurations, func(i, j int) bool {
+		return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
+	})
 
 	// Secrets
 	sort.Slice(r.Secrets, func(i, j int) bool {
@@ -245,14 +274,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 		r.Digests = lo.Assign(r.Digests, new.Digests)
 	}
 
-	for t, files := range new.Files {
-		if v, ok := r.Files[t]; ok {
-			r.Files[t] = append(v, files...)
-		} else {
-			r.Files[t] = files
-		}
-	}
-
+	r.Misconfigurations = append(r.Misconfigurations, new.Misconfigurations...)
 	r.Secrets = append(r.Secrets, new.Secrets...)
 	r.Licenses = append(r.Licenses, new.Licenses...)
 	r.SystemInstalledFiles = append(r.SystemInstalledFiles, new.SystemInstalledFiles...)
@@ -336,18 +358,44 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 		group.analyzers = append(group.analyzers, a)
 	}
 
+	for analyzerType, init := range postAnalyzers {
+		a, err := init(opt)
+		if err != nil {
+			return AnalyzerGroup{}, xerrors.Errorf("post-analyzer init error: %w", err)
+		}
+		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
+			continue
+		}
+		group.postAnalyzers = append(group.postAnalyzers, a)
+	}
+
 	return group, nil
 }
 
-// AnalyzerVersions returns analyzer version identifier used for cache keys.
-func (ag AnalyzerGroup) AnalyzerVersions() map[string]int {
-	versions := map[string]int{}
-	for _, a := range ag.analyzers {
-		versions[string(a.Type())] = a.Version()
-	}
-	return versions
+type Versions struct {
+	Analyzers     map[string]int
+	PostAnalyzers map[string]int
 }
 
+// AnalyzerVersions returns analyzer version identifier used for cache keys.
+func (ag AnalyzerGroup) AnalyzerVersions() Versions {
+	analyzerVersions := map[string]int{}
+	for _, a := range ag.analyzers {
+		analyzerVersions[string(a.Type())] = a.Version()
+	}
+	postAnalyzerVersions := map[string]int{}
+	for _, a := range ag.postAnalyzers {
+		postAnalyzerVersions[string(a.Type())] = a.Version()
+	}
+	return Versions{
+		Analyzers:     analyzerVersions,
+		PostAnalyzers: postAnalyzerVersions,
+	}
+}
+
+// AnalyzeFile determines which files are required by the analyzers based on the file name and attributes,
+// and passes only those files to the analyzer for analysis.
+// This function may be called concurrently and must be thread-safe.
 func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, terminateWalk *bool, terminateError *string, limit *semaphore.Weighted, result *AnalysisResult,
 	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions) error {
 	// if a goroutine encountered an error while analyzing the file then skip further processing
@@ -409,12 +457,52 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, ter
 				}
 				return
 			}
-			if ret != nil {
-				result.Merge(ret)
-			}
+			result.Merge(ret)
 		}(a, rc)
 	}
 
+	return nil
+}
+
+// RequiredPostAnalyzers returns a list of analyzer types that require the given file.
+func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo) []Type {
+	if info.IsDir() {
+		return nil
+	}
+	var postAnalyzerTypes []Type
+	for _, a := range ag.postAnalyzers {
+		if ag.filePatternMatch(a.Type(), filePath) || a.Required(filePath, info) {
+			postAnalyzerTypes = append(postAnalyzerTypes, a.Type())
+		}
+	}
+	return postAnalyzerTypes
+}
+
+// PostAnalyze passes a virtual filesystem containing only required files
+// and passes it to the respective post-analyzer.
+// The obtained results are merged into the "result".
+// This function may be called concurrently and must be thread-safe.
+func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, *mapfs.FS], result *AnalysisResult, opts AnalysisOptions) error {
+	for _, a := range ag.postAnalyzers {
+		fsys, ok := files.Load(a.Type())
+		if !ok {
+			continue
+		}
+
+		filteredFS, err := fsys.Filter(result.SystemInstalledFiles)
+		if err != nil {
+			return xerrors.Errorf("unable to filter filesystem: %w", err)
+		}
+
+		res, err := a.PostAnalyze(ctx, PostAnalysisInput{
+			FS:      filteredFS,
+			Options: opts,
+		})
+		if err != nil {
+			return xerrors.Errorf("post analysis error: %w", err)
+		}
+		result.Merge(res)
+	}
 	return nil
 }
 

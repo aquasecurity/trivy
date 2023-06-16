@@ -61,6 +61,19 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path amazon linux 2023",
+			input: analyzer.AnalysisInput{
+				FilePath: "usr/lib/system-release",
+				Content:  strings.NewReader(`Amazon Linux release 2023 (Amazon Linux)`),
+			},
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: aos.Amazon,
+					Name:   "2023 (Amazon Linux)",
+				},
+			},
+		},
+		{
 			name: "sad path amazon linux 2 without code name",
 			input: analyzer.AnalysisInput{
 				FilePath: "etc/system-release",

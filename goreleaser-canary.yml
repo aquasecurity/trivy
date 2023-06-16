@@ -23,13 +23,13 @@ builds:
 archives:
   -
     format: tar.gz
-    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
-    replacements:
-      amd64: 64bit
-      arm64: ARM64
-      darwin: macOS
-      linux: Linux
-      windows: Windows
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_
+      {{- if eq .Os "darwin" }}macOS
+      {{- else}}{{- title .Os }}{{ end }}-
+      {{- if eq .Arch "amd64" }}64bit
+      {{- else if eq .Arch "arm64" }}ARM64
+      {{- else }}{{ .Arch }}{{ end }}
     files:
       - README.md
       - LICENSE

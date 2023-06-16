@@ -16,10 +16,14 @@ func namespaceRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) e
 	if err := validateReportArguments(opts); err != nil {
 		return err
 	}
+	var trivyk trivyk8s.TrivyK8S
+	if opts.AllNamespaces {
+		trivyk = trivyk8s.New(cluster, log.Logger).AllNamespaces()
+	} else {
+		trivyk = trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
+	}
 
-	trivyk8s := trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
-
-	artifacts, err := trivyk8s.ListArtifacts(ctx)
+	artifacts, err := trivyk.ListArtifacts(ctx)
 	if err != nil {
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
