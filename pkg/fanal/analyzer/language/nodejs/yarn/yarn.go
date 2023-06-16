@@ -293,35 +293,23 @@ func (a yarnAnalyzer) extractLicensesFromCache(fsys fs.FS, root string, licenses
 		return nil
 	}
 
+	required := func(path string, _ fs.DirEntry) bool {
+		return filepath.Ext(path) == ".zip"
+	}
+
 	// Traverse .yarn/cache dir and find licenses in zip files
-	err := fs.WalkDir(fsys, cachePath, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		} else if !d.Type().IsRegular() || filepath.Ext(path) != ".zip" {
-			return nil
-		}
-
-		zf, err := fsys.Open(path)
-		if err != nil {
-			return xerrors.Errorf("file open error: %w", err)
-		}
-		file, ok := zf.(dio.ReadSeekCloserAt)
-		if !ok {
-			return xerrors.Errorf("type assertion error: %w", err)
-		}
-		defer zf.Close()
-
-		fi, err := zf.Stat()
+	err := fsutils.WalkDir(fsys, cachePath, required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+		fi, err := d.Info()
 		if err != nil {
 			return xerrors.Errorf("file stat error: %w", err)
 		}
 
-		r, err := zip.NewReader(file, fi.Size())
+		zr, err := zip.NewReader(r, fi.Size())
 		if err != nil {
 			return xerrors.Errorf("zip reader error: %w", err)
 		}
 
-		for _, f := range r.File {
+		for _, f := range zr.File {
 			if filepath.Base(f.Name) != types.NpmPkg {
 				continue
 			}
