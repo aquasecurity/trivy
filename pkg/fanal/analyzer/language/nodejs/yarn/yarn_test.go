@@ -230,8 +230,12 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			dir:  "testdata/unsupported_protocol",
 			want: &analyzer.AnalysisResult{},
 		},
+		// docker run --rm -it node@sha256:2d5e8a8a51bc341fd5f2eed6d91455c3a3d147e91a14298fc564b5dc519c1666 sh
+		// mkdir test && cd "$_"
 		// yarn set version 3.4.1
-		// yarn add @esbuild/darwin-arm64@0.18.2 is-odd@3.0.1
+		// yarn add is-callable@1.2.7 is-odd@3.0.1
+		// yarn unplug is-callable@1.2.7
+		// rm .yarn/cache/is-callable-npm*
 		{
 			name: "parse licenses (yarn v2+)",
 			dir:  "testdata/yarn-licenses",
@@ -242,14 +246,14 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Libraries: []types.Package{
 							{
-								ID:       "@esbuild/darwin-arm64@0.18.2",
-								Name:     "@esbuild/darwin-arm64",
-								Version:  "0.18.2",
+								ID:       "is-callable@1.2.7",
+								Name:     "is-callable",
+								Version:  "1.2.7",
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
 										StartLine: 8,
-										EndLine:   14,
+										EndLine:   13,
 									},
 								},
 							},
@@ -261,8 +265,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Indirect: true,
 								Locations: []types.Location{
 									{
-										StartLine: 16,
-										EndLine:   21,
+										StartLine: 15,
+										EndLine:   20,
 									},
 								},
 							},
@@ -274,8 +278,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"is-number@6.0.0"},
 								Locations: []types.Location{
 									{
-										StartLine: 23,
-										EndLine:   30,
+										StartLine: 22,
+										EndLine:   29,
 									},
 								},
 							},
@@ -284,8 +288,11 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
+
+		// docker run --rm -it node@sha256:2d5e8a8a51bc341fd5f2eed6d91455c3a3d147e91a14298fc564b5dc519c1666 sh
+		// mkdir test && cd "$_"
 		// yarn set version 1.22.19
-		// yarn add @esbuild/darwin-arm64@0.18.2 is-odd@3.0.1
+		// yarn add is-callable@1.2.7 is-odd@3.0.1
 		{
 			name: "parse licenses (yarn classic)",
 			dir:  "testdata/yarn-classic-licenses",
@@ -296,9 +303,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Libraries: []types.Package{
 							{
-								ID:       "@esbuild/darwin-arm64@0.18.2",
-								Name:     "@esbuild/darwin-arm64",
-								Version:  "0.18.2",
+								ID:       "is-callable@1.2.7",
+								Name:     "is-callable",
+								Version:  "1.2.7",
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{

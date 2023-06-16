@@ -5,11 +5,10 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@esbuild/darwin-arm64@npm:^0.18.2":
-  version: 0.18.2
-  resolution: "@esbuild/darwin-arm64@npm:0.18.2"
-  checksum: 1d6a35ed82fa9f4490cf881e3ba5e7a78fb601d19cbbd03b3760c52600ac8d13e96ef1793f910865f45abf4dc38645e1d16ecc8ed8a1ab8b9a72e05e80f3cb7a
-  conditions: os=darwin & cpu=arm64
+"is-callable@npm:1.2.7":
+  version: 1.2.7
+  resolution: "is-callable@npm:1.2.7"
+  checksum: 61fd57d03b0d984e2ed3720fb1c7a897827ea174bd44402878e059542ea8c4aeedee0ea0985998aa5cc2736b2fa6e271c08587addb5b3959ac52cf665173d1ac
   languageName: node
   linkType: hard
 
@@ -20,7 +19,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-odd@npm:^3.0.1":
+"is-odd@npm:3.0.1":
   version: 3.0.1
   resolution: "is-odd@npm:3.0.1"
   dependencies:
@@ -29,11 +28,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yarn-3-licenses@workspace:.":
+"root-workspace-0b6124@workspace:.":
   version: 0.0.0-use.local
-  resolution: "yarn-3-licenses@workspace:."
+  resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@esbuild/darwin-arm64": ^0.18.2
-    is-odd: ^3.0.1
+    is-callable: 1.2.7
+    is-odd: 3.0.1
+  dependenciesMeta:
+    is-callable@1.2.7:
+      unplugged: true
   languageName: unknown
   linkType: soft
