@@ -373,11 +373,6 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
-			name:     "happy path package.json",
-			filePath: "test/package.json",
-			want:     true,
-		},
-		{
 			name:     "sad path",
 			filePath: "test/package-lock.json",
 			want:     false,
@@ -391,6 +386,16 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			name:     "not a yarn cache",
 			filePath: "cache/is-number-npm-6.0.0-30881e83e6-f73bfced03.zip",
 			want:     false,
+		},
+		{
+			name:     "bad path for package.json",
+			filePath: "node_modules/resolve/test/resolver/malformed_package_json/package.json",
+			want:     false,
+		},
+		{
+			name:     "package.json in the package",
+			filePath: "node_modules/resolve/package.json",
+			want:     true,
 		},
 	}
 	for _, tt := range tests {
