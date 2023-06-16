@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
@@ -101,7 +102,16 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	return fileName == types.YarnLock || fileName == types.NpmPkg
+	if fileName == types.YarnLock || fileName == types.NpmPkg {
+		return true
+	}
+
+	// The path is slashed in analyzers.
+	dirs := strings.Split(path.Dir(filePath), "/")
+	l := len(dirs)
+	// valid path to zip file - **/.yarn/cache/*.zip
+	return len(dirs) > 1 && dirs[l-2] == ".yarn" && dirs[l-1] == "cache" && path.Ext(fileName) == ".zip"
+
 }
 
 func (a yarnAnalyzer) Type() analyzer.Type {

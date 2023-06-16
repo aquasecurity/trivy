@@ -382,6 +382,16 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			filePath: "test/package-lock.json",
 			want:     false,
 		},
+		{
+			name:     "yarn cache",
+			filePath: ".yarn/cache/websocket-driver-npm-0.7.4-a72739da70-fffe5a33fe.zip",
+			want:     true,
+		},
+		{
+			name:     "not a yarn cache",
+			filePath: "cache/is-number-npm-6.0.0-30881e83e6-f73bfced03.zip",
+			want:     false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
