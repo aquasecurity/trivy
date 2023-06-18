@@ -49,7 +49,7 @@ func fixtureContainerImages() error {
 
 func fixtureVMImages() error {
 	const (
-		testVMImages    = "ghcr.io/aquasecurity/trivy-test-vm-images"
+		testVMImages    = "ghcr.io/aquasecurity/trivy-test-vm-images2"
 		titleAnnotation = "org.opencontainers.image.title"
 		dir             = "integration/testdata/fixtures/vm-images/"
 	)
