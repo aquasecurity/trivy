@@ -417,7 +417,11 @@ replace k8s.io/kubectl => k8s.io/kubectl v0.26.3
 // kubectl v0.27.2 is incompatibale with helm v3.11.1
 // helm v3.12.1 is compatibale with oras v1.1.1
 // oras 1.2.2 is incompatible with github.com/docker/docker v23.0.0-rc.1+incompatible
+<<<<<<< HEAD
 replace github.com/docker/docker => github.com/docker/docker v20.10.24+incompatible
 >>>>>>> 20486b0d1 (chore: update sum db)
 =======
 >>>>>>> f91a68d29 (feat: kubernetes bill of materials)
+=======
+replace oras.land/oras-go => oras.land/oras-go v1.2.3
+>>>>>>> 88ec55d99 (feat: kubernetes bill of materials)
