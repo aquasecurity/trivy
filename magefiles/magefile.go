@@ -272,7 +272,7 @@ func (t Test) VM() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...")
 }
 
-// UpdateGolden updates golden files for integration tests
+// UpdateVMGolden updates golden files for integration tests
 func (Test) UpdateVMGolden() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
 }
