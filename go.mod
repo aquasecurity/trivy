@@ -14,7 +14,11 @@ require (
 	github.com/alicebob/miniredis/v2 v2.30.3
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/defsec v0.89.0
+<<<<<<< HEAD
 	github.com/aquasecurity/go-dep-parser v0.0.0-20230614075854-30b52f543be9
+=======
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230605080024-b71d9356a6c6
+>>>>>>> f91a68d29 (feat: kubernetes bill of materials)
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -297,8 +301,8 @@ require (
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/moby/locker v1.0.1 // indirect
+	github.com/moby/patternmatcher v0.5.0 // indirect
 	github.com/moby/spdystream v0.2.0 // indirect
-	github.com/moby/sys/mount v0.3.3 // indirect
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/moby/sys/signal v0.7.0 // indirect
@@ -400,14 +404,20 @@ require (
 )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f91a68d29 (feat: kubernetes bill of materials)
 // v1.2.0 is taken from github.com/open-policy-agent/opa v0.42.0
 // v1.2.0 incompatible with github.com/docker/docker v23.0.0-rc.1+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.1.1
 
 replace k8s.io/kubectl => k8s.io/kubectl v0.26.3
+<<<<<<< HEAD
 =======
 // kubectl v0.27.2 is incompatibale with helm v3.11.1
 // helm v3.12.1 is compatibale with oras v1.1.1
 // oras 1.2.2 is incompatible with github.com/docker/docker v23.0.0-rc.1+incompatible
 replace github.com/docker/docker => github.com/docker/docker v20.10.24+incompatible
 >>>>>>> 20486b0d1 (chore: update sum db)
+=======
+>>>>>>> f91a68d29 (feat: kubernetes bill of materials)
