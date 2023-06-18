@@ -91,7 +91,7 @@ func TestVM(t *testing.T) {
 			// Set up the output file
 			outputFile := filepath.Join(tmpDir, "output.json")
 			if *update {
-				outputFile = tt.golden
+				outputFile = filepath.Join(currentDir, tt.golden)
 			}
 
 			// Get the absolute path of the golden file
