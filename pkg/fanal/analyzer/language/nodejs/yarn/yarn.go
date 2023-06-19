@@ -112,7 +112,7 @@ func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		yarnPath := filepath.Join(dir, types.YarnLock)
 		// package.json is associated with yarn.lock and does not relate to dependency
 		if _, err := os.Stat(yarnPath); errors.Is(err, os.ErrNotExist) {
-			return true
+			return false
 		}
 	}
 
