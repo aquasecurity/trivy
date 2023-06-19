@@ -249,8 +249,7 @@ func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, path string, fn traver
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 		}
-		fn(pkg)
-		return nil
+		return fn(pkg)
 	})
 	if err != nil {
 		return xerrors.Errorf("walk error: %w", err)
