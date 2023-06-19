@@ -101,13 +101,23 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 }
 
 func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	fileName := filepath.Base(filePath)
+	dir, fileName := filepath.Split(filePath)
 	if fileName == types.YarnLock {
 		return true
 	}
 
+	dir = strings.TrimRight(dir, "/")
+
+	if fileName == types.NpmPkg {
+		yarnPath := filepath.Join(dir, types.YarnLock)
+		// package.json is associated with yarn.lock and does not relate to dependency
+		if _, err := os.Stat(yarnPath); errors.Is(err, os.ErrNotExist) {
+			return true
+		}
+	}
+
 	// The path is slashed in analyzers.
-	dirs := strings.Split(path.Dir(filePath), "/")
+	dirs := strings.Split(dir, "/")
 	l := len(dirs)
 	// Valid path to the zip file - **/.yarn/cache/*.zip
 	if l > 1 && dirs[l-2] == ".yarn" && dirs[l-1] == "cache" && path.Ext(fileName) == ".zip" {

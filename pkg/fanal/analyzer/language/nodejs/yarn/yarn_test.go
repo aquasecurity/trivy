@@ -397,6 +397,11 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			filePath: "node_modules/resolve/package.json",
 			want:     true,
 		},
+		{
+			name:     "package.json with yarn.lock",
+			filePath: "testdata/happy/package.json",
+			want:     true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
