@@ -45,7 +45,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 						},
 						},
 						"Properties": map[string]string{
-							"control_plane_components": "kube-apiserver",
+							"ControlPlaneComponents": "kube-apiserver",
 						},
 						"Name":      "kube-apiserver-kind-control-plane",
 						"Namespace": "kube-system",
@@ -62,11 +62,11 @@ func TestK8sClusterInfoReport(t *testing.T) {
 						"NodeName":                "kind-control-plane",
 						"OsImage":                 "Ubuntu 21.04",
 						"Properties": map[string]string{
-							"architecture":     "arm64",
-							"host_name":        "kind-control-plane",
-							"kernel_version":   "6.2.15-300.fc38.aarch64",
-							"node_role":        "master",
-							"operating_system": "linux",
+							"Architecture":    "arm64",
+							"HostName":        "kind-control-plane",
+							"KernelVersion":   "6.2.15-300.fc38.aarch64",
+							"NodeRole":        "master",
+							"OperatingSystem": "linux",
 						},
 					},
 				},
@@ -79,7 +79,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 						Type: cdx.ComponentTypeApplication,
 						Name: "kube-apiserver-kind-control-plane",
 						Properties: map[string]string{
-							"control_plane_components": "kube-apiserver",
+							"ControlPlaneComponents": "kube-apiserver",
 						},
 						Components: []*core.Component{
 							{
@@ -113,11 +113,11 @@ func TestK8sClusterInfoReport(t *testing.T) {
 						Type: cdx.ComponentTypeContainer,
 						Name: "kind-control-plane",
 						Properties: map[string]string{
-							"architecture":     "arm64",
-							"host_name":        "kind-control-plane",
-							"kernel_version":   "6.2.15-300.fc38.aarch64",
-							"node_role":        "master",
-							"operating_system": "linux",
+							"Architecture":    "arm64",
+							"HostName":        "kind-control-plane",
+							"KernelVersion":   "6.2.15-300.fc38.aarch64",
+							"NodeRole":        "master",
+							"OperatingSystem": "linux",
 						},
 						Components: []*core.Component{
 							{

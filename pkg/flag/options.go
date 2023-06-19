@@ -121,6 +121,11 @@ func (o *Options) Align() {
 		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
 		o.Scanners = nil
 	}
+
+	if o.Format == report.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
+		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning`)
+		o.Scanners = nil
+	}
 }
 
 // RegistryOpts returns options for OCI registries
