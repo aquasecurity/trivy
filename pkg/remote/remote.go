@@ -91,7 +91,7 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 
 // Referrers is a wrapper of google/go-containerregistry/pkg/v1/remote.Referrers
 // so that it can try multiple authentication methods.
-func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions) (*v1.IndexManifest, error) {
+func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions) (v1.ImageIndex, error) {
 	transport := httpTransport(option.Insecure)
 
 	var errs error
