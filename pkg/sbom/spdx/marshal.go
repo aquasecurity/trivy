@@ -274,7 +274,7 @@ func (m *Marshaler) rootPackage(r types.Report, pkgDownloadLocation string) (*sp
 
 	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", r.ArtifactName, r.ArtifactType))
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s package ID: %w", err, pkgID)
+		return nil, xerrors.Errorf("failed to get %s package ID: %w", pkgID, err)
 	}
 
 	pkgPurpose := PackagePurposeSource
@@ -391,7 +391,7 @@ func (m *Marshaler) pkgFiles(pkg ftypes.Package) ([]*spdx.File, error) {
 
 	file, err := m.parseFile(pkg.FilePath, pkg.Digest)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse file: %w", file)
+		return nil, xerrors.Errorf("failed to parse file: %w", err)
 	}
 	return []*spdx.File{
 		&file,
