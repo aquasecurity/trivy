@@ -15,6 +15,10 @@
     "framework",
     "web"
   ],
+  "workspaces": [
+    "packages/*",
+    "backend"
+  ],
   "homepage": "https://getbootstrap.com/",
   "author": "The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)",
   "contributors": [

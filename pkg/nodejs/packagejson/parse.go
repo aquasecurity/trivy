@@ -2,10 +2,10 @@ package packagejson
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 	"io"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 	"golang.org/x/xerrors"
 )
 
@@ -15,12 +15,14 @@ type packageJSON struct {
 	License              interface{}       `json:"license"`
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
+	Workspaces           []string          `json:"workspaces"`
 }
 
 type Package struct {
 	types.Library
 	Dependencies         map[string]string
 	OptionalDependencies map[string]string
+	Workspaces           []string
 }
 
 type Parser struct{}
@@ -50,6 +52,7 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 		},
 		Dependencies:         pkgJSON.Dependencies,
 		OptionalDependencies: pkgJSON.OptionalDependencies,
+		Workspaces:           pkgJSON.Workspaces,
 	}, nil
 }
 

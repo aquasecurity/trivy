@@ -40,6 +40,10 @@ func TestParse(t *testing.T) {
 				OptionalDependencies: map[string]string{
 					"colors": "^1.4.0",
 				},
+				Workspaces: []string{
+					"packages/*",
+					"backend",
+				},
 			},
 		},
 		{
