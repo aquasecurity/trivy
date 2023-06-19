@@ -387,21 +387,6 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			filePath: "cache/is-number-npm-6.0.0-30881e83e6-f73bfced03.zip",
 			want:     false,
 		},
-		{
-			name:     "bad path for package.json",
-			filePath: "node_modules/resolve/test/resolver/malformed_package_json/package.json",
-			want:     false,
-		},
-		{
-			name:     "package.json in the package",
-			filePath: "node_modules/resolve/package.json",
-			want:     true,
-		},
-		{
-			name:     "package.json with yarn.lock",
-			filePath: "testdata/happy/package.json",
-			want:     true,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -101,31 +101,14 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 }
 
 func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	dir, fileName := filepath.Split(filePath)
-	if fileName == types.YarnLock {
+	dirs, fileName := splitPath(filePath)
+	if fileName == types.YarnLock || fileName == types.NpmPkg {
 		return true
 	}
-
-	dir = strings.TrimRight(dir, "/")
-
-	if fileName == types.NpmPkg {
-		yarnPath := filepath.Join(dir, types.YarnLock)
-		// package.json is associated with yarn.lock and does not relate to dependency
-		if _, err := os.Stat(yarnPath); errors.Is(err, os.ErrNotExist) {
-			return false
-		}
-	}
-
 	// The path is slashed in analyzers.
-	dirs := strings.Split(dir, "/")
 	l := len(dirs)
 	// Valid path to the zip file - **/.yarn/cache/*.zip
 	if l > 1 && dirs[l-2] == ".yarn" && dirs[l-1] == "cache" && path.Ext(fileName) == ".zip" {
-		return true
-	}
-
-	// The file path to package.json - */node_modules/<package_name>/package.json
-	if l > 1 && dirs[len(dirs)-2] == "node_modules" && fileName == types.NpmPkg {
 		return true
 	}
 
@@ -245,16 +228,34 @@ func (a yarnAnalyzer) traversePkgs(fsys fs.FS, lockPath string, fn traverseFunc)
 	return a.traverseYarnClassicPkgs(fsys, nodeModulesPath, fn)
 }
 
-func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, path string, fn traverseFunc) error {
-	// Parse package.json
-	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == types.NpmPkg
+func isNodeModulesPkg(path string, _ fs.DirEntry) bool {
+	// We can't check for sure whether the package.json is valid in `Required` fn.
+	// For example, package.json can be located near yarn.lock, then it fits,
+	// or in the package tests in node_modules - then not.
+	// That's why we add all the package.json and filter them later.
+	dirs, fileName := splitPath(path)
+	nodeModulesIdx := len(dirs) - 2
+	// the scope starts with "@" https://docs.npmjs.com/cli/v9/using-npm/scope
+	if len(dirs) > 2 && strings.HasPrefix(dirs[len(dirs)-2], "@") {
+		nodeModulesIdx -= 1
 	}
+	// The file path to package.json - */node_modules/<package_name>/package.json
+	// or */node_modules/@<scope_name>/<package_name>/package.json
+	return len(dirs) > 1 && dirs[nodeModulesIdx] == "node_modules" && fileName == types.NpmPkg
+}
 
+func splitPath(path string) (dirs []string, fileName string) {
+	dir, fileName := filepath.Split(path)
+	dir = strings.TrimRight(dir, "/")
+	dirs = strings.Split(dir, "/")
+	return dirs, fileName
+}
+
+func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, path string, fn traverseFunc) error {
 	// Traverse node_modules dir
 	// Note that fs.FS is always slashed regardless of the platform,
 	// and path.Join should be used rather than filepath.Join.
-	err := fsutils.WalkDir(fsys, path, required, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(fsys, path, isNodeModulesPkg, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
@@ -287,19 +288,13 @@ func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS, root string, fn travers
 
 func (a yarnAnalyzer) traverseUnpluggedFolder(fsys fs.FS, root string, fn traverseFunc) error {
 	// `unplugged` hold machine-specific build artifacts
-
-	// Parse package.json
-	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == types.NpmPkg
-	}
-
 	unpluggedPath := path.Join(root, "unplugged")
 	if _, err := fs.Stat(fsys, unpluggedPath); err != nil {
 		return nil
 	}
 
 	// Traverse .yarn/unplugged dir
-	err := fsutils.WalkDir(fsys, unpluggedPath, required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(fsys, unpluggedPath, isNodeModulesPkg, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", path, err)
