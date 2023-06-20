@@ -137,6 +137,9 @@ func httpTransport(insecure bool) *http.Transport {
 func httpTransportWithMtls(insecure bool, clientCert []byte, clientKey []byte) (*http.Transport, error) {
 	tr := httpTransport(insecure)
 	caCertPool, err := x509.SystemCertPool()
+	if err != nil {
+		return nil, err
+	}
 	cert, err := tls.X509KeyPair(clientCert, clientKey)
 	if err != nil {
 		return nil, err
