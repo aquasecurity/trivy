@@ -37,15 +37,16 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 		return Package{}, xerrors.Errorf("JSON decode error: %w", err)
 	}
 
+	var id string
 	// Name and version fields are optional
 	// https://docs.npmjs.com/cli/v9/configuring-npm/package-json#name
-	if pkgJSON.Name == "" || pkgJSON.Version == "" {
-		return Package{}, nil
+	if pkgJSON.Name != "" && pkgJSON.Version != "" {
+		id = utils.PackageID(pkgJSON.Name, pkgJSON.Version)
 	}
 
 	return Package{
 		Library: types.Library{
-			ID:      utils.PackageID(pkgJSON.Name, pkgJSON.Version),
+			ID:      id,
 			Name:    pkgJSON.Name,
 			Version: pkgJSON.Version,
 			License: parseLicense(pkgJSON.License),

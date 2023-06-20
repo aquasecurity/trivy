@@ -62,7 +62,12 @@ func TestParse(t *testing.T) {
 		{
 			name:      "happy path - version doesn't exist",
 			inputFile: "testdata/without_version_package.json",
-			want:      packagejson.Package{},
+			want: packagejson.Package{
+				Library: types.Library{
+					ID:   "",
+					Name: "angular",
+				},
+			},
 		},
 		{
 			name:      "sad path",
@@ -73,6 +78,15 @@ func TestParse(t *testing.T) {
 			// npm install --save promise jquery
 			// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
 			wantErr: "JSON decode error",
+		},
+		{
+			name:      "without name and version",
+			inputFile: "testdata/without_name_and_version_package.json",
+			want: packagejson.Package{
+				Library: types.Library{
+					License: "MIT",
+				},
+			},
 		},
 	}
 
