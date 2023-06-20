@@ -19,6 +19,11 @@ func TestLicenseSplitRegexp(t *testing.T) {
 			[]string{"GPL-1+", "GPL-2"},
 		},
 		{
+			"simple list commad-separated",
+			"GPL-1+,GPL-2,GPL-3",
+			[]string{"GPL-1+", "GPL-2", "GPL-3"},
+		},
+		{
 			"3 licenses 'or'-separated",
 			"GPL-1+ or Artistic or Artistic-dist",
 			[]string{"GPL-1+", "Artistic", "Artistic-dist"},
@@ -40,13 +45,11 @@ func TestLicenseSplitRegexp(t *testing.T) {
 			"GPL-1+ or Artistic, and BSD-4-clause-POWERDOG",
 			[]string{"GPL-1+", "Artistic", "BSD-4-clause-POWERDOG"},
 		},
-		/*
-			{
-				"two licenses with version",
-				"BSD 3-Clause License or Apache License, Version 2.0",
-				[]string{"BSD 3-Clause License", "Apache License, Version 2.0"},
-			},
-		*/
+		{
+			"two licenses with version",
+			"BSD 3-Clause License or Apache License, Version 2.0",
+			[]string{"BSD 3-Clause License", "Apache License, Version 2.0"},
+		},
 	}
 
 	for _, tt := range tests {
