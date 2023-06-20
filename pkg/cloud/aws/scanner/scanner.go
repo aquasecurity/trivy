@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
 type AWSScanner struct {
@@ -77,13 +78,14 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 	policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
 	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
-
-	if len(option.RegoOptions.PolicyNamespaces) > 0 {
-		scannerOpts = append(
-			scannerOpts,
-			options.ScannerWithPolicyNamespaces(option.RegoOptions.PolicyNamespaces...),
-		)
+	dataFS, dataPaths, err := misconf.CreateDataFS(option.RegoOptions.DataPaths)
+	if err != nil {
+		log.Logger.Errorf("Could not load config data: %s", err)
 	}
+	scannerOpts = append(scannerOpts, options.ScannerWithDataDirs(dataPaths...))
+	scannerOpts = append(scannerOpts, options.ScannerWithDataFilesystem(dataFS))
+
+	scannerOpts = addPolicyNamespaces(option.RegoOptions.PolicyNamespaces, scannerOpts)
 
 	if option.Compliance.Spec.ID != "" {
 		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance.Spec.ID))
@@ -140,4 +142,13 @@ type defsecLogger struct {
 func (d *defsecLogger) Write(p []byte) (n int, err error) {
 	log.Logger.Debug("[defsec] " + strings.TrimSpace(string(p)))
 	return len(p), nil
+}
+func addPolicyNamespaces(namespaces []string, scannerOpts []options.ScannerOption) []options.ScannerOption {
+	if len(namespaces) > 0 {
+		scannerOpts = append(
+			scannerOpts,
+			options.ScannerWithPolicyNamespaces(namespaces...),
+		)
+	}
+	return scannerOpts
 }

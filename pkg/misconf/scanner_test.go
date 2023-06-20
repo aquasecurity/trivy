@@ -163,3 +163,19 @@ func Test_createPolicyFS(t *testing.T) {
 		assert.True(t, stat.IsDir())
 	})
 }
+
+func Test_createDataFS(t *testing.T) {
+	t.Run("outside pwd", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		require.NoError(t, os.MkdirAll(filepath.Join(tmpDir, "subdir/testdir"), 0750))
+		f, got, err := CreateDataFS([]string{filepath.Join(tmpDir, "subdir/testdir")}, "")
+		require.NoError(t, err)
+		assert.Equal(t, []string{"."}, got)
+
+		d, err := f.Open(tmpDir)
+		require.NoError(t, err)
+		stat, err := d.Stat()
+		require.NoError(t, err)
+		assert.True(t, stat.IsDir())
+	})
+}

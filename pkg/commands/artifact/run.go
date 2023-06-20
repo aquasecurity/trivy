@@ -578,7 +578,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Trace:                   opts.Trace,
 			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:             append(opts.PolicyPaths, downloadedPolicyPaths...),
-			DataPaths:               opts.DataPaths,
+			DataPaths:               append(opts.DataPaths, downloadedPolicyPaths...),
 			HelmValues:              opts.HelmValues,
 			HelmValueFiles:          opts.HelmValueFiles,
 			HelmFileValues:          opts.HelmFileValues,
