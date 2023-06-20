@@ -24,6 +24,7 @@ import (
 	k8sscanner "github.com/aquasecurity/defsec/pkg/scanners/kubernetes"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	tfscanner "github.com/aquasecurity/defsec/pkg/scanners/terraform"
+	tfpscanner "github.com/aquasecurity/defsec/pkg/scanners/terraformplan"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
@@ -36,6 +37,7 @@ var enabledDefsecTypes = map[detection.FileType]string{
 	detection.FileTypeDockerfile:     types.Dockerfile,
 	detection.FileTypeKubernetes:     types.Kubernetes,
 	detection.FileTypeHelm:           types.Helm,
+	detection.FileTypeTerraformPlan:  types.TerraformPlan,
 }
 
 type ScannerOption struct {
@@ -90,6 +92,10 @@ func NewTerraformScanner(filePatterns []string, opt ScannerOption) (*Scanner, er
 	return newScanner(detection.FileTypeTerraform, filePatterns, opt)
 }
 
+func NewTerraformPlanScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
+	return newScanner(detection.FileTypeTerraformPlan, filePatterns, opt)
+}
+
 func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) (*Scanner, error) {
 	opts, err := scannerOptions(t, opt)
 	if err != nil {
@@ -110,6 +116,8 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = k8sscanner.NewScanner(opts...)
 	case detection.FileTypeTerraform:
 		scanner = tfscanner.New(opts...)
+	case detection.FileTypeTerraformPlan:
+		scanner = tfpscanner.New(opts...)
 	}
 
 	return &Scanner{
@@ -251,6 +259,8 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 		opts = append(opts, tfscanner.ScannerWithTFVarsPaths(scannerOption.TerraformTFVars...))
 	}
 
+	opts = append(opts, tfscanner.ScannerWithAllDirectories(true))
+
 	return opts
 }
 
@@ -360,7 +370,7 @@ func ResultsToMisconf(configType string, scannerName string, results scan.Result
 		if !ok {
 			misconf = types.Misconfiguration{
 				FileType: configType,
-				FilePath: filePath,
+				FilePath: filepath.ToSlash(filePath), // defsec return OS-aware path
 			}
 		}
 

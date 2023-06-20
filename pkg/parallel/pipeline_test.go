@@ -2,6 +2,7 @@ package parallel_test
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"testing"
 
@@ -15,13 +16,13 @@ func TestPipeline_Do(t *testing.T) {
 	type field struct {
 		numWorkers int
 		items      []float64
-		onItem     func(float64) (float64, error)
+		onItem     func(context.Context, float64) (float64, error)
 	}
 	type testCase struct {
 		name    string
 		field   field
 		want    float64
-		wantErr bool
+		wantErr require.ErrorAssertionFunc
 	}
 	tests := []testCase{
 		{
@@ -40,11 +41,12 @@ func TestPipeline_Do(t *testing.T) {
 					9,
 					10,
 				},
-				onItem: func(f float64) (float64, error) {
+				onItem: func(_ context.Context, f float64) (float64, error) {
 					return math.Pow(f, 2), nil
 				},
 			},
-			want: 385,
+			want:    385,
+			wantErr: require.NoError,
 		},
 		{
 			name: "ceil",
@@ -60,11 +62,41 @@ func TestPipeline_Do(t *testing.T) {
 					-2.2,
 					-3.3,
 				},
-				onItem: func(f float64) (float64, error) {
+				onItem: func(_ context.Context, f float64) (float64, error) {
 					return math.Round(f), nil
 				},
 			},
-			want: 10,
+			want:    10,
+			wantErr: require.NoError,
+		},
+		{
+			name: "error in series",
+			field: field{
+				numWorkers: 1,
+				items: []float64{
+					1,
+					2,
+					3,
+				},
+				onItem: func(_ context.Context, f float64) (float64, error) {
+					return 0, fmt.Errorf("error")
+				},
+			},
+			wantErr: require.Error,
+		},
+		{
+			name: "error in parallel",
+			field: field{
+				numWorkers: 3,
+				items: []float64{
+					1,
+					2,
+				},
+				onItem: func(_ context.Context, f float64) (float64, error) {
+					return 0, fmt.Errorf("error")
+				},
+			},
+			wantErr: require.Error,
 		},
 	}
 	for _, tt := range tests {
@@ -75,7 +107,7 @@ func TestPipeline_Do(t *testing.T) {
 				return nil
 			})
 			err := p.Do(context.Background())
-			require.NoError(t, err)
+			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

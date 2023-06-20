@@ -1,7 +1,6 @@
 package spec_test
 
 import (
-	"fmt"
 	"sort"
 	"testing"
 
@@ -126,7 +125,7 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 				Spec: tt.spec,
 			}
 			got, err := cs.Scanners()
-			if !tt.wantErr(t, err, fmt.Sprintf("Scanners()")) {
+			if !tt.wantErr(t, err, "Scanners()") {
 				return
 			}
 			sort.Slice(got, func(i, j int) bool {

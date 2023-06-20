@@ -1,4 +1,4 @@
-//go:build integration || vm_integration || module_integration
+//go:build integration || vm_integration || module_integration || k8s_integration
 
 package integration
 
@@ -176,6 +176,10 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 			return bom.Relationships[i].RefA.ElementRefID < bom.Relationships[j].RefA.ElementRefID
 		}
 		return bom.Relationships[i].RefB.ElementRefID < bom.Relationships[j].RefB.ElementRefID
+	})
+
+	sort.Slice(bom.Files, func(i, j int) bool {
+		return bom.Files[i].FileSPDXIdentifier < bom.Files[j].FileSPDXIdentifier
 	})
 
 	// We don't compare values which change each time an SBOM is generated

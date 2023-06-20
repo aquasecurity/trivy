@@ -1,6 +1,38 @@
 project_name: trivy
 builds:
-  -
+  - id: build-linux
+    main: cmd/trivy/main.go
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - s390x
+      - ppc64le
+    goarm:
+      - 7
+  - id: build-bsd
+    main: cmd/trivy/main.go
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - freebsd
+    goarch:
+      # modernc.org/sqlite doesn't support freebsd/arm64, etc.
+      - amd64
+  - id: build-macos
     main: cmd/trivy/main.go
     binary: trivy
     ldflags:
@@ -11,36 +43,26 @@ builds:
       - CGO_ENABLED=0
     goos:
       - darwin
-      - linux
-      - freebsd
+    goarch:
+      - amd64
+      - arm64
+    goarm:
+      - 7
+  - id: build-windows
+    main: cmd/trivy/main.go
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
       - windows
     goarch:
       - amd64
-      - 386
-      - arm
-      - arm64
-      - s390x
-      - ppc64le
     goarm:
       - 7
-    ignore:
-      - goos: darwin
-        goarch: 386
-      # modernc.org/sqlite doesn't support the following pairs
-      - goos: freebsd
-        goarch: arm
-      - goos: freebsd
-        goarch: arm64
-      - goos: windows
-        goarch: 386
-      - goos: windows
-        goarch: arm
-      - goos: windows
-        goarch: arm64
-      - goos: windows
-        goarch: s390x
-      - goos: windows
-        goarch: ppc64le
 
 release:
     extra_files:
@@ -66,7 +88,6 @@ nfpms:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- title .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
-      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE
@@ -79,7 +100,7 @@ nfpms:
          key_file: '{{ .Env.GPG_FILE }}'
 
 archives:
-  -
+  - id: archive
     format: tar.gz
     name_template: >-
       {{ .ProjectName }}_{{ .Version }}_
@@ -91,7 +112,6 @@ archives:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
-      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE
@@ -127,7 +147,7 @@ dockers:
     goos: linux
     goarch: amd64
     ids:
-      - trivy
+      - build-linux
     build_flag_templates:
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
@@ -152,7 +172,7 @@ dockers:
     goos: linux
     goarch: arm64
     ids:
-      - trivy
+      - build-linux
     build_flag_templates:
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
@@ -177,7 +197,7 @@ dockers:
     goos: linux
     goarch: s390x
     ids:
-      - trivy
+      - build-linux
     build_flag_templates:
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
@@ -202,7 +222,7 @@ dockers:
     goos: linux
     goarch: ppc64le
     ids:
-      - trivy
+      - build-linux
     build_flag_templates:
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"

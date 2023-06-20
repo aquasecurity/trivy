@@ -15,7 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cloud"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud/report"
-	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -142,11 +142,16 @@ func Run(ctx context.Context, opt flag.Options) error {
 		})
 	}
 
-	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, results.GetFailed(), opt.Services)
+	res := results.GetFailed()
+	if opt.MisconfOptions.IncludeNonFailures {
+		res = results
+	}
+
+	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, res, opt.Services)
 	if err := report.Write(r, opt, cached); err != nil {
 		return fmt.Errorf("unable to write results: %w", err)
 	}
 
-	cmd.Exit(opt, r.Failed())
+	operation.Exit(opt, r.Failed())
 	return nil
 }

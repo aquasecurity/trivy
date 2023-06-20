@@ -19,7 +19,7 @@ const (
 	tableFormat = "table"
 )
 
-// Report represents a kubernetes scan report
+// Report represents an AWS scan report
 type Report struct {
 	Provider        string
 	AccountID       string
@@ -64,7 +64,10 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	for _, resultsAtTime := range rep.Results {
 		for _, res := range resultsAtTime.Results {
 			resCopy := res
-			if err := result.FilterResult(ctx, &resCopy, result.FilterOption{Severities: opt.Severities}); err != nil {
+			if err := result.FilterResult(ctx, &resCopy, result.FilterOption{
+				Severities:         opt.Severities,
+				IncludeNonFailures: opt.IncludeNonFailures,
+			}); err != nil {
 				return err
 			}
 			sort.Slice(resCopy.Misconfigurations, func(i, j int) bool {

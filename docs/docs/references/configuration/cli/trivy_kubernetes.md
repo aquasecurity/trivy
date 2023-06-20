@@ -40,9 +40,10 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
+      --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
-  -f, --format string                     format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+  -f, --format string                     format (table, json, cyclonedx) (default "table")
       --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings             specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -63,11 +64,13 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
       --parallel int                      number (between 1-20) of goroutines enabled for parallel scanning (default 5)
+      --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --policy-namespaces strings         Rego namespaces
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
+      --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --report string                     specify a report format for the output. (all,summary) (default "all")
       --reset                             remove all caches and database
@@ -86,6 +89,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace                             enable more verbose trace output for custom queries
+      --username strings                  username. Comma-separated usernames allowed.
       --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 

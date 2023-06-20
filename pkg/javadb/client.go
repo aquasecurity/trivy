@@ -117,7 +117,7 @@ func NewClient() (*DB, error) {
 }
 
 func (d *DB) Exists(groupID, artifactID string) (bool, error) {
-	index, err := d.driver.SelectIndexByArtifactIDAndGroupID(groupID, artifactID)
+	index, err := d.driver.SelectIndexByArtifactIDAndGroupID(artifactID, groupID)
 	if err != nil {
 		return false, err
 	}

@@ -418,7 +418,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 				Input:  "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
 			},
 			wantComponentsCount:   161,
-			wantDependenciesCount: 80,
+			wantDependenciesCount: 162,
 		},
 	}
 
