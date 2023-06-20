@@ -290,6 +290,14 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		return nil, xerrors.Errorf("failed to new package purl: %w", err)
 	}
 
+	name := pkg.Name
+	var group string
+	// use `group` field for GroupID and `name` for ArtifactID for jar files
+	if pkg.Type == ftypes.Jar {
+		name = pu.Name
+		group = pu.Namespace
+	}
+
 	properties := map[string]string{
 		PropertyPkgID:           pkg.ID,
 		PropertyPkgType:         pkg.Type,
@@ -305,7 +313,8 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 
 	return &core.Component{
 		Type:            cdx.ComponentTypeLibrary,
-		Name:            pkg.Name,
+		Name:            name,
+		Group:           group,
 		Version:         pu.Version,
 		PackageURL:      &pu,
 		Supplier:        pkg.Maintainer,

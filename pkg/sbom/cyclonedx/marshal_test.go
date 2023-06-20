@@ -1045,6 +1045,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "Java",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.Jar,
+						Packages: []ftypes.Package{
+							{
+								Name:     "org.springframework:spring-web",
+								Version:  "5.3.22",
+								FilePath: "spring-web-5.3.22.jar",
+							},
+						},
+					},
 				},
 			},
 			want: &cdx.BOM{
@@ -1103,6 +1115,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						BOMRef:     "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+						Type:       "library",
+						Name:       "spring-web",
+						Group:      "org.springframework",
+						Version:    "5.3.22",
+						PackageURL: "pkg:maven/org.springframework/spring-web@5.3.22",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "spring-web-5.3.22.jar",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "jar",
+							},
+						},
+					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
@@ -1110,6 +1140,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
+							"pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						},
 					},
 					{
@@ -1120,6 +1151,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:gem/actioncable@6.1.4.1",
+						Dependencies: lo.ToPtr([]string{}),
+					},
+					{
+						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
