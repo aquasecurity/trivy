@@ -88,9 +88,10 @@ var mapping = map[string]string{
 // 'LGPLv3+_or_GPLv2+' => {"LGPLv3+", "GPLv2"}
 // 'BSD-3-CLAUSE and GPL-2' => {"BSD-3-CLAUSE", "GPL-2"}
 // 'GPL-1+ or Artistic, and BSD-4-clause-POWERDOG' => {"GPL-1+", "Artistic", "BSD-4-clause-POWERDOG"}
+// 'BSD 3-Clause License or Apache License, Version 2.0' => {"BSD 3-Clause License", "Apache License, Version 2.0"}
 // var LicenseSplitRegexp = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
 
-var LicenseSplitRegexp = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
+var LicenseSplitRegexp = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ]+)|(!.*,[ _]*Version[ _].*)(,[ ]*)")
 
 func Normalize(name string) string {
 	if l, ok := mapping[strings.ToUpper(name)]; ok {
