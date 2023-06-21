@@ -36,6 +36,9 @@ import (
 
 const (
 	k8sCoreComponentNamespace = core.ToolVendor + ":" + core.ToolName + ":" + "k8s" + ":" + "component" + ":"
+	k8sComponentType          = "Type"
+	k8sComponentName          = "Name"
+	k8sComponentNode          = "node"
 )
 
 type Scanner struct {
@@ -297,8 +300,8 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 	kubeletVersion := sanitizedVersion(nf.KubeletVersion)
 	properties := toProperties(nf.Properties, "")
 	properties = append(properties, toProperties(map[string]string{
-		"type": "node",
-		"name": nf.NodeName,
+		k8sComponentType: k8sComponentNode,
+		k8sComponentName: nf.NodeName,
 	}, k8sCoreComponentNamespace)...)
 	return &core.Component{
 		Type:       cdx.ComponentTypeContainer,
@@ -327,8 +330,8 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Name:    kubelet,
 						Version: kubeletVersion,
 						Properties: []core.Property{
-							{Name: "type", Value: "node", NameSpace: k8sCoreComponentNamespace},
-							{Name: "name", Value: kubelet, NameSpace: k8sCoreComponentNamespace},
+							{Name: k8sComponentType, Value: k8sComponentNode, NameSpace: k8sCoreComponentNamespace},
+							{Name: k8sComponentName, Value: kubelet, NameSpace: k8sCoreComponentNamespace},
 							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
@@ -340,8 +343,8 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Name:    runtimeName,
 						Version: runtimeVersion,
 						Properties: []core.Property{
-							{Name: "type", Value: "node", NameSpace: k8sCoreComponentNamespace},
-							{Name: "name", Value: runtimeName, NameSpace: k8sCoreComponentNamespace},
+							{Name: k8sComponentType, Value: k8sComponentNode, NameSpace: k8sCoreComponentNamespace},
+							{Name: k8sComponentName, Value: runtimeName, NameSpace: k8sCoreComponentNamespace},
 							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
