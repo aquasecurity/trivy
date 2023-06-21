@@ -73,14 +73,12 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 		splitServices = append(splitServices, strings.Split(service, ",")...)
 	}
 	opt.Services = splitServices
-	log.Logger.Debug("including services: ", opt.Services)
 
 	var splitSkipServices []string
 	for _, skipService := range opt.SkipServices {
 		splitSkipServices = append(splitSkipServices, strings.Split(skipService, ",")...)
 	}
 	opt.SkipServices = splitSkipServices
-	log.Logger.Debug("excluding services: ", opt.SkipServices)
 
 	if len(opt.Services) != 1 && opt.ARN != "" {
 		return fmt.Errorf("you must specify the single --service which the --arn relates to")
@@ -108,14 +106,13 @@ func filterServices(opt *flag.Options) error {
 		log.Logger.Debug("No service(s) specified, scanning all services...")
 		opt.Services = allSupportedServicesFunc()
 	} else if len(opt.SkipServices) > 0 {
+		log.Logger.Debug("excluding services: ", opt.SkipServices)
 		for _, s := range allSupportedServicesFunc() {
-			for _, ss := range opt.SkipServices {
-				if s == ss {
-					continue
-				}
-				if !slice.ContainsString(opt.Services, s, nil) {
-					opt.Services = append(opt.Services, s)
-				}
+			if slice.ContainsString(opt.SkipServices, s, nil) {
+				continue
+			}
+			if !slice.ContainsString(opt.Services, s, nil) {
+				opt.Services = append(opt.Services, s)
 			}
 		}
 	} else if len(opt.Services) > 0 {

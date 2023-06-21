@@ -1550,7 +1550,7 @@ Summary Report for compliance: my-custom-spec
 				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:       "us-east-1",
-					SkipServices: []string{"cloudtrail"},
+					SkipServices: []string{"cloudtrail", "iam"},
 					Account:      "123456789",
 				},
 				CloudOptions: flag.CloudOptions{
@@ -1558,7 +1558,7 @@ Summary Report for compliance: my-custom-spec
 				},
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
-			allServices:  []string{"s3", "cloudtrail"},
+			allServices:  []string{"s3", "cloudtrail", "iam"},
 			cacheContent: "testdata/s3onlycache.json",
 			want: `{
   "ArtifactName": "123456789",
@@ -1852,13 +1852,15 @@ Summary Report for compliance: my-custom-spec
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			oldAllSupportedServicesFunc := allSupportedServicesFunc
-			allSupportedServicesFunc = func() []string {
-				return test.allServices
+			if test.allServices != nil {
+				oldAllSupportedServicesFunc := allSupportedServicesFunc
+				allSupportedServicesFunc = func() []string {
+					return test.allServices
+				}
+				defer func() {
+					allSupportedServicesFunc = oldAllSupportedServicesFunc
+				}()
 			}
-			defer func() {
-				allSupportedServicesFunc = oldAllSupportedServicesFunc
-			}()
 
 			buffer := new(bytes.Buffer)
 			test.options.Output = buffer
