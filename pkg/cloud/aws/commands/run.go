@@ -142,7 +142,12 @@ func Run(ctx context.Context, opt flag.Options) error {
 		})
 	}
 
-	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, results.GetFailed(), opt.Services)
+	res := results.GetFailed()
+	if opt.MisconfOptions.IncludeNonFailures {
+		res = results
+	}
+
+	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, res, opt.Services)
 	if err := report.Write(r, opt, cached); err != nil {
 		return fmt.Errorf("unable to write results: %w", err)
 	}
