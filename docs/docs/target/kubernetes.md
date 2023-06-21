@@ -343,3 +343,16 @@ Trivy has a native [Kubernetes Operator][operator] which continuously scans your
 [operator]: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/
 [crd]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
 [trivy-operator]: https://aquasecurity.github.io/trivy-operator/latest
+
+## SBOM
+
+Trivy supports the generation of Kubernetes Bill of Materials (KBOM) for kubernetes cluster control plane components, node components and addons.
+
+## KBOM
+
+KBOM, Kubernetes Bill of Materials, is a manifest of all the important components that make up your Kubernetes cluster – Control plane components, Node Components, and Addons, including their versions and images. Which “api-server” version are you currently running? Which flavor of “kubelet” is running on each node? What kind of etcd or storage are you currently using? And most importantly – are there any vulnerabilities known to affect these components? These are all questions that KBOM can help you answer.
+Trivy can generate KBOM in CycloneDX format:
+
+```sh
+trivy k8s cluster --format cyclonedx
+```

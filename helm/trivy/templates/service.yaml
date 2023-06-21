@@ -14,4 +14,5 @@ spec:
       protocol: TCP
       port: {{ .Values.service.port | default 4954 }}
       targetPort: {{ .Values.service.port | default 4954 }}
-  sessionAffinity: ClientIP
+  sessionAffinity: {{ .Values.service.sessionAffinity | default "ClientIP" }}
+
