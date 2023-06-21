@@ -94,6 +94,16 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 		}
 	}
 
+	err := filterServices(opt)
+	if err != nil {
+		return err
+	}
+
+	log.Logger.Debug("scanning services: ", opt.Services)
+	return nil
+}
+
+func filterServices(opt *flag.Options) error {
 	if len(opt.Services) == 0 && len(opt.SkipServices) == 0 {
 		log.Logger.Debug("No service(s) specified, scanning all services...")
 		opt.Services = allSupportedServicesFunc()
@@ -124,8 +134,6 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 			}
 		}
 	}
-
-	log.Logger.Debug("scanning services: ", opt.Services)
 	return nil
 }
 
