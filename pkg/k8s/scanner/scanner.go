@@ -35,7 +35,7 @@ import (
 )
 
 const (
-	k8sCoreComponentNamespace = core.Namespace + "k8s" + ":" + "component" + ":"
+	k8sCoreComponentNamespace = core.Namespace + "k8s:component" + ":"
 	k8sComponentType          = "Type"
 	k8sComponentName          = "Name"
 	k8sComponentNode          = "node"

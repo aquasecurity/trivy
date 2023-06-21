@@ -298,7 +298,7 @@ func (c *CycloneDX) Licenses(licenses []string) *cdx.Licenses {
 }
 
 func (c *CycloneDX) Properties(properties []Property) []cdx.Property {
-	cdxProps := make([]cdx.Property, 0)
+	cdxProps := make([]cdx.Property, 0, len(properties))
 	for _, property := range properties {
 		namespace := Namespace
 		if len(property.Namespace) > 0 {
@@ -310,8 +310,8 @@ func (c *CycloneDX) Properties(properties []Property) []cdx.Property {
 				Value: property.Value,
 			})
 	}
-	sort.Slice(properties, func(i, j int) bool {
-		return properties[i].Name < properties[j].Name
+	sort.Slice(cdxProps, func(i, j int) bool {
+		return cdxProps[i].Name < cdxProps[j].Name
 	})
 	return cdxProps
 }
