@@ -216,14 +216,17 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 		Name: r.ArtifactName,
 	}
 
-	props := map[string]string{
-		PropertySchemaVersion: strconv.Itoa(r.SchemaVersion),
+	props := []core.Property{
+		{Name: PropertySchemaVersion, Value: strconv.Itoa(r.SchemaVersion)},
 	}
 
 	switch r.ArtifactType {
 	case ftypes.ArtifactContainerImage:
 		root.Type = cdx.ComponentTypeContainer
-		props[PropertyImageID] = r.Metadata.ImageID
+		props = append(props, core.Property{
+			Name:  PropertyImageID,
+			Value: r.Metadata.ImageID,
+		})
 
 		p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {
@@ -239,17 +242,29 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 	}
 
 	if r.Metadata.Size != 0 {
-		props[PropertySize] = strconv.FormatInt(r.Metadata.Size, 10)
+		props = append(props, core.Property{
+			Name:  PropertySize,
+			Value: strconv.FormatInt(r.Metadata.Size, 10),
+		})
 	}
 
 	if len(r.Metadata.RepoDigests) > 0 {
-		props[PropertyRepoDigest] = strings.Join(r.Metadata.RepoDigests, ",")
+		props = append(props, core.Property{
+			Name:  PropertyRepoDigest,
+			Value: strings.Join(r.Metadata.RepoDigests, ","),
+		})
 	}
 	if len(r.Metadata.DiffIDs) > 0 {
-		props[PropertyDiffID] = strings.Join(r.Metadata.DiffIDs, ",")
+		props = append(props, core.Property{
+			Name:  PropertyDiffID,
+			Value: strings.Join(r.Metadata.DiffIDs, ","),
+		})
 	}
 	if len(r.Metadata.RepoTags) > 0 {
-		props[PropertyRepoTag] = strings.Join(r.Metadata.RepoTags, ",")
+		props = append(props, core.Property{
+			Name:  PropertyRepoTag,
+			Value: strings.Join(r.Metadata.RepoTags, ","),
+		})
 	}
 
 	root.Properties = filterProperties(props)
@@ -260,9 +275,9 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Component {
 	component := &core.Component{
 		Name: r.Target,
-		Properties: map[string]string{
-			PropertyType:  r.Type,
-			PropertyClass: string(r.Class),
+		Properties: []core.Property{
+			{Name: PropertyType, Value: r.Type},
+			{Name: PropertyClass, Value: string(r.Class)},
 		},
 	}
 
@@ -298,17 +313,17 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		group = pu.Namespace
 	}
 
-	properties := map[string]string{
-		PropertyPkgID:           pkg.ID,
-		PropertyPkgType:         pkg.Type,
-		PropertyFilePath:        pkg.FilePath,
-		PropertySrcName:         pkg.SrcName,
-		PropertySrcVersion:      pkg.SrcVersion,
-		PropertySrcRelease:      pkg.SrcRelease,
-		PropertySrcEpoch:        strconv.Itoa(pkg.SrcEpoch),
-		PropertyModularitylabel: pkg.Modularitylabel,
-		PropertyLayerDigest:     pkg.Layer.Digest,
-		PropertyLayerDiffID:     pkg.Layer.DiffID,
+	properties := []core.Property{
+		{Name: PropertyPkgID, Value: pkg.ID},
+		{Name: PropertyPkgType, Value: pkg.Type},
+		{Name: PropertyFilePath, Value: pkg.FilePath},
+		{Name: PropertySrcName, Value: pkg.SrcName},
+		{Name: PropertySrcVersion, Value: pkg.SrcVersion},
+		{Name: PropertySrcRelease, Value: pkg.SrcRelease},
+		{Name: PropertySrcEpoch, Value: strconv.Itoa(pkg.SrcEpoch)},
+		{Name: PropertyModularitylabel, Value: pkg.Modularitylabel},
+		{Name: PropertyLayerDigest, Value: pkg.Layer.Digest},
+		{Name: PropertyLayerDiffID, Value: pkg.Layer.DiffID},
 	}
 
 	return &core.Component{
@@ -325,8 +340,8 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 	}, nil
 }
 
-func filterProperties(props map[string]string) map[string]string {
-	return lo.OmitBy(props, func(key string, value string) bool {
-		return value == "" || (key == PropertySrcEpoch && value == "0")
+func filterProperties(props []core.Property) []core.Property {
+	return lo.Filter(props, func(property core.Property, index int) bool {
+		return property.Value == "" || (property.Name == PropertySrcEpoch && property.Value == "0")
 	})
 }

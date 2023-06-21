@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
 	"golang.org/x/xerrors"
 
 	ms "github.com/mitchellh/mapstructure"
 	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/go-version/pkg/version"
 
@@ -30,6 +32,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
+)
+
+const (
+	k8sCoreComponentNamespace = core.ToolVendor + ":" + core.ToolName + ":" + "k8s" + ":" + "component" + ":"
 )
 
 type Scanner struct {
@@ -215,16 +221,16 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 					Type:       cdx.ComponentTypeContainer,
 					Name:       name,
 					Version:    cDigest,
-					Properties: map[string]string{
-						cyc.PropertyPkgID:   fmt.Sprintf("%s:%s", name, version),
-						cyc.PropertyPkgType: oci,
+					Properties: []core.Property{
+						{Name: cyc.PropertyPkgID, Value: fmt.Sprintf("%s:%s", name, version)},
+						{Name: cyc.PropertyPkgType, Value: oci},
 					},
 				})
 			}
 			rootComponent := &core.Component{
 				Name:       comp.Name,
 				Type:       cdx.ComponentTypeApplication,
-				Properties: comp.Properties,
+				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
 				Components: imageComponents,
 			}
 			coreComponents = append(coreComponents, rootComponent)
@@ -289,34 +295,41 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 	osName, osVersion := osNameVersion(nf.OsImage)
 	runtimeName, runtimeVersion := runtimeNameVersion(nf.ContainerRuntimeVersion)
 	kubeletVersion := sanitizedVersion(nf.KubeletVersion)
+	properties := toProperties(nf.Properties, "")
+	properties = append(properties, toProperties(map[string]string{
+		"type": "node",
+		"name": nf.NodeName,
+	}, k8sCoreComponentNamespace)...)
 	return &core.Component{
 		Type:       cdx.ComponentTypeContainer,
 		Name:       nf.NodeName,
-		Properties: nf.Properties,
+		Properties: properties,
 		Components: []*core.Component{
 			{
 				Type:    cdx.ComponentTypeOS,
 				Name:    osName,
 				Version: osVersion,
-				Properties: map[string]string{
-					"Class": types.ClassOSPkg,
-					"Type":  osName,
+				Properties: []core.Property{
+					{Name: "Class", Value: types.ClassOSPkg},
+					{Name: "Type", Value: osName},
 				},
 			},
 			{
 				Type: cdx.ComponentTypeApplication,
 				Name: nodeCoreComponents,
-				Properties: map[string]string{
-					"Class": types.ClassLangPkg,
-					"Type":  golang,
+				Properties: []core.Property{
+					{Name: "Class", Value: types.ClassLangPkg},
+					{Name: "Type", Value: golang},
 				},
 				Components: []*core.Component{
 					{
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    kubelet,
 						Version: kubeletVersion,
-						Properties: map[string]string{
-							cyc.PropertyPkgType: golang,
+						Properties: []core.Property{
+							{Name: "type", Value: "node", NameSpace: k8sCoreComponentNamespace},
+							{Name: "name", Value: kubelet, NameSpace: k8sCoreComponentNamespace},
+							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", kubelet, kubeletVersion, packageurl.Qualifiers{}, ""),
@@ -326,8 +339,10 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    runtimeName,
 						Version: runtimeVersion,
-						Properties: map[string]string{
-							cyc.PropertyPkgType: golang,
+						Properties: []core.Property{
+							{Name: "type", Value: "node", NameSpace: k8sCoreComponentNamespace},
+							{Name: "name", Value: runtimeName, NameSpace: k8sCoreComponentNamespace},
+							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
@@ -337,4 +352,18 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 			},
 		},
 	}
+}
+
+func toProperties(props map[string]string, namespace string) []core.Property {
+	properties := lo.MapToSlice(props, func(k, v string) core.Property {
+		return core.Property{
+			Name:      k,
+			Value:     v,
+			NameSpace: namespace,
+		}
+	})
+	sort.Slice(properties, func(i, j int) bool {
+		return properties[i].Name < properties[j].Name
+	})
+	return properties
 }
