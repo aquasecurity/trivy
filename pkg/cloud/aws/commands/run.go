@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 
+	"k8s.io/kubectl/pkg/util/slice"
+
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"golang.org/x/xerrors"
@@ -21,6 +23,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+var allSupportedServicesFunc = awsScanner.AllSupportedServices
 
 func getAccountIDAndRegion(ctx context.Context, region string) (string, string, error) {
 	log.Logger.Debug("Looking for AWS credentials provider...")
@@ -47,13 +51,36 @@ func getAccountIDAndRegion(ctx context.Context, region string) (string, string, 
 	return *result.Account, cfg.Region, nil
 }
 
+func validateServicesInput(services, skipServices []string) error {
+	for _, s := range services {
+		for _, ss := range skipServices {
+			if s == ss {
+				return fmt.Errorf("service: %s specified to both skip and include", s)
+			}
+		}
+	}
+	return nil
+}
+
 func processOptions(ctx context.Context, opt *flag.Options) error {
+	if err := validateServicesInput(opt.Services, opt.SkipServices); err != nil {
+		return err
+	}
+
 	// support comma separated services too
 	var splitServices []string
 	for _, service := range opt.Services {
 		splitServices = append(splitServices, strings.Split(service, ",")...)
 	}
 	opt.Services = splitServices
+	log.Logger.Debug("including services: ", opt.Services)
+
+	var splitSkipServices []string
+	for _, skipService := range opt.SkipServices {
+		splitSkipServices = append(splitSkipServices, strings.Split(skipService, ",")...)
+	}
+	opt.SkipServices = splitSkipServices
+	log.Logger.Debug("excluding services: ", opt.SkipServices)
 
 	if len(opt.Services) != 1 && opt.ARN != "" {
 		return fmt.Errorf("you must specify the single --service which the --arn relates to")
@@ -67,14 +94,25 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 		}
 	}
 
-	if len(opt.Services) == 0 {
+	if len(opt.Services) == 0 && len(opt.SkipServices) == 0 {
 		log.Logger.Debug("No service(s) specified, scanning all services...")
-		opt.Services = awsScanner.AllSupportedServices()
-	} else {
+		opt.Services = allSupportedServicesFunc()
+	} else if len(opt.SkipServices) > 0 {
+		for _, s := range allSupportedServicesFunc() {
+			for _, ss := range opt.SkipServices {
+				if s == ss {
+					continue
+				}
+				if !slice.ContainsString(opt.Services, s, nil) {
+					opt.Services = append(opt.Services, s)
+				}
+			}
+		}
+	} else if len(opt.Services) > 0 {
 		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(opt.Services, ", "))
 		for _, service := range opt.Services {
 			var found bool
-			supported := awsScanner.AllSupportedServices()
+			supported := allSupportedServicesFunc()
 			for _, allowed := range supported {
 				if allowed == service {
 					found = true
@@ -87,6 +125,7 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 		}
 	}
 
+	log.Logger.Debug("scanning services: ", opt.Services)
 	return nil
 }
 
