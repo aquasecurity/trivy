@@ -68,7 +68,7 @@ type Component struct {
 type Property struct {
 	Name      string
 	Value     string
-	NameSpace string
+	Namespace string
 }
 
 func NewCycloneDX(version string, opts ...Option) *CycloneDX {
@@ -301,8 +301,8 @@ func (c *CycloneDX) Properties(properties []Property) []cdx.Property {
 	cdxProps := make([]cdx.Property, 0)
 	for _, property := range properties {
 		namespace := Namespace
-		if len(property.NameSpace) > 0 {
-			namespace = property.NameSpace
+		if len(property.Namespace) > 0 {
+			namespace = property.Namespace
 		}
 		cdxProps = append(cdxProps,
 			cdx.Property{

@@ -79,7 +79,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 						Type: cdx.ComponentTypeApplication,
 						Name: "kube-apiserver-kind-control-plane",
 						Properties: []core.Property{
-							{Name: "ControlPlaneComponents", Value: "kube-apiserver", NameSpace: k8sCoreComponentNamespace},
+							{Name: "ControlPlaneComponents", Value: "kube-apiserver", Namespace: k8sCoreComponentNamespace},
 						},
 						Components: []*core.Component{
 							{
@@ -118,8 +118,8 @@ func TestK8sClusterInfoReport(t *testing.T) {
 							{Name: "KernelVersion", Value: "6.2.15-300.fc38.aarch64"},
 							{Name: "NodeRole", Value: "master"},
 							{Name: "OperatingSystem", Value: "linux"},
-							{Name: k8sComponentName, Value: "kind-control-plane", NameSpace: k8sCoreComponentNamespace},
-							{Name: k8sComponentType, Value: "node", NameSpace: k8sCoreComponentNamespace},
+							{Name: k8sComponentName, Value: "kind-control-plane", Namespace: k8sCoreComponentNamespace},
+							{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
 						},
 						Components: []*core.Component{
 							{
@@ -127,16 +127,16 @@ func TestK8sClusterInfoReport(t *testing.T) {
 								Name:    "ubuntu",
 								Version: "21.04",
 								Properties: []core.Property{
-									{Name: "Class", Value: "os-pkgs", NameSpace: ""},
-									{Name: "Type", Value: "ubuntu", NameSpace: ""},
+									{Name: "Class", Value: "os-pkgs", Namespace: ""},
+									{Name: "Type", Value: "ubuntu", Namespace: ""},
 								},
 							},
 							{
 								Type: cdx.ComponentTypeApplication,
 								Name: "node-core-components",
 								Properties: []core.Property{
-									{Name: "Class", Value: "lang-pkgs", NameSpace: ""},
-									{Name: "Type", Value: "golang", NameSpace: ""},
+									{Name: "Class", Value: "lang-pkgs", Namespace: ""},
+									{Name: "Type", Value: "golang", Namespace: ""},
 								},
 								Components: []*core.Component{
 									{
@@ -144,9 +144,9 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										Name:    "k8s.io/kubelet",
 										Version: "1.21.1",
 										Properties: []core.Property{
-											{Name: k8sComponentType, Value: "node", NameSpace: k8sCoreComponentNamespace},
-											{Name: k8sComponentName, Value: "k8s.io/kubelet", NameSpace: k8sCoreComponentNamespace},
-											{Name: "PkgType", Value: "golang", NameSpace: ""},
+											{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
+											{Name: k8sComponentName, Value: "k8s.io/kubelet", Namespace: k8sCoreComponentNamespace},
+											{Name: "PkgType", Value: "golang", Namespace: ""},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
@@ -162,9 +162,9 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										Name:    "github.com/containerd/containerd",
 										Version: "1.5.2",
 										Properties: []core.Property{
-											{Name: k8sComponentType, Value: "node", NameSpace: k8sCoreComponentNamespace},
-											{Name: k8sComponentName, Value: "github.com/containerd/containerd", NameSpace: k8sCoreComponentNamespace},
-											{Name: "PkgType", Value: "golang", NameSpace: ""},
+											{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
+											{Name: k8sComponentName, Value: "github.com/containerd/containerd", Namespace: k8sCoreComponentNamespace},
+											{Name: "PkgType", Value: "golang", Namespace: ""},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{

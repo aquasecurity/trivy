@@ -330,8 +330,8 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Name:    kubelet,
 						Version: kubeletVersion,
 						Properties: []core.Property{
-							{Name: k8sComponentType, Value: k8sComponentNode, NameSpace: k8sCoreComponentNamespace},
-							{Name: k8sComponentName, Value: kubelet, NameSpace: k8sCoreComponentNamespace},
+							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
+							{Name: k8sComponentName, Value: kubelet, Namespace: k8sCoreComponentNamespace},
 							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
@@ -343,8 +343,8 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Name:    runtimeName,
 						Version: runtimeVersion,
 						Properties: []core.Property{
-							{Name: k8sComponentType, Value: k8sComponentNode, NameSpace: k8sCoreComponentNamespace},
-							{Name: k8sComponentName, Value: runtimeName, NameSpace: k8sCoreComponentNamespace},
+							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
+							{Name: k8sComponentName, Value: runtimeName, Namespace: k8sCoreComponentNamespace},
 							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
@@ -362,7 +362,7 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 		return core.Property{
 			Name:      k,
 			Value:     v,
-			NameSpace: namespace,
+			Namespace: namespace,
 		}
 	})
 	sort.Slice(properties, func(i, j int) bool {
