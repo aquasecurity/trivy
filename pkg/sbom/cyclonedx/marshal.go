@@ -342,6 +342,6 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 
 func filterProperties(props []core.Property) []core.Property {
 	return lo.Filter(props, func(property core.Property, index int) bool {
-		return property.Value == "" || (property.Name == PropertySrcEpoch && property.Value == "0")
+		return !(property.Value == "" || (property.Name == PropertySrcEpoch && property.Value == "0"))
 	})
 }
