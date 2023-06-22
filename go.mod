@@ -93,7 +93,7 @@ require (
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.7
 	go.uber.org/zap v1.24.0
-	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
+	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	golang.org/x/mod v0.10.0
 	golang.org/x/sync v0.2.0
 	golang.org/x/term v0.8.0
@@ -400,3 +400,5 @@ require (
 
 // oras 1.2.2 is incompatible with github.com/docker/docker v23.0.0-rc.1+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.2.3
+
+replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20230622052008-f7e1d98ef777
