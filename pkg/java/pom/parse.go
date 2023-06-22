@@ -391,7 +391,8 @@ func excludeDep(exclusions map[string]struct{}, art artifact) bool {
 func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResult, error) {
 	// Pass nil properties so that variables in <parent> are not evaluated.
 	target := newArtifact(parent.GroupId, parent.ArtifactId, parent.Version, "", nil)
-	if target.IsEmpty() {
+	// if version is property (e.g. ${revision}) - we still need to parse this pom
+	if target.IsEmpty() && !isProperty(parent.Version) {
 		return analysisResult{}, nil
 	}
 	log.Logger.Debugf("Start parent: %s", target.String())

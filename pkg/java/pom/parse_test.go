@@ -202,6 +202,21 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "parent version in property",
+			inputFile: filepath.Join("testdata", "parent-version-is-property", "child", "pom.xml"),
+			local:     false,
+			want: []types.Library{
+				{
+					Name:    "com.example:child",
+					Version: "1.0.0-SNAPSHOT",
+				},
+				{
+					Name:    "org.example:example-api",
+					Version: "1.1.1",
+				},
+			},
+		},
+		{
 			name:      "parent in a remote repository",
 			inputFile: filepath.Join("testdata", "parent-remote-repository", "pom.xml"),
 			local:     true,

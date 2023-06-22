@@ -1,6 +1,9 @@
 package pom
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 func isDirectory(path string) (bool, error) {
 	fileInfo, err := os.Stat(path)
@@ -8,4 +11,11 @@ func isDirectory(path string) (bool, error) {
 		return false, err
 	}
 	return fileInfo.IsDir(), err
+}
+
+func isProperty(version string) bool {
+	if version != "" && strings.HasPrefix(version, "${") && strings.HasSuffix(version, "}") {
+		return true
+	}
+	return false
 }
