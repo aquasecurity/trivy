@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/content"
 	"github.com/containerd/containerd/images"
@@ -51,16 +52,9 @@ func (n familiarNamed) String() string {
 	return string(n)
 }
 
-func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
-	return func(ctx context.Context, ref []string) (io.ReadCloser, error) {
-		if len(ref) < 1 {
-			return nil, xerrors.New("no image reference")
-		}
-		imgOpts := archive.WithImage(client.ImageService(), ref[0])
-		target := img.Target()
-		manifestOpts := archive.WithManifest(target)
-
-		manifest, err := images.Manifest(ctx, img.ContentStore(), target, img.Platform())
+func platformToMatchComparer(ctx context.Context, img containerd.Image, platform types.Platform) (platforms.MatchComparer, error) {
+	if platform.Platform == nil {
+		manifest, err := images.Manifest(ctx, img.ContentStore(), img.Target(), img.Platform())
 		if err != nil {
 			return nil, xerrors.Errorf("error getting image manifest: %w", err)
 		}
@@ -71,10 +65,30 @@ func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
 		}
 
 		if len(ps) == 0 {
-			return nil, xerrors.New("no platform")
+			return nil, xerrors.Errorf("no platform for image %s", img.Name())
 		}
+		return platforms.OnlyStrict(ps[0]), nil
+	}
+	ociPlatform, err := platforms.Parse(platform.Platform.String())
+	if err != nil {
+		return nil, err
+	}
+	return platforms.OnlyStrict(ociPlatform), nil
+}
 
-		platOpts := archive.WithPlatform(platforms.OnlyStrict(ps[0]))
+func imageWriter(client *containerd.Client, img containerd.Image, platform types.Platform) imageSave {
+	return func(ctx context.Context, ref []string) (io.ReadCloser, error) {
+		if len(ref) < 1 {
+			return nil, xerrors.New("no image reference")
+		}
+		imgOpts := archive.WithImage(client.ImageService(), ref[0])
+		manifestOpts := archive.WithManifest(img.Target())
+
+		platformMatcher, err := platformToMatchComparer(ctx, img, platform)
+		if err != nil {
+			return nil, err
+		}
+		platOpts := archive.WithPlatform(platformMatcher)
 		pr, pw := io.Pipe()
 		go func() {
 			pw.CloseWithError(archive.Export(ctx, client.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
@@ -84,7 +98,7 @@ func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
 }
 
 // ContainerdImage implements v1.Image
-func ContainerdImage(ctx context.Context, imageName string) (Image, func(), error) {
+func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOptions) (Image, func(), error) {
 	cleanup := func() {}
 
 	addr := os.Getenv("CONTAINERD_ADDRESS")
@@ -142,7 +156,7 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 	}
 
 	return &image{
-		opener:  imageOpener(ctx, ref.String(), f, imageWriter(client, img)),
+		opener:  imageOpener(ctx, ref.String(), f, imageWriter(client, img, opts.RegistryOptions.Platform)),
 		inspect: insp,
 		history: history,
 	}, cleanup, nil
