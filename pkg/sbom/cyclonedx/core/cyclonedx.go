@@ -53,6 +53,7 @@ type CycloneDX struct {
 type Component struct {
 	Type       cdx.ComponentType
 	Name       string
+	Group      string
 	Version    string
 	PackageURL *purl.PackageURL
 	Licenses   []string
@@ -120,6 +121,7 @@ func (c *CycloneDX) MarshalComponent(component *Component, components map[string
 		BOMRef:     bomRef,
 		Type:       component.Type,
 		Name:       component.Name,
+		Group:      component.Group,
 		Version:    component.Version,
 		PackageURL: c.PackageURL(component.PackageURL),
 		Supplier:   c.Supplier(component.Supplier),

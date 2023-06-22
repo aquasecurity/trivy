@@ -3,6 +3,7 @@ package cyclonedx
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"sort"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
@@ -344,7 +346,7 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 	pkg := p.Package()
 	// Trivy's marshall loses case-sensitivity in PURL used in SBOM for packages (Go, Npm, PyPI),
 	// so we have to use an original package name
-	pkg.Name = component.Name
+	pkg.Name = getPackageName(p.Type, component)
 	pkg.Ref = component.BOMRef
 
 	for _, license := range lo.FromPtr(component.Licenses) {
@@ -404,4 +406,12 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 		Version:    component.Version,
 		PackageURL: component.PackageURL,
 	}
+}
+
+func getPackageName(typ string, component cdx.Component) string {
+	// Jar uses `Group` field for `GroupID`
+	if typ == packageurl.TypeMaven && component.Group != "" {
+		return fmt.Sprintf("%s:%s", component.Group, component.Name)
+	}
+	return component.Name
 }
