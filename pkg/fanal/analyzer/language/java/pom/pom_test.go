@@ -31,8 +31,9 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy/pom.xml",
 						Libraries: []types.Package{
 							{
-								Name:    "com.example:example",
-								Version: "1.0.0",
+								Name:     "com.example:example",
+								Version:  "1.0.0",
+								Licenses: []string{"Apache-2.0"},
 							},
 						},
 					},
@@ -50,8 +51,9 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "pom.xml",
 						Libraries: []types.Package{
 							{
-								Name:    "com.example:example",
-								Version: "1.0.0",
+								Name:     "com.example:example",
+								Version:  "1.0.0",
+								Licenses: []string{"Apache-2.0"},
 							},
 						},
 					},
@@ -68,8 +70,9 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/requirements/pom.xml",
 						Libraries: []types.Package{
 							{
-								Name:    "com.example:example",
-								Version: "2.0.0",
+								Name:     "com.example:example",
+								Version:  "2.0.0",
+								Licenses: []string{"Apache-2.0"},
 							},
 						},
 					},

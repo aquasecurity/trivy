@@ -19,18 +19,19 @@ func (jw JSONWriter) Write(report Report) error {
 	var err error
 
 	switch jw.Report {
-	case allReport:
+	case AllReport:
 		output, err = json.MarshalIndent(report, "", "  ")
-	case summaryReport:
+		if err != nil {
+			return xerrors.Errorf("failed to write json: %w", err)
+		}
+	case SummaryReport:
 		output, err = json.MarshalIndent(report.consolidate(), "", "  ")
+		if err != nil {
+			return xerrors.Errorf("failed to write json: %w", err)
+		}
 	default:
 		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, jw.Report)
 	}
-
-	if err != nil {
-		return xerrors.Errorf("failed to marshal json: %w", err)
-	}
-
 	if _, err = fmt.Fprintln(jw.Output, string(output)); err != nil {
 		return xerrors.Errorf("failed to write json: %w", err)
 	}

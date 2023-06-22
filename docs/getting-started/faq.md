@@ -4,6 +4,10 @@
 
 `tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
 
+### Does Trivy support X?
+
+Check out the [Scanning coverage page](./coverage.md)
+
 ### Is there a paid version of Trivy?
 
 If you liked Trivy, you will love Aqua which builds on top of Trivy to provide even more enhanced capabilities for a complete security management offering.  
@@ -16,3 +20,4 @@ See [here](../docs/configuration/reporting.md#converting).
 
 ### How to run Trivy under air-gapped environment?
 See [here](../docs/advanced/air-gap.md).
+

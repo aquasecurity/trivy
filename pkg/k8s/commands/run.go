@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	k8sRep "github.com/aquasecurity/trivy/pkg/k8s"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -88,8 +89,8 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		}
 		r.flagOpts.ScanOptions.Scanners = scanners
 	}
-
-	rpt, err := s.Scan(ctx, artifacts)
+	var rpt report.Report
+	rpt, err = s.Scan(ctx, artifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
@@ -110,13 +111,14 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		})
 	}
 
-	if err := report.Write(rpt, report.Option{
+	if err := k8sRep.Write(rpt, report.Option{
 		Format:     r.flagOpts.Format,
 		Report:     r.flagOpts.ReportFormat,
 		Output:     r.flagOpts.Output,
 		Severities: r.flagOpts.Severities,
 		Components: r.flagOpts.Components,
 		Scanners:   r.flagOpts.ScanOptions.Scanners,
+		APIVersion: r.flagOpts.AppVersion,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}

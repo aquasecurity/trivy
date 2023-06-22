@@ -76,6 +76,7 @@ func Test_Run(t *testing.T) {
 				CloudOptions: flag.CloudOptions{
 					MaxCacheAge: time.Hour * 24 * 365 * 100,
 				},
+				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
 			cacheContent: exampleS3Cache,
 			want: `{
@@ -99,7 +100,7 @@ func Test_Run(t *testing.T) {
       "Class": "config",
       "Type": "cloud",
       "MisconfSummary": {
-        "Successes": 0,
+        "Successes": 1,
         "Failures": 9,
         "Exceptions": 0
       },
@@ -274,6 +275,29 @@ func Test_Run(t *testing.T) {
         },
         {
           "Type": "AWS",
+          "ID": "AVD-AWS-0092",
+          "AVDID": "AVD-AWS-0092",
+          "Title": "S3 Buckets not publicly accessible through ACL.",
+          "Description": "Buckets should not have ACLs that allow public access",
+          "Resolution": "Don't use canned ACLs or switch to private acl",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0092",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0092"
+          ],
+          "Status": "PASS",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "AWS",
           "ID": "AVD-AWS-0093",
           "AVDID": "AVD-AWS-0093",
           "Title": "S3 Access block should restrict public bucket to limit access",
@@ -327,7 +351,7 @@ func Test_Run(t *testing.T) {
 `,
 		},
 		{
-			name: "custom rego rule",
+			name: "custom rego rule with passed results",
 			options: flag.Options{
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
@@ -347,6 +371,7 @@ func Test_Run(t *testing.T) {
 					},
 					SkipPolicyUpdate: true,
 				},
+				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
 			regoPolicy: `# METADATA
 # title: No example buckets
@@ -390,7 +415,7 @@ deny[res] {
       "Class": "config",
       "Type": "cloud",
       "MisconfSummary": {
-        "Successes": 0,
+        "Successes": 1,
         "Failures": 10,
         "Exceptions": 0
       },
@@ -553,6 +578,29 @@ deny[res] {
             "https://avd.aquasec.com/misconfig/avd-aws-0091"
           ],
           "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-0092",
+          "AVDID": "AVD-AWS-0092",
+          "Title": "S3 Buckets not publicly accessible through ACL.",
+          "Description": "Buckets should not have ACLs that allow public access",
+          "Resolution": "Don't use canned ACLs or switch to private acl",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0092",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0092"
+          ],
+          "Status": "PASS",
           "Layer": {},
           "CauseMetadata": {
             "Resource": "arn:aws:s3:::examplebucket",
