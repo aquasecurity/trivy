@@ -89,6 +89,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
+								FilePath: "app/gradle/target/gradle.lockfile",
 							},
 						},
 					},
@@ -102,6 +103,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
+								FilePath: "app/maven/target/child-project-1.0.jar",
 							},
 						},
 					},
@@ -117,6 +119,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
+								FilePath: "app/app/package.json",
 							},
 						},
 					},
@@ -280,6 +283,25 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path for jar where name is GroupID and ArtifactID",
+			inputFile: "testdata/happy/group-in-name.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: "jar",
+						Libraries: []ftypes.Package{
+							{
+								Name:     "org.springframework:spring-web",
+								Version:  "5.3.22",
+								Ref:      "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+								FilePath: "spring-web-5.3.22.jar",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path only os component",
 			inputFile: "testdata/happy/os-only-bom.json",
 			want: types.SBOM{
@@ -315,7 +337,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			var cdx cyclonedx.CycloneDX
+			var cdx cyclonedx.BOM
 			err = json.NewDecoder(f).Decode(&cdx)
 			if tt.wantErr != "" {
 				require.Error(t, err)

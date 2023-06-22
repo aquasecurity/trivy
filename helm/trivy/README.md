@@ -81,6 +81,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `service.name`                        | If specified, the name used for the Trivy service                       |     |
 | `service.type`                        | Kubernetes service type                                                 | `ClusterIP` |
 | `service.port`                        | Kubernetes service port                                                 | `4954`      |
+| `service.sessionAffinity`             | Kubernetes service session affinity                                     | `ClientIP`  |
 | `httpProxy`                           | The URL of the HTTP proxy server                                        |     |
 | `httpsProxy`                          | The URL of the HTTPS proxy server                                       |     |
 | `noProxy`                             | The URLs that the proxy settings do not apply to                        |     |

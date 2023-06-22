@@ -4,9 +4,8 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"errors"
-	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -21,9 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
-	"github.com/aquasecurity/trivy/pkg/syncx"
 )
 
 type Artifact struct {
@@ -56,7 +53,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}
 
 	return Artifact{
-		rootPath: filepath.Clean(rootPath),
+		rootPath: filepath.ToSlash(filepath.Clean(rootPath)),
 		cache:    c,
 		walker: walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs),
 			opt.Slow, opt.WalkOption.ErrorCallback),
@@ -132,24 +129,33 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	}
 
 	// Prepare filesystem for post analysis
-	files := new(syncx.Map[analyzer.Type, *mapfs.FS])
+	composite, err := a.analyzer.PostAnalyzerFS()
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to prepare filesystem for post analysis: %w", err)
+	}
 
-	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		dir := a.rootPath
 
 		// When the directory is the same as the filePath, a file was given
 		// instead of a directory, rewrite the file path and directory in this case.
 		if filePath == "." {
-			dir, filePath = filepath.Split(a.rootPath)
+			dir, filePath = path.Split(a.rootPath)
 		}
 
-		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
+		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 
+		// Skip post analysis if the file is not required
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+		if len(analyzerTypes) == 0 {
+			return nil
+		}
+
 		// Build filesystem for post analysis
-		if err := a.buildFS(dir, filePath, info, files); err != nil {
-			return xerrors.Errorf("failed to build filesystem: %w", err)
+		if err = composite.CreateLink(analyzerTypes, dir, filePath, filepath.Join(dir, filePath)); err != nil {
+			return xerrors.Errorf("failed to create link: %w", err)
 		}
 
 		return nil
@@ -162,7 +168,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	wg.Wait()
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, files, result, opts); err != nil {
+	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
@@ -230,29 +236,4 @@ func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
 	}
 
 	return cacheKey, nil
-}
-
-// buildFS creates filesystem for post analysis
-func (a Artifact) buildFS(dir, filePath string, info os.FileInfo, files *syncx.Map[analyzer.Type, *mapfs.FS]) error {
-	// Get all post-analyzers that want to analyze the file
-	atypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
-	if len(atypes) == 0 {
-		return nil
-	}
-
-	// Create fs.FS for each post-analyzer that wants to analyze the current file
-	for _, at := range atypes {
-		// Since filesystem scanning may require access outside the specified path, (e.g. Terraform modules)
-		// it allows "../" access with "WithUnderlyingRoot".
-		mfs, _ := files.LoadOrStore(at, mapfs.New(mapfs.WithUnderlyingRoot(dir)))
-		if d := filepath.Dir(filePath); d != "." {
-			if err := mfs.MkdirAll(d, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
-				return xerrors.Errorf("mapfs mkdir error: %w", err)
-			}
-		}
-		if err := mfs.WriteFile(filePath, filepath.Join(dir, filePath)); err != nil {
-			return xerrors.Errorf("mapfs write error: %w", err)
-		}
-	}
-	return nil
 }

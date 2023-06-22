@@ -392,6 +392,15 @@ $ skopeo copy docker-daemon:alpine:3.11 oci:/path/to/alpine
 $ trivy image --input /path/to/alpine
 ```
 
+Referencing specific images can be done by their tag or by their manifest digest:
+```
+# Referenced by tag
+$ trivy image --input /path/to/alpine:3.15
+
+# Referenced by digest
+$ trivy image --input /path/to/alpine@sha256:82389ea44e50c696aba18393b168a833929506f5b29b9d75eb817acceb6d54ba
+```
+
 ## SBOM
 Trivy supports the generation of Software Bill of Materials (SBOM) for container images and the search for SBOMs during vulnerability scanning.
 

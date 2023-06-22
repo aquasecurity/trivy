@@ -19,9 +19,7 @@ import (
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/misconf"
-	"github.com/aquasecurity/trivy/pkg/syncx"
 )
 
 var (
@@ -328,7 +326,7 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 		// e.g. "dockerfile:my_dockerfile_*"
 		s := strings.SplitN(p, separator, 2)
 		if len(s) != 2 {
-			return group, xerrors.Errorf("invalid file pattern (%s)", p)
+			return group, xerrors.Errorf("invalid file pattern (%s) expected format: \"fileType:regexPattern\" e.g. \"dockerfile:my_dockerfile_*\"", p)
 		}
 
 		fileType, pattern := s[0], s[1]
@@ -467,14 +465,27 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 // and passes it to the respective post-analyzer.
 // The obtained results are merged into the "result".
 // This function may be called concurrently and must be thread-safe.
-func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, *mapfs.FS], result *AnalysisResult, opts AnalysisOptions) error {
+func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeFS, result *AnalysisResult, opts AnalysisOptions) error {
 	for _, a := range ag.postAnalyzers {
-		fsys, ok := files.Load(a.Type())
+		fsys, ok := compositeFS.Get(a.Type())
 		if !ok {
 			continue
 		}
 
-		filteredFS, err := fsys.Filter(result.SystemInstalledFiles)
+		skippedFiles := result.SystemInstalledFiles
+		for _, app := range result.Applications {
+			skippedFiles = append(skippedFiles, app.FilePath)
+			for _, lib := range app.Libraries {
+				// The analysis result could contain packages listed in SBOM.
+				// The files of those packages don't have to be analyzed.
+				// This is especially helpful for expensive post-analyzers such as the JAR analyzer.
+				if lib.FilePath != "" {
+					skippedFiles = append(skippedFiles, lib.FilePath)
+				}
+			}
+		}
+
+		filteredFS, err := fsys.Filter(skippedFiles)
 		if err != nil {
 			return xerrors.Errorf("unable to filter filesystem: %w", err)
 		}
@@ -489,6 +500,11 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, 
 		result.Merge(res)
 	}
 	return nil
+}
+
+// PostAnalyzerFS returns a composite filesystem that contains multiple filesystems for each post-analyzer
+func (ag AnalyzerGroup) PostAnalyzerFS() (*CompositeFS, error) {
+	return NewCompositeFS(ag)
 }
 
 func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {

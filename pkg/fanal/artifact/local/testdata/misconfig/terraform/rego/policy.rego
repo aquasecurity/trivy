@@ -4,7 +4,7 @@ package user.something
  	"id": "TEST001",
  	"avd_id": "AVD-TEST-0001",
  	"title": "Test policy",
- 	"short_code": "no-buckets",
+ 	"short_code": "empty-bucket-name",
  	"severity": "LOW",
  	"description": "This is a test policy.",
  	"recommended_actions": "Have a cup of tea.",
@@ -28,5 +28,6 @@ package user.something
 
  deny[res] {
      bucket := input.aws.s3.buckets[_]
-     res := result("No buckets allowed!", bucket)
+     bucket.name.value == ""
+     res := result("Empty bucket name!", bucket)
  }

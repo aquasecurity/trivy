@@ -73,9 +73,15 @@ func (p *PackageURL) Package() *ftypes.Package {
 	if p.Type == packageurl.TypeMaven || p.Type == ftypes.Gradle {
 		// Maven and Gradle packages separate ":"
 		// e.g. org.springframework:spring-core
-		pkg.Name = strings.Join([]string{p.Namespace, p.Name}, ":")
+		pkg.Name = strings.Join([]string{
+			p.Namespace,
+			p.Name,
+		}, ":")
 	} else {
-		pkg.Name = strings.Join([]string{p.Namespace, p.Name}, "/")
+		pkg.Name = strings.Join([]string{
+			p.Namespace,
+			p.Name,
+		}, "/")
 	}
 
 	return pkg

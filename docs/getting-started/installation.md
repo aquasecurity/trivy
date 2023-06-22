@@ -134,7 +134,7 @@ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/inst
 ```bash
 git clone --depth 1 --branch {{ git.tag }} https://github.com/aquasecurity/trivy
 cd trivy
-go install
+go install ./cmd/trivy
 ```
 
 ## Use container image
