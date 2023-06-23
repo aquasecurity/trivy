@@ -36,6 +36,19 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "package-lock.json",
 						Libraries: []types.Package{
 							{
+								ID:       "ansi-colors@3.2.3",
+								Name:     "ansi-colors",
+								Version:  "3.2.3",
+								Dev:      true,
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 6,
+										EndLine:   11,
+									},
+								},
+							},
+							{
 								ID:       "array-flatten@1.1.1",
 								Name:     "array-flatten",
 								Version:  "1.1.1",
