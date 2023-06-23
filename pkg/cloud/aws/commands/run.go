@@ -7,6 +7,10 @@ import (
 
 	"golang.org/x/exp/slices"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/defsec/pkg/errs"
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/trivy/pkg/cloud"
@@ -17,9 +21,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/sts"
-	"golang.org/x/xerrors"
 )
 
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
