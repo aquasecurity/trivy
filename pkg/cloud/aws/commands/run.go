@@ -3,14 +3,9 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 
-	"k8s.io/kubectl/pkg/util/slice"
-
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/sts"
-	"golang.org/x/xerrors"
+	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/defsec/pkg/errs"
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
@@ -22,6 +17,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
+	"golang.org/x/xerrors"
 )
 
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
@@ -42,10 +40,10 @@ func getAccountIDAndRegion(ctx context.Context, region string) (string, string, 
 	log.Logger.Debug("Looking up AWS caller identity...")
 	result, err := svc.GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
 	if err != nil {
-		return "", "", fmt.Errorf("failed to discover AWS caller identity: %w", err)
+		return "", "", xerrors.Errorf("failed to discover AWS caller identity: %w", err)
 	}
 	if result.Account == nil {
-		return "", "", fmt.Errorf("missing account id for aws account")
+		return "", "", xerrors.Errorf("missing account id for aws account")
 	}
 	log.Logger.Debugf("Verified AWS credentials for account %s!", *result.Account)
 	return *result.Account, cfg.Region, nil
@@ -55,7 +53,7 @@ func validateServicesInput(services, skipServices []string) error {
 	for _, s := range services {
 		for _, ss := range skipServices {
 			if s == ss {
-				return fmt.Errorf("service: %s specified to both skip and include", s)
+				return xerrors.Errorf("service: %s specified to both skip and include", s)
 			}
 		}
 	}
@@ -81,7 +79,7 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 	opt.SkipServices = splitSkipServices
 
 	if len(opt.Services) != 1 && opt.ARN != "" {
-		return fmt.Errorf("you must specify the single --service which the --arn relates to")
+		return xerrors.Errorf("you must specify the single --service which the --arn relates to")
 	}
 
 	if opt.Account == "" || opt.Region == "" {
@@ -108,10 +106,10 @@ func filterServices(opt *flag.Options) error {
 	} else if len(opt.SkipServices) > 0 {
 		log.Logger.Debug("excluding services: ", opt.SkipServices)
 		for _, s := range allSupportedServicesFunc() {
-			if slice.ContainsString(opt.SkipServices, s, nil) {
+			if slices.Contains(opt.SkipServices, s) {
 				continue
 			}
-			if !slice.ContainsString(opt.Services, s, nil) {
+			if !slices.Contains(opt.Services, s) {
 				opt.Services = append(opt.Services, s)
 			}
 		}
@@ -127,7 +125,7 @@ func filterServices(opt *flag.Options) error {
 				}
 			}
 			if !found {
-				return fmt.Errorf("service '%s' is not currently supported - supported services are: %s", service, strings.Join(supported, ", "))
+				return xerrors.Errorf("service '%s' is not currently supported - supported services are: %s", service, strings.Join(supported, ", "))
 			}
 		}
 	}
@@ -140,7 +138,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	defer cancel()
 
 	if err := log.InitLogger(opt.Debug, false); err != nil {
-		return fmt.Errorf("logger error: %w", err)
+		return xerrors.Errorf("logger error: %w", err)
 	}
 
 	var err error
@@ -162,7 +160,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 				log.Logger.Warnf("Adapter error: %s", e)
 			}
 		} else {
-			return fmt.Errorf("aws scan error: %w", err)
+			return xerrors.Errorf("aws scan error: %w", err)
 		}
 	}
 
@@ -193,7 +191,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 
 	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, res, opt.Services)
 	if err := report.Write(r, opt, cached); err != nil {
-		return fmt.Errorf("unable to write results: %w", err)
+		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
 	operation.Exit(opt, r.Failed())
