@@ -103,7 +103,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools v2.2.0+incompatible
 	k8s.io/api v0.27.2
-	k8s.io/kubectl v0.27.2
 	k8s.io/utils v0.0.0-20230220204549-a5ecb0141aa5
 	modernc.org/sqlite v1.20.3
 )
@@ -381,6 +380,7 @@ require (
 	k8s.io/component-base v0.27.2 // indirect
 	k8s.io/klog/v2 v2.100.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20230501164219-8b0f38b5fd1f // indirect
+	k8s.io/kubectl v0.27.2 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
 	modernc.org/ccgo/v3 v3.16.13 // indirect
