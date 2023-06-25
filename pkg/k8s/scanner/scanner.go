@@ -250,7 +250,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 	}
 	rootComponent := &core.Component{
 		Name:       clusterName,
-		Type:       cdx.ComponentTypeContainer,
+		Type:       cdx.ComponentTypePlatform,
 		Components: coreComponents,
 	}
 	return rootComponent, nil
@@ -304,7 +304,7 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 		k8sComponentName: nf.NodeName,
 	}, k8sCoreComponentNamespace)...)
 	return &core.Component{
-		Type:       cdx.ComponentTypeContainer,
+		Type:       cdx.ComponentTypePlatform,
 		Name:       nf.NodeName,
 		Properties: properties,
 		Components: []*core.Component{
