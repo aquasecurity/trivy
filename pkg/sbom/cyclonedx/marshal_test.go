@@ -182,9 +182,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -726,9 +727,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1060,9 +1062,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1187,9 +1190,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1267,9 +1271,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Results:       types.Results{},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
