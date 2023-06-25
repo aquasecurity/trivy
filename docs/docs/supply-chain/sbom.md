@@ -224,7 +224,7 @@ $ trivy image --format cyclonedx --output result.json alpine:3.15
 $ cat result.json | jq .
 {
   "bomFormat": "CycloneDX",
-  "specVersion": "1.4",
+  "specVersion": "1.5",
   "serialNumber": "urn:uuid:2be5773d-7cd3-4b4b-90a5-e165474ddace",
   "version": 1,
   "metadata": {
