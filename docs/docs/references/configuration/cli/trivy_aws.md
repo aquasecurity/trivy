@@ -92,6 +92,7 @@ trivy aws [flags]
       --service strings             Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.
   -s, --severity string             severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
       --skip-policy-update          skip fetching rego policy updates
+      --skip-service strings        Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.
   -t, --template string             output template
       --tf-vars strings             specify paths to override the Terraform tfvars files
       --trace                       enable more verbose trace output for custom queries

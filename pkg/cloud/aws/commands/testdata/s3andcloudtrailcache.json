@@ -1,0 +1,420 @@
+{
+  "schema_version": 2,
+  "state": {
+    "AWS": {
+      "S3": {
+        "Buckets": [{
+          "Metadata": {
+            "default": false,
+            "explicit": false,
+            "managed": true,
+            "parent": null,
+            "range": {
+              "endLine": 0,
+              "filename": "arn:aws:s3:::examplebucket",
+              "fsKey": "",
+              "isLogicalSource": false,
+              "sourcePrefix": "remote",
+              "startLine": 0
+            },
+            "ref": "arn:aws:s3:::examplebucket",
+            "unresolvable": false
+          },
+          "Name": {
+            "metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:s3:::examplebucket",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:s3:::examplebucket",
+              "unresolvable": false
+            },
+            "value": "examplebucket"
+          },
+          "PublicAccessBlock": null,
+          "BucketPolicies": null,
+          "Encryption": {
+            "Metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:s3:::examplebucket",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:s3:::examplebucket",
+              "unresolvable": false
+            },
+            "Enabled": {
+              "metadata": {
+                "default": true,
+                "explicit": false,
+                "managed": true,
+                "parent": null,
+                "range": {
+                  "endLine": 0,
+                  "filename": "arn:aws:s3:::examplebucket",
+                  "fsKey": "",
+                  "isLogicalSource": false,
+                  "sourcePrefix": "remote",
+                  "startLine": 0
+                },
+                "ref": "arn:aws:s3:::examplebucket",
+                "unresolvable": false
+              },
+              "value": false
+            },
+            "Algorithm": {
+              "metadata": {
+                "default": true,
+                "explicit": false,
+                "managed": true,
+                "parent": null,
+                "range": {
+                  "endLine": 0,
+                  "filename": "arn:aws:s3:::examplebucket",
+                  "fsKey": "",
+                  "isLogicalSource": false,
+                  "sourcePrefix": "remote",
+                  "startLine": 0
+                },
+                "ref": "arn:aws:s3:::examplebucket",
+                "unresolvable": false
+              },
+              "value": ""
+            },
+            "KMSKeyId": {
+              "metadata": {
+                "default": true,
+                "explicit": false,
+                "managed": true,
+                "parent": null,
+                "range": {
+                  "endLine": 0,
+                  "filename": "arn:aws:s3:::examplebucket",
+                  "fsKey": "",
+                  "isLogicalSource": false,
+                  "sourcePrefix": "remote",
+                  "startLine": 0
+                },
+                "ref": "arn:aws:s3:::examplebucket",
+                "unresolvable": false
+              },
+              "value": ""
+            }
+          },
+          "Versioning": {
+            "Metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:s3:::examplebucket",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:s3:::examplebucket",
+              "unresolvable": false
+            },
+            "Enabled": {
+              "metadata": {
+                "default": true,
+                "explicit": false,
+                "managed": true,
+                "parent": null,
+                "range": {
+                  "endLine": 0,
+                  "filename": "arn:aws:s3:::examplebucket",
+                  "fsKey": "",
+                  "isLogicalSource": false,
+                  "sourcePrefix": "remote",
+                  "startLine": 0
+                },
+                "ref": "arn:aws:s3:::examplebucket",
+                "unresolvable": false
+              },
+              "value": false
+            },
+            "MFADelete": {
+              "metadata": {
+                "default": false,
+                "explicit": false,
+                "managed": true,
+                "parent": null,
+                "range": {
+                  "endLine": 0,
+                  "filename": "arn:aws:s3:::examplebucket",
+                  "fsKey": "",
+                  "isLogicalSource": false,
+                  "sourcePrefix": "remote",
+                  "startLine": 0
+                },
+                "ref": "arn:aws:s3:::examplebucket",
+                "unresolvable": false
+              },
+              "value": false
+            }
+          },
+          "Logging": {
+            "Metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:s3:::examplebucket",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:s3:::examplebucket",
+              "unresolvable": false
+            },
+            "Enabled": {
+              "metadata": {
+                "default": true,
+                "explicit": false,
+                "managed": true,
+                "parent": null,
+                "range": {
+                  "endLine": 0,
+                  "filename": "arn:aws:s3:::examplebucket",
+                  "fsKey": "",
+                  "isLogicalSource": false,
+                  "sourcePrefix": "remote",
+                  "startLine": 0
+                },
+                "ref": "arn:aws:s3:::examplebucket",
+                "unresolvable": false
+              },
+              "value": false
+            },
+            "TargetBucket": {
+              "metadata": {
+                "default": true,
+                "explicit": false,
+                "managed": true,
+                "parent": null,
+                "range": {
+                  "endLine": 0,
+                  "filename": "arn:aws:s3:::examplebucket",
+                  "fsKey": "",
+                  "isLogicalSource": false,
+                  "sourcePrefix": "remote",
+                  "startLine": 0
+                },
+                "ref": "arn:aws:s3:::examplebucket",
+                "unresolvable": false
+              },
+              "value": ""
+            }
+          },
+          "ACL": {
+            "metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:s3:::examplebucket",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:s3:::examplebucket",
+              "unresolvable": false
+            },
+            "value": "private"
+          }
+        }]
+      },
+      "CloudTrail": {
+        "Trails": [{
+          "Metadata": {
+            "default": false,
+            "explicit": false,
+            "managed": true,
+            "parent": null,
+            "range": {
+              "endLine": 0,
+              "filename": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+              "fsKey": "",
+              "isLogicalSource": false,
+              "sourcePrefix": "remote",
+              "startLine": 0
+            },
+            "ref": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+            "unresolvable": false
+          },
+          "Name": {
+            "metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+              "unresolvable": false
+            },
+            "value": "management-events"
+          },
+          "EnableLogFileValidation": {
+            "metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+              "unresolvable": false
+            },
+            "value": false
+          },
+          "IsMultiRegion": {
+            "metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+              "unresolvable": false
+            },
+            "value": true
+          },
+          "KMSKeyID": {
+            "metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+              "unresolvable": false
+            },
+            "value": ""
+          },
+          "CloudWatchLogsLogGroupArn": {
+            "metadata": {
+              "default": true,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+              "unresolvable": false
+            },
+            "value": ""
+          },
+          "IsLogging": {
+            "metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+              "unresolvable": false
+            },
+            "value": true
+          },
+          "BucketName": {
+            "metadata": {
+              "default": false,
+              "explicit": false,
+              "managed": true,
+              "parent": null,
+              "range": {
+                "endLine": 0,
+                "filename": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+                "fsKey": "",
+                "isLogicalSource": false,
+                "sourcePrefix": "remote",
+                "startLine": 0
+              },
+              "ref": "arn:aws:cloudtrail:us-east-1:12345678:trail/management-events",
+              "unresolvable": false
+            },
+            "value": "aws-cloudtrail-logs-12345678-d0a47f2f"
+          },
+          "EventSelectors": null
+        }]
+      }
+    }
+
+  },
+  "service_metadata": {
+    "s3": {
+      "name": "s3",
+      "updated": "2022-10-04T14:08:36.659817426+01:00"
+    },
+    "cloudtrail": {
+      "name": "cloudtrail",
+      "updated": "2022-10-04T14:08:36.659817426+01:00"
+    }
+  },
+  "updated": "2022-10-04T14:08:36.659817426+01:00"
+}
