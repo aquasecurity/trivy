@@ -82,8 +82,9 @@ type RegistryOptions struct {
 	// RegistryToken is a bearer token to be sent to a registry
 	RegistryToken string
 
-	// SSL/TLS/mTLS
-	Insecure   bool
+	// SSL/TLS
+	Insecure bool
+	// For internal use. Needed for mTLS authentication.
 	ClientCert []byte
 	ClientKey  []byte
 	// Architecture

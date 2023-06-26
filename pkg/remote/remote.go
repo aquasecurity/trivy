@@ -3,7 +3,6 @@ package remote
 import (
 	"context"
 	"crypto/tls"
-	"crypto/x509"
 	"net"
 	"net/http"
 	"time"
@@ -28,14 +27,9 @@ type Descriptor = remote.Descriptor
 // so that it can try multiple authentication methods.
 func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
 	var transport *http.Transport
-	if len(option.ClientCert) != 0 && len(option.ClientKey) != 0 {
-		var err error
-		transport, err = httpTransportWithMtls(option.Insecure, option.ClientCert, option.ClientKey)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		transport = httpTransport(option.Insecure)
+	transport, err := httpTransport(option.Insecure, option.ClientCert, option.ClientKey)
+	if err != nil {
+		return nil, err
 	}
 
 	var errs error
@@ -78,7 +72,10 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 // Image is a wrapper of google/go-containerregistry/pkg/v1/remote.Image
 // so that it can try multiple authentication methods.
 func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions) (v1.Image, error) {
-	transport := httpTransport(option.Insecure)
+	transport, err := httpTransport(option.Insecure, option.ClientCert, option.ClientKey)
+	if err != nil {
+		return nil, err
+	}
 
 	var errs error
 	// Try each authentication method until it succeeds
@@ -102,7 +99,10 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 // Referrers is a wrapper of google/go-containerregistry/pkg/v1/remote.Referrers
 // so that it can try multiple authentication methods.
 func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions) (*v1.IndexManifest, error) {
-	transport := httpTransport(option.Insecure)
+	transport, err := httpTransport(option.Insecure, option.ClientCert, option.ClientKey)
+	if err != nil {
+		return nil, err
+	}
 
 	var errs error
 	// Try each authentication method until it succeeds
@@ -123,7 +123,7 @@ func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions)
 	return nil, errs
 }
 
-func httpTransport(insecure bool) *http.Transport {
+func httpTransport(insecure bool, clientCert []byte, clientKey []byte) (*http.Transport, error) {
 	d := &net.Dialer{
 		Timeout: 10 * time.Minute,
 	}
@@ -131,23 +131,14 @@ func httpTransport(insecure bool) *http.Transport {
 	tr.DialContext = d.DialContext
 	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure}
 
-	return tr
-}
+	if len(clientCert) != 0 && len(clientKey) != 0 {
+		cert, err := tls.X509KeyPair(clientCert, clientKey)
+		if err != nil {
+			return nil, err
+		}
+		tr.TLSClientConfig.Certificates = []tls.Certificate{cert}
+	}
 
-func httpTransportWithMtls(insecure bool, clientCert []byte, clientKey []byte) (*http.Transport, error) {
-	tr := httpTransport(insecure)
-	caCertPool, err := x509.SystemCertPool()
-	if err != nil {
-		return nil, err
-	}
-	cert, err := tls.X509KeyPair(clientCert, clientKey)
-	if err != nil {
-		return nil, err
-	}
-	tr.TLSClientConfig = &tls.Config{
-		RootCAs:      caCertPool,
-		Certificates: []tls.Certificate{cert},
-	}
 	return tr, nil
 }
 
