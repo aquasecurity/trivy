@@ -39,6 +39,7 @@ type Package struct {
 	Version              string            `json:"version"`
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
+	DevDependencies      map[string]string `json:"devDependencies"`
 	Resolved             string            `json:"resolved"`
 	Dev                  bool              `json:"dev"`
 	StartLine            int
@@ -77,7 +78,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 	var deps []types.Dependency
 
 	directDeps := map[string]struct{}{}
-	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies) {
+	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies, packages[""].DevDependencies) {
 		pkgPath := joinPaths(nodeModulesFolder, name)
 		if _, ok := packages[pkgPath]; !ok {
 			log.Logger.Debugf("Unable to find the direct dependency: '%s@%s'", name, version)
@@ -89,7 +90,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 	}
 
 	for pkgPath, pkg := range packages {
-		if pkg.Dev || pkgPath == "" {
+		if pkgPath == "" {
 			continue
 		}
 
@@ -108,6 +109,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 			ID:                 pkgID,
 			Name:               pkgName,
 			Version:            pkg.Version,
+			Dev:                pkg.Dev,
 			Indirect:           isIndirectLib(pkgPath, directDeps),
 			ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: pkg.Resolved}},
 			Locations: []types.Location{
@@ -179,14 +181,11 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 	var libs []types.Library
 	var deps []types.Dependency
 	for pkgName, dependency := range dependencies {
-		if dependency.Dev {
-			continue
-		}
-
 		lib := types.Library{
 			ID:                 utils.PackageID(pkgName, dependency.Version),
 			Name:               pkgName,
 			Version:            dependency.Version,
+			Dev:                dependency.Dev,
 			Indirect:           true, // lockfile v1 schema doesn't have information about Direct dependencies
 			ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: dependency.Resolved}},
 			Locations: []types.Location{

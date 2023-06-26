@@ -8,6 +8,7 @@ type Library struct {
 	ID                 string `json:",omitempty"`
 	Name               string
 	Version            string
+	Dev                bool
 	Indirect           bool          `json:",omitempty"`
 	License            string        `json:",omitempty"`
 	ExternalReferences []ExternalRef `json:",omitempty"`
