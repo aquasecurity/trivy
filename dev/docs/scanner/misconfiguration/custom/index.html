@@ -3162,6 +3162,10 @@ You're not viewing the latest version.
 Once you finish writing custom policies, you can pass the directory where those policies are stored with <code>--policy</code> option.</p>
 <div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
 </code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Note: The <code>--policy</code> path always needs to refer to a directory. You cannot pass a specific policy file.</p>
+</div>
 <p>As for <code>--namespaces</code> option, the detail is described as below.</p>
 <h3 id="file-formats">File formats</h3>
 <p>If a file name matches the following file patterns, Trivy will parse the file and pass it as input to your Rego policy.</p>

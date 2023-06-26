@@ -3501,8 +3501,9 @@ trivy conf --policy custom-policy/policy --policy combine/policy --namespaces us
 <p>For more details, see <a href="custom/">Custom Policies</a>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
+<p>You also need to specify <code>--namespaces</code> option.
+Furthermore, the <code>--policy</code> path always needs to refer to a directory. You cannot pass a specific policy file.</p>
 </div>
-<p>You also need to specify <code>--namespaces</code> option.</p>
 <h3 id="pass-custom-data">Pass custom data</h3>
 <p>You can pass directories including your custom data through <code>--data</code> option.
 This can be repeated for specifying multiple directories.</p>
