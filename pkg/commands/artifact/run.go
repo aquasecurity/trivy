@@ -639,6 +639,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Slow:         opts.Slow,
 			AWSRegion:    opts.Region,
 			FileChecksum: fileChecksum,
+			IncludeDev:   opts.IncludeDev,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{

@@ -85,7 +85,7 @@ func (a poetryAnalyzer) Version() int {
 }
 
 func (a poetryAnalyzer) parsePoetryLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
-	return language.Parse(types.Poetry, path, r, a.lockParser)
+	return language.Parse(types.Poetry, path, false, r, a.lockParser)
 }
 
 func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Application) error {

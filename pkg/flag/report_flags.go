@@ -98,6 +98,12 @@ var (
 		Value:      "",
 		Usage:      "compliance report to generate",
 	}
+	IncludeDevFlag = Flag{
+		Name:       "include-dev",
+		ConfigName: "include-dev",
+		Value:      false,
+		Usage:      "include developer dependencies in the report. (Currently only Npm supports this flag)",
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -115,6 +121,7 @@ type ReportFlagGroup struct {
 	Output         *Flag
 	Severity       *Flag
 	Compliance     *Flag
+	IncludeDev     *Flag
 }
 
 type ReportOptions struct {
@@ -130,6 +137,7 @@ type ReportOptions struct {
 	Output         io.Writer
 	Severities     []dbTypes.Severity
 	Compliance     spec.ComplianceSpec
+	IncludeDev     bool
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -146,6 +154,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Output:         &OutputFlag,
 		Severity:       &SeverityFlag,
 		Compliance:     &ComplianceFlag,
+		IncludeDev:     &IncludeDevFlag,
 	}
 }
 
@@ -167,6 +176,7 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.Output,
 		f.Severity,
 		f.Compliance,
+		f.IncludeDev,
 	}
 }
 
@@ -239,6 +249,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),
 		Compliance:     cs,
+		IncludeDev:     getBool(f.IncludeDev),
 	}, nil
 }
 

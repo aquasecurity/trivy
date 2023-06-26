@@ -20,6 +20,7 @@ type Option struct {
 	NoProgress        bool
 	Insecure          bool
 	Offline           bool
+	IncludeDev        bool
 	AppDirs           []string
 	SBOMSources       []string
 	RekorURL          string
