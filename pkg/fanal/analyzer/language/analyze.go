@@ -17,7 +17,7 @@ import (
 
 // Analyze returns an analysis result of the lock file
 func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
-	app, err := Parse(fileType, filePath, false, r, parser)
+	app, err := Parse(fileType, filePath, true, r, parser)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -69,7 +69,7 @@ func ParsePackage(fileType, filePath string, r dio.ReadSeekerAt, parser godeptyp
 
 	// The file path of each library should be empty in case of dependency list such as lock file
 	// since they all will be the same path.
-	return toApplication(fileType, filePath, filePath, false, r, parsedLibs, parsedDependencies), nil
+	return toApplication(fileType, filePath, filePath, true, r, parsedLibs, parsedDependencies), nil
 }
 
 func toApplication(fileType, filePath, libFilePath string, includeDev bool, r dio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
