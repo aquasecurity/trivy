@@ -103,8 +103,8 @@ func Normalize(name string) string {
 func SplitLicenses(str string) []string {
 	var licenses []string
 	for _, maybeLic := range licenseSplitRegexp.Split(str, -1) {
-		// no version starts with "ver" https://spdx.org/licenses/
-		if strings.HasPrefix(strings.ToLower(maybeLic), "ver") {
+		lower := strings.ToLower(maybeLic)
+		if (strings.HasPrefix(lower, "ver ") || strings.HasPrefix(lower, "version ")) && len(licenses) > 0 {
 			licenses[len(licenses)-1] += ", " + maybeLic
 		} else {
 			licenses = append(licenses, maybeLic)

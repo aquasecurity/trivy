@@ -51,6 +51,11 @@ func TestSplitLicenses(t *testing.T) {
 			"Apache License,Version 2.0, OSET Public License version 2.1",
 			[]string{"Apache License, Version 2.0", "OSET Public License version 2.1"},
 		},
+		{
+			"the license starts with `ver`",
+			"verbatim and BSD-4-clause",
+			[]string{"verbatim", "BSD-4-clause"},
+		},
 	}
 
 	for _, tt := range tests {
