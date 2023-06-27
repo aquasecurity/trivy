@@ -72,6 +72,39 @@ func TestParse(t *testing.T) {
 			input:   "testdata/invalid.json",
 			wantErr: true,
 		},
+		{
+			name:  "with License-Expression field",
+			input: "testdata/iniconfig-2.0.0.METADATA",
+			want: []types.Library{
+				{
+					Name:    "iniconfig",
+					Version: "2.0.0",
+					License: "MIT",
+				},
+			},
+		},
+		{
+			name:  "with an empty license field but with license in Classifier",
+			input: "testdata/zipp-3.12.1.METADATA",
+			want: []types.Library{
+				{
+					Name:    "zipp",
+					Version: "3.12.1",
+					License: "MIT License",
+				},
+			},
+		},
+		{
+			name:  "without licenses, but with a license file (a license in Classifier was removed)",
+			input: "testdata/networkx-3.0.METADATA",
+			want: []types.Library{
+				{
+					Name:    "networkx",
+					Version: "3.0",
+					License: "file://LICENSE.txt",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
