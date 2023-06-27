@@ -8,6 +8,9 @@ Once you finish writing custom policies, you can pass the directory where those 
 trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
 ```
 
+!!! Tip
+    Note: The `--policy` path always needs to refer to a directory. You cannot pass a specific policy file.
+
 As for `--namespaces` option, the detail is described as below.
 
 ### File formats

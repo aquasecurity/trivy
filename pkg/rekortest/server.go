@@ -50,7 +50,7 @@ var (
 			Data: &cyclonedx.BOM{
 				BOMFormat:    cyclonedx.BOMFormat,
 				SerialNumber: "urn:uuid:6453fd82-71f4-47c8-ad12-01775619c443",
-				SpecVersion:  cyclonedx.SpecVersion1_4,
+				SpecVersion:  cyclonedx.SpecVersion1_5,
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-09-15T13:53:49+00:00",
@@ -138,7 +138,7 @@ var (
 			Data: &cyclonedx.BOM{
 				BOMFormat:    cyclonedx.BOMFormat,
 				SerialNumber: "urn:uuid:8b16c9a3-e957-4c85-b43d-7dd05ea0421c",
-				SpecVersion:  cyclonedx.SpecVersion1_4,
+				SpecVersion:  cyclonedx.SpecVersion1_5,
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-10-21T09:50:08+00:00",
@@ -205,7 +205,7 @@ var (
 		Predicate: &attestation.CosignPredicate{
 			Data: &cyclonedx.BOM{
 				BOMFormat:   cyclonedx.BOMFormat,
-				SpecVersion: cyclonedx.SpecVersion1_4,
+				SpecVersion: cyclonedx.SpecVersion1_5,
 				Version:     2,
 			},
 		},

@@ -3,8 +3,9 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
+
+	"golang.org/x/exp/slices"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
@@ -22,6 +23,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+var allSupportedServicesFunc = awsScanner.AllSupportedServices
+
 func getAccountIDAndRegion(ctx context.Context, region string) (string, string, error) {
 	log.Logger.Debug("Looking for AWS credentials provider...")
 
@@ -38,16 +41,31 @@ func getAccountIDAndRegion(ctx context.Context, region string) (string, string, 
 	log.Logger.Debug("Looking up AWS caller identity...")
 	result, err := svc.GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
 	if err != nil {
-		return "", "", fmt.Errorf("failed to discover AWS caller identity: %w", err)
+		return "", "", xerrors.Errorf("failed to discover AWS caller identity: %w", err)
 	}
 	if result.Account == nil {
-		return "", "", fmt.Errorf("missing account id for aws account")
+		return "", "", xerrors.Errorf("missing account id for aws account")
 	}
 	log.Logger.Debugf("Verified AWS credentials for account %s!", *result.Account)
 	return *result.Account, cfg.Region, nil
 }
 
+func validateServicesInput(services, skipServices []string) error {
+	for _, s := range services {
+		for _, ss := range skipServices {
+			if s == ss {
+				return xerrors.Errorf("service: %s specified to both skip and include", s)
+			}
+		}
+	}
+	return nil
+}
+
 func processOptions(ctx context.Context, opt *flag.Options) error {
+	if err := validateServicesInput(opt.Services, opt.SkipServices); err != nil {
+		return err
+	}
+
 	// support comma separated services too
 	var splitServices []string
 	for _, service := range opt.Services {
@@ -55,8 +73,14 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 	}
 	opt.Services = splitServices
 
+	var splitSkipServices []string
+	for _, skipService := range opt.SkipServices {
+		splitSkipServices = append(splitSkipServices, strings.Split(skipService, ",")...)
+	}
+	opt.SkipServices = splitSkipServices
+
 	if len(opt.Services) != 1 && opt.ARN != "" {
-		return fmt.Errorf("you must specify the single --service which the --arn relates to")
+		return xerrors.Errorf("you must specify the single --service which the --arn relates to")
 	}
 
 	if opt.Account == "" || opt.Region == "" {
@@ -67,14 +91,34 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 		}
 	}
 
-	if len(opt.Services) == 0 {
+	err := filterServices(opt)
+	if err != nil {
+		return err
+	}
+
+	log.Logger.Debug("scanning services: ", opt.Services)
+	return nil
+}
+
+func filterServices(opt *flag.Options) error {
+	if len(opt.Services) == 0 && len(opt.SkipServices) == 0 {
 		log.Logger.Debug("No service(s) specified, scanning all services...")
-		opt.Services = awsScanner.AllSupportedServices()
-	} else {
+		opt.Services = allSupportedServicesFunc()
+	} else if len(opt.SkipServices) > 0 {
+		log.Logger.Debug("excluding services: ", opt.SkipServices)
+		for _, s := range allSupportedServicesFunc() {
+			if slices.Contains(opt.SkipServices, s) {
+				continue
+			}
+			if !slices.Contains(opt.Services, s) {
+				opt.Services = append(opt.Services, s)
+			}
+		}
+	} else if len(opt.Services) > 0 {
 		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(opt.Services, ", "))
 		for _, service := range opt.Services {
 			var found bool
-			supported := awsScanner.AllSupportedServices()
+			supported := allSupportedServicesFunc()
 			for _, allowed := range supported {
 				if allowed == service {
 					found = true
@@ -82,11 +126,10 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 				}
 			}
 			if !found {
-				return fmt.Errorf("service '%s' is not currently supported - supported services are: %s", service, strings.Join(supported, ", "))
+				return xerrors.Errorf("service '%s' is not currently supported - supported services are: %s", service, strings.Join(supported, ", "))
 			}
 		}
 	}
-
 	return nil
 }
 
@@ -96,7 +139,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	defer cancel()
 
 	if err := log.InitLogger(opt.Debug, false); err != nil {
-		return fmt.Errorf("logger error: %w", err)
+		return xerrors.Errorf("logger error: %w", err)
 	}
 
 	var err error
@@ -118,7 +161,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 				log.Logger.Warnf("Adapter error: %s", e)
 			}
 		} else {
-			return fmt.Errorf("aws scan error: %w", err)
+			return xerrors.Errorf("aws scan error: %w", err)
 		}
 	}
 
@@ -149,7 +192,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 
 	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, res, opt.Services)
 	if err := report.Write(r, opt, cached); err != nil {
-		return fmt.Errorf("unable to write results: %w", err)
+		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
 	operation.Exit(opt, r.Failed())

@@ -72,7 +72,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 				},
 			},
 			want: &core.Component{
-				Type: cdx.ComponentTypeContainer,
+				Type: cdx.ComponentTypePlatform,
 				Name: "test-cluster",
 				Components: []*core.Component{
 					{
@@ -110,7 +110,7 @@ func TestK8sClusterInfoReport(t *testing.T) {
 						},
 					},
 					{
-						Type: cdx.ComponentTypeContainer,
+						Type: cdx.ComponentTypePlatform,
 						Name: "kind-control-plane",
 						Properties: []core.Property{
 							{Name: "Architecture", Value: "arm64"},
