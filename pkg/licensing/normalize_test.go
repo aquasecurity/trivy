@@ -1,25 +1,26 @@
 package licensing_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
-func TestLicenseSplitRegexp(t *testing.T) {
+func TestSplitLicenses(t *testing.T) {
 	tests := []struct {
 		name     string
 		license  string
 		licenses []string
 	}{
 		{
-			"simple list commad-separated",
+			"simple list comma-separated",
 			"GPL-1+,GPL-2",
 			[]string{"GPL-1+", "GPL-2"},
 		},
 		{
-			"simple list commad-separated",
+			"simple list comma-separated",
 			"GPL-1+,GPL-2,GPL-3",
 			[]string{"GPL-1+", "GPL-2", "GPL-3"},
 		},
@@ -47,14 +48,14 @@ func TestLicenseSplitRegexp(t *testing.T) {
 		},
 		{
 			"two licenses with version",
-			"BSD 3-Clause License or Apache License, Version 2.0",
-			[]string{"BSD 3-Clause License", "Apache License, Version 2.0"},
+			"Apache License,Version 2.0, OSET Public License version 2.1",
+			[]string{"Apache License, Version 2.0", "OSET Public License version 2.1"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			res := licensing.LicenseSplitRegexp.Split(tt.license, -1)
+			res := licensing.SplitLicenses(tt.license)
 			assert.Equal(t, tt.licenses, res)
 		})
 	}

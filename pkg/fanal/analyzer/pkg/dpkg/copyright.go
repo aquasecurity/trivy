@@ -89,7 +89,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.Licens
 
 			l = normalizeLicense(l)
 			if len(l) > 0 {
-				for _, lic := range licensing.LicenseSplitRegexp.Split(l, -1) {
+				for _, lic := range licensing.SplitLicenses(l) {
 					lic = licensing.Normalize(lic)
 					if !slices.Contains(licenses, lic) {
 						licenses = append(licenses, lic)

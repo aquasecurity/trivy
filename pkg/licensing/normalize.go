@@ -91,11 +91,24 @@ var mapping = map[string]string{
 // 'BSD 3-Clause License or Apache License, Version 2.0' => {"BSD 3-Clause License", "Apache License, Version 2.0"}
 // var LicenseSplitRegexp = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
 
-var LicenseSplitRegexp = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ]+)|(!.*,[ _]*Version[ _].*)(,[ ]*)")
+var licenseSplitRegexp = regexp.MustCompile("(,?[_ ]+(?:or|and)[_ ]+)|(,[ ]*)")
 
 func Normalize(name string) string {
 	if l, ok := mapping[strings.ToUpper(name)]; ok {
 		return l
 	}
 	return name
+}
+
+func SplitLicenses(str string) []string {
+	var licenses []string
+	for _, maybeLic := range licenseSplitRegexp.Split(str, -1) {
+		// no version starts with "ver" https://spdx.org/licenses/
+		if strings.HasPrefix(strings.ToLower(maybeLic), "ver") {
+			licenses[len(licenses)-1] += ", " + maybeLic
+		} else {
+			licenses = append(licenses, maybeLic)
+		}
+	}
+	return licenses
 }
