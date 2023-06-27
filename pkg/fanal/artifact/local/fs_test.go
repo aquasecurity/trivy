@@ -382,9 +382,10 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:                true,
-					Namespaces:              []string{"user"},
-					PolicyPaths:             []string{"./testdata/misconfig/terraform/rego"},
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/terraform/rego"},
+					//Added so that it can scan only the given policies
 					DisableEmbeddedPolicies: true,
 				},
 			},
