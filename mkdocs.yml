@@ -10,6 +10,7 @@ nav:
   - Getting Started: 
       - Overview: index.md
       - Installation: getting-started/installation.md
+      - Signature Verification: getting-started/signature-verification.md
       - Scanning coverage: getting-started/coverage.md
       - FAQ: getting-started/faq.md
   - Tutorials:
