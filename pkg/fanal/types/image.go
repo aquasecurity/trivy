@@ -85,6 +85,10 @@ type RegistryOptions struct {
 	// SSL/TLS
 	Insecure bool
 
+	// For internal use. Needed for mTLS authentication.
+	ClientCert []byte
+	ClientKey  []byte
+
 	// Architecture
 	Platform Platform
 
