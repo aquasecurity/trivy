@@ -252,7 +252,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			artifactOpt: artifact.Option{
 				SBOMSources: []string{"oci"},
 			},
-			wantErr: "unable to fetch referrers",
+			wantErr: "unable to get manifest",
 		},
 	}
 

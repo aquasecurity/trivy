@@ -102,6 +102,8 @@ func (a *alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Packag
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
 			pkg.DependsOn = a.parseDependencies(line)
+		case "A:":
+			pkg.Arch = line[2:]
 		case "C:":
 			d := decodeChecksumLine(line)
 			if d != "" {

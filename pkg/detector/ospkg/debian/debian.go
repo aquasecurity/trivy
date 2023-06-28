@@ -36,7 +36,8 @@ var (
 		"9":   time.Date(2022, 6, 30, 23, 59, 59, 0, time.UTC),
 		"10":  time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
 		"11":  time.Date(2026, 8, 14, 23, 59, 59, 0, time.UTC),
-		"12":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"12":  time.Date(2028, 6, 10, 23, 59, 59, 0, time.UTC),
+		"13":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
 

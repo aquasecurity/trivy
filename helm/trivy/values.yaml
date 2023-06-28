@@ -136,6 +136,8 @@ service:
   type: ClusterIP
   # port Kubernetes service port
   port: 4954
+  # sessionAffinity Kubernetes service session affinity
+  sessionAffinity: ClientIP
 
 ingress:
   enabled: false

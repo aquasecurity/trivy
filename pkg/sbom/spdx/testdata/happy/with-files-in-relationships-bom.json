@@ -1,0 +1,91 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "app",
+  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/app-8e571278-2221-4dcd-bc56-0b256210fa91",
+  "creationInfo": {
+    "licenseListVersion": "",
+    "creators": [
+      "Organization: aquasecurity",
+      "Tool: trivy-dev"
+    ],
+    "created": "2023-05-31T05:58:45Z"
+  },
+  "packages": [
+    {
+      "name": "app",
+      "SPDXID": "SPDXRef-Filesystem-13b142ca391a006e",
+      "downloadLocation": "NONE",
+      "copyrightText": "",
+      "attributionTexts": [
+        "SchemaVersion: 2"
+      ],
+      "primaryPackagePurpose": "SOURCE"
+    },
+    {
+      "name": "node-pkg",
+      "SPDXID": "SPDXRef-Application-24f8a80152e2c0fc",
+      "downloadLocation": "NONE",
+      "sourceInfo": "Node.js",
+      "copyrightText": "",
+      "primaryPackagePurpose": "APPLICATION"
+    },
+    {
+      "name": "yargs-parser",
+      "SPDXID": "SPDXRef-Package-c3508825bf3861d8",
+      "versionInfo": "21.1.1",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "ISC",
+      "licenseDeclared": "ISC",
+      "copyrightText": "",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/yargs-parser@21.1.1"
+        }
+      ],
+      "attributionTexts": [
+        "PkgID: yargs-parser@21.1.1"
+      ],
+      "primaryPackagePurpose": "LIBRARY"
+    }
+  ],
+  "files": [
+    {
+      "fileName": "node_modules/yargs-parser/package.json",
+      "SPDXID": "SPDXRef-File-51bb5f929ef68877",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "69e70ec702f9df4ff64024b5fdea4644f1ce6c97"
+        }
+      ],
+      "copyrightText": ""
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Filesystem-13b142ca391a006e",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-Filesystem-13b142ca391a006e",
+      "relatedSpdxElement": "SPDXRef-Application-24f8a80152e2c0fc",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-24f8a80152e2c0fc",
+      "relatedSpdxElement": "SPDXRef-Package-c3508825bf3861d8",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-c3508825bf3861d8",
+      "relatedSpdxElement": "SPDXRef-File-51bb5f929ef68877",
+      "relationshipType": "CONTAINS"
+    }
+  ]
+}

@@ -31,6 +31,8 @@ Scanners (what Trivy can find there):
 - Sensitive information and secrets
 - Software licenses
 
+Trivy supports most popular programming languages, operating systems, and platforms. For a complete list, see the [Scanning Coverage] page.
+
 To learn more, go to the [Trivy homepage][homepage] for feature highlights, or to the [Documentation site][docs] for detailed information.
 
 ## Quick Start
@@ -103,11 +105,21 @@ trivy k8s --report summary cluster
 
 `tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
 
----
+## Want more? Check out Aqua
+
+If you liked Trivy, you will love Aqua which builds on top of Trivy to provide even more enhanced capabilities for a complete security management offering.  
+You can find a high level comparison table specific to Trivy users [here](https://github.com/aquasecurity/resources/blob/main/trivy-aqua.md).  
+In addition check out the <https://aquasec.com> website for more information about our products and services.
+If you'd like to contact Aqua or request a demo, please use this form: <https://www.aquasec.com/demo>
+
+## Community
 
 Trivy is an [Aqua Security][aquasec] open source project.  
 Learn about our open source work and portfolio [here][oss].  
 Contact us about any matter by opening a GitHub Discussion [here][discussions]
+Join our [Slack community][slack] to stay up to date with community efforts.
+
+Please ensure to abide by our [Code of Conduct][code-of-conduct] during all interactions.
 
 [test]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml
 [test-img]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml/badge.svg
@@ -122,9 +134,12 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [homepage]: https://trivy.dev
 [docs]: https://aquasecurity.github.io/trivy
 [pronunciation]: #how-to-pronounce-the-name-trivy
+[slack]: https://slack.aquasec.com
+[code-of-conduct]: https://github.com/aquasecurity/community/blob/main/CODE_OF_CONDUCT.md
 
 [Installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [Ecosystem]: https://aquasecurity.github.io/trivy/latest/ecosystem/
+[Scanning Coverage]: https://aquasecurity.github.io/trivy/latest/getting-started/coverage/
 
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego

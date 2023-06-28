@@ -33,8 +33,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Packages: []ftypes.Package{
 							{
-								Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", Licenses: []string{"MIT"},
-								Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+								Name:       "musl",
+								Version:    "1.2.3-r0",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3-r0",
+								Licenses:   []string{"MIT"},
+								Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 								},
@@ -111,6 +115,69 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path for bom with hasFiles field",
+			inputFile: "testdata/happy/with-hasfiles-bom.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: "node-pkg",
+						Libraries: []ftypes.Package{
+							{
+								ID:       "yargs-parser@21.1.1",
+								Name:     "yargs-parser",
+								Version:  "21.1.1",
+								Licenses: []string{"ISC"},
+								Ref:      "pkg:npm/yargs-parser@21.1.1",
+								FilePath: "node_modules/yargs-parser/package.json",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path for bom with hasFiles field",
+			inputFile: "testdata/happy/with-hasfiles-bom.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: "node-pkg",
+						Libraries: []ftypes.Package{
+							{
+								ID:       "yargs-parser@21.1.1",
+								Name:     "yargs-parser",
+								Version:  "21.1.1",
+								Licenses: []string{"ISC"},
+								Ref:      "pkg:npm/yargs-parser@21.1.1",
+								FilePath: "node_modules/yargs-parser/package.json",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path for bom files in relationships",
+			inputFile: "testdata/happy/with-files-in-relationships-bom.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: "node-pkg",
+						Libraries: []ftypes.Package{
+							{
+								ID:       "yargs-parser@21.1.1",
+								Name:     "yargs-parser",
+								Version:  "21.1.1",
+								Licenses: []string{"ISC"},
+								Ref:      "pkg:npm/yargs-parser@21.1.1",
+								FilePath: "node_modules/yargs-parser/package.json",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path for unrelated bom",
 			inputFile: "testdata/happy/unrelated-bom.json",
 			want: types.SBOM{
@@ -129,6 +196,31 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Ref:     "pkg:composer/pear/pear_exception@v1.0.0",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path with no relationship",
+			inputFile: "testdata/happy/no-relationship.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.Jar,
+						Libraries: []ftypes.Package{
+							{
+								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
+								Name:     "co.elastic.apm:apm-agent",
+								Version:  "1.36.0",
+								Ref:      "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
+							},
+							{
+								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
+								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
+								Version:  "1.36.0",
+								Ref:      "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 							},
 						},
 					},

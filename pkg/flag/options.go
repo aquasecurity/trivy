@@ -18,6 +18,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
 )
 
 type Flag struct {
@@ -116,20 +117,53 @@ func (o *Options) Align() {
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == report.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
+	if o.Format == report.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
 		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+		o.Scanners = nil
+	}
+
+	if o.Format == report.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
+		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning`)
 		o.Scanners = nil
 	}
 }
 
-// Registry returns options for OCI registries
-func (o *Options) Registry() ftypes.RegistryOptions {
+// RegistryOpts returns options for OCI registries
+func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 	return ftypes.RegistryOptions{
 		Credentials:   o.Credentials,
 		RegistryToken: o.RegistryToken,
 		Insecure:      o.Insecure,
 		Platform:      o.Platform,
 		AWSRegion:     o.AWSOptions.Region,
+	}
+}
+
+// FilterOpts returns options for filtering
+func (o *Options) FilterOpts() result.FilterOption {
+	return result.FilterOption{
+		Severities:         o.Severities,
+		IgnoreUnfixed:      o.IgnoreUnfixed,
+		IncludeNonFailures: o.IncludeNonFailures,
+		IgnoreFile:         o.IgnoreFile,
+		PolicyFile:         o.IgnorePolicy,
+		IgnoreLicenses:     o.IgnoredLicenses,
+		VEXPath:            o.VEXPath,
+	}
+}
+
+func (o *Options) ReportOpts() report.Option {
+	return report.Option{
+		AppVersion:         o.AppVersion,
+		Format:             o.Format,
+		Output:             o.Output,
+		Tree:               o.DependencyTree,
+		Severities:         o.Severities,
+		OutputTemplate:     o.Template,
+		IncludeNonFailures: o.IncludeNonFailures,
+		Trace:              o.Trace,
+		Report:             o.ReportFormat,
+		Compliance:         o.Compliance,
 	}
 }
 

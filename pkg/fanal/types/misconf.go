@@ -3,6 +3,8 @@ package types
 import (
 	"fmt"
 	"sort"
+
+	"github.com/samber/lo"
 )
 
 type Misconfiguration struct {
@@ -101,6 +103,8 @@ func ToMisconfigurations(misconfs map[string]Misconfiguration) []Misconfiguratio
 	for _, misconf := range misconfs {
 		// Remove duplicates
 		misconf.Successes = uniqueResults(misconf.Successes)
+		misconf.Warnings = uniqueResults(misconf.Warnings)
+		misconf.Failures = uniqueResults(misconf.Failures)
 
 		// Sort results
 		sort.Sort(misconf.Successes)
@@ -123,15 +127,11 @@ func ToMisconfigurations(misconfs map[string]Misconfiguration) []Misconfiguratio
 }
 
 func uniqueResults(results []MisconfResult) []MisconfResult {
-	uniq := map[string]MisconfResult{}
-	for _, result := range results {
-		key := fmt.Sprintf("%s::%s::%s", result.ID, result.Namespace, result.Message)
-		uniq[key] = result
+	if len(results) == 0 {
+		return results
 	}
-
-	var uniqResults []MisconfResult
-	for _, s := range uniq {
-		uniqResults = append(uniqResults, s)
-	}
-	return uniqResults
+	return lo.UniqBy(results, func(result MisconfResult) string {
+		return fmt.Sprintf("ID: %s, Namespace: %s, Messsage: %s, Cause: %v",
+			result.ID, result.Namespace, result.Message, result.CauseMetadata)
+	})
 }

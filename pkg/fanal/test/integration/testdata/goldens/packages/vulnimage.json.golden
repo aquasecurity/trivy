@@ -3,6 +3,7 @@
     "ID": ".composer-phpext-rundeps@0",
     "Name": ".composer-phpext-rundeps",
     "Version": "0",
+    "Arch": "noarch",
     "DependsOn": [
       "libsodium@1.0.15-r0",
       "musl@1.1.18-r3",
@@ -18,6 +19,7 @@
     "ID": ".persistent-deps@0",
     "Name": ".persistent-deps",
     "Version": "0",
+    "Arch": "noarch",
     "DependsOn": [
       "ca-certificates@20171114-r0",
       "curl@7.61.0-r0",
@@ -35,6 +37,7 @@
     "ID": ".php-rundeps@0",
     "Name": ".php-rundeps",
     "Version": "0",
+    "Arch": "noarch",
     "DependsOn": [
       "libcurl@7.61.1-r0",
       "libedit@20170329.3.1-r3",
@@ -55,6 +58,7 @@
     "ID": "alpine-baselayout@3.0.5-r2",
     "Name": "alpine-baselayout",
     "Version": "3.0.5-r2",
+    "Arch": "x86_64",
     "SrcName": "alpine-baselayout",
     "SrcVersion": "3.0.5-r2",
     "Licenses": [
@@ -74,6 +78,7 @@
     "ID": "alpine-keys@2.1-r1",
     "Name": "alpine-keys",
     "Version": "2.1-r1",
+    "Arch": "x86_64",
     "SrcName": "alpine-keys",
     "SrcVersion": "2.1-r1",
     "Licenses": [
@@ -89,6 +94,7 @@
     "ID": "apk-tools@2.10.1-r0",
     "Name": "apk-tools",
     "Version": "2.10.1-r0",
+    "Arch": "x86_64",
     "SrcName": "apk-tools",
     "SrcVersion": "2.10.1-r0",
     "Licenses": [
@@ -110,6 +116,7 @@
     "ID": "apr@1.6.3-r0",
     "Name": "apr",
     "Version": "1.6.3-r0",
+    "Arch": "x86_64",
     "SrcName": "apr",
     "SrcVersion": "1.6.3-r0",
     "Licenses": [
@@ -129,6 +136,7 @@
     "ID": "apr-util@1.6.1-r1",
     "Name": "apr-util",
     "Version": "1.6.1-r1",
+    "Arch": "x86_64",
     "SrcName": "apr-util",
     "SrcVersion": "1.6.1-r1",
     "Licenses": [
@@ -150,6 +158,7 @@
     "ID": "bash@4.4.19-r1",
     "Name": "bash",
     "Version": "4.4.19-r1",
+    "Arch": "x86_64",
     "SrcName": "bash",
     "SrcVersion": "4.4.19-r1",
     "Licenses": [
@@ -171,6 +180,7 @@
     "ID": "busybox@1.27.2-r11",
     "Name": "busybox",
     "Version": "1.27.2-r11",
+    "Arch": "x86_64",
     "SrcName": "busybox",
     "SrcVersion": "1.27.2-r11",
     "Licenses": [
@@ -189,6 +199,7 @@
     "ID": "ca-certificates@20171114-r0",
     "Name": "ca-certificates",
     "Version": "20171114-r0",
+    "Arch": "x86_64",
     "SrcName": "ca-certificates",
     "SrcVersion": "20171114-r0",
     "Licenses": [
@@ -210,6 +221,7 @@
     "ID": "curl@7.61.0-r0",
     "Name": "curl",
     "Version": "7.61.0-r0",
+    "Arch": "x86_64",
     "SrcName": "curl",
     "SrcVersion": "7.61.0-r0",
     "Licenses": [
@@ -231,6 +243,7 @@
     "ID": "db@5.3.28-r0",
     "Name": "db",
     "Version": "5.3.28-r0",
+    "Arch": "x86_64",
     "SrcName": "db",
     "SrcVersion": "5.3.28-r0",
     "Licenses": [
@@ -249,6 +262,7 @@
     "ID": "expat@2.2.5-r0",
     "Name": "expat",
     "Version": "2.2.5-r0",
+    "Arch": "x86_64",
     "SrcName": "expat",
     "SrcVersion": "2.2.5-r0",
     "Licenses": [
@@ -267,6 +281,7 @@
     "ID": "gdbm@1.13-r1",
     "Name": "gdbm",
     "Version": "1.13-r1",
+    "Arch": "x86_64",
     "SrcName": "gdbm",
     "SrcVersion": "1.13-r1",
     "Licenses": [
@@ -285,6 +300,7 @@
     "ID": "git@2.15.2-r0",
     "Name": "git",
     "Version": "2.15.2-r0",
+    "Arch": "x86_64",
     "SrcName": "git",
     "SrcVersion": "2.15.2-r0",
     "Licenses": [
@@ -307,6 +323,7 @@
     "ID": "libbz2@1.0.6-r6",
     "Name": "libbz2",
     "Version": "1.0.6-r6",
+    "Arch": "x86_64",
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6-r6",
     "Licenses": [
@@ -325,6 +342,7 @@
     "ID": "libc-utils@0.7.1-r0",
     "Name": "libc-utils",
     "Version": "0.7.1-r0",
+    "Arch": "x86_64",
     "SrcName": "libc-dev",
     "SrcVersion": "0.7.1-r0",
     "Licenses": [
@@ -343,6 +361,7 @@
     "ID": "libcurl@7.61.1-r0",
     "Name": "libcurl",
     "Version": "7.61.1-r0",
+    "Arch": "x86_64",
     "SrcName": "curl",
     "SrcVersion": "7.61.1-r0",
     "Licenses": [
@@ -366,6 +385,7 @@
     "ID": "libedit@20170329.3.1-r3",
     "Name": "libedit",
     "Version": "20170329.3.1-r3",
+    "Arch": "x86_64",
     "SrcName": "libedit",
     "SrcVersion": "20170329.3.1-r3",
     "Licenses": [
@@ -385,6 +405,7 @@
     "ID": "libffi@3.2.1-r4",
     "Name": "libffi",
     "Version": "3.2.1-r4",
+    "Arch": "x86_64",
     "SrcName": "libffi",
     "SrcVersion": "3.2.1-r4",
     "Licenses": [
@@ -403,6 +424,7 @@
     "ID": "libressl@2.6.5-r0",
     "Name": "libressl",
     "Version": "2.6.5-r0",
+    "Arch": "x86_64",
     "SrcName": "libressl",
     "SrcVersion": "2.6.5-r0",
     "Licenses": [
@@ -424,6 +446,7 @@
     "ID": "libressl2.6-libcrypto@2.6.5-r0",
     "Name": "libressl2.6-libcrypto",
     "Version": "2.6.5-r0",
+    "Arch": "x86_64",
     "SrcName": "libressl",
     "SrcVersion": "2.6.5-r0",
     "Licenses": [
@@ -442,6 +465,7 @@
     "ID": "libressl2.6-libssl@2.6.5-r0",
     "Name": "libressl2.6-libssl",
     "Version": "2.6.5-r0",
+    "Arch": "x86_64",
     "SrcName": "libressl",
     "SrcVersion": "2.6.5-r0",
     "Licenses": [
@@ -461,6 +485,7 @@
     "ID": "libressl2.6-libtls@2.6.5-r0",
     "Name": "libressl2.6-libtls",
     "Version": "2.6.5-r0",
+    "Arch": "x86_64",
     "SrcName": "libressl",
     "SrcVersion": "2.6.5-r0",
     "Licenses": [
@@ -481,6 +506,7 @@
     "ID": "libsasl@2.1.26-r11",
     "Name": "libsasl",
     "Version": "2.1.26-r11",
+    "Arch": "x86_64",
     "SrcName": "cyrus-sasl",
     "SrcVersion": "2.1.26-r11",
     "Licenses": [
@@ -500,6 +526,7 @@
     "ID": "libsodium@1.0.15-r0",
     "Name": "libsodium",
     "Version": "1.0.15-r0",
+    "Arch": "x86_64",
     "SrcName": "libsodium",
     "SrcVersion": "1.0.15-r0",
     "Licenses": [
@@ -518,6 +545,7 @@
     "ID": "libssh2@1.8.0-r2",
     "Name": "libssh2",
     "Version": "1.8.0-r2",
+    "Arch": "x86_64",
     "SrcName": "libssh2",
     "SrcVersion": "1.8.0-r2",
     "Licenses": [
@@ -538,6 +566,7 @@
     "ID": "libuuid@2.31-r0",
     "Name": "libuuid",
     "Version": "2.31-r0",
+    "Arch": "x86_64",
     "SrcName": "util-linux",
     "SrcVersion": "2.31-r0",
     "Licenses": [
@@ -561,6 +590,7 @@
     "ID": "libxml2@2.9.7-r0",
     "Name": "libxml2",
     "Version": "2.9.7-r0",
+    "Arch": "x86_64",
     "SrcName": "libxml2",
     "SrcVersion": "2.9.7-r0",
     "Licenses": [
@@ -580,6 +610,7 @@
     "ID": "mercurial@4.5.2-r0",
     "Name": "mercurial",
     "Version": "4.5.2-r0",
+    "Arch": "x86_64",
     "SrcName": "mercurial",
     "SrcVersion": "4.5.2-r0",
     "Licenses": [
@@ -599,6 +630,7 @@
     "ID": "musl@1.1.18-r3",
     "Name": "musl",
     "Version": "1.1.18-r3",
+    "Arch": "x86_64",
     "SrcName": "musl",
     "SrcVersion": "1.1.18-r3",
     "Licenses": [
@@ -614,6 +646,7 @@
     "ID": "musl-utils@1.1.18-r3",
     "Name": "musl-utils",
     "Version": "1.1.18-r3",
+    "Arch": "x86_64",
     "SrcName": "musl",
     "SrcVersion": "1.1.18-r3",
     "Licenses": [
@@ -635,6 +668,7 @@
     "ID": "ncurses-libs@6.0_p20171125-r1",
     "Name": "ncurses-libs",
     "Version": "6.0_p20171125-r1",
+    "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.0_p20171125-r1",
     "Licenses": [
@@ -655,6 +689,7 @@
     "ID": "ncurses-terminfo@6.0_p20171125-r1",
     "Name": "ncurses-terminfo",
     "Version": "6.0_p20171125-r1",
+    "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.0_p20171125-r1",
     "Licenses": [
@@ -673,6 +708,7 @@
     "ID": "ncurses-terminfo-base@6.0_p20171125-r1",
     "Name": "ncurses-terminfo-base",
     "Version": "6.0_p20171125-r1",
+    "Arch": "x86_64",
     "SrcName": "ncurses",
     "SrcVersion": "6.0_p20171125-r1",
     "Licenses": [
@@ -688,6 +724,7 @@
     "ID": "openssh@7.5_p1-r9",
     "Name": "openssh",
     "Version": "7.5_p1-r9",
+    "Arch": "x86_64",
     "SrcName": "openssh",
     "SrcVersion": "7.5_p1-r9",
     "Licenses": [
@@ -710,6 +747,7 @@
     "ID": "openssh-client@7.5_p1-r9",
     "Name": "openssh-client",
     "Version": "7.5_p1-r9",
+    "Arch": "x86_64",
     "SrcName": "openssh",
     "SrcVersion": "7.5_p1-r9",
     "Licenses": [
@@ -731,6 +769,7 @@
     "ID": "openssh-keygen@7.5_p1-r9",
     "Name": "openssh-keygen",
     "Version": "7.5_p1-r9",
+    "Arch": "x86_64",
     "SrcName": "openssh",
     "SrcVersion": "7.5_p1-r9",
     "Licenses": [
@@ -750,6 +789,7 @@
     "ID": "openssh-server@7.5_p1-r9",
     "Name": "openssh-server",
     "Version": "7.5_p1-r9",
+    "Arch": "x86_64",
     "SrcName": "openssh",
     "SrcVersion": "7.5_p1-r9",
     "Licenses": [
@@ -772,6 +812,7 @@
     "ID": "openssh-server-common@7.5_p1-r9",
     "Name": "openssh-server-common",
     "Version": "7.5_p1-r9",
+    "Arch": "x86_64",
     "SrcName": "openssh",
     "SrcVersion": "7.5_p1-r9",
     "Licenses": [
@@ -787,6 +828,7 @@
     "ID": "openssh-sftp-server@7.5_p1-r9",
     "Name": "openssh-sftp-server",
     "Version": "7.5_p1-r9",
+    "Arch": "x86_64",
     "SrcName": "openssh",
     "SrcVersion": "7.5_p1-r9",
     "Licenses": [
@@ -805,6 +847,7 @@
     "ID": "patch@2.7.5-r2",
     "Name": "patch",
     "Version": "2.7.5-r2",
+    "Arch": "x86_64",
     "SrcName": "patch",
     "SrcVersion": "2.7.5-r2",
     "Licenses": [
@@ -823,6 +866,7 @@
     "ID": "pcre2@10.30-r0",
     "Name": "pcre2",
     "Version": "10.30-r0",
+    "Arch": "x86_64",
     "SrcName": "pcre2",
     "SrcVersion": "10.30-r0",
     "Licenses": [
@@ -841,6 +885,7 @@
     "ID": "pkgconf@1.3.10-r0",
     "Name": "pkgconf",
     "Version": "1.3.10-r0",
+    "Arch": "x86_64",
     "SrcName": "pkgconf",
     "SrcVersion": "1.3.10-r0",
     "Licenses": [
@@ -859,6 +904,7 @@
     "ID": "python2@2.7.15-r2",
     "Name": "python2",
     "Version": "2.7.15-r2",
+    "Arch": "x86_64",
     "SrcName": "python2",
     "SrcVersion": "2.7.15-r2",
     "Licenses": [
@@ -887,6 +933,7 @@
     "ID": "readline@7.0.003-r0",
     "Name": "readline",
     "Version": "7.0.003-r0",
+    "Arch": "x86_64",
     "SrcName": "readline",
     "SrcVersion": "7.0.003-r0",
     "Licenses": [
@@ -906,6 +953,7 @@
     "ID": "scanelf@1.2.2-r1",
     "Name": "scanelf",
     "Version": "1.2.2-r1",
+    "Arch": "x86_64",
     "SrcName": "pax-utils",
     "SrcVersion": "1.2.2-r1",
     "Licenses": [
@@ -924,6 +972,7 @@
     "ID": "serf@1.3.9-r3",
     "Name": "serf",
     "Version": "1.3.9-r3",
+    "Arch": "x86_64",
     "SrcName": "serf",
     "SrcVersion": "1.3.9-r3",
     "Licenses": [
@@ -947,6 +996,7 @@
     "ID": "sqlite-libs@3.21.0-r1",
     "Name": "sqlite-libs",
     "Version": "3.21.0-r1",
+    "Arch": "x86_64",
     "SrcName": "sqlite",
     "SrcVersion": "3.21.0-r1",
     "Licenses": [
@@ -965,6 +1015,7 @@
     "ID": "ssl_client@1.27.2-r11",
     "Name": "ssl_client",
     "Version": "1.27.2-r11",
+    "Arch": "x86_64",
     "SrcName": "busybox",
     "SrcVersion": "1.27.2-r11",
     "Licenses": [
@@ -984,6 +1035,7 @@
     "ID": "subversion@1.9.7-r0",
     "Name": "subversion",
     "Version": "1.9.7-r0",
+    "Arch": "x86_64",
     "SrcName": "subversion",
     "SrcVersion": "1.9.7-r0",
     "Licenses": [
@@ -1008,6 +1060,7 @@
     "ID": "subversion-libs@1.9.7-r0",
     "Name": "subversion-libs",
     "Version": "1.9.7-r0",
+    "Arch": "x86_64",
     "SrcName": "subversion",
     "SrcVersion": "1.9.7-r0",
     "Licenses": [
@@ -1035,6 +1088,7 @@
     "ID": "tar@1.29-r1",
     "Name": "tar",
     "Version": "1.29-r1",
+    "Arch": "x86_64",
     "SrcName": "tar",
     "SrcVersion": "1.29-r1",
     "Licenses": [
@@ -1053,6 +1107,7 @@
     "ID": "tini@0.16.1-r0",
     "Name": "tini",
     "Version": "0.16.1-r0",
+    "Arch": "x86_64",
     "SrcName": "tini",
     "SrcVersion": "0.16.1-r0",
     "Licenses": [
@@ -1071,6 +1126,7 @@
     "ID": "xz@5.2.3-r1",
     "Name": "xz",
     "Version": "5.2.3-r1",
+    "Arch": "x86_64",
     "SrcName": "xz",
     "SrcVersion": "5.2.3-r1",
     "Licenses": [
@@ -1090,6 +1146,7 @@
     "ID": "xz-libs@5.2.3-r1",
     "Name": "xz-libs",
     "Version": "5.2.3-r1",
+    "Arch": "x86_64",
     "SrcName": "xz",
     "SrcVersion": "5.2.3-r1",
     "Licenses": [
@@ -1108,6 +1165,7 @@
     "ID": "zlib@1.2.11-r1",
     "Name": "zlib",
     "Version": "1.2.11-r1",
+    "Arch": "x86_64",
     "SrcName": "zlib",
     "SrcVersion": "1.2.11-r1",
     "Licenses": [

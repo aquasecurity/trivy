@@ -19,10 +19,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-var ErrSBOMSupportOnly = xerrors.New("SBOM support only")
-
 // NewDriver returns a driver according to the library type
-func NewDriver(libType string) (Driver, error) {
+func NewDriver(libType string) (Driver, bool) {
 	var ecosystem dbTypes.Ecosystem
 	var comparer compare.Comparer
 
@@ -64,18 +62,19 @@ func NewDriver(libType string) (Driver, error) {
 		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
 		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
-		return Driver{}, ErrSBOMSupportOnly
+		return Driver{}, false
 	case ftypes.CondaPkg:
 		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
-		return Driver{}, ErrSBOMSupportOnly
+		return Driver{}, false
 	default:
-		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
+		log.Logger.Warnf("The %q library type is not supported for vulnerability scanning", libType)
+		return Driver{}, false
 	}
 	return Driver{
 		ecosystem: ecosystem,
 		comparer:  comparer,
 		dbc:       db.Config{},
-	}, nil
+	}, true
 }
 
 // Driver represents security advisories for each programming language

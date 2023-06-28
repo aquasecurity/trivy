@@ -7,22 +7,18 @@ import (
 
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report/table"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
-	allReport     = "all"
-	summaryReport = "summary"
-
-	tableFormat = "table"
-	jsonFormat  = "json"
+	AllReport     = "all"
+	SummaryReport = "summary"
 
 	workloadComponent = "workload"
 	infraComponent    = "infra"
@@ -36,13 +32,15 @@ type Option struct {
 	ColumnHeading []string
 	Scanners      types.Scanners
 	Components    []string
+	APIVersion    string
 }
 
 // Report represents a kubernetes scan report
 type Report struct {
 	SchemaVersion int `json:",omitempty"`
 	ClusterName   string
-	Resources     []Resource `json:",omitempty"`
+	Resources     []Resource      `json:",omitempty"`
+	RootComponent *core.Component `json:"-"`
 	name          string
 }
 
@@ -125,54 +123,16 @@ type Writer interface {
 	Write(Report) error
 }
 
-// Write writes the results in the give format
-func Write(report Report, option Option) error {
-	report.printErrors()
-
-	switch option.Format {
-	case jsonFormat:
-		jwriter := JSONWriter{
-			Output: option.Output,
-			Report: option.Report,
-		}
-		return jwriter.Write(report)
-	case tableFormat:
-		separatedReports := separateMisconfigReports(report, option.Scanners, option.Components)
-
-		if option.Report == summaryReport {
-			target := fmt.Sprintf("Summary Report for %s", report.ClusterName)
-			table.RenderTarget(option.Output, target, table.IsOutputToTerminal(option.Output))
-		}
-
-		for _, r := range separatedReports {
-			writer := &TableWriter{
-				Output:        option.Output,
-				Report:        option.Report,
-				Severities:    option.Severities,
-				ColumnHeading: ColumnHeading(option.Scanners, option.Components, r.columns),
-			}
-
-			if err := writer.Write(r.report); err != nil {
-				return err
-			}
-		}
-
-		return nil
-	default:
-		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
-	}
-}
-
 type reports struct {
-	report  Report
-	columns []string
+	Report  Report
+	Columns []string
 }
 
-// separateMisconfigReports returns 3 reports based on scanners and components flags,
+// SeparateMisconfigReports returns 3 reports based on scanners and components flags,
 // - misconfiguration report
 // - rbac report
 // - infra checks report
-func separateMisconfigReports(k8sReport Report, scanners types.Scanners, components []string) []reports {
+func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, components []string) []reports {
 
 	workloadMisconfig := make([]Resource, 0)
 	infraMisconfig := make([]Resource, 0)
@@ -221,21 +181,21 @@ func separateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 			len(workloadMisconfig) > 0) ||
 			len(workloadVulnerabilities) > 0 {
 			r = append(r, reports{
-				report:  workloadReport,
-				columns: WorkloadColumns(),
+				Report:  workloadReport,
+				Columns: WorkloadColumns(),
 			})
 		}
 	}
 
 	if scanners.Enabled(types.RBACScanner) && len(rbacAssessment) > 0 {
 		r = append(r, reports{
-			report: Report{
+			Report: Report{
 				SchemaVersion: 0,
 				ClusterName:   k8sReport.ClusterName,
 				Resources:     rbacAssessment,
 				name:          "RBAC Assessment",
 			},
-			columns: RoleColumns(),
+			Columns: RoleColumns(),
 		})
 	}
 
@@ -244,13 +204,13 @@ func separateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 		len(infraMisconfig) > 0 {
 
 		r = append(r, reports{
-			report: Report{
+			Report: Report{
 				SchemaVersion: 0,
 				ClusterName:   k8sReport.ClusterName,
 				Resources:     infraMisconfig,
 				name:          "Infra Assessment",
 			},
-			columns: InfraColumns(),
+			Columns: InfraColumns(),
 		})
 	}
 
@@ -293,7 +253,7 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 	return r
 }
 
-func (r Report) printErrors() {
+func (r Report) PrintErrors() {
 	for _, resource := range r.Resources {
 		if resource.Error != "" {
 			log.Logger.Errorf("Error during vulnerabilities or misconfiguration scan: %s", resource.Error)

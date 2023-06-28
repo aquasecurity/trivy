@@ -12,9 +12,6 @@ trivy sbom [flags] SBOM_PATH
   # Scan CycloneDX and show the result in tables
   $ trivy sbom /path/to/report.cdx
 
-  # Scan CycloneDX and generate a CycloneDX report
-  $ trivy sbom --format cyclonedx /path/to/report.cdx
-
   # Scan CycloneDX-type attestation and show the result in tables
   $ trivy sbom /path/to/report.cdx.intoto.jsonl
 

@@ -74,13 +74,15 @@ func TestScanner_Scan(t *testing.T) {
 	}
 	tests := []struct {
 		name         string
+		scannerFunc  func(filePatterns []string, opt ScannerOption) (*Scanner, error)
 		fields       fields
 		files        []file
 		wantFilePath string
 		wantFileType string
 	}{
 		{
-			name: "happy path. Dockerfile",
+			name:        "happy path. Dockerfile",
+			scannerFunc: NewDockerfileScanner,
 			fields: fields{
 				opt: ScannerOption{},
 			},
@@ -94,7 +96,8 @@ func TestScanner_Scan(t *testing.T) {
 			wantFileType: types.Dockerfile,
 		},
 		{
-			name: "happy path. Dockerfile with custom file name",
+			name:        "happy path. Dockerfile with custom file name",
+			scannerFunc: NewDockerfileScanner,
 			fields: fields{
 				filePatterns: []string{"dockerfile:dockerf"},
 				opt:          ScannerOption{},
@@ -108,6 +111,21 @@ func TestScanner_Scan(t *testing.T) {
 			wantFilePath: "dockerf",
 			wantFileType: types.Dockerfile,
 		},
+		{
+			name:        "happy path. terraform plan file",
+			scannerFunc: NewTerraformPlanScanner,
+			fields: fields{
+				opt: ScannerOption{},
+			},
+			files: []file{
+				{
+					path:    "main.tfplan.json",
+					content: []byte(`{"format_version":"1.1","terraform_version":"1.4.6","planned_values":{"root_module":{"resources":[{"address":"aws_s3_bucket.my-bucket","mode":"managed","type":"aws_s3_bucket","name":"my-bucket","provider_name":"registry.terraform.io/hashicorp/aws","schema_version":0,"values":{"bucket":"evil","force_destroy":false,"tags":null,"timeouts":null},"sensitive_values":{"cors_rule":[],"grant":[],"lifecycle_rule":[],"logging":[],"object_lock_configuration":[],"replication_configuration":[],"server_side_encryption_configuration":[],"tags_all":{},"versioning":[],"website":[]}}]}},"resource_changes":[{"address":"aws_s3_bucket.my-bucket","mode":"managed","type":"aws_s3_bucket","name":"my-bucket","provider_name":"registry.terraform.io/hashicorp/aws","change":{"actions":["create"],"before":null,"after":{"bucket":"evil","force_destroy":false,"tags":null,"timeouts":null},"after_unknown":{"acceleration_status":true,"acl":true,"arn":true,"bucket_domain_name":true,"bucket_prefix":true,"bucket_regional_domain_name":true,"cors_rule":true,"grant":true,"hosted_zone_id":true,"id":true,"lifecycle_rule":true,"logging":true,"object_lock_configuration":true,"object_lock_enabled":true,"policy":true,"region":true,"replication_configuration":true,"request_payer":true,"server_side_encryption_configuration":true,"tags_all":true,"versioning":true,"website":true,"website_domain":true,"website_endpoint":true},"before_sensitive":false,"after_sensitive":{"cors_rule":[],"grant":[],"lifecycle_rule":[],"logging":[],"object_lock_configuration":[],"replication_configuration":[],"server_side_encryption_configuration":[],"tags_all":{},"versioning":[],"website":[]}}}],"configuration":{"provider_config":{"aws":{"name":"aws","full_name":"registry.terraform.io/hashicorp/aws","expressions":{"profile":{"constant_value":"foo-bar-123123123"},"region":{"constant_value":"us-west-1"}}}},"root_module":{"resources":[{"address":"aws_s3_bucket.my-bucket","mode":"managed","type":"aws_s3_bucket","name":"my-bucket","provider_config_key":"aws","expressions":{"bucket":{"constant_value":"evil"}},"schema_version":0}]}}}`),
+				},
+			},
+			wantFilePath: "main.tf",
+			wantFileType: types.TerraformPlan,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -118,7 +136,7 @@ func TestScanner_Scan(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			s, err := NewDockerfileScanner(tt.fields.filePatterns, tt.fields.opt)
+			s, err := tt.scannerFunc(tt.fields.filePatterns, tt.fields.opt)
 			require.NoError(t, err)
 
 			misconfs, err := s.Scan(context.Background(), fsys)
