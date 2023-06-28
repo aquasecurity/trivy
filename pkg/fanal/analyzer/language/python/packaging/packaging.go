@@ -4,11 +4,14 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
@@ -17,8 +20,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
-	"github.com/samber/lo"
 )
 
 func init() {
@@ -27,9 +31,10 @@ func init() {
 
 const version = 1
 
-func newPackagingAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newPackagingAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &packagingAnalyzer{
-		pkgParser: packaging.NewParser(),
+		pkgParser:                        packaging.NewParser(),
+		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
 	}, nil
 }
 
@@ -47,11 +52,13 @@ var (
 
 		// wheel
 		".dist-info/METADATA",
+		".dist-info/LICENSE",
 	}
 )
 
 type packagingAnalyzer struct {
-	pkgParser godeptypes.Parser
+	pkgParser                        godeptypes.Parser
+	licenseClassifierConfidenceLevel float64
 }
 
 // Analyze analyzes egg and wheel files.
@@ -60,7 +67,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
-		return required(path)
+		return required(path) && !strings.HasSuffix(path, "LICENSE")
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
@@ -86,6 +93,11 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 		} else if app == nil {
 			return nil
 		}
+
+		if err := a.fillAdditionalData(input.FS, path, app); err != nil {
+			log.Logger.Warnf("Unable to collect additional info: %s", err)
+		}
+
 		apps = append(apps, *app)
 		return nil
 	})
@@ -96,6 +108,36 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	return &analyzer.AnalysisResult{
 		Applications: apps,
 	}, nil
+}
+
+func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, path string, app *types.Application) error {
+	isLicRefToFile := func(lic string) bool {
+		return strings.HasPrefix(lic, "file")
+	}
+	if len(app.Libraries) > 0 &&
+		(len(app.Libraries[0].Licenses) == 0 || lo.SomeBy(app.Libraries[0].Licenses, isLicRefToFile)) {
+		dir := filepath.Dir(path)
+		f, err := fsys.Open(filepath.Join(dir, "LICENSE"))
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil
+		} else if err != nil {
+			return xerrors.Errorf("file open error: %w", err)
+		}
+		defer f.Close()
+
+		l, err := licensing.Classify(path, f, a.licenseClassifierConfidenceLevel)
+		if err != nil {
+			return xerrors.Errorf("license classify error: %w", err)
+		}
+		// License found
+		if l != nil && len(l.Findings) > 0 {
+			licenses := lo.Map(l.Findings, func(finding types.LicenseFinding, _ int) string {
+				return finding.Name
+			})
+			app.Libraries[0].Licenses = append(app.Libraries[0].Licenses, licenses...)
+		}
+	}
+	return nil
 }
 
 func (a packagingAnalyzer) parse(path string, r dio.ReadSeekerAt) (*types.Application, error) {

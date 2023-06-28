@@ -101,6 +101,25 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			dir:  "testdata/no-req-files",
 			want: &analyzer.AnalysisResult{},
 		},
+		{
+			name: "license file in dist.info",
+			dir:  "testdata/license-file-dist",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.PythonPkg,
+						FilePath: "typing_extensions-4.4.0.dist-info/METADATA",
+						Libraries: []types.Package{
+							{
+								Name:     "typing_extensions",
+								Version:  "4.4.0",
+								Licenses: []string{"BeOpen", "CNRI-Python-GPL-Compatible", "LicenseRef-MIT-Lucent", "Python-2.0"},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -147,6 +166,11 @@ func Test_packagingAnalyzer_Required(t *testing.T) {
 		{
 			name:     "wheel",
 			filePath: "python3.8/site-packages/wrapt-1.12.1.dist-info/METADATA",
+			want:     true,
+		},
+		{
+			name:     "wheel license",
+			filePath: "python3.8/site-packages/wrapt-1.12.1.dist-info/LICENSE",
 			want:     true,
 		},
 		{
