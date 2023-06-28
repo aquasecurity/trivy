@@ -245,9 +245,8 @@ func isNodeModulesPkg(path string, _ fs.DirEntry) bool {
 }
 
 func splitPath(path string) (dirs []string, fileName string) {
-	dir, fileName := filepath.Split(path)
-	dir = strings.TrimRight(dir, "/")
-	dirs = strings.Split(dir, "/")
+	fileName = filepath.Base(path)
+	dirs = strings.Split(filepath.Dir(path), "/")
 	return dirs, fileName
 }
 
@@ -255,14 +254,14 @@ func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, path string, fn traver
 	// Traverse node_modules dir
 	// Note that fs.FS is always slashed regardless of the platform,
 	// and path.Join should be used rather than filepath.Join.
-	err := fsutils.WalkDir(fsys, path, isNodeModulesPkg, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	walkDirFunc := func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 		}
 		return fn(pkg)
-	})
-	if err != nil {
+	}
+	if err := fsutils.WalkDir(fsys, path, isNodeModulesPkg, walkDirFunc); err != nil {
 		return xerrors.Errorf("walk error: %w", err)
 	}
 	return nil
@@ -334,12 +333,7 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 			if filepath.Base(f.Name) != types.NpmPkg {
 				continue
 			}
-			pkgFile, err := f.Open()
-			if err != nil {
-				return xerrors.Errorf("file open error: %w", err)
-			}
-			defer pkgFile.Close()
-			pkg, err := a.packageJsonParser.Parse(pkgFile)
+			pkg, err := a.parsePackageJson(f)
 			if err != nil {
 				return xerrors.Errorf("unable to parse %q: %w", path, err)
 			}
@@ -354,4 +348,18 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 	}
 
 	return nil
+}
+
+func (a yarnAnalyzer) parsePackageJson(f *zip.File) (packagejson.Package, error) {
+	pkgFile, err := f.Open()
+	if err != nil {
+		return packagejson.Package{}, xerrors.Errorf("file open error: %w", err)
+	}
+	defer pkgFile.Close()
+	pkg, err := a.packageJsonParser.Parse(pkgFile)
+	if err != nil {
+		return packagejson.Package{}, err
+	}
+
+	return pkg, nil
 }
