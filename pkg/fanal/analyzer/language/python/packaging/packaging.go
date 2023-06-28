@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"io/fs"
 	"os"
 	"strings"
 
@@ -12,16 +13,25 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/python/packaging"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/samber/lo"
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(&packagingAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzer.TypePythonPkg, newPackagingAnalyzer)
 }
 
 const version = 1
+
+func newPackagingAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	return &packagingAnalyzer{
+		pkgParser: packaging.NewParser(),
+	}, nil
+}
 
 var (
 	requiredFiles = []string{
@@ -40,29 +50,56 @@ var (
 	}
 )
 
-type packagingAnalyzer struct{}
+type packagingAnalyzer struct {
+	pkgParser godeptypes.Parser
+}
 
 // Analyze analyzes egg and wheel files.
-func (a packagingAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	r := input.Content
+func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 
-	// .egg file is zip format and PKG-INFO needs to be extracted from the zip file.
-	if strings.HasSuffix(input.FilePath, ".egg") {
-		pkginfoInZip, err := a.analyzeEggZip(input.Content, input.Info.Size())
-		if err != nil {
-			return nil, xerrors.Errorf("egg analysis error: %w", err)
-		}
+	var apps []types.Application
 
-		// Egg archive may not contain required files, then we will get nil. Skip this archives
-		if pkginfoInZip == nil {
-			return nil, nil
-		}
-
-		r = pkginfoInZip
+	required := func(path string, _ fs.DirEntry) bool {
+		return required(path)
 	}
 
-	p := packaging.NewParser()
-	return language.AnalyzePackage(types.PythonPkg, input.FilePath, r, p, input.Options.FileChecksum)
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+
+		// .egg file is zip format and PKG-INFO needs to be extracted from the zip file.
+		if strings.HasSuffix(path, ".egg") {
+			info, _ := d.Info()
+			pkginfoInZip, err := a.analyzeEggZip(r, info.Size())
+			if err != nil {
+				return xerrors.Errorf("egg analysis error: %w", err)
+			}
+
+			// Egg archive may not contain required files, then we will get nil. Skip this archives
+			if pkginfoInZip == nil {
+				return nil
+			}
+
+			r = pkginfoInZip
+		}
+		app, err := a.parse(path, r)
+		if err != nil {
+			return xerrors.Errorf("parse error: %w", err)
+		} else if app == nil {
+			return nil
+		}
+		apps = append(apps, *app)
+		return nil
+	})
+
+	if err != nil {
+		return nil, xerrors.Errorf("python package walk error: %w", err)
+	}
+	return &analyzer.AnalysisResult{
+		Applications: apps,
+	}, nil
+}
+
+func (a packagingAnalyzer) parse(path string, r dio.ReadSeekerAt) (*types.Application, error) {
+	return language.Parse(types.PythonPkg, path, r, a.pkgParser)
 }
 
 func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSeekerAt, error) {
@@ -71,14 +108,12 @@ func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSee
 		return nil, xerrors.Errorf("zip reader error: %w", err)
 	}
 
-	for _, file := range zr.File {
-		if !a.Required(file.Name, nil) {
-			continue
-		}
-
-		return a.open(file)
+	finded, ok := lo.Find(zr.File, func(f *zip.File) bool {
+		return required(f.Name)
+	})
+	if ok {
+		return a.open(finded)
 	}
-
 	return nil, nil
 }
 
@@ -98,12 +133,13 @@ func (a packagingAnalyzer) open(file *zip.File) (dio.ReadSeekerAt, error) {
 }
 
 func (a packagingAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	for _, r := range requiredFiles {
-		if strings.HasSuffix(filePath, r) {
-			return true
-		}
-	}
-	return false
+	return required(filePath)
+}
+
+func required(filePath string) bool {
+	return lo.SomeBy(requiredFiles, func(fileName string) bool {
+		return strings.HasSuffix(filePath, fileName)
+	})
 }
 
 func (a packagingAnalyzer) Type() analyzer.Type {
