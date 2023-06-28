@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -110,14 +111,15 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	}, nil
 }
 
-func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, path string, app *types.Application) error {
+func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, filePath string, app *types.Application) error {
 	isLicRefToFile := func(lic string) bool {
 		return strings.HasPrefix(lic, "file")
 	}
 	if len(app.Libraries) > 0 &&
 		(len(app.Libraries[0].Licenses) == 0 || lo.SomeBy(app.Libraries[0].Licenses, isLicRefToFile)) {
-		dir := filepath.Dir(path)
-		f, err := fsys.Open(filepath.Join(dir, "LICENSE"))
+		// Note that fs.FS is always slashed regardless of the platform,
+		// and path.Join should be used rather than filepath.Join.
+		f, err := fsys.Open(path.Join(filepath.Dir(filePath), "LICENSE"))
 		if errors.Is(err, fs.ErrNotExist) {
 			return nil
 		} else if err != nil {
@@ -125,7 +127,7 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, path string, app *type
 		}
 		defer f.Close()
 
-		l, err := licensing.Classify(path, f, a.licenseClassifierConfidenceLevel)
+		l, err := licensing.Classify(filePath, f, a.licenseClassifierConfidenceLevel)
 		if err != nil {
 			return xerrors.Errorf("license classify error: %w", err)
 		}
