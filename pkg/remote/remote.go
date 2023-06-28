@@ -28,7 +28,7 @@ type Descriptor = remote.Descriptor
 func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
 	transport, err := httpTransport(option)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to create http transport: %w", err)
 	}
 
 	var errs error
@@ -73,7 +73,7 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions) (v1.Image, error) {
 	transport, err := httpTransport(option)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to create http transport: %w", err)
 	}
 
 	var errs error
