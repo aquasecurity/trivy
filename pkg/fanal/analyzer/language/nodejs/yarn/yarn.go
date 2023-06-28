@@ -244,9 +244,10 @@ func isNodeModulesPkg(path string, _ fs.DirEntry) bool {
 	return len(dirs) > 1 && dirs[nodeModulesIdx] == "node_modules" && fileName == types.NpmPkg
 }
 
-func splitPath(path string) (dirs []string, fileName string) {
-	fileName = filepath.Base(path)
-	dirs = strings.Split(filepath.Dir(path), "/")
+func splitPath(filePath string) (dirs []string, fileName string) {
+	fileName = filepath.Base(filePath)
+	// The path is slashed in analyzers.
+	dirs = strings.Split(path.Dir(filePath), "/")
 	return dirs, fileName
 }
 
