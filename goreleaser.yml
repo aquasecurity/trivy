@@ -147,7 +147,7 @@ dockers:
     goos: linux
     goarch: amd64
     ids:
-      - trivy
+      - build-linux
     build_flag_templates:
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
@@ -172,7 +172,7 @@ dockers:
     goos: linux
     goarch: arm64
     ids:
-      - trivy
+      - build-linux
     build_flag_templates:
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
@@ -197,7 +197,7 @@ dockers:
     goos: linux
     goarch: s390x
     ids:
-      - trivy
+      - build-linux
     build_flag_templates:
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
@@ -222,7 +222,7 @@ dockers:
     goos: linux
     goarch: ppc64le
     ids:
-      - trivy
+      - build-linux
     build_flag_templates:
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"

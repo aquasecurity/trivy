@@ -182,9 +182,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -726,9 +727,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1045,12 +1047,25 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "Java",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.Jar,
+						Packages: []ftypes.Package{
+							{
+								Name:     "org.springframework:spring-web",
+								Version:  "5.3.22",
+								FilePath: "spring-web-5.3.22.jar",
+							},
+						},
+					},
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1103,6 +1118,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						BOMRef:     "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+						Type:       "library",
+						Name:       "spring-web",
+						Group:      "org.springframework",
+						Version:    "5.3.22",
+						PackageURL: "pkg:maven/org.springframework/spring-web@5.3.22",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "spring-web-5.3.22.jar",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "jar",
+							},
+						},
+					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
@@ -1110,6 +1143,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
+							"pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						},
 					},
 					{
@@ -1120,6 +1154,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:gem/actioncable@6.1.4.1",
+						Dependencies: lo.ToPtr([]string{}),
+					},
+					{
+						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1152,9 +1190,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1232,9 +1271,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Results:       types.Results{},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_4,
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema: "http://cyclonedx.org/schema/bom-1.5.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
