@@ -32,8 +32,8 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 					{
 						Type: cdx.ComponentTypeApplication,
 						Name: "kube-apiserver-kind-control-plane",
-						Properties: map[string]string{
-							"control_plane_components": "kube-apiserver",
+						Properties: []core.Property{
+							{Name: "control_plane_components", Value: "kube-apiserver"},
 						},
 						Components: []*core.Component{
 							{
@@ -57,9 +57,9 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 									},
 								},
 								Hashes: []digest.Digest{"sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f"},
-								Properties: map[string]string{
-									"PkgID":   "k8s.gcr.io/kube-apiserver:1.21.1",
-									"PkgType": "oci",
+								Properties: []core.Property{
+									{Name: "PkgID", Value: "k8s.gcr.io/kube-apiserver:1.21.1"},
+									{Name: "PkgType", Value: "oci"},
 								},
 							},
 						},
@@ -67,37 +67,37 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 					{
 						Type: cdx.ComponentTypeContainer,
 						Name: "kind-control-plane",
-						Properties: map[string]string{
-							"architecture":     "arm64",
-							"host_name":        "kind-control-plane",
-							"kernel_version":   "6.2.13-300.fc38.aarch64",
-							"node_role":        "master",
-							"operating_system": "linux",
+						Properties: []core.Property{
+							{Name: "architecture", Value: "arm64"},
+							{Name: "host_name", Value: "kind-control-plane"},
+							{Name: "kernel_version", Value: "6.2.13-300.fc38.aarch64"},
+							{Name: "node_role", Value: "master"},
+							{Name: "operating_system", Value: "linux"},
 						},
 						Components: []*core.Component{
 							{
 								Type:    cdx.ComponentTypeOS,
 								Name:    "ubuntu",
 								Version: "21.04",
-								Properties: map[string]string{
-									"Class": "os-pkgs",
-									"Type":  "ubuntu",
+								Properties: []core.Property{
+									{Name: "Class", Value: "os-pkgs"},
+									{Name: "Type", Value: "ubuntu"},
 								},
 							},
 							{
 								Type: cdx.ComponentTypeApplication,
 								Name: "node-core-components",
-								Properties: map[string]string{
-									"Class": "lang-pkgs",
-									"Type":  "golang",
+								Properties: []core.Property{
+									{Name: "Class", Value: "lang-pkgs"},
+									{Name: "Type", Value: "golang"},
 								},
 								Components: []*core.Component{
 									{
 										Type:    cdx.ComponentTypeLibrary,
 										Name:    "kubelet",
 										Version: "1.21.1",
-										Properties: map[string]string{
-											"PkgType": "golang",
+										Properties: []core.Property{
+											{Name: "PkgType", Value: "golang"},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
@@ -112,8 +112,8 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 										Type:    cdx.ComponentTypeLibrary,
 										Name:    "containerd",
 										Version: "1.5.2",
-										Properties: map[string]string{
-											"PkgType": "golang",
+										Properties: []core.Property{
+											{Name: "PkgType", Value: "golang"},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
@@ -132,10 +132,11 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 			},
 
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
-				SpecVersion:  cdx.SpecVersion1_4,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SpecVersion:  cdx.SpecVersion1_5,
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",

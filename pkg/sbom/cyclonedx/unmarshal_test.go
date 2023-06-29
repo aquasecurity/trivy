@@ -283,6 +283,25 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path for jar where name is GroupID and ArtifactID",
+			inputFile: "testdata/happy/group-in-name.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: "jar",
+						Libraries: []ftypes.Package{
+							{
+								Name:     "org.springframework:spring-web",
+								Version:  "5.3.22",
+								Ref:      "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+								FilePath: "spring-web-5.3.22.jar",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path only os component",
 			inputFile: "testdata/happy/os-only-bom.json",
 			want: types.SBOM{

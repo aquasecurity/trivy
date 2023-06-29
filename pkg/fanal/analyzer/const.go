@@ -221,5 +221,6 @@ var (
 		TypeHelm,
 		TypeKubernetes,
 		TypeTerraform,
+		TypeTerraformPlan,
 	}
 )
