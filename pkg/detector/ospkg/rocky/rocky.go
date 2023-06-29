@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rocky"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -75,7 +74,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 			continue
 		}
 		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
-		advisories, err := s.vs.Get(osVer, pkgName)
+		advisories, err := s.vs.Get(osVer, pkgName, pkg.Arch)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Rocky Linux advisories: %w", err)
 		}
@@ -84,12 +83,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 		installedVersion := version.NewVersion(installed)
 
 		for _, adv := range advisories {
-			// these are cases when different architectures have different fixed version or there is no fixed version for one of architecture
-			// we need to get correct fixed version
-			fixedVersion := fixedVersionForArch(adv.Entries, pkg.Arch)
-			if fixedVersion.String() == "" {
-				continue
-			}
+			fixedVersion := version.NewVersion(adv.FixedVersion)
 			if installedVersion.LessThan(fixedVersion) {
 				vuln := types.DetectedVulnerability{
 					VulnerabilityID:  adv.VulnerabilityID,
@@ -140,17 +134,4 @@ func addModularNamespace(name, label string) string {
 		}
 	}
 	return name
-}
-
-func fixedVersionForArch(entries dbTypes.Entries, arch string) version.Version {
-	for _, entry := range entries {
-		// Rocky advisories use `noarch` value for architecture and rpm packages use `noarch`
-		// So we can't get cases when entries slice is empty or package has no architecture
-		// e.g. https://errata.rockylinux.org/RLSA-2020:4436 and https://rockylinux.pkgs.org/8/rockylinux-appstream-aarch64/appstream-data-8-20200724.el8.noarch.rpm.html
-		// And we can just compare architectures from advisory and package
-		if entry.Arch == arch {
-			return version.NewVersion(entry.FixedVersion)
-		}
-	}
-	return version.Version{}
 }

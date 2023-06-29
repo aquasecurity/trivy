@@ -238,8 +238,8 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/CycloneDX/cyclonedx-go v0.7.0 h1:jNxp8hL7UpcvPDFXjY+Y1ibFtsW+e5zyF9QoSmhK/zg=
 github.com/CycloneDX/cyclonedx-go v0.7.0/go.mod h1:W5Z9w8pTTL+t+yG3PCiFRGlr8PUlE0pGWzKSJbsyXkg=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
-github.com/DmitriyLewen/trivy-db v0.0.0-20230622052008-f7e1d98ef777 h1:ZtMXAEQVfbf+FqwFVJGDI31+f803jfMwxcerufdtkwU=
-github.com/DmitriyLewen/trivy-db v0.0.0-20230622052008-f7e1d98ef777/go.mod h1:5MdwqaPC+r3W3Sdfrxw6bc3QAIIMPJkG5RM6qNGdPrw=
+github.com/DmitriyLewen/trivy-db v0.0.0-20230629140158-b7cd08262e1d h1:q23wPVReJX+QJ1bmKjlHp/T9y277yjcf1m9rquYYrYY=
+github.com/DmitriyLewen/trivy-db v0.0.0-20230629140158-b7cd08262e1d/go.mod h1:MDwdokuKyIiCjiQ7M98Xegm3FdMlbX3UK8KaD69wCO8=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
 github.com/MakeNowJust/heredoc v1.0.0 h1:cXCdzVdstXyiTqTvfqk9SDHpKNjxuom+DOlyEeQ4pzQ=
