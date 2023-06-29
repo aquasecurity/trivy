@@ -66,41 +66,50 @@ var (
 		Value:      "https://rekor.sigstore.dev",
 		Usage:      "[EXPERIMENTAL] address of rekor STL server",
 	}
+	IncludeDevDepsFlag = Flag{
+		Name:       "include-dev-deps",
+		ConfigName: "include-dev-deps",
+		Value:      false,
+		Usage:      "include development dependencies in the report (supported: npm)",
+	}
 )
 
 type ScanFlagGroup struct {
-	SkipDirs     *Flag
-	SkipFiles    *Flag
-	OfflineScan  *Flag
-	Scanners     *Flag
-	FilePatterns *Flag
-	Slow         *Flag
-	SBOMSources  *Flag
-	RekorURL     *Flag
+	SkipDirs       *Flag
+	SkipFiles      *Flag
+	OfflineScan    *Flag
+	Scanners       *Flag
+	FilePatterns   *Flag
+	Slow           *Flag
+	SBOMSources    *Flag
+	RekorURL       *Flag
+	IncludeDevDeps *Flag
 }
 
 type ScanOptions struct {
-	Target       string
-	SkipDirs     []string
-	SkipFiles    []string
-	OfflineScan  bool
-	Scanners     types.Scanners
-	FilePatterns []string
-	Slow         bool
-	SBOMSources  []string
-	RekorURL     string
+	Target         string
+	SkipDirs       []string
+	SkipFiles      []string
+	OfflineScan    bool
+	Scanners       types.Scanners
+	FilePatterns   []string
+	Slow           bool
+	SBOMSources    []string
+	RekorURL       string
+	IncludeDevDeps bool
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:     &SkipDirsFlag,
-		SkipFiles:    &SkipFilesFlag,
-		OfflineScan:  &OfflineScanFlag,
-		Scanners:     &ScannersFlag,
-		FilePatterns: &FilePatternsFlag,
-		Slow:         &SlowFlag,
-		SBOMSources:  &SBOMSourcesFlag,
-		RekorURL:     &RekorURLFlag,
+		SkipDirs:       &SkipDirsFlag,
+		SkipFiles:      &SkipFilesFlag,
+		OfflineScan:    &OfflineScanFlag,
+		Scanners:       &ScannersFlag,
+		FilePatterns:   &FilePatternsFlag,
+		Slow:           &SlowFlag,
+		SBOMSources:    &SBOMSourcesFlag,
+		RekorURL:       &RekorURLFlag,
+		IncludeDevDeps: &IncludeDevDepsFlag,
 	}
 }
 
@@ -118,6 +127,7 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 		f.Slow,
 		f.SBOMSources,
 		f.RekorURL,
+		f.IncludeDevDeps,
 	}
 }
 
@@ -137,15 +147,16 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	}
 
 	return ScanOptions{
-		Target:       target,
-		SkipDirs:     getStringSlice(f.SkipDirs),
-		SkipFiles:    getStringSlice(f.SkipFiles),
-		OfflineScan:  getBool(f.OfflineScan),
-		Scanners:     scanners,
-		FilePatterns: getStringSlice(f.FilePatterns),
-		Slow:         getBool(f.Slow),
-		SBOMSources:  sbomSources,
-		RekorURL:     getString(f.RekorURL),
+		Target:         target,
+		SkipDirs:       getStringSlice(f.SkipDirs),
+		SkipFiles:      getStringSlice(f.SkipFiles),
+		OfflineScan:    getBool(f.OfflineScan),
+		Scanners:       scanners,
+		FilePatterns:   getStringSlice(f.FilePatterns),
+		Slow:           getBool(f.Slow),
+		SBOMSources:    sbomSources,
+		RekorURL:       getString(f.RekorURL),
+		IncludeDevDeps: getBool(f.IncludeDevDeps),
 	}, nil
 }
 
