@@ -242,7 +242,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 
 func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.IncludeDev = nil // disable '--include-dev'
+	reportFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	report := flag.ReportFormatFlag
 	report.Value = "summary"                                     // override the default value as the summary is preferred for the compliance report
@@ -387,9 +387,9 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.Compliance = nil   // disable '--compliance'
-	reportFlagGroup.IncludeDev = nil   // disable '--include-dev'
+	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+	reportFlagGroup.Compliance = nil     // disable '--compliance'
+	reportFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	rootfsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -446,10 +446,10 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.Compliance = nil   // disable '--compliance'
-	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
-	reportFlagGroup.IncludeDev = nil   // disable '--include-dev'
+	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+	reportFlagGroup.Compliance = nil     // disable '--compliance'
+	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
+	reportFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -502,7 +502,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.IncludeDev = nil // disable '--include-dev'
+	reportFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	convertFlags := &flag.Flags{
 		ScanFlagGroup:   &flag.ScanFlagGroup{},
@@ -647,7 +647,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
-	reportFlagGroup.IncludeDev = nil     // disable '--include-dev'
+	reportFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 	reportFormat := flag.ReportFormatFlag
 	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = &reportFormat
@@ -903,7 +903,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance.Usage += fmt.Sprintf(" (%s,%s, %s, %s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS, types.ComplianceK8sPSSBaseline, types.ComplianceK8sPSSRestricted)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
-	reportFlagGroup.IncludeDev = nil         // disable '--include-dev'
+	reportFlagGroup.IncludeDevDeps = nil     // disable '--include-dev-deps'
 
 	formatFlag := flag.FormatFlag
 	formatFlag.Usage = "format (" + strings.Join([]string{r.FormatTable, r.FormatJSON, r.FormatCycloneDX}, ", ") + ")"
@@ -973,7 +973,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance.Usage += fmt.Sprintf(" (%s, %s)", types.ComplianceAWSCIS12, types.ComplianceAWSCIS14)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
-	reportFlagGroup.IncludeDev = nil         // disable '--include-dev'
+	reportFlagGroup.IncludeDevDeps = nil     // disable '--include-dev-deps'
 
 	awsFlags := &flag.Flags{
 		AWSFlagGroup:     flag.NewAWSFlagGroup(),
@@ -1037,8 +1037,8 @@ The following services are supported:
 
 func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.IncludeDev = nil   // disable '--include-dev'
+	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+	reportFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -1105,7 +1105,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
-	reportFlagGroup.IncludeDev = nil     // disable '--include-dev'
+	reportFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	scanFlags := flag.NewScanFlagGroup()
 	scanFlags.Scanners = nil // disable '--scanners' as it always scans for vulnerabilities

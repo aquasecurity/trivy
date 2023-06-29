@@ -98,9 +98,9 @@ var (
 		Value:      "",
 		Usage:      "compliance report to generate",
 	}
-	IncludeDevFlag = Flag{
-		Name:       "include-dev",
-		ConfigName: "include-dev",
+	IncludeDevDepsFlag = Flag{
+		Name:       "include-dev-deps",
+		ConfigName: "include-dev-deps",
 		Value:      false,
 		Usage:      "include developer dependencies in the report. (Currently only Npm supports this flag)",
 	}
@@ -121,7 +121,7 @@ type ReportFlagGroup struct {
 	Output         *Flag
 	Severity       *Flag
 	Compliance     *Flag
-	IncludeDev     *Flag
+	IncludeDevDeps *Flag
 }
 
 type ReportOptions struct {
@@ -137,7 +137,7 @@ type ReportOptions struct {
 	Output         io.Writer
 	Severities     []dbTypes.Severity
 	Compliance     spec.ComplianceSpec
-	IncludeDev     bool
+	IncludeDevDeps bool
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -154,7 +154,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Output:         &OutputFlag,
 		Severity:       &SeverityFlag,
 		Compliance:     &ComplianceFlag,
-		IncludeDev:     &IncludeDevFlag,
+		IncludeDevDeps: &IncludeDevDepsFlag,
 	}
 }
 
@@ -176,7 +176,7 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.Output,
 		f.Severity,
 		f.Compliance,
-		f.IncludeDev,
+		f.IncludeDevDeps,
 	}
 }
 
@@ -249,7 +249,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),
 		Compliance:     cs,
-		IncludeDev:     getBool(f.IncludeDev),
+		IncludeDevDeps: getBool(f.IncludeDevDeps),
 	}, nil
 }
 

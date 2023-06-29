@@ -22,15 +22,15 @@ func TestMain(m *testing.M) {
 
 func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name       string
-		dir        string
-		includeDev bool
-		want       *analyzer.AnalysisResult
+		name           string
+		dir            string
+		includeDevDeps bool
+		want           *analyzer.AnalysisResult
 	}{
 		{
-			name:       "with node_modules. Include dev deps",
-			dir:        "testdata/happy",
-			includeDev: true,
+			name:           "with node_modules. Include dev deps",
+			dir:            "testdata/happy",
+			includeDevDeps: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -144,9 +144,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:       "with node_modules. Exclude dev deps",
-			dir:        "testdata/happy",
-			includeDev: false,
+			name:           "with node_modules. Exclude dev deps",
+			dir:            "testdata/happy",
+			includeDevDeps: false,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -286,7 +286,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 				Options: analyzer.AnalysisOptions{
-					IncludeDev: tt.includeDev,
+					IncludeDevDeps: tt.includeDevDeps,
 				},
 			})
 

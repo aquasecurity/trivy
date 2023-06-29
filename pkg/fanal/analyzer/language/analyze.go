@@ -44,7 +44,7 @@ func AnalyzePackage(fileType, filePath string, r dio.ReadSeekerAt, parser godept
 }
 
 // Parse returns a parsed result of the lock file
-func Parse(fileType, filePath string, includeDev bool, r dio.ReadSeekerAt, parser godeptypes.Parser) (*types.Application, error) {
+func Parse(fileType, filePath string, includeDevDeps bool, r dio.ReadSeekerAt, parser godeptypes.Parser) (*types.Application, error) {
 	parsedLibs, parsedDependencies, err := parser.Parse(r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
@@ -52,7 +52,7 @@ func Parse(fileType, filePath string, includeDev bool, r dio.ReadSeekerAt, parse
 
 	// The file path of each library should be empty in case of dependency list such as lock file
 	// since they all will be the same path.
-	return toApplication(fileType, filePath, "", includeDev, nil, parsedLibs, parsedDependencies), nil
+	return toApplication(fileType, filePath, "", includeDevDeps, nil, parsedLibs, parsedDependencies), nil
 }
 
 // ParsePackage returns a parsed result of the package file
@@ -72,7 +72,7 @@ func ParsePackage(fileType, filePath string, r dio.ReadSeekerAt, parser godeptyp
 	return toApplication(fileType, filePath, filePath, true, r, parsedLibs, parsedDependencies), nil
 }
 
-func toApplication(fileType, filePath, libFilePath string, includeDev bool, r dio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
+func toApplication(fileType, filePath, libFilePath string, includeDevDeps bool, r dio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
 	if len(libs) == 0 {
 		return nil
 	}
@@ -91,7 +91,7 @@ func toApplication(fileType, filePath, libFilePath string, includeDev bool, r di
 	var pkgs []types.Package
 	for _, lib := range libs {
 		// At the moment `npm` only supports lib.Dev field
-		if !includeDev && lib.Dev {
+		if !includeDevDeps && lib.Dev {
 			continue
 		}
 		var licenses []string
