@@ -177,7 +177,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map
 	// Merge dependencies and optionalDependencies
 	dependencies := lo.Assign(rootPkg.Dependencies, rootPkg.OptionalDependencies)
 
-	if rootPkg.Workspaces != nil {
+	if len(rootPkg.Workspaces) > 0 {
 		pkgs, err := a.traverseWorkspaces(fsys, rootPkg.Workspaces)
 		if err != nil {
 			return nil, xerrors.Errorf("traverse workspaces error: %w", err)
