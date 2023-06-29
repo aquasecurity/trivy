@@ -3,6 +3,7 @@ package ospkg
 import (
 	"time"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
@@ -67,7 +68,12 @@ func Detect(_, osFamily, osName string, repo *ftypes.Repository, _ time.Time, pk
 
 	eosl := !driver.IsSupportedVersion(osFamily, osName)
 
-	vulns, err := driver.Detect(osName, repo, pkgs)
+	// Package `gpg-pubkey` doesn't use the correct version.
+	// We don't need to find vulnerabilities for this package.
+	filteredPkgs := lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
+		return pkg.Name != "gpg-pubkey"
+	})
+	vulns, err := driver.Detect(osName, repo, filteredPkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}
