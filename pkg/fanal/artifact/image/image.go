@@ -66,6 +66,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		FilePatterns:         opt.FilePatterns,
 		DisabledAnalyzers:    opt.DisabledAnalyzers,
 		MisconfScannerOption: opt.MisconfScannerOption,
+		SecretScannerOption:  opt.SecretScannerOption,
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("config analyzer group error: %w", err)
