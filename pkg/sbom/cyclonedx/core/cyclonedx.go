@@ -53,15 +53,22 @@ type CycloneDX struct {
 type Component struct {
 	Type       cdx.ComponentType
 	Name       string
+	Group      string
 	Version    string
 	PackageURL *purl.PackageURL
 	Licenses   []string
 	Hashes     []digest.Digest
 	Supplier   string
-	Properties map[string]string
+	Properties []Property
 
 	Components      []*Component
 	Vulnerabilities []types.DetectedVulnerability
+}
+
+type Property struct {
+	Name      string
+	Value     string
+	Namespace string
 }
 
 func NewCycloneDX(version string, opts ...Option) *CycloneDX {
@@ -120,6 +127,7 @@ func (c *CycloneDX) MarshalComponent(component *Component, components map[string
 		BOMRef:     bomRef,
 		Type:       component.Type,
 		Name:       component.Name,
+		Group:      component.Group,
 		Version:    component.Version,
 		PackageURL: c.PackageURL(component.PackageURL),
 		Supplier:   c.Supplier(component.Supplier),
@@ -289,17 +297,23 @@ func (c *CycloneDX) Licenses(licenses []string) *cdx.Licenses {
 	return lo.ToPtr(cdx.Licenses(choices))
 }
 
-func (c *CycloneDX) Properties(props map[string]string) []cdx.Property {
-	properties := lo.MapToSlice(props, func(k, v string) cdx.Property {
-		return cdx.Property{
-			Name:  Namespace + k,
-			Value: v,
+func (c *CycloneDX) Properties(properties []Property) []cdx.Property {
+	cdxProps := make([]cdx.Property, 0, len(properties))
+	for _, property := range properties {
+		namespace := Namespace
+		if len(property.Namespace) > 0 {
+			namespace = property.Namespace
 		}
+		cdxProps = append(cdxProps,
+			cdx.Property{
+				Name:  namespace + property.Name,
+				Value: property.Value,
+			})
+	}
+	sort.Slice(cdxProps, func(i, j int) bool {
+		return cdxProps[i].Name < cdxProps[j].Name
 	})
-	sort.Slice(properties, func(i, j int) bool {
-		return properties[i].Name < properties[j].Name
-	})
-	return properties
+	return cdxProps
 }
 
 func IsTrivySBOM(c *cdx.BOM) bool {
