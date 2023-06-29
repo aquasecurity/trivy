@@ -88,7 +88,6 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 
 	// By default, we need to remove dev dependencies from the result
 	// IncludeDevDeps option allows you not to remove them
-	// Only works for npm at the moment
 	artifactDetail.Applications = excludeDevDeps(options.IncludeDevDeps, artifactDetail.Applications)
 
 	// Fill OS packages and language-specific packages
