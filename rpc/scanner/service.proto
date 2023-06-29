@@ -27,6 +27,7 @@ message ScanOptions {
   repeated string       scanners           = 2;
   bool                  list_all_packages  = 3;
   map<string, Licenses> license_categories = 4;
+  bool                  include_dev_deps   = 5;
 }
 
 message ScanResponse {
