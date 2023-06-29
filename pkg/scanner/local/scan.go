@@ -88,7 +88,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 
 	// By default, we need to remove dev dependencies from the result
 	// IncludeDevDeps option allows you not to remove them
-	artifactDetail.Applications = excludeDevDeps(options.IncludeDevDeps, artifactDetail.Applications)
+	excludeDevDeps(artifactDetail.Applications, options.IncludeDevDeps)
 
 	// Fill OS packages and language-specific packages
 	if options.ListAllPackages {
@@ -407,13 +407,14 @@ func ShouldScanMisconfigOrRbac(scanners types.Scanners) bool {
 	return scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner)
 }
 
-func excludeDevDeps(include bool, apps []ftypes.Application) []ftypes.Application {
-	if !include {
-		for i := range apps {
-			apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
-				return !lib.Dev
-			})
-		}
+// excludeDevDeps removes development dependencies from the list of applications
+func excludeDevDeps(apps []ftypes.Application, include bool) {
+	if include {
+		return
 	}
-	return apps
+	for i := range apps {
+		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
+			return !lib.Dev
+		})
+	}
 }
