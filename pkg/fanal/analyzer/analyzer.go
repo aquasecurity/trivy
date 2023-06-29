@@ -144,9 +144,8 @@ type PostAnalysisInput struct {
 }
 
 type AnalysisOptions struct {
-	IncludeDevDeps bool
-	Offline        bool
-	FileChecksum   bool
+	Offline      bool
+	FileChecksum bool
 }
 
 type AnalysisResult struct {

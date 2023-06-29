@@ -102,7 +102,7 @@ var (
 		Name:       "include-dev-deps",
 		ConfigName: "include-dev-deps",
 		Value:      false,
-		Usage:      "include developer dependencies in the report. (Currently only Npm supports this flag)",
+		Usage:      "include developer dependencies in the report. (Currently only npm supports this flag)",
 	}
 )
 

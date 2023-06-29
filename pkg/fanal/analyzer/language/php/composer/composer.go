@@ -100,7 +100,7 @@ func (a composerAnalyzer) Version() int {
 }
 
 func (a composerAnalyzer) parseComposerLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
-	return language.Parse(types.Composer, path, false, r, a.lockParser)
+	return language.Parse(types.Composer, path, r, a.lockParser)
 }
 
 func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.Application) error {

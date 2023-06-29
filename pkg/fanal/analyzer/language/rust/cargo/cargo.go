@@ -100,7 +100,7 @@ func (a cargoAnalyzer) Version() int {
 }
 
 func (a cargoAnalyzer) parseCargoLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
-	return language.Parse(types.Cargo, path, false, r, a.lockParser)
+	return language.Parse(types.Cargo, path, r, a.lockParser)
 }
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {

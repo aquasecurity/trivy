@@ -222,7 +222,7 @@ func parse(fsys fs.FS, path string, parser godeptypes.Parser) (*types.Applicatio
 	}
 
 	// Parse go.mod or go.sum
-	return language.Parse(types.GoModule, path, true, file, parser)
+	return language.Parse(types.GoModule, path, file, parser)
 }
 
 func lessThanGo117(gomod *types.Application) bool {

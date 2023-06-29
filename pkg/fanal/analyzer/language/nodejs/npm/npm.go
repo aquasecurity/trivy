@@ -57,7 +57,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 			licenses = map[string]string{}
 		}
 
-		app, err := a.parseNpmPkgLock(input.FS, filePath, input.Options.IncludeDevDeps)
+		app, err := a.parseNpmPkgLock(input.FS, filePath)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -105,7 +105,7 @@ func (a npmLibraryAnalyzer) Version() int {
 	return version
 }
 
-func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string, includeDevDeps bool) (*types.Application, error) {
+func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string) (*types.Application, error) {
 	f, err := fsys.Open(path)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
@@ -118,7 +118,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string, includeDevD
 	}
 
 	// parse package-lock.json file
-	return language.Parse(types.Npm, path, includeDevDeps, file, a.lockParser)
+	return language.Parse(types.Npm, path, file, a.lockParser)
 }
 
 func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string]string, error) {
