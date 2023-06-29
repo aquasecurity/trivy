@@ -334,7 +334,7 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 			if filepath.Base(f.Name) != types.NpmPkg {
 				continue
 			}
-			pkg, err := a.parsePackageJson(f)
+			pkg, err := a.parsePackageJsonFromZip(f)
 			if err != nil {
 				return xerrors.Errorf("unable to parse %q: %w", path, err)
 			}
@@ -351,7 +351,7 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 	return nil
 }
 
-func (a yarnAnalyzer) parsePackageJson(f *zip.File) (packagejson.Package, error) {
+func (a yarnAnalyzer) parsePackageJsonFromZip(f *zip.File) (packagejson.Package, error) {
 	pkgFile, err := f.Open()
 	if err != nil {
 		return packagejson.Package{}, xerrors.Errorf("file open error: %w", err)
