@@ -43,7 +43,7 @@ trivy filesystem [flags] PATH
       --ignore-unfixed                   display only fixed vulnerabilities
       --ignored-licenses strings         specify a list of license to ignore
       --ignorefile string                specify .trivyignore file (default ".trivyignore")
-      --include-dev                      include developer dependencies in the report. (Currently only Npm supports this flag)
+      --include-dev-deps                 include developer dependencies in the report. (Currently only Npm supports this flag)
       --include-non-failures             include successes and exceptions, available with '--scanners config'
       --java-db-repository string        OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
       --license-confidence-level float   specify license classifier's confidence level (default 0.9)
