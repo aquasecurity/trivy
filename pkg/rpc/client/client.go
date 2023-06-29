@@ -85,6 +85,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 				Scanners:          opts.Scanners.StringSlice(),
 				ListAllPackages:   opts.ListAllPackages,
 				LicenseCategories: licenseCategories,
+				IncludeDevDeps:    opts.IncludeDevDeps,
 			},
 		})
 		return err
