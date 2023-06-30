@@ -1039,6 +1039,9 @@ func Test_Run(t *testing.T) {
 					PolicyPaths: []string{
 						filepath.Join(regoDir, "policies"),
 					},
+					DataPaths: []string{
+						filepath.Join(regoDir, "policies"),
+					},
 					PolicyNamespaces: []string{
 						"user",
 					},
