@@ -81,7 +81,7 @@ require (
 	github.com/sigstore/rekor v1.2.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/sosedoff/gitkit v0.3.0
-	github.com/spdx/tools-golang v0.5.0
+	github.com/spdx/tools-golang v0.5.2
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
