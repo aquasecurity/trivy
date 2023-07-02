@@ -3,7 +3,7 @@ package commands
 import (
 	"testing"
 
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func Test_extractKindAndName(t *testing.T) {
