@@ -225,7 +225,7 @@ uname_arch() {
     armv5*) arch="armv5" ;;
     armv6*) arch="armv6" ;;
     armv7*) arch="armv7" ;;
-    s390*) arch="s390x"  ;;
+    s390*) arch="s390x" ;;
   esac
   echo ${arch}
 }
