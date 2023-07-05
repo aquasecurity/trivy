@@ -187,7 +187,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				policy: []string{"policydir"},
 			},
-			wantErr: "no such file or directory",
+			wantErr: "file \"policydir\" stat error",
 		},
 	}
 	for _, tt := range tests {
