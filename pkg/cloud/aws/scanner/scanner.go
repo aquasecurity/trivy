@@ -6,6 +6,8 @@ import (
 	"io/fs"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
@@ -80,6 +82,10 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 
 	var policyFS fs.FS
 	policyFS, policyPaths, err = misconf.CreatePolicyFS(append(policyPaths, option.RegoOptions.PolicyPaths...))
+	if err != nil {
+		return nil, false, xerrors.Errorf("unable to create policyfs: %w", err)
+	}
+
 	scannerOpts = append(scannerOpts, options.ScannerWithPolicyFilesystem(policyFS))
 	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
 
@@ -111,18 +117,9 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		}
 	}
 
-	var fullState *state.State
-	if previousState, err := awsCache.LoadState(); err == nil {
-		if freshState != nil {
-			fullState, err = previousState.Merge(freshState)
-			if err != nil {
-				return nil, false, err
-			}
-		} else {
-			fullState = previousState
-		}
-	} else {
-		fullState = freshState
+	fullState, err := createState(freshState, awsCache)
+	if err != nil {
+		return nil, false, err
 	}
 
 	if fullState == nil {
@@ -139,6 +136,23 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	return defsecResults, len(included) > 0, nil
+}
+
+func createState(freshState *state.State, awsCache *cache.Cache) (*state.State, error) {
+	var fullState *state.State
+	if previousState, err := awsCache.LoadState(); err == nil {
+		if freshState != nil {
+			fullState, err = previousState.Merge(freshState)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			fullState = previousState
+		}
+	} else {
+		fullState = freshState
+	}
+	return fullState, nil
 }
 
 type defsecLogger struct {
