@@ -251,7 +251,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = &report
 
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s)", types.ComplianceDockerCIS)
+	compliance.Values = []string{types.ComplianceDockerCIS}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
 	imageFlags := &flag.Flags{
@@ -330,7 +330,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFormat := flag.ReportFormatFlag
-	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFormat.Usage = "specify a compliance report format for the output" //@TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = &reportFormat
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
@@ -643,7 +643,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
 	reportFormat := flag.ReportFormatFlag
-	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFormat.Usage = "specify a compliance report format for the output" //@TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = &reportFormat
 
 	scanFlags := &flag.ScanFlagGroup{
@@ -895,16 +895,21 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s,%s, %s, %s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS, types.ComplianceK8sPSSBaseline, types.ComplianceK8sPSSRestricted)
+	compliance.Values = []string{
+		types.ComplianceK8sNsa,
+		types.ComplianceK8sCIS,
+		types.ComplianceK8sPSSBaseline,
+		types.ComplianceK8sPSSRestricted,
+	}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
 	formatFlag := flag.FormatFlag
-	formatFlag.Usage = "format (" + strings.Join([]string{
+	formatFlag.Values = []string{
 		r.FormatTable,
 		r.FormatJSON,
 		r.FormatCycloneDX,
-	}, ", ") + ")"
+	}
 	reportFlagGroup.Format = &formatFlag
 
 	k8sFlags := &flag.Flags{
@@ -968,7 +973,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s, %s)", types.ComplianceAWSCIS12, types.ComplianceAWSCIS14)
+	compliance.Values = []string{types.ComplianceAWSCIS12, types.ComplianceAWSCIS14}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 

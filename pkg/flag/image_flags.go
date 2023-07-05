@@ -2,7 +2,6 @@ package flag
 
 import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -18,8 +17,12 @@ var (
 	ImageConfigScannersFlag = Flag{
 		Name:       "image-config-scanners",
 		ConfigName: "image.image-config-scanners",
-		Usage:      "comma-separated list of what security issues to detect on container image configurations (config,secret)",
 		Default:    []string{},
+		Values: types.Scanners{
+			types.MisconfigScanner,
+			types.SecretScanner,
+		}.StringSlice(),
+		Usage: "comma-separated list of what security issues to detect on container image configurations",
 	}
 	ScanRemovedPkgsFlag = Flag{
 		Name:       "removed-pkgs",
@@ -48,8 +51,9 @@ var (
 	SourceFlag = Flag{
 		Name:       "image-src",
 		ConfigName: "image.source",
-		Usage:      "image source(s) to use, in priority order (docker,containerd,podman,remote)",
 		Default:    ftypes.AllImageSources.StringSlice(),
+		Values:     ftypes.AllImageSources.StringSlice(),
+		Usage:      "image source(s) to use, in priority order",
 	}
 )
 
@@ -98,16 +102,6 @@ func (f *ImageFlagGroup) Flags() []*Flag {
 }
 
 func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
-	scanners, err := parseScanners(getStringSlice(f.ImageConfigScanners), types.AllImageConfigScanners)
-	if err != nil {
-		return ImageOptions{}, xerrors.Errorf("unable to parse image config scanners: %w", err)
-	}
-
-	imageSources, err := parseImageSources(getStringSlice(f.ImageSources))
-	if err != nil {
-		return ImageOptions{}, xerrors.Errorf("unable to parse image sources: %w", err)
-	}
-
 	var platform ftypes.Platform
 	if p := getString(f.Platform); p != "" {
 		pl, err := v1.ParsePlatform(p)
@@ -122,22 +116,10 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 
 	return ImageOptions{
 		Input:               getString(f.Input),
-		ImageConfigScanners: scanners,
+		ImageConfigScanners: getUnderlyingStringSlice[types.Scanner](f.ImageConfigScanners),
 		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
 		Platform:            platform,
 		DockerHost:          getString(f.DockerHost),
-		ImageSources:        imageSources,
+		ImageSources:        getUnderlyingStringSlice[ftypes.ImageSource](f.ImageSources),
 	}, nil
-}
-
-func parseImageSources(srcs []string) (ftypes.ImageSources, error) {
-	var imageSources ftypes.ImageSources
-	for _, s := range srcs {
-		src := ftypes.ImageSource(s)
-		if !slices.Contains(ftypes.AllImageSources, src) {
-			return nil, xerrors.Errorf("unknown image source: %s", s)
-		}
-		imageSources = append(imageSources, src)
-	}
-	return imageSources, nil
 }

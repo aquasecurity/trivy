@@ -42,6 +42,10 @@ var (
 			"workload",
 			"infra",
 		},
+		Values: []string{
+			"workload",
+			"infra",
+		},
 		Usage: "specify which components to scan",
 	}
 	K8sVersionFlag = Flag{

@@ -1,9 +1,6 @@
 package flag
 
 import (
-	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -33,6 +30,11 @@ var (
 			types.VulnerabilityScanner,
 			types.SecretScanner,
 		}.StringSlice(),
+		Values: types.Scanners{
+			types.VulnerabilityScanner,
+			types.MisconfigScanner,
+			types.SecretScanner,
+			types.LicenseScanner,
 		}.StringSlice(),
 		Aliases: []Alias{
 			{
@@ -41,7 +43,7 @@ var (
 				Deprecated: true, // --security-checks was renamed to --scanners
 			},
 		},
-		Usage: "comma-separated list of what security issues to detect (vuln,config,secret,license)",
+		Usage: "comma-separated list of what security issues to detect",
 	}
 	FilePatternsFlag = Flag{
 		Name:       "file-patterns",
@@ -58,8 +60,9 @@ var (
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
-		Usage:      "[EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)",
 		Default:    []string{},
+		Values:     []string{"oci", "rekor"},
+		Usage:      "[EXPERIMENTAL] try to retrieve SBOM from the specified sources",
 	}
 	RekorURLFlag = Flag{
 		Name:       "rekor-url",
@@ -137,47 +140,17 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	if len(args) == 1 {
 		target = args[0]
 	}
-	scanners, err := parseScanners(getStringSlice(f.Scanners), types.AllScanners)
-	if err != nil {
-		return ScanOptions{}, xerrors.Errorf("unable to parse scanners: %w", err)
-	}
-
-	sbomSources := getStringSlice(f.SBOMSources)
-	if err = validateSBOMSources(sbomSources); err != nil {
-		return ScanOptions{}, xerrors.Errorf("unable to parse SBOM sources: %w", err)
-	}
 
 	return ScanOptions{
 		Target:         target,
 		SkipDirs:       getStringSlice(f.SkipDirs),
 		SkipFiles:      getStringSlice(f.SkipFiles),
 		OfflineScan:    getBool(f.OfflineScan),
-		Scanners:       scanners,
+		Scanners:       getUnderlyingStringSlice[types.Scanner](f.Scanners),
 		FilePatterns:   getStringSlice(f.FilePatterns),
 		Slow:           getBool(f.Slow),
-		SBOMSources:    sbomSources,
+		SBOMSources:    getStringSlice(f.SBOMSources),
 		RekorURL:       getString(f.RekorURL),
 		IncludeDevDeps: getBool(f.IncludeDevDeps),
 	}, nil
-}
-
-func parseScanners(scanner []string, allowedScanners []types.Scanner) (types.Scanners, error) {
-	var scanners types.Scanners
-	for _, v := range scanner {
-		s := types.Scanner(v)
-		if !slices.Contains(allowedScanners, s) {
-			return nil, xerrors.Errorf("unknown scanner: %s", v)
-		}
-		scanners = append(scanners, s)
-	}
-	return scanners, nil
-}
-
-func validateSBOMSources(sbomSources []string) error {
-	for _, v := range sbomSources {
-		if !slices.Contains(types.SBOMSources, v) {
-			return xerrors.Errorf("unknown SBOM source: %s", v)
-		}
-	}
-	return nil
 }
