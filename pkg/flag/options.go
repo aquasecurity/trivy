@@ -285,6 +285,9 @@ func getStringSlice(flag *Flag) []string {
 
 func getUnderlyingStringSlice[T String](flag *Flag) []T {
 	ss := getStringSlice(flag)
+	if len(ss) == 0 {
+		return nil
+	}
 	return lo.Map(ss, func(s string, _ int) T {
 		return T(s)
 	})

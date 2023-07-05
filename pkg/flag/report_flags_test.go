@@ -49,33 +49,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path with a low case severity",
-			fields: fields{
-				severities: "critical",
-			},
-			want: flag.ReportOptions{
-				Output: os.Stdout,
-				Severities: []dbTypes.Severity{
-					dbTypes.SeverityCritical,
-				},
-			},
-		},
-		{
-			name: "happy path with an unknown severity",
-			fields: fields{
-				severities: "CRITICAL,INVALID",
-			},
-			want: flag.ReportOptions{
-				Output: os.Stdout,
-				Severities: []dbTypes.Severity{
-					dbTypes.SeverityCritical,
-				},
-			},
-			wantLogs: []string{
-				"unknown severity option: unknown severity: INVALID",
-			},
-		},
-		{
 			name: "happy path with an cyclonedx",
 			fields: fields{
 				severities:  "CRITICAL",
@@ -179,7 +152,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			name: "happy path with compliance",
 			fields: fields{
 				compliane:  "@testdata/example-spec.yaml",
-				severities: "low",
+				severities: dbTypes.SeverityLow.String(),
 			},
 			want: flag.ReportOptions{
 				Output: os.Stdout,

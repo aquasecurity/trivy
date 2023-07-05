@@ -273,6 +273,9 @@ func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependenc
 }
 
 func toSeverity(severity []string) []dbTypes.Severity {
+	if len(severity) == 0 {
+		return nil
+	}
 	severities := lo.Map(severity, func(s string, _ int) dbTypes.Severity {
 		// Note that there is no need to check the error here
 		// since the severity value is already validated in the flag parser.
