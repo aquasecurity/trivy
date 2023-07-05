@@ -116,8 +116,8 @@ adjust_os() {
     amd64) OS=64bit ;;
     arm) OS=ARM ;;
     arm64) OS=ARM64 ;;
-    ppc64le) OS=Linux;;
-    s390x) OS=Linux;;
+    ppc64le) OS=Linux ;;
+    s390x) OS=Linux ;;
     darwin) OS=macOS ;;
     dragonfly) OS=DragonFlyBSD ;;
     freebsd) OS=FreeBSD ;;
