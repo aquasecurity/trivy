@@ -33,7 +33,7 @@ trivy filesystem [flags] PATH
       --enable-modules strings           [EXPERIMENTAL] module names to enable
       --exit-code int                    specify exit code when any security issues are found
       --file-patterns strings            specify config file patterns
-  -f, --format string                    format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+  -f, --format string                    format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
       --helm-set strings                 specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings            specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings          specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -61,14 +61,14 @@ trivy filesystem [flags] PATH
       --redis-tls                        enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string            registry token
       --rekor-url string                 [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
-      --report string                    specify a compliance report format for the output. (all,summary) (default "all")
+      --report string                    specify a compliance report format for the output (all,summary) (default "all")
       --reset                            remove all caches and database
       --reset-policy-bundle              remove policy bundle
       --sbom-sources strings             [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                 comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
       --secret-config string             specify a path to config file for secret scanning (default "trivy-secret.yaml")
       --server string                    server address in client mode
-  -s, --severity string                  severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
+  -s, --severity strings                 severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --skip-db-update                   skip updating vulnerability database
       --skip-dirs strings                specify the directories where the traversal is skipped
       --skip-files strings               specify the file paths to skip traversal
