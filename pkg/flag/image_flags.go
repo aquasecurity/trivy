@@ -18,38 +18,38 @@ var (
 	ImageConfigScannersFlag = Flag{
 		Name:       "image-config-scanners",
 		ConfigName: "image.image-config-scanners",
-		Value:      "",
 		Usage:      "comma-separated list of what security issues to detect on container image configurations (config,secret)",
+		Default:    []string{},
 	}
 	ScanRemovedPkgsFlag = Flag{
 		Name:       "removed-pkgs",
 		ConfigName: "image.removed-pkgs",
-		Value:      false,
+		Default:    false,
 		Usage:      "detect vulnerabilities of removed packages (only for Alpine)",
 	}
 	InputFlag = Flag{
 		Name:       "input",
 		ConfigName: "image.input",
-		Value:      "",
+		Default:    "",
 		Usage:      "input file path instead of image name",
 	}
 	PlatformFlag = Flag{
 		Name:       "platform",
 		ConfigName: "image.platform",
-		Value:      "",
+		Default:    "",
 		Usage:      "set platform in the form os/arch if image is multi-platform capable",
 	}
 	DockerHostFlag = Flag{
 		Name:       "docker-host",
 		ConfigName: "image.docker.host",
-		Value:      "",
+		Default:    "",
 		Usage:      "unix domain socket path to use for docker scanning",
 	}
 	SourceFlag = Flag{
 		Name:       "image-src",
 		ConfigName: "image.source",
-		Value:      ftypes.AllImageSources.StringSlice(),
 		Usage:      "image source(s) to use, in priority order (docker,containerd,podman,remote)",
+		Default:    ftypes.AllImageSources.StringSlice(),
 	}
 )
 

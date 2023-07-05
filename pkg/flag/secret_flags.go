@@ -4,7 +4,7 @@ var (
 	SecretConfigFlag = Flag{
 		Name:       "secret-config",
 		ConfigName: "secret.config",
-		Value:      "trivy-secret.yaml",
+		Default:    "trivy-secret.yaml",
 		Usage:      "specify a path to config file for secret scanning",
 	}
 )

@@ -26,76 +26,76 @@ var (
 		Name:       "format",
 		ConfigName: "format",
 		Shorthand:  "f",
-		Value:      report.FormatTable,
 		Usage:      "format (" + strings.Join(report.SupportedFormats, ", ") + ")",
+		Default:    report.FormatTable,
 	}
 	ReportFormatFlag = Flag{
 		Name:       "report",
 		ConfigName: "report",
-		Value:      "all",
 		Usage:      "specify a report format for the output. (all,summary)",
+		Default:    "all",
 	}
 	TemplateFlag = Flag{
 		Name:       "template",
 		ConfigName: "template",
 		Shorthand:  "t",
-		Value:      "",
+		Default:    "",
 		Usage:      "output template",
 	}
 	DependencyTreeFlag = Flag{
 		Name:       "dependency-tree",
 		ConfigName: "dependency-tree",
-		Value:      false,
+		Default:    false,
 		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
 	}
 	ListAllPkgsFlag = Flag{
 		Name:       "list-all-pkgs",
 		ConfigName: "list-all-pkgs",
-		Value:      false,
+		Default:    false,
 		Usage:      "enabling the option will output all packages regardless of vulnerability",
 	}
 	IgnoreFileFlag = Flag{
 		Name:       "ignorefile",
 		ConfigName: "ignorefile",
-		Value:      result.DefaultIgnoreFile,
+		Default:    result.DefaultIgnoreFile,
 		Usage:      "specify .trivyignore file",
 	}
 	IgnorePolicyFlag = Flag{
 		Name:       "ignore-policy",
 		ConfigName: "ignore-policy",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify the Rego file path to evaluate each vulnerability",
 	}
 	ExitCodeFlag = Flag{
 		Name:       "exit-code",
 		ConfigName: "exit-code",
-		Value:      0,
+		Default:    0,
 		Usage:      "specify exit code when any security issues are found",
 	}
 	ExitOnEOLFlag = Flag{
 		Name:       "exit-on-eol",
 		ConfigName: "exit-on-eol",
-		Value:      0,
+		Default:    0,
 		Usage:      "exit with the specified code when the OS reaches end of service/life",
 	}
 	OutputFlag = Flag{
 		Name:       "output",
 		ConfigName: "output",
 		Shorthand:  "o",
-		Value:      "",
+		Default:    "",
 		Usage:      "output file name",
 	}
 	SeverityFlag = Flag{
 		Name:       "severity",
 		ConfigName: "severity",
 		Shorthand:  "s",
-		Value:      strings.Join(dbTypes.SeverityNames, ","),
 		Usage:      "severities of security issues to be displayed (comma separated)",
+		Default:    dbTypes.SeverityNames,
 	}
 	ComplianceFlag = Flag{
 		Name:       "compliance",
 		ConfigName: "scan.compliance",
-		Value:      "",
+		Default:    "",
 		Usage:      "compliance report to generate",
 	}
 )

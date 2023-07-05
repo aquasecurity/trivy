@@ -11,27 +11,28 @@ var (
 	SkipDirsFlag = Flag{
 		Name:       "skip-dirs",
 		ConfigName: "scan.skip-dirs",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify the directories where the traversal is skipped",
 	}
 	SkipFilesFlag = Flag{
 		Name:       "skip-files",
 		ConfigName: "scan.skip-files",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify the file paths to skip traversal",
 	}
 	OfflineScanFlag = Flag{
 		Name:       "offline-scan",
 		ConfigName: "scan.offline",
-		Value:      false,
+		Default:    false,
 		Usage:      "do not issue API requests to identify dependencies",
 	}
 	ScannersFlag = Flag{
 		Name:       "scanners",
 		ConfigName: "scan.scanners",
-		Value: types.Scanners{
+		Default: types.Scanners{
 			types.VulnerabilityScanner,
 			types.SecretScanner,
+		}.StringSlice(),
 		}.StringSlice(),
 		Aliases: []Alias{
 			{
@@ -45,31 +46,31 @@ var (
 	FilePatternsFlag = Flag{
 		Name:       "file-patterns",
 		ConfigName: "scan.file-patterns",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify config file patterns",
 	}
 	SlowFlag = Flag{
 		Name:       "slow",
 		ConfigName: "scan.slow",
-		Value:      false,
+		Default:    false,
 		Usage:      "scan over time with lower CPU and memory utilization",
 	}
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
-		Value:      []string{},
 		Usage:      "[EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)",
+		Default:    []string{},
 	}
 	RekorURLFlag = Flag{
 		Name:       "rekor-url",
 		ConfigName: "scan.rekor-url",
-		Value:      "https://rekor.sigstore.dev",
+		Default:    "https://rekor.sigstore.dev",
 		Usage:      "[EXPERIMENTAL] address of rekor STL server",
 	}
 	IncludeDevDepsFlag = Flag{
 		Name:       "include-dev-deps",
 		ConfigName: "include-dev-deps",
-		Value:      false,
+		Default:    false,
 		Usage:      "include development dependencies in the report (supported: npm)",
 	}
 )

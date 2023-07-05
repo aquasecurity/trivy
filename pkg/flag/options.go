@@ -32,8 +32,8 @@ type Flag struct {
 	// Shorthand is a shorthand letter.
 	Shorthand string
 
-	// Value is the default value. It must be filled to determine the flag type.
-	Value interface{}
+	// Default is the default value. It must be filled to determine the flag type.
+	Default any
 
 	// Usage explains how to use the flag.
 	Usage string
@@ -178,7 +178,7 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 		flags = cmd.Flags()
 	}
 
-	switch v := flag.Value.(type) {
+	switch v := flag.Default.(type) {
 	case int:
 		flags.IntP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case string:
@@ -203,7 +203,7 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 		return nil
 	} else if flag.Name == "" {
 		// This flag is available only in trivy.yaml
-		viper.SetDefault(flag.ConfigName, flag.Value)
+		viper.SetDefault(flag.ConfigName, flag.Default)
 		return nil
 	}
 

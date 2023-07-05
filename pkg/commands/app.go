@@ -246,7 +246,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	report := flag.ReportFormatFlag
-	report.Value = "summary"                                     // override the default value as the summary is preferred for the compliance report
+	report.Default = "summary"                                   // override the default value as the summary is preferred for the compliance report
 	report.Usage = "specify a format for the compliance report." // "--report" works only with "--compliance"
 	reportFlagGroup.ReportFormat = &report
 
@@ -546,7 +546,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Name:       "remote",
 		ConfigName: "server.addr",
 		Shorthand:  "",
-		Value:      "http://localhost:4954",
+		Default:    "http://localhost:4954",
 		Usage:      "server address",
 	}
 	remoteFlags.ServerAddr = &remoteAddr // disable '--server' and enable '--remote' instead.
@@ -880,7 +880,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := flag.NewScanFlagGroup()
 	scanners := flag.ScannersFlag
-	scanners.Value = fmt.Sprintf( // overwrite the default value
+	scanners.Default = fmt.Sprintf( // overwrite the default value
 		"%s,%s,%s,%s",
 		types.VulnerabilityScanner,
 		types.MisconfigScanner,
@@ -1047,7 +1047,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Region: &flag.Flag{
 				Name:       "aws-region",
 				ConfigName: "aws.region",
-				Value:      "",
+				Default:    "",
 				Usage:      "AWS region to scan",
 			},
 		},
