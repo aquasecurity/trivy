@@ -200,7 +200,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 	}
 
-	policyFS, policyPaths, err := createPolicyFS(opt.PolicyPaths)
+	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
 	if err != nil {
 		return nil, err
 	}
@@ -284,7 +284,7 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []op
 	return opts
 }
 
-func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
+func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	if len(policyPaths) == 0 {
 		return nil, nil, nil
 	}

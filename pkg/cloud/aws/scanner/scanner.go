@@ -3,6 +3,7 @@ package scanner
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"strings"
 
 	"github.com/aquasecurity/defsec/pkg/framework"
@@ -76,8 +77,12 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		scannerOpts = append(scannerOpts,
 			options.ScannerWithEmbeddedPolicies(false))
 	}
-	policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
+
+	var policyFS fs.FS
+	policyFS, policyPaths, err = misconf.CreatePolicyFS(append(policyPaths, option.RegoOptions.PolicyPaths...))
+	scannerOpts = append(scannerOpts, options.ScannerWithPolicyFilesystem(policyFS))
 	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
+
 	dataFS, dataPaths, err := misconf.CreateDataFS(option.RegoOptions.DataPaths)
 	if err != nil {
 		log.Logger.Errorf("Could not load config data: %s", err)
