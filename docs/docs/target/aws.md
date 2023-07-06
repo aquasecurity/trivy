@@ -103,5 +103,7 @@ Regardless of whether the cache is used or not, rules will be evaluated again wi
 
 You can write custom policies for Trivy to evaluate against your AWS account.
 These policies are written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/), the same language used by [Open Policy Agent](https://www.openpolicyagent.org/).
-See the [Custom Policies](../scanner/misconfiguration/custom/index.md) page for more information.
+See the [Custom Policies](../scanner/misconfiguration/custom/index.md) page for more information on how to write custom policies.
 
+Custom policies in cloud scanning also support passing in custom data. This can be useful when you want to selectively enable/disable certain aspects of your cloud policies.
+See the [Custom Data](../scanner/misconfiguration/custom/data.md) page for more information on how to provide custom data to custom policies.
