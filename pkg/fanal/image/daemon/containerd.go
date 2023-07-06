@@ -117,7 +117,17 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 		return nil, cleanup, err
 	}
 
-	client, err := containerd.New(addr)
+	options := []containerd.ClientOpt{}
+	if platformStr := opts.RegistryOptions.Platform.String(); platformStr != "" {
+		ociPlatform, err := platforms.Parse(platformStr)
+		if err != nil {
+			return nil, cleanup, err
+		}
+
+		options = append(options, containerd.WithDefaultPlatform(platforms.OnlyStrict(ociPlatform)))
+	}
+
+	client, err := containerd.New(addr, options...)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to initialize a containerd client: %w", err)
 	}
