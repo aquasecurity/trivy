@@ -70,11 +70,7 @@ func platformToMatchComparer(ctx context.Context, img containerd.Image, platform
 		}
 		return platforms.OnlyStrict(ps[0]), nil
 	}
-	ociPlatform, err := platforms.Parse(platform.Platform.String())
-	if err != nil {
-		return nil, err
-	}
-	return platforms.OnlyStrict(ociPlatform), nil
+	return img.Platform(), nil
 }
 
 func imageWriter(client *containerd.Client, img containerd.Image, platform types.Platform) imageSave {
@@ -118,8 +114,8 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 	}
 
 	options := []containerd.ClientOpt{}
-	if platformStr := opts.RegistryOptions.Platform.String(); platformStr != "" {
-		ociPlatform, err := platforms.Parse(platformStr)
+	if opts.RegistryOptions.Platform.Platform != nil {
+		ociPlatform, err := platforms.Parse(opts.RegistryOptions.Platform.String())
 		if err != nil {
 			return nil, cleanup, err
 		}
