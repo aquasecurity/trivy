@@ -42,7 +42,7 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 			log.Logger.Warn("Increase --timeout value")
 		}
 	}()
-
+	opts.K8sVersion = cluster.GetClusterVersion()
 	switch args[0] {
 	case clusterArtifact:
 		return clusterRun(ctx, opts, cluster)
