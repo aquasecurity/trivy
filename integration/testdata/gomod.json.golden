@@ -28,9 +28,9 @@
           "FixedVersion": "v2.8.0",
           "Layer": {},
           "DataSource": {
-            "ID": "glad",
-            "Name": "GitLab Advisory Database Community",
-            "URL": "https://gitlab.com/gitlab-org/advisories-community"
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Go",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago"
           },
           "Title": "OCI Manifest Type Confusion Issue",
           "Description": "### Impact\n\nSystems that rely on digest equivalence for image attestations may be vulnerable to type confusion.",
@@ -52,9 +52,9 @@
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-23628",
           "DataSource": {
-            "ID": "glad",
-            "Name": "GitLab Advisory Database Community",
-            "URL": "https://gitlab.com/gitlab-org/advisories-community"
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Go",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago"
           },
           "Title": "Incorrect Calculation",
           "Description": "OPA is an open source, general-purpose policy engine. Under certain conditions, pretty-printing an abstract syntax tree (AST) that contains synthetic nodes could change the logic of some statements by reordering array literals. Example of policies impacted are those that parse and compare web paths. **All of these** three conditions have to be met to create an adverse effect: 1. An AST of Rego had to be **created programmatically** such that it ends up containing terms without a location (such as wildcard variables). 2. The AST had to be **pretty-printed** using the `github.com/open-policy-agent/opa/format` package. 3. The result of the pretty-printing had to be **parsed and evaluated again** via an OPA instance using the bundles, or the Golang packages. If any of these three conditions are not met, you are not affected. Notably, all three would be true if using **optimized bundles**, i.e. bundles created with `opa build -O=1` or higher. In that case, the optimizer would fulfil condition (1.), the result of that would be pretty-printed when writing the bundle to disk, fulfilling (2.). When the bundle was then used, we'd satisfy (3.). As a workaround users may disable optimization when creating bundles.",
@@ -90,9 +90,9 @@
           "Layer": {},
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-38561",
           "DataSource": {
-            "ID": "go-vulndb",
-            "Name": "The Go Vulnerability Database",
-            "URL": "https://github.com/golang/vulndb"
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Go",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago"
           },
           "Description": "Due to improper index calculation, an incorrectly formatted language tag can cause Parse\nto panic via an out of bounds read. If Parse is used to process untrusted user inputs,\nthis may be used as a vector for a denial of service attack.\n",
           "Severity": "UNKNOWN",
@@ -117,9 +117,9 @@
           "FixedVersion": "v2.8.0",
           "Layer": {},
           "DataSource": {
-            "ID": "glad",
-            "Name": "GitLab Advisory Database Community",
-            "URL": "https://gitlab.com/gitlab-org/advisories-community"
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Go",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago"
           },
           "Title": "OCI Manifest Type Confusion Issue",
           "Description": "### Impact\n\nSystems that rely on digest equivalence for image attestations may be vulnerable to type confusion.",
@@ -146,9 +146,9 @@
           "FixedVersion": "v2.8.0",
           "Layer": {},
           "DataSource": {
-            "ID": "glad",
-            "Name": "GitLab Advisory Database Community",
-            "URL": "https://gitlab.com/gitlab-org/advisories-community"
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Go",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago"
           },
           "Title": "OCI Manifest Type Confusion Issue",
           "Description": "### Impact\n\nSystems that rely on digest equivalence for image attestations may be vulnerable to type confusion.",
