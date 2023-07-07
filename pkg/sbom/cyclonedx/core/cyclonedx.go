@@ -149,11 +149,11 @@ func (c *CycloneDX) MarshalComponent(component *Component, components map[string
 				// new recommendation
 				rec := fmt.Sprintf("Upgrade %s to version %s", v.PkgName, v.FixedVersion)
 				// previous recommendations
-				recs := strings.Split(vuln.Recommendation, ", ")
+				recs := strings.Split(vuln.Recommendation, "; ")
 				if !slices.Contains(recs, rec) {
 					recs = append(recs, rec)
 					slices.Sort(recs)
-					vuln.Recommendation = strings.Join(recs, ", ")
+					vuln.Recommendation = strings.Join(recs, "; ")
 				}
 			}
 		} else {

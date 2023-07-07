@@ -1365,8 +1365,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							Name: string(vulnerability.GHSA),
 							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 						},
-						Recommendation: "Upgrade org.apache.nifi:nifi-dbcp-base to version 1.22.0, Upgrade org.apache.nifi:nifi-hikari-dbcp-service to version 1.22.0",
-
+						Recommendation: "Upgrade org.apache.nifi:nifi-dbcp-base to version 1.22.0; Upgrade org.apache.nifi:nifi-hikari-dbcp-service to version 1.22.0",
 						Ratings: &[]cdx.VulnerabilityRating{
 							{
 								Source: &cdx.Source{
