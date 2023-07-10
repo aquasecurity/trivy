@@ -316,12 +316,12 @@ This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
 ### Pass custom policies
-You can pass directories including your custom policies through `--policy` option.
-This can be repeated for specifying multiple directories.
+You can pass policy files or directories including your custom policies through `--policy` option.
+This can be repeated for specifying multiple files or directories.
 
 ```bash
 cd examplex/misconf/
-trivy conf --policy custom-policy/policy --policy combine/policy --namespaces user misconf/mixed
+trivy conf --policy custom-policy/policy --policy combine/policy --policy policy.rego --namespaces user misconf/mixed
 ```
 
 For more details, see [Custom Policies](./custom/index.md).
