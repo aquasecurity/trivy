@@ -747,6 +747,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
+			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
 			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
 			require.NoError(t, err)
 
@@ -1004,6 +1005,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
+			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
 			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
 			require.NoError(t, err)
 
@@ -1786,9 +1788,10 @@ func TestMixedConfigurationScan(t *testing.T) {
 			},
 			artifactOpt: artifact.Option{
 				MisconfScannerOption: misconf.ScannerOption{
-					RegoOnly:    true,
-					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/mixed/rego"},
+					RegoOnly:                true,
+					Namespaces:              []string{"user"},
+					PolicyPaths:             []string{"./testdata/misconfig/mixed/rego"},
+					DisableEmbeddedPolicies: true,
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{

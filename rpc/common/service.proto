@@ -50,6 +50,7 @@ message Package {
   string          file_path   = 12;
   repeated string depends_on  = 14;
   string          digest      = 16;
+  bool            dev         = 17;
 }
 
 message Misconfiguration {

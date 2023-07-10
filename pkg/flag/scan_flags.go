@@ -66,6 +66,12 @@ var (
 		Value:      "https://rekor.sigstore.dev",
 		Usage:      "[EXPERIMENTAL] address of rekor STL server",
 	}
+	IncludeDevDepsFlag = Flag{
+		Name:       "include-dev-deps",
+		ConfigName: "include-dev-deps",
+		Value:      false,
+		Usage:      "include development dependencies in the report (supported: npm)",
+	}
 	ThirdPartyOSPkgs = Flag{
 		Name:       "third-party-os-pkgs",
 		ConfigName: "scan.third-party-os-pkgs",
@@ -77,39 +83,42 @@ var (
 type ScanFlagGroup struct {
 	SkipDirs         *Flag
 	SkipFiles        *Flag
-	ThirdPartyOSPkgs *Flag
 	OfflineScan      *Flag
 	Scanners         *Flag
 	FilePatterns     *Flag
 	Slow             *Flag
 	SBOMSources      *Flag
 	RekorURL         *Flag
+	IncludeDevDeps   *Flag
+	ThirdPartyOSPkgs *Flag
 }
 
 type ScanOptions struct {
 	Target           string
 	SkipDirs         []string
 	SkipFiles        []string
-	ThirdPartyOSPkgs []string
 	OfflineScan      bool
 	Scanners         types.Scanners
 	FilePatterns     []string
 	Slow             bool
 	SBOMSources      []string
 	RekorURL         string
+	IncludeDevDeps   bool
+	ThirdPartyOSPkgs []string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
 		SkipDirs:         &SkipDirsFlag,
 		SkipFiles:        &SkipFilesFlag,
-		ThirdPartyOSPkgs: &ThirdPartyOSPkgs,
 		OfflineScan:      &OfflineScanFlag,
 		Scanners:         &ScannersFlag,
 		FilePatterns:     &FilePatternsFlag,
 		Slow:             &SlowFlag,
 		SBOMSources:      &SBOMSourcesFlag,
 		RekorURL:         &RekorURLFlag,
+		IncludeDevDeps:   &IncludeDevDepsFlag,
+		ThirdPartyOSPkgs: &ThirdPartyOSPkgs,
 	}
 }
 
@@ -121,13 +130,14 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 	return []*Flag{
 		f.SkipDirs,
 		f.SkipFiles,
-		f.ThirdPartyOSPkgs,
 		f.OfflineScan,
 		f.Scanners,
 		f.FilePatterns,
 		f.Slow,
 		f.SBOMSources,
 		f.RekorURL,
+		f.IncludeDevDeps,
+		f.ThirdPartyOSPkgs,
 	}
 }
 
@@ -150,13 +160,14 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		Target:           target,
 		SkipDirs:         getStringSlice(f.SkipDirs),
 		SkipFiles:        getStringSlice(f.SkipFiles),
-		ThirdPartyOSPkgs: getStringSlice(f.ThirdPartyOSPkgs),
 		OfflineScan:      getBool(f.OfflineScan),
 		Scanners:         scanners,
 		FilePatterns:     getStringSlice(f.FilePatterns),
 		Slow:             getBool(f.Slow),
 		SBOMSources:      sbomSources,
 		RekorURL:         getString(f.RekorURL),
+		IncludeDevDeps:   getBool(f.IncludeDevDeps),
+		ThirdPartyOSPkgs: getStringSlice(f.ThirdPartyOSPkgs),
 	}, nil
 }
 
