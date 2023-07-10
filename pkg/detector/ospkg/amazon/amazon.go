@@ -19,7 +19,8 @@ import (
 
 var (
 	eolDates = map[string]time.Time{
-		"1": time.Date(2023, 6, 30, 23, 59, 59, 0, time.UTC),
+		// https://aws.amazon.com/jp/blogs/aws/update-on-amazon-linux-ami-end-of-life/
+		"1": time.Date(2023, 12, 31, 23, 59, 59, 0, time.UTC),
 		// https://aws.amazon.com/amazon-linux-2/faqs/?nc1=h_ls
 		"2": time.Date(2025, 6, 30, 23, 59, 59, 0, time.UTC),
 		// Amazon Linux 2022 was renamed to 2023. AL2022 is not currently supported.

@@ -26,7 +26,10 @@ type Descriptor = remote.Descriptor
 // Get is a wrapper of google/go-containerregistry/pkg/v1/remote.Get
 // so that it can try multiple authentication methods.
 func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
-	transport := httpTransport(option.Insecure)
+	transport, err := httpTransport(option)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create http transport: %w", err)
+	}
 
 	var errs error
 	// Try each authentication method until it succeeds
@@ -68,7 +71,10 @@ func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) 
 // Image is a wrapper of google/go-containerregistry/pkg/v1/remote.Image
 // so that it can try multiple authentication methods.
 func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions) (v1.Image, error) {
-	transport := httpTransport(option.Insecure)
+	transport, err := httpTransport(option)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create http transport: %w", err)
+	}
 
 	var errs error
 	// Try each authentication method until it succeeds
@@ -92,7 +98,10 @@ func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions
 // Referrers is a wrapper of google/go-containerregistry/pkg/v1/remote.Referrers
 // so that it can try multiple authentication methods.
 func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions) (v1.ImageIndex, error) {
-	transport := httpTransport(option.Insecure)
+	transport, err := httpTransport(option)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create http transport: %w", err)
+	}
 
 	var errs error
 	// Try each authentication method until it succeeds
@@ -113,15 +122,23 @@ func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions)
 	return nil, errs
 }
 
-func httpTransport(insecure bool) *http.Transport {
+func httpTransport(option types.RegistryOptions) (*http.Transport, error) {
 	d := &net.Dialer{
 		Timeout: 10 * time.Minute,
 	}
 	tr := http.DefaultTransport.(*http.Transport).Clone()
 	tr.DialContext = d.DialContext
-	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure}
+	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: option.Insecure}
 
-	return tr
+	if len(option.ClientCert) != 0 && len(option.ClientKey) != 0 {
+		cert, err := tls.X509KeyPair(option.ClientCert, option.ClientKey)
+		if err != nil {
+			return nil, err
+		}
+		tr.TLSClientConfig.Certificates = []tls.Certificate{cert}
+	}
+
+	return tr, nil
 }
 
 func authOptions(ctx context.Context, ref name.Reference, option types.RegistryOptions) []remote.Option {
