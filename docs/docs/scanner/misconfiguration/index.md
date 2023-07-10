@@ -327,8 +327,7 @@ trivy conf --policy custom-policy/policy --policy combine/policy --namespaces us
 For more details, see [Custom Policies](./custom/index.md).
 
 !!! tip
-    You also need to specify `--namespaces` option.
-    Furthermore, the `--policy` path always needs to refer to a directory. You cannot pass a specific policy file.
+You also need to specify `--namespaces` option.
 
 ### Pass custom data
 You can pass directories including your custom data through `--data` option.
