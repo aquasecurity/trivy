@@ -31,12 +31,19 @@ type MisconfResult struct {
 type MisconfResults []MisconfResult
 
 type CauseMetadata struct {
-	Resource  string `json:",omitempty"`
-	Provider  string `json:",omitempty"`
-	Service   string `json:",omitempty"`
-	StartLine int    `json:",omitempty"`
-	EndLine   int    `json:",omitempty"`
-	Code      Code   `json:",omitempty"`
+	Resource    string      `json:",omitempty"`
+	Provider    string      `json:",omitempty"`
+	Service     string      `json:",omitempty"`
+	StartLine   int         `json:",omitempty"`
+	EndLine     int         `json:",omitempty"`
+	Code        Code        `json:",omitempty"`
+	Occurrences []Occurence `json:",omitempty"`
+}
+
+type Occurence struct {
+	Resource string `json:",omitempty"`
+	Filename string `json:",omitempty"`
+	Location Location
 }
 
 type Code struct {

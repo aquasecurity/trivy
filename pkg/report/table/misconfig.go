@@ -163,6 +163,21 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 			}
 		}
 		r.printf(" <blue>%s%s\r\n", r.result.Target, lineInfo)
+		for i, occ := range misconf.CauseMetadata.Occurrences {
+			lineInfo := fmt.Sprintf("%d-%d", occ.Location.StartLine, occ.Location.EndLine)
+			if occ.Location.StartLine >= occ.Location.EndLine {
+				lineInfo = fmt.Sprintf("%d", occ.Location.StartLine)
+			}
+
+			r.printf(
+				" %s<dim>via </dim><italic>%s<dim>:%s (%s)\n",
+				strings.Repeat(" ", i+2),
+				occ.Filename,
+				lineInfo,
+				occ.Resource,
+			)
+		}
+
 		r.printSingleDivider()
 		for i, line := range lines {
 			if line.Truncated {
