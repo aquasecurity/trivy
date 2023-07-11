@@ -35,7 +35,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.2
 	github.com/containerd/containerd v1.7.0
-	github.com/deepfactor-io/go-dep-parser v0.0.0-20230615053739-827d207b27f9
+	github.com/deepfactor-io/go-dep-parser v0.0.0-20230711095037-6a968937e16a
 	github.com/docker/docker v23.0.3+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.14.1

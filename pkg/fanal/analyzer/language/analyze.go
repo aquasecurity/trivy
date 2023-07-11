@@ -121,6 +121,7 @@ func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 			DependsOn: deps[lib.ID],
 			Locations: locs,
 			Digest:    d,
+			Warnings:  lib.Warnings,
 		})
 	}
 

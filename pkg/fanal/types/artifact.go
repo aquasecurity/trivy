@@ -96,6 +96,9 @@ type Package struct {
 
 	// lines from the lock file where the dependency is written
 	Locations []Location `json:",omitempty"`
+
+	// store warnings
+	Warnings []string `json:",omitempty"`
 }
 
 type Location struct {
