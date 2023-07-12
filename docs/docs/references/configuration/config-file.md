@@ -291,6 +291,11 @@ misconfiguration:
     vars:
       - dev-terraform.tfvars
       - common-terraform.tfvars
+  
+  # Same as '--tf-exclude-downloaded-modules'
+  # Default is false
+  terraform:
+    exclude-downloaded-modules: false
 ```
 
 ## Kubernetes Options
