@@ -39,9 +39,10 @@ var (
 		"15.1": time.Date(2021, 1, 31, 23, 59, 59, 0, time.UTC),
 		"15.2": time.Date(2021, 12, 31, 23, 59, 59, 0, time.UTC),
 		"15.3": time.Date(2022, 12, 31, 23, 59, 59, 0, time.UTC),
-		// 6 months after SLES 15 SP5 release
-		"15.4": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
-		//"15.5": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
+		"15.4": time.Date(2023, 12, 31, 23, 59, 59, 0, time.UTC),
+		"15.5": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
+		// 6 months after SLES 15 SP7 release
+		//"15.6": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
 	}
 
 	opensuseEolDates = map[string]time.Time{
@@ -54,6 +55,7 @@ var (
 		"15.2": time.Date(2021, 11, 30, 23, 59, 59, 0, time.UTC),
 		"15.3": time.Date(2022, 11, 30, 23, 59, 59, 0, time.UTC),
 		"15.4": time.Date(2023, 11, 30, 23, 59, 59, 0, time.UTC),
+		"15.5": time.Date(2024, 12, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 

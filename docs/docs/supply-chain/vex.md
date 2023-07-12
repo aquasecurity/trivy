@@ -43,7 +43,7 @@ Take a look at the example below.
 $ cat <<EOF > trivy.vex.cdx
 {
   "bomFormat": "CycloneDX",
-  "specVersion": "1.4",
+  "specVersion": "1.5",
   "version": 1,
   "vulnerabilities": [
     {

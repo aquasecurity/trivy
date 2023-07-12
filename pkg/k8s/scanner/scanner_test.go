@@ -72,14 +72,14 @@ func TestK8sClusterInfoReport(t *testing.T) {
 				},
 			},
 			want: &core.Component{
-				Type: cdx.ComponentTypeContainer,
+				Type: cdx.ComponentTypePlatform,
 				Name: "test-cluster",
 				Components: []*core.Component{
 					{
 						Type: cdx.ComponentTypeApplication,
 						Name: "kube-apiserver-kind-control-plane",
-						Properties: map[string]string{
-							"ControlPlaneComponents": "kube-apiserver",
+						Properties: []core.Property{
+							{Name: "ControlPlaneComponents", Value: "kube-apiserver", Namespace: k8sCoreComponentNamespace},
 						},
 						Components: []*core.Component{
 							{
@@ -102,47 +102,51 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										},
 									},
 								},
-								Properties: map[string]string{
-									cyc.PropertyPkgID:   "k8s.gcr.io/kube-apiserver:1.21.1",
-									cyc.PropertyPkgType: "oci",
+								Properties: []core.Property{
+									{Name: cyc.PropertyPkgID, Value: "k8s.gcr.io/kube-apiserver:1.21.1"},
+									{Name: cyc.PropertyPkgType, Value: "oci"},
 								},
 							},
 						},
 					},
 					{
-						Type: cdx.ComponentTypeContainer,
+						Type: cdx.ComponentTypePlatform,
 						Name: "kind-control-plane",
-						Properties: map[string]string{
-							"Architecture":    "arm64",
-							"HostName":        "kind-control-plane",
-							"KernelVersion":   "6.2.15-300.fc38.aarch64",
-							"NodeRole":        "master",
-							"OperatingSystem": "linux",
+						Properties: []core.Property{
+							{Name: "Architecture", Value: "arm64"},
+							{Name: "HostName", Value: "kind-control-plane"},
+							{Name: "KernelVersion", Value: "6.2.15-300.fc38.aarch64"},
+							{Name: "NodeRole", Value: "master"},
+							{Name: "OperatingSystem", Value: "linux"},
+							{Name: k8sComponentName, Value: "kind-control-plane", Namespace: k8sCoreComponentNamespace},
+							{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
 						},
 						Components: []*core.Component{
 							{
 								Type:    cdx.ComponentTypeOS,
 								Name:    "ubuntu",
 								Version: "21.04",
-								Properties: map[string]string{
-									"Class": "os-pkgs",
-									"Type":  "ubuntu",
+								Properties: []core.Property{
+									{Name: "Class", Value: "os-pkgs", Namespace: ""},
+									{Name: "Type", Value: "ubuntu", Namespace: ""},
 								},
 							},
 							{
 								Type: cdx.ComponentTypeApplication,
 								Name: "node-core-components",
-								Properties: map[string]string{
-									"Class": "lang-pkgs",
-									"Type":  "golang",
+								Properties: []core.Property{
+									{Name: "Class", Value: "lang-pkgs", Namespace: ""},
+									{Name: "Type", Value: "golang", Namespace: ""},
 								},
 								Components: []*core.Component{
 									{
 										Type:    cdx.ComponentTypeLibrary,
 										Name:    "k8s.io/kubelet",
 										Version: "1.21.1",
-										Properties: map[string]string{
-											"PkgType": "golang",
+										Properties: []core.Property{
+											{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
+											{Name: k8sComponentName, Value: "k8s.io/kubelet", Namespace: k8sCoreComponentNamespace},
+											{Name: "PkgType", Value: "golang", Namespace: ""},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
@@ -157,8 +161,10 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										Type:    cdx.ComponentTypeLibrary,
 										Name:    "github.com/containerd/containerd",
 										Version: "1.5.2",
-										Properties: map[string]string{
-											cyc.PropertyPkgType: "golang",
+										Properties: []core.Property{
+											{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
+											{Name: k8sComponentName, Value: "github.com/containerd/containerd", Namespace: k8sCoreComponentNamespace},
+											{Name: "PkgType", Value: "golang", Namespace: ""},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{

@@ -74,7 +74,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 			continue
 		}
 		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
-		advisories, err := s.vs.Get(osVer, pkgName)
+		advisories, err := s.vs.Get(osVer, pkgName, pkg.Arch)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Rocky Linux advisories: %w", err)
 		}

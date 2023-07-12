@@ -547,6 +547,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
+		IncludeDevDeps:      opts.IncludeDevDeps,
 	}
 
 	if len(opts.ImageConfigScanners) != 0 {
@@ -594,7 +595,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		ver := canonicalVersion(opts.AppVersion)
 		log.Logger.Info("Secret scanning is enabled")
 		log.Logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
-		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)
+		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/scanner/secret/#recommendation for faster secret detection", ver)
 	} else {
 		opts.SecretConfigPath = ""
 	}
