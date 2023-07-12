@@ -1,6 +1,6 @@
 {
   "bomFormat": "CycloneDX",
-  "specVersion": "1.4",
+  "specVersion": "1.5",
   "serialNumber": "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
   "version": 1,
   "metadata": {
@@ -86,7 +86,8 @@
     {
       "bom-ref": "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
       "type": "library",
-      "name": "org.codehaus.mojo:child-project",
+      "name": "child-project",
+      "group": "org.codehaus.mojo",
       "version": "1.0",
       "purl": "pkg:maven/org.codehaus.mojo/child-project@1.0",
       "properties": [

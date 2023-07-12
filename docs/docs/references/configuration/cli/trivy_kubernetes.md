@@ -43,7 +43,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
-  -f, --format string                     format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+  -f, --format string                     format (table, json, cyclonedx) (default "table")
       --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings             specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
