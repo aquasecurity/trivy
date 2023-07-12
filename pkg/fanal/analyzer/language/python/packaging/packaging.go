@@ -50,10 +50,6 @@ var (
 		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
 		".egg-info",
 		".egg-info/PKG-INFO",
-
-		// wheel
-		".dist-info/METADATA",
-		".dist-info/LICENSE",
 	}
 )
 
@@ -68,7 +64,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
-		return required(path) && !strings.HasSuffix(path, "LICENSE")
+		return strings.Contains(path, ".dist-info") || required(path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
@@ -112,14 +108,20 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 }
 
 func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, filePath string, app *types.Application) error {
-	isLicRefToFile := func(lic string) bool {
-		return strings.HasPrefix(lic, "file")
-	}
-	if len(app.Libraries) > 0 &&
-		(len(app.Libraries[0].Licenses) == 0 || lo.SomeBy(app.Libraries[0].Licenses, isLicRefToFile)) {
+
+	if len(app.Libraries) > 0 {
+
+		licenseFiles := lo.FilterMap(app.Libraries[0].Licenses, func(lic string, _ int) (string, bool) {
+			return strings.CutPrefix(lic, "file://")
+		})
+
+		if len(licenseFiles) == 0 {
+			return nil
+		}
+
 		// Note that fs.FS is always slashed regardless of the platform,
 		// and path.Join should be used rather than filepath.Join.
-		f, err := fsys.Open(path.Join(filepath.Dir(filePath), "LICENSE"))
+		f, err := fsys.Open(path.Join(filepath.Dir(filePath), licenseFiles[0]))
 		if errors.Is(err, fs.ErrNotExist) {
 			return nil
 		} else if err != nil {
@@ -177,7 +179,7 @@ func (a packagingAnalyzer) open(file *zip.File) (dio.ReadSeekerAt, error) {
 }
 
 func (a packagingAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return required(filePath)
+	return strings.Contains(filePath, ".dist-info") || required(filePath)
 }
 
 func required(filePath string) bool {
