@@ -49,7 +49,7 @@ var (
 		Value:      []string{},
 		Usage:      "specify paths to override the Terraform tfvars files",
 	}
-	TerraformExcludeDonwloaded = Flag{
+	TerraformExcludeDownloaded = Flag{
 		Name:       "tf-exclude-downloaded-modules",
 		ConfigName: "misconfiguration.terraform.exclude-downloaded-modules",
 		Value:      false,
@@ -68,7 +68,7 @@ type MisconfFlagGroup struct {
 	HelmFileValues             *Flag
 	HelmStringValues           *Flag
 	TerraformTFVars            *Flag
-	TerraformExcludeDonwloaded *Flag
+	TerraformExcludeDownloaded *Flag
 }
 
 type MisconfOptions struct {
@@ -81,7 +81,7 @@ type MisconfOptions struct {
 	HelmFileValues      []string
 	HelmStringValues    []string
 	TerraformTFVars     []string
-	TfExcludeDonwloaded bool
+	TfExcludeDownloaded bool
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -93,7 +93,7 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		HelmStringValues:           &HelmSetStringFlag,
 		HelmValueFiles:             &HelmValuesFileFlag,
 		TerraformTFVars:            &TfVarsFlag,
-		TerraformExcludeDonwloaded: &TerraformExcludeDonwloaded,
+		TerraformExcludeDownloaded: &TerraformExcludeDownloaded,
 	}
 }
 
@@ -110,7 +110,7 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 		f.HelmFileValues,
 		f.HelmStringValues,
 		f.TerraformTFVars,
-		f.TerraformExcludeDonwloaded,
+		f.TerraformExcludeDownloaded,
 	}
 }
 
@@ -123,6 +123,6 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		HelmFileValues:      getStringSlice(f.HelmFileValues),
 		HelmStringValues:    getStringSlice(f.HelmStringValues),
 		TerraformTFVars:     getStringSlice(f.TerraformTFVars),
-		TfExcludeDonwloaded: getBool(f.TerraformExcludeDonwloaded),
+		TfExcludeDownloaded: getBool(f.TerraformExcludeDownloaded),
 	}, nil
 }

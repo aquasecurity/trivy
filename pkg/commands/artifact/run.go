@@ -587,7 +587,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			TerraformTFVars:         opts.TerraformTFVars,
 			K8sVersion:              opts.K8sVersion,
 			DisableEmbeddedPolicies: disableEmbedded,
-			TfExcludeDonwloaded:     opts.TfExcludeDonwloaded,
+			TfExcludeDownloaded:     opts.TfExcludeDownloaded,
 		}
 	}
 

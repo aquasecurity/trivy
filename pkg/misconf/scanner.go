@@ -53,7 +53,7 @@ type ScannerOption struct {
 	HelmFileValues      []string
 	HelmStringValues    []string
 	TerraformTFVars     []string
-	TfExcludeDonwloaded bool
+	TfExcludeDownloaded bool
 	K8sVersion          string
 }
 
@@ -261,7 +261,7 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 	}
 
 	opts = append(opts, tfscanner.ScannerWithAllDirectories(true))
-	opts = append(opts, tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDonwloaded))
+	opts = append(opts, tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded))
 
 	return opts
 }
