@@ -24,7 +24,7 @@ trivy filesystem [flags] PATH
       --clear-cache                      clear image caches without scanning
       --compliance string                compliance report to generate
       --config-data strings              specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings            specify paths to the Rego policy files directory, applying config files
+      --config-policy strings            specify the paths to the Rego policy files or to the directories containing them, applying config files
       --custom-headers strings           custom headers in client mode
       --db-repository string             OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --dependency-tree                  [EXPERIMENTAL] show dependency origin tree of vulnerable packages
@@ -43,6 +43,7 @@ trivy filesystem [flags] PATH
       --ignore-unfixed                   display only fixed vulnerabilities
       --ignored-licenses strings         specify a list of license to ignore
       --ignorefile string                specify .trivyignore file (default ".trivyignore")
+      --include-dev-deps                 include development dependencies in the report (supported: npm)
       --include-non-failures             include successes and exceptions, available with '--scanners config'
       --java-db-repository string        OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
       --license-confidence-level float   specify license classifier's confidence level (default 0.9)

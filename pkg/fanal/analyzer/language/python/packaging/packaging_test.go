@@ -60,17 +60,39 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "egg-info no-license",
-			dir:  "testdata/no-license-egg",
+			name: "egg-info license classifiers",
+			dir:  "testdata/classifier-license-egg",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "setuptools-51.3.3.egg-info/PKG-INFO",
+						FilePath: "testdata/setuptools-51.3.3.egg-info/PKG-INFO",
 						Libraries: []types.Package{
 							{
-								Name:    "setuptools",
-								Version: "51.3.3",
+								Name:     "setuptools",
+								Version:  "51.3.3",
+								Licenses: []string{"MIT License"},
+								FilePath: "testdata/classifier-license.egg-info/PKG-INFO",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "dist-info license classifiers",
+			dir:  "testdata/classifier-license-dist",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.PythonPkg,
+						FilePath: "testdata/setuptools-51.3.3.dist-info/METADATA",
+						Libraries: []types.Package{
+							{
+								Name:     "setuptools",
+								Version:  "51.3.3",
+								Licenses: []string{"MIT License"},
+								FilePath: "testdata/classifier-license.dist-info/METADATA",
 							},
 						},
 					},

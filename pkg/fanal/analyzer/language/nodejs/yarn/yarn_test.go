@@ -230,6 +230,103 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			dir:  "testdata/unsupported_protocol",
 			want: &analyzer.AnalysisResult{},
 		},
+		{
+			name: "monorepo",
+			dir:  "testdata/monorepo",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Yarn,
+						FilePath: "yarn.lock",
+						Libraries: []types.Package{
+							{
+								ID:       "is-number@6.0.0",
+								Name:     "is-number",
+								Version:  "6.0.0",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 16,
+										EndLine:   21,
+									},
+								},
+							},
+							{
+								ID:      "is-number@7.0.0",
+								Name:    "is-number",
+								Version: "7.0.0",
+								Locations: []types.Location{
+									{
+										StartLine: 23,
+										EndLine:   28,
+									},
+								},
+							},
+							{
+								ID:        "is-odd@3.0.1",
+								Name:      "is-odd",
+								Version:   "3.0.1",
+								DependsOn: []string{"is-number@6.0.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 30,
+										EndLine:   37,
+									},
+								},
+							},
+							{
+								ID:       "js-tokens@4.0.0",
+								Name:     "js-tokens",
+								Version:  "4.0.0",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 39,
+										EndLine:   44,
+									},
+								},
+							},
+							{
+								ID:      "js-tokens@8.0.1",
+								Name:    "js-tokens",
+								Version: "8.0.1",
+								Locations: []types.Location{
+									{
+										StartLine: 46,
+										EndLine:   51,
+									},
+								},
+							},
+							{
+								ID:        "loose-envify@1.4.0",
+								Name:      "loose-envify",
+								Version:   "1.4.0",
+								Indirect:  true,
+								DependsOn: []string{"js-tokens@4.0.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 53,
+										EndLine:   62,
+									},
+								},
+							},
+							{
+								ID:        "scheduler@0.23.0",
+								Name:      "scheduler",
+								Version:   "0.23.0",
+								DependsOn: []string{"loose-envify@1.4.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 114,
+										EndLine:   121,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
