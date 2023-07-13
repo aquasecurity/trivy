@@ -41,6 +41,7 @@ trivy repository [flags] REPO_URL
       --ignore-unfixed                   display only fixed vulnerabilities
       --ignored-licenses strings         specify a list of license to ignore
       --ignorefile string                specify .trivyignore file (default ".trivyignore")
+      --include-dev-deps                 include development dependencies in the report (supported: npm, yarn)
       --include-non-failures             include successes and exceptions, available with '--scanners config'
       --java-db-repository string        OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
       --license-confidence-level float   specify license classifier's confidence level (default 0.9)

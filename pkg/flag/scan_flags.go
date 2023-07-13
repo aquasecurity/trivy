@@ -70,7 +70,7 @@ var (
 		Name:       "include-dev-deps",
 		ConfigName: "include-dev-deps",
 		Value:      false,
-		Usage:      "include development dependencies in the report (supported: npm)",
+		Usage:      "include development dependencies in the report (supported: npm, yarn)",
 	}
 )
 
