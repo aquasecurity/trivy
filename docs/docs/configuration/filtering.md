@@ -215,6 +215,12 @@ generic-unwanted-rule
 aws-account-id
 ```
 
+For a container image, such as the one used below, follow these steps to add a vulnerability to the `trivyignore` file: 
+
+1. Open the link to the Aqua Vulnerability Database (AVD) e.g. the following leads to a low vulnerability https://avd.aquasec.com/nvd/cve-2019-1563.
+2. Find the ID (either on the top or in the right-hand corner) e.g. in case of the example from number 1, the ID will be `CVE-2019-1563`.
+3. Add the ID to the `trivyignore` file & perform the trivy scan.
+
 ```bash
 $ trivy image python:3.4-alpine3.9
 ```
@@ -231,8 +237,10 @@ python:3.4-alpine3.9 (alpine 3.9.2)
 Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 ```
-
 </details>
+
+Note that if the `trivyignore` file is not in the main path, you can provide the path to the file throught he following flag `--ignorefile`.
+
 
 ## By Vulnerability Target
 |     Scanner      | Supported |
