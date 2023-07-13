@@ -3493,17 +3493,16 @@ Failures: <span class="m">2</span> <span class="o">(</span>MEDIUM: <span class="
 <p>This section describes misconfiguration-specific configuration.
 Other common options are documented <a href="../../configuration/">here</a>.</p>
 <h3 id="pass-custom-policies">Pass custom policies</h3>
-<p>You can pass directories including your custom policies through <code>--policy</code> option.
-This can be repeated for specifying multiple directories.</p>
+<p>You can pass policy files or directories including your custom policies through <code>--policy</code> option.
+This can be repeated for specifying multiple files or directories.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span> examplex/misconf/
-trivy conf --policy custom-policy/policy --policy combine/policy --namespaces user misconf/mixed
+trivy conf --policy custom-policy/policy --policy combine/policy --policy policy.rego --namespaces user misconf/mixed
 </code></pre></div>
 <p>For more details, see <a href="custom/">Custom Policies</a>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>You also need to specify <code>--namespaces</code> option.
-Furthermore, the <code>--policy</code> path always needs to refer to a directory. You cannot pass a specific policy file.</p>
 </div>
+<p>You also need to specify <code>--namespaces</code> option.</p>
 <h3 id="pass-custom-data">Pass custom data</h3>
 <p>You can pass directories including your custom data through <code>--data</code> option.
 This can be repeated for specifying multiple directories.</p>

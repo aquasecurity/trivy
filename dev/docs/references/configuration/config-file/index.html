@@ -3217,7 +3217,7 @@ You're not viewing the latest version.
 <h1 id="config-file">Config file</h1>
 <p>Trivy can be customized by tweaking a <code>trivy.yaml</code> file.
 The config path can be overridden by the <code>--config</code> flag.</p>
-<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.42.1/examples/trivy-conf/trivy.yaml">here</a>.</p>
+<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.43.1/examples/trivy-conf/trivy.yaml">here</a>.</p>
 <h2 id="global-options">Global Options</h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># Same as &#39;--quiet&#39;</span><span class="w"></span>
 <span class="c1"># Default is false</span><span class="w"></span>
@@ -3427,6 +3427,7 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">policy</span><span class="p p-Indicator">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/repository</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/custom</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/some-policy.rego</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--config-data&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
