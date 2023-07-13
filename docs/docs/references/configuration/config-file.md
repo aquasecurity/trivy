@@ -243,6 +243,7 @@ rego
   policy:
     - policy/repository
     - policy/custom
+    - policy/some-policy.rego
 
   # Same as '--config-data'
   # Default is empty

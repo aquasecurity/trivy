@@ -3,9 +3,11 @@ package misconf
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -297,8 +299,24 @@ func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
 		if err != nil {
 			return nil, nil, xerrors.Errorf("failed to derive absolute path from '%s': %w", p, err)
 		}
-		if err = mfs.CopyFilesUnder(abs); err != nil {
-			return nil, nil, xerrors.Errorf("mapfs file copy error: %w", err)
+		fi, err := os.Stat(abs)
+		if errors.Is(err, os.ErrNotExist) {
+			return nil, nil, xerrors.Errorf("policy file %q not found", abs)
+		} else if err != nil {
+			return nil, nil, xerrors.Errorf("file %q stat error: %w", abs, err)
+		}
+
+		if fi.IsDir() {
+			if err = mfs.CopyFilesUnder(abs); err != nil {
+				return nil, nil, xerrors.Errorf("mapfs file copy error: %w", err)
+			}
+		} else {
+			if err := mfs.MkdirAll(filepath.Dir(abs), os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
+				return nil, nil, xerrors.Errorf("mapfs mkdir error: %w", err)
+			}
+			if err := mfs.WriteFile(abs, abs); err != nil {
+				return nil, nil, xerrors.Errorf("mapfs write error: %w", err)
+			}
 		}
 	}
 
