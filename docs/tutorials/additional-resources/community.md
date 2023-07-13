@@ -25,7 +25,7 @@ Below is a list of additional resources from the community.
 
 - [Using Trivy Kubernetes in OVHCloud documentation.](https://docs.ovh.com/gb/en/kubernetes/installing-trivy/)
 
-## Trivy AWS
+## OS scanning
 
 - [Scan OS of your EC2 instances with Trivy](https://pabis.eu/blog/2023-05-01-Scan-Instances-With-Trivy.html)
 
