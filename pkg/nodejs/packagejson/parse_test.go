@@ -40,6 +40,10 @@ func TestParse(t *testing.T) {
 				OptionalDependencies: map[string]string{
 					"colors": "^1.4.0",
 				},
+				DevDependencies: map[string]string{
+					"@babel/cli":  "^7.14.5",
+					"@babel/core": "^7.14.6",
+				},
 				Workspaces: []string{
 					"packages/*",
 					"backend",
@@ -57,6 +61,10 @@ func TestParse(t *testing.T) {
 					License: "ISC",
 				},
 				Dependencies: map[string]string{},
+				DevDependencies: map[string]string{
+					"@babel/cli":  "^7.14.5",
+					"@babel/core": "^7.14.6",
+				},
 			},
 		},
 		{

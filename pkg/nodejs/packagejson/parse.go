@@ -15,6 +15,7 @@ type packageJSON struct {
 	License              interface{}       `json:"license"`
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
+	DevDependencies      map[string]string `json:"devDependencies"`
 	Workspaces           []string          `json:"workspaces"`
 }
 
@@ -22,6 +23,7 @@ type Package struct {
 	types.Library
 	Dependencies         map[string]string
 	OptionalDependencies map[string]string
+	DevDependencies      map[string]string
 	Workspaces           []string
 }
 
@@ -53,6 +55,7 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 		},
 		Dependencies:         pkgJSON.Dependencies,
 		OptionalDependencies: pkgJSON.OptionalDependencies,
+		DevDependencies:      pkgJSON.DevDependencies,
 		Workspaces:           pkgJSON.Workspaces,
 	}, nil
 }
