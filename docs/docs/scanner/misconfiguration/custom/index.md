@@ -2,14 +2,11 @@
 
 ## Overview
 You can write custom policies in [Rego][rego].
-Once you finish writing custom policies, you can pass the directory where those policies are stored with `--policy` option.
+Once you finish writing custom policies, you can pass the policy files or the directory where those policies are stored with `--policy` option.
 
 ``` bash
-trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
+trivy conf --policy /path/to/policy.rego --policy /path/to/custom_policies --namespaces user /path/to/config_dir
 ```
-
-!!! Tip
-    Note: The `--policy` path always needs to refer to a directory. You cannot pass a specific policy file.
 
 As for `--namespaces` option, the detail is described as below.
 

@@ -23,7 +23,7 @@ var (
 		Name:       "config-policy",
 		ConfigName: "rego.policy",
 		Value:      []string{},
-		Usage:      "specify paths to the Rego policy files directory, applying config files",
+		Usage:      "specify the paths to the Rego policy files or to the directories containing them, applying config files",
 		Aliases: []Alias{
 			{Name: "policy"},
 		},
