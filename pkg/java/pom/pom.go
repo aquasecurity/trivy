@@ -25,6 +25,7 @@ func (p *pom) inherit(result analysisResult) {
 
 	p.content.GroupId = art.GroupID
 	p.content.ArtifactId = art.ArtifactID
+	p.content.Licenses = art.ToPOMLicenses()
 
 	if isProperty(art.Version.String()) {
 		p.content.Version = evaluateVariable(art.Version.String(), p.content.Properties, nil)
@@ -100,17 +101,13 @@ func (p pom) listProperties(val reflect.Value) map[string]string {
 }
 
 func (p pom) artifact() artifact {
-	return newArtifact(p.content.GroupId, p.content.ArtifactId, p.content.Version, p.joinLicenses(), p.content.Properties)
+	return newArtifact(p.content.GroupId, p.content.ArtifactId, p.content.Version, p.licenses(), p.content.Properties)
 }
 
-func (p pom) joinLicenses() string {
-	var licenses []string
-	for _, license := range p.content.Licenses.License {
-		if license.Name != "" {
-			licenses = append(licenses, license.Name)
-		}
-	}
-	return strings.Join(licenses, ", ")
+func (p pom) licenses() []string {
+	return lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
+		return lic.Name, lic.Name != ""
+	})
 }
 
 func (p pom) repositories() []string {
@@ -124,16 +121,12 @@ func (p pom) repositories() []string {
 }
 
 type pomXML struct {
-	Parent     pomParent `xml:"parent"`
-	GroupId    string    `xml:"groupId"`
-	ArtifactId string    `xml:"artifactId"`
-	Version    string    `xml:"version"`
-	Licenses   struct {
-		License []struct {
-			Name string `xml:"name"`
-		} `xml:"license"`
-	} `xml:"licenses"`
-	Modules struct {
+	Parent     pomParent   `xml:"parent"`
+	GroupId    string      `xml:"groupId"`
+	ArtifactId string      `xml:"artifactId"`
+	Version    string      `xml:"version"`
+	Licenses   pomLicenses `xml:"licenses"`
+	Modules    struct {
 		Text   string   `xml:",chardata"`
 		Module []string `xml:"module"`
 	} `xml:"modules"`
@@ -167,6 +160,15 @@ type pomParent struct {
 	ArtifactId   string `xml:"artifactId"`
 	Version      string `xml:"version"`
 	RelativePath string `xml:"relativePath"`
+}
+
+type pomLicenses struct {
+	Text    string       `xml:",chardata"`
+	License []pomLicense `xml:"license"`
+}
+
+type pomLicense struct {
+	Name string `xml:"name"`
 }
 
 type pomDependencies struct {

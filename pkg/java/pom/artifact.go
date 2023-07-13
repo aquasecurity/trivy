@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/log"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 )
 
@@ -18,7 +19,7 @@ type artifact struct {
 	GroupID    string
 	ArtifactID string
 	Version    version
-	License    string
+	Licenses   []string
 
 	Exclusions map[string]struct{}
 
@@ -26,12 +27,12 @@ type artifact struct {
 	Root   bool
 }
 
-func newArtifact(groupID, artifactID, version, license string, props map[string]string) artifact {
+func newArtifact(groupID, artifactID, version string, licenses []string, props map[string]string) artifact {
 	return artifact{
 		GroupID:    evaluateVariable(groupID, props, nil),
 		ArtifactID: evaluateVariable(artifactID, props, nil),
 		Version:    newVersion(evaluateVariable(version, props, nil)),
-		License:    license,
+		Licenses:   licenses,
 	}
 }
 
@@ -43,10 +44,24 @@ func (a artifact) Equal(o artifact) bool {
 	return a.GroupID == o.GroupID || a.ArtifactID == o.ArtifactID || a.Version.String() == o.Version.String()
 }
 
+func (a artifact) JoinLicenses() string {
+	return strings.Join(a.Licenses, ", ")
+}
+
+func (a artifact) ToPOMLicenses() pomLicenses {
+	return pomLicenses{License: lo.Map(a.Licenses, func(lic string, _ int) pomLicense {
+		return pomLicense{Name: lic}
+	})}
+}
+
 func (a artifact) Inherit(parent artifact) artifact {
 	// inherited from a parent
 	if a.GroupID == "" {
 		a.GroupID = parent.GroupID
+	}
+
+	if len(a.Licenses) == 0 {
+		a.Licenses = parent.Licenses
 	}
 
 	if a.Version.String() == "" {

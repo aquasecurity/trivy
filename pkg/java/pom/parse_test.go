@@ -535,6 +535,18 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:      "inherit parent license",
+			inputFile: filepath.Join("testdata", "inherit-license", "module", "submodule", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				{
+					Name:    "com.example.app:submodule",
+					Version: "1.0.0",
+					License: "Apache-2.0",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
