@@ -6,7 +6,7 @@ Keywords: annotations,backport,checker,checking,function,hinting,hints,type,type
 Author-email: "Guido van Rossum, Jukka Lehtosalo, Łukasz Langa, Michael Lee" <levkivskyi@gmail.com>
 Requires-Python: >=3.7
 Description-Content-Type: text/markdown
-License-File: LICENSE.txt
+License-File: licenses/LICENSE.txt
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Environment :: Console
 Classifier: Intended Audience :: Developers

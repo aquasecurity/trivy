@@ -116,7 +116,7 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, filePath string, app *
 				licenses = append(licenses, lic)
 				continue
 			}
-			licenseFielPath := strings.TrimPrefix(lic, "file://")
+			licenseFielPath := filepath.Base(strings.TrimPrefix(lic, "file://"))
 
 			findings, err := classifyLicense(filePath, licenseFielPath, a.licenseClassifierConfidenceLevel, fsys)
 			if err != nil {
