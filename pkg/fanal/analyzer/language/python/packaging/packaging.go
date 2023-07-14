@@ -110,38 +110,53 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, filePath string, app *types.Application) error {
 
 	if len(app.Libraries) > 0 {
+		var licenses []string
+		for _, lic := range app.Libraries[0].Licenses {
+			licenseFielPath, ok := strings.CutPrefix(lic, "file://")
+			if !ok {
+				licenses = append(licenses, lic)
+				continue
+			}
 
-		licenseFiles := lo.FilterMap(app.Libraries[0].Licenses, func(lic string, _ int) (string, bool) {
-			return strings.CutPrefix(lic, "file://")
-		})
-
-		if len(licenseFiles) == 0 {
-			return nil
+			findings, err := classifyLicense(filePath, licenseFielPath, a.licenseClassifierConfidenceLevel, fsys)
+			if err != nil {
+				return err
+			}
+			// License found
+			if len(findings) > 0 {
+				foundLicenses := lo.Map(findings, func(finding types.LicenseFinding, _ int) string {
+					return finding.Name
+				})
+				licenses = append(licenses, foundLicenses...)
+			}
 		}
 
-		// Note that fs.FS is always slashed regardless of the platform,
-		// and path.Join should be used rather than filepath.Join.
-		f, err := fsys.Open(path.Join(filepath.Dir(filePath), licenseFiles[0]))
-		if errors.Is(err, fs.ErrNotExist) {
-			return nil
-		} else if err != nil {
-			return xerrors.Errorf("file open error: %w", err)
-		}
-		defer f.Close()
-
-		l, err := licensing.Classify(filePath, f, a.licenseClassifierConfidenceLevel)
-		if err != nil {
-			return xerrors.Errorf("license classify error: %w", err)
-		}
-		// License found
-		if l != nil && len(l.Findings) > 0 {
-			licenses := lo.Map(l.Findings, func(finding types.LicenseFinding, _ int) string {
-				return finding.Name
-			})
-			app.Libraries[0].Licenses = append(app.Libraries[0].Licenses, licenses...)
-		}
+		app.Libraries[0].Licenses = licenses
 	}
 	return nil
+}
+
+func classifyLicense(dir string, licPath string, classifierConfidenceLevel float64, fsys fs.FS) (types.LicenseFindings, error) {
+	// Note that fs.FS is always slashed regardless of the platform,
+	// and path.Join should be used rather than filepath.Join.
+	f, err := fsys.Open(path.Join(filepath.Dir(dir), licPath))
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, nil
+	} else if err != nil {
+		return nil, xerrors.Errorf("file open error: %w", err)
+	}
+	defer f.Close()
+
+	l, err := licensing.Classify(licPath, f, classifierConfidenceLevel)
+	if err != nil {
+		return nil, xerrors.Errorf("license classify error: %w", err)
+	}
+
+	if l == nil {
+		return nil, nil
+	}
+
+	return l.Findings, nil
 }
 
 func (a packagingAnalyzer) parse(path string, r dio.ReadSeekerAt) (*types.Application, error) {

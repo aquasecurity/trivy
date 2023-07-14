@@ -66,13 +66,12 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "testdata/setuptools-51.3.3.egg-info/PKG-INFO",
+						FilePath: "setuptools-51.3.3.egg-info/PKG-INFO",
 						Libraries: []types.Package{
 							{
 								Name:     "setuptools",
 								Version:  "51.3.3",
 								Licenses: []string{"MIT License"},
-								FilePath: "testdata/classifier-license.egg-info/PKG-INFO",
 							},
 						},
 					},
@@ -86,13 +85,12 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "testdata/setuptools-51.3.3.dist-info/METADATA",
+						FilePath: "setuptools-51.3.3.dist-info/METADATA",
 						Libraries: []types.Package{
 							{
 								Name:     "setuptools",
 								Version:  "51.3.3",
 								Licenses: []string{"MIT License"},
-								FilePath: "testdata/classifier-license.dist-info/METADATA",
 							},
 						},
 					},
