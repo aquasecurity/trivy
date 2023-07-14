@@ -39,7 +39,7 @@ trivy image [flags] IMAGE_NAME
       --clear-cache                      clear image caches without scanning
       --compliance string                compliance report to generate (docker-cis)
       --config-data strings              specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings            specify paths to the Rego policy files directory, applying config files
+      --config-policy strings            specify the paths to the Rego policy files or to the directories containing them, applying config files
       --custom-headers strings           custom headers in client mode
       --db-repository string             OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --dependency-tree                  [EXPERIMENTAL] show dependency origin tree of vulnerable packages
