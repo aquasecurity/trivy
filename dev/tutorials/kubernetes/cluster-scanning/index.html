@@ -3050,26 +3050,26 @@ You're not viewing the latest version.
 <p>Pro tip: The output of the commands will be even more interesting if you have some workloads running in your cluster. </p>
 <h2 id="cluster-scanning">Cluster Scanning</h2>
 <p>Trivy K8s is great to get an overview of all the vulnerabilities and misconfiguration issues or to scan specific workloads that are running in your cluster. You would want to use the Trivy K8s command either on your own local cluster or in your CI/CD pipeline post deployments.  </p>
-<p>The Trivy K8s command is part of the Trivy CLI: </p>
+<p>The <code>trivy k8s</code> command is part of the Trivy CLI. </p>
 <p>With the following command, we can scan our entire Kubernetes cluster for vulnerabilities and get a summary of the scan: </p>
-<div class="highlight"><pre><span></span><code>trivy k8s --report=summary 
+<div class="highlight"><pre><span></span><code>trivy k8s --report=summary cluster
 </code></pre></div>
 <p>To get detailed information for all your resources, just replace ‘summary’ with ‘all’: </p>
-<div class="highlight"><pre><span></span><code>trivy k8s --report=all 
+<div class="highlight"><pre><span></span><code>trivy k8s --report=all cluster
 </code></pre></div>
 <p>However, we recommend displaying all information only in case you scan a specific namespace or resource since you can get overwhelmed with additional details. </p>
 <p>Furthermore, we can specify the namespace that Trivy is supposed to scan to focus on specific resources in the scan result: </p>
-<div class="highlight"><pre><span></span><code>trivy k8s -n kube-system --report=summary 
+<div class="highlight"><pre><span></span><code>trivy k8s -n kube-system --report=summary cluster
 </code></pre></div>
 <p>Again, if you’d like to receive additional details, use the ‘--report=all’ flag: </p>
-<div class="highlight"><pre><span></span><code>trivy k8s -n kube-system --report=all 
+<div class="highlight"><pre><span></span><code>trivy k8s -n kube-system --report=all cluster
 </code></pre></div>
 <p>Like with scanning for vulnerabilities, we can also filter in-cluster security issues by severity of the vulnerabilities: </p>
-<div class="highlight"><pre><span></span><code>trivy k8s --severity=CRITICAL --report=summary 
+<div class="highlight"><pre><span></span><code>trivy k8s --severity=CRITICAL --report=summary cluster
 </code></pre></div>
 <p>Note that you can use any of the Trivy flags on the Trivy K8s command. </p>
 <p>With the Trivy K8s command, you can also scan specific workloads that are running within your cluster, such as our deployment: </p>
-<div class="highlight"><pre><span></span><code>trivy k8s –n app --report=summary deployments/react-application
+<div class="highlight"><pre><span></span><code>trivy k8s --namespace  app --report=summary deployments/react-application
 </code></pre></div>
 <h2 id="trivy-operator">Trivy Operator</h2>
 <p>The Trivy K8s command is an imperative model to scan resources. We wouldn’t want to manually scan each resource across different environments. The larger the cluster and the more workloads are running in it, the more error-prone this process would become. With the Trivy Operator, we can automate the scanning process after the deployment.  </p>
