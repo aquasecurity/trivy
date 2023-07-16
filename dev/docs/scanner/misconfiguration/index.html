@@ -1397,6 +1397,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#exclude-downloaded-terraform-modules" class="md-nav__link">
+    Exclude downloaded Terraform modules
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#helm-value-overrides" class="md-nav__link">
     Helm value overrides
   </a>
@@ -3133,6 +3140,13 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#exclude-downloaded-terraform-modules" class="md-nav__link">
+    Exclude downloaded Terraform modules
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#helm-value-overrides" class="md-nav__link">
     Helm value overrides
   </a>
@@ -3520,6 +3534,10 @@ This can be repeated for specifying multiple packages.</p>
 <p>You can pass <code>tf-vars</code> files to Trivy to override default values found in the Terraform HCL code.</p>
 <div class="highlight"><pre><span></span><code>trivy conf --tf-vars dev.terraform.tfvars ./infrastructure/tf
 </code></pre></div>
+<h3 id="exclude-downloaded-terraform-modules">Exclude downloaded Terraform modules</h3>
+<p>You can remove results for downloaded modules in <code>.terraform</code> folder.
+<div class="highlight"><pre><span></span><code>trivy conf --tf-exclude-downloaded-modules ./configs
+</code></pre></div></p>
 <h3 id="helm-value-overrides">Helm value overrides</h3>
 <p>There are a number of options for overriding values in Helm charts. When override values are passed to the Helm scanner, the values will be used during the Manifest rendering process and will become part of the scanned artifact.</p>
 <h4 id="setting-inline-value-overrides">Setting inline value overrides</h4>
