@@ -34,7 +34,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --compliance string                 compliance report to generate (k8s-nsa,k8s-cis,k8s-pss-baseline,k8s-pss-restricted)
       --components strings                specify which components to scan (workload,infra) (default [workload,infra])
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings             specify paths to the Rego policy files directory, applying config files
+      --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
       --context string                    specify a context to scan
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages

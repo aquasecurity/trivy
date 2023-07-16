@@ -9,6 +9,7 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/google/uuid"
 	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 	"k8s.io/utils/clock"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -144,6 +145,17 @@ func (c *CycloneDX) MarshalComponent(component *Component, components map[string
 		//     -> Library component (nokogiri /srv/app2/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
 		if vuln, ok := vulns[v.VulnerabilityID]; ok {
 			*vuln.Affects = append(*vuln.Affects, cdxAffects(bomRef, v.InstalledVersion))
+			if v.FixedVersion != "" {
+				// new recommendation
+				rec := fmt.Sprintf("Upgrade %s to version %s", v.PkgName, v.FixedVersion)
+				// previous recommendations
+				recs := strings.Split(vuln.Recommendation, "; ")
+				if !slices.Contains(recs, rec) {
+					recs = append(recs, rec)
+					slices.Sort(recs)
+					vuln.Recommendation = strings.Join(recs, "; ")
+				}
+			}
 		} else {
 			vulns[v.VulnerabilityID] = c.marshalVulnerability(cdxComponent.BOMRef, v)
 		}

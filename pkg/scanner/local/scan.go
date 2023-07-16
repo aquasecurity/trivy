@@ -205,7 +205,7 @@ func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Re
 	}
 	for _, result := range pkgResults {
 		if r, found := lo.Find(vulnResults, func(r types.Result) bool {
-			return r.Class == result.Class && r.Target == result.Target
+			return r.Class == result.Class && r.Target == result.Target && r.Type == result.Type
 		}); found {
 			r.Packages = result.Packages
 			results = append(results, r)
