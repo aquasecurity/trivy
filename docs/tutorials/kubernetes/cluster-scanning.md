@@ -10,7 +10,7 @@ Pro tip: The output of the commands will be even more interesting if you have so
 
 Trivy K8s is great to get an overview of all the vulnerabilities and misconfiguration issues or to scan specific workloads that are running in your cluster. You would want to use the Trivy K8s command either on your own local cluster or in your CI/CD pipeline post deployments.  
 
-The `Trivy K8s` command is part of the Trivy CLI. 
+The `trivy k8s` command is part of the Trivy CLI. 
 
 With the following command, we can scan our entire Kubernetes cluster for vulnerabilities and get a summary of the scan: 
 
