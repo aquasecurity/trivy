@@ -356,6 +356,12 @@ You can pass `tf-vars` files to Trivy to override default values found in the Te
 trivy conf --tf-vars dev.terraform.tfvars ./infrastructure/tf
 ```
 
+### Exclude downloaded Terraform modules
+You can remove results for downloaded modules in `.terraform` folder.
+```bash
+trivy conf --tf-exclude-downloaded-modules ./configs
+```
+
 ### Helm value overrides
 There are a number of options for overriding values in Helm charts. When override values are passed to the Helm scanner, the values will be used during the Manifest rendering process and will become part of the scanned artifact.
 

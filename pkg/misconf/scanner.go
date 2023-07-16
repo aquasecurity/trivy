@@ -50,12 +50,13 @@ type ScannerOption struct {
 	DataPaths               []string
 	DisableEmbeddedPolicies bool
 
-	HelmValues       []string
-	HelmValueFiles   []string
-	HelmFileValues   []string
-	HelmStringValues []string
-	TerraformTFVars  []string
-	K8sVersion       string
+	HelmValues          []string
+	HelmValueFiles      []string
+	HelmFileValues      []string
+	HelmStringValues    []string
+	TerraformTFVars     []string
+	TfExcludeDownloaded bool
+	K8sVersion          string
 }
 
 func (o *ScannerOption) Sort() {
@@ -262,6 +263,7 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 	}
 
 	opts = append(opts, tfscanner.ScannerWithAllDirectories(true))
+	opts = append(opts, tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded))
 
 	return opts
 }

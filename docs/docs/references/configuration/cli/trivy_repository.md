@@ -73,6 +73,7 @@ trivy repository [flags] REPO_URL
       --slow                             scan over time with lower CPU and memory utilization
       --tag string                       pass the tag name to be scanned
   -t, --template string                  output template
+      --tf-exclude-downloaded-modules    remove results for downloaded modules in .terraform folder
       --tf-vars strings                  specify paths to override the Terraform tfvars files
       --token string                     for authentication in client/server mode
       --token-header string              specify a header name for token in client/server mode (default "Trivy-Token")
