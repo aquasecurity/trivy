@@ -971,9 +971,7 @@ const expectedS3AndCloudTrailResult = `{
 `
 
 func Test_Run(t *testing.T) {
-	regoDir := filepath.Join("testdata", "Test_Run_Dir")
-	require.NoError(t, os.MkdirAll(regoDir, 0755))
-	defer os.RemoveAll(regoDir)
+	regoDir := t.TempDir()
 
 	tests := []struct {
 		name         string
