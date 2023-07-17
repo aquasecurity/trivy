@@ -12,19 +12,19 @@ var (
 	UsernameFlag = Flag{
 		Name:       "username",
 		ConfigName: "registry.username",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "username. Comma-separated usernames allowed.",
 	}
 	PasswordFlag = Flag{
 		Name:       "password",
 		ConfigName: "registry.password",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.",
 	}
 	RegistryTokenFlag = Flag{
 		Name:       "registry-token",
 		ConfigName: "registry.token",
-		Value:      "",
+		Default:    "",
 		Usage:      "registry token",
 	}
 )

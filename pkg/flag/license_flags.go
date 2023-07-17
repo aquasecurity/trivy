@@ -9,56 +9,56 @@ var (
 	LicenseFull = Flag{
 		Name:       "license-full",
 		ConfigName: "license.full",
-		Value:      false,
+		Default:    false,
 		Usage:      "eagerly look for licenses in source code headers and license files",
 	}
 	IgnoredLicenses = Flag{
 		Name:       "ignored-licenses",
 		ConfigName: "license.ignored",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify a list of license to ignore",
 	}
 	LicenseConfidenceLevel = Flag{
 		Name:       "license-confidence-level",
 		ConfigName: "license.confidenceLevel",
-		Value:      0.9,
+		Default:    0.9,
 		Usage:      "specify license classifier's confidence level",
 	}
 
 	// LicenseForbidden is an option only in a config file
 	LicenseForbidden = Flag{
 		ConfigName: "license.forbidden",
-		Value:      licensing.ForbiddenLicenses,
+		Default:    licensing.ForbiddenLicenses,
 		Usage:      "forbidden licenses",
 	}
 	// LicenseRestricted is an option only in a config file
 	LicenseRestricted = Flag{
 		ConfigName: "license.restricted",
-		Value:      licensing.RestrictedLicenses,
+		Default:    licensing.RestrictedLicenses,
 		Usage:      "restricted licenses",
 	}
 	// LicenseReciprocal is an option only in a config file
 	LicenseReciprocal = Flag{
 		ConfigName: "license.reciprocal",
-		Value:      licensing.ReciprocalLicenses,
+		Default:    licensing.ReciprocalLicenses,
 		Usage:      "reciprocal licenses",
 	}
 	// LicenseNotice is an option only in a config file
 	LicenseNotice = Flag{
 		ConfigName: "license.notice",
-		Value:      licensing.NoticeLicenses,
+		Default:    licensing.NoticeLicenses,
 		Usage:      "notice licenses",
 	}
 	// LicensePermissive is an option only in a config file
 	LicensePermissive = Flag{
 		ConfigName: "license.permissive",
-		Value:      licensing.PermissiveLicenses,
+		Default:    licensing.PermissiveLicenses,
 		Usage:      "permissive licenses",
 	}
 	// LicenseUnencumbered is an option only in a config file
 	LicenseUnencumbered = Flag{
 		ConfigName: "license.unencumbered",
-		Value:      licensing.UnencumberedLicenses,
+		Default:    licensing.UnencumberedLicenses,
 		Usage:      "unencumbered licenses",
 	}
 )

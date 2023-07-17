@@ -18,7 +18,7 @@ trivy config [flags] DIR
       --enable-modules strings          [EXPERIMENTAL] module names to enable
       --exit-code int                   specify exit code when any security issues are found
       --file-patterns strings           specify config file patterns
-  -f, --format string                   format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+  -f, --format string                   format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
       --helm-set strings                specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings           specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings         specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -36,9 +36,9 @@ trivy config [flags] DIR
       --redis-key string                redis key file location, if using redis as cache backend
       --redis-tls                       enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string           registry token
-      --report string                   specify a compliance report format for the output. (all,summary) (default "all")
+      --report string                   specify a compliance report format for the output (all,summary) (default "all")
       --reset-policy-bundle             remove policy bundle
-  -s, --severity string                 severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
+  -s, --severity strings                severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --skip-dirs strings               specify the directories where the traversal is skipped
       --skip-files strings              specify the file paths to skip traversal
       --skip-policy-update              skip fetching rego policy updates

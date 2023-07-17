@@ -31,8 +31,8 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --clear-cache                       clear image caches without scanning
-      --compliance string                 compliance report to generate (k8s-nsa,k8s-cis, k8s-pss-baseline, k8s-pss-restricted)
-      --components strings                specify which components to scan (default [workload,infra])
+      --compliance string                 compliance report to generate (k8s-nsa,k8s-cis,k8s-pss-baseline,k8s-pss-restricted)
+      --components strings                specify which components to scan (workload,infra) (default [workload,infra])
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
       --context string                    specify a context to scan
@@ -43,7 +43,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
-  -f, --format string                     format (table, json, cyclonedx) (default "table")
+  -f, --format string                     format (table,json,cyclonedx) (default "table")
       --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings             specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -72,13 +72,13 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
-      --report string                     specify a report format for the output. (all,summary) (default "all")
+      --report string                     specify a report format for the output (all,summary) (default "all")
       --reset                             remove all caches and database
       --reset-policy-bundle               remove policy bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners string                   comma-separated list of what security issues to detect (vuln,config,secret,license) (default "vuln,config,secret,rbac")
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
-  -s, --severity string                   severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
+  -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --skip-db-update                    skip updating vulnerability database
       --skip-dirs strings                 specify the directories where the traversal is skipped
       --skip-files strings                specify the file paths to skip traversal

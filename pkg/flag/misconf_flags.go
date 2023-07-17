@@ -10,49 +10,49 @@ var (
 	ResetPolicyBundleFlag = Flag{
 		Name:       "reset-policy-bundle",
 		ConfigName: "misconfiguration.reset-policy-bundle",
-		Value:      false,
+		Default:    false,
 		Usage:      "remove policy bundle",
 	}
 	IncludeNonFailuresFlag = Flag{
 		Name:       "include-non-failures",
 		ConfigName: "misconfiguration.include-non-failures",
-		Value:      false,
+		Default:    false,
 		Usage:      "include successes and exceptions, available with '--scanners config'",
 	}
 	HelmValuesFileFlag = Flag{
 		Name:       "helm-values",
 		ConfigName: "misconfiguration.helm.values",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify paths to override the Helm values.yaml files",
 	}
 	HelmSetFlag = Flag{
 		Name:       "helm-set",
 		ConfigName: "misconfiguration.helm.set",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)",
 	}
 	HelmSetFileFlag = Flag{
 		Name:       "helm-set-file",
 		ConfigName: "misconfiguration.helm.set-file",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)",
 	}
 	HelmSetStringFlag = Flag{
 		Name:       "helm-set-string",
 		ConfigName: "misconfiguration.helm.set-string",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)",
 	}
 	TfVarsFlag = Flag{
 		Name:       "tf-vars",
 		ConfigName: "misconfiguration.terraform.vars",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify paths to override the Terraform tfvars files",
 	}
 	TerraformExcludeDownloaded = Flag{
 		Name:       "tf-exclude-downloaded-modules",
 		ConfigName: "misconfiguration.terraform.exclude-downloaded-modules",
-		Value:      false,
+		Default:    false,
 		Usage:      "remove results for downloaded modules in .terraform folder",
 	}
 )
