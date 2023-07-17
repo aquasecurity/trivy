@@ -12,7 +12,6 @@ import (
 
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/content"
-	"github.com/containerd/containerd/images"
 	"github.com/containerd/containerd/images/archive"
 	"github.com/containerd/containerd/namespaces"
 	"github.com/containerd/containerd/platforms"
@@ -53,26 +52,6 @@ func (n familiarNamed) String() string {
 	return string(n)
 }
 
-func platformToMatchComparer(ctx context.Context, img containerd.Image, platform types.Platform) (platforms.MatchComparer, error) {
-	if platform.Platform == nil {
-		manifest, err := images.Manifest(ctx, img.ContentStore(), img.Target(), img.Platform())
-		if err != nil {
-			return nil, xerrors.Errorf("error getting image manifest: %w", err)
-		}
-
-		ps, err := images.Platforms(ctx, img.ContentStore(), manifest.Config)
-		if err != nil {
-			return nil, xerrors.Errorf("error getting image platforms: %w", err)
-		}
-
-		if len(ps) == 0 {
-			return nil, xerrors.Errorf("no platform for image %s", img.Name())
-		}
-		return platforms.OnlyStrict(ps[0]), nil
-	}
-	return img.Platform(), nil
-}
-
 func imageWriter(client *containerd.Client, img containerd.Image, platform types.Platform) imageSave {
 	return func(ctx context.Context, ref []string) (io.ReadCloser, error) {
 		if len(ref) < 1 {
@@ -81,11 +60,13 @@ func imageWriter(client *containerd.Client, img containerd.Image, platform types
 		imgOpts := archive.WithImage(client.ImageService(), ref[0])
 		manifestOpts := archive.WithManifest(img.Target())
 
-		platformMatcher, err := platformToMatchComparer(ctx, img, platform)
-		if err != nil {
-			return nil, err
+		var platformMatchComparer platforms.MatchComparer
+		if platform.Platform == nil {
+			platformMatchComparer = platforms.DefaultStrict()
+		} else {
+			platformMatchComparer = img.Platform()
 		}
-		platOpts := archive.WithPlatform(platformMatcher)
+		platOpts := archive.WithPlatform(platformMatchComparer)
 		pr, pw := io.Pipe()
 		go func() {
 			pw.CloseWithError(archive.Export(ctx, client.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
