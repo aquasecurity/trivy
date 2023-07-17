@@ -98,7 +98,7 @@ func TestK8s(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, got.Metadata.Component.Name, "kind-kind-test")
-		assert.Equal(t, got.Metadata.Component.Type, cdx.ComponentType("container"))
+		assert.Equal(t, got.Metadata.Component.Type, cdx.ComponentType("platform"))
 
 		// Has components
 		assert.True(t, len(*got.Components) > 0)

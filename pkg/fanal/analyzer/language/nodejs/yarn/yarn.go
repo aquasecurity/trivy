@@ -169,11 +169,54 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map
 	}
 	defer func() { _ = f.Close() }()
 
-	pkg, err := a.packageJsonParser.Parse(f)
+	rootPkg, err := a.packageJsonParser.Parse(f)
 	if err != nil {
 		return nil, xerrors.Errorf("parse error: %w", err)
 	}
 
 	// Merge dependencies and optionalDependencies
-	return lo.Assign(pkg.Dependencies, pkg.OptionalDependencies), nil
+	dependencies := lo.Assign(rootPkg.Dependencies, rootPkg.OptionalDependencies)
+
+	if len(rootPkg.Workspaces) > 0 {
+		pkgs, err := a.traverseWorkspaces(fsys, rootPkg.Workspaces)
+		if err != nil {
+			return nil, xerrors.Errorf("traverse workspaces error: %w", err)
+		}
+		for _, pkg := range pkgs {
+			dependencies = lo.Assign(dependencies, pkg.Dependencies, pkg.OptionalDependencies)
+		}
+	}
+
+	return dependencies, nil
+}
+
+func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]packagejson.Package, error) {
+	var pkgs []packagejson.Package
+
+	required := func(path string, _ fs.DirEntry) bool {
+		return filepath.Base(path) == types.NpmPkg
+	}
+
+	walkDirFunc := func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+		pkg, err := a.packageJsonParser.Parse(r)
+		if err != nil {
+			return xerrors.Errorf("unable to parse %q: %w", path, err)
+		}
+		pkgs = append(pkgs, pkg)
+		return nil
+	}
+
+	for _, workspace := range workspaces {
+		matches, err := fs.Glob(fsys, workspace)
+		if err != nil {
+			return nil, err
+		}
+		for _, match := range matches {
+			if err := fsutils.WalkDir(fsys, match, required, walkDirFunc); err != nil {
+				return nil, xerrors.Errorf("walk error: %w", err)
+			}
+		}
+
+	}
+	return pkgs, nil
 }

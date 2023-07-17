@@ -17,8 +17,8 @@ func main() {
 		log.Fatal(err)
 	}
 	// Set a dummy path for the documents
-	flag.CacheDirFlag.Value = "/path/to/cache"
-	flag.ModuleDirFlag.Value = "$HOME/.trivy/modules"
+	flag.CacheDirFlag.Default = "/path/to/cache"
+	flag.ModuleDirFlag.Default = "$HOME/.trivy/modules"
 
 	cmd := commands.NewApp(ver)
 	cmd.DisableAutoGenTag = true

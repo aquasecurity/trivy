@@ -3,6 +3,7 @@ on:
   push:
     branches-ignore:
       - 'main'
+      - 'gh-readonly-queue/**'
     paths-ignore:
       - '**.md'
       - 'docs/**'
@@ -23,7 +24,7 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.5.3
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -48,7 +49,7 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.1
+        uses: aquaproj/aqua-installer@v2.1.2
         with:
           aqua_version: v1.25.0
           aqua_opts: ""
@@ -70,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.3
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -78,7 +79,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.1
+        uses: aquaproj/aqua-installer@v2.1.2
         with:
           aqua_version: v1.25.0
 
@@ -90,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.3
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -98,7 +99,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.1
+        uses: aquaproj/aqua-installer@v2.1.2
         with:
           aqua_version: v1.25.0
 
@@ -110,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.3
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -118,7 +119,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.1
+        uses: aquaproj/aqua-installer@v2.1.2
         with:
           aqua_version: v1.25.0
 
@@ -132,14 +133,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.3
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.1.1
+        uses: aquaproj/aqua-installer@v2.1.2
         with:
           aqua_version: v1.25.0
       - name: Run vm integration tests
@@ -156,7 +157,7 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.5.3
 
     - name: Set up Go
       uses: actions/setup-go@v4

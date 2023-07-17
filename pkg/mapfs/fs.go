@@ -1,6 +1,7 @@
 package mapfs
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -233,11 +234,11 @@ func (m *FS) RemoveAll(path string) error {
 }
 
 func cleanPath(path string) string {
-	// Return if the file path is a volume name only.
-	// Otherwise, `filepath.Clean` changes "C:" to "C:." and
-	// it will no longer match the pathname held by mapfs.
-	if path == filepath.VolumeName(path) {
-		return path
+	// Convert the volume name like 'C:' into dir like 'C\'
+	if vol := filepath.VolumeName(path); len(vol) > 0 {
+		newVol := strings.TrimSuffix(vol, ":")
+		newVol = fmt.Sprintf("%s%c", newVol, filepath.Separator)
+		path = strings.Replace(path, vol, newVol, 1)
 	}
 	path = filepath.Clean(path)
 	path = filepath.ToSlash(path)

@@ -32,6 +32,7 @@ func TestFilesystem(t *testing.T) {
 		skipDirs       []string
 		command        string
 		format         string
+		includeDevDeps bool
 	}
 	tests := []struct {
 		name   string
@@ -72,6 +73,16 @@ func TestFilesystem(t *testing.T) {
 				listAllPkgs: true,
 			},
 			golden: "testdata/npm.json.golden",
+		},
+		{
+			name: "npm with dev deps",
+			args: args{
+				scanner:        types.VulnerabilityScanner,
+				input:          "testdata/fixtures/fs/npm",
+				listAllPkgs:    true,
+				includeDevDeps: true,
+			},
+			golden: "testdata/npm-with-dev.json.golden",
 		},
 		{
 			name: "yarn",
@@ -410,6 +421,10 @@ func TestFilesystem(t *testing.T) {
 
 			if tt.args.listAllPkgs {
 				osArgs = append(osArgs, "--list-all-pkgs")
+			}
+
+			if tt.args.includeDevDeps {
+				osArgs = append(osArgs, "--include-dev-deps")
 			}
 
 			if tt.args.secretConfig != "" {
