@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	bundleVersion    = 0 // Latest released MAJOR version for defsec
-	bundleRepository = "ghcr.io/aquasecurity/defsec"
+	BundleVersion    = 0 // Latest released MAJOR version for defsec
+	BundleRepository = "ghcr.io/aquasecurity/defsec"
 	policyMediaType  = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
 	updateInterval   = 24 * time.Hour
 )
@@ -76,10 +76,13 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) populateOCIArtifact() error {
+func (c *Client) populateOCIArtifact(policyBundleURL string) error {
 	if c.artifact == nil {
-		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
-		art, err := oci.NewArtifact(repo, c.quiet, types.RegistryOptions{})
+		if policyBundleURL == "" {
+			policyBundleURL = fmt.Sprintf("%s:%d", BundleRepository, BundleVersion)
+		}
+		log.Logger.Debugf("Using URL: %s to load policy bundle", policyBundleURL)
+		art, err := oci.NewArtifact(policyBundleURL, c.quiet, types.RegistryOptions{})
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
@@ -89,8 +92,8 @@ func (c *Client) populateOCIArtifact() error {
 }
 
 // DownloadBuiltinPolicies download default policies from GitHub Pages
-func (c *Client) DownloadBuiltinPolicies(ctx context.Context) error {
-	if err := c.populateOCIArtifact(); err != nil {
+func (c *Client) DownloadBuiltinPolicies(ctx context.Context, policyBundleURL string) error {
+	if err := c.populateOCIArtifact(policyBundleURL); err != nil {
 		return xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
@@ -141,7 +144,7 @@ func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 }
 
 // NeedsUpdate returns if the default policy should be updated
-func (c *Client) NeedsUpdate(ctx context.Context) (bool, error) {
+func (c *Client) NeedsUpdate(ctx context.Context, policyBundleURL string) (bool, error) {
 	meta, err := c.GetMetadata()
 	if err != nil {
 		return true, nil
@@ -152,7 +155,7 @@ func (c *Client) NeedsUpdate(ctx context.Context) (bool, error) {
 		return false, nil
 	}
 
-	if err = c.populateOCIArtifact(); err != nil {
+	if err = c.populateOCIArtifact(policyBundleURL); err != nil {
 		return false, xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
