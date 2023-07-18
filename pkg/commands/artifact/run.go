@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
@@ -591,12 +592,20 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		}
 	}
 
-	// Do not load config file for secret scanning
+	var secretScannerOptions analyzer.SecretScannerOption
 	if opts.Scanners.Enabled(types.SecretScanner) {
 		ver := canonicalVersion(opts.AppVersion)
 		log.Logger.Info("Secret scanning is enabled")
 		log.Logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
 		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/scanner/secret/#recommendation for faster secret detection", ver)
+
+		// parse and save secret config to options (it needed to cache key calculate)
+		c, err := secret.ParseConfig(opts.SecretConfigPath)
+		if err != nil {
+			log.Logger.Errorf("Unable to parse secret config: %s", err)
+		}
+		secretScannerOptions.ConfigPath = opts.SecretConfigPath
+		secretScannerOptions.Config = c
 	} else {
 		opts.SecretConfigPath = ""
 	}
@@ -655,9 +664,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			MisconfScannerOption: configScannerOptions,
 
 			// For secret scanning
-			SecretScannerOption: analyzer.SecretScannerOption{
-				ConfigPath: opts.SecretConfigPath,
-			},
+			SecretScannerOption: secretScannerOptions,
 
 			// For license scanning
 			LicenseScannerOption: analyzer.LicenseScannerOption{

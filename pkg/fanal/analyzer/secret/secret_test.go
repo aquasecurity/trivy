@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
+	fsecret "github.com/aquasecurity/trivy/pkg/fanal/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -151,9 +152,15 @@ func TestSecretAnalyzer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			c, err := fsecret.ParseConfig(tt.configPath)
+			require.NoError(t, err)
+
 			a := &secret.SecretAnalyzer{}
-			err := a.Init(analyzer.AnalyzerOptions{
-				SecretScannerOption: analyzer.SecretScannerOption{ConfigPath: tt.configPath},
+			err = a.Init(analyzer.AnalyzerOptions{
+				SecretScannerOption: analyzer.SecretScannerOption{
+					ConfigPath: tt.configPath,
+					Config:     c,
+				},
 			})
 			require.NoError(t, err)
 			content, err := os.Open(tt.filePath)
@@ -209,10 +216,14 @@ func TestSecretRequire(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			c, err := fsecret.ParseConfig("testdata/skip-tests-config.yaml")
+			require.NoError(t, err)
+
 			a := secret.SecretAnalyzer{}
-			err := a.Init(analyzer.AnalyzerOptions{
+			err = a.Init(analyzer.AnalyzerOptions{
 				SecretScannerOption: analyzer.SecretScannerOption{
 					ConfigPath: "testdata/skip-tests-config.yaml",
+					Config:     c,
 				},
 			})
 			require.NoError(t, err)

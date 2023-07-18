@@ -86,7 +86,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "testdata/AmazonLinux2.img.gz",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:b8d4a043e24d47c367a2be5bc9749cded56d858a19ad9b19043d99a151cc0050",
+					BlobID: "sha256:6857a9eebe583eb27d9e42e4d3038b9a549c285d3a45b9cf7d29fa3062f2d336",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -106,7 +106,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:b8d4a043e24d47c367a2be5bc9749cded56d858a19ad9b19043d99a151cc0050",
+						ArtifactID: "sha256:6857a9eebe583eb27d9e42e4d3038b9a549c285d3a45b9cf7d29fa3062f2d336",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -117,9 +117,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/AmazonLinux2.img.gz",
 				Type: types.ArtifactVM,
-				ID:   "sha256:b8d4a043e24d47c367a2be5bc9749cded56d858a19ad9b19043d99a151cc0050",
+				ID:   "sha256:6857a9eebe583eb27d9e42e4d3038b9a549c285d3a45b9cf7d29fa3062f2d336",
 				BlobIDs: []string{
-					"sha256:b8d4a043e24d47c367a2be5bc9749cded56d858a19ad9b19043d99a151cc0050",
+					"sha256:6857a9eebe583eb27d9e42e4d3038b9a549c285d3a45b9cf7d29fa3062f2d336",
 				},
 			},
 		},
@@ -128,13 +128,13 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "ebs:ebs-012345",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:f26b9c7c836259bd2d11516c755a7aec8e94bbfa7588f98b491bc9b0ca03df73",
-					BlobIDs:    []string{"sha256:f26b9c7c836259bd2d11516c755a7aec8e94bbfa7588f98b491bc9b0ca03df73"},
+					ArtifactID: "sha256:b7427507796b6744db8833da2b212bd4023053944dcfe6a9833035081b1142bf",
+					BlobIDs:    []string{"sha256:b7427507796b6744db8833da2b212bd4023053944dcfe6a9833035081b1142bf"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f26b9c7c836259bd2d11516c755a7aec8e94bbfa7588f98b491bc9b0ca03df73",
+					BlobID: "sha256:b7427507796b6744db8833da2b212bd4023053944dcfe6a9833035081b1142bf",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -154,7 +154,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:f26b9c7c836259bd2d11516c755a7aec8e94bbfa7588f98b491bc9b0ca03df73",
+						ArtifactID: "sha256:b7427507796b6744db8833da2b212bd4023053944dcfe6a9833035081b1142bf",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -164,9 +164,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "ebs-012345",
 				Type: types.ArtifactVM,
-				ID:   "sha256:f26b9c7c836259bd2d11516c755a7aec8e94bbfa7588f98b491bc9b0ca03df73",
+				ID:   "sha256:b7427507796b6744db8833da2b212bd4023053944dcfe6a9833035081b1142bf",
 				BlobIDs: []string{
-					"sha256:f26b9c7c836259bd2d11516c755a7aec8e94bbfa7588f98b491bc9b0ca03df73",
+					"sha256:b7427507796b6744db8833da2b212bd4023053944dcfe6a9833035081b1142bf",
 				},
 			},
 		},

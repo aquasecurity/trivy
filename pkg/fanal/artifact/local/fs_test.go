@@ -47,7 +47,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+					BlobID: "sha256:ac10c79658b2492603cc110cda33fbb628b9c3100776d6486f5bd7a68df69afc",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -78,9 +78,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+				ID:   "sha256:ac10c79658b2492603cc110cda33fbb628b9c3100776d6486f5bd7a68df69afc",
 				BlobIDs: []string{
-					"sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+					"sha256:ac10c79658b2492603cc110cda33fbb628b9c3100776d6486f5bd7a68df69afc",
 				},
 			},
 		},
@@ -98,7 +98,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:d5fa75cdac006582a8f6bc4e3fcc8bfb70bd9d0403c24d8c2e3230d3f38a7ff5",
+					BlobID: "sha256:66031d0884060720ac01ddd8743079dcdd46d366022b6c98917a831a5d46e434",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 					},
@@ -108,9 +108,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:d5fa75cdac006582a8f6bc4e3fcc8bfb70bd9d0403c24d8c2e3230d3f38a7ff5",
+				ID:   "sha256:66031d0884060720ac01ddd8743079dcdd46d366022b6c98917a831a5d46e434",
 				BlobIDs: []string{
-					"sha256:d5fa75cdac006582a8f6bc4e3fcc8bfb70bd9d0403c24d8c2e3230d3f38a7ff5",
+					"sha256:66031d0884060720ac01ddd8743079dcdd46d366022b6c98917a831a5d46e434",
 				},
 			},
 		},
@@ -121,7 +121,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+					BlobID: "sha256:ac10c79658b2492603cc110cda33fbb628b9c3100776d6486f5bd7a68df69afc",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -167,7 +167,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+					BlobID: "sha256:d6d6e8af064710348e3c780fc0ffadb9a13c0a9c2bdeeb31db34e46cfba83fd1",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -189,9 +189,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+				ID:   "sha256:d6d6e8af064710348e3c780fc0ffadb9a13c0a9c2bdeeb31db34e46cfba83fd1",
 				BlobIDs: []string{
-					"sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+					"sha256:d6d6e8af064710348e3c780fc0ffadb9a13c0a9c2bdeeb31db34e46cfba83fd1",
 				},
 			},
 		},
@@ -202,7 +202,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+					BlobID: "sha256:d6d6e8af064710348e3c780fc0ffadb9a13c0a9c2bdeeb31db34e46cfba83fd1",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -224,9 +224,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+				ID:   "sha256:d6d6e8af064710348e3c780fc0ffadb9a13c0a9c2bdeeb31db34e46cfba83fd1",
 				BlobIDs: []string{
-					"sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+					"sha256:d6d6e8af064710348e3c780fc0ffadb9a13c0a9c2bdeeb31db34e46cfba83fd1",
 				},
 			},
 		},
@@ -420,9 +420,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:51123b27efc62be0db21fad4ccaf0839850f9f9162d225c6bd9d0e94089b2d8b",
+				ID:   "sha256:429631ccd1201a2e1d513a8d31b7350f1edece43a9b13dbdda6a15917cdb73e9",
 				BlobIDs: []string{
-					"sha256:51123b27efc62be0db21fad4ccaf0839850f9f9162d225c6bd9d0e94089b2d8b",
+					"sha256:429631ccd1201a2e1d513a8d31b7350f1edece43a9b13dbdda6a15917cdb73e9",
 				},
 			},
 		},
@@ -503,9 +503,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:e5159ce9589ca0fd714cbbb757628fffff31229a52310ea151ae1410be5f1f1b",
+				ID:   "sha256:c6ce82c5507761f30026e66cf864810631c243d84fbf24469055e4ab7ccfb168",
 				BlobIDs: []string{
-					"sha256:e5159ce9589ca0fd714cbbb757628fffff31229a52310ea151ae1410be5f1f1b",
+					"sha256:c6ce82c5507761f30026e66cf864810631c243d84fbf24469055e4ab7ccfb168",
 				},
 			},
 		},
@@ -533,9 +533,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/no-results",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:0c31a344fe889e279aecf743d801ae5d40ee2841a45ed7820114c1094c41a966",
+				ID:   "sha256:8bd0353f0a482bc66eccfa012fac79094cec4e5211d536a2c214f0f56ed35aef",
 				BlobIDs: []string{
-					"sha256:0c31a344fe889e279aecf743d801ae5d40ee2841a45ed7820114c1094c41a966",
+					"sha256:8bd0353f0a482bc66eccfa012fac79094cec4e5211d536a2c214f0f56ed35aef",
 				},
 			},
 		},
@@ -580,9 +580,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/passed",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:4e2b9cba04625f1d9cc57f74640d039779b0ee176e958aaea37883e03842056d",
+				ID:   "sha256:f43ac44fa26a77bbae9f8143229df9e96c254ece382bb9f7c06f5d3282f61c38",
 				BlobIDs: []string{
-					"sha256:4e2b9cba04625f1d9cc57f74640d039779b0ee176e958aaea37883e03842056d",
+					"sha256:f43ac44fa26a77bbae9f8143229df9e96c254ece382bb9f7c06f5d3282f61c38",
 				},
 			},
 		},
@@ -644,9 +644,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/busted-relative-paths/child/main.tf",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:aacaabaaef04916bc31b5200617a07ca5c92a4eab1b94783cde06cc4b24412d2",
+				ID:   "sha256:b1771a13b2d3f2361eaabc9021d5cbf990036525fbc3de76b8eab09df6de089a",
 				BlobIDs: []string{
-					"sha256:aacaabaaef04916bc31b5200617a07ca5c92a4eab1b94783cde06cc4b24412d2",
+					"sha256:b1771a13b2d3f2361eaabc9021d5cbf990036525fbc3de76b8eab09df6de089a",
 				},
 			},
 		},
@@ -733,9 +733,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/relative-paths/child",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:9c5c0038bf41e03f878ed27c569b93198a16b0d975e7fca4e90aa2a4eaf87402",
+				ID:   "sha256:a745551e41b066b392eb3ede35cb3186e7641356e6f647b384549747f7777cd1",
 				BlobIDs: []string{
-					"sha256:9c5c0038bf41e03f878ed27c569b93198a16b0d975e7fca4e90aa2a4eaf87402",
+					"sha256:a745551e41b066b392eb3ede35cb3186e7641356e6f647b384549747f7777cd1",
 				},
 			},
 		},
@@ -823,9 +823,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:b2ae3759e901c7ba8b0aa690e551e3eec01b6e450533d5444a63969ffbb97adf",
+				ID:   "sha256:671c193a63cf434a083e3ce8681f51f1812bf8fe024e7866bc722be116e3337a",
 				BlobIDs: []string{
-					"sha256:b2ae3759e901c7ba8b0aa690e551e3eec01b6e450533d5444a63969ffbb97adf",
+					"sha256:671c193a63cf434a083e3ce8681f51f1812bf8fe024e7866bc722be116e3337a",
 				},
 			},
 		},
@@ -905,9 +905,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:410c31b72c1da31a4b2974fe4405820ffe81c65880017491ca63ec6be2cd9424",
+				ID:   "sha256:97b181a760eae84809cc34612ff30e8cd04e3016e195bc29a2a81ee06d7fd922",
 				BlobIDs: []string{
-					"sha256:410c31b72c1da31a4b2974fe4405820ffe81c65880017491ca63ec6be2cd9424",
+					"sha256:97b181a760eae84809cc34612ff30e8cd04e3016e195bc29a2a81ee06d7fd922",
 				},
 			},
 		},
@@ -935,9 +935,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:5cafcecda4322751d7b281d9546f5789a46d82d19cc2adab614122d2ce3420b9",
+				ID:   "sha256:0a0be4d68fe269065fc586e011877c8626484a38901ee1b87d04d04beb66862f",
 				BlobIDs: []string{
-					"sha256:5cafcecda4322751d7b281d9546f5789a46d82d19cc2adab614122d2ce3420b9",
+					"sha256:0a0be4d68fe269065fc586e011877c8626484a38901ee1b87d04d04beb66862f",
 				},
 			},
 		},
@@ -991,9 +991,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:9f9b0773ca1ec4b257aae410798a635076eaed12afefac839b62efdc65d417e1",
+				ID:   "sha256:e2910b04a678ad994cd0a767e1ca697faca8b2ce967ef04b2cc7413c13ae775f",
 				BlobIDs: []string{
-					"sha256:9f9b0773ca1ec4b257aae410798a635076eaed12afefac839b62efdc65d417e1",
+					"sha256:e2910b04a678ad994cd0a767e1ca697faca8b2ce967ef04b2cc7413c13ae775f",
 				},
 			},
 		},
@@ -1078,9 +1078,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:a22d246cba3476acf2a3d6cfe88b5a895ab78cb328b76fe070fce9f1c77f80c7",
+				ID:   "sha256:66ddd8785e922a0f4ed5dfeab134660d56d3956b2eb5d677477f67494b6e4e09",
 				BlobIDs: []string{
-					"sha256:a22d246cba3476acf2a3d6cfe88b5a895ab78cb328b76fe070fce9f1c77f80c7",
+					"sha256:66ddd8785e922a0f4ed5dfeab134660d56d3956b2eb5d677477f67494b6e4e09",
 				},
 			},
 		},
@@ -1135,9 +1135,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:a22d246cba3476acf2a3d6cfe88b5a895ab78cb328b76fe070fce9f1c77f80c7",
+				ID:   "sha256:66ddd8785e922a0f4ed5dfeab134660d56d3956b2eb5d677477f67494b6e4e09",
 				BlobIDs: []string{
-					"sha256:a22d246cba3476acf2a3d6cfe88b5a895ab78cb328b76fe070fce9f1c77f80c7",
+					"sha256:66ddd8785e922a0f4ed5dfeab134660d56d3956b2eb5d677477f67494b6e4e09",
 				},
 			},
 		},
@@ -1165,9 +1165,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:5cafcecda4322751d7b281d9546f5789a46d82d19cc2adab614122d2ce3420b9",
+				ID:   "sha256:0a0be4d68fe269065fc586e011877c8626484a38901ee1b87d04d04beb66862f",
 				BlobIDs: []string{
-					"sha256:5cafcecda4322751d7b281d9546f5789a46d82d19cc2adab614122d2ce3420b9",
+					"sha256:0a0be4d68fe269065fc586e011877c8626484a38901ee1b87d04d04beb66862f",
 				},
 			},
 		},
@@ -1224,9 +1224,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:a9541fe2309a78505f147a688ebf8a2e107bad8351bb22e280f627d5ecf91b16",
+				ID:   "sha256:efd85e2f3536ea1228e9c3cdaba49805c135460c032911a9b0d3c2116eae6c09",
 				BlobIDs: []string{
-					"sha256:a9541fe2309a78505f147a688ebf8a2e107bad8351bb22e280f627d5ecf91b16",
+					"sha256:efd85e2f3536ea1228e9c3cdaba49805c135460c032911a9b0d3c2116eae6c09",
 				},
 			},
 		},
@@ -1315,9 +1315,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:ee77eca0b592b90536a467b20629c017b03e627c95427a3e7f4be2a9eb55c710",
+				ID:   "sha256:93c243acc440980405b0222051210aa534bbcc9bfbc8645c535f51fc039b8aed",
 				BlobIDs: []string{
-					"sha256:ee77eca0b592b90536a467b20629c017b03e627c95427a3e7f4be2a9eb55c710",
+					"sha256:93c243acc440980405b0222051210aa534bbcc9bfbc8645c535f51fc039b8aed",
 				},
 			},
 		},
@@ -1400,9 +1400,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:1892ab8d28210fe199dbea24de4f2073ddf5d4bf5b33aa32436d2e1f1facb588",
+				ID:   "sha256:c172e7932d30d20b1df48b8023b44e998da2d9f20e01e607bed93549dbb35512",
 				BlobIDs: []string{
-					"sha256:1892ab8d28210fe199dbea24de4f2073ddf5d4bf5b33aa32436d2e1f1facb588",
+					"sha256:c172e7932d30d20b1df48b8023b44e998da2d9f20e01e607bed93549dbb35512",
 				},
 			},
 		},
@@ -1430,9 +1430,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:70f3be8d859a21841ac42de298e9e805aa058593cf3e315e8ee0fa1f30ef5107",
+				ID:   "sha256:32d4a8ee1605708b7457e047c637b1a09b9ccf96f7c0a903236e44a312646292",
 				BlobIDs: []string{
-					"sha256:70f3be8d859a21841ac42de298e9e805aa058593cf3e315e8ee0fa1f30ef5107",
+					"sha256:32d4a8ee1605708b7457e047c637b1a09b9ccf96f7c0a903236e44a312646292",
 				},
 			},
 		},
@@ -1489,9 +1489,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f0eb13ac1479d37da2bcfc7964de5f3a4d3f06982ec27f110c97e9c8cf1cde38",
+				ID:   "sha256:6dfbb4fdd09bb061970d0a726292328e57ac419ab85d2fe2183275521b8a178a",
 				BlobIDs: []string{
-					"sha256:f0eb13ac1479d37da2bcfc7964de5f3a4d3f06982ec27f110c97e9c8cf1cde38",
+					"sha256:6dfbb4fdd09bb061970d0a726292328e57ac419ab85d2fe2183275521b8a178a",
 				},
 			},
 		},
@@ -1578,9 +1578,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:ca17bc98d3b2dc8e7b001877324c51d08ba1b2a6764514a9a81adb3fb11f3c08",
+				ID:   "sha256:175a990c4139656e70379dd9a42b0f504e7da10877c317103f3400040fa7b951",
 				BlobIDs: []string{
-					"sha256:ca17bc98d3b2dc8e7b001877324c51d08ba1b2a6764514a9a81adb3fb11f3c08",
+					"sha256:175a990c4139656e70379dd9a42b0f504e7da10877c317103f3400040fa7b951",
 				},
 			},
 		},
@@ -1660,9 +1660,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:2e29f26823faf3042ff25c32734fa96bc24ebb09a4d92d5ea3ea5c60d7204114",
+				ID:   "sha256:ed9d9270bb0dcc5a33571bcacfae75caf0571eb4706b128f652f82792f824dd1",
 				BlobIDs: []string{
-					"sha256:2e29f26823faf3042ff25c32734fa96bc24ebb09a4d92d5ea3ea5c60d7204114",
+					"sha256:ed9d9270bb0dcc5a33571bcacfae75caf0571eb4706b128f652f82792f824dd1",
 				},
 			},
 		},
@@ -1690,9 +1690,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:5cafcecda4322751d7b281d9546f5789a46d82d19cc2adab614122d2ce3420b9",
+				ID:   "sha256:0a0be4d68fe269065fc586e011877c8626484a38901ee1b87d04d04beb66862f",
 				BlobIDs: []string{
-					"sha256:5cafcecda4322751d7b281d9546f5789a46d82d19cc2adab614122d2ce3420b9",
+					"sha256:0a0be4d68fe269065fc586e011877c8626484a38901ee1b87d04d04beb66862f",
 				},
 			},
 		},
@@ -1746,9 +1746,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:a2a781172a5d3a7c70251322696b892cf16da89c937a85f5caf7d2e8c44eede4",
+				ID:   "sha256:54b3dc04d960685a418afcdbeea948d471479c30b7b132b349d6cfd17833e321",
 				BlobIDs: []string{
-					"sha256:a2a781172a5d3a7c70251322696b892cf16da89c937a85f5caf7d2e8c44eede4",
+					"sha256:54b3dc04d960685a418afcdbeea948d471479c30b7b132b349d6cfd17833e321",
 				},
 			},
 		},

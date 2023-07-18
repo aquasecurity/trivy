@@ -13,6 +13,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 )
 
 func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[string]int, artifactOpt artifact.Option) (string, error) {
@@ -30,7 +31,17 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 		SkipFiles        []string
 		SkipDirs         []string
 		FilePatterns     []string `json:",omitempty"`
-	}{id, analyzerVersions, hookVersions, artifactOpt.SkipFiles, artifactOpt.SkipDirs, artifactOpt.FilePatterns}
+		// save new cache for each change in secret config
+		SecretConfig *secret.Config
+	}{
+		id,
+		analyzerVersions,
+		hookVersions,
+		artifactOpt.SkipFiles,
+		artifactOpt.SkipDirs,
+		artifactOpt.FilePatterns,
+		artifactOpt.SecretScannerOption.Config,
+	}
 
 	if err := json.NewEncoder(h).Encode(keyBase); err != nil {
 		return "", xerrors.Errorf("json encode error: %w", err)
@@ -49,8 +60,6 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 			}
 		}
 	}
-
-	// TODO: add secret scanner option here
 
 	return fmt.Sprintf("sha256:%x", h.Sum(nil)), nil
 }
