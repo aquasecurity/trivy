@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,6 +22,7 @@ func TestCalcKey(t *testing.T) {
 		patterns         []string
 		policy           []string
 		data             []string
+		secretConfig     *secret.Config
 	}
 	tests := []struct {
 		name    string
@@ -176,6 +178,29 @@ func TestCalcKey(t *testing.T) {
 			want: "sha256:0e26546849a11898031f0dfaf3b60e5fa811678b75a69993bc9c82b150e2c978",
 		},
 		{
+
+			name: "secret config",
+			args: args{
+				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
+				},
+				hookVersions: map[string]int{
+					"python-pkg": 1,
+				},
+				secretConfig: &secret.Config{
+					DisableAllowRuleIDs: []string{
+						"example",
+						"usr-dirs",
+					},
+				},
+			},
+			want: "sha256:1f154a2848ad3ce519bda7f6f7d90886f7ccce63c875e9a618a38b8cf0050204",
+		},
+		{
 			name: "with policy/non-existent dir",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
@@ -200,6 +225,10 @@ func TestCalcKey(t *testing.T) {
 				MisconfScannerOption: misconf.ScannerOption{
 					PolicyPaths: tt.args.policy,
 					DataPaths:   tt.args.data,
+				},
+
+				SecretScannerOption: analyzer.SecretScannerOption{
+					Config: tt.args.secretConfig,
 				},
 			}
 			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)
