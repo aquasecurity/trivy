@@ -158,7 +158,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				policy: []string{"testdata/policy/test.rego"},
 			},
-			want: "sha256:9602d5ef5af086112cc9fae8310390ed3fb79f4b309d8881b9807e379c8dfa57",
+			want: "sha256:46538f674ad7373e6f63273fc09edabe63085eaa37c95abb40a7a0ed14160db5",
 		},
 		{
 			name: "skip files and dirs",
