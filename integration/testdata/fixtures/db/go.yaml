@@ -1,4 +1,4 @@
-- bucket: go::The Go Vulnerability Database
+- bucket: go::GitHub Security Advisory Go
   pairs:
     - bucket: golang.org/x/text
       pairs:
@@ -8,8 +8,6 @@
               - "0.3.7"
             VulnerableVersions:
               - ">= 0, < 0.3.7"
-- bucket: go::GitLab Advisory Database Community
-  pairs:
     - bucket: github.com/docker/distribution
       pairs:
         - key: GMS-2022-20
