@@ -31,7 +31,7 @@ trivy sbom [flags] SBOM_PATH
       --exit-code int               specify exit code when any security issues are found
       --exit-on-eol int             exit with the specified code when the OS reaches end of service/life
       --file-patterns strings       specify config file patterns
-  -f, --format string               format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+  -f, --format string               format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
   -h, --help                        help for sbom
       --ignore-policy string        specify the Rego file path to evaluate each vulnerability
       --ignore-unfixed              display only fixed vulnerabilities
@@ -49,7 +49,7 @@ trivy sbom [flags] SBOM_PATH
       --reset                       remove all caches and database
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --server string               server address in client mode
-  -s, --severity string             severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
+  -s, --severity strings            severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --skip-db-update              skip updating vulnerability database
       --skip-dirs strings           specify the directories where the traversal is skipped
       --skip-files strings          specify the file paths to skip traversal

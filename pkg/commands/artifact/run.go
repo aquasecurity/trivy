@@ -579,7 +579,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Trace:                   opts.Trace,
 			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:             append(opts.PolicyPaths, downloadedPolicyPaths...),
-			DataPaths:               opts.DataPaths,
+			DataPaths:               append(opts.DataPaths),
 			HelmValues:              opts.HelmValues,
 			HelmValueFiles:          opts.HelmValueFiles,
 			HelmFileValues:          opts.HelmFileValues,
@@ -587,6 +587,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			TerraformTFVars:         opts.TerraformTFVars,
 			K8sVersion:              opts.K8sVersion,
 			DisableEmbeddedPolicies: disableEmbedded,
+			TfExcludeDownloaded:     opts.TfExcludeDownloaded,
 		}
 	}
 
