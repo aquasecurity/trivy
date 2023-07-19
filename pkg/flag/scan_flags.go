@@ -79,7 +79,7 @@ var (
 	ThirdPartyOSPkgs = Flag{
 		Name:       "third-party-os-pkgs",
 		ConfigName: "scan.third-party-os-pkgs",
-		Default:      []string{},
+		Default:    []string{},
 		Usage:      "[EXPERIMENTAL] parse files of these os packages as language packages (use GitHub and GitLab database for these files)",
 	}
 )
@@ -152,16 +152,16 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	}
 
 	return ScanOptions{
-		Target:         target,
-		SkipDirs:       getStringSlice(f.SkipDirs),
-		SkipFiles:      getStringSlice(f.SkipFiles),
-		OfflineScan:    getBool(f.OfflineScan),
-		Scanners:       getUnderlyingStringSlice[types.Scanner](f.Scanners),
-		FilePatterns:   getStringSlice(f.FilePatterns),
-		Slow:           getBool(f.Slow),
-		SBOMSources:    getStringSlice(f.SBOMSources),
-		RekorURL:       getString(f.RekorURL),
-		IncludeDevDeps: getBool(f.IncludeDevDeps),
+		Target:           target,
+		SkipDirs:         getStringSlice(f.SkipDirs),
+		SkipFiles:        getStringSlice(f.SkipFiles),
+		OfflineScan:      getBool(f.OfflineScan),
+		Scanners:         getUnderlyingStringSlice[types.Scanner](f.Scanners),
+		FilePatterns:     getStringSlice(f.FilePatterns),
+		Slow:             getBool(f.Slow),
+		SBOMSources:      getStringSlice(f.SBOMSources),
+		RekorURL:         getString(f.RekorURL),
+		IncludeDevDeps:   getBool(f.IncludeDevDeps),
 		ThirdPartyOSPkgs: getStringSlice(f.ThirdPartyOSPkgs),
 	}, nil
 }
