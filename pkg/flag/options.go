@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -21,6 +22,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/result"
 )
 
+type String interface {
+	~string
+}
+
 type Flag struct {
 	// Name is for CLI flag and environment variable.
 	// If this field is empty, it will be available only in config file.
@@ -32,8 +37,12 @@ type Flag struct {
 	// Shorthand is a shorthand letter.
 	Shorthand string
 
-	// Value is the default value. It must be filled to determine the flag type.
-	Value interface{}
+	// Default is the default value. It must be filled to determine the flag type.
+	Default any
+
+	// Values is a list of allowed values.
+	// It currently supports string flags and string slice flags only.
+	Values []string
 
 	// Usage explains how to use the flag.
 	Usage string
@@ -178,13 +187,21 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 		flags = cmd.Flags()
 	}
 
-	switch v := flag.Value.(type) {
+	switch v := flag.Default.(type) {
 	case int:
 		flags.IntP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case string:
-		flags.StringP(flag.Name, flag.Shorthand, v, flag.Usage)
+		usage := flag.Usage
+		if len(flag.Values) > 0 {
+			usage += fmt.Sprintf(" (%s)", strings.Join(flag.Values, ","))
+		}
+		flags.VarP(newCustomStringValue(v, flag.Values), flag.Name, flag.Shorthand, usage)
 	case []string:
-		flags.StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
+		usage := flag.Usage
+		if len(flag.Values) > 0 {
+			usage += fmt.Sprintf(" (%s)", strings.Join(flag.Values, ","))
+		}
+		flags.VarP(newCustomStringSliceValue(v, flag.Values), flag.Name, flag.Shorthand, usage)
 	case bool:
 		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:
@@ -203,7 +220,7 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 		return nil
 	} else if flag.Name == "" {
 		// This flag is available only in trivy.yaml
-		viper.SetDefault(flag.ConfigName, flag.Value)
+		viper.SetDefault(flag.ConfigName, flag.Default)
 		return nil
 	}
 
@@ -264,6 +281,16 @@ func getStringSlice(flag *Flag) []string {
 		v = strings.Split(v[0], ",")
 	}
 	return v
+}
+
+func getUnderlyingStringSlice[T String](flag *Flag) []T {
+	ss := getStringSlice(flag)
+	if len(ss) == 0 {
+		return nil
+	}
+	return lo.Map(ss, func(s string, _ int) T {
+		return T(s)
+	})
 }
 
 func getInt(flag *Flag) int {

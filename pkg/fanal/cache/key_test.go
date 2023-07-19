@@ -147,6 +147,20 @@ func TestCalcKey(t *testing.T) {
 			want: "sha256:46538f674ad7373e6f63273fc09edabe63085eaa37c95abb40a7a0ed14160db5",
 		},
 		{
+			name: "with policy file",
+			args: args{
+				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
+				},
+				policy: []string{"testdata/policy/test.rego"},
+			},
+			want: "sha256:9602d5ef5af086112cc9fae8310390ed3fb79f4b309d8881b9807e379c8dfa57",
+		},
+		{
 			name: "skip files and dirs",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
@@ -188,7 +202,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				policy: []string{"policydir"},
 			},
-			wantErr: "hash dir error",
+			wantErr: "file \"policydir\" stat error",
 		},
 	}
 	for _, tt := range tests {

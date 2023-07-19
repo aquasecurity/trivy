@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -26,76 +27,79 @@ var (
 		Name:       "format",
 		ConfigName: "format",
 		Shorthand:  "f",
-		Value:      report.FormatTable,
-		Usage:      "format (" + strings.Join(report.SupportedFormats, ", ") + ")",
+		Default:    report.FormatTable,
+		Values:     report.SupportedFormats,
+		Usage:      "format",
 	}
 	ReportFormatFlag = Flag{
 		Name:       "report",
 		ConfigName: "report",
-		Value:      "all",
-		Usage:      "specify a report format for the output. (all,summary)",
+		Default:    "all",
+		Values:     []string{"all", "summary"},
+		Usage:      "specify a report format for the output",
 	}
 	TemplateFlag = Flag{
 		Name:       "template",
 		ConfigName: "template",
 		Shorthand:  "t",
-		Value:      "",
+		Default:    "",
 		Usage:      "output template",
 	}
 	DependencyTreeFlag = Flag{
 		Name:       "dependency-tree",
 		ConfigName: "dependency-tree",
-		Value:      false,
+		Default:    false,
 		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
 	}
 	ListAllPkgsFlag = Flag{
 		Name:       "list-all-pkgs",
 		ConfigName: "list-all-pkgs",
-		Value:      false,
+		Default:    false,
 		Usage:      "enabling the option will output all packages regardless of vulnerability",
 	}
 	IgnoreFileFlag = Flag{
 		Name:       "ignorefile",
 		ConfigName: "ignorefile",
-		Value:      result.DefaultIgnoreFile,
+		Default:    result.DefaultIgnoreFile,
 		Usage:      "specify .trivyignore file",
 	}
 	IgnorePolicyFlag = Flag{
 		Name:       "ignore-policy",
 		ConfigName: "ignore-policy",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify the Rego file path to evaluate each vulnerability",
 	}
 	ExitCodeFlag = Flag{
 		Name:       "exit-code",
 		ConfigName: "exit-code",
-		Value:      0,
+		Default:    0,
 		Usage:      "specify exit code when any security issues are found",
 	}
 	ExitOnEOLFlag = Flag{
 		Name:       "exit-on-eol",
 		ConfigName: "exit-on-eol",
-		Value:      0,
+		Default:    0,
 		Usage:      "exit with the specified code when the OS reaches end of service/life",
 	}
 	OutputFlag = Flag{
 		Name:       "output",
 		ConfigName: "output",
 		Shorthand:  "o",
-		Value:      "",
+		Default:    "",
 		Usage:      "output file name",
 	}
 	SeverityFlag = Flag{
 		Name:       "severity",
 		ConfigName: "severity",
 		Shorthand:  "s",
-		Value:      strings.Join(dbTypes.SeverityNames, ","),
-		Usage:      "severities of security issues to be displayed (comma separated)",
+		Default:    dbTypes.SeverityNames,
+		Values:     dbTypes.SeverityNames,
+		Usage:      "severities of security issues to be displayed",
 	}
 	ComplianceFlag = Flag{
 		Name:       "compliance",
 		ConfigName: "scan.compliance",
-		Value:      "",
+		Default:    "",
 		Usage:      "compliance report to generate",
 	}
 )
@@ -177,10 +181,6 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	listAllPkgs := getBool(f.ListAllPkgs)
 	output := getString(f.Output)
 
-	if format != "" && !slices.Contains(report.SupportedFormats, format) {
-		return ReportOptions{}, xerrors.Errorf("unknown format: %v", format)
-	}
-
 	if template != "" {
 		if format == "" {
 			log.Logger.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
@@ -237,7 +237,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		ExitOnEOL:      getInt(f.ExitOnEOL),
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
-		Severities:     splitSeverity(getStringSlice(f.Severity)),
+		Severities:     toSeverity(getStringSlice(f.Severity)),
 		Compliance:     cs,
 	}, nil
 }
@@ -272,23 +272,16 @@ func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependenc
 	return false
 }
 
-func splitSeverity(severity []string) []dbTypes.Severity {
-	switch {
-	case len(severity) == 0:
+func toSeverity(severity []string) []dbTypes.Severity {
+	if len(severity) == 0 {
 		return nil
-	case len(severity) == 1 && strings.Contains(severity[0], ","): // get severities from flag
-		severity = strings.Split(severity[0], ",")
 	}
-
-	var severities []dbTypes.Severity
-	for _, s := range severity {
-		sev, err := dbTypes.NewSeverity(strings.ToUpper(s))
-		if err != nil {
-			log.Logger.Warnf("unknown severity option: %s", err)
-			continue
-		}
-		severities = append(severities, sev)
-	}
+	severities := lo.Map(severity, func(s string, _ int) dbTypes.Severity {
+		// Note that there is no need to check the error here
+		// since the severity value is already validated in the flag parser.
+		sev, _ := dbTypes.NewSeverity(s)
+		return sev
+	})
 	log.Logger.Debugf("Severities: %q", severities)
 	return severities
 }

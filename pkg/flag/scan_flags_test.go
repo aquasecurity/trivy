@@ -47,16 +47,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.NoError,
 		},
 		{
-			name: "with wrong scanner",
-			fields: fields{
-				scanners: "vuln,WRONG-CHECK",
-			},
-			want: flag.ScanOptions{},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
-				require.ErrorContains(t, err, "unknown scanner: WRONG-CHECK")
-			},
-		},
-		{
 			name:      "without target (args)",
 			args:      []string{},
 			fields:    fields{},

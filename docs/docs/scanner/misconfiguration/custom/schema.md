@@ -83,8 +83,7 @@ The policies can be placed in a structure as follows
         └── barschema.json
     ```
 
-To use such a policy with Trivy, use the `--config-policy` flag that points to the directory where the schemas and policies
-are contained.
+To use such a policy with Trivy, use the `--config-policy` flag that points to the policy file or to the directory where the schemas and policies are contained.
 
 ```bash
 $ trivy --config-policy=/Users/user/my-custom-policies <path/to/iac>

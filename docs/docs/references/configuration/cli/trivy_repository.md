@@ -22,7 +22,7 @@ trivy repository [flags] REPO_URL
       --clear-cache                      clear image caches without scanning
       --commit string                    pass the commit hash to be scanned
       --config-data strings              specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings            specify paths to the Rego policy files directory, applying config files
+      --config-policy strings            specify the paths to the Rego policy files or to the directories containing them, applying config files
       --custom-headers strings           custom headers in client mode
       --db-repository string             OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --dependency-tree                  [EXPERIMENTAL] show dependency origin tree of vulnerable packages
@@ -31,7 +31,7 @@ trivy repository [flags] REPO_URL
       --enable-modules strings           [EXPERIMENTAL] module names to enable
       --exit-code int                    specify exit code when any security issues are found
       --file-patterns strings            specify config file patterns
-  -f, --format string                    format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+  -f, --format string                    format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
       --helm-set strings                 specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings            specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings          specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -64,7 +64,7 @@ trivy repository [flags] REPO_URL
       --scanners strings                 comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
       --secret-config string             specify a path to config file for secret scanning (default "trivy-secret.yaml")
       --server string                    server address in client mode
-  -s, --severity string                  severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
+  -s, --severity strings                 severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --skip-db-update                   skip updating vulnerability database
       --skip-dirs strings                specify the directories where the traversal is skipped
       --skip-files strings               specify the file paths to skip traversal
@@ -73,6 +73,7 @@ trivy repository [flags] REPO_URL
       --slow                             scan over time with lower CPU and memory utilization
       --tag string                       pass the tag name to be scanned
   -t, --template string                  output template
+      --tf-exclude-downloaded-modules    remove results for downloaded modules in .terraform folder
       --tf-vars strings                  specify paths to override the Terraform tfvars files
       --token string                     for authentication in client/server mode
       --token-header string              specify a header name for token in client/server mode (default "Trivy-Token")
