@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"os"
 
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
@@ -95,6 +96,15 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
+	output := os.Stdout
+	if r.flagOpts.Output != "" {
+		output, err = os.Create(r.flagOpts.Output)
+		if err != nil {
+			return xerrors.Errorf("failed to create output file: %w", err)
+		}
+		defer output.Close()
+	}
+
 	if r.flagOpts.Compliance.Spec.ID != "" {
 		var scanResults []types.Results
 		for _, rss := range rpt.Resources {
@@ -107,14 +117,14 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return cr.Write(complianceReport, cr.Option{
 			Format: r.flagOpts.Format,
 			Report: r.flagOpts.ReportFormat,
-			Output: r.flagOpts.Output,
+			Output: output,
 		})
 	}
 
 	if err := k8sRep.Write(rpt, report.Option{
 		Format:     r.flagOpts.Format,
 		Report:     r.flagOpts.ReportFormat,
-		Output:     r.flagOpts.Output,
+		Output:     output,
 		Severities: r.flagOpts.Severities,
 		Components: r.flagOpts.Components,
 		Scanners:   r.flagOpts.ScanOptions.Scanners,

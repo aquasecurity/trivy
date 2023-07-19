@@ -1,8 +1,6 @@
 package flag
 
 import (
-	"io"
-	"os"
 	"strings"
 
 	"github.com/samber/lo"
@@ -131,7 +129,7 @@ type ReportOptions struct {
 	ExitCode       int
 	ExitOnEOL      int
 	IgnorePolicy   string
-	Output         io.Writer
+	Output         string
 	Severities     []dbTypes.Severity
 	Compliance     spec.ComplianceSpec
 }
@@ -174,12 +172,11 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 	}
 }
 
-func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
+func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 	format := getString(f.Format)
 	template := getString(f.Template)
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
-	output := getString(f.Output)
 
 	if template != "" {
 		if format == "" {
@@ -214,13 +211,6 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		listAllPkgs = true
 	}
 
-	if output != "" {
-		var err error
-		if out, err = os.Create(output); err != nil {
-			return ReportOptions{}, xerrors.Errorf("failed to create an output file: %w", err)
-		}
-	}
-
 	cs, err := loadComplianceTypes(getString(f.Compliance))
 	if err != nil {
 		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
@@ -236,7 +226,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		ExitCode:       getInt(f.ExitCode),
 		ExitOnEOL:      getInt(f.ExitOnEOL),
 		IgnorePolicy:   getString(f.IgnorePolicy),
-		Output:         out,
+		Output:         getString(f.Output),
 		Severities:     toSeverity(getStringSlice(f.Severity)),
 		Compliance:     cs,
 	}, nil

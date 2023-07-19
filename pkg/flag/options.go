@@ -2,7 +2,6 @@ package flag
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"sync"
@@ -441,7 +440,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 }
 
 // nolint: gocyclo
-func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup, output io.Writer) (Options, error) {
+func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup) (Options, error) {
 	var err error
 	opts := Options{
 		AppVersion:    appVersion,
@@ -522,7 +521,7 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.ReportFlagGroup != nil {
-		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions(output)
+		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("report flag error: %w", err)
 		}

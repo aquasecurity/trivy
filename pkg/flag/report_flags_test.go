@@ -1,7 +1,6 @@
 package flag_test
 
 import (
-	"os"
 	"testing"
 
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
@@ -44,9 +43,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		{
 			name:   "happy default (without flags)",
 			fields: fields{},
-			want: flag.ReportOptions{
-				Output: os.Stdout,
-			},
+			want:   flag.ReportOptions{},
 		},
 		{
 			name: "happy path with an cyclonedx",
@@ -56,7 +53,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				listAllPkgs: true,
 			},
 			want: flag.ReportOptions{
-				Output:      os.Stdout,
 				Severities:  []dbTypes.Severity{dbTypes.SeverityCritical},
 				Format:      report.FormatCycloneDX,
 				ListAllPkgs: true,
@@ -76,7 +72,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				`Severities: ["CRITICAL"]`,
 			},
 			want: flag.ReportOptions{
-				Output: os.Stdout,
 				Severities: []dbTypes.Severity{
 					dbTypes.SeverityCritical,
 				},
@@ -94,7 +89,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				"'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.",
 			},
 			want: flag.ReportOptions{
-				Output:     os.Stdout,
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				Template:   "@contrib/gitlab.tpl",
 			},
@@ -110,7 +104,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				"'--template' is ignored because '--format json' is specified. Use '--template' option with '--format template' option.",
 			},
 			want: flag.ReportOptions{
-				Output:     os.Stdout,
 				Format:     "json",
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				Template:   "@contrib/gitlab.tpl",
@@ -126,7 +119,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				"'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.",
 			},
 			want: flag.ReportOptions{
-				Output:     os.Stdout,
 				Format:     "template",
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
@@ -143,7 +135,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 			want: flag.ReportOptions{
 				Format:      "table",
-				Output:      os.Stdout,
 				Severities:  []dbTypes.Severity{dbTypes.SeverityLow},
 				ListAllPkgs: true,
 			},
@@ -155,7 +146,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				severities: dbTypes.SeverityLow.String(),
 			},
 			want: flag.ReportOptions{
-				Output: os.Stdout,
 				Compliance: spec.ComplianceSpec{
 					Spec: defsecTypes.Spec{
 						ID:          "0001",
@@ -216,7 +206,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				Compliance:     &flag.ComplianceFlag,
 			}
 
-			got, err := f.ToOptions(os.Stdout)
+			got, err := f.ToOptions()
 			assert.NoError(t, err)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
