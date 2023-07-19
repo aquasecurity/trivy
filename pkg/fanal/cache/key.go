@@ -13,7 +13,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 )
 
 func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[string]int, artifactOpt artifact.Option) (string, error) {
@@ -31,17 +30,7 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 		SkipFiles        []string
 		SkipDirs         []string
 		FilePatterns     []string `json:",omitempty"`
-		// save new cache for each change in secret config
-		SecretConfig *secret.Config
-	}{
-		id,
-		analyzerVersions,
-		hookVersions,
-		artifactOpt.SkipFiles,
-		artifactOpt.SkipDirs,
-		artifactOpt.FilePatterns,
-		artifactOpt.SecretScannerOption.Config,
-	}
+	}{id, analyzerVersions, hookVersions, artifactOpt.SkipFiles, artifactOpt.SkipDirs, artifactOpt.FilePatterns}
 
 	if err := json.NewEncoder(h).Encode(keyBase); err != nil {
 		return "", xerrors.Errorf("json encode error: %w", err)
@@ -57,6 +46,22 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 
 			if _, err := h.Write([]byte(hash)); err != nil {
 				return "", xerrors.Errorf("sha256 write error: %w", err)
+			}
+		}
+	}
+
+	// Write secret config
+	if artifactOpt.SecretScannerOption.ConfigPath != "" {
+		secretConfigHash, err := hashContents(artifactOpt.SecretScannerOption.ConfigPath)
+		if err != nil {
+			// if config file is not found (e.g.  if default path is used, but user didn't create this file)
+			// we just need to skip to write hash
+			if os.IsNotExist(err) {
+				return "", xerrors.Errorf("secret config sha256 calc error: %w", err)
+			}
+		} else {
+			if _, err := h.Write([]byte(secretConfigHash)); err != nil {
+				return "", xerrors.Errorf("secret config sha256 write error: %w", err)
 			}
 		}
 	}
