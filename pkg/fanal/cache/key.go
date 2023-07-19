@@ -54,8 +54,8 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 	if artifactOpt.SecretScannerOption.ConfigPath != "" {
 		secretConfigHash, err := hashContents(artifactOpt.SecretScannerOption.ConfigPath)
 		if err != nil {
-			// if config file is not found (e.g.  if default path is used, but user didn't create this file)
-			// we just need to skip to write hash
+			// If config file doesn't exist (e.g. if default path is used, but user didn't create this file)
+			// We just need to skip to write hash
 			if os.IsNotExist(err) {
 				return "", xerrors.Errorf("secret config sha256 calc error: %w", err)
 			}
