@@ -61,9 +61,9 @@ var (
 		Default:    false,
 		Usage:      "remove results for downloaded modules in .terraform folder",
 	}
-	PolicyBundleURLFlag = Flag{
-		Name:       "policy-bundle-url",
-		ConfigName: "misconfiguration.policy-bundle-url",
+	PolicyBundleRepositoryFlag = Flag{
+		Name:       "policy-bundle-repository",
+		ConfigName: "misconfiguration.policy-bundle-repository",
 		Value:      fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
 		Usage:      "OCI registry URL to retrieve policy bundle from",
 	}
@@ -71,9 +71,9 @@ var (
 
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
 type MisconfFlagGroup struct {
-	IncludeNonFailures *Flag
-	ResetPolicyBundle  *Flag
-	PolicyBundleURL    *Flag
+	IncludeNonFailures     *Flag
+	ResetPolicyBundle      *Flag
+	PolicyBundleRepository *Flag
 
 	// Values Files
 	HelmValues                 *Flag
@@ -85,9 +85,9 @@ type MisconfFlagGroup struct {
 }
 
 type MisconfOptions struct {
-	IncludeNonFailures bool
-	ResetPolicyBundle  bool
-	PolicyBundleURL    string
+	IncludeNonFailures     bool
+	ResetPolicyBundle      bool
+	PolicyBundleRepository string
 
 	// Values Files
 	HelmValues          []string
@@ -100,9 +100,9 @@ type MisconfOptions struct {
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
-		IncludeNonFailures: &IncludeNonFailuresFlag,
-		ResetPolicyBundle:  &ResetPolicyBundleFlag,
-		PolicyBundleURL:    &PolicyBundleURLFlag,
+		IncludeNonFailures:     &IncludeNonFailuresFlag,
+		ResetPolicyBundle:      &ResetPolicyBundleFlag,
+		PolicyBundleRepository: &PolicyBundleRepositoryFlag,
 
 		HelmValues:                 &HelmSetFlag,
 		HelmFileValues:             &HelmSetFileFlag,
@@ -121,7 +121,7 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 	return []*Flag{
 		f.IncludeNonFailures,
 		f.ResetPolicyBundle,
-		f.PolicyBundleURL,
+		f.PolicyBundleRepository,
 		f.HelmValues,
 		f.HelmValueFiles,
 		f.HelmFileValues,
@@ -133,14 +133,14 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 
 func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 	return MisconfOptions{
-		IncludeNonFailures:  getBool(f.IncludeNonFailures),
-		ResetPolicyBundle:   getBool(f.ResetPolicyBundle),
-		PolicyBundleURL:     getString(f.PolicyBundleURL),
-		HelmValues:          getStringSlice(f.HelmValues),
-		HelmValueFiles:      getStringSlice(f.HelmValueFiles),
-		HelmFileValues:      getStringSlice(f.HelmFileValues),
-		HelmStringValues:    getStringSlice(f.HelmStringValues),
-		TerraformTFVars:     getStringSlice(f.TerraformTFVars),
-		TfExcludeDownloaded: getBool(f.TerraformExcludeDownloaded),
+		IncludeNonFailures:     getBool(f.IncludeNonFailures),
+		ResetPolicyBundle:      getBool(f.ResetPolicyBundle),
+		PolicyBundleRepository: getString(f.PolicyBundleRepository),
+		HelmValues:             getStringSlice(f.HelmValues),
+		HelmValueFiles:         getStringSlice(f.HelmValueFiles),
+		HelmFileValues:         getStringSlice(f.HelmFileValues),
+		HelmStringValues:       getStringSlice(f.HelmStringValues),
+		TerraformTFVars:        getStringSlice(f.TerraformTFVars),
+		TfExcludeDownloaded:    getBool(f.TerraformExcludeDownloaded),
 	}, nil
 }
