@@ -56,13 +56,18 @@ jobs:
       - name: Create deb repository
         run: ci/deploy-deb.sh
 
-      - id: get_version
-        uses: battila7/get-version-action@v2
-
       - name: Trigger ${{ github.repository_owner }}/trivy-action
-        uses: peter-evans/repository-dispatch@v2
+        uses: actions/github-script@v6
         with:
-          token: ${{ secrets.PAT }}
-          repository: ${{ github.repository_owner }}/trivy-action
-          event-type: bump_trivy
-          client-payload: '{"trivy_version": "${{ steps.get_version.outputs.version-without-v }}"}'
+          github-token: ${{ secrets.PAT }}
+          script: |
+            const version = "${{ github.ref_name }}".slice(1)
+            await github.rest.actions.createWorkflowDispatch({
+              owner: "${{ github.repository_owner }}",
+              repo: "trivy-action",
+              workflow_id: "bump_trivy.yaml",
+              ref: "master",
+              inputs: {
+                trivy_version: version,
+              },
+            })
