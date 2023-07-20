@@ -64,7 +64,7 @@ var (
 	PolicyBundleRepositoryFlag = Flag{
 		Name:       "policy-bundle-repository",
 		ConfigName: "misconfiguration.policy-bundle-repository",
-		Value:      fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
+		Default:    fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
 		Usage:      "OCI registry URL to retrieve policy bundle from",
 	}
 )
