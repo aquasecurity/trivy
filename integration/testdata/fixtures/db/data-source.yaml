@@ -40,6 +40,11 @@
         ID: "ghsa"
         Name: "GitHub Security Advisory Erlang"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Aerlang"
+    - key: "go::GitHub Security Advisory Go"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Go"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago"
     - key: Oracle Linux 8
       value:
         ID: "oracle-oval"
@@ -89,16 +94,6 @@
         ID: "debian"
         Name: "Debian Security Tracker"
         URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
-    - key: go::GitLab Advisory Database Community
-      value:
-        ID: "glad"
-        Name: "GitLab Advisory Database Community"
-        URL:  "https://gitlab.com/gitlab-org/advisories-community"
-    - key: go::The Go Vulnerability Database
-      value:
-        ID: "go-vulndb"
-        Name: "The Go Vulnerability Database"
-        URL:  "https://github.com/golang/vulndb"
     - key: maven::GitLab Advisory Database Community
       value:
         ID: "glad"
