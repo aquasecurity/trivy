@@ -10,9 +10,9 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // e.g. config yaml:
@@ -25,8 +25,8 @@ var (
 		Name:       "format",
 		ConfigName: "format",
 		Shorthand:  "f",
-		Default:    report.FormatTable,
-		Values:     report.SupportedFormats,
+		Default:    string(types.FormatTable),
+		Values:     xstrings.ToStringSlice(types.SupportedFormats),
 		Usage:      "format",
 	}
 	ReportFormatFlag = Flag{
@@ -120,7 +120,7 @@ type ReportFlagGroup struct {
 }
 
 type ReportOptions struct {
-	Format         string
+	Format         types.Format
 	ReportFormat   string
 	Template       string
 	DependencyTree bool
@@ -173,7 +173,7 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 }
 
 func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
-	format := getString(f.Format)
+	format := getUnderlyingString[types.Format](f.Format)
 	template := getString(f.Template)
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
@@ -185,14 +185,14 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 			log.Logger.Warnf("'--template' is ignored because '--format %s' is specified. Use '--template' option with '--format template' option.", format)
 		}
 	} else {
-		if format == report.FormatTemplate {
+		if format == types.FormatTemplate {
 			log.Logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
 		}
 	}
 
 	// "--list-all-pkgs" option is unavailable with "--format table".
 	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
-	if listAllPkgs && format == report.FormatTable {
+	if listAllPkgs && format == types.FormatTable {
 		log.Logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
 	}
 
@@ -201,7 +201,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		log.Logger.Infof(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
 			`Note that it is the reverse of the usual dependency tree, which shows the packages that depend on the vulnerable package. ` +
 			`It supports limited package managers. Please see the document for the detail.`)
-		if format != report.FormatTable {
+		if format != types.FormatTable {
 			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
 	}
@@ -233,7 +233,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 }
 
 func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
-	if len(compliance) > 0 && !slices.Contains(types.Compliances, compliance) && !strings.HasPrefix(compliance, "@") {
+	if len(compliance) > 0 && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
 		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
 	}
 
@@ -245,13 +245,13 @@ func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 	return cs, nil
 }
 
-func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {
-	if slices.Contains(report.SupportedSBOMFormats, format) && !listAllPkgs {
-		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", report.SupportedSBOMFormats)
+func (f *ReportFlagGroup) forceListAllPkgs(format types.Format, listAllPkgs, dependencyTree bool) bool {
+	if slices.Contains(types.SupportedSBOMFormats, format) && !listAllPkgs {
+		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", types.SupportedSBOMFormats)
 		return true
 	}
 	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
-	if format == report.FormatSarif && !listAllPkgs {
+	if format == types.FormatSarif && !listAllPkgs {
 		log.Logger.Debugf("Sarif format automatically enables '--list-all-pkgs' to get locations")
 		return true
 	}

@@ -3,23 +3,22 @@ package flag_test
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestReportFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		format         string
+		format         types.Format
 		template       string
 		dependencyTree bool
 		listAllPkgs    bool
@@ -54,7 +53,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 			want: flag.ReportOptions{
 				Severities:  []dbTypes.Severity{dbTypes.SeverityCritical},
-				Format:      report.FormatCycloneDX,
+				Format:      types.FormatCycloneDX,
 				ListAllPkgs: true,
 			},
 		},
@@ -75,7 +74,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				Severities: []dbTypes.Severity{
 					dbTypes.SeverityCritical,
 				},
-				Format:      report.FormatCycloneDX,
+				Format:      types.FormatCycloneDX,
 				ListAllPkgs: true,
 			},
 		},
@@ -178,7 +177,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			core, obs := observer.New(level)
 			log.Logger = zap.New(core).Sugar()
 
-			viper.Set(flag.FormatFlag.ConfigName, tt.fields.format)
+			viper.Set(flag.FormatFlag.ConfigName, string(tt.fields.format))
 			viper.Set(flag.TemplateFlag.ConfigName, tt.fields.template)
 			viper.Set(flag.DependencyTreeFlag.ConfigName, tt.fields.dependencyTree)
 			viper.Set(flag.ListAllPkgsFlag.ConfigName, tt.fields.listAllPkgs)

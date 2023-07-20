@@ -2,15 +2,13 @@ package report
 
 import (
 	"io"
-	"os"
 	"strings"
 	"sync"
 
 	"golang.org/x/xerrors"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/report/github"
@@ -22,72 +20,15 @@ import (
 
 const (
 	SchemaVersion = 2
-
-	FormatTable      = "table"
-	FormatJSON       = "json"
-	FormatTemplate   = "template"
-	FormatSarif      = "sarif"
-	FormatCycloneDX  = "cyclonedx"
-	FormatSPDX       = "spdx"
-	FormatSPDXJSON   = "spdx-json"
-	FormatGitHub     = "github"
-	FormatCosignVuln = "cosign-vuln"
 )
-
-var (
-	SupportedFormats = []string{
-		FormatTable,
-		FormatJSON,
-		FormatTemplate,
-		FormatSarif,
-		FormatCycloneDX,
-		FormatSPDX,
-		FormatSPDXJSON,
-		FormatGitHub,
-		FormatCosignVuln,
-	}
-)
-
-var (
-	SupportedSBOMFormats = []string{
-		FormatCycloneDX,
-		FormatSPDX,
-		FormatSPDXJSON,
-		FormatGitHub,
-	}
-)
-
-type Option struct {
-	AppVersion string
-
-	Format         string
-	Report         string
-	Output         string
-	Tree           bool
-	Severities     []dbTypes.Severity
-	OutputTemplate string
-	Compliance     spec.ComplianceSpec
-
-	// For misconfigurations
-	IncludeNonFailures bool
-	Trace              bool
-
-	// For licenses
-	LicenseRiskThreshold int
-	IgnoredLicenses      []string
-}
 
 // Write writes the result to output, format as passed in argument
-func Write(report types.Report, option Option) error {
-	output := os.Stdout
-	if option.Output != "" {
-		f, err := os.Create(option.Output)
-		if err != nil {
-			return xerrors.Errorf("failed to create a file: %w", err)
-		}
-		output = f
-		defer f.Close()
+func Write(report types.Report, option flag.Options) error {
+	output, err := option.OutputWriter()
+	if err != nil {
+		return xerrors.Errorf("failed to create a file: %w", err)
 	}
+	defer output.Close()
 
 	// Compliance report
 	if option.Compliance.Spec.ID != "" {
@@ -96,32 +37,32 @@ func Write(report types.Report, option Option) error {
 
 	var writer Writer
 	switch option.Format {
-	case FormatTable:
+	case types.FormatTable:
 		writer = &table.Writer{
 			Output:               output,
 			Severities:           option.Severities,
-			Tree:                 option.Tree,
+			Tree:                 option.DependencyTree,
 			ShowMessageOnce:      &sync.Once{},
 			IncludeNonFailures:   option.IncludeNonFailures,
 			Trace:                option.Trace,
 			LicenseRiskThreshold: option.LicenseRiskThreshold,
 			IgnoredLicenses:      option.IgnoredLicenses,
 		}
-	case FormatJSON:
+	case types.FormatJSON:
 		writer = &JSONWriter{Output: output}
-	case FormatGitHub:
+	case types.FormatGitHub:
 		writer = &github.Writer{
 			Output:  output,
 			Version: option.AppVersion,
 		}
-	case FormatCycloneDX:
+	case types.FormatCycloneDX:
 		// TODO: support xml format option with cyclonedx writer
 		writer = cyclonedx.NewWriter(output, option.AppVersion)
-	case FormatSPDX, FormatSPDXJSON:
+	case types.FormatSPDX, types.FormatSPDXJSON:
 		writer = spdx.NewWriter(output, option.AppVersion, option.Format)
-	case FormatTemplate:
+	case types.FormatTemplate:
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
-		if strings.HasPrefix(option.OutputTemplate, "@") && strings.HasSuffix(option.OutputTemplate, "sarif.tpl") {
+		if strings.HasPrefix(option.Template, "@") && strings.HasSuffix(option.Template, "sarif.tpl") {
 			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			writer = &SarifWriter{
 				Output:  output,
@@ -130,15 +71,15 @@ func Write(report types.Report, option Option) error {
 			break
 		}
 		var err error
-		if writer, err = NewTemplateWriter(output, option.OutputTemplate); err != nil {
+		if writer, err = NewTemplateWriter(output, option.Template); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
-	case FormatSarif:
+	case types.FormatSarif:
 		writer = &SarifWriter{
 			Output:  output,
 			Version: option.AppVersion,
 		}
-	case FormatCosignVuln:
+	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
@@ -150,14 +91,14 @@ func Write(report types.Report, option Option) error {
 	return nil
 }
 
-func complianceWrite(report types.Report, opt Option, output io.Writer) error {
+func complianceWrite(report types.Report, opt flag.Options, output io.Writer) error {
 	complianceReport, err := cr.BuildComplianceReport([]types.Results{report.Results}, opt.Compliance)
 	if err != nil {
 		return xerrors.Errorf("compliance report build error: %w", err)
 	}
 	return cr.Write(complianceReport, cr.Option{
 		Format:     opt.Format,
-		Report:     opt.Report,
+		Report:     opt.ReportFormat,
 		Output:     output,
 		Severities: opt.Severities,
 	})

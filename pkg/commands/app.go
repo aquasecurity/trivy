@@ -28,8 +28,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/policy"
-	r "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // VersionInfo holds the trivy DB version Info
@@ -894,11 +894,11 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
 	formatFlag := flag.FormatFlag
-	formatFlag.Values = []string{
-		r.FormatTable,
-		r.FormatJSON,
-		r.FormatCycloneDX,
-	}
+	formatFlag.Values = xstrings.ToStringSlice([]types.Format{
+		types.FormatTable,
+		types.FormatJSON,
+		types.FormatCycloneDX,
+	})
 	reportFlagGroup.Format = &formatFlag
 
 	k8sFlags := &flag.Flags{

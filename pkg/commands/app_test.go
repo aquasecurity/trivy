@@ -11,7 +11,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Test_showVersion(t *testing.T) {
@@ -170,7 +170,7 @@ Policy Bundle:
 
 func TestFlags(t *testing.T) {
 	type want struct {
-		format     string
+		format     types.Format
 		severities []dbTypes.Severity
 	}
 	tests := []struct {
@@ -185,7 +185,7 @@ func TestFlags(t *testing.T) {
 				"test",
 			},
 			want: want{
-				format: report.FormatTable,
+				format: types.FormatTable,
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityUnknown,
 					dbTypes.SeverityLow,
@@ -203,7 +203,7 @@ func TestFlags(t *testing.T) {
 				"LOW,MEDIUM",
 			},
 			want: want{
-				format: report.FormatTable,
+				format: types.FormatTable,
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityLow,
 					dbTypes.SeverityMedium,
@@ -220,7 +220,7 @@ func TestFlags(t *testing.T) {
 				"HIGH",
 			},
 			want: want{
-				format: report.FormatTable,
+				format: types.FormatTable,
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityLow,
 					dbTypes.SeverityHigh,
@@ -237,7 +237,7 @@ func TestFlags(t *testing.T) {
 				"CRITICAL",
 			},
 			want: want{
-				format: report.FormatJSON,
+				format: types.FormatJSON,
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityCritical,
 				},

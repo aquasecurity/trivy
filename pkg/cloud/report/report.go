@@ -59,15 +59,11 @@ func (r *Report) Failed() bool {
 
 // Write writes the results in the give format
 func Write(rep *Report, opt flag.Options, fromCache bool) error {
-	output := os.Stdout
-	if opt.Output != "" {
-		f, err := os.Create(opt.Output)
-		if err != nil {
-			return xerrors.Errorf("failed to create output file: %w", err)
-		}
-		output = f
-		defer f.Close()
+	output, err := opt.OutputWriter()
+	if err != nil {
+		return xerrors.Errorf("failed to create output file: %w", err)
 	}
+	defer output.Close()
 
 	if opt.Compliance.Spec.ID != "" {
 		return writeCompliance(rep, opt, output)
@@ -139,14 +135,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		return nil
 	default:
-		return pkgReport.Write(base, pkgReport.Option{
-			Format:             opt.Format,
-			Output:             opt.Output,
-			Severities:         opt.Severities,
-			OutputTemplate:     opt.Template,
-			IncludeNonFailures: opt.IncludeNonFailures,
-			Trace:              opt.Trace,
-		})
+		return pkgReport.Write(base, opt)
 	}
 }
 

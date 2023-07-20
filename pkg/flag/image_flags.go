@@ -6,6 +6,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // e.g. config yaml
@@ -18,10 +19,10 @@ var (
 		Name:       "image-config-scanners",
 		ConfigName: "image.image-config-scanners",
 		Default:    []string{},
-		Values: types.Scanners{
+		Values: xstrings.ToStringSlice(types.Scanners{
 			types.MisconfigScanner,
 			types.SecretScanner,
-		}.StringSlice(),
+		}),
 		Usage: "comma-separated list of what security issues to detect on container image configurations",
 	}
 	ScanRemovedPkgsFlag = Flag{
@@ -51,8 +52,8 @@ var (
 	SourceFlag = Flag{
 		Name:       "image-src",
 		ConfigName: "image.source",
-		Default:    ftypes.AllImageSources.StringSlice(),
-		Values:     ftypes.AllImageSources.StringSlice(),
+		Default:    xstrings.ToStringSlice(ftypes.AllImageSources),
+		Values:     xstrings.ToStringSlice(ftypes.AllImageSources),
 		Usage:      "image source(s) to use, in priority order",
 	}
 )
