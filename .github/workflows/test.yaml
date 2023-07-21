@@ -76,7 +76,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version-file: '1.19.10'
+          go-version: '1.19.10'
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v2.1.2
