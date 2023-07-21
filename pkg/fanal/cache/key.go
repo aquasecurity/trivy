@@ -36,33 +36,22 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 		return "", xerrors.Errorf("json encode error: %w", err)
 	}
 
-	// Write policy and data contents
-	for _, paths := range [][]string{artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths} {
-		for _, p := range paths {
-			hash, err := hashContents(p)
-			if err != nil {
-				return "", err
-			}
+	// Write policy, data contents and secret config file
+	paths := append(artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths...)
 
-			if _, err := h.Write([]byte(hash)); err != nil {
-				return "", xerrors.Errorf("sha256 write error: %w", err)
-			}
-		}
+	// Check if the secret config exists.
+	if _, err := os.Stat(artifactOpt.SecretScannerOption.ConfigPath); err == nil {
+		paths = append(paths, artifactOpt.SecretScannerOption.ConfigPath)
 	}
 
-	// Write secret config
-	if artifactOpt.SecretScannerOption.ConfigPath != "" {
-		secretConfigHash, err := hashContents(artifactOpt.SecretScannerOption.ConfigPath)
+	for _, p := range paths {
+		hash, err := hashContents(p)
 		if err != nil {
-			// If config file doesn't exist (e.g. if default path is used, but user didn't create this file)
-			// We just need to skip to write hash
-			if os.IsNotExist(err) {
-				return "", xerrors.Errorf("secret config sha256 calc error: %w", err)
-			}
-		} else {
-			if _, err := h.Write([]byte(secretConfigHash)); err != nil {
-				return "", xerrors.Errorf("secret config sha256 write error: %w", err)
-			}
+			return "", err
+		}
+
+		if _, err := h.Write([]byte(hash)); err != nil {
+			return "", xerrors.Errorf("sha256 write error: %w", err)
 		}
 	}
 
