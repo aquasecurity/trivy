@@ -172,7 +172,7 @@ type Application struct {
 	FilePath string `json:",omitempty"`
 
 	// Libraries is a list of lang-specific packages
-	Libraries []Package
+	Libraries Packages
 }
 
 type File struct {

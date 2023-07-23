@@ -25,7 +25,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "opt/bitnami/bin/elasticsearch",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								FilePath: "opt/bitnami/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent",
@@ -52,7 +52,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "opt/bitnami/bin/elasticsearch",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								FilePath: "opt/bitnami/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent",

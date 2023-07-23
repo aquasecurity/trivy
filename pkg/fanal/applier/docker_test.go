@@ -30,7 +30,7 @@ func TestApplyLayers(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "lib/apk/db/installed",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "openssl",
 									Version: "1.2.3",
@@ -43,7 +43,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app/Gemfile.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "gemlibrary1",
 									Version: "1.2.3",
@@ -53,7 +53,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Composer,
 							FilePath: "app/composer.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -63,7 +63,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.GemSpec,
 							FilePath: "usr/local/bundle/specifications/gon-6.3.2.gemspec",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:     "gon",
 									Version:  "6.3.2",
@@ -80,13 +80,14 @@ func TestApplyLayers(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "lib/apk/db/installed",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "openssl",
 									Version: "1.2.3",
 									Release: "4.5.6",
 								},
-								{ // added
+								{
+									// added
 									Name:    "musl",
 									Version: "1.2.4",
 									Release: "4.5.7",
@@ -103,7 +104,7 @@ func TestApplyLayers(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "lib/apk/db/installed",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "openssl",
 									Version: "1.2.3",
@@ -121,7 +122,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.GemSpec,
 							FilePath: "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:     "activesupport",
 									Version:  "6.0.2.1",
@@ -137,7 +138,7 @@ func TestApplyLayers(t *testing.T) {
 					Family: "alpine",
 					Name:   "3.10",
 				},
-				Packages: []types.Package{
+				Packages: types.Packages{
 					{
 						Name:    "musl",
 						Version: "1.2.4",
@@ -160,7 +161,7 @@ func TestApplyLayers(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type: types.GemSpec,
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "activesupport",
 								Version:  "6.0.2.1",
@@ -184,7 +185,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Bundler,
 						FilePath: "app/Gemfile.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "gemlibrary1",
 								Version: "1.2.3",
@@ -243,7 +244,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app/Gemfile.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "rails",
 									Version: "5.0.0",
@@ -257,7 +258,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Composer,
 							FilePath: "app/composer.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -267,7 +268,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.GemSpec,
 							FilePath: "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:     "activesupport",
 									Version:  "6.0.2.1",
@@ -285,7 +286,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app/Gemfile.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "rails",
 									Version: "6.0.0",
@@ -299,7 +300,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "app/composer2.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -322,7 +323,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Bundler,
 						FilePath: "app/Gemfile.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "rack",
 								Version: "4.0.0",
@@ -344,7 +345,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Composer,
 						FilePath: "app/composer2.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "phplibrary1",
 								Version: "6.6.6",
@@ -536,7 +537,7 @@ func TestApplyLayers(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "var/lib/dpkg/status.d/openssl",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "openssl",
 									Version: "1.2.3",
@@ -549,7 +550,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "app/composer.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -575,7 +576,7 @@ func TestApplyLayers(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "var/lib/dpkg/status.d/libc",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "libc",
 									Version: "1.2.4",
@@ -602,7 +603,7 @@ func TestApplyLayers(t *testing.T) {
 					Family: "debian",
 					Name:   "8",
 				},
-				Packages: []types.Package{
+				Packages: types.Packages{
 					{
 						Name:     "libc",
 						Version:  "1.2.4",
@@ -637,7 +638,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "app/composer.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -669,7 +670,7 @@ func TestApplyLayers(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "var/lib/rpm/Packages",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "openssl",
 									Version: "1.2.3",
@@ -692,7 +693,7 @@ func TestApplyLayers(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "var/lib/rpm/Packages",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "openssl",
 									Version: "1.2.3",
@@ -723,7 +724,7 @@ func TestApplyLayers(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "var/lib/rpm/Packages",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "openssl",
 									Version: "1.2.3",
@@ -749,7 +750,7 @@ func TestApplyLayers(t *testing.T) {
 					Family: "redhat",
 					Name:   "8",
 				},
-				Packages: []types.Package{
+				Packages: types.Packages{
 					{
 						Name:    "bash",
 						Version: "5.6.7",
@@ -806,9 +807,7 @@ func TestApplyLayers(t *testing.T) {
 				return got.Applications[i].FilePath < got.Applications[j].FilePath
 			})
 			for _, app := range got.Applications {
-				sort.Slice(app.Libraries, func(i, j int) bool {
-					return app.Libraries[i].Name < app.Libraries[j].Name
-				})
+				sort.Sort(app.Libraries)
 			}
 			assert.Equal(t, tt.want, got, tt.name)
 		})
