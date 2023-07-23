@@ -463,7 +463,6 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	repoFlags.ReportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	repoFlags.ReportFlagGroup.Compliance = nil   // disable '--compliance'
 	repoFlags.ReportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
-	repoFlags.ScanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	cmd := &cobra.Command{
 		Use:     "repository [flags] REPO_URL",
