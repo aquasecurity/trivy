@@ -61,7 +61,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		}
 
 		// Parse package.json alongside yarn.lock to find direct deps and mark dev deps
-		if err = a.parseIndirectAndDevDependencies(input.FS, filepath.Dir(path), app); err != nil {
+		if err = a.analyzeDependencies(input.FS, filepath.Dir(path), app); err != nil {
 			log.Logger.Warnf("Unable to parse %q to remove dev dependencies: %s", filepath.Join(filepath.Dir(path), types.NpmPkg), err)
 		}
 		apps = append(apps, *app)
@@ -94,7 +94,9 @@ func (a yarnAnalyzer) parseYarnLock(path string, r dio.ReadSeekerAt) (*types.App
 	return language.Parse(types.Yarn, path, r, a.lockParser)
 }
 
-func (a yarnAnalyzer) parseIndirectAndDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
+// analyzeDependencies analyzes the package.json file next to yarn.lock,
+// distinguishing between direct and transitive dependencies as well as production and development dependencies.
+func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application) error {
 	packageJsonPath := filepath.Join(dir, types.NpmPkg)
 	directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -110,28 +112,44 @@ func (a yarnAnalyzer) parseIndirectAndDevDependencies(fsys fs.FS, dir string, ap
 		return pkg.ID, pkg
 	})
 
+	// Walk prod dependencies
+	pkgs, err := a.walkDependencies(app.Libraries, pkgIDs, directDeps, false)
+	if err != nil {
+		return xerrors.Errorf("unable to walk dependencies: %w", err)
+	}
+
+	// Walk dev dependencies
+	devPkgs, err := a.walkDependencies(app.Libraries, pkgIDs, directDevDeps, true)
+	if err != nil {
+		return xerrors.Errorf("unable to walk dependencies: %w", err)
+	}
+
+	// Merge prod and dev dependencies.
+	// If the same package is found in both prod and dev dependencies, use the one in prod.
+	pkgs = lo.Assign(devPkgs, pkgs)
+
+	pkgSlice := maps.Values(pkgs)
+	sort.Sort(types.Packages(pkgSlice))
+
+	// Save libraries
+	app.Libraries = pkgSlice
+	return nil
+}
+
+func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]types.Package,
+	directDeps map[string]string, dev bool) (map[string]types.Package, error) {
+
 	// Identify direct dependencies
 	pkgs := map[string]types.Package{}
-	for _, pkg := range app.Libraries {
+	for _, pkg := range libs {
 		if constraint, ok := directDeps[pkg.Name]; ok {
 			// npm has own comparer to compare versions
 			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-				return xerrors.Errorf("unable to match version for %s", pkg.Name)
+				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
 			} else if match {
 				// Mark as a direct dependency
 				pkg.Indirect = false
-				pkgs[pkg.ID] = pkg
-			}
-		}
-		if constraint, ok := directDevDeps[pkg.Name]; ok {
-			// npm has own comparer to compare versions
-			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-				return xerrors.Errorf("unable to match version for %s", pkg.Name)
-			} else if match {
-				// Mark as a direct dependency
-				pkg.Indirect = false
-				// Mark as a dev dependency
-				pkg.Dev = true
+				pkg.Dev = dev
 				pkgs[pkg.ID] = pkg
 			}
 		}
@@ -142,24 +160,13 @@ func (a yarnAnalyzer) parseIndirectAndDevDependencies(fsys fs.FS, dir string, ap
 		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
 	}
 
-	pkgSlice := maps.Values(pkgs)
-	sort.Sort(types.Packages(pkgSlice))
-
-	// Save libraries
-	app.Libraries = pkgSlice
-	return nil
+	return pkgs, nil
 }
 
 func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[string]types.Package, deps map[string]types.Package) {
 	for _, pkgID := range pkg.DependsOn {
-		if savedDep, ok := deps[pkgID]; ok {
-			// required to avoid case when we kept prod dependencies
-			// and found same dev dependencies
-			// we don't need to overwrite these dependencies
-			// otherwise - we need to overwrite these dependencies
-			if savedDep.Dev == pkg.Dev || !savedDep.Dev {
-				continue
-			}
+		if _, ok := deps[pkgID]; ok {
+			continue
 		}
 
 		dep, ok := pkgIDs[pkgID]
@@ -168,9 +175,7 @@ func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[str
 		}
 
 		dep.Indirect = true
-		if pkg.Dev {
-			dep.Dev = true
-		}
+		dep.Dev = pkg.Dev
 		deps[dep.ID] = dep
 		a.walkIndirectDependencies(dep, pkgIDs, deps)
 	}
@@ -191,6 +196,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map
 
 	// Merge dependencies and optionalDependencies
 	dependencies := lo.Assign(rootPkg.Dependencies, rootPkg.OptionalDependencies)
+	devDependencies := rootPkg.DevDependencies
 
 	if len(rootPkg.Workspaces) > 0 {
 		pkgs, err := a.traverseWorkspaces(fsys, rootPkg.Workspaces)
@@ -199,11 +205,11 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map
 		}
 		for _, pkg := range pkgs {
 			dependencies = lo.Assign(dependencies, pkg.Dependencies, pkg.OptionalDependencies)
-			rootPkg.DevDependencies = lo.Assign(rootPkg.DevDependencies, pkg.DevDependencies)
+			devDependencies = lo.Assign(devDependencies, pkg.DevDependencies)
 		}
 	}
 
-	return dependencies, rootPkg.DevDependencies, nil
+	return dependencies, devDependencies, nil
 }
 
 func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]packagejson.Package, error) {
