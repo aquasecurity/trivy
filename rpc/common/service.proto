@@ -63,27 +63,39 @@ message Misconfiguration {
 }
 
 message MisconfResult {
-  string namespace = 1;
-  string message   = 2;
-  string type      = 3;
-  string id        = 4;
-  string title     = 5;
-  string severity  = 6;
+  string namespace               = 1;
+  string         message         = 2;
+  PolicyMetadata policy_metadata = 3;
+  CauseMetadata  cause_metadata  = 4;
+}
+
+message PolicyMetadata {
+  string          id                  = 1;
+  string          adv_id              = 2;
+  string          type                = 3;
+  string          title               = 4;
+  string          description         = 5;
+  string          severity            = 6;
+  string          recommended_actions = 7;
+  repeated string references          = 8;
 }
 
 message DetectedMisconfiguration {
-  string type                 = 1;
-  string id                   = 2;
-  string title                = 3;
-  string description          = 4;
-  string message              = 5;
-  string namespace            = 6;
-  string          resolution  = 7;
-  Severity        severity    = 8;
-  string          primary_url = 9;
-  repeated string references  = 10;
-  string          status      = 11;
-  Layer           layer       = 12;
+  string type                    = 1;
+  string id                      = 2;
+  string title                   = 3;
+  string description             = 4;
+  string message                 = 5;
+  string namespace               = 6;
+  string          resolution     = 7;
+  Severity        severity       = 8;
+  string          primary_url    = 9;
+  repeated string references     = 10;
+  string          status         = 11;
+  Layer           layer          = 12;
+  CauseMetadata   cause_metadata = 13;
+  string          avd_id         = 14;
+  string          query          = 15;
 }
 
 message Vulnerability {
@@ -121,6 +133,15 @@ message Layer {
   string digest     = 1;
   string diff_id    = 2;
   string created_by = 3;
+}
+
+message CauseMetadata {
+  string resource   = 1;
+  string provider   = 2;
+  string service    = 3;
+  int32  start_line = 4;
+  int32  end_line   = 5;
+  Code   code       = 6;
 }
 
 enum Severity {

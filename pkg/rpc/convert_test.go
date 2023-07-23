@@ -465,3 +465,207 @@ func TestConvertFromRPCResults(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertFromRPCMisconfs(t *testing.T) {
+	type args struct {
+		misconfs []*common.DetectedMisconfiguration
+	}
+	tests := []struct {
+		name string
+		args args
+		want []types.DetectedMisconfiguration
+	}{
+		{
+			name: "happy path misconf",
+			args: args{misconfs: []*common.DetectedMisconfiguration{
+				{
+					Type:        "Dockerfile Security Check",
+					Id:          "DS005",
+					AvdId:       "AVD-DS-0005",
+					Title:       "ADD instead of COPY",
+					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					Namespace:   "builtin.dockerfile.DS005",
+					Query:       "data.builtin.dockerfile.DS005.deny",
+					Resolution:  "Use COPY instead of ADD",
+					Severity:    common.Severity_LOW,
+					PrimaryUrl:  "https://avd.aquasec.com/misconfig/ds005",
+					References: []string{
+						"https://docs.docker.com/engine/reference/builder/#add",
+						"https://avd.aquasec.com/misconfig/ds005",
+					},
+					Status: "FAIL",
+					Layer:  &common.Layer{},
+					CauseMetadata: &common.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: &common.Code{
+							Lines: []*common.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									Annotation: "",
+									Truncated:  false,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			}},
+			want: []types.DetectedMisconfiguration{
+				{
+					Type:        "Dockerfile Security Check",
+					ID:          "DS005",
+					AVDID:       "AVD-DS-0005",
+					Title:       "ADD instead of COPY",
+					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					Namespace:   "builtin.dockerfile.DS005",
+					Query:       "data.builtin.dockerfile.DS005.deny",
+					Resolution:  "Use COPY instead of ADD",
+					Severity:    "LOW",
+					PrimaryURL:  "https://avd.aquasec.com/misconfig/ds005",
+					References: []string{
+						"https://docs.docker.com/engine/reference/builder/#add",
+						"https://avd.aquasec.com/misconfig/ds005",
+					},
+					Status: "FAIL",
+					Layer:  ftypes.Layer{},
+					CauseMetadata: ftypes.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									Annotation: "",
+									Truncated:  false,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCMisconfs(tt.args.misconfs)
+			assert.Equal(t, tt.want, got, tt.name)
+		})
+	}
+}
+
+func TestConvertToRPCMiconfs(t *testing.T) {
+	type args struct {
+		misconfs []types.DetectedMisconfiguration
+	}
+	tests := []struct {
+		name string
+		args args
+		want []*common.DetectedMisconfiguration
+	}{
+		{
+			name: "happy path misconf",
+			args: args{misconfs: []types.DetectedMisconfiguration{
+				{
+					Type:        "Dockerfile Security Check",
+					ID:          "DS005",
+					AVDID:       "AVD-DS-0005",
+					Title:       "ADD instead of COPY",
+					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					Namespace:   "builtin.dockerfile.DS005",
+					Query:       "data.builtin.dockerfile.DS005.deny",
+					Resolution:  "Use COPY instead of ADD",
+					Severity:    "LOW",
+					PrimaryURL:  "https://avd.aquasec.com/misconfig/ds005",
+					References: []string{
+						"https://docs.docker.com/engine/reference/builder/#add",
+						"https://avd.aquasec.com/misconfig/ds005",
+					},
+					Status: "FAIL",
+					Layer:  ftypes.Layer{},
+					CauseMetadata: ftypes.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									Annotation: "",
+									Truncated:  false,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			}},
+			want: []*common.DetectedMisconfiguration{
+				{
+					Type:        "Dockerfile Security Check",
+					Id:          "DS005",
+					AvdId:       "AVD-DS-0005",
+					Title:       "ADD instead of COPY",
+					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					Namespace:   "builtin.dockerfile.DS005",
+					Query:       "data.builtin.dockerfile.DS005.deny",
+					Resolution:  "Use COPY instead of ADD",
+					Severity:    common.Severity_LOW,
+					PrimaryUrl:  "https://avd.aquasec.com/misconfig/ds005",
+					References: []string{
+						"https://docs.docker.com/engine/reference/builder/#add",
+						"https://avd.aquasec.com/misconfig/ds005",
+					},
+					Status: "FAIL",
+					Layer:  &common.Layer{},
+					CauseMetadata: &common.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: &common.Code{
+							Lines: []*common.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									Annotation: "",
+									Truncated:  false,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCMisconfs(tt.args.misconfs)
+			assert.Equal(t, tt.want, got, tt.name)
+		})
+	}
+}
