@@ -8,16 +8,6 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-var Compliances = []string{
-	ComplianceK8sNsa,
-	ComplianceK8sCIS,
-	ComplianceK8sPSSBaseline,
-	ComplianceK8sPSSRestricted,
-	ComplianceAWSCIS12,
-	ComplianceAWSCIS14,
-	ComplianceDockerCIS,
-}
-
 // Report represents a scan result
 type Report struct {
 	SchemaVersion int                 `json:",omitempty"`
@@ -48,6 +38,7 @@ type Results []Result
 
 type ResultClass string
 type Compliance = string
+type Format string
 
 const (
 	ClassOSPkg       = "os-pkgs"      // For detected packages and vulnerabilities in OS packages
@@ -65,6 +56,45 @@ const (
 	ComplianceAWSCIS12         = Compliance("aws-cis-1.2")
 	ComplianceAWSCIS14         = Compliance("aws-cis-1.4")
 	ComplianceDockerCIS        = Compliance("docker-cis")
+
+	FormatTable      Format = "table"
+	FormatJSON       Format = "json"
+	FormatTemplate   Format = "template"
+	FormatSarif      Format = "sarif"
+	FormatCycloneDX  Format = "cyclonedx"
+	FormatSPDX       Format = "spdx"
+	FormatSPDXJSON   Format = "spdx-json"
+	FormatGitHub     Format = "github"
+	FormatCosignVuln Format = "cosign-vuln"
+)
+
+var (
+	SupportedFormats = []Format{
+		FormatTable,
+		FormatJSON,
+		FormatTemplate,
+		FormatSarif,
+		FormatCycloneDX,
+		FormatSPDX,
+		FormatSPDXJSON,
+		FormatGitHub,
+		FormatCosignVuln,
+	}
+	SupportedSBOMFormats = []Format{
+		FormatCycloneDX,
+		FormatSPDX,
+		FormatSPDXJSON,
+		FormatGitHub,
+	}
+	SupportedCompliances = []string{
+		ComplianceK8sNsa,
+		ComplianceK8sCIS,
+		ComplianceK8sPSSBaseline,
+		ComplianceK8sPSSRestricted,
+		ComplianceAWSCIS12,
+		ComplianceAWSCIS14,
+		ComplianceDockerCIS,
+	}
 )
 
 // Result holds a target and detected vulnerabilities

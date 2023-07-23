@@ -10,6 +10,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
@@ -82,7 +83,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
 				VulnType:          opts.VulnType,
-				Scanners:          opts.Scanners.StringSlice(),
+				Scanners:          xstrings.ToStringSlice(opts.Scanners),
 				ListAllPackages:   opts.ListAllPackages,
 				LicenseCategories: licenseCategories,
 				IncludeDevDeps:    opts.IncludeDevDeps,
