@@ -321,10 +321,10 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.90.3 h1:ZBPhzS5/+75SLGEZe6fWFyWEuNtibNc7CZZXl2yQhjw=
-github.com/aquasecurity/defsec v0.90.3/go.mod h1:VPkgjZz3dx3znIIVLZgbtFhSzN9aZC2409s5V5Oqb7o=
-github.com/aquasecurity/go-dep-parser v0.0.0-20230713131216-85ebd0d79cd3 h1:btZmyXc4e4wDNBEI4guYzpCMeNPM0f8p0F/IzSsoP0M=
-github.com/aquasecurity/go-dep-parser v0.0.0-20230713131216-85ebd0d79cd3/go.mod h1:Cl6aYro+Ddzh1MB451j/C6rvwKdn/Ifa7z98sFirJ9I=
+github.com/aquasecurity/defsec v0.90.4-0.20230716083016-931764ac907f h1:JQnhl5zK5cBJKPbCLdvK0ialSkwvp+z1B9rY61SRxNI=
+github.com/aquasecurity/defsec v0.90.4-0.20230716083016-931764ac907f/go.mod h1:VPkgjZz3dx3znIIVLZgbtFhSzN9aZC2409s5V5Oqb7o=
+github.com/aquasecurity/go-dep-parser v0.0.0-20230627073354-fb7eb3159bd5 h1:FA5XM/KP1l+PYH+QafFzzBjdsT+WxWTWsYGPzKrMeAQ=
+github.com/aquasecurity/go-dep-parser v0.0.0-20230627073354-fb7eb3159bd5/go.mod h1:VjG2wX19QDny5yKN+he0v9wuZjF0k+00173mh0FJCVU=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-mock-aws v0.0.0-20230328195059-5bf52338aec3 h1:Vt9y1gZS5JGY3tsL9zc++Cg4ofX51CG7PaMyC5SXWPg=
@@ -725,8 +725,8 @@ github.com/docker/distribution v2.8.2+incompatible h1:T3de5rq0dB1j30rp0sA2rER+m3
 github.com/docker/distribution v2.8.2+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/docker v20.10.7+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/docker/docker v23.0.0-rc.1+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
-github.com/docker/docker v23.0.5+incompatible h1:DaxtlTJjFSnLOXVNUBU1+6kXGz2lpDoEAH6QoxaSg8k=
-github.com/docker/docker v23.0.5+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
+github.com/docker/docker v23.0.7-0.20230714215826-f00e7af96042+incompatible h1:j7cPAKd+yLS4f16Jqri/wXRK+7TtFQCt89WPqECWnIM=
+github.com/docker/docker v23.0.7-0.20230714215826-f00e7af96042+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/docker/docker-credential-helpers v0.6.3/go.mod h1:WRaJzqw3CTB9bk10avuGsjVBZsD05qeibJ1/TYlvc0Y=
 github.com/docker/docker-credential-helpers v0.7.0 h1:xtCHsjxogADNZcdv1pKUHXryefjlVRqWqIhk/uXJp0A=
 github.com/docker/docker-credential-helpers v0.7.0/go.mod h1:rETQfLdHNT3foU5kuNkFR1R1V12OJRRO5lzt2D1b5X0=
