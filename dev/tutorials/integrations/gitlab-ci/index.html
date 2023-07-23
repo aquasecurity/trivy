@@ -3107,8 +3107,8 @@ with the container image.</p>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.io/aquasec/trivy:latest</span><span class="w"></span>
 <span class="w">    </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
 <span class="w">  </span><span class="nt">variables</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># No need to clone the repo, we exclusively work on artifacts.  See</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># No need to clone the repo, we exclusively work on artifacts. See</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy</span><span class="w"></span>
 <span class="w">    </span><span class="nt">GIT_STRATEGY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span><span class="w"></span>
 <span class="w">    </span><span class="nt">TRIVY_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;$CI_REGISTRY_USER&quot;</span><span class="w"></span>
 <span class="w">    </span><span class="nt">TRIVY_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;$CI_REGISTRY_PASSWORD&quot;</span><span class="w"></span>
