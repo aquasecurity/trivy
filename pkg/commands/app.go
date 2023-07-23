@@ -1180,7 +1180,7 @@ func showVersion(cacheDir, outputFormat, version string, w io.Writer) error {
 	mc := metadata.NewClient(cacheDir)
 	meta, err := mc.Get()
 	if err != nil {
-		return xerrors.Errorf("failed to get db metadata: %w", err)
+		log.Logger.Debugw("Failed to get DB metadata", "error", err)
 	}
 	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
 		dbMeta = &metadata.Metadata{
@@ -1194,7 +1194,7 @@ func showVersion(cacheDir, outputFormat, version string, w io.Writer) error {
 	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
 	metaJava, err := mcJava.Get()
 	if err != nil {
-		return xerrors.Errorf("failed to get java db metadata: %w", err)
+		log.Logger.Debugw("Failed to get Java DB metadata", "error", err)
 	}
 	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
 		javadbMeta = &metadata.Metadata{
@@ -1210,7 +1210,7 @@ func showVersion(cacheDir, outputFormat, version string, w io.Writer) error {
 	if pc != nil && err == nil {
 		pbMeta, err = pc.GetMetadata()
 		if err != nil {
-			return xerrors.Errorf("failed to get policy metadata: %w", err)
+			log.Logger.Debugw("Failed to get policy metadata", "error", err)
 		}
 	}
 
