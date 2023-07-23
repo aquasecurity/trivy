@@ -213,7 +213,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 			globalOptions := globalFlags.ToOptions()
 			if globalOptions.ShowVersion {
 				// Customize version output
-				showVersion(globalOptions.CacheDir, versionFormat, version, cmd.OutOrStdout())
+				return showVersion(globalOptions.CacheDir, versionFormat, version, cmd.OutOrStdout())
 			} else {
 				return cmd.Help()
 			}
@@ -962,7 +962,10 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
-	compliance.Values = []string{types.ComplianceAWSCIS12, types.ComplianceAWSCIS14}
+	compliance.Values = []string{
+		types.ComplianceAWSCIS12,
+		types.ComplianceAWSCIS14,
+	}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
@@ -1173,12 +1176,15 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
-func showVersion(cacheDir, outputFormat, version string, w io.Writer) {
+func showVersion(cacheDir, outputFormat, version string, w io.Writer) error {
 	var dbMeta *metadata.Metadata
 	var javadbMeta *metadata.Metadata
 
 	mc := metadata.NewClient(cacheDir)
-	meta, _ := mc.Get() // nolint: errcheck
+	meta, err := mc.Get()
+	if err != nil {
+		return xerrors.Errorf("failed to get db metadata: %w", err)
+	}
 	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
 		dbMeta = &metadata.Metadata{
 			Version:      meta.Version,
@@ -1189,7 +1195,10 @@ func showVersion(cacheDir, outputFormat, version string, w io.Writer) {
 	}
 
 	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
-	metaJava, _ := mcJava.Get() // nolint: errcheck
+	metaJava, err := mcJava.Get()
+	if err != nil {
+		return xerrors.Errorf("failed to get java db metadata: %w", err)
+	}
 	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
 		javadbMeta = &metadata.Metadata{
 			Version:      metaJava.Version,
@@ -1202,17 +1211,23 @@ func showVersion(cacheDir, outputFormat, version string, w io.Writer) {
 	var pbMeta *policy.Metadata
 	pc, err := policy.NewClient(cacheDir, false)
 	if pc != nil && err == nil {
-		pbMeta, _ = pc.GetMetadata()
+		pbMeta, err = pc.GetMetadata()
+		if err != nil {
+			return xerrors.Errorf("failed to get policy metadata: %w", err)
+		}
 	}
 
 	switch outputFormat {
 	case "json":
-		_ = json.NewEncoder(w).Encode(VersionInfo{
+		err = json.NewEncoder(w).Encode(VersionInfo{
 			Version:         version,
 			VulnerabilityDB: dbMeta,
 			JavaDB:          javadbMeta,
 			PolicyBundle:    pbMeta,
 		})
+		if err != nil {
+			return xerrors.Errorf("json encode error: %w", err)
+		}
 	default:
 		output := fmt.Sprintf("Version: %s\n", version)
 		if dbMeta != nil {
@@ -1241,6 +1256,7 @@ func showVersion(cacheDir, outputFormat, version string, w io.Writer) {
 		}
 		fmt.Fprintf(w, output)
 	}
+	return nil
 }
 
 func validateArgs(cmd *cobra.Command, args []string) error {
