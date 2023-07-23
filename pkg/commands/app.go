@@ -217,7 +217,6 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 			} else {
 				return cmd.Help()
 			}
-			return nil
 		},
 	}
 
@@ -1161,9 +1160,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := globalFlags.ToOptions()
-			showVersion(options.CacheDir, versionFormat, cmd.Version, cmd.OutOrStdout())
-
-			return nil
+			return showVersion(options.CacheDir, versionFormat, cmd.Version, cmd.OutOrStdout())
 		},
 		SilenceErrors: true,
 		SilenceUsage:  true,
