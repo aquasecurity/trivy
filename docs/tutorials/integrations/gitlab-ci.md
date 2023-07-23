@@ -74,8 +74,8 @@ container_scanning:
     name: docker.io/aquasec/trivy:latest
     entrypoint: [""]
   variables:
-    # No need to clone the repo, we exclusively work on artifacts.  See
-    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    # No need to clone the repo, we exclusively work on artifacts. See
+    # https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy
     GIT_STRATEGY: none
     TRIVY_USERNAME: "$CI_REGISTRY_USER"
     TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
