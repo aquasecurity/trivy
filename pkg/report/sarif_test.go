@@ -456,11 +456,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			sarifWritten := bytes.Buffer{}
-			err := report.Write(tt.input, report.Option{
-				Format: "sarif",
-				Output: &sarifWritten,
-			})
+			sarifWritten := bytes.NewBuffer(nil)
+			w := report.SarifWriter{
+				Output: sarifWritten,
+			}
+			err := w.Write(tt.input)
 			assert.NoError(t, err)
 
 			result := &sarif.Report{}

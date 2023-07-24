@@ -3,7 +3,10 @@ package scanner
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"strings"
+
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/scan"
@@ -14,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
 type AWSScanner struct {
@@ -73,17 +77,27 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		log.Logger.Debug("Policies successfully loaded from disk")
 		policyPaths = append(policyPaths, downloadedPolicyPaths...)
 		scannerOpts = append(scannerOpts,
-			options.ScannerWithEmbeddedPolicies(false))
+			options.ScannerWithEmbeddedPolicies(false),
+			options.ScannerWithEmbeddedLibraries(false))
 	}
-	policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
+
+	var policyFS fs.FS
+	policyFS, policyPaths, err = misconf.CreatePolicyFS(append(policyPaths, option.RegoOptions.PolicyPaths...))
+	if err != nil {
+		return nil, false, xerrors.Errorf("unable to create policyfs: %w", err)
+	}
+
+	scannerOpts = append(scannerOpts, options.ScannerWithPolicyFilesystem(policyFS))
 	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
 
-	if len(option.RegoOptions.PolicyNamespaces) > 0 {
-		scannerOpts = append(
-			scannerOpts,
-			options.ScannerWithPolicyNamespaces(option.RegoOptions.PolicyNamespaces...),
-		)
+	dataFS, dataPaths, err := misconf.CreateDataFS(option.RegoOptions.DataPaths)
+	if err != nil {
+		log.Logger.Errorf("Could not load config data: %s", err)
 	}
+	scannerOpts = append(scannerOpts, options.ScannerWithDataDirs(dataPaths...))
+	scannerOpts = append(scannerOpts, options.ScannerWithDataFilesystem(dataFS))
+
+	scannerOpts = addPolicyNamespaces(option.RegoOptions.PolicyNamespaces, scannerOpts)
 
 	if option.Compliance.Spec.ID != "" {
 		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance.Spec.ID))
@@ -104,18 +118,9 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		}
 	}
 
-	var fullState *state.State
-	if previousState, err := awsCache.LoadState(); err == nil {
-		if freshState != nil {
-			fullState, err = previousState.Merge(freshState)
-			if err != nil {
-				return nil, false, err
-			}
-		} else {
-			fullState = previousState
-		}
-	} else {
-		fullState = freshState
+	fullState, err := createState(freshState, awsCache)
+	if err != nil {
+		return nil, false, err
 	}
 
 	if fullState == nil {
@@ -134,10 +139,36 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	return defsecResults, len(included) > 0, nil
 }
 
+func createState(freshState *state.State, awsCache *cache.Cache) (*state.State, error) {
+	var fullState *state.State
+	if previousState, err := awsCache.LoadState(); err == nil {
+		if freshState != nil {
+			fullState, err = previousState.Merge(freshState)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			fullState = previousState
+		}
+	} else {
+		fullState = freshState
+	}
+	return fullState, nil
+}
+
 type defsecLogger struct {
 }
 
 func (d *defsecLogger) Write(p []byte) (n int, err error) {
 	log.Logger.Debug("[defsec] " + strings.TrimSpace(string(p)))
 	return len(p), nil
+}
+func addPolicyNamespaces(namespaces []string, scannerOpts []options.ScannerOption) []options.ScannerOption {
+	if len(namespaces) > 0 {
+		scannerOpts = append(
+			scannerOpts,
+			options.ScannerWithPolicyNamespaces(namespaces...),
+		)
+	}
+	return scannerOpts
 }

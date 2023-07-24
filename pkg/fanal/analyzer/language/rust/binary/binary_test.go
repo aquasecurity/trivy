@@ -28,7 +28,7 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.RustBinary,
 						FilePath: "testdata/executable_rust",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:        "crate_with_features@0.1.0",
 								Name:      "crate_with_features",

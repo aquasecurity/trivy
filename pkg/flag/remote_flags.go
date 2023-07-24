@@ -15,31 +15,31 @@ var (
 	ServerTokenFlag = Flag{
 		Name:       "token",
 		ConfigName: "server.token",
-		Value:      "",
+		Default:    "",
 		Usage:      "for authentication in client/server mode",
 	}
 	ServerTokenHeaderFlag = Flag{
 		Name:       "token-header",
 		ConfigName: "server.token-header",
-		Value:      DefaultTokenHeader,
+		Default:    DefaultTokenHeader,
 		Usage:      "specify a header name for token in client/server mode",
 	}
 	ServerAddrFlag = Flag{
 		Name:       "server",
 		ConfigName: "server.addr",
-		Value:      "",
+		Default:    "",
 		Usage:      "server address in client mode",
 	}
 	ServerCustomHeadersFlag = Flag{
 		Name:       "custom-headers",
 		ConfigName: "server.custom-headers",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "custom headers in client mode",
 	}
 	ServerListenFlag = Flag{
 		Name:       "listen",
 		ConfigName: "server.listen",
-		Value:      "localhost:4954",
+		Default:    "localhost:4954",
 		Usage:      "listen address in server mode",
 	}
 )

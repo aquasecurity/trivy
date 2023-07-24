@@ -10,21 +10,21 @@ var (
 	ArtifactTypeFlag = Flag{
 		Name:       "artifact-type",
 		ConfigName: "sbom.artifact-type",
-		Value:      "",
+		Default:    "",
 		Usage:      "deprecated",
 		Deprecated: true,
 	}
 	SBOMFormatFlag = Flag{
 		Name:       "sbom-format",
 		ConfigName: "sbom.format",
-		Value:      "",
+		Default:    "",
 		Usage:      "deprecated",
 		Deprecated: true,
 	}
 	VEXFlag = Flag{
 		Name:       "vex",
 		ConfigName: "sbom.vex",
-		Value:      "",
+		Default:    "",
 		Usage:      "[EXPERIMENTAL] file path to VEX",
 	}
 )

@@ -4,37 +4,37 @@ var (
 	awsRegionFlag = Flag{
 		Name:       "region",
 		ConfigName: "cloud.aws.region",
-		Value:      "",
+		Default:    "",
 		Usage:      "AWS Region to scan",
 	}
 	awsEndpointFlag = Flag{
 		Name:       "endpoint",
 		ConfigName: "cloud.aws.endpoint",
-		Value:      "",
+		Default:    "",
 		Usage:      "AWS Endpoint override",
 	}
 	awsServiceFlag = Flag{
 		Name:       "service",
 		ConfigName: "cloud.aws.service",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.",
 	}
 	awsSkipServicesFlag = Flag{
 		Name:       "skip-service",
 		ConfigName: "cloud.aws.skip-service",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.",
 	}
 	awsAccountFlag = Flag{
 		Name:       "account",
 		ConfigName: "cloud.aws.account",
-		Value:      "",
+		Default:    "",
 		Usage:      "The AWS account to scan. It's useful to specify this when reviewing cached results for multiple accounts.",
 	}
 	awsARNFlag = Flag{
 		Name:       "arn",
 		ConfigName: "cloud.aws.arn",
-		Value:      "",
+		Default:    "",
 		Usage:      "The AWS ARN to show results for. Useful to filter results once a scan is cached.",
 	}
 )

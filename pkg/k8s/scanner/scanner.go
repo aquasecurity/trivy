@@ -7,16 +7,13 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/xerrors"
-
+	cdx "github.com/CycloneDX/cyclonedx-go"
 	ms "github.com/mitchellh/mapstructure"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-version/pkg/version"
-
-	cdx "github.com/CycloneDX/cyclonedx-go"
-
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/bom"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -27,7 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	rep "github.com/aquasecurity/trivy/pkg/report"
 	cyc "github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
@@ -74,7 +70,7 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 		}
 	}()
 
-	if s.opts.Format == rep.FormatCycloneDX {
+	if s.opts.Format == types.FormatCycloneDX {
 		rootComponent, err := clusterInfoToReportResources(artifactsData, s.cluster)
 		if err != nil {
 			return report.Report{}, err

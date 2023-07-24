@@ -43,19 +43,21 @@ var enabledDefsecTypes = map[detection.FileType]string{
 }
 
 type ScannerOption struct {
-	Trace                   bool
-	RegoOnly                bool
-	Namespaces              []string
-	PolicyPaths             []string
-	DataPaths               []string
-	DisableEmbeddedPolicies bool
+	Trace                    bool
+	RegoOnly                 bool
+	Namespaces               []string
+	PolicyPaths              []string
+	DataPaths                []string
+	DisableEmbeddedPolicies  bool
+	DisableEmbeddedLibraries bool
 
-	HelmValues       []string
-	HelmValueFiles   []string
-	HelmFileValues   []string
-	HelmStringValues []string
-	TerraformTFVars  []string
-	K8sVersion       string
+	HelmValues          []string
+	HelmValueFiles      []string
+	HelmFileValues      []string
+	HelmStringValues    []string
+	TerraformTFVars     []string
+	TfExcludeDownloaded bool
+	K8sVersion          string
 }
 
 func (o *ScannerOption) Sort() {
@@ -200,9 +202,10 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	opts := []options.ScannerOption{
 		options.ScannerWithSkipRequiredCheck(true),
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
+		options.ScannerWithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 	}
 
-	policyFS, policyPaths, err := createPolicyFS(opt.PolicyPaths)
+	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +213,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		opts = append(opts, options.ScannerWithPolicyFilesystem(policyFS))
 	}
 
-	dataFS, dataPaths, err := createDataFS(opt.DataPaths, opt.K8sVersion)
+	dataFS, dataPaths, err := CreateDataFS(opt.DataPaths, opt.K8sVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -262,6 +265,7 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 	}
 
 	opts = append(opts, tfscanner.ScannerWithAllDirectories(true))
+	opts = append(opts, tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded))
 
 	return opts
 }
@@ -286,7 +290,7 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []op
 	return opts
 }
 
-func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
+func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	if len(policyPaths) == 0 {
 		return nil, nil, nil
 	}
@@ -324,11 +328,12 @@ func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	return mfs, policyPaths, nil
 }
 
-func createDataFS(dataPaths []string, k8sVersion string) (fs.FS, []string, error) {
+func CreateDataFS(dataPaths []string, options ...string) (fs.FS, []string, error) {
 	fsys := mapfs.New()
 
-	// Create a virtual file for Kubernetes scanning
-	if k8sVersion != "" {
+	// Check if k8sVersion is provided
+	if len(options) > 0 {
+		k8sVersion := options[0]
 		if err := fsys.MkdirAll("system", 0700); err != nil {
 			return nil, nil, err
 		}
@@ -337,13 +342,14 @@ func createDataFS(dataPaths []string, k8sVersion string) (fs.FS, []string, error
 			return nil, nil, err
 		}
 	}
+
 	for _, path := range dataPaths {
 		if err := fsys.CopyFilesUnder(path); err != nil {
 			return nil, nil, err
 		}
 	}
 
-	// data paths are no longer needed as fs.FS contains only needed files now.
+	// dataPaths are no longer needed as fs.FS contains only needed files now.
 	dataPaths = []string{"."}
 
 	return fsys, dataPaths, nil

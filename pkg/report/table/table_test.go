@@ -8,7 +8,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -339,8 +339,7 @@ package-lock.json
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
-			err := report.Write(types.Report{Results: tc.results}, report.Option{
-				Format:             report.FormatTable,
+			writer := table.Writer{
 				Output:             &tableWritten,
 				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,
@@ -348,7 +347,8 @@ package-lock.json
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityMedium,
 				},
-			})
+			}
+			err := writer.Write(types.Report{Results: tc.results})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})

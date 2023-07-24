@@ -92,7 +92,7 @@ func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 	for _, lib := range libs {
 		var licenses []string
 		if lib.License != "" {
-			licenses = strings.Split(lib.License, ",")
+			licenses = licensing.SplitLicenses(lib.License)
 			for i, license := range licenses {
 				licenses[i] = licensing.Normalize(strings.TrimSpace(license))
 			}

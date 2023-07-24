@@ -22,14 +22,14 @@ trivy convert [flags] RESULT_JSON
       --dependency-tree        [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --exit-code int          specify exit code when any security issues are found
       --exit-on-eol int        exit with the specified code when the OS reaches end of service/life
-  -f, --format string          format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+  -f, --format string          format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
   -h, --help                   help for convert
       --ignore-policy string   specify the Rego file path to evaluate each vulnerability
       --ignorefile string      specify .trivyignore file (default ".trivyignore")
       --list-all-pkgs          enabling the option will output all packages regardless of vulnerability
   -o, --output string          output file name
-      --report string          specify a report format for the output. (all,summary) (default "all")
-  -s, --severity string        severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
+      --report string          specify a report format for the output (all,summary) (default "all")
+  -s, --severity strings       severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
   -t, --template string        output template
 ```
 
