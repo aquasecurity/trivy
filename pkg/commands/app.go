@@ -451,9 +451,9 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 		RepoFlagGroup:          flag.NewRepoFlagGroup(),
 	}
-	repoFlags.ReportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	repoFlags.ReportFlagGroup.Compliance = nil   // disable '--compliance'
-	repoFlags.ReportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
+	repoFlags.ReportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+	repoFlags.ReportFlagGroup.Compliance = nil     // disable '--compliance'
+	repoFlags.ReportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
 	repoFlags.ScanFlagGroup.ThirdPartyOSPkgs = nil // disable `--third-party-os-pkgs`
 
 	cmd := &cobra.Command{

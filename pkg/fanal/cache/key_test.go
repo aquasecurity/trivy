@@ -192,7 +192,6 @@ func TestCalcKey(t *testing.T) {
 			want: "sha256:0c131167d441f8131d263f9ff6b0eb429b63da2e9923bb73992d87b1d80feaf1",
 		},
 		{
-
 			name: "secret config",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
@@ -207,10 +206,9 @@ func TestCalcKey(t *testing.T) {
 				},
 				secretConfigPath: "testdata/trivy-secret.yaml",
 			},
-			want: "sha256:d3fb9503f2851ae9bdb250b7ef55c00c0bfa1250b19d4d398a9219c2c0e20958",
+			want: "sha256:027f3b455e9649d290491a9bc329d2d9fa065f1d28c0f76a82220133eca0bef7",
 		},
 		{
-
 			name: "secret config file doesn't exist",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
@@ -225,7 +223,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				secretConfigPath: "trivy-secret.yaml",
 			},
-			want: "sha256:c720b502991465ea11929cfefc71cf4b5aeaa9a8c0ae59fdaf597f957f5cdb18",
+			want: "sha256:e1869e8e674badac5f3f940a1a67c486a9b05b7b3286d51eeb61915fa9c9058f",
 		},
 		{
 			name: "with policy/non-existent dir",
