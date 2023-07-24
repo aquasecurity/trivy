@@ -59,7 +59,7 @@ jobs:
       - name: Trigger ${{ github.repository_owner }}/trivy-action
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.PAT }}
+          github-token: ${{ secrets.ORG_REPO_TOKEN }}
           script: |
             const version = "${{ github.ref_name }}".slice(1)
             await github.rest.actions.createWorkflowDispatch({
