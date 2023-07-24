@@ -95,8 +95,8 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 		return nil
 	})
 
-	for _, app := range apps {
-		if err := a.fillAdditionalData(input.FS, &app); err != nil {
+	for i := range apps {
+		if err := a.fillAdditionalData(input.FS, &apps[i]); err != nil {
 			log.Logger.Warnf("Unable to collect additional info: %s", err)
 		}
 	}
