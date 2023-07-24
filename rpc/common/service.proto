@@ -63,10 +63,12 @@ message Misconfiguration {
 }
 
 message MisconfResult {
-  string namespace               = 1;
-  string         message         = 2;
-  PolicyMetadata policy_metadata = 3;
-  CauseMetadata  cause_metadata  = 4;
+  string namespace = 1;
+  string message   = 2;
+  reserved 3 to 6;
+  reserved "type", "id", "title", "severity";
+  PolicyMetadata policy_metadata = 7;
+  CauseMetadata  cause_metadata  = 8;
 }
 
 message PolicyMetadata {
