@@ -64,8 +64,9 @@ const (
 	YarnLock   = "yarn.lock"
 	PnpmLock   = "pnpm-lock.yaml"
 
-	ComposerLock = "composer.lock"
-	ComposerJson = "composer.json"
+	ComposerLock      = "composer.lock"
+	ComposerJson      = "composer.json"
+	ComposerInstalled = "installed.json"
 
 	PyProject       = "pyproject.toml"
 	PipRequirements = "requirements.txt"
