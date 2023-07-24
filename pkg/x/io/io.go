@@ -4,12 +4,12 @@ import "io"
 
 // NopCloser returns a WriteCloser with a no-op Close method wrapping
 // the provided Writer w.
-func NopCloser(w io.Writer) io.WriteCloser {
-	return nopCloser{w}
+func NopCloser(rw io.ReadWriter) io.ReadWriteCloser {
+	return nopCloser{rw}
 }
 
 type nopCloser struct {
-	io.Writer
+	io.ReadWriter
 }
 
 func (nopCloser) Close() error { return nil }

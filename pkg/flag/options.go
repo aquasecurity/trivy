@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -160,15 +161,21 @@ func (o *Options) FilterOpts() result.FilterOption {
 
 // OutputWriter returns an output writer.
 // If the output file is not specified, it returns os.Stdout.
-func (o *Options) OutputWriter() (io.WriteCloser, error) {
-	if o.Output != "" {
-		f, err := os.Create(o.Output)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to create output file: %w", err)
-		}
-		return f, nil
+// It must also be a reader because the plugin reads the output later.
+func (o *Options) OutputWriter() (io.ReadWriteCloser, error) {
+	if o.Output == "" {
+		return xio.NopCloser(os.Stdout), nil
 	}
-	return xio.NopCloser(os.Stdout), nil
+
+	if strings.HasPrefix(o.Output, "plugin=") {
+		return xio.NopCloser(bytes.NewBuffer(nil)), nil
+	}
+
+	f, err := os.Create(o.Output)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create output file: %w", err)
+	}
+	return f, nil
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {

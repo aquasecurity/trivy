@@ -3,12 +3,14 @@ package plugin
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -57,8 +59,13 @@ type Selector struct {
 	Arch string
 }
 
+type RunOptions struct {
+	Args  []string
+	Stdin io.Reader
+}
+
 // Run runs the plugin
-func (p Plugin) Run(ctx context.Context, args []string) error {
+func (p Plugin) Run(ctx context.Context, opts RunOptions) error {
 	platform, err := p.selectPlatform()
 	if err != nil {
 		return xerrors.Errorf("platform selection error: %w", err)
@@ -66,8 +73,8 @@ func (p Plugin) Run(ctx context.Context, args []string) error {
 
 	execFile := filepath.Join(dir(), p.Name, platform.Bin)
 
-	cmd := exec.CommandContext(ctx, execFile, args...)
-	cmd.Stdin = os.Stdin
+	cmd := exec.CommandContext(ctx, execFile, opts.Args...)
+	cmd.Stdin = lo.Ternary(opts.Stdin != nil, opts.Stdin, os.Stdin)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = os.Environ()
@@ -186,18 +193,9 @@ func Uninstall(name string) error {
 
 // Information gets the information about an installed plugin
 func Information(name string) (string, error) {
-	pluginDir := filepath.Join(dir(), name)
-
-	if _, err := os.Stat(pluginDir); err != nil {
-		if os.IsNotExist(err) {
-			return "", xerrors.Errorf("could not find a plugin called '%s', did you install it?", name)
-		}
-		return "", xerrors.Errorf("stat error: %w", err)
-	}
-
-	plugin, err := loadMetadata(pluginDir)
+	plugin, err := load(name)
 	if err != nil {
-		return "", xerrors.Errorf("unable to load metadata: %w", err)
+		return "", xerrors.Errorf("plugin load error: %w", err)
 	}
 
 	return fmt.Sprintf(`
@@ -230,19 +228,11 @@ func List() (string, error) {
 
 // Update updates an existing plugin
 func Update(name string) error {
-	pluginDir := filepath.Join(dir(), name)
-
-	if _, err := os.Stat(pluginDir); err != nil {
-		if os.IsNotExist(err) {
-			return xerrors.Errorf("could not find a plugin called '%s' to update: %w", name, err)
-		}
-		return err
-	}
-
-	plugin, err := loadMetadata(pluginDir)
+	plugin, err := load(name)
 	if err != nil {
-		return err
+		return xerrors.Errorf("plugin load error: %w", err)
 	}
+
 	log.Logger.Infof("Updating plugin '%s'", name)
 	updated, err := Install(nil, plugin.Repository, true)
 	if err != nil {
@@ -280,15 +270,28 @@ func LoadAll() ([]Plugin, error) {
 	return plugins, nil
 }
 
-// RunWithArgs runs the plugin with arguments
-func RunWithArgs(ctx context.Context, url string, args []string) error {
-	pl, err := Install(ctx, url, false)
+// Run runs the plugin
+func Run(ctx context.Context, name string, opts RunOptions) error {
+	plugin, err := load(name)
+	if err != nil {
+		return xerrors.Errorf("plugin load error: %w", err)
+	}
+
+	if err = plugin.Run(ctx, opts); err != nil {
+		return xerrors.Errorf("unable to run %s plugin: %w", plugin.Name, err)
+	}
+	return nil
+}
+
+// RunWithURL runs the plugin with URL
+func RunWithURL(ctx context.Context, url string, opts RunOptions) error {
+	plugin, err := Install(ctx, url, false)
 	if err != nil {
 		return xerrors.Errorf("plugin install error: %w", err)
 	}
 
-	if err = pl.Run(ctx, args); err != nil {
-		return xerrors.Errorf("unable to run %s plugin: %w", pl.Name, err)
+	if err = plugin.Run(ctx, opts); err != nil {
+		return xerrors.Errorf("unable to run %s plugin: %w", plugin.Name, err)
 	}
 	return nil
 }
@@ -296,6 +299,23 @@ func RunWithArgs(ctx context.Context, url string, args []string) error {
 func IsPredefined(name string) bool {
 	_, ok := officialPlugins[name]
 	return ok
+}
+
+func load(name string) (Plugin, error) {
+	pluginDir := filepath.Join(dir(), name)
+	if _, err := os.Stat(pluginDir); err != nil {
+		if os.IsNotExist(err) {
+			return Plugin{}, xerrors.Errorf("could not find a plugin called '%s': %w", name, err)
+		}
+		return Plugin{}, xerrors.Errorf("plugin stat error: %w", err)
+	}
+
+	plugin, err := loadMetadata(pluginDir)
+	if err != nil {
+		return Plugin{}, xerrors.Errorf("unable to load plugin metadata: %w", err)
+	}
+
+	return plugin, nil
 }
 
 func loadMetadata(dir string) (Plugin, error) {

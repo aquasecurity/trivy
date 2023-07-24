@@ -1,6 +1,7 @@
 package report
 
 import (
+	"context"
 	"io"
 	"strings"
 	"sync"
@@ -10,6 +11,7 @@ import (
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/report/github"
 	"github.com/aquasecurity/trivy/pkg/report/predicate"
@@ -85,9 +87,14 @@ func Write(report types.Report, option flag.Options) error {
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
 
-	if err := writer.Write(report); err != nil {
+	if err = writer.Write(report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
+
+	if err = writeToPlugin(output, option); err != nil {
+		return xerrors.Errorf("failed to write results to plugin: %w", err)
+	}
+
 	return nil
 }
 
@@ -101,6 +108,31 @@ func complianceWrite(report types.Report, opt flag.Options, output io.Writer) er
 		Report:     opt.ReportFormat,
 		Output:     output,
 		Severities: opt.Severities,
+	})
+}
+
+func writeToPlugin(output io.Reader, opt flag.Options) error {
+	if !strings.HasPrefix(opt.Output, "plugin=") {
+		return nil
+	}
+	p, a, _ := strings.Cut(opt.Output, ",")
+	pluginName := strings.TrimPrefix(p, "plugin=")
+	// TODO
+	pluginArgs := strings.Split(a, "args_")
+
+	var args []string
+	for _, arg := range pluginArgs {
+		key, value, found := strings.Cut(arg, "=")
+		if found {
+			args = append(args, "--"+key, value)
+		} else if key != "" {
+			args = append(args, "--"+key)
+		}
+	}
+
+	return plugin.Run(context.TODO(), pluginName, plugin.RunOptions{
+		Args:  args,
+		Stdin: output,
 	})
 }
 
