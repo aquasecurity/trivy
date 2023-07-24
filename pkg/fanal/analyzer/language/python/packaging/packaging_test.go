@@ -28,7 +28,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "kitchen",
 								Version:  "1.2.6",
@@ -49,7 +49,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "testdata/happy.egg-info/PKG-INFO",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "distlib",
 								Version:  "0.3.1",
@@ -70,7 +70,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "testdata/classifier-license.egg-info/PKG-INFO",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "setuptools",
 								Version:  "51.3.3",
@@ -90,7 +90,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "testdata/classifier-license.dist-info/METADATA",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "setuptools",
 								Version:  "51.3.3",
@@ -110,7 +110,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "testdata/happy.dist-info/METADATA",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "distlib",
 								Version:  "0.3.1",

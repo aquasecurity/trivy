@@ -72,7 +72,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		if err = a.removeDevDependencies(input.FS, filepath.Dir(path), app); err != nil {
 			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.CargoToml), err)
 		}
-		sort.Sort(types.Packages(app.Libraries))
+		sort.Sort(app.Libraries)
 		apps = append(apps, *app)
 
 		return nil
