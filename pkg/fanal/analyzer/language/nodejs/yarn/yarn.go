@@ -294,19 +294,7 @@ func (a yarnAnalyzer) traversePkgs(fsys fs.FS, lockPath string, fn traverseFunc)
 }
 
 func isNodeModulesPkg(path string, _ fs.DirEntry) bool {
-	// We can't check for sure whether the package.json is valid in `Required` fn.
-	// For example, package.json can be located near yarn.lock, then it fits,
-	// or in the package tests in node_modules - then not.
-	// That's why we add all the package.json and filter them later.
-	dirs, fileName := splitPath(path)
-	nodeModulesIdx := len(dirs) - 2
-	// the scope starts with "@" https://docs.npmjs.com/cli/v9/using-npm/scope
-	if len(dirs) > 2 && strings.HasPrefix(dirs[len(dirs)-2], "@") {
-		nodeModulesIdx -= 1
-	}
-	// The file path to package.json - */node_modules/<package_name>/package.json
-	// or */node_modules/@<scope_name>/<package_name>/package.json
-	return len(dirs) > 1 && dirs[nodeModulesIdx] == "node_modules" && fileName == types.NpmPkg
+	return strings.HasSuffix(path, "package.json")
 }
 
 func splitPath(filePath string) (dirs []string, fileName string) {
