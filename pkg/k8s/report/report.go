@@ -25,7 +25,7 @@ const (
 )
 
 type Option struct {
-	Format        string
+	Format        types.Format
 	Report        string
 	Output        io.Writer
 	Severities    []dbTypes.Severity

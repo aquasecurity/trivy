@@ -43,12 +43,13 @@ var enabledDefsecTypes = map[detection.FileType]string{
 }
 
 type ScannerOption struct {
-	Trace                   bool
-	RegoOnly                bool
-	Namespaces              []string
-	PolicyPaths             []string
-	DataPaths               []string
-	DisableEmbeddedPolicies bool
+	Trace                    bool
+	RegoOnly                 bool
+	Namespaces               []string
+	PolicyPaths              []string
+	DataPaths                []string
+	DisableEmbeddedPolicies  bool
+	DisableEmbeddedLibraries bool
 
 	HelmValues          []string
 	HelmValueFiles      []string
@@ -201,6 +202,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	opts := []options.ScannerOption{
 		options.ScannerWithSkipRequiredCheck(true),
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
+		options.ScannerWithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)

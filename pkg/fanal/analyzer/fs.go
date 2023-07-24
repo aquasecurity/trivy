@@ -10,14 +10,14 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/mapfs"
-	"github.com/aquasecurity/trivy/pkg/syncx"
+	"github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 // CompositeFS contains multiple filesystems for post-analyzers
 type CompositeFS struct {
 	group AnalyzerGroup
 	dir   string
-	files *syncx.Map[Type, *mapfs.FS]
+	files *sync.Map[Type, *mapfs.FS]
 }
 
 func NewCompositeFS(group AnalyzerGroup) (*CompositeFS, error) {
@@ -29,7 +29,7 @@ func NewCompositeFS(group AnalyzerGroup) (*CompositeFS, error) {
 	return &CompositeFS{
 		group: group,
 		dir:   tmpDir,
-		files: new(syncx.Map[Type, *mapfs.FS]),
+		files: new(sync.Map[Type, *mapfs.FS]),
 	}, nil
 }
 
