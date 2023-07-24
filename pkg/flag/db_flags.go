@@ -13,19 +13,19 @@ var (
 	ResetFlag = Flag{
 		Name:       "reset",
 		ConfigName: "reset",
-		Value:      false,
+		Default:    false,
 		Usage:      "remove all caches and database",
 	}
 	DownloadDBOnlyFlag = Flag{
 		Name:       "download-db-only",
 		ConfigName: "db.download-only",
-		Value:      false,
+		Default:    false,
 		Usage:      "download/update vulnerability database but don't run a scan",
 	}
 	SkipDBUpdateFlag = Flag{
 		Name:       "skip-db-update",
 		ConfigName: "db.skip-update",
-		Value:      false,
+		Default:    false,
 		Usage:      "skip updating vulnerability database",
 		Aliases: []Alias{
 			{
@@ -37,37 +37,37 @@ var (
 	DownloadJavaDBOnlyFlag = Flag{
 		Name:       "download-java-db-only",
 		ConfigName: "db.download-java-only",
-		Value:      false,
+		Default:    false,
 		Usage:      "download/update Java index database but don't run a scan",
 	}
 	SkipJavaDBUpdateFlag = Flag{
 		Name:       "skip-java-db-update",
 		ConfigName: "db.java-skip-update",
-		Value:      false,
+		Default:    false,
 		Usage:      "skip updating Java index database",
 	}
 	NoProgressFlag = Flag{
 		Name:       "no-progress",
 		ConfigName: "db.no-progress",
-		Value:      false,
+		Default:    false,
 		Usage:      "suppress progress bar",
 	}
 	DBRepositoryFlag = Flag{
 		Name:       "db-repository",
 		ConfigName: "db.repository",
-		Value:      defaultDBRepository,
+		Default:    defaultDBRepository,
 		Usage:      "OCI repository to retrieve trivy-db from",
 	}
 	JavaDBRepositoryFlag = Flag{
 		Name:       "java-db-repository",
 		ConfigName: "db.java-repository",
-		Value:      defaultJavaDBRepository,
+		Default:    defaultJavaDBRepository,
 		Usage:      "OCI repository to retrieve trivy-java-db from",
 	}
 	LightFlag = Flag{
 		Name:       "light",
 		ConfigName: "db.light",
-		Value:      false,
+		Default:    false,
 		Usage:      "deprecated",
 		Deprecated: true,
 	}

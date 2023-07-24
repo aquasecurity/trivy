@@ -2,7 +2,6 @@ package walker
 
 import (
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -80,7 +79,7 @@ func (w *walker) shouldSkipDir(dir string) bool {
 
 	// Skip system dirs and specified dirs (absolute path)
 	for _, pattern := range w.skipDirs {
-		if match, err := path.Match(pattern, dir); err != nil {
+		if match, err := doublestar.Match(pattern, dir); err != nil {
 			return false // return early if bad pattern
 		} else if match {
 			log.Logger.Debugf("Skipping directory: %s", dir)

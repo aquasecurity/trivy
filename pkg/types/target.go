@@ -1,7 +1,6 @@
 package types
 
 import (
-	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 )
 
@@ -83,10 +82,4 @@ func (scanners Scanners) AnyEnabled(ss ...Scanner) bool {
 		}
 	}
 	return false
-}
-
-func (scanners Scanners) StringSlice() []string {
-	return lo.Map(scanners, func(s Scanner, _ int) string {
-		return string(s)
-	})
 }

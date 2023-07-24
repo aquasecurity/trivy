@@ -2,11 +2,11 @@ package flag
 
 import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // e.g. config yaml
@@ -18,38 +18,43 @@ var (
 	ImageConfigScannersFlag = Flag{
 		Name:       "image-config-scanners",
 		ConfigName: "image.image-config-scanners",
-		Value:      "",
-		Usage:      "comma-separated list of what security issues to detect on container image configurations (config,secret)",
+		Default:    []string{},
+		Values: xstrings.ToStringSlice(types.Scanners{
+			types.MisconfigScanner,
+			types.SecretScanner,
+		}),
+		Usage: "comma-separated list of what security issues to detect on container image configurations",
 	}
 	ScanRemovedPkgsFlag = Flag{
 		Name:       "removed-pkgs",
 		ConfigName: "image.removed-pkgs",
-		Value:      false,
+		Default:    false,
 		Usage:      "detect vulnerabilities of removed packages (only for Alpine)",
 	}
 	InputFlag = Flag{
 		Name:       "input",
 		ConfigName: "image.input",
-		Value:      "",
+		Default:    "",
 		Usage:      "input file path instead of image name",
 	}
 	PlatformFlag = Flag{
 		Name:       "platform",
 		ConfigName: "image.platform",
-		Value:      "",
+		Default:    "",
 		Usage:      "set platform in the form os/arch if image is multi-platform capable",
 	}
 	DockerHostFlag = Flag{
 		Name:       "docker-host",
 		ConfigName: "image.docker.host",
-		Value:      "",
+		Default:    "",
 		Usage:      "unix domain socket path to use for docker scanning",
 	}
 	SourceFlag = Flag{
 		Name:       "image-src",
 		ConfigName: "image.source",
-		Value:      ftypes.AllImageSources.StringSlice(),
-		Usage:      "image source(s) to use, in priority order (docker,containerd,podman,remote)",
+		Default:    xstrings.ToStringSlice(ftypes.AllImageSources),
+		Values:     xstrings.ToStringSlice(ftypes.AllImageSources),
+		Usage:      "image source(s) to use, in priority order",
 	}
 )
 
@@ -98,16 +103,6 @@ func (f *ImageFlagGroup) Flags() []*Flag {
 }
 
 func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
-	scanners, err := parseScanners(getStringSlice(f.ImageConfigScanners), types.AllImageConfigScanners)
-	if err != nil {
-		return ImageOptions{}, xerrors.Errorf("unable to parse image config scanners: %w", err)
-	}
-
-	imageSources, err := parseImageSources(getStringSlice(f.ImageSources))
-	if err != nil {
-		return ImageOptions{}, xerrors.Errorf("unable to parse image sources: %w", err)
-	}
-
 	var platform ftypes.Platform
 	if p := getString(f.Platform); p != "" {
 		pl, err := v1.ParsePlatform(p)
@@ -122,22 +117,10 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 
 	return ImageOptions{
 		Input:               getString(f.Input),
-		ImageConfigScanners: scanners,
+		ImageConfigScanners: getUnderlyingStringSlice[types.Scanner](f.ImageConfigScanners),
 		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
 		Platform:            platform,
 		DockerHost:          getString(f.DockerHost),
-		ImageSources:        imageSources,
+		ImageSources:        getUnderlyingStringSlice[ftypes.ImageSource](f.ImageSources),
 	}, nil
-}
-
-func parseImageSources(srcs []string) (ftypes.ImageSources, error) {
-	var imageSources ftypes.ImageSources
-	for _, s := range srcs {
-		src := ftypes.ImageSource(s)
-		if !slices.Contains(ftypes.AllImageSources, src) {
-			return nil, xerrors.Errorf("unknown image source: %s", s)
-		}
-		imageSources = append(imageSources, src)
-	}
-	return imageSources, nil
 }

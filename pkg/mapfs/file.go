@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/syncx"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 var separator = "/"
@@ -24,7 +24,7 @@ type file struct {
 	underlyingPath string // underlying file path
 	data           []byte // virtual file, only either of 'path' or 'data' has a value.
 	stat           fileStat
-	files          syncx.Map[string, *file]
+	files          xsync.Map[string, *file]
 }
 
 func (f *file) isVirtual() bool {
@@ -187,7 +187,7 @@ func (f *file) MkdirAll(path string, perm fs.FileMode) error {
 			modTime: time.Now(),
 			mode:    perm,
 		},
-		files: syncx.Map[string, *file]{},
+		files: xsync.Map[string, *file]{},
 	}
 
 	// Create the directory when the key is not present

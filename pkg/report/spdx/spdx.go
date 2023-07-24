@@ -15,11 +15,11 @@ import (
 type Writer struct {
 	output    io.Writer
 	version   string
-	format    string
+	format    types.Format
 	marshaler *spdx.Marshaler
 }
 
-func NewWriter(output io.Writer, version string, spdxFormat string) Writer {
+func NewWriter(output io.Writer, version string, spdxFormat types.Format) Writer {
 	return Writer{
 		output:    output,
 		version:   version,

@@ -3,12 +3,11 @@ package k8s
 import (
 	"fmt"
 
-	"github.com/aquasecurity/trivy/pkg/k8s/report"
-
 	cdx "github.com/CycloneDX/cyclonedx-go"
 
-	rp "github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/report/table"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Writer interface {
@@ -20,13 +19,13 @@ func Write(k8sreport report.Report, option report.Option) error {
 	k8sreport.PrintErrors()
 
 	switch option.Format {
-	case rp.FormatJSON:
+	case types.FormatJSON:
 		jwriter := report.JSONWriter{
 			Output: option.Output,
 			Report: option.Report,
 		}
 		return jwriter.Write(k8sreport)
-	case rp.FormatTable:
+	case types.FormatTable:
 		separatedReports := report.SeparateMisconfigReports(k8sreport, option.Scanners, option.Components)
 
 		if option.Report == report.SummaryReport {
@@ -48,7 +47,7 @@ func Write(k8sreport report.Report, option report.Option) error {
 		}
 
 		return nil
-	case rp.FormatCycloneDX:
+	case types.FormatCycloneDX:
 		w := report.NewCycloneDXWriter(option.Output, cdx.BOMFileFormatJSON, option.APIVersion)
 		return w.Write(k8sreport.RootComponent)
 	}

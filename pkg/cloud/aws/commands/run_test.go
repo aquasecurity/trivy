@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"bytes"
 	"context"
 	"os"
 	"path/filepath"
@@ -9,9 +8,9 @@ import (
 	"time"
 
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -287,6 +286,7 @@ const expectedS3ScanResult = `{
   ]
 }
 `
+
 const expectedCustomScanResult = `{
   "ArtifactName": "12345678",
   "ArtifactType": "aws_account",
@@ -304,12 +304,45 @@ const expectedCustomScanResult = `{
   },
   "Results": [
     {
+      "Target": "",
+      "Class": "config",
+      "Type": "cloud",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 1,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "AWS",
+          "Title": "Bad input data",
+          "Description": "Just failing rule with input data",
+          "Message": "Rego policy resulted in DENY",
+          "Namespace": "user.whatever",
+          "Query": "deny",
+          "Severity": "LOW",
+          "References": [
+            ""
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "cloud",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
+        }
+      ]
+    },
+    {
       "Target": "arn:aws:s3:::examplebucket",
       "Class": "config",
       "Type": "cloud",
       "MisconfSummary": {
         "Successes": 1,
-        "Failures": 10,
+        "Failures": 9,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -551,34 +584,13 @@ const expectedCustomScanResult = `{
               "Lines": null
             }
           }
-        },
-        {
-          "Type": "AWS",
-          "Title": "No example buckets",
-          "Description": "Buckets should not be named with \"example\" in the name",
-          "Message": "example bucket detected",
-          "Namespace": "user.whatever",
-          "Query": "deny",
-          "Severity": "LOW",
-          "References": [
-            ""
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "cloud",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
         }
       ]
     }
   ]
 }
 `
+
 const expectedS3AndCloudTrailResult = `{
   "ArtifactName": "123456789",
   "ArtifactType": "aws_account",
@@ -958,7 +970,6 @@ const expectedS3AndCloudTrailResult = `{
 `
 
 func Test_Run(t *testing.T) {
-
 	regoDir := t.TempDir()
 
 	tests := []struct {
@@ -969,6 +980,7 @@ func Test_Run(t *testing.T) {
 		cacheContent string
 		regoPolicy   string
 		allServices  []string
+		inputData    string
 	}{
 		{
 			name: "fail without region",
@@ -1042,13 +1054,16 @@ func Test_Run(t *testing.T) {
 					PolicyNamespaces: []string{
 						"user",
 					},
+					DataPaths: []string{
+						filepath.Join(regoDir, "data"),
+					},
 					SkipPolicyUpdate: true,
 				},
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
 			regoPolicy: `# METADATA
-# title: No example buckets
-# description: Buckets should not be named with "example" in the name
+# title: Bad input data
+# description: Just failing rule with input data
 # scope: package
 # schemas:
 # - input: schema["input"]
@@ -1059,14 +1074,20 @@ func Test_Run(t *testing.T) {
 #     selector:
 #     - type: cloud
 package user.whatever
+import data.settings.DS123.foo
 
-deny[res] {
-	bucket := input.aws.s3.buckets[_]
-	contains(bucket.name.value, "example")
-	res := result.new("example bucket detected", bucket.name)
+deny {
+	foo == true
 }
 `,
-			cacheContent: "testdata/s3onlycache.json",
+			inputData: `{
+	"settings": {
+		"DS123": {
+			"foo": true
+		}
+	}
+}`,
+			cacheContent: filepath.Join("testdata", "s3onlycache.json"),
 			allServices:  []string{"s3"},
 			want:         expectedCustomScanResult,
 		},
@@ -1221,8 +1242,8 @@ Summary Report for compliance: my-custom-spec
 				}()
 			}
 
-			buffer := new(bytes.Buffer)
-			test.options.Output = buffer
+			output := filepath.Join(t.TempDir(), "output")
+			test.options.Output = output
 			test.options.Debug = true
 			test.options.GlobalOptions.Timeout = time.Minute
 			if test.options.Format == "" {
@@ -1241,6 +1262,11 @@ Summary Report for compliance: my-custom-spec
 				require.NoError(t, os.WriteFile(filepath.Join(regoDir, "policies", "user.rego"), []byte(test.regoPolicy), 0644))
 			}
 
+			if test.inputData != "" {
+				require.NoError(t, os.MkdirAll(filepath.Join(regoDir, "data"), 0755))
+				require.NoError(t, os.WriteFile(filepath.Join(regoDir, "data", "data.json"), []byte(test.inputData), 0644))
+			}
+
 			if test.cacheContent != "" {
 				cacheRoot := t.TempDir()
 				test.options.CacheDir = cacheRoot
@@ -1250,16 +1276,19 @@ Summary Report for compliance: my-custom-spec
 				cacheData, err := os.ReadFile(test.cacheContent)
 				require.NoError(t, err, test.name)
 
-				require.NoError(t, os.WriteFile(cacheFile, []byte(cacheData), 0600))
+				require.NoError(t, os.WriteFile(cacheFile, cacheData, 0600))
 			}
 
 			err := Run(context.Background(), test.options)
 			if test.expectErr {
 				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-				assert.Equal(t, test.want, buffer.String())
+				return
 			}
+			assert.NoError(t, err)
+
+			b, err := os.ReadFile(output)
+			require.NoError(t, err)
+			assert.Equal(t, test.want, string(b))
 		})
 	}
 }

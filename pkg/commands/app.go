@@ -28,8 +28,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/policy"
-	r "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // VersionInfo holds the trivy DB version Info
@@ -70,15 +70,6 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 	groupUtility    = "utility"
 	groupPlugin     = "plugin"
 )
-
-var (
-	outputWriter io.Writer = os.Stdout
-)
-
-// SetOut overrides the destination for messages
-func SetOut(out io.Writer) {
-	outputWriter = out
-}
 
 // NewApp is the factory method to return Trivy CLI
 func NewApp(version string) *cobra.Command {
@@ -189,8 +180,6 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
   $ trivy server`,
 		Args: cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SetOut(outputWriter)
-
 			// Set the Trivy version here so that we can override version printer.
 			cmd.Version = version
 
@@ -224,11 +213,10 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 			globalOptions := globalFlags.ToOptions()
 			if globalOptions.ShowVersion {
 				// Customize version output
-				showVersion(globalOptions.CacheDir, versionFormat, version, outputWriter)
+				return showVersion(globalOptions.CacheDir, versionFormat, version, cmd.OutOrStdout())
 			} else {
 				return cmd.Help()
 			}
-			return nil
 		},
 	}
 
@@ -246,12 +234,12 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	report := flag.ReportFormatFlag
-	report.Value = "summary"                                     // override the default value as the summary is preferred for the compliance report
+	report.Default = "summary"                                   // override the default value as the summary is preferred for the compliance report
 	report.Usage = "specify a format for the compliance report." // "--report" works only with "--compliance"
 	reportFlagGroup.ReportFormat = &report
 
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s)", types.ComplianceDockerCIS)
+	compliance.Values = []string{types.ComplianceDockerCIS}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
 	imageFlags := &flag.Flags{
@@ -310,7 +298,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -330,7 +318,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFormat := flag.ReportFormatFlag
-	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFormat.Usage = "specify a compliance report format for the output" //@TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = &reportFormat
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
@@ -369,7 +357,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := fsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := fsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := fsFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -428,7 +416,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := rootfsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := rootfsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := rootfsFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -463,7 +451,6 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	repoFlags.ReportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	repoFlags.ReportFlagGroup.Compliance = nil   // disable '--compliance'
 	repoFlags.ReportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
-	repoFlags.ScanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	cmd := &cobra.Command{
 		Use:     "repository [flags] REPO_URL",
@@ -482,7 +469,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := repoFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := repoFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := repoFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -522,7 +509,7 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := convertFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			opts, err := convertFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			opts, err := convertFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -546,7 +533,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Name:       "remote",
 		ConfigName: "server.addr",
 		Shorthand:  "",
-		Value:      "http://localhost:4954",
+		Default:    "http://localhost:4954",
 		Usage:      "server address",
 	}
 	remoteFlags.ServerAddr = &remoteAddr // disable '--server' and enable '--remote' instead.
@@ -579,7 +566,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := clientFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := clientFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := clientFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -620,7 +607,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := serverFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := serverFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := serverFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -643,7 +630,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
 	reportFormat := flag.ReportFormatFlag
-	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFormat.Usage = "specify a compliance report format for the output" //@TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = &reportFormat
 
 	scanFlags := &flag.ScanFlagGroup{
@@ -682,7 +669,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := configFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := configFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := configFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -840,7 +827,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				}
 
 				repo := args[0]
-				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags)
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
@@ -864,7 +851,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				}
 
 				repo := args[0]
-				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags)
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
@@ -880,7 +867,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := flag.NewScanFlagGroup()
 	scanners := flag.ScannersFlag
-	scanners.Value = fmt.Sprintf( // overwrite the default value
+	scanners.Default = fmt.Sprintf( // overwrite the default value
 		"%s,%s,%s,%s",
 		types.VulnerabilityScanner,
 		types.MisconfigScanner,
@@ -895,16 +882,21 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s,%s, %s, %s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS, types.ComplianceK8sPSSBaseline, types.ComplianceK8sPSSRestricted)
+	compliance.Values = []string{
+		types.ComplianceK8sNsa,
+		types.ComplianceK8sCIS,
+		types.ComplianceK8sPSSBaseline,
+		types.ComplianceK8sPSSRestricted,
+	}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
 	formatFlag := flag.FormatFlag
-	formatFlag.Usage = "format (" + strings.Join([]string{
-		r.FormatTable,
-		r.FormatJSON,
-		r.FormatCycloneDX,
-	}, ", ") + ")"
+	formatFlag.Values = xstrings.ToStringSlice([]types.Format{
+		types.FormatTable,
+		types.FormatJSON,
+		types.FormatCycloneDX,
+	})
 	reportFlagGroup.Format = &formatFlag
 
 	k8sFlags := &flag.Flags{
@@ -948,7 +940,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := k8sFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			opts, err := k8sFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			opts, err := k8sFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -968,7 +960,10 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s, %s)", types.ComplianceAWSCIS12, types.ComplianceAWSCIS14)
+	compliance.Values = []string{
+		types.ComplianceAWSCIS12,
+		types.ComplianceAWSCIS14,
+	}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
@@ -1012,7 +1007,7 @@ The following services are supported:
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := awsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			opts, err := awsFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -1047,7 +1042,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Region: &flag.Flag{
 				Name:       "aws-region",
 				ConfigName: "aws.region",
-				Value:      "",
+				Default:    "",
 				Usage:      "AWS region to scan",
 			},
 		},
@@ -1076,7 +1071,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := vmFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := vmFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := vmFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -1135,7 +1130,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := sbomFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := sbomFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := sbomFlags.ToOptions(cmd.Version, args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -1164,9 +1159,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := globalFlags.ToOptions()
-			showVersion(options.CacheDir, versionFormat, cmd.Version, outputWriter)
-
-			return nil
+			return showVersion(options.CacheDir, versionFormat, cmd.Version, cmd.OutOrStdout())
 		},
 		SilenceErrors: true,
 		SilenceUsage:  true,
@@ -1179,12 +1172,15 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
-func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
+func showVersion(cacheDir, outputFormat, version string, w io.Writer) error {
 	var dbMeta *metadata.Metadata
 	var javadbMeta *metadata.Metadata
 
 	mc := metadata.NewClient(cacheDir)
-	meta, _ := mc.Get() // nolint: errcheck
+	meta, err := mc.Get()
+	if err != nil {
+		log.Logger.Debugw("Failed to get DB metadata", "error", err)
+	}
 	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
 		dbMeta = &metadata.Metadata{
 			Version:      meta.Version,
@@ -1195,7 +1191,10 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	}
 
 	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
-	metaJava, _ := mcJava.Get() // nolint: errcheck
+	metaJava, err := mcJava.Get()
+	if err != nil {
+		log.Logger.Debugw("Failed to get Java DB metadata", "error", err)
+	}
 	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
 		javadbMeta = &metadata.Metadata{
 			Version:      metaJava.Version,
@@ -1208,18 +1207,23 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	var pbMeta *policy.Metadata
 	pc, err := policy.NewClient(cacheDir, false)
 	if pc != nil && err == nil {
-		pbMeta, _ = pc.GetMetadata()
+		pbMeta, err = pc.GetMetadata()
+		if err != nil {
+			log.Logger.Debugw("Failed to get policy metadata", "error", err)
+		}
 	}
 
 	switch outputFormat {
 	case "json":
-		b, _ := json.Marshal(VersionInfo{
+		err = json.NewEncoder(w).Encode(VersionInfo{
 			Version:         version,
 			VulnerabilityDB: dbMeta,
 			JavaDB:          javadbMeta,
 			PolicyBundle:    pbMeta,
 		})
-		fmt.Fprintln(outputWriter, string(b))
+		if err != nil {
+			return xerrors.Errorf("json encode error: %w", err)
+		}
 	default:
 		output := fmt.Sprintf("Version: %s\n", version)
 		if dbMeta != nil {
@@ -1246,8 +1250,9 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
   DownloadedAt: %s
 `, pbMeta.Digest, pbMeta.DownloadedAt.UTC())
 		}
-		fmt.Fprintf(outputWriter, output)
+		fmt.Fprintf(w, output)
 	}
+	return nil
 }
 
 func validateArgs(cmd *cobra.Command, args []string) error {
