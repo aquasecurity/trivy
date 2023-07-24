@@ -1203,8 +1203,8 @@ github.com/knqyf263/go-rpmdb v0.0.0-20230517124904-b97c85e63254 h1:sWdRcroy0oENk
 github.com/knqyf263/go-rpmdb v0.0.0-20230517124904-b97c85e63254/go.mod h1:9LQcoMCMQ9vrF7HcDtXfvqGO4+ddxFQ8+YF/0CVGDww=
 github.com/knqyf263/nested v0.0.1 h1:Sv26CegUMhjt19zqbBKntjwESdxe5hxVPSk0+AKjdUc=
 github.com/knqyf263/nested v0.0.1/go.mod h1:zwhsIhMkBg90DTOJQvxPkKIypEHPYkgWHs4gybdlUmk=
-github.com/knqyf263/trivy-db v0.0.0-20230724130628-f1f2e042e675 h1:GVjM9PYBKR1J+Ao2nwHiBsfnEZzdA12Ej2YHJ6yK2sg=
-github.com/knqyf263/trivy-db v0.0.0-20230724130628-f1f2e042e675/go.mod h1:st35g9O0ecDGBqnRHNFFz8imlDD3GWTCwo1WyJixI2c=
+github.com/knqyf263/trivy-db v0.0.0-20230724141103-6dde4f3b3952 h1:dtN4/jADviE+/1Oha6hMdjHyWACdjxD8ay37f7oOy14=
+github.com/knqyf263/trivy-db v0.0.0-20230724141103-6dde4f3b3952/go.mod h1:st35g9O0ecDGBqnRHNFFz8imlDD3GWTCwo1WyJixI2c=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.2/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.3/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
