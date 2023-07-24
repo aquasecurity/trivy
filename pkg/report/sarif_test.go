@@ -426,6 +426,95 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
+			name: "report with licenses",
+			input: types.Report{
+				Results: types.Results{
+					{
+						Target: "OS Packages",
+						Class:  "license",
+						Licenses: []types.DetectedLicense{
+							{
+								Severity:   "HIGH",
+								Category:   "restricted",
+								PkgName:    "alpine-base",
+								FilePath:   "",
+								Name:       "GPL-3.0",
+								Confidence: 1,
+								Link:       "",
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       lo.ToPtr("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        lo.ToPtr(""),
+								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
+								Rules: []*sarif.ReportingDescriptor{
+									{
+										ID:                   "alpine-base:GPL-3.0",
+										Name:                 lo.ToPtr("License"),
+										ShortDescription:     sarif.NewMultiformatMessageString("GPL-3.0 in alpine-base"),
+										FullDescription:      sarif.NewMultiformatMessageString("GPL-3.0 in alpine-base"),
+										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error"),
+										Help: sarif.NewMultiformatMessageString("License GPL-3.0\nClassification: restricted\nPkgName: alpine-base\nPath: ").
+											WithMarkdown("**License GPL-3.0**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|alpine-base|restricted||"),
+										Properties: map[string]interface{}{
+											"tags": []interface{}{
+												"license",
+												"security",
+												"HIGH",
+											},
+											"precision":         "very-high",
+											"security-severity": "8.0",
+										},
+									},
+								},
+							},
+						},
+						Results: []*sarif.Result{
+							{
+								RuleID:    lo.ToPtr("alpine-base:GPL-3.0"),
+								RuleIndex: lo.ToPtr(uint(0)),
+								Level:     lo.ToPtr("error"),
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: OS Packages\nLicense GPL-3.0\nPkgName: restricted\n Classification: alpine-base\n Path: ")},
+								Locations: []*sarif.Location{
+									{
+										Message: sarif.NewTextMessage(""),
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       lo.ToPtr("OS Packages"),
+												URIBaseId: lo.ToPtr("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   lo.ToPtr(1),
+												EndLine:     lo.ToPtr(1),
+												StartColumn: lo.ToPtr(1),
+												EndColumn:   lo.ToPtr(1),
+											},
+										},
+									},
+								},
+							},
+						},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: lo.ToPtr("file:///"),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "no vulns",
 			want: &sarif.Report{
 				Version: "2.1.0",
