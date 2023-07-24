@@ -159,6 +159,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			PkgName:          pkg.Name,
 			InstalledVersion: utils.FormatVersion(pkg),
 			PkgRef:           pkg.Ref,
+			Status:           adv.Status,
 			Layer:            pkg.Layer,
 			SeveritySource:   vulnerability.RedHat,
 			Vulnerability: dbTypes.Vulnerability{
@@ -180,6 +181,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 		// patched vulnerabilities
 		fixedVersion := version.NewVersion(adv.FixedVersion)
 		if installedVersion.LessThan(fixedVersion) {
+			vuln.Status = dbTypes.StatusFixed
 			vuln.VendorIDs = adv.VendorIDs
 			vuln.FixedVersion = fixedVersion.String()
 

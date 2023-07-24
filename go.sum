@@ -343,8 +343,6 @@ github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da h1:pj/adfN
 github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da/go.mod h1:852lbQLpK2nCwlR4ZLYIccxYCfoQao6q9Nl6tjz54v8=
 github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gwo=
 github.com/aquasecurity/tml v0.6.1/go.mod h1:OnYMWY5lvI9ejU7yH9LCberWaaTBW7hBFsITiIMY2yY=
-github.com/aquasecurity/trivy-db v0.0.0-20230703082116-dc52e83376ce h1:swoQLWQoZ4HW13XeEji217TTcgi61MuMZdsKrqSTE0A=
-github.com/aquasecurity/trivy-db v0.0.0-20230703082116-dc52e83376ce/go.mod h1:cXuqKo+FaMY0ixJNoUcyDHdfCBRPWOysI2Td8N4fRsg=
 github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728 h1:0eS+V7SXHgqoT99tV1mtMW6HL4HdoB9qGLMCb1fZp8A=
 github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.5.7-0.20230708090141-f44c2292c9a9 h1:PA91rctNeAZY0hb2tPK68lAEpau3ItSto4FnqFXPF4g=
@@ -1205,6 +1203,8 @@ github.com/knqyf263/go-rpmdb v0.0.0-20230517124904-b97c85e63254 h1:sWdRcroy0oENk
 github.com/knqyf263/go-rpmdb v0.0.0-20230517124904-b97c85e63254/go.mod h1:9LQcoMCMQ9vrF7HcDtXfvqGO4+ddxFQ8+YF/0CVGDww=
 github.com/knqyf263/nested v0.0.1 h1:Sv26CegUMhjt19zqbBKntjwESdxe5hxVPSk0+AKjdUc=
 github.com/knqyf263/nested v0.0.1/go.mod h1:zwhsIhMkBg90DTOJQvxPkKIypEHPYkgWHs4gybdlUmk=
+github.com/knqyf263/trivy-db v0.0.0-20230724130628-f1f2e042e675 h1:GVjM9PYBKR1J+Ao2nwHiBsfnEZzdA12Ej2YHJ6yK2sg=
+github.com/knqyf263/trivy-db v0.0.0-20230724130628-f1f2e042e675/go.mod h1:st35g9O0ecDGBqnRHNFFz8imlDD3GWTCwo1WyJixI2c=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.2/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.3/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
