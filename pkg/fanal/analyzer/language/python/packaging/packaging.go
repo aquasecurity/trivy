@@ -40,7 +40,7 @@ func newPackagingAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, 
 }
 
 var (
-	requiredFiles = []string{
+	eggFiles = []string{
 		// .egg format
 		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
 		".egg", // zip format
@@ -64,7 +64,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
-		return strings.Contains(path, ".dist-info") || required(path)
+		return filepath.Base(path) == "METADATA" || isEggFile(path)
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
@@ -91,13 +91,15 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 			return nil
 		}
 
-		if err := a.fillAdditionalData(input.FS, path, app); err != nil {
-			log.Logger.Warnf("Unable to collect additional info: %s", err)
-		}
-
 		apps = append(apps, *app)
 		return nil
 	})
+
+	for _, app := range apps {
+		if err := a.fillAdditionalData(input.FS, &app); err != nil {
+			log.Logger.Warnf("Unable to collect additional info: %s", err)
+		}
+	}
 
 	if err != nil {
 		return nil, xerrors.Errorf("python package walk error: %w", err)
@@ -107,7 +109,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	}, nil
 }
 
-func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, filePath string, app *types.Application) error {
+func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application) error {
 
 	if len(app.Libraries) > 0 {
 		var licenses []string
@@ -121,7 +123,7 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, filePath string, app *
 			}
 			licenseFielPath := filepath.Base(strings.TrimPrefix(lic, "file://"))
 
-			findings, err := classifyLicense(filePath, licenseFielPath, a.licenseClassifierConfidenceLevel, fsys)
+			findings, err := classifyLicense(app.FilePath, licenseFielPath, a.licenseClassifierConfidenceLevel, fsys)
 			if err != nil {
 				return err
 			}
@@ -173,7 +175,7 @@ func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSee
 	}
 
 	finded, ok := lo.Find(zr.File, func(f *zip.File) bool {
-		return required(f.Name)
+		return isEggFile(f.Name)
 	})
 	if ok {
 		return a.open(finded)
@@ -197,11 +199,11 @@ func (a packagingAnalyzer) open(file *zip.File) (dio.ReadSeekerAt, error) {
 }
 
 func (a packagingAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.Contains(filePath, ".dist-info") || required(filePath)
+	return strings.Contains(filePath, ".dist-info") || isEggFile(filePath)
 }
 
-func required(filePath string) bool {
-	return lo.SomeBy(requiredFiles, func(fileName string) bool {
+func isEggFile(filePath string) bool {
+	return lo.SomeBy(eggFiles, func(fileName string) bool {
 		return strings.HasSuffix(filePath, fileName)
 	})
 }
