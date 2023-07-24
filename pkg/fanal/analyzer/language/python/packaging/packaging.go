@@ -58,7 +58,7 @@ type packagingAnalyzer struct {
 	licenseClassifierConfidenceLevel float64
 }
 
-// Analyze analyzes egg and wheel files.
+// PostAnalyze analyzes egg and wheel files.
 func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 
 	var apps []types.Application
@@ -112,6 +112,9 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, filePath string, app *
 	if len(app.Libraries) > 0 {
 		var licenses []string
 		for _, lic := range app.Libraries[0].Licenses {
+			// Parser adds `file://` prefix to filepath from `License-File` field
+			// We need to read this file to find licenses
+			// Otherwise, this is the name of the license
 			if !strings.HasPrefix(lic, "file://") {
 				licenses = append(licenses, lic)
 				continue
