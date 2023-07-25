@@ -148,6 +148,7 @@
           "PkgName": "phoenix",
           "InstalledVersion": "1.6.13",
           "FixedVersion": "1.6.14",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-42975",
