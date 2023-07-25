@@ -11,21 +11,30 @@ Trivy provides various methods for filtering the results.
 |      Secret      |           |
 |     License      |           |
 
-Trivy supports next vulnerability Statuses:
+Trivy supports the following vulnerability statuses:
 
-- unknown
-- not_affected
-- affected
-- fixed
-- under_investigation (RedHat only)
-- will_not_fix (Debian and RedHat only)
-- fix_deferred (Debian only)
-- end_of_life (Debian and RedHat only)
+- `unknown`
+- `not_affected`: this package is not affected by this vulnerability on this platform
+- `affected`: this package is affected by this vulnerability on this platform, but there is no patch released yet
+- `fixed`: this vulnerability is fixed on this platform
+- `under_investigation`: it is currently unknown whether or not this vulnerability affects this package on this platform, and it is under investigation
+- `will_not_fix`: this package is affected by this vulnerability on this platform, but there is currently no intention to fix it (this would primarily be for flaws that are of Low or Moderate impact that pose no significant risk to customers)
+- `fix_deferred`: this package is affected by this vulnerability on this platform, and may be fixed in the future
+- `end_of_life`: this package has been identified to contain the impacted component, but analysis to determine whether it is affected or not by this vulnerability was not performed
 
-To ignore vulnerabilities with a specific status, use the `--ignore-status <list_of_statuses>` option.
+Note that vulnerabilities with the `unknown`, `not_affected` or `under_investigation` status are not detected.
+These are only defined for comprehensiveness, and you will not have the opportunity to specify these statuses.
 
-!!! note
-    There is also a `--ignore-unfixed` option to skip all unfixed vulnerabilities (equivalent to `-ignore-status affected, will_not_fix, fix_deferred, end_of_life, unknown`).
+Some statuses are supported in limited distributions.
+
+|     OS     | Fixed | Affected | Under Investigation | Will Not Fix | Fix Deferred | End of Life |
+|:----------:|:-----:|:--------:|:-------------------:|:------------:|:------------:|:-----------:|
+|   Debian   |   ✓   |    ✓     |                     |              |      ✓       |      ✓      |
+|    RHEL    |   ✓   |    ✓     |          ✓          |      ✓       |      ✓       |      ✓      |
+| Other OSes |   ✓   |    ✓     |                     |              |              |             |
+
+
+To ignore vulnerabilities with specific statuses, use the `--ignore-status <list_of_statuses>` option.
 
 
 ```bash
@@ -56,6 +65,15 @@ Total: 527 (UNKNOWN: 0, LOW: 276, MEDIUM: 83, HIGH: 158, CRITICAL: 10)
 ```
 
 </details>
+
+!!! tip
+    To skip all unfixed vulnerabilities, you can use the `--ignore-unfixed` flag .
+    It is a shorthand of `-ignore-status affected,will_not_fix,fix_deferred,end_of_life`.
+    It displays "fixed" vulnerabilities only.
+
+```bash
+$ trivy image --ignore-unfixed ruby:2.4.0
+```
 
 ## By Severity
 
