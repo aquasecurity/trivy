@@ -2,7 +2,7 @@
 Trivy provides various methods for filtering the results.
 
 
-## Hide Unfixed Vulnerabilities
+## By Status
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -11,48 +11,54 @@ Trivy provides various methods for filtering the results.
 |      Secret      |           |
 |     License      |           |
 
-By default, `Trivy` also detects unpatched/unfixed vulnerabilities.
-This means you can't fix these vulnerabilities even if you update all packages.
-If you would like to ignore them, use the `--ignore-unfixed` option.
+Trivy supports next vulnerability Statuses:
+
+- unknown
+- not_affected
+- affected
+- fixed
+- under_investigation (RedHat only)
+- will_not_fix (Debian and RedHat only)
+- fix_deferred (Debian only)
+- end_of_life (Debian and RedHat only)
+
+To ignore vulnerabilities with a specific status, use the `--ignore-status <list_of_statuses>` option.
+
+!!! note
+    There is also a `--ignore-unfixed` option to skip all unfixed vulnerabilities (equivalent to `-ignore-status affected, will_not_fix, fix_deferred, end_of_life, unknown`).
+
 
 ```bash
-$ trivy image --ignore-unfixed ruby:2.4.0
+$ trivy image --ignore-status affected ruby:2.4.0
 ```
 
 <details>
 <summary>Result</summary>
 
 ```
-2019-05-16T12:49:52.656+0900    INFO    Updating vulnerability database...
 2019-05-16T12:50:14.786+0900    INFO    Detecting Debian vulnerabilities...
 
 ruby:2.4.0 (debian 8.7)
 =======================
-Total: 4730 (UNKNOWN: 1, LOW: 145, MEDIUM: 3487, HIGH: 1014, CRITICAL: 83)
+Total: 3764 (UNKNOWN: 68, LOW: 130, MEDIUM: 2089, HIGH: 1145, CRITICAL: 332)
 
-+------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
-|           LIBRARY            | VULNERABILITY ID | SEVERITY |     INSTALLED VERSION      |          FIXED VERSION           |                        TITLE                        |
-+------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
-| apt                          | CVE-2019-3462    | CRITICAL | 1.0.9.8.3                  | 1.0.9.8.5                        | Incorrect sanitation of the                         |
-|                              |                  |          |                            |                                  | 302 redirect field in HTTP                          |
-|                              |                  |          |                            |                                  | transport method of...                              |
-+                              +------------------+----------+                            +----------------------------------+-----------------------------------------------------+
-|                              | CVE-2016-1252    | MEDIUM   |                            | 1.0.9.8.4                        | The apt package in Debian                           |
-|                              |                  |          |                            |                                  | jessie before 1.0.9.8.4, in                         |
-|                              |                  |          |                            |                                  | Debian unstable before...                           |
-+------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
-| bash                         | CVE-2019-9924    | HIGH     | 4.3-11                     | 4.3-11+deb8u2                    | bash: BASH_CMD is writable in                       |
-|                              |                  |          |                            |                                  | restricted bash shells                              |
-+                              +------------------+          +                            +----------------------------------+-----------------------------------------------------+
-|                              | CVE-2016-7543    |          |                            | 4.3-11+deb8u1                    | bash: Specially crafted                             |
-|                              |                  |          |                            |                                  | SHELLOPTS+PS4 variables allows                      |
-|                              |                  |          |                            |                                  | command substitution                                |
-+                              +------------------+----------+                            +                                  +-----------------------------------------------------+
-|                              | CVE-2016-0634    | MEDIUM   |                            |                                  | bash: Arbitrary code execution                      |
-|                              |                  |          |                            |                                  | via malicious hostname                              |
-+                              +------------------+----------+                            +----------------------------------+-----------------------------------------------------+
-|                              | CVE-2016-9401    | LOW      |                            | 4.3-11+deb8u2                    | bash: popd controlled free                          |
-+------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
+┌─────────────────────────────┬──────────────────┬──────────┬────────┬────────────────────────────┬──────────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│           Library           │  Vulnerability   │ Severity │ Status │     Installed Version      │          Fixed Version           │                            Title                             │
+├─────────────────────────────┼──────────────────┼──────────┼────────┼────────────────────────────┼──────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ apt                         │ CVE-2019-3462    │ HIGH     │ fixed  │ 1.0.9.8.4                  │ 1.0.9.8.5                        │ Incorrect sanitation of the 302 redirect field in HTTP       │
+│                             │                  │          │        │                            │                                  │ transport metho ......                                       │
+│                             │                  │          │        │                            │                                  │ https://avd.aquasec.com/nvd/cve-2019-3462                    │
+│                             ├──────────────────┼──────────┤        │                            ├──────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                             │ CVE-2020-3810    │ MEDIUM   │        │                            │ 1.0.9.8.6                        │ Missing input validation in the ar/tar implementations of    │
+│                             │                  │          │        │                            │                                  │ APT before v ......                                          │
+│                             │                  │          │        │                            │                                  │ https://avd.aquasec.com/nvd/cve-2020-3810                    │
+├─────────────────────────────┼──────────────────┼──────────┤        ├────────────────────────────┼──────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ bash                        │ CVE-2019-9924    │ HIGH     │        │ 4.3-11+deb8u1              │ 4.3-11+deb8u2                    │ bash: BASH_CMD is writable in restricted bash shells         │
+│                             │                  │          │        │                            │                                  │ https://avd.aquasec.com/nvd/cve-2019-9924                    │
+│                             ├──────────────────┼──────────┤        │                            │                                  ├──────────────────────────────────────────────────────────────┤
+│                             │ CVE-2016-9401    │ MEDIUM   │        │                            │                                  │ bash: popd controlled free                                   │
+│                             │                  │          │        │                            │                                  │ https://avd.aquasec.com/nvd/cve-2016-9401                    │
+├─────────────────────────────┼──────────────────┼──────────┤        ├────────────────────────────┼──────────────────────────────────┼──────────────────────────────────────────────────────────────┤
 ...
 ```
 

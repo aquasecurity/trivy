@@ -43,6 +43,7 @@ trivy rootfs [flags] ROOTDIR
       --helm-values strings              specify paths to override the Helm values.yaml files
   -h, --help                             help for rootfs
       --ignore-policy string             specify the Rego file path to evaluate each vulnerability
+      --ignore-status strings            comma-separated list of vulnerability status to ignore (unknown,not_affected,affected,fixed,under_investigation,will_not_fix,fix_deferred,end_of_life)
       --ignore-unfixed                   display only fixed vulnerabilities
       --ignored-licenses strings         specify a list of license to ignore
       --ignorefile string                specify .trivyignore file (default ".trivyignore")

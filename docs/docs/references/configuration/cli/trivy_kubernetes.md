@@ -50,6 +50,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --helm-values strings               specify paths to override the Helm values.yaml files
   -h, --help                              help for kubernetes
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
+      --ignore-status strings             comma-separated list of vulnerability status to ignore (unknown,not_affected,affected,fixed,under_investigation,will_not_fix,fix_deferred,end_of_life)
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
