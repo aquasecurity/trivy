@@ -78,12 +78,16 @@ func BuildVersionInfo(appVersion string, cacheDir string) VersionInfo {
 		log.Logger.Debugw("Failed to instantiate policy client", "error", err)
 	}
 	if pc != nil && err == nil {
-		pbMeta, err = pc.GetMetadata()
+		pbMetaRaw, err := pc.GetMetadata()
 
 		if err != nil {
 			log.Logger.Debugw("Failed to get policy metadata", "error", err)
+		} else {
+			pbMeta = &policy.Metadata{
+				Digest:       pbMetaRaw.Digest,
+				DownloadedAt: pbMetaRaw.DownloadedAt.UTC(),
+			}
 		}
-		pbMeta.DownloadedAt = pbMeta.DownloadedAt.UTC()
 	}
 
 	return VersionInfo{
