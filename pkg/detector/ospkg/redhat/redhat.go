@@ -181,7 +181,6 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 		// patched vulnerabilities
 		fixedVersion := version.NewVersion(adv.FixedVersion)
 		if installedVersion.LessThan(fixedVersion) {
-			vuln.Status = dbTypes.StatusFixed
 			vuln.VendorIDs = adv.VendorIDs
 			vuln.FixedVersion = fixedVersion.String()
 

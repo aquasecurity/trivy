@@ -134,7 +134,6 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 			}
 
 			if sourceVersion.LessThan(fixedVersion) {
-				vuln.Status = dbTypes.StatusFixed
 				vulns = append(vulns, vuln)
 			}
 		}

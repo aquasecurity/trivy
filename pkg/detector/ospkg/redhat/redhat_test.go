@@ -84,7 +84,6 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
 					FixedVersion:     "2:7.4.160-6.el7_6",
-					Status:           dbTypes.StatusFixed,
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
@@ -130,7 +129,6 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
 					FixedVersion:     "3.36.0-9.el7_6",
-					Status:           dbTypes.StatusFixed,
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
@@ -145,7 +143,6 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
 					FixedVersion:     "3.53.1-17.el7_3",
-					Status:           dbTypes.StatusFixed,
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
@@ -191,7 +188,6 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "kernel-headers",
 					InstalledVersion: "3.10.0-1127.19-1.el7",
 					FixedVersion:     "4.5.0-15.2.1.el7",
-					Status:           dbTypes.StatusFixed,
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
@@ -237,7 +233,6 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "kernel-headers",
 					InstalledVersion: "3.10.0-326.36-3.el7",
 					FixedVersion:     "3.10.0-327.36.3.el7",
-					Status:           dbTypes.StatusFixed,
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
@@ -273,7 +268,6 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el8",
 					FixedVersion:     "2:7.4.160-7.el8_7",
-					Status:           dbTypes.StatusFixed,
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
@@ -316,7 +310,6 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "php",
 					InstalledVersion: "7.2.10-1.module_el8.2.0+313+b04d0a66",
 					FixedVersion:     "7.2.11-1.1.module+el8.0.0+4664+17bd8d65",
-					Status:           dbTypes.StatusFixed,
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityCritical.String(),
