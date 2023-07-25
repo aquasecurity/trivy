@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -15,8 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
-	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	javadb "github.com/aquasecurity/trivy-java-db/pkg/db"
+
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
@@ -27,18 +25,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
-
-// VersionInfo holds the trivy DB version Info
-type VersionInfo struct {
-	Version         string             `json:",omitempty"`
-	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
-	JavaDB          *metadata.Metadata `json:",omitempty"`
-	PolicyBundle    *policy.Metadata   `json:",omitempty"`
-}
 
 const (
 	usageTemplate = `Usage:{{if .Runnable}}
@@ -742,7 +732,7 @@ func NewPluginCommand() *cobra.Command {
 				if err != nil {
 					return xerrors.Errorf("plugin list display error: %w", err)
 				}
-				if _, err = fmt.Fprintf(os.Stdout, info); err != nil {
+				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
 					return xerrors.Errorf("print error: %w", err)
 				}
 				return nil
@@ -759,7 +749,7 @@ func NewPluginCommand() *cobra.Command {
 				if err != nil {
 					return xerrors.Errorf("plugin information display error: %w", err)
 				}
-				if _, err = fmt.Fprintf(os.Stdout, info); err != nil {
+				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
 					return xerrors.Errorf("print error: %w", err)
 				}
 				return nil
@@ -1173,84 +1163,14 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func showVersion(cacheDir, outputFormat, version string, w io.Writer) error {
-	var dbMeta *metadata.Metadata
-	var javadbMeta *metadata.Metadata
-
-	mc := metadata.NewClient(cacheDir)
-	meta, err := mc.Get()
-	if err != nil {
-		log.Logger.Debugw("Failed to get DB metadata", "error", err)
-	}
-	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
-		dbMeta = &metadata.Metadata{
-			Version:      meta.Version,
-			NextUpdate:   meta.NextUpdate.UTC(),
-			UpdatedAt:    meta.UpdatedAt.UTC(),
-			DownloadedAt: meta.DownloadedAt.UTC(),
-		}
-	}
-
-	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
-	metaJava, err := mcJava.Get()
-	if err != nil {
-		log.Logger.Debugw("Failed to get Java DB metadata", "error", err)
-	}
-	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
-		javadbMeta = &metadata.Metadata{
-			Version:      metaJava.Version,
-			NextUpdate:   metaJava.NextUpdate.UTC(),
-			UpdatedAt:    metaJava.UpdatedAt.UTC(),
-			DownloadedAt: metaJava.DownloadedAt.UTC(),
-		}
-	}
-
-	var pbMeta *policy.Metadata
-	pc, err := policy.NewClient(cacheDir, false)
-	if pc != nil && err == nil {
-		pbMeta, err = pc.GetMetadata()
-		if err != nil {
-			log.Logger.Debugw("Failed to get policy metadata", "error", err)
-		}
-	}
-
+	versionInfo := utils.BuildVersionInfo(version, cacheDir)
 	switch outputFormat {
 	case "json":
-		err = json.NewEncoder(w).Encode(VersionInfo{
-			Version:         version,
-			VulnerabilityDB: dbMeta,
-			JavaDB:          javadbMeta,
-			PolicyBundle:    pbMeta,
-		})
-		if err != nil {
+		if err := json.NewEncoder(w).Encode(versionInfo); err != nil {
 			return xerrors.Errorf("json encode error: %w", err)
 		}
 	default:
-		output := fmt.Sprintf("Version: %s\n", version)
-		if dbMeta != nil {
-			output += fmt.Sprintf(`Vulnerability DB:
-  Version: %d
-  UpdatedAt: %s
-  NextUpdate: %s
-  DownloadedAt: %s
-`, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
-		}
-
-		if javadbMeta != nil {
-			output += fmt.Sprintf(`Java DB:
-  Version: %d
-  UpdatedAt: %s
-  NextUpdate: %s
-  DownloadedAt: %s
-`, javadbMeta.Version, javadbMeta.UpdatedAt.UTC(), javadbMeta.NextUpdate.UTC(), javadbMeta.DownloadedAt.UTC())
-		}
-
-		if pbMeta != nil {
-			output += fmt.Sprintf(`Policy Bundle:
-  Digest: %s
-  DownloadedAt: %s
-`, pbMeta.Digest, pbMeta.DownloadedAt.UTC())
-		}
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, versionInfo.String())
 	}
 	return nil
 }
