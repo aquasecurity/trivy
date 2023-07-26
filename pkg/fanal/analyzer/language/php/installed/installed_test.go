@@ -11,10 +11,11 @@ import (
 
 func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name            string
+		inputFile       string
+		includeChecksum bool
+		want            *analyzer.AnalysisResult
+		wantErr         string
 	}{
 		{
 			name:      "happy path",
@@ -22,7 +23,7 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.Composer,
+						Type:     types.ComposerInstalled,
 						FilePath: "testdata/happy/installed.json",
 						Libraries: []types.Package{
 							{
@@ -31,6 +32,7 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 								Version:  "1.13.3",
 								Indirect: false,
 								Licenses: []string{"MIT"},
+								FilePath: "testdata/happy/installed.json",
 								Locations: []types.Location{
 									{
 										StartLine: 3,
@@ -45,6 +47,53 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 								Version:  "v1.0.2",
 								Indirect: false,
 								Licenses: []string{"BSD-2-Clause"},
+								FilePath: "testdata/happy/installed.json",
+								Locations: []types.Location{
+									{
+										StartLine: 66,
+										EndLine:   127,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:            "happy path with digest",
+			inputFile:       "testdata/happy/installed.json",
+			includeChecksum: true,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.ComposerInstalled,
+						FilePath: "testdata/happy/installed.json",
+						Libraries: []types.Package{
+							{
+								ID:       "pear/log@1.13.3",
+								Name:     "pear/log",
+								Version:  "1.13.3",
+								Indirect: false,
+								Licenses: []string{"MIT"},
+								FilePath: "testdata/happy/installed.json",
+								Digest:   "sha1:2d78baf5784998fcaebf94928bc74d41d83f58b3",
+								Locations: []types.Location{
+									{
+										StartLine: 3,
+										EndLine:   65,
+									},
+								},
+								DependsOn: []string{"pear/pear_exception@v1.0.2"},
+							},
+							{
+								ID:       "pear/pear_exception@v1.0.2",
+								Name:     "pear/pear_exception",
+								Version:  "v1.0.2",
+								Indirect: false,
+								Licenses: []string{"BSD-2-Clause"},
+								FilePath: "testdata/happy/installed.json",
+								Digest:   "sha1:2d78baf5784998fcaebf94928bc74d41d83f58b3",
 								Locations: []types.Location{
 									{
 										StartLine: 66,
@@ -77,6 +126,7 @@ func Test_composerInstalledAnalyzer_Analyze(t *testing.T) {
 			got, err := a.Analyze(nil, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
+				Options:  analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {
@@ -100,11 +150,6 @@ func Test_composerInstalledAnalyzer_Required(t *testing.T) {
 			name:     "happy path",
 			filePath: "app/vendor/composer/installed.json",
 			want:     true,
-		},
-		{
-			name:     "without `vendor/composer` dir",
-			filePath: "installed.json",
-			want:     false,
 		},
 		{
 			name:     "sad path",
