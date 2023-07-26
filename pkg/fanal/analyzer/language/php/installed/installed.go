@@ -23,7 +23,7 @@ const (
 type composerInstalledAnalyzer struct{}
 
 func (a composerInstalledAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	return language.AnalyzePackage(types.ComposerInstalled, input.FilePath, input.Content, composer.NewParser(), input.Options.FileChecksum)
+	return language.Analyze(types.ComposerInstalled, input.FilePath, input.Content, composer.NewParser())
 }
 
 func (a composerInstalledAnalyzer) Required(filePath string, _ os.FileInfo) bool {
