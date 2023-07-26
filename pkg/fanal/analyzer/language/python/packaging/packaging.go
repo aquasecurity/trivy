@@ -84,22 +84,20 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 
 			r = pkginfoInZip
 		}
-		app, err := a.parse(path, r)
+		app, err := a.parse(path, r, input.Options.FileChecksum)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
 			return nil
 		}
 
+		if err := a.fillAdditionalData(input.FS, app); err != nil {
+			log.Logger.Warnf("Unable to collect additional info: %s", err)
+		}
+
 		apps = append(apps, *app)
 		return nil
 	})
-
-	for i := range apps {
-		if err := a.fillAdditionalData(input.FS, &apps[i]); err != nil {
-			log.Logger.Warnf("Unable to collect additional info: %s", err)
-		}
-	}
 
 	if err != nil {
 		return nil, xerrors.Errorf("python package walk error: %w", err)
@@ -164,8 +162,8 @@ func classifyLicense(dir string, licPath string, classifierConfidenceLevel float
 	return l.Findings, nil
 }
 
-func (a packagingAnalyzer) parse(path string, r dio.ReadSeekerAt) (*types.Application, error) {
-	return language.Parse(types.PythonPkg, path, r, a.pkgParser)
+func (a packagingAnalyzer) parse(path string, r dio.ReadSeekerAt, checksum bool) (*types.Application, error) {
+	return language.ParsePackage(types.PythonPkg, path, r, a.pkgParser, checksum)
 }
 
 func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSeekerAt, error) {
