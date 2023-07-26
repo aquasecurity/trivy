@@ -26,7 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/version"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -62,9 +62,9 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 )
 
 // NewApp is the factory method to return Trivy CLI
-func NewApp(version string) *cobra.Command {
+func NewApp(appVersion string) *cobra.Command {
 	globalFlags := flag.NewGlobalFlagGroup()
-	rootCmd := NewRootCommand(version, globalFlags)
+	rootCmd := NewRootCommand(appVersion, globalFlags)
 	rootCmd.AddGroup(
 		&cobra.Group{
 			ID:    groupScanning,
@@ -151,7 +151,7 @@ func initConfig(configFile string) error {
 	return nil
 }
 
-func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+func NewRootCommand(appVersion string, globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	var versionFormat string
 	cmd := &cobra.Command{
 		Use:   "trivy [global flags] command [flags] target",
@@ -171,7 +171,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 		Args: cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			// Set the Trivy version here so that we can override version printer.
-			cmd.Version = version
+			cmd.Version = appVersion
 
 			// viper.BindPFlag cannot be called in init().
 			// cf. https://github.com/spf13/cobra/issues/875
@@ -203,7 +203,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 			globalOptions := globalFlags.ToOptions()
 			if globalOptions.ShowVersion {
 				// Customize version output
-				return showVersion(globalOptions.CacheDir, versionFormat, version, cmd.OutOrStdout())
+				return showVersion(globalOptions.CacheDir, versionFormat, appVersion, cmd.OutOrStdout())
 			} else {
 				return cmd.Help()
 			}
@@ -1162,8 +1162,8 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
-func showVersion(cacheDir, outputFormat, version string, w io.Writer) error {
-	versionInfo := utils.BuildVersionInfo(version, cacheDir)
+func showVersion(cacheDir, outputFormat, appVersion string, w io.Writer) error {
+	versionInfo := version.BuildVersionInfo(appVersion, cacheDir)
 	switch outputFormat {
 	case "json":
 		if err := json.NewEncoder(w).Encode(versionInfo); err != nil {

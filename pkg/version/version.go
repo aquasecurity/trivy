@@ -10,6 +10,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/policy"
 )
 
+var (
+	Version = "dev"
+)
+
 type VersionInfo struct {
 	Version         string             `json:",omitempty"`
 	VulnerabilityDB *metadata.Metadata `json:",omitempty"`

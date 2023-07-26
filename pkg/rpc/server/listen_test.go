@@ -22,8 +22,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/policy"
-	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/aquasecurity/trivy/pkg/version"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
@@ -297,10 +297,10 @@ func Test_VersionEndpoint(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	var versionInfo utils.VersionInfo
+	var versionInfo version.VersionInfo
 	require.NoError(t, json.NewDecoder(resp.Body).Decode(&versionInfo))
 
-	expected := utils.VersionInfo{
+	expected := version.VersionInfo{
 		Version: appVersion,
 		VulnerabilityDB: &metadata.Metadata{
 			Version:      2,

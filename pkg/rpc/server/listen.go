@@ -18,8 +18,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/aquasecurity/trivy/pkg/version"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -109,7 +109,7 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
-		if err := json.NewEncoder(w).Encode(utils.BuildVersionInfo(appVersion, cacheDir)); err != nil {
+		if err := json.NewEncoder(w).Encode(version.BuildVersionInfo(appVersion, cacheDir)); err != nil {
 			log.Logger.Errorf("get version error: %s", err)
 		}
 	})
