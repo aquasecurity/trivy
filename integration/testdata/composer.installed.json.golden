@@ -32,6 +32,7 @@
             "ralouphie/getallheaders@3.0.3"
           ],
           "Layer": {},
+          "FilePath": "installed.json",
           "Locations": [
             {
               "StartLine": 3,
@@ -47,6 +48,7 @@
             "MIT"
           ],
           "Layer": {},
+          "FilePath": "installed.json",
           "Locations": [
             {
               "StartLine": 116,
@@ -62,6 +64,7 @@
             "MIT"
           ],
           "Layer": {},
+          "FilePath": "installed.json",
           "Locations": [
             {
               "StartLine": 172,
@@ -75,6 +78,7 @@
           "VulnerabilityID": "CVE-2022-24775",
           "PkgID": "guzzlehttp/psr7@1.8.3",
           "PkgName": "guzzlehttp/psr7",
+          "PkgPath": "installed.json",
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
           "Layer": {},
