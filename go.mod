@@ -400,3 +400,5 @@ require (
 
 // oras 1.2.2 is incompatible with github.com/docker/docker v23.0.0-rc.1+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.2.3
+
+replace github.com/aquasecurity/trivy-db => github.com/knqyf263/trivy-db v0.0.0-20230724141103-6dde4f3b3952

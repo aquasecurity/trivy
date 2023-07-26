@@ -66,6 +66,7 @@
           "PkgName": "libopenssl1_1",
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:5c5a844f54abd051851758624820ae6a08a9d6ddffddaebbb335601c32608fb3",
             "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
@@ -91,6 +92,7 @@
           "PkgName": "openssl-1_1",
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:5c5a844f54abd051851758624820ae6a08a9d6ddffddaebbb335601c32608fb3",
             "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"

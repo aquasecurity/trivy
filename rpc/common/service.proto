@@ -109,6 +109,7 @@ message Vulnerability {
   map<string, Severity>     vendor_severity      = 21;
   string                    pkg_path             = 22;
   string                    pkg_id               = 23;
+  int32                     status               = 24;
 }
 
 message DataSource {
