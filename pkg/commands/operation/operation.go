@@ -152,14 +152,14 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 	mu.Lock()
 	defer mu.Unlock()
 
-	client, err := policy.NewClient(cacheDir, quiet)
+	client, err := policy.NewClient(cacheDir, quiet, policyBundleRepository)
 	if err != nil {
 		return nil, xerrors.Errorf("policy client error: %w", err)
 	}
 
 	needsUpdate := false
 	if !skipUpdate {
-		needsUpdate, err = client.NeedsUpdate(ctx, policyBundleRepository)
+		needsUpdate, err = client.NeedsUpdate(ctx)
 		if err != nil {
 			return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
 		}
@@ -168,7 +168,7 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 	if needsUpdate {
 		log.Logger.Info("Need to update the built-in policies")
 		log.Logger.Info("Downloading the built-in policies...")
-		if err = client.DownloadBuiltinPolicies(ctx, policyBundleRepository); err != nil {
+		if err = client.DownloadBuiltinPolicies(ctx); err != nil {
 			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
 		}
 	}

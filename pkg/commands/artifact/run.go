@@ -372,7 +372,7 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	if opts.ResetPolicyBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true)
+		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.PolicyBundleRepository)
 		if err != nil {
 			return xerrors.Errorf("failed to instantiate policy client: %w", err)
 		}

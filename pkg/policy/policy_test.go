@@ -119,7 +119,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			art, err := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
-			c, err := policy.NewClient(tt.cacheDir, true, policy.WithOCIArtifact(art))
+			c, err := policy.NewClient(tt.cacheDir, true, "", policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
 			got, err := c.LoadBuiltinPolicies()
@@ -260,11 +260,11 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			art, err := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
-			c, err := policy.NewClient(tmpDir, true, policy.WithOCIArtifact(art), policy.WithClock(tt.clock))
+			c, err := policy.NewClient(tmpDir, true, "", policy.WithOCIArtifact(art), policy.WithClock(tt.clock))
 			require.NoError(t, err)
 
 			// Assert results
-			got, err := c.NeedsUpdate(context.Background(), "")
+			got, err := c.NeedsUpdate(context.Background())
 			assert.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, got)
 		})
@@ -364,10 +364,10 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			art, err := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
-			c, err := policy.NewClient(tempDir, true, policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
+			c, err := policy.NewClient(tempDir, true, "", policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
-			err = c.DownloadBuiltinPolicies(context.Background(), "")
+			err = c.DownloadBuiltinPolicies(context.Background())
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -394,7 +394,7 @@ func TestClient_Clear(t *testing.T) {
 	err := os.MkdirAll(filepath.Join(cacheDir, "policy"), 0755)
 	require.NoError(t, err)
 
-	c, err := policy.NewClient(cacheDir, true)
+	c, err := policy.NewClient(cacheDir, true, "")
 	require.NoError(t, err)
 	require.NoError(t, c.Clear())
 }

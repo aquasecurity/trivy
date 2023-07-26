@@ -49,8 +49,9 @@ type Option func(*options)
 // Client implements policy operations
 type Client struct {
 	*options
-	policyDir string
-	quiet     bool
+	policyDir        string
+	policyBundleRepo string
+	quiet            bool
 }
 
 // Metadata holds default policy metadata
@@ -60,7 +61,7 @@ type Metadata struct {
 }
 
 // NewClient is the factory method for policy client
-func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
+func NewClient(cacheDir string, quiet bool, policyBundleRepo string, opts ...Option) (*Client, error) {
 	o := &options{
 		clock: clock.RealClock{},
 	}
@@ -69,20 +70,22 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
 		opt(o)
 	}
 
+	if policyBundleRepo == "" {
+		policyBundleRepo = fmt.Sprintf("%s:%d", BundleRepository, BundleVersion)
+	}
+
 	return &Client{
-		options:   o,
-		policyDir: filepath.Join(cacheDir, "policy"),
-		quiet:     quiet,
+		options:          o,
+		policyDir:        filepath.Join(cacheDir, "policy"),
+		policyBundleRepo: policyBundleRepo,
+		quiet:            quiet,
 	}, nil
 }
 
-func (c *Client) populateOCIArtifact(policyBundleRepository string) error {
+func (c *Client) populateOCIArtifact() error {
 	if c.artifact == nil {
-		if policyBundleRepository == "" {
-			policyBundleRepository = fmt.Sprintf("%s:%d", BundleRepository, BundleVersion)
-		}
-		log.Logger.Debugf("Using URL: %s to load policy bundle", policyBundleRepository)
-		art, err := oci.NewArtifact(policyBundleRepository, c.quiet, types.RegistryOptions{})
+		log.Logger.Debugf("Using URL: %s to load policy bundle", c.policyBundleRepo)
+		art, err := oci.NewArtifact(c.policyBundleRepo, c.quiet, types.RegistryOptions{})
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
@@ -92,8 +95,8 @@ func (c *Client) populateOCIArtifact(policyBundleRepository string) error {
 }
 
 // DownloadBuiltinPolicies download default policies from GitHub Pages
-func (c *Client) DownloadBuiltinPolicies(ctx context.Context, policyBundleRepository string) error {
-	if err := c.populateOCIArtifact(policyBundleRepository); err != nil {
+func (c *Client) DownloadBuiltinPolicies(ctx context.Context) error {
+	if err := c.populateOCIArtifact(); err != nil {
 		return xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
@@ -144,7 +147,7 @@ func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 }
 
 // NeedsUpdate returns if the default policy should be updated
-func (c *Client) NeedsUpdate(ctx context.Context, policyBundleRepository string) (bool, error) {
+func (c *Client) NeedsUpdate(ctx context.Context) (bool, error) {
 	meta, err := c.GetMetadata()
 	if err != nil {
 		return true, nil
@@ -155,7 +158,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, policyBundleRepository string)
 		return false, nil
 	}
 
-	if err = c.populateOCIArtifact(policyBundleRepository); err != nil {
+	if err = c.populateOCIArtifact(); err != nil {
 		return false, xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
