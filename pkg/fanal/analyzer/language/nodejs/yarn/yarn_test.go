@@ -26,7 +26,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
@@ -135,7 +135,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
@@ -238,7 +238,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
@@ -268,7 +268,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "is-number@6.0.0",
 								Name:     "is-number",

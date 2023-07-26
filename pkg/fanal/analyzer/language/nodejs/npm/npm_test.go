@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -34,7 +33,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Npm,
 						FilePath: "package-lock.json",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "ansi-colors@3.2.3",
 								Name:     "ansi-colors",
@@ -149,7 +148,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Npm,
 						FilePath: "package-lock.json",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "ms@2.1.1",
 								Name:     "ms",
@@ -184,30 +183,11 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 
 			assert.NoError(t, err)
 			if len(got.Applications) > 0 {
-				sortPkgs(got.Applications[0].Libraries)
+				sort.Sort(got.Applications[0].Libraries)
 			}
 			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-
-func sortPkgs(libs []types.Package) {
-	sort.Slice(libs, func(i, j int) bool {
-		ret := strings.Compare(libs[i].Name, libs[j].Name)
-		if ret == 0 {
-			return libs[i].Version < libs[j].Version
-		}
-		return ret < 0
-	})
-	for _, lib := range libs {
-		sortLocations(lib.Locations)
-	}
-}
-
-func sortLocations(locs []types.Location) {
-	sort.Slice(locs, func(i, j int) bool {
-		return locs[i].StartLine < locs[j].StartLine
-	})
 }
 
 func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
