@@ -55,6 +55,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 								Version:  "0.3.1",
 								Licenses: []string{"Python license"},
 								FilePath: "distlib-0.3.1.egg-info/PKG-INFO",
+								Digest:   "sha1:d9d89d8ed3b2b683767c96814c9c5d3e57ef2e1b",
 							},
 						},
 					},
@@ -154,6 +155,9 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
+				Options: analyzer.AnalysisOptions{
+					FileChecksum: tt.includeChecksum,
+				},
 			})
 
 			if tt.wantErr != "" {
