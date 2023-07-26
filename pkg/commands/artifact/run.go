@@ -372,7 +372,7 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	if opts.ResetPolicyBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true)
+		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.PolicyBundleRepository)
 		if err != nil {
 			return xerrors.Errorf("failed to instantiate policy client: %w", err)
 		}
@@ -566,7 +566,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 		var downloadedPolicyPaths []string
 		var disableEmbedded bool
-		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate)
+		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate, opts.MisconfOptions.PolicyBundleRepository)
 		if err != nil {
 			if !opts.SkipPolicyUpdate {
 				log.Logger.Errorf("Falling back to embedded policies: %s", err)
