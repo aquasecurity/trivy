@@ -254,7 +254,7 @@ func Test_newServeMux(t *testing.T) {
 			defer func() { _ = c.Close() }()
 
 			ts := httptest.NewServer(newServeMux(
-				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader, "", ""),
+				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader, ""),
 			)
 			defer ts.Close()
 
@@ -284,10 +284,8 @@ func Test_VersionEndpoint(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = c.Close() }()
 
-	appVersion := "dev-test"
-
 	ts := httptest.NewServer(newServeMux(
-		c, dbUpdateWg, requestWg, "", "", appVersion, "testdata/testcache"),
+		c, dbUpdateWg, requestWg, "", "", "testdata/testcache"),
 	)
 	defer ts.Close()
 
@@ -301,7 +299,7 @@ func Test_VersionEndpoint(t *testing.T) {
 	require.NoError(t, json.NewDecoder(resp.Body).Decode(&versionInfo))
 
 	expected := version.VersionInfo{
-		Version: appVersion,
+		Version: "dev",
 		VulnerabilityDB: &metadata.Metadata{
 			Version:      2,
 			NextUpdate:   time.Date(2023, 7, 20, 18, 11, 37, 696263532, time.UTC),

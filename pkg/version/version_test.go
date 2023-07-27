@@ -10,10 +10,9 @@ import (
 )
 
 func Test_BuildVersionInfo(t *testing.T) {
-	appVersion := "dev-test"
 
 	expected := VersionInfo{
-		Version: appVersion,
+		Version: "dev",
 		VulnerabilityDB: &metadata.Metadata{
 			Version:      2,
 			NextUpdate:   time.Date(2023, 7, 20, 18, 11, 37, 696263532, time.UTC),
@@ -31,11 +30,11 @@ func Test_BuildVersionInfo(t *testing.T) {
 			DownloadedAt: time.Date(2023, 7, 23, 16, 40, 33, 122462000, time.UTC),
 		},
 	}
-	assert.Equal(t, expected, BuildVersionInfo(appVersion, "testdata/testcache"))
+	assert.Equal(t, expected, NewVersionInfo("testdata/testcache"))
 }
 
 func Test_VersionInfoString(t *testing.T) {
-	expected := `Version: dev-test
+	expected := `Version: dev
 Vulnerability DB:
   Version: 2
   UpdatedAt: 2023-07-20 12:11:37.696263932 +0000 UTC
@@ -50,6 +49,6 @@ Policy Bundle:
   Digest: sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43
   DownloadedAt: 2023-07-23 16:40:33.122462 +0000 UTC
 `
-	versionInfo := BuildVersionInfo("dev-test", "testdata/testcache")
+	versionInfo := NewVersionInfo("testdata/testcache")
 	assert.Equal(t, expected, versionInfo.String())
 }

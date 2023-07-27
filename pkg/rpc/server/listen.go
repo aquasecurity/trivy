@@ -68,14 +68,14 @@ func (s Server) ListenAndServe(serverCache cache.Cache, skipDBUpdate bool) error
 		}
 	}()
 
-	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.appVersion, s.cacheDir)
+	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.cacheDir)
 	log.Logger.Infof("Listening %s...", s.addr)
 
 	return http.ListenAndServe(s.addr, mux)
 }
 
 func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
-	token, tokenHeader, appVersion, cacheDir string) *http.ServeMux {
+	token, tokenHeader, cacheDir string) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Stop processing requests during DB update
@@ -109,7 +109,7 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
-		if err := json.NewEncoder(w).Encode(version.BuildVersionInfo(appVersion, cacheDir)); err != nil {
+		if err := json.NewEncoder(w).Encode(version.NewVersionInfo(cacheDir)); err != nil {
 			log.Logger.Errorf("get version error: %s", err)
 		}
 	})

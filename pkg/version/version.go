@@ -11,8 +11,12 @@ import (
 )
 
 var (
-	Version = "dev"
+	ver = "dev"
 )
+
+func AppVersion() string {
+	return ver
+}
 
 type VersionInfo struct {
 	Version         string             `json:",omitempty"`
@@ -21,7 +25,7 @@ type VersionInfo struct {
 	PolicyBundle    *policy.Metadata   `json:",omitempty"`
 }
 
-func formatDbMetadata(title string, meta metadata.Metadata) string {
+func formatDBMetadata(title string, meta metadata.Metadata) string {
 	return fmt.Sprintf(`%s:
   Version: %d
   UpdatedAt: %s
@@ -33,10 +37,10 @@ func formatDbMetadata(title string, meta metadata.Metadata) string {
 func (v *VersionInfo) String() string {
 	output := fmt.Sprintf("Version: %s\n", v.Version)
 	if v.VulnerabilityDB != nil {
-		output += formatDbMetadata("Vulnerability DB", *v.VulnerabilityDB)
+		output += formatDBMetadata("Vulnerability DB", *v.VulnerabilityDB)
 	}
 	if v.JavaDB != nil {
-		output += formatDbMetadata("Java DB", *v.JavaDB)
+		output += formatDBMetadata("Java DB", *v.JavaDB)
 	}
 	if v.PolicyBundle != nil {
 		output += v.PolicyBundle.String()
@@ -44,7 +48,7 @@ func (v *VersionInfo) String() string {
 	return output
 }
 
-func BuildVersionInfo(appVersion string, cacheDir string) VersionInfo {
+func NewVersionInfo(cacheDir string) VersionInfo {
 	var dbMeta *metadata.Metadata
 	var javadbMeta *metadata.Metadata
 
@@ -95,7 +99,7 @@ func BuildVersionInfo(appVersion string, cacheDir string) VersionInfo {
 	}
 
 	return VersionInfo{
-		Version:         appVersion,
+		Version:         ver,
 		VulnerabilityDB: dbMeta,
 		JavaDB:          javadbMeta,
 		PolicyBundle:    pbMeta,

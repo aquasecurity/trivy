@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/version"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
@@ -439,10 +440,10 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 }
 
 // nolint: gocyclo
-func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup) (Options, error) {
+func (f *Flags) ToOptions(args []string, globalFlags *GlobalFlagGroup) (Options, error) {
 	var err error
 	opts := Options{
-		AppVersion:    appVersion,
+		AppVersion:    version.AppVersion(),
 		GlobalOptions: globalFlags.ToOptions(),
 	}
 
