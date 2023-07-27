@@ -201,6 +201,7 @@ var (
 		TypeCocoaPods,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeComposer,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
