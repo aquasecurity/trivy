@@ -1,6 +1,12 @@
 # Global
 *   @knqyf263
 
+# Misconfiguration scanning
+docs/docs/scanner/misconfiguration  @knqyf263 @simar7
+docs/docs/target/aws.md             @knqyf263 @simar7
+pkg/fanal/analyzer/config           @knqyf263 @simar7
+pkg/cloud                           @knqyf263 @simar7
+
 # Helm chart
 helm/trivy/ @chen-keinan
 
