@@ -25,7 +25,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Gradle,
 						FilePath: "testdata/happy.lockfile",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "com.example:example",
 								Version: "0.0.1",

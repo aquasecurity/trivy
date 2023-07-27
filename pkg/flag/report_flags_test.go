@@ -1,26 +1,24 @@
 package flag_test
 
 import (
-	"os"
 	"testing"
-
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestReportFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		format         string
+		format         types.Format
 		template       string
 		dependencyTree bool
 		listAllPkgs    bool
@@ -44,9 +42,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		{
 			name:   "happy default (without flags)",
 			fields: fields{},
-			want: flag.ReportOptions{
-				Output: os.Stdout,
-			},
+			want:   flag.ReportOptions{},
 		},
 		{
 			name: "happy path with an cyclonedx",
@@ -56,9 +52,8 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				listAllPkgs: true,
 			},
 			want: flag.ReportOptions{
-				Output:      os.Stdout,
 				Severities:  []dbTypes.Severity{dbTypes.SeverityCritical},
-				Format:      report.FormatCycloneDX,
+				Format:      types.FormatCycloneDX,
 				ListAllPkgs: true,
 			},
 		},
@@ -76,11 +71,10 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				`Severities: ["CRITICAL"]`,
 			},
 			want: flag.ReportOptions{
-				Output: os.Stdout,
 				Severities: []dbTypes.Severity{
 					dbTypes.SeverityCritical,
 				},
-				Format:      report.FormatCycloneDX,
+				Format:      types.FormatCycloneDX,
 				ListAllPkgs: true,
 			},
 		},
@@ -94,7 +88,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				"'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.",
 			},
 			want: flag.ReportOptions{
-				Output:     os.Stdout,
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				Template:   "@contrib/gitlab.tpl",
 			},
@@ -110,7 +103,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				"'--template' is ignored because '--format json' is specified. Use '--template' option with '--format template' option.",
 			},
 			want: flag.ReportOptions{
-				Output:     os.Stdout,
 				Format:     "json",
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				Template:   "@contrib/gitlab.tpl",
@@ -126,7 +118,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				"'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.",
 			},
 			want: flag.ReportOptions{
-				Output:     os.Stdout,
 				Format:     "template",
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
@@ -143,7 +134,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 			want: flag.ReportOptions{
 				Format:      "table",
-				Output:      os.Stdout,
 				Severities:  []dbTypes.Severity{dbTypes.SeverityLow},
 				ListAllPkgs: true,
 			},
@@ -155,7 +145,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				severities: dbTypes.SeverityLow.String(),
 			},
 			want: flag.ReportOptions{
-				Output: os.Stdout,
 				Compliance: spec.ComplianceSpec{
 					Spec: defsecTypes.Spec{
 						ID:          "0001",
@@ -188,7 +177,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			core, obs := observer.New(level)
 			log.Logger = zap.New(core).Sugar()
 
-			viper.Set(flag.FormatFlag.ConfigName, tt.fields.format)
+			viper.Set(flag.FormatFlag.ConfigName, string(tt.fields.format))
 			viper.Set(flag.TemplateFlag.ConfigName, tt.fields.template)
 			viper.Set(flag.DependencyTreeFlag.ConfigName, tt.fields.dependencyTree)
 			viper.Set(flag.ListAllPkgsFlag.ConfigName, tt.fields.listAllPkgs)
@@ -216,7 +205,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				Compliance:     &flag.ComplianceFlag,
 			}
 
-			got, err := f.ToOptions(os.Stdout)
+			got, err := f.ToOptions()
 			assert.NoError(t, err)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 

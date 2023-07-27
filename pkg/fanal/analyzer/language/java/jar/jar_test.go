@@ -34,7 +34,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.war",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "org.glassfish:javax.el",
 								FilePath: "testdata/test.war/WEB-INF/lib/javax.el-3.0.0.jar",
@@ -89,7 +89,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.par",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par/lib/jackson-core-2.9.10.jar",
@@ -109,7 +109,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.jar",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
 								FilePath: "testdata/test.jar",

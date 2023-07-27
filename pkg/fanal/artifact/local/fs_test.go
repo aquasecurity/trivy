@@ -57,7 +57,7 @@ func TestArtifact_Inspect(t *testing.T) {
 						PackageInfos: []types.PackageInfo{
 							{
 								FilePath: "lib/apk/db/installed",
-								Packages: []types.Package{
+								Packages: types.Packages{
 									{
 										ID:         "musl@1.1.24-r2",
 										Name:       "musl",
@@ -131,7 +131,7 @@ func TestArtifact_Inspect(t *testing.T) {
 						PackageInfos: []types.PackageInfo{
 							{
 								FilePath: "lib/apk/db/installed",
-								Packages: []types.Package{
+								Packages: types.Packages{
 									{
 										ID:         "musl@1.1.24-r2",
 										Name:       "musl",
@@ -174,7 +174,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "pip",
 								FilePath: "requirements.txt",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
@@ -209,7 +209,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "pip",
 								FilePath: "requirements.txt",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "Flask",
 										Version: "2.0.0",

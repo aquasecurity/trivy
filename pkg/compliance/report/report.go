@@ -15,13 +15,10 @@ import (
 const (
 	allReport     = "all"
 	summaryReport = "summary"
-
-	tableFormat = "table"
-	jsonFormat  = "json"
 )
 
 type Option struct {
-	Format        string
+	Format        types.Format
 	Report        string
 	Output        io.Writer
 	Severities    []dbTypes.Severity
@@ -70,10 +67,10 @@ type Writer interface {
 // Write writes the results in the give format
 func Write(report *ComplianceReport, option Option) error {
 	switch option.Format {
-	case jsonFormat:
+	case types.FormatJSON:
 		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
 		return jwriter.Write(report)
-	case tableFormat:
+	case types.FormatTable:
 		if !report.empty() {
 			complianceWriter := &TableWriter{
 				Output:     option.Output,

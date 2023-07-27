@@ -31,7 +31,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Packages: []ftypes.PackageInfo{
 					{
-						Packages: []ftypes.Package{
+						Packages: ftypes.Packages{
 							{
 								Name:       "musl",
 								Version:    "1.2.3-r0",
@@ -50,7 +50,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "app/composer/composer.lock",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -73,7 +73,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "gobinary",
 						FilePath: "app/gobinary/gobinary",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "github.com/package-url/packageurl-go",
 								Version: "v0.1.1-0.20220203205134-d70459300c8a",
@@ -86,7 +86,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					},
 					{
 						Type: "jar",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "org.codehaus.mojo:child-project",
 								Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0",
@@ -99,7 +99,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					},
 					{
 						Type: "node-pkg",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:     "bootstrap",
 								Version:  "5.0.2",
@@ -121,7 +121,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: "node-pkg",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								ID:       "yargs-parser@21.1.1",
 								Name:     "yargs-parser",
@@ -142,7 +142,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: "node-pkg",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								ID:       "yargs-parser@21.1.1",
 								Name:     "yargs-parser",
@@ -163,7 +163,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: "node-pkg",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								ID:       "yargs-parser@21.1.1",
 								Name:     "yargs-parser",
@@ -185,7 +185,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "app/composer/composer.lock",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -209,7 +209,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: ftypes.Jar,
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent",

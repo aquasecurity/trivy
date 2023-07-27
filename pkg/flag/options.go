@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -18,13 +17,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
-
-type String interface {
-	~string
-}
 
 type Flag struct {
 	// Name is for CLI flag and environment variable.
@@ -120,18 +117,18 @@ type Options struct {
 
 // Align takes consistency of options
 func (o *Options) Align() {
-	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
+	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
 		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
 		o.Scanners = nil
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == report.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
+	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
 		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
 		o.Scanners = nil
 	}
 
-	if o.Format == report.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
+	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
 		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning`)
 		o.Scanners = nil
 	}
@@ -152,7 +149,7 @@ func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 func (o *Options) FilterOpts() result.FilterOption {
 	return result.FilterOption{
 		Severities:         o.Severities,
-		IgnoreUnfixed:      o.IgnoreUnfixed,
+		IgnoreStatuses:     o.IgnoreStatuses,
 		IncludeNonFailures: o.IncludeNonFailures,
 		IgnoreFile:         o.IgnoreFile,
 		PolicyFile:         o.IgnorePolicy,
@@ -161,19 +158,17 @@ func (o *Options) FilterOpts() result.FilterOption {
 	}
 }
 
-func (o *Options) ReportOpts() report.Option {
-	return report.Option{
-		AppVersion:         o.AppVersion,
-		Format:             o.Format,
-		Output:             o.Output,
-		Tree:               o.DependencyTree,
-		Severities:         o.Severities,
-		OutputTemplate:     o.Template,
-		IncludeNonFailures: o.IncludeNonFailures,
-		Trace:              o.Trace,
-		Report:             o.ReportFormat,
-		Compliance:         o.Compliance,
+// OutputWriter returns an output writer.
+// If the output file is not specified, it returns os.Stdout.
+func (o *Options) OutputWriter() (io.WriteCloser, error) {
+	if o.Output != "" {
+		f, err := os.Create(o.Output)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to create output file: %w", err)
+		}
+		return f, nil
 	}
+	return xio.NopCloser(os.Stdout), nil
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {
@@ -268,6 +263,11 @@ func getString(flag *Flag) string {
 	return cast.ToString(getValue(flag))
 }
 
+func getUnderlyingString[T xstrings.String](flag *Flag) T {
+	s := getString(flag)
+	return T(s)
+}
+
 func getStringSlice(flag *Flag) []string {
 	// viper always returns a string for ENV
 	// https://github.com/spf13/viper/blob/419fd86e49ef061d0d33f4d1d56d5e2a480df5bb/viper.go#L545-L553
@@ -283,14 +283,12 @@ func getStringSlice(flag *Flag) []string {
 	return v
 }
 
-func getUnderlyingStringSlice[T String](flag *Flag) []T {
+func getUnderlyingStringSlice[T xstrings.String](flag *Flag) []T {
 	ss := getStringSlice(flag)
 	if len(ss) == 0 {
 		return nil
 	}
-	return lo.Map(ss, func(s string, _ int) T {
-		return T(s)
-	})
+	return xstrings.ToTSlice[T](ss)
 }
 
 func getInt(flag *Flag) int {
@@ -441,7 +439,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 }
 
 // nolint: gocyclo
-func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup, output io.Writer) (Options, error) {
+func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup) (Options, error) {
 	var err error
 	opts := Options{
 		AppVersion:    appVersion,
@@ -522,7 +520,7 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.ReportFlagGroup != nil {
-		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions(output)
+		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("report flag error: %w", err)
 		}

@@ -59,6 +59,7 @@
           "PkgName": "libcrypto1.1",
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10",
             "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
@@ -119,6 +120,7 @@
           "PkgName": "libcrypto1.1",
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10",
             "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
@@ -189,6 +191,7 @@
           "PkgName": "libssl1.1",
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10",
             "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
@@ -249,6 +252,7 @@
           "PkgName": "libssl1.1",
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10",
             "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
@@ -319,6 +323,7 @@
           "PkgName": "musl",
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10",
             "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
@@ -357,6 +362,7 @@
           "PkgName": "musl-utils",
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10",
             "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"

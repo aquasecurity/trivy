@@ -64,7 +64,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 		if err = a.mergeComposerJson(input.FS, filepath.Dir(path), app); err != nil {
 			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.ComposerJson), err)
 		}
-		sort.Sort(types.Packages(app.Libraries))
+		sort.Sort(app.Libraries)
 		apps = append(apps, *app)
 
 		return nil

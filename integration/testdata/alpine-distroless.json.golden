@@ -54,6 +54,7 @@
           "PkgName": "git",
           "InstalledVersion": "2.35.1-r2",
           "FixedVersion": "2.35.2-r0",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:6c6f69aa25501b090c54c62a9c17e978064c2f1328f67a7ef88c81ce5f2d7983",
             "DiffID": "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92"

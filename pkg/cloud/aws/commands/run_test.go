@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"bytes"
 	"context"
 	"os"
 	"path/filepath"
@@ -1243,8 +1242,8 @@ Summary Report for compliance: my-custom-spec
 				}()
 			}
 
-			buffer := new(bytes.Buffer)
-			test.options.Output = buffer
+			output := filepath.Join(t.TempDir(), "output")
+			test.options.Output = output
 			test.options.Debug = true
 			test.options.GlobalOptions.Timeout = time.Minute
 			if test.options.Format == "" {
@@ -1283,10 +1282,13 @@ Summary Report for compliance: my-custom-spec
 			err := Run(context.Background(), test.options)
 			if test.expectErr {
 				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-				assert.Equal(t, test.want, buffer.String())
+				return
 			}
+			assert.NoError(t, err)
+
+			b, err := os.ReadFile(output)
+			require.NoError(t, err)
+			assert.Equal(t, test.want, string(b))
 		})
 	}
 }
