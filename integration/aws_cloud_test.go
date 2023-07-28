@@ -1,4 +1,4 @@
-// go:build integration
+//go:build integration
 
 package integration
 
@@ -17,7 +17,6 @@ import (
 )
 
 func TestAwsCommandRun(t *testing.T) {
-	t.Setenv("AWS_PROFILE", "trivy-test-localstack")
 	tests := []struct {
 		name    string
 		options flag.Options
