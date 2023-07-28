@@ -239,7 +239,7 @@ func (t Test) Unit() error {
 // Integration runs integration tests
 func (t Test) Integration() error {
 	mg.Deps(t.FixtureContainerImages)
-	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
+	return sh.RunWithV(ENV, "go", "test", "-timeout", "15m", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
 }
 
 // K8s runs k8s integration tests
