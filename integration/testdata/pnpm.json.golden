@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/pnpm",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/pnpm",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

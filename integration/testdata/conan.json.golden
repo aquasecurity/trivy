@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/conan",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/conan",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

@@ -1,6 +1,6 @@
 //go:build unix
 
-package remote
+package repo
 
 import (
 	"context"
@@ -183,7 +183,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			rawurl: ts.URL + "/test.git",
 			want: types.ArtifactReference{
 				Name: ts.URL + "/test.git",
-				Type: types.ArtifactRemoteRepository,
+				Type: types.ArtifactRepository,
 				ID:   "sha256:1fa928c33b16a335015ce96e1384127f8463c4f27ed0786806a6d4584b63d091",
 				BlobIDs: []string{
 					"sha256:1fa928c33b16a335015ce96e1384127f8463c4f27ed0786806a6d4584b63d091",

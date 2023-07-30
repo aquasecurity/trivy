@@ -15,7 +15,7 @@
     "component": {
       "bom-ref": "cd0ebb00-5c53-4b82-a3f7-271add663c51",
       "type": "application",
-      "name": "testdata/fixtures/fs/conda",
+      "name": "testdata/fixtures/repo/conda",
       "properties": [
         {
           "name": "aquasecurity:trivy:SchemaVersion",
