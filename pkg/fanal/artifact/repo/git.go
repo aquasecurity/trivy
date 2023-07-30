@@ -25,7 +25,7 @@ type Artifact struct {
 func NewArtifact(target string, c cache.ArtifactCache, artifactOpt artifact.Option) (
 	artifact.Artifact, func(), error) {
 
-	cleanup := func() {}
+	var cleanup func()
 	var errs error
 
 	// Try the local repository
@@ -38,10 +38,11 @@ func NewArtifact(target string, c cache.ArtifactCache, artifactOpt artifact.Opti
 	// Try the remote git repository
 	art, cleanup, err = tryRemoteRepo(target, c, artifactOpt)
 	if err == nil {
-		return art, func() {}, nil
+		return art, cleanup, nil
 	}
 	errs = multierror.Append(errs, err)
 
+	// Return errors
 	return nil, cleanup, errs
 }
 
@@ -64,6 +65,10 @@ func (Artifact) Clean(_ types.ArtifactReference) error {
 }
 
 func tryLocalRepo(target string, c cache.ArtifactCache, artifactOpt artifact.Option) (artifact.Artifact, error) {
+	if _, err := os.Stat(target); err != nil {
+		return nil, xerrors.Errorf("no such path: %w", err)
+	}
+
 	art, err := local.NewArtifact(target, c, artifactOpt)
 	if err != nil {
 		return nil, xerrors.Errorf("local repo artifact error: %w", err)
