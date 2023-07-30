@@ -154,7 +154,7 @@ func Protoc() error {
 	if err := sh.RunV("bash", "-c", "docker build -t trivy-protoc - < Dockerfile.protoc"); err != nil {
 		return err
 	}
-	return sh.Run("docker", "run", "--rm", "-it", "-v", "${PWD}:/app", "-w", "/app", "trivy-protoc", "mage", "protoc")
+	return sh.Run("docker", "run", "--rm", "-it", "--platform", "linux/x86_64", "-v", "${PWD}:/app", "-w", "/app", "trivy-protoc", "mage", "protoc")
 }
 
 // Yacc generates parser
