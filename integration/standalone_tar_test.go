@@ -418,7 +418,7 @@ func TestTar(t *testing.T) {
 			require.NoError(t, err)
 
 			// Compare want and got
-			compareReports(t, tt.golden, outputFile)
+			compareReports(t, tt.golden, outputFile, nil)
 		})
 	}
 }
@@ -513,7 +513,7 @@ func TestTarWithEnv(t *testing.T) {
 			require.NoError(t, err)
 
 			// Compare want and got
-			compareReports(t, tt.golden, outputFile)
+			compareReports(t, tt.golden, outputFile, nil)
 		})
 	}
 }
@@ -588,7 +588,7 @@ cache:
 			require.NoError(t, err)
 
 			// Compare want and got
-			compareReports(t, tt.golden, outputFile)
+			compareReports(t, tt.golden, outputFile, nil)
 		})
 	}
 }

@@ -279,7 +279,7 @@ func TestClientServer(t *testing.T) {
 			err := execute(osArgs)
 			require.NoError(t, err)
 
-			compareReports(t, c.golden, outputFile)
+			compareReports(t, c.golden, outputFile, nil)
 		})
 	}
 }
@@ -501,7 +501,7 @@ func TestClientServerWithToken(t *testing.T) {
 			}
 
 			require.NoError(t, err, c.name)
-			compareReports(t, c.golden, outputFile)
+			compareReports(t, c.golden, outputFile, nil)
 		})
 	}
 }
@@ -528,7 +528,7 @@ func TestClientServerWithRedis(t *testing.T) {
 		err := execute(osArgs)
 		require.NoError(t, err)
 
-		compareReports(t, golden, outputFile)
+		compareReports(t, golden, outputFile, nil)
 	})
 
 	// Terminate the Redis container

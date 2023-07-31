@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,7 +19,6 @@ import (
 func TestRepository(t *testing.T) {
 	type args struct {
 		scanner        types.Scanner
-		severity       []string
 		ignoreIDs      []string
 		policyPaths    []string
 		namespaces     []string
@@ -35,9 +35,10 @@ func TestRepository(t *testing.T) {
 		includeDevDeps bool
 	}
 	tests := []struct {
-		name   string
-		args   args
-		golden string
+		name     string
+		args     args
+		golden   string
+		override func(*types.Report)
 	}{
 		{
 			name: "gomod",
@@ -323,6 +324,34 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/conda-spdx.json.golden",
 		},
+		// "trivy fs" will be deprecated, but we keep some tests for making sure of backward compatibility.
+		{
+			name: "gomod with fs subcommand",
+			args: args{
+				command:   "fs",
+				scanner:   types.VulnerabilityScanner,
+				input:     "testdata/fixtures/repo/gomod",
+				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
+			},
+			golden: "testdata/gomod-skip.json.golden",
+			override: func(report *types.Report) {
+				report.ArtifactType = ftypes.ArtifactFilesystem
+			},
+		},
+		{
+			name: "dockerfile with fs subcommand",
+			args: args{
+				command:     "fs",
+				scanner:     types.MisconfigScanner,
+				policyPaths: []string{"testdata/fixtures/repo/custom-policy/policy"},
+				namespaces:  []string{"user"},
+				input:       "testdata/fixtures/repo/custom-policy",
+			},
+			golden: "testdata/dockerfile-custom-policies.json.golden",
+			override: func(report *types.Report) {
+				report.ArtifactType = ftypes.ArtifactFilesystem
+			},
+		},
 	}
 
 	// Set up testing DB
@@ -370,10 +399,6 @@ func TestRepository(t *testing.T) {
 				for _, namespace := range tt.args.namespaces {
 					osArgs = append(osArgs, "--policy-namespaces", namespace)
 				}
-			}
-
-			if len(tt.args.severity) != 0 {
-				osArgs = append(osArgs, "--severity", strings.Join(tt.args.severity, ","))
 			}
 
 			if len(tt.args.ignoreIDs) != 0 {
@@ -445,7 +470,7 @@ func TestRepository(t *testing.T) {
 			case "spdx-json":
 				compareSpdxJson(t, tt.golden, outputFile)
 			case "json":
-				compareReports(t, tt.golden, outputFile)
+				compareReports(t, tt.golden, outputFile, tt.override)
 			default:
 				require.Fail(t, "invalid format", "format: %s", format)
 			}
