@@ -1,4 +1,4 @@
-package remote
+package repo
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -21,18 +22,92 @@ type Artifact struct {
 	local artifact.Artifact
 }
 
-func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Option) (
+func NewArtifact(target string, c cache.ArtifactCache, artifactOpt artifact.Option) (
 	artifact.Artifact, func(), error) {
-	cleanup := func() {}
 
-	u, err := newURL(rawurl)
+	var cleanup func()
+	var errs error
+
+	// Try the local repository
+	art, err := tryLocalRepo(target, c, artifactOpt)
+	if err == nil {
+		return art, func() {}, nil
+	}
+	errs = multierror.Append(errs, err)
+
+	// Try the remote git repository
+	art, cleanup, err = tryRemoteRepo(target, c, artifactOpt)
+	if err == nil {
+		return art, cleanup, nil
+	}
+	errs = multierror.Append(errs, err)
+
+	// Return errors
+	return nil, cleanup, errs
+}
+
+func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
+	ref, err := a.local.Inspect(ctx)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("remote repository error: %w", err)
+	}
+
+	if a.url != "" {
+		ref.Name = a.url
+	}
+	ref.Type = types.ArtifactRepository
+
+	return ref, nil
+}
+
+func (Artifact) Clean(_ types.ArtifactReference) error {
+	return nil
+}
+
+func tryLocalRepo(target string, c cache.ArtifactCache, artifactOpt artifact.Option) (artifact.Artifact, error) {
+	if _, err := os.Stat(target); err != nil {
+		return nil, xerrors.Errorf("no such path: %w", err)
+	}
+
+	art, err := local.NewArtifact(target, c, artifactOpt)
+	if err != nil {
+		return nil, xerrors.Errorf("local repo artifact error: %w", err)
+	}
+	return Artifact{
+		local: art,
+	}, nil
+}
+
+func tryRemoteRepo(target string, c cache.ArtifactCache, artifactOpt artifact.Option) (artifact.Artifact, func(), error) {
+	cleanup := func() {}
+	u, err := newURL(target)
 	if err != nil {
 		return nil, cleanup, err
 	}
 
-	tmpDir, err := os.MkdirTemp("", "fanal-remote")
+	tmpDir, err := cloneRepo(u, artifactOpt)
 	if err != nil {
-		return nil, cleanup, err
+		return nil, cleanup, xerrors.Errorf("repository clone error: %w", err)
+	}
+
+	cleanup = func() { _ = os.RemoveAll(tmpDir) }
+
+	art, err := local.NewArtifact(tmpDir, c, artifactOpt)
+	if err != nil {
+		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
+	}
+
+	return Artifact{
+		url:   target,
+		local: art,
+	}, cleanup, nil
+
+}
+
+func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
+	tmpDir, err := os.MkdirTemp("", "trivy-remote-repo")
+	if err != nil {
+		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
 
 	cloneOptions := git.CloneOptions{
@@ -63,52 +138,24 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 
 	r, err := git.PlainClone(tmpDir, false, &cloneOptions)
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("git clone error: %w", err)
+		return "", xerrors.Errorf("git clone error: %w", err)
 	}
 
 	if artifactOpt.RepoCommit != "" {
 		w, err := r.Worktree()
 		if err != nil {
-			return nil, cleanup, xerrors.Errorf("git worktree error: %w", err)
+			return "", xerrors.Errorf("git worktree error: %w", err)
 		}
 
 		err = w.Checkout(&git.CheckoutOptions{
 			Hash: plumbing.NewHash(artifactOpt.RepoCommit),
 		})
 		if err != nil {
-			return nil, cleanup, xerrors.Errorf("git checkout error: %w", err)
+			return "", xerrors.Errorf("git checkout error: %w", err)
 		}
 	}
 
-	cleanup = func() {
-		_ = os.RemoveAll(tmpDir)
-	}
-
-	art, err := local.NewArtifact(tmpDir, c, artifactOpt)
-	if err != nil {
-		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
-	}
-
-	return Artifact{
-		url:   rawurl,
-		local: art,
-	}, cleanup, nil
-}
-
-func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
-	ref, err := a.local.Inspect(ctx)
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("remote repository error: %w", err)
-	}
-
-	ref.Name = a.url
-	ref.Type = types.ArtifactRemoteRepository
-
-	return ref, nil
-}
-
-func (Artifact) Clean(_ types.ArtifactReference) error {
-	return nil
+	return tmpDir, nil
 }
 
 func newURL(rawurl string) (*url.URL, error) {
@@ -128,7 +175,6 @@ func newURL(rawurl string) (*url.URL, error) {
 // Helper function to check for a GitHub/GitLab token from env vars in order to
 // make authenticated requests to access private repos
 func gitAuth() *http.BasicAuth {
-
 	var auth *http.BasicAuth
 
 	// The username can be anything for HTTPS Git operations

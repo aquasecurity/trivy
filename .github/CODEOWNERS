@@ -1,23 +1,14 @@
 # Global
 *   @knqyf263
 
-# Docs
-/docs/** @knqyf263 @AnaisUrlichs @itaysk
-/mkdocs.yml @knqyf263 @AnaisUrlichs @itaysk
-/README.md @knqyf263 @AnaisUrlichs @itaysk
+# Misconfiguration scanning
+docs/docs/scanner/misconfiguration  @knqyf263 @simar7
+docs/docs/target/aws.md             @knqyf263 @simar7
+pkg/fanal/analyzer/config           @knqyf263 @simar7
+pkg/cloud                           @knqyf263 @simar7
 
 # Helm chart
 helm/trivy/ @chen-keinan
-
-# Misconfiguration scanning
-examples/misconf/           @knqyf263
-docs/docs/misconfiguration  @knqyf263
-docs/docs/cloud             @knqyf263
-pkg/fanal/analyzer/config   @knqyf263
-pkg/fanal/handler/misconf   @knqyf263
-pkg/cloud                   @knqyf263
-pkg/flag/aws_flags.go       @knqyf263
-pkg/flag/misconf_flags.go   @knqyf263
 
 # Kubernetes scanning
 pkg/k8s/                @josedonizetti @chen-keinan @knqyf263

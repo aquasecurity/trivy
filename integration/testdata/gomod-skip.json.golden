@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/gomod",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/gomod",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

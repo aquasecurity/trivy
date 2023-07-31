@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/pubspec",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/pubspec",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

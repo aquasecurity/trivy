@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/dotnet",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/dotnet",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

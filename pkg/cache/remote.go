@@ -53,7 +53,7 @@ func (c RemoteCache) PutArtifact(imageID string, artifactInfo types.ArtifactInfo
 func (c RemoteCache) PutBlob(diffID string, blobInfo types.BlobInfo) error {
 	err := rpc.Retry(func() error {
 		var err error
-		_, err = c.client.PutBlob(c.ctx, rpc.ConvertToRPCBlobInfo(diffID, blobInfo))
+		_, err = c.client.PutBlob(c.ctx, rpc.ConvertToRPCPutBlobRequest(diffID, blobInfo))
 		return err
 	})
 	if err != nil {

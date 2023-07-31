@@ -1,4 +1,5 @@
 //go:build module_integration
+
 package integration
 
 import (
@@ -70,7 +71,7 @@ func TestModule(t *testing.T) {
 			}()
 
 			// Compare want and got
-			compareReports(t, tt.golden, outputFile)
+			compareReports(t, tt.golden, outputFile, nil)
 		})
 	}
 }
