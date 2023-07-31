@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/target/git-repository/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/target/repository/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Git Repository - Trivy</title>
+        <title>Code Repository - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#git-repository" class="md-skip">
+        <a href="#code-repository" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@ You're not viewing the latest version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Git Repository
+              Code Repository
             
           </span>
         </div>
@@ -998,12 +998,12 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Git Repository
+          Code Repository
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Git Repository
+        Code Repository
       </a>
       
         
@@ -1020,6 +1020,13 @@ You're not viewing the latest version.
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rationale" class="md-nav__link">
+    Rationale
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#scanners" class="md-nav__link">
@@ -3074,6 +3081,13 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#rationale" class="md-nav__link">
+    Rationale
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scanners" class="md-nav__link">
     Scanners
   </a>
@@ -3174,14 +3188,14 @@ You're not viewing the latest version.
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/target/git-repository.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/target/repository.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
 
-<h1 id="git-repository">Git Repository</h1>
-<p>Scan your remote git repositories for</p>
+<h1 id="code-repository">Code Repository</h1>
+<p>Scan your local or remote code repositories for</p>
 <ul>
 <li>Vulnerabilities</li>
 <li>Misconfigurations</li>
@@ -3189,151 +3203,58 @@ You're not viewing the latest version.
 <li>Licenses</li>
 </ul>
 <p>By default, vulnerability and secret scanning are enabled, and you can configure that with <code>--scanners</code>.</p>
-<div class="highlight"><pre><span></span><code>$ trivy repo <span class="o">[</span>YOUR_REPO_URL<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>$ trivy repo <span class="o">(</span>REPO_PATH <span class="p">|</span> REPO_URL<span class="o">)</span>
 </code></pre></div>
+<p>For example, you can scan a local repository as below.</p>
+<div class="highlight"><pre><span></span><code>$ trivy repo ./
+</code></pre></div>
+<p>It's also possible to scan a single file.</p>
+<div class="highlight"><pre><span></span><code>$ trivy repo ./trivy-ci-test/Pipfile.lock
+</code></pre></div>
+<p>To scan remote code repositories, you need to specify the URL.</p>
+<div class="highlight"><pre><span></span><code>$ trivy repo https://github.com/aquasecurity/trivy-ci-test
+</code></pre></div>
+<h2 id="rationale">Rationale</h2>
+<p><code>trivy repo</code> is  designed to scan code repositories, and it is intended to be used for scanning local/remote repositories in your machine or in your CI environment.
+Therefore, unlike container/VM image scanning, it targets lock files such as package-lock.json and does not target artifacts like JAR files, binary files, etc.
+See <a href="../../scanner/vulnerability/language/">here</a> for the detail.</p>
 <h2 id="scanners">Scanners</h2>
 <h3 id="vulnerabilities">Vulnerabilities</h3>
 <p>It is enabled by default.
 Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
 See <a href="../../scanner/vulnerability/">here</a> for the detail.</p>
-<div class="highlight"><pre><span></span><code>$ trivy repo https://github.com/knqyf263/trivy-ci-test
+<div class="highlight"><pre><span></span><code>$ trivy repo ~/src/github.com/aquasecurity/trivy-ci-test
 </code></pre></div>
 <details>
 <summary>Result</summary>
 
-<div class="highlight"><pre><span></span><code>2021-03-09T15:04:19.003+0200    INFO    Detecting cargo vulnerabilities...
-2021-03-09T15:04:19.005+0200    INFO    Detecting pipenv vulnerabilities...
-
-Cargo.lock
-==========
-Total: 7 (UNKNOWN: 7, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
-
-+----------+-------------------+----------+-------------------+------------------------------+---------------------------------------------+
-| LIBRARY  | VULNERABILITY ID  | SEVERITY | INSTALLED VERSION |        FIXED VERSION         |                    TITLE                    |
-+----------+-------------------+----------+-------------------+------------------------------+---------------------------------------------+
-| ammonia  | RUSTSEC-2019-0001 | UNKNOWN  | 1.9.0             | &gt;= 2.1.0                     | Uncontrolled recursion leads                |
-|          |                   |          |                   |                              | to abort in HTML serialization              |
-|          |                   |          |                   |                              | --&gt;rustsec.org/advisories/RUSTSEC-2019-0001 |
-+----------+-------------------+          +-------------------+------------------------------+---------------------------------------------+
-| openssl  | RUSTSEC-2016-0001 |          | 0.8.3             | &gt;= 0.9.0                     | SSL/TLS MitM vulnerability                  |
-|          |                   |          |                   |                              | due to insecure defaults                    |
-|          |                   |          |                   |                              | --&gt;rustsec.org/advisories/RUSTSEC-2016-0001 |
-+----------+-------------------+          +-------------------+------------------------------+---------------------------------------------+
-| smallvec | RUSTSEC-2018-0018 |          | 0.6.9             | &gt;= 0.6.13                    | smallvec creates uninitialized              |
-|          |                   |          |                   |                              | value of any type                           |
-|          |                   |          |                   |                              | --&gt;rustsec.org/advisories/RUSTSEC-2018-0018 |
-+          +-------------------+          +                   +------------------------------+---------------------------------------------+
-|          | RUSTSEC-2019-0009 |          |                   | &gt;= 0.6.10                    | Double-free and use-after-free              |
-|          |                   |          |                   |                              | in SmallVec::grow()                         |
-|          |                   |          |                   |                              | --&gt;rustsec.org/advisories/RUSTSEC-2019-0009 |
-+          +-------------------+          +                   +                              +---------------------------------------------+
-|          | RUSTSEC-2019-0012 |          |                   |                              | Memory corruption in SmallVec::grow()       |
-|          |                   |          |                   |                              | --&gt;rustsec.org/advisories/RUSTSEC-2019-0012 |
-+          +-------------------+          +                   +------------------------------+---------------------------------------------+
-|          | RUSTSEC-2021-0003 |          |                   | &gt;= 0.6.14, &lt; 1.0.0, &gt;= 1.6.1 | Buffer overflow in SmallVec::insert_many    |
-|          |                   |          |                   |                              | --&gt;rustsec.org/advisories/RUSTSEC-2021-0003 |
-+----------+-------------------+          +-------------------+------------------------------+---------------------------------------------+
-| tempdir  | RUSTSEC-2018-0017 |          | 0.3.7             |                              | `tempdir` crate has been                    |
-|          |                   |          |                   |                              | deprecated; use `tempfile` instead          |
-|          |                   |          |                   |                              | --&gt;rustsec.org/advisories/RUSTSEC-2018-0017 |
-+----------+-------------------+----------+-------------------+------------------------------+---------------------------------------------+
+<div class="highlight"><pre><span></span><code>2020-06-01T17:06:58.652+0300    WARN    OS is not detected and vulnerabilities in OS packages are not detected.
+2020-06-01T17:06:58.652+0300    INFO    Detecting pipenv vulnerabilities...
+2020-06-01T17:06:58.691+0300    INFO    Detecting cargo vulnerabilities...
 
 Pipfile.lock
 ============
-Total: 20 (UNKNOWN: 3, LOW: 0, MEDIUM: 7, HIGH: 5, CRITICAL: 5)
+Total: 10 (UNKNOWN: 2, LOW: 0, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
 
-+---------------------+------------------+----------+-------------------+------------------------+---------------------------------------+
-|       LIBRARY       | VULNERABILITY ID | SEVERITY | INSTALLED VERSION |     FIXED VERSION      |                 TITLE                 |
-+---------------------+------------------+----------+-------------------+------------------------+---------------------------------------+
-| django              | CVE-2019-19844   | CRITICAL | 2.0.9             | 3.0.1, 2.2.9, 1.11.27  | Django: crafted email address         |
-|                     |                  |          |                   |                        | allows account takeover               |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2019-19844 |
-+                     +------------------+          +                   +------------------------+---------------------------------------+
-|                     | CVE-2020-7471    |          |                   | 3.0.3, 2.2.10, 1.11.28 | django: potential SQL injection       |
-|                     |                  |          |                   |                        | via StringAgg(delimiter)              |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-7471  |
-+                     +------------------+----------+                   +------------------------+---------------------------------------+
-|                     | CVE-2019-6975    | HIGH     |                   | 2.1.6, 2.0.11, 1.11.19 | python-django: memory exhaustion in   |
-|                     |                  |          |                   |                        | django.utils.numberformat.format()    |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2019-6975  |
-+                     +------------------+          +                   +------------------------+---------------------------------------+
-|                     | CVE-2020-9402    |          |                   | 3.0.4, 2.2.11, 1.11.29 | django: potential SQL injection       |
-|                     |                  |          |                   |                        | via &quot;tolerance&quot; parameter in          |
-|                     |                  |          |                   |                        | GIS functions and aggregates...       |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-9402  |
-+                     +------------------+----------+                   +------------------------+---------------------------------------+
-|                     | CVE-2019-3498    | MEDIUM   |                   | 2.1.5, 2.0.10, 1.11.18 | python-django: Content spoofing       |
-|                     |                  |          |                   |                        | via URL path in default 404 page      |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2019-3498  |
-+                     +------------------+          +                   +------------------------+---------------------------------------+
-|                     | CVE-2020-13254   |          |                   | 3.0.7, 2.2.13          | django: potential data leakage        |
-|                     |                  |          |                   |                        | via malformed memcached keys          |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-13254 |
-+                     +------------------+          +                   +                        +---------------------------------------+
-|                     | CVE-2020-13596   |          |                   |                        | django: possible XSS via              |
-|                     |                  |          |                   |                        | admin ForeignKeyRawIdWidget           |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-13596 |
-+---------------------+------------------+----------+-------------------+------------------------+---------------------------------------+
-| django-cors-headers | pyup.io-37132    | UNKNOWN  | 2.5.2             | 3.0.0                  | In django-cors-headers                |
-|                     |                  |          |                   |                        | version 3.0.0,                        |
-|                     |                  |          |                   |                        | ``CORS_ORIGIN_WHITELIST``             |
-|                     |                  |          |                   |                        | requires URI schemes, and             |
-|                     |                  |          |                   |                        | optionally ports. This...             |
-+---------------------+------------------+----------+-------------------+------------------------+---------------------------------------+
-| djangorestframework | CVE-2020-25626   | MEDIUM   | 3.9.2             | 3.11.2                 | django-rest-framework: XSS            |
-|                     |                  |          |                   |                        | Vulnerability in API viewer           |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-25626 |
-+---------------------+------------------+----------+-------------------+------------------------+---------------------------------------+
-| httplib2            | CVE-2021-21240   | HIGH     | 0.12.1            | 0.19.0                 | python-httplib2: Regular              |
-|                     |                  |          |                   |                        | expression denial of                  |
-|                     |                  |          |                   |                        | service via malicious header          |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2021-21240 |
-+                     +------------------+----------+                   +------------------------+---------------------------------------+
-|                     | CVE-2020-11078   | MEDIUM   |                   | 0.18.0                 | python-httplib2: CRLF injection       |
-|                     |                  |          |                   |                        | via an attacker controlled            |
-|                     |                  |          |                   |                        | unescaped part of uri for...          |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-11078 |
-+                     +------------------+----------+                   +                        +---------------------------------------+
-|                     | pyup.io-38303    | UNKNOWN  |                   |                        | Httplib2 0.18.0 is an                 |
-|                     |                  |          |                   |                        | important security update to          |
-|                     |                  |          |                   |                        | patch a CWE-93 CRLF...                |
-+---------------------+------------------+          +-------------------+------------------------+---------------------------------------+
-| jinja2              | pyup.io-39525    |          | 2.10.1            | 2.11.3                 | This affects the package              |
-|                     |                  |          |                   |                        | jinja2 from 0.0.0 and before          |
-|                     |                  |          |                   |                        | 2.11.3. The ReDOS...                  |
-+---------------------+------------------+----------+-------------------+------------------------+---------------------------------------+
-| py                  | CVE-2020-29651   | HIGH     | 1.8.0             |                        | python-py: ReDoS in the py.path.svnwc |
-|                     |                  |          |                   |                        | component via malicious input         |
-|                     |                  |          |                   |                        | to blame functionality...             |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-29651 |
-+---------------------+------------------+----------+-------------------+------------------------+---------------------------------------+
-| pyyaml              | CVE-2019-20477   | CRITICAL |               5.1 |                        | PyYAML: command execution             |
-|                     |                  |          |                   |                        | through python/object/apply           |
-|                     |                  |          |                   |                        | constructor in FullLoader             |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2019-20477 |
-+                     +------------------+          +                   +------------------------+---------------------------------------+
-|                     | CVE-2020-14343   |          |                   |                    5.4 | PyYAML: incomplete                    |
-|                     |                  |          |                   |                        | fix for CVE-2020-1747                 |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-14343 |
-+                     +------------------+          +                   +------------------------+---------------------------------------+
-|                     | CVE-2020-1747    |          |                   | 5.3.1                  | PyYAML: arbitrary command             |
-|                     |                  |          |                   |                        | execution through python/object/new   |
-|                     |                  |          |                   |                        | when FullLoader is used               |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-1747  |
-+---------------------+------------------+----------+-------------------+------------------------+---------------------------------------+
-| urllib3             | CVE-2019-11324   | HIGH     | 1.24.1            | 1.24.2                 | python-urllib3: Certification         |
-|                     |                  |          |                   |                        | mishandle when error should be thrown |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2019-11324 |
-+                     +------------------+----------+                   +------------------------+---------------------------------------+
-|                     | CVE-2019-11236   | MEDIUM   |                   |                        | python-urllib3: CRLF injection        |
-|                     |                  |          |                   |                        | due to not encoding the               |
-|                     |                  |          |                   |                        | &#39;\r\n&#39; sequence leading to...         |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2019-11236 |
-+                     +------------------+          +                   +------------------------+---------------------------------------+
-|                     | CVE-2020-26137   |          |                   | 1.25.9                 | python-urllib3: CRLF injection        |
-|                     |                  |          |                   |                        | via HTTP request method               |
-|                     |                  |          |                   |                        | --&gt;avd.aquasec.com/nvd/cve-2020-26137 |
-+---------------------+------------------+----------+-------------------+------------------------+---------------------------------------+
++---------------------+------------------+----------+-------------------+------------------------+------------------------------------+
+|       LIBRARY       | VULNERABILITY ID | SEVERITY | INSTALLED VERSION |     FIXED VERSION      |               TITLE                |
++---------------------+------------------+----------+-------------------+------------------------+------------------------------------+
+| django              | CVE-2020-7471    | HIGH     | 2.0.9             | 3.0.3, 2.2.10, 1.11.28 | django: potential                  |
+|                     |                  |          |                   |                        | SQL injection via                  |
+|                     |                  |          |                   |                        | StringAgg(delimiter)               |
++                     +------------------+----------+                   +------------------------+------------------------------------+
+|                     | CVE-2019-19844   | MEDIUM   |                   | 3.0.1, 2.2.9, 1.11.27  | Django: crafted email address      |
+|                     |                  |          |                   |                        | allows account takeover            |
++                     +------------------+          +                   +------------------------+------------------------------------+
+|                     | CVE-2019-3498    |          |                   | 2.1.5, 2.0.10, 1.11.18 | python-django: Content             |
+|                     |                  |          |                   |                        | spoofing via URL path in           |
+|                     |                  |          |                   |                        | default 404 page                   |
++                     +------------------+          +                   +------------------------+------------------------------------+
+|                     | CVE-2019-6975    |          |                   | 2.1.6, 2.0.11, 1.11.19 | python-django:                     |
+|                     |                  |          |                   |                        | memory exhaustion in               |
+|                     |                  |          |                   |                        | django.utils.numberformat.format() |
++---------------------+------------------+----------+-------------------+------------------------+------------------------------------+
+...
 </code></pre></div>
 
 </details>
@@ -3354,9 +3275,10 @@ See <a href="../../scanner/license/">here</a> for the detail.</p>
 <div class="highlight"><pre><span></span><code>$ trivy repo --scanners license <span class="o">[</span>YOUR_REPO_URL<span class="o">]</span>
 </code></pre></div>
 <h2 id="sbom-generation">SBOM generation</h2>
-<p>Trivy can generate SBOM for git repositories.
+<p>Trivy can generate SBOM for code repositories.
 See <a href="../../supply-chain/sbom/">here</a> for the detail.</p>
 <h2 id="references">References</h2>
+<p>The following flags and environmental variables are available for remote git repositories.</p>
 <h3 id="scanning-a-branch">Scanning a Branch</h3>
 <p>Pass a <code>--branch</code> argument with a valid branch name on the remote repository provided:</p>
 <div class="highlight"><pre><span></span><code>$ trivy repo --branch &lt;branch-name&gt; &lt;repo-name&gt;
@@ -3376,8 +3298,8 @@ See <a href="../../supply-chain/sbom/">here</a> for the detail.</p>
 <p>For example:</p>
 <div class="highlight"><pre><span></span><code>$ export GITHUB_TOKEN=&quot;your_private_github_token&quot;
 $ trivy repo &lt;your private GitHub repo URL&gt;
-$
-$ # or
+
+# or
 $ export GITLAB_TOKEN=&quot;your_private_gitlab_token&quot;
 $ trivy repo &lt;your private GitLab repo URL&gt;
 </code></pre></div>
