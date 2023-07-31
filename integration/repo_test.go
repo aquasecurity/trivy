@@ -324,7 +324,6 @@ func TestRepository(t *testing.T) {
 			},
 			golden: "testdata/conda-spdx.json.golden",
 		},
-		// "trivy fs" will be deprecated, but we keep some tests for making sure of backward compatibility.
 		{
 			name: "gomod with fs subcommand",
 			args: args{
