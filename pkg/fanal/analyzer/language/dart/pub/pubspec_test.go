@@ -25,7 +25,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pub,
 						FilePath: "testdata/happy.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "crypto@3.0.2",
 								Name:    "crypto",
@@ -74,9 +74,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 
 			if got != nil {
 				for _, app := range got.Applications {
-					sort.Slice(app.Libraries, func(i, j int) bool {
-						return app.Libraries[i].ID < app.Libraries[j].ID
-					})
+					sort.Sort(app.Libraries)
 				}
 			}
 

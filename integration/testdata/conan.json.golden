@@ -87,6 +87,7 @@
           "PkgName": "pcre",
           "InstalledVersion": "8.43",
           "FixedVersion": "8.45",
+          "Status": "fixed",
           "Layer": {},
           "Severity": "UNKNOWN"
         }

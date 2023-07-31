@@ -198,12 +198,7 @@ func (r *AnalysisResult) Sort() {
 	})
 
 	for _, app := range r.Applications {
-		sort.Slice(app.Libraries, func(i, j int) bool {
-			if app.Libraries[i].Name != app.Libraries[j].Name {
-				return app.Libraries[i].Name < app.Libraries[j].Name
-			}
-			return app.Libraries[i].Version < app.Libraries[j].Version
-		})
+		sort.Sort(app.Libraries)
 	}
 
 	// Custom resources

@@ -41,6 +41,7 @@
           "VulnerabilityID": "CVE-2022-0261",
           "PkgName": "vim",
           "InstalledVersion": "8.2.4081-1.cm1",
+          "Status": "affected",
           "Layer": {
             "Digest": "sha256:3df36548ffbf2fa7319966e038058a3d2a922880009e535202546a6b250b9d57",
             "DiffID": "sha256:4266328c97a194b2ca52ec83bc05496596303f5e9b244ffa99cf84763a487804"
@@ -71,6 +72,7 @@
           "PkgName": "vim",
           "InstalledVersion": "8.2.4081-1.cm1",
           "FixedVersion": "8.2.4082-1.cm1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:3df36548ffbf2fa7319966e038058a3d2a922880009e535202546a6b250b9d57",
             "DiffID": "sha256:4266328c97a194b2ca52ec83bc05496596303f5e9b244ffa99cf84763a487804"

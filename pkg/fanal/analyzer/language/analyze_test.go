@@ -26,7 +26,12 @@ func (p *mockParser) Parse(r dio.ReadSeekerAt) ([]godeptypes.Library, []godeptyp
 
 	switch string(b) {
 	case "happy":
-		return []godeptypes.Library{{Name: "test", Version: "1.2.3"}}, nil, nil
+		return []godeptypes.Library{
+			{
+				Name:    "test",
+				Version: "1.2.3",
+			},
+		}, nil, nil
 	case "sad":
 		return nil, nil, xerrors.New("unexpected error")
 	}
@@ -58,7 +63,7 @@ func TestAnalyze(t *testing.T) {
 					{
 						Type:     types.GoBinary,
 						FilePath: "app/myweb",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "test",
 								Version: "1.2.3",

@@ -58,6 +58,7 @@
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-11.91.amzn1",
           "FixedVersion": "7.61.1-12.93.amzn1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:105ff6bf468b1422ad7c47ea9d63eae82f875c93310cb8d34551951e754ef43b",
             "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"

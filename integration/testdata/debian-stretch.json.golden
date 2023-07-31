@@ -58,6 +58,7 @@
           "PkgID": "bash@4.4-5",
           "PkgName": "bash",
           "InstalledVersion": "4.4-5",
+          "Status": "end_of_life",
           "Layer": {
             "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
@@ -112,6 +113,7 @@
           "PkgName": "e2fslibs",
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
@@ -172,6 +174,7 @@
           "PkgName": "e2fsprogs",
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
@@ -232,6 +235,7 @@
           "PkgName": "libcomerr2",
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
@@ -292,6 +296,7 @@
           "PkgName": "libss2",
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"

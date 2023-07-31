@@ -30,10 +30,14 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Packages: []ftypes.PackageInfo{
 					{
-						Packages: []ftypes.Package{
+						Packages: ftypes.Packages{
 							{
-								Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", Licenses: []string{"MIT"},
-								Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+								Name:       "musl",
+								Version:    "1.2.3-r0",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3-r0",
+								Licenses:   []string{"MIT"},
+								Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 								},
@@ -45,7 +49,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "app/composer/composer.lock",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -68,7 +72,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "gobinary",
 						FilePath: "app/gobinary/gobinary",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "github.com/package-url/packageurl-go",
 								Version: "v0.1.1-0.20220203205134-d70459300c8a",
@@ -81,7 +85,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					},
 					{
 						Type: "gradle",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "com.example:example",
 								Ref:     "pkg:gradle/com.example/example@0.0.1",
@@ -95,7 +99,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					},
 					{
 						Type: "jar",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "org.codehaus.mojo:child-project",
 								Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
@@ -110,7 +114,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "node-pkg",
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:     "bootstrap",
 								Version:  "5.0.2",
@@ -136,7 +140,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Packages: []ftypes.PackageInfo{
 					{
-						Packages: []ftypes.Package{
+						Packages: ftypes.Packages{
 							{
 								ID:         "libc6@2.35-0ubuntu3.1",
 								Name:       "libc6",
@@ -144,8 +148,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcName:    "glibc",
 								SrcVersion: "2.35",
 								SrcRelease: "0ubuntu3.1",
-								Licenses:   []string{"LGPL-2.1", "GPL-2.0", "GFDL-1.3"},
-								Ref:        "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
+								Licenses: []string{
+									"LGPL-2.1",
+									"GPL-2.0",
+									"GFDL-1.3",
+								},
+								Ref: "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466",
 								},
@@ -179,10 +187,14 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Packages: []ftypes.PackageInfo{
 					{
-						Packages: []ftypes.Package{
+						Packages: ftypes.Packages{
 							{
-								Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", Licenses: []string{"MIT"},
-								Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+								Name:       "musl",
+								Version:    "1.2.3-r0",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3-r0",
+								Licenses:   []string{"MIT"},
+								Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 							},
 						},
 					},
@@ -191,7 +203,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -216,7 +228,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -235,7 +247,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -260,7 +272,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/core",
 								Version: "1.13.1",
@@ -289,7 +301,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: "jar",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:     "org.springframework:spring-web",
 								Version:  "5.3.22",

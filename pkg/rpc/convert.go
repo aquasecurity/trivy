@@ -186,6 +186,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			PkgPath:            vuln.PkgPath,
 			InstalledVersion:   vuln.InstalledVersion,
 			FixedVersion:       vuln.FixedVersion,
+			Status:             int32(vuln.Status),
 			Title:              vuln.Title,
 			Description:        vuln.Description,
 			Severity:           common.Severity(severity),
@@ -216,18 +217,21 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 		}
 
 		rpcMisconfs = append(rpcMisconfs, &common.DetectedMisconfiguration{
-			Type:        m.Type,
-			Id:          m.ID,
-			Title:       m.Title,
-			Description: m.Description,
-			Message:     m.Message,
-			Namespace:   m.Namespace,
-			Resolution:  m.Resolution,
-			Severity:    common.Severity(severity),
-			PrimaryUrl:  m.PrimaryURL,
-			References:  m.References,
-			Status:      string(m.Status),
-			Layer:       ConvertToRPCLayer(m.Layer),
+			Type:          m.Type,
+			Id:            m.ID,
+			AvdId:         m.AVDID,
+			Title:         m.Title,
+			Description:   m.Description,
+			Message:       m.Message,
+			Namespace:     m.Namespace,
+			Query:         m.Query,
+			Resolution:    m.Resolution,
+			Severity:      common.Severity(severity),
+			PrimaryUrl:    m.PrimaryURL,
+			References:    m.References,
+			Status:        string(m.Status),
+			Layer:         ConvertToRPCLayer(m.Layer),
+			CauseMetadata: ConvertToRPCCauseMetadata(m.CauseMetadata),
 		})
 	}
 	return rpcMisconfs
@@ -239,6 +243,30 @@ func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 		Digest:    layer.Digest,
 		DiffId:    layer.DiffID,
 		CreatedBy: layer.CreatedBy,
+	}
+}
+
+func ConvertToRPCPolicyMetadata(policy ftypes.PolicyMetadata) *common.PolicyMetadata {
+	return &common.PolicyMetadata{
+		Id:                 policy.ID,
+		AdvId:              policy.AVDID,
+		Type:               policy.Type,
+		Title:              policy.Title,
+		Description:        policy.Description,
+		Severity:           policy.Severity,
+		RecommendedActions: policy.RecommendedActions,
+		References:         policy.References,
+	}
+}
+
+func ConvertToRPCCauseMetadata(cause ftypes.CauseMetadata) *common.CauseMetadata {
+	return &common.CauseMetadata{
+		Resource:  cause.Resource,
+		Provider:  cause.Provider,
+		Service:   cause.Service,
+		StartLine: int32(cause.StartLine),
+		EndLine:   int32(cause.EndLine),
+		Code:      ConvertToRPCCode(cause.Code),
 	}
 }
 
@@ -378,6 +406,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			PkgPath:          vuln.PkgPath,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
+			Status:           dbTypes.Status(vuln.Status),
 			Vulnerability: dbTypes.Vulnerability{
 				Title:            vuln.Title,
 				Description:      vuln.Description,
@@ -405,18 +434,21 @@ func ConvertFromRPCMisconfs(rpcMisconfs []*common.DetectedMisconfiguration) []ty
 	var misconfs []types.DetectedMisconfiguration
 	for _, rpcMisconf := range rpcMisconfs {
 		misconfs = append(misconfs, types.DetectedMisconfiguration{
-			Type:        rpcMisconf.Type,
-			ID:          rpcMisconf.Id,
-			Title:       rpcMisconf.Title,
-			Description: rpcMisconf.Description,
-			Message:     rpcMisconf.Message,
-			Namespace:   rpcMisconf.Namespace,
-			Resolution:  rpcMisconf.Resolution,
-			Severity:    rpcMisconf.Severity.String(),
-			PrimaryURL:  rpcMisconf.PrimaryUrl,
-			References:  rpcMisconf.References,
-			Status:      types.MisconfStatus(rpcMisconf.Status),
-			Layer:       ConvertFromRPCLayer(rpcMisconf.Layer),
+			Type:          rpcMisconf.Type,
+			ID:            rpcMisconf.Id,
+			AVDID:         rpcMisconf.AvdId,
+			Title:         rpcMisconf.Title,
+			Description:   rpcMisconf.Description,
+			Message:       rpcMisconf.Message,
+			Namespace:     rpcMisconf.Namespace,
+			Query:         rpcMisconf.Query,
+			Resolution:    rpcMisconf.Resolution,
+			Severity:      rpcMisconf.Severity.String(),
+			PrimaryURL:    rpcMisconf.PrimaryUrl,
+			References:    rpcMisconf.References,
+			Status:        types.MisconfStatus(rpcMisconf.Status),
+			Layer:         ConvertFromRPCLayer(rpcMisconf.Layer),
+			CauseMetadata: ConvertFromRPCCauseMetadata(rpcMisconf.CauseMetadata),
 		})
 	}
 	return misconfs
@@ -428,8 +460,40 @@ func ConvertFromRPCLayer(rpcLayer *common.Layer) ftypes.Layer {
 		return ftypes.Layer{}
 	}
 	return ftypes.Layer{
-		Digest: rpcLayer.Digest,
-		DiffID: rpcLayer.DiffId,
+		Digest:    rpcLayer.Digest,
+		DiffID:    rpcLayer.DiffId,
+		CreatedBy: rpcLayer.CreatedBy,
+	}
+}
+
+func ConvertFromRPCPolicyMetadata(rpcPolicy *common.PolicyMetadata) ftypes.PolicyMetadata {
+	if rpcPolicy == nil {
+		return ftypes.PolicyMetadata{}
+	}
+
+	return ftypes.PolicyMetadata{
+		ID:                 rpcPolicy.Id,
+		AVDID:              rpcPolicy.AdvId,
+		Type:               rpcPolicy.Type,
+		Title:              rpcPolicy.Title,
+		Description:        rpcPolicy.Description,
+		Severity:           rpcPolicy.Severity,
+		RecommendedActions: rpcPolicy.RecommendedActions,
+		References:         rpcPolicy.References,
+	}
+}
+
+func ConvertFromRPCCauseMetadata(rpcCause *common.CauseMetadata) ftypes.CauseMetadata {
+	if rpcCause == nil {
+		return ftypes.CauseMetadata{}
+	}
+	return ftypes.CauseMetadata{
+		Resource:  rpcCause.Resource,
+		Provider:  rpcCause.Provider,
+		Service:   rpcCause.Service,
+		StartLine: int(rpcCause.StartLine),
+		EndLine:   int(rpcCause.EndLine),
+		Code:      ConvertFromRPCCode(rpcCause.Code),
 	}
 }
 
@@ -516,14 +580,10 @@ func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.M
 	var results []ftypes.MisconfResult
 	for _, r := range rpcResults {
 		results = append(results, ftypes.MisconfResult{
-			Namespace: r.Namespace,
-			Message:   r.Message,
-			PolicyMetadata: ftypes.PolicyMetadata{
-				ID:       r.Id,
-				Type:     r.Type,
-				Title:    r.Title,
-				Severity: r.Severity,
-			},
+			Namespace:      r.Namespace,
+			Message:        r.Message,
+			PolicyMetadata: ConvertFromRPCPolicyMetadata(r.PolicyMetadata),
+			CauseMetadata:  ConvertFromRPCCauseMetadata(r.CauseMetadata),
 		})
 	}
 	return results
@@ -601,8 +661,8 @@ func ConvertToRPCArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *ca
 	}
 }
 
-// ConvertToRPCBlobInfo returns PutBlobRequest
-func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlobRequest {
+// ConvertToRPCPutBlobRequest returns PutBlobRequest
+func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlobRequest {
 	var packageInfos []*common.PackageInfo
 	for _, pkgInfo := range blobInfo.PackageInfos {
 		packageInfos = append(packageInfos, &common.PackageInfo{
@@ -675,12 +735,10 @@ func ConvertToMisconfResults(results []ftypes.MisconfResult) []*common.MisconfRe
 	var rpcResults []*common.MisconfResult
 	for _, r := range results {
 		rpcResults = append(rpcResults, &common.MisconfResult{
-			Namespace: r.Namespace,
-			Message:   r.Message,
-			Id:        r.ID,
-			Type:      r.Type,
-			Title:     r.Title,
-			Severity:  r.Severity,
+			Namespace:      r.Namespace,
+			Message:        r.Message,
+			PolicyMetadata: ConvertToRPCPolicyMetadata(r.PolicyMetadata),
+			CauseMetadata:  ConvertToRPCCauseMetadata(r.CauseMetadata),
 		})
 	}
 	return rpcResults

@@ -243,6 +243,7 @@ rego
   policy:
     - policy/repository
     - policy/custom
+    - policy/some-policy.rego
 
   # Same as '--config-data'
   # Default is empty
@@ -291,6 +292,11 @@ misconfiguration:
     vars:
       - dev-terraform.tfvars
       - common-terraform.tfvars
+  
+  # Same as '--tf-exclude-downloaded-modules'
+  # Default is false
+  terraform:
+    exclude-downloaded-modules: false
 ```
 
 ## Kubernetes Options

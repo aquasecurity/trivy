@@ -16,7 +16,7 @@ var (
 	ClusterContextFlag = Flag{
 		Name:       "context",
 		ConfigName: "kubernetes.context",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify a context to scan",
 		Aliases: []Alias{
 			{Name: "ctx"},
@@ -26,19 +26,23 @@ var (
 		Name:       "namespace",
 		ConfigName: "kubernetes.namespace",
 		Shorthand:  "n",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify a namespace to scan",
 	}
 	KubeConfigFlag = Flag{
 		Name:       "kubeconfig",
 		ConfigName: "kubernetes.kubeconfig",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify the kubeconfig file path to use",
 	}
 	ComponentsFlag = Flag{
 		Name:       "components",
 		ConfigName: "kubernetes.components",
-		Value: []string{
+		Default: []string{
+			"workload",
+			"infra",
+		},
+		Values: []string{
 			"workload",
 			"infra",
 		},
@@ -47,38 +51,38 @@ var (
 	K8sVersionFlag = Flag{
 		Name:       "k8s-version",
 		ConfigName: "kubernetes.k8s.version",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
 	}
 	ParallelFlag = Flag{
 		Name:       "parallel",
 		ConfigName: "kubernetes.parallel",
-		Value:      5,
+		Default:    5,
 		Usage:      "number (between 1-20) of goroutines enabled for parallel scanning",
 	}
 	TolerationsFlag = Flag{
 		Name:       "tolerations",
 		ConfigName: "kubernetes.tolerations",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)",
 	}
 	AllNamespaces = Flag{
 		Name:       "all-namespaces",
 		ConfigName: "kubernetes.all.namespaces",
 		Shorthand:  "A",
-		Value:      false,
+		Default:    false,
 		Usage:      "fetch resources from all cluster namespaces",
 	}
 	NodeCollectorNamespace = Flag{
 		Name:       "node-collector-namespace",
 		ConfigName: "node.collector.namespace",
-		Value:      "trivy-temp",
+		Default:    "trivy-temp",
 		Usage:      "specify the namespace in which the node-collector job should be deployed",
 	}
 	ExcludeNodes = Flag{
 		Name:       "exclude-nodes",
 		ConfigName: "exclude.nodes",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)",
 	}
 )
