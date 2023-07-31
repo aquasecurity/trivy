@@ -2,7 +2,7 @@
 Trivy provides various methods for filtering the results.
 
 
-## Hide Unfixed Vulnerabilities
+## By Status
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -11,52 +11,69 @@ Trivy provides various methods for filtering the results.
 |      Secret      |           |
 |     License      |           |
 
-By default, `Trivy` also detects unpatched/unfixed vulnerabilities.
-This means you can't fix these vulnerabilities even if you update all packages.
-If you would like to ignore them, use the `--ignore-unfixed` option.
+Trivy supports the following vulnerability statuses:
+
+- `unknown`
+- `not_affected`: this package is not affected by this vulnerability on this platform
+- `affected`: this package is affected by this vulnerability on this platform, but there is no patch released yet
+- `fixed`: this vulnerability is fixed on this platform
+- `under_investigation`: it is currently unknown whether or not this vulnerability affects this package on this platform, and it is under investigation
+- `will_not_fix`: this package is affected by this vulnerability on this platform, but there is currently no intention to fix it (this would primarily be for flaws that are of Low or Moderate impact that pose no significant risk to customers)
+- `fix_deferred`: this package is affected by this vulnerability on this platform, and may be fixed in the future
+- `end_of_life`: this package has been identified to contain the impacted component, but analysis to determine whether it is affected or not by this vulnerability was not performed
+
+Note that vulnerabilities with the `unknown`, `not_affected` or `under_investigation` status are not detected.
+These are only defined for comprehensiveness, and you will not have the opportunity to specify these statuses.
+
+Some statuses are supported in limited distributions.
+
+|     OS     | Fixed | Affected | Under Investigation | Will Not Fix | Fix Deferred | End of Life |
+|:----------:|:-----:|:--------:|:-------------------:|:------------:|:------------:|:-----------:|
+|   Debian   |   ✓   |    ✓     |                     |              |      ✓       |      ✓      |
+|    RHEL    |   ✓   |    ✓     |          ✓          |      ✓       |      ✓       |      ✓      |
+| Other OSes |   ✓   |    ✓     |                     |              |              |             |
+
+
+To ignore vulnerabilities with specific statuses, use the `--ignore-status <list_of_statuses>` option.
+
 
 ```bash
-$ trivy image --ignore-unfixed ruby:2.4.0
+$ trivy image --ignore-status affected,fixed ruby:2.4.0
 ```
 
 <details>
 <summary>Result</summary>
 
 ```
-2019-05-16T12:49:52.656+0900    INFO    Updating vulnerability database...
 2019-05-16T12:50:14.786+0900    INFO    Detecting Debian vulnerabilities...
 
 ruby:2.4.0 (debian 8.7)
 =======================
-Total: 4730 (UNKNOWN: 1, LOW: 145, MEDIUM: 3487, HIGH: 1014, CRITICAL: 83)
+Total: 527 (UNKNOWN: 0, LOW: 276, MEDIUM: 83, HIGH: 158, CRITICAL: 10)
 
-+------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
-|           LIBRARY            | VULNERABILITY ID | SEVERITY |     INSTALLED VERSION      |          FIXED VERSION           |                        TITLE                        |
-+------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
-| apt                          | CVE-2019-3462    | CRITICAL | 1.0.9.8.3                  | 1.0.9.8.5                        | Incorrect sanitation of the                         |
-|                              |                  |          |                            |                                  | 302 redirect field in HTTP                          |
-|                              |                  |          |                            |                                  | transport method of...                              |
-+                              +------------------+----------+                            +----------------------------------+-----------------------------------------------------+
-|                              | CVE-2016-1252    | MEDIUM   |                            | 1.0.9.8.4                        | The apt package in Debian                           |
-|                              |                  |          |                            |                                  | jessie before 1.0.9.8.4, in                         |
-|                              |                  |          |                            |                                  | Debian unstable before...                           |
-+------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
-| bash                         | CVE-2019-9924    | HIGH     | 4.3-11                     | 4.3-11+deb8u2                    | bash: BASH_CMD is writable in                       |
-|                              |                  |          |                            |                                  | restricted bash shells                              |
-+                              +------------------+          +                            +----------------------------------+-----------------------------------------------------+
-|                              | CVE-2016-7543    |          |                            | 4.3-11+deb8u1                    | bash: Specially crafted                             |
-|                              |                  |          |                            |                                  | SHELLOPTS+PS4 variables allows                      |
-|                              |                  |          |                            |                                  | command substitution                                |
-+                              +------------------+----------+                            +                                  +-----------------------------------------------------+
-|                              | CVE-2016-0634    | MEDIUM   |                            |                                  | bash: Arbitrary code execution                      |
-|                              |                  |          |                            |                                  | via malicious hostname                              |
-+                              +------------------+----------+                            +----------------------------------+-----------------------------------------------------+
-|                              | CVE-2016-9401    | LOW      |                            | 4.3-11+deb8u2                    | bash: popd controlled free                          |
-+------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
+┌─────────────────────────────┬──────────────────┬──────────┬──────────────┬────────────────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
+│           Library           │  Vulnerability   │ Severity │    Status    │     Installed Version      │ Fixed Version │                            Title                             │
+├─────────────────────────────┼──────────────────┼──────────┼──────────────┼────────────────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ binutils                    │ CVE-2014-9939    │ CRITICAL │ will_not_fix │ 2.25-5                     │               │ binutils: buffer overflow in ihex.c                          │
+│                             │                  │          │              │                            │               │ https://avd.aquasec.com/nvd/cve-2014-9939                    │
+│                             ├──────────────────┤          │              │                            ├───────────────┼──────────────────────────────────────────────────────────────┤
+│                             │ CVE-2017-6969    │          │              │                            │               │ binutils: Heap-based buffer over-read in readelf when        │
+│                             │                  │          │              │                            │               │ processing corrupt RL78 binaries                             │
+│                             │                  │          │              │                            │               │ https://avd.aquasec.com/nvd/cve-2017-6969                    │
+│                             ├──────────────────┤          │              │                            ├───────────────┼──────────────────────────────────────────────────────────────┤
 ...
 ```
 
 </details>
+
+!!! tip
+    To skip all unfixed vulnerabilities, you can use the `--ignore-unfixed` flag .
+    It is a shorthand of `-ignore-status affected,will_not_fix,fix_deferred,end_of_life`.
+    It displays "fixed" vulnerabilities only.
+
+```bash
+$ trivy image --ignore-unfixed ruby:2.4.0
+```
 
 ## By Severity
 

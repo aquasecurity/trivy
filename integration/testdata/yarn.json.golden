@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/yarn",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/yarn",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -40,6 +40,7 @@
           "PkgName": "jquery",
           "InstalledVersion": "3.2.1",
           "FixedVersion": "3.4.0",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",

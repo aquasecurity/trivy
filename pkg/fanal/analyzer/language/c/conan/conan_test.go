@@ -27,7 +27,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Conan,
 						FilePath: "testdata/happy.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "openssl/3.0.5",
 								Name:    "openssl",
@@ -67,9 +67,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 
 			if got != nil {
 				for _, app := range got.Applications {
-					sort.Slice(app.Libraries, func(i, j int) bool {
-						return app.Libraries[i].ID < app.Libraries[j].ID
-					})
+					sort.Sort(app.Libraries)
 				}
 			}
 

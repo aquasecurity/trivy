@@ -22,43 +22,43 @@ var (
 	ClearCacheFlag = Flag{
 		Name:       "clear-cache",
 		ConfigName: "cache.clear",
-		Value:      false,
+		Default:    false,
 		Usage:      "clear image caches without scanning",
 	}
 	CacheBackendFlag = Flag{
 		Name:       "cache-backend",
 		ConfigName: "cache.backend",
-		Value:      "fs",
+		Default:    "fs",
 		Usage:      "cache backend (e.g. redis://localhost:6379)",
 	}
 	CacheTTLFlag = Flag{
 		Name:       "cache-ttl",
 		ConfigName: "cache.ttl",
-		Value:      time.Duration(0),
+		Default:    time.Duration(0),
 		Usage:      "cache TTL when using redis as cache backend",
 	}
 	RedisTLSFlag = Flag{
 		Name:       "redis-tls",
 		ConfigName: "cache.redis.tls",
-		Value:      false,
+		Default:    false,
 		Usage:      "enable redis TLS with public certificates, if using redis as cache backend",
 	}
 	RedisCACertFlag = Flag{
 		Name:       "redis-ca",
 		ConfigName: "cache.redis.ca",
-		Value:      "",
+		Default:    "",
 		Usage:      "redis ca file location, if using redis as cache backend",
 	}
 	RedisCertFlag = Flag{
 		Name:       "redis-cert",
 		ConfigName: "cache.redis.cert",
-		Value:      "",
+		Default:    "",
 		Usage:      "redis certificate file location, if using redis as cache backend",
 	}
 	RedisKeyFlag = Flag{
 		Name:       "redis-key",
 		ConfigName: "cache.redis.key",
-		Value:      "",
+		Default:    "",
 		Usage:      "redis key file location, if using redis as cache backend",
 	}
 )

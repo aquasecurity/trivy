@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/pnpm",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/pnpm",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -26,6 +26,7 @@
           "PkgName": "jquery",
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
@@ -142,6 +143,7 @@
           "PkgName": "lodash",
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10744",

@@ -42,7 +42,7 @@ nav:
           - Container Image: docs/target/container_image.md
           - Filesystem: docs/target/filesystem.md
           - Rootfs: docs/target/rootfs.md
-          - Git Repository: docs/target/git-repository.md
+          - Code Repository: docs/target/repository.md
           - Virtual Machine Image: docs/target/vm.md
           - Kubernetes: docs/target/kubernetes.md
           - AWS: docs/target/aws.md

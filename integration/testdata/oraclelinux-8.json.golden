@@ -67,6 +67,7 @@
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-11.el8",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e1b9aa33b064e76023cc29e9fac51bcebe62740c92ed38f09ba6205ddd9aa6f4",
             "DiffID": "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
@@ -124,6 +125,7 @@
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-12.el8",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e1b9aa33b064e76023cc29e9fac51bcebe62740c92ed38f09ba6205ddd9aa6f4",
             "DiffID": "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"

@@ -143,7 +143,7 @@ Trivy has number of configuration flags for use with license scanning;
 Trivy license scanning can ignore licenses that are identified to explicitly remove them from the results using the `--ignored-licenses` flag;
 
 ```shell
-$ trivy image --scanners license --ignored-licenses MPL-2.0,MIT --severity LOW grafana/grafana:latest
+$ trivy image --scanners license --ignored-licenses MPL-2.0,MIT --severity HIGH grafana/grafana:latest
 2022-07-13T18:15:28.605Z        INFO    License scanning is enabled
 
 OS Packages (license)

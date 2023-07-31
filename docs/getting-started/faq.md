@@ -21,3 +21,5 @@ See [here](../docs/configuration/reporting.md#converting).
 ### How to run Trivy under air-gapped environment?
 See [here](../docs/advanced/air-gap.md).
 
+### Why `trivy fs` and `trivy repo` does not scan JAR files for vulnerabilities?
+See [here](../docs/target/repository.md#rationale).

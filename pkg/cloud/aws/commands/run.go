@@ -5,10 +5,9 @@ import (
 	"errors"
 	"strings"
 
-	"golang.org/x/exp/slices"
-
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/defsec/pkg/errs"
@@ -17,10 +16,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud/report"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
-	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
@@ -166,24 +163,6 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	log.Logger.Debug("Writing report to output...")
-	if opt.Compliance.Spec.ID != "" {
-		convertedResults := report.ConvertResults(results, cloud.ProviderAWS, opt.Services)
-		var crr []types.Results
-		for _, r := range convertedResults {
-			crr = append(crr, r.Results)
-		}
-
-		complianceReport, err := cr.BuildComplianceReport(crr, opt.Compliance)
-		if err != nil {
-			return xerrors.Errorf("compliance report build error: %w", err)
-		}
-
-		return cr.Write(complianceReport, cr.Option{
-			Format: opt.Format,
-			Report: opt.ReportFormat,
-			Output: opt.Output,
-		})
-	}
 
 	res := results.GetFailed()
 	if opt.MisconfOptions.IncludeNonFailures {

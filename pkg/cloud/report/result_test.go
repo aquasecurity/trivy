@@ -1,7 +1,8 @@
 package report
 
 import (
-	"bytes"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -68,15 +69,18 @@ See https://avd.aquasec.com/misconfig/avd-aws-9999
 				tt.options.AWSOptions.Services,
 			)
 
-			buffer := bytes.NewBuffer([]byte{})
-			tt.options.Output = buffer
+			output := filepath.Join(t.TempDir(), "output")
+			tt.options.Output = output
 			require.NoError(t, Write(report, tt.options, tt.fromCache))
+
+			b, err := os.ReadFile(output)
+			require.NoError(t, err)
 
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)
 			assert.Equal(t, tt.options.AWSOptions.Region, report.Region)
 			assert.ElementsMatch(t, tt.options.AWSOptions.Services, report.ServicesInScope)
-			assert.Equal(t, tt.expected, strings.ReplaceAll(buffer.String(), "\r\n", "\n"))
+			assert.Equal(t, tt.expected, strings.ReplaceAll(string(b), "\r\n", "\n"))
 		})
 	}
 }

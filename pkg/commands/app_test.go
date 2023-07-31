@@ -2,10 +2,16 @@ package commands
 
 import (
 	"bytes"
+	"io"
 	"testing"
 
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Test_showVersion(t *testing.T) {
@@ -152,12 +158,137 @@ Policy Bundle:
 		t.Run(test.name, func(t *testing.T) {
 			got := new(bytes.Buffer)
 			app := NewApp("test")
-			SetOut(got)
+			app.SetOut(got)
 			app.SetArgs(test.arguments)
 
 			err := app.Execute()
 			require.NoError(t, err)
 			assert.Equal(t, test.want, got.String())
+		})
+	}
+}
+
+func TestFlags(t *testing.T) {
+	type want struct {
+		format     types.Format
+		severities []dbTypes.Severity
+	}
+	tests := []struct {
+		name      string
+		arguments []string // 1st argument is path to trivy binaries
+		want      want
+		wantErr   string
+	}{
+		{
+			name: "happy path",
+			arguments: []string{
+				"test",
+			},
+			want: want{
+				format: types.FormatTable,
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityUnknown,
+					dbTypes.SeverityLow,
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityCritical,
+				},
+			},
+		},
+		{
+			name: "happy path with comma-separated severities",
+			arguments: []string{
+				"test",
+				"--severity",
+				"LOW,MEDIUM",
+			},
+			want: want{
+				format: types.FormatTable,
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+					dbTypes.SeverityMedium,
+				},
+			},
+		},
+		{
+			name: "happy path with repeated severities",
+			arguments: []string{
+				"test",
+				"--severity",
+				"LOW",
+				"--severity",
+				"HIGH",
+			},
+			want: want{
+				format: types.FormatTable,
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+					dbTypes.SeverityHigh,
+				},
+			},
+		},
+		{
+			name: "happy path with json",
+			arguments: []string{
+				"test",
+				"--format",
+				"json",
+				"--severity",
+				"CRITICAL",
+			},
+			want: want{
+				format: types.FormatJSON,
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+				},
+			},
+		},
+		{
+			name: "invalid format",
+			arguments: []string{
+				"test",
+				"--format",
+				"foo",
+			},
+			wantErr: `invalid argument "foo" for "-f, --format" flag`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			globalFlags := flag.NewGlobalFlagGroup()
+			rootCmd := NewRootCommand("dev", globalFlags)
+			rootCmd.SetErr(io.Discard)
+			rootCmd.SetOut(io.Discard)
+
+			flags := &flag.Flags{
+				ReportFlagGroup: flag.NewReportFlagGroup(),
+			}
+			cmd := &cobra.Command{
+				Use: "test",
+				RunE: func(cmd *cobra.Command, args []string) error {
+					// Bind
+					require.NoError(t, flags.Bind(cmd))
+
+					options, err := flags.ToOptions("dev", args, globalFlags)
+					require.NoError(t, err)
+
+					assert.Equal(t, tt.want.format, options.Format)
+					assert.Equal(t, tt.want.severities, options.Severities)
+					return nil
+				},
+			}
+			flags.AddFlags(cmd)
+			rootCmd.AddCommand(cmd)
+
+			rootCmd.SetArgs(tt.arguments)
+
+			err := rootCmd.Execute()
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }

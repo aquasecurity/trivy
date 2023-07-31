@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/cocoapods",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/cocoapods",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

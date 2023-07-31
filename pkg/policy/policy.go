@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	bundleVersion    = 0 // Latest released MAJOR version for defsec
-	bundleRepository = "ghcr.io/aquasecurity/defsec"
+	BundleVersion    = 0 // Latest released MAJOR version for defsec
+	BundleRepository = "ghcr.io/aquasecurity/defsec"
 	policyMediaType  = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
 	updateInterval   = 24 * time.Hour
 )
@@ -49,8 +49,9 @@ type Option func(*options)
 // Client implements policy operations
 type Client struct {
 	*options
-	policyDir string
-	quiet     bool
+	policyDir        string
+	policyBundleRepo string
+	quiet            bool
 }
 
 // Metadata holds default policy metadata
@@ -60,7 +61,7 @@ type Metadata struct {
 }
 
 // NewClient is the factory method for policy client
-func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
+func NewClient(cacheDir string, quiet bool, policyBundleRepo string, opts ...Option) (*Client, error) {
 	o := &options{
 		clock: clock.RealClock{},
 	}
@@ -69,17 +70,22 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
 		opt(o)
 	}
 
+	if policyBundleRepo == "" {
+		policyBundleRepo = fmt.Sprintf("%s:%d", BundleRepository, BundleVersion)
+	}
+
 	return &Client{
-		options:   o,
-		policyDir: filepath.Join(cacheDir, "policy"),
-		quiet:     quiet,
+		options:          o,
+		policyDir:        filepath.Join(cacheDir, "policy"),
+		policyBundleRepo: policyBundleRepo,
+		quiet:            quiet,
 	}, nil
 }
 
 func (c *Client) populateOCIArtifact() error {
 	if c.artifact == nil {
-		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
-		art, err := oci.NewArtifact(repo, c.quiet, types.RegistryOptions{})
+		log.Logger.Debugf("Using URL: %s to load policy bundle", c.policyBundleRepo)
+		art, err := oci.NewArtifact(c.policyBundleRepo, c.quiet, types.RegistryOptions{})
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}

@@ -282,7 +282,7 @@ func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Rep
 }
 
 func (r *runner) Report(opts flag.Options, report types.Report) error {
-	if err := pkgReport.Write(report, opts.ReportOpts()); err != nil {
+	if err := pkgReport.Write(report, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -325,7 +325,7 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 
 	// If vulnerability scanning and SBOM generation are disabled, it doesn't need to download the Java database.
 	if !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
-		!slices.Contains(pkgReport.SupportedSBOMFormats, opts.Format) {
+		!slices.Contains(types.SupportedSBOMFormats, opts.Format) {
 		return nil
 	}
 
@@ -372,7 +372,7 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	if opts.ResetPolicyBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true)
+		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.PolicyBundleRepository)
 		if err != nil {
 			return xerrors.Errorf("failed to instantiate policy client: %w", err)
 		}
@@ -497,7 +497,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// But we don't create client if vulnerability analysis is disabled and SBOM format is not used
 	// We need to disable jar analyzer to avoid errors
 	// TODO disable all languages that don't contain license information for this case
-	if !opts.Scanners.Enabled(types.VulnerabilityScanner) && !slices.Contains(pkgReport.SupportedSBOMFormats, opts.Format) {
+	if !opts.Scanners.Enabled(types.VulnerabilityScanner) && !slices.Contains(types.SupportedSBOMFormats, opts.Format) {
 		analyzers = append(analyzers, analyzer.TypeJar)
 	}
 
@@ -566,7 +566,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 		var downloadedPolicyPaths []string
 		var disableEmbedded bool
-		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate)
+		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate, opts.MisconfOptions.PolicyBundleRepository)
 		if err != nil {
 			if !opts.SkipPolicyUpdate {
 				log.Logger.Errorf("Falling back to embedded policies: %s", err)
@@ -576,17 +576,19 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			disableEmbedded = true
 		}
 		configScannerOptions = misconf.ScannerOption{
-			Trace:                   opts.Trace,
-			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:             append(opts.PolicyPaths, downloadedPolicyPaths...),
-			DataPaths:               opts.DataPaths,
-			HelmValues:              opts.HelmValues,
-			HelmValueFiles:          opts.HelmValueFiles,
-			HelmFileValues:          opts.HelmFileValues,
-			HelmStringValues:        opts.HelmStringValues,
-			TerraformTFVars:         opts.TerraformTFVars,
-			K8sVersion:              opts.K8sVersion,
-			DisableEmbeddedPolicies: disableEmbedded,
+			Trace:                    opts.Trace,
+			Namespaces:               append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
+			DataPaths:                opts.DataPaths,
+			HelmValues:               opts.HelmValues,
+			HelmValueFiles:           opts.HelmValueFiles,
+			HelmFileValues:           opts.HelmFileValues,
+			HelmStringValues:         opts.HelmStringValues,
+			TerraformTFVars:          opts.TerraformTFVars,
+			K8sVersion:               opts.K8sVersion,
+			DisableEmbeddedPolicies:  disableEmbedded,
+			DisableEmbeddedLibraries: disableEmbedded,
+			TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		}
 	}
 
@@ -610,7 +612,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	// SPDX needs to calculate digests for package files
 	var fileChecksum bool
-	if opts.Format == pkgReport.FormatSPDXJSON || opts.Format == pkgReport.FormatSPDX {
+	if opts.Format == types.FormatSPDXJSON || opts.Format == types.FormatSPDX {
 		fileChecksum = true
 	}
 

@@ -1,7 +1,8 @@
 package report
 
 import (
-	"bytes"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
@@ -320,19 +321,22 @@ Scan Overview for AWS Account
 				tt.options.AWSOptions.Services,
 			)
 
-			buffer := bytes.NewBuffer([]byte{})
-			tt.options.Output = buffer
+			output := filepath.Join(t.TempDir(), "output")
+			tt.options.Output = output
 			require.NoError(t, Write(report, tt.options, tt.fromCache))
 
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)
 			assert.Equal(t, tt.options.AWSOptions.Region, report.Region)
 			assert.ElementsMatch(t, tt.options.AWSOptions.Services, report.ServicesInScope)
+
+			b, err := os.ReadFile(output)
+			require.NoError(t, err)
 			if tt.options.Format == "json" {
 				// json output can be formatted/ordered differently - we just care that the data matches
-				assert.JSONEq(t, tt.expected, buffer.String())
+				assert.JSONEq(t, tt.expected, string(b))
 			} else {
-				assert.Equal(t, tt.expected, buffer.String())
+				assert.Equal(t, tt.expected, string(b))
 			}
 		})
 	}
