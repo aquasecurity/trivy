@@ -2,8 +2,6 @@ package npm
 
 import (
 	"os"
-	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,6 +35,12 @@ func TestParse(t *testing.T) {
 			want:     npmV2Libs,
 			wantDeps: npmDeps,
 		},
+		{
+			name:     "lock version v3 with workspace",
+			file:     "testdata/package-lock_v3_with_workspace.json",
+			want:     npmV3WithWorkspaceLibs,
+			wantDeps: npmV3WithWorkspaceDeps,
+		},
 	}
 
 	for _, tt := range tests {
@@ -47,40 +51,10 @@ func TestParse(t *testing.T) {
 			got, deps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
-			sortLibs(got)
-			sortLibs(tt.want)
-
 			assert.Equal(t, tt.want, got)
 			if tt.wantDeps != nil {
-				sortDeps(deps)
-				sortDeps(tt.wantDeps)
 				assert.Equal(t, tt.wantDeps, deps)
 			}
 		})
 	}
-}
-
-func sortDeps(deps []types.Dependency) {
-	sort.Slice(deps, func(i, j int) bool {
-		return strings.Compare(deps[i].ID, deps[j].ID) < 0
-	})
-
-	for i := range deps {
-		sort.Strings(deps[i].DependsOn)
-	}
-}
-
-func sortLibs(libs []types.Library) {
-	for _, lib := range libs {
-		sortLocations(lib.Locations)
-	}
-	sort.Slice(libs, func(i, j int) bool {
-		return strings.Compare(libs[i].ID, libs[j].ID) < 0
-	})
-}
-
-func sortLocations(locs []types.Location) {
-	sort.Slice(locs, func(i, j int) bool {
-		return locs[i].StartLine < locs[j].StartLine
-	})
 }

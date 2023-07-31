@@ -33,13 +33,14 @@ func UniqueLibraries(libs []types.Library) []types.Library {
 		} else if len(lib.Locations) > 0 {
 			// merge locations
 			l.Locations = append(l.Locations, lib.Locations...)
-			sort.Slice(l.Locations, func(i, j int) bool {
-				return l.Locations[i].StartLine < l.Locations[j].StartLine
-			})
+			sort.Sort(l.Locations)
 			unique[identifier] = l
 		}
 	}
-	return maps.Values(unique)
+	libSlice := maps.Values(unique)
+	sort.Sort(types.Libraries(libSlice))
+
+	return libSlice
 }
 
 func MergeMaps(parent, child map[string]string) map[string]string {

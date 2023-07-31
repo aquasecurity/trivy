@@ -101,4 +101,34 @@ var (
 		{ID: "type-is@1.6.18", Name: "type-is", Version: "1.6.18", Dev: false, Indirect: true, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz"}}, Locations: []types.Location{{StartLine: 288, EndLine: 299}}},
 		{ID: "unpipe@1.0.0", Name: "unpipe", Version: "1.0.0", Dev: false, Indirect: true, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz"}}, Locations: []types.Location{{StartLine: 300, EndLine: 307}}},
 	}
+
+	// docker run --name node --rm -it node@sha256:51dd437f31812df71108b81385e2945071ec813d5815fa3403855669c8f3432b sh
+	// mkdir node_v3_with_workspace && cd node_v3_with_workspace
+	// npm init --force
+	// npm init -w ./functions/func1 !!! use `function1` name for package
+	// grep -v "version" ./functions/func1/package.json > tmpfile && mv tmpfile ./functions/func1/package.json
+	// npm init -w ./functions/nested_func --force
+	// npm install --save debug@2.5.2
+	// sed -i 's/\^/=/g' package.json
+	// npm install --save debug@2.6.9 -w nested_func
+	// npm install nested_func -w function1
+	// grep -v "functions/func1" ./package.json > tmpfile && mv tmpfile ./package.json
+	// sed -i 's/functions\/nested_func/functions\/*/g' package.json
+	// npm update
+	// libraries are filled manually
+	npmV3WithWorkspaceLibs = []types.Library{
+		{ID: "debug@2.5.2", Name: "debug", Version: "2.5.2", Indirect: false, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "https://registry.npmjs.org/debug/-/debug-2.5.2.tgz"}}, Locations: []types.Location{{StartLine: 39, EndLine: 46}}},
+		{ID: "debug@2.6.9", Name: "debug", Version: "2.6.9", Indirect: true, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz"}}, Locations: []types.Location{{StartLine: 31, EndLine: 38}}},
+		{ID: "function1@", Name: "function1", Version: "", Indirect: false, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "functions/func1"}}, Locations: []types.Location{{StartLine: 18, EndLine: 23}}},
+		{ID: "ms@0.7.2", Name: "ms", Version: "0.7.2", Indirect: true, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "https://registry.npmjs.org/ms/-/ms-0.7.2.tgz"}}, Locations: []types.Location{{StartLine: 47, EndLine: 51}}},
+		{ID: "ms@2.0.0", Name: "ms", Version: "2.0.0", Indirect: true, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"}}, Locations: []types.Location{{StartLine: 56, EndLine: 60}}},
+		{ID: "nested_func@1.0.0", Name: "nested_func", Version: "1.0.0", Indirect: false, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "functions/nested_func"}}, Locations: []types.Location{{StartLine: 24, EndLine: 30}}},
+	}
+
+	npmV3WithWorkspaceDeps = []types.Dependency{
+		{ID: "debug@2.5.2", DependsOn: []string{"ms@0.7.2"}},
+		{ID: "debug@2.6.9", DependsOn: []string{"ms@2.0.0"}},
+		{ID: "function1@", DependsOn: []string{"nested_func@1.0.0"}},
+		{ID: "nested_func@1.0.0", DependsOn: []string{"debug@2.6.9"}},
+	}
 )
