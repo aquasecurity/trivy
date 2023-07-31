@@ -424,8 +424,8 @@ func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
 		Service:   flat.RuleService,
 		StartLine: flat.Location.StartLine,
 		EndLine:   flat.Location.EndLine,
-		Occurrences: lo.Map(flat.Occurrences, func(o scan.Occurrence, _ int) types.Occurence {
-			return types.Occurence{
+		Occurrences: lo.Map(flat.Occurrences, func(o scan.Occurrence, _ int) types.Occurrence {
+			return types.Occurrence{
 				Resource: o.Resource,
 				Filename: o.Filename,
 				Location: types.Location{
