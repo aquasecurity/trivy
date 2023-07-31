@@ -440,7 +440,7 @@ func TestRepository(t *testing.T) {
 
 			// Setup the output file
 			outputFile := filepath.Join(t.TempDir(), "output.json")
-			if *update {
+			if *update && tt.override == nil {
 				outputFile = tt.golden
 			}
 
