@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/pom",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/pom",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -25,6 +25,7 @@
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.4",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-9548",
@@ -80,6 +81,7 @@
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.7",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-20190",

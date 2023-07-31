@@ -80,6 +80,7 @@
           "PkgID": "bash@4.2.46-33.el7.x86_64",
           "PkgName": "bash",
           "InstalledVersion": "4.2.46-33.el7",
+          "Status": "will_not_fix",
           "Layer": {
             "Digest": "sha256:7b1c937e0f6794db2535be6e4cb6d60a0b668ef78c2576611a3fb9c97a95ccdf",
             "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"

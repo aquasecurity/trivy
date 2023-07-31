@@ -237,7 +237,7 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 
 	case ftypes.ArtifactVM:
 		root.Type = cdx.ComponentTypeContainer
-	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
+	case ftypes.ArtifactFilesystem, ftypes.ArtifactRepository:
 		root.Type = cdx.ComponentTypeApplication
 	}
 

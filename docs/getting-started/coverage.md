@@ -55,4 +55,4 @@ Trivy reads IaC & configuration languages for the purpose of misconfiguration de
 - Azure ARM Template
 - Helm Chart
 
-For more information about checks [see here](../docs/misconfiguration/policy/builtin.md).
+For more information about checks [see here](../docs/scanner/misconfiguration/policy/builtin.md).

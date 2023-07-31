@@ -29,6 +29,7 @@
           "PkgID": "bash@5.1-6ubuntu1",
           "PkgName": "bash",
           "InstalledVersion": "5.1-6ubuntu1",
+          "Status": "affected",
           "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-3715",

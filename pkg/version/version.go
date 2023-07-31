@@ -81,7 +81,7 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 	}
 
 	var pbMeta *policy.Metadata
-	pc, err := policy.NewClient(cacheDir, false)
+	pc, err := policy.NewClient(cacheDir, false, "")
 	if err != nil {
 		log.Logger.Debugw("Failed to instantiate policy client", "error", err)
 	}

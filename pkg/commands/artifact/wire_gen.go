@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	local2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/repo"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -98,7 +98,7 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
-	artifactArtifact, cleanup, err := remote.NewArtifact(url, artifactCache, artifactOption)
+	artifactArtifact, cleanup, err := repo.NewArtifact(url, artifactCache, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -198,7 +198,7 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 func initializeRemoteRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	artifactArtifact, cleanup, err := remote.NewArtifact(url, artifactCache, artifactOption)
+	artifactArtifact, cleanup, err := repo.NewArtifact(url, artifactCache, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

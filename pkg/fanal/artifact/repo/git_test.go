@@ -1,6 +1,6 @@
 //go:build unix
 
-package remote
+package repo
 
 import (
 	"context"
@@ -39,7 +39,7 @@ func TestNewArtifact(t *testing.T) {
 	defer ts.Close()
 
 	type args struct {
-		rawurl     string
+		target     string
 		c          cache.ArtifactCache
 		noProgress bool
 		repoBranch string
@@ -52,9 +52,18 @@ func TestNewArtifact(t *testing.T) {
 		assertion assert.ErrorAssertionFunc
 	}{
 		{
-			name: "happy path",
+			name: "remote repo",
 			args: args{
-				rawurl:     ts.URL + "/test.git",
+				target:     ts.URL + "/test.git",
+				c:          nil,
+				noProgress: false,
+			},
+			assertion: assert.NoError,
+		},
+		{
+			name: "local repo",
+			args: args{
+				target:     "testdata",
 				c:          nil,
 				noProgress: false,
 			},
@@ -63,7 +72,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "happy noProgress",
 			args: args{
-				rawurl:     ts.URL + "/test.git",
+				target:     ts.URL + "/test.git",
 				c:          nil,
 				noProgress: true,
 			},
@@ -72,7 +81,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "branch",
 			args: args{
-				rawurl:     ts.URL + "/test.git",
+				target:     ts.URL + "/test.git",
 				c:          nil,
 				repoBranch: "valid-branch",
 			},
@@ -81,7 +90,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "tag",
 			args: args{
-				rawurl:  ts.URL + "/test.git",
+				target:  ts.URL + "/test.git",
 				c:       nil,
 				repoTag: "v1.0.0",
 			},
@@ -90,7 +99,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "commit",
 			args: args{
-				rawurl:     ts.URL + "/test.git",
+				target:     ts.URL + "/test.git",
 				c:          nil,
 				repoCommit: "6ac152fe2b87cb5e243414df71790a32912e778d",
 			},
@@ -99,7 +108,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "sad path",
 			args: args{
-				rawurl:     ts.URL + "/unknown.git",
+				target:     ts.URL + "/unknown.git",
 				c:          nil,
 				noProgress: false,
 			},
@@ -110,7 +119,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "invalid url",
 			args: args{
-				rawurl:     "ht tp://foo.com",
+				target:     "ht tp://foo.com",
 				c:          nil,
 				noProgress: false,
 			},
@@ -121,7 +130,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "invalid branch",
 			args: args{
-				rawurl:     ts.URL + "/test.git",
+				target:     ts.URL + "/test.git",
 				c:          nil,
 				repoBranch: "invalid-branch",
 			},
@@ -132,7 +141,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "invalid tag",
 			args: args{
-				rawurl:  ts.URL + "/test.git",
+				target:  ts.URL + "/test.git",
 				c:       nil,
 				repoTag: "v1.0.9",
 			},
@@ -143,7 +152,7 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "invalid commit",
 			args: args{
-				rawurl:     ts.URL + "/test.git",
+				target:     ts.URL + "/test.git",
 				c:          nil,
 				repoCommit: "6ac152fe2b87cb5e243414df71790a32912e778e",
 			},
@@ -155,7 +164,7 @@ func TestNewArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{
+			_, cleanup, err := NewArtifact(tt.args.target, tt.args.c, artifact.Option{
 				NoProgress: tt.args.noProgress,
 				RepoBranch: tt.args.repoBranch,
 				RepoTag:    tt.args.repoTag,
@@ -183,7 +192,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			rawurl: ts.URL + "/test.git",
 			want: types.ArtifactReference{
 				Name: ts.URL + "/test.git",
-				Type: types.ArtifactRemoteRepository,
+				Type: types.ArtifactRepository,
 				ID:   "sha256:1fa928c33b16a335015ce96e1384127f8463c4f27ed0786806a6d4584b63d091",
 				BlobIDs: []string{
 					"sha256:1fa928c33b16a335015ce96e1384127f8463c4f27ed0786806a6d4584b63d091",

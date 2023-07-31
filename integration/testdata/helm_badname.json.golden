@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/helm_badname",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/helm_badname",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

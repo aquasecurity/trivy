@@ -65,39 +65,40 @@ trivy aws [flags]
 ### Options
 
 ```
-      --account string                  The AWS account to scan. It's useful to specify this when reviewing cached results for multiple accounts.
-      --arn string                      The AWS ARN to show results for. Useful to filter results once a scan is cached.
-      --compliance string               compliance report to generate (aws-cis-1.2,aws-cis-1.4)
-      --config-data strings             specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings           specify the paths to the Rego policy files or to the directories containing them, applying config files
-      --dependency-tree                 [EXPERIMENTAL] show dependency origin tree of vulnerable packages
-      --endpoint string                 AWS Endpoint override
-      --exit-code int                   specify exit code when any security issues are found
-  -f, --format string                   format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
-      --helm-set strings                specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
-      --helm-set-file strings           specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
-      --helm-set-string strings         specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
-      --helm-values strings             specify paths to override the Helm values.yaml files
-  -h, --help                            help for aws
-      --ignore-policy string            specify the Rego file path to evaluate each vulnerability
-      --ignorefile string               specify .trivyignore file (default ".trivyignore")
-      --include-non-failures            include successes and exceptions, available with '--scanners config'
-      --list-all-pkgs                   enabling the option will output all packages regardless of vulnerability
-      --max-cache-age duration          The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this. (default 24h0m0s)
-  -o, --output string                   output file name
-      --policy-namespaces strings       Rego namespaces
-      --region string                   AWS Region to scan
-      --report string                   specify a report format for the output (all,summary) (default "all")
-      --reset-policy-bundle             remove policy bundle
-      --service strings                 Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.
-  -s, --severity strings                severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
-      --skip-policy-update              skip fetching rego policy updates
-      --skip-service strings            Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.
-  -t, --template string                 output template
-      --tf-exclude-downloaded-modules   remove results for downloaded modules in .terraform folder
-      --tf-vars strings                 specify paths to override the Terraform tfvars files
-      --trace                           enable more verbose trace output for custom queries
-      --update-cache                    Update the cache for the applicable cloud provider instead of using cached results.
+      --account string                    The AWS account to scan. It's useful to specify this when reviewing cached results for multiple accounts.
+      --arn string                        The AWS ARN to show results for. Useful to filter results once a scan is cached.
+      --compliance string                 compliance report to generate (aws-cis-1.2,aws-cis-1.4)
+      --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
+      --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
+      --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
+      --endpoint string                   AWS Endpoint override
+      --exit-code int                     specify exit code when any security issues are found
+  -f, --format string                     format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
+      --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
+      --helm-set-file strings             specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
+      --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
+      --helm-values strings               specify paths to override the Helm values.yaml files
+  -h, --help                              help for aws
+      --ignore-policy string              specify the Rego file path to evaluate each vulnerability
+      --ignorefile string                 specify .trivyignore file (default ".trivyignore")
+      --include-non-failures              include successes and exceptions, available with '--scanners config'
+      --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
+      --max-cache-age duration            The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this. (default 24h0m0s)
+  -o, --output string                     output file name
+      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/defsec:0")
+      --policy-namespaces strings         Rego namespaces
+      --region string                     AWS Region to scan
+      --report string                     specify a report format for the output (all,summary) (default "all")
+      --reset-policy-bundle               remove policy bundle
+      --service strings                   Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.
+  -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
+      --skip-policy-update                skip fetching rego policy updates
+      --skip-service strings              Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.
+  -t, --template string                   output template
+      --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder
+      --tf-vars strings                   specify paths to override the Terraform tfvars files
+      --trace                             enable more verbose trace output for custom queries
+      --update-cache                      Update the cache for the applicable cloud provider instead of using cached results.
 ```
 
 ### Options inherited from parent commands

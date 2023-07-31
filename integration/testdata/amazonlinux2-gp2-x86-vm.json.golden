@@ -30,6 +30,7 @@
           "PkgName": "bind-export-libs",
           "InstalledVersion": "32:9.11.4-26.P2.amzn2.5.2",
           "FixedVersion": "99:9.11.4-26.P2.amzn2.13",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-38177",
