@@ -285,7 +285,7 @@ func TestDockerEngine(t *testing.T) {
 			assert.NoError(t, err, tt.name)
 
 			// check for vulnerability output info
-			compareReports(t, tt.golden, output)
+			compareReports(t, tt.golden, output, nil)
 
 			// cleanup
 			_, err = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{

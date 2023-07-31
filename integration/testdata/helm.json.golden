@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/helm",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/helm",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

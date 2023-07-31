@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/pom",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/pom",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

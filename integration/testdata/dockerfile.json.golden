@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/dockerfile",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/dockerfile",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
