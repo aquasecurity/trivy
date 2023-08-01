@@ -238,6 +238,8 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/CycloneDX/cyclonedx-go v0.7.2-0.20230625092137-07e2f29defc3 h1:NqeV+ZMqpcosu0Xg2VW14Ru9ayBs/toe2oihS7sN6Xo=
 github.com/CycloneDX/cyclonedx-go v0.7.2-0.20230625092137-07e2f29defc3/go.mod h1:fGXSp1lCDfMQ8KR1EjxT4ewc5HHhGczRF2pWhLSWohs=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
+github.com/DmitriyLewen/go-dep-parser v0.0.0-20230801071957-241b33aea45b h1:H+nrm4wmD7v51cHGCa40/8lARctfcnA8reSRjdQ2qTc=
+github.com/DmitriyLewen/go-dep-parser v0.0.0-20230801071957-241b33aea45b/go.mod h1:Cl6aYro+Ddzh1MB451j/C6rvwKdn/Ifa7z98sFirJ9I=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
 github.com/MakeNowJust/heredoc v1.0.0 h1:cXCdzVdstXyiTqTvfqk9SDHpKNjxuom+DOlyEeQ4pzQ=
@@ -323,8 +325,6 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.91.0 h1:JGTiKL2UgnANZ4RoQQKokzpZ2vFv2LlXGoNjIypz9RQ=
 github.com/aquasecurity/defsec v0.91.0/go.mod h1:l/srzxtuuyb6c6FlqUvMp3xw2ZbvuZ0l9972MNJM7V8=
-github.com/aquasecurity/go-dep-parser v0.0.0-20230731081423-69e49e750d15 h1:kHCZ2eQkRMm08Kkg6U12s0cqthclWDGEwohM2mb4hhk=
-github.com/aquasecurity/go-dep-parser v0.0.0-20230731081423-69e49e750d15/go.mod h1:Cl6aYro+Ddzh1MB451j/C6rvwKdn/Ifa7z98sFirJ9I=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-mock-aws v0.0.0-20230328195059-5bf52338aec3 h1:Vt9y1gZS5JGY3tsL9zc++Cg4ofX51CG7PaMyC5SXWPg=
