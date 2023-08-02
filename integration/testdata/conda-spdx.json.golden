@@ -2,8 +2,8 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "testdata/fixtures/fs/conda",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/fs/conda-2738b2fe-b40c-4ecb-b8ae-5b3cc4cbc004",
+  "name": "testdata/fixtures/repo/conda",
+  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-08df146c-0996-4718-8648-b2a45769ab79",
   "creationInfo": {
     "licenseListVersion": "",
     "creators": [
@@ -58,8 +58,8 @@
       "primaryPackagePurpose": "LIBRARY"
     },
     {
-      "name": "testdata/fixtures/fs/conda",
-      "SPDXID": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
+      "name": "testdata/fixtures/repo/conda",
+      "SPDXID": "SPDXRef-Filesystem-2e2426fd0f2580ef",
       "downloadLocation": "NONE",
       "copyrightText": "",
       "attributionTexts": [
@@ -95,11 +95,11 @@
   "relationships": [
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
-      "relatedSpdxElement": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
+      "relatedSpdxElement": "SPDXRef-Filesystem-2e2426fd0f2580ef",
       "relationshipType": "DESCRIBES"
     },
     {
-      "spdxElementId": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
+      "spdxElementId": "SPDXRef-Filesystem-2e2426fd0f2580ef",
       "relatedSpdxElement": "SPDXRef-Application-ee5ef1aa4ac89125",
       "relationshipType": "CONTAINS"
     },

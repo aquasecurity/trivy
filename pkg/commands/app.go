@@ -1205,7 +1205,7 @@ func showVersion(cacheDir, outputFormat, version string, w io.Writer) error {
 	}
 
 	var pbMeta *policy.Metadata
-	pc, err := policy.NewClient(cacheDir, false)
+	pc, err := policy.NewClient(cacheDir, false, "")
 	if pc != nil && err == nil {
 		pbMeta, err = pc.GetMetadata()
 		if err != nil {

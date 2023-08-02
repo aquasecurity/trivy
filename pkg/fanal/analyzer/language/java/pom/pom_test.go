@@ -29,7 +29,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pom,
 						FilePath: "testdata/happy/pom.xml",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "com.example:example",
 								Version:  "1.0.0",
@@ -49,7 +49,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pom,
 						FilePath: "pom.xml",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "com.example:example",
 								Version:  "1.0.0",
@@ -68,7 +68,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pom,
 						FilePath: "testdata/requirements/pom.xml",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "com.example:example",
 								Version:  "2.0.0",

@@ -26,6 +26,7 @@ func TestDockerEngine(t *testing.T) {
 		imageTag      string
 		invalidImage  bool
 		ignoreUnfixed bool
+		ignoreStatus  []string
 		severity      []string
 		ignoreIDs     []string
 		input         string
@@ -102,6 +103,13 @@ func TestDockerEngine(t *testing.T) {
 			golden:        "testdata/centos-7-ignore-unfixed.json.golden",
 		},
 		{
+			name:         "centos 7, with --ignore-status option",
+			imageTag:     "ghcr.io/aquasecurity/trivy-test-images:centos-7",
+			ignoreStatus: []string{"will_not_fix"},
+			input:        "testdata/fixtures/images/centos-7.tar.gz",
+			golden:       "testdata/centos-7-ignore-unfixed.json.golden",
+		},
+		{
 			name:          "centos 7, with --ignore-unfixed option, with medium severity",
 			imageTag:      "ghcr.io/aquasecurity/trivy-test-images:centos-7",
 			ignoreUnfixed: true,
@@ -127,6 +135,13 @@ func TestDockerEngine(t *testing.T) {
 			imageTag:      "ghcr.io/aquasecurity/trivy-test-images:debian-buster",
 			input:         "testdata/fixtures/images/debian-buster.tar.gz",
 			golden:        "testdata/debian-buster-ignore-unfixed.json.golden",
+		},
+		{
+			name:         "debian buster/10, with --ignore-status option",
+			ignoreStatus: []string{"affected"},
+			imageTag:     "ghcr.io/aquasecurity/trivy-test-images:debian-buster",
+			input:        "testdata/fixtures/images/debian-buster.tar.gz",
+			golden:       "testdata/debian-buster-ignore-unfixed.json.golden",
 		},
 		{
 			name:     "debian stretch/9",
@@ -240,6 +255,12 @@ func TestDockerEngine(t *testing.T) {
 			if tt.ignoreUnfixed {
 				osArgs = append(osArgs, "--ignore-unfixed")
 			}
+
+			if len(tt.ignoreStatus) != 0 {
+				osArgs = append(osArgs,
+					[]string{"--ignore-status", strings.Join(tt.ignoreStatus, ",")}...,
+				)
+			}
 			if len(tt.severity) != 0 {
 				osArgs = append(osArgs,
 					[]string{"--severity", strings.Join(tt.severity, ",")}...,
@@ -264,7 +285,7 @@ func TestDockerEngine(t *testing.T) {
 			assert.NoError(t, err, tt.name)
 
 			// check for vulnerability output info
-			compareReports(t, tt.golden, output)
+			compareReports(t, tt.golden, output, nil)
 
 			// cleanup
 			_, err = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{

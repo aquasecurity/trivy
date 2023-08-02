@@ -497,7 +497,7 @@ func getPackageDownloadLocation(t ftypes.ArtifactType, artifactName string) stri
 	location := noneField
 	// this field is used for git/mercurial/subversion/bazaar:
 	// https://spdx.github.io/spdx-spec/v2.2.2/package-information/#77-package-download-location-field
-	if t == ftypes.ArtifactRemoteRepository {
+	if t == ftypes.ArtifactRepository {
 		// Trivy currently only supports git repositories. Format examples:
 		// git+https://git.myproject.org/MyProject.git
 		// git+http://git.myproject.org/MyProject

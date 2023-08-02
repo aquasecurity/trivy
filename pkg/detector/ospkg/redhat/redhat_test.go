@@ -69,6 +69,7 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2017-5953",
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
+					Status:           dbTypes.StatusWillNotFix,
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityLow.String(),

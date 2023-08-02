@@ -619,7 +619,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "http://test-aggregate",
-				ArtifactType:  ftypes.ArtifactRemoteRepository,
+				ArtifactType:  ftypes.ArtifactRepository,
 				Results: types.Results{
 					{
 						Target: "Node.js",

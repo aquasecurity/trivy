@@ -199,9 +199,12 @@ func execute(osArgs []string) error {
 	return app.Execute()
 }
 
-func compareReports(t *testing.T, wantFile, gotFile string) {
+func compareReports(t *testing.T, wantFile, gotFile string, override func(*types.Report)) {
 	want := readReport(t, wantFile)
 	got := readReport(t, gotFile)
+	if override != nil {
+		override(&want)
+	}
 	assert.Equal(t, want, got)
 }
 

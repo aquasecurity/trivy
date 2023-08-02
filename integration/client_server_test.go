@@ -236,21 +236,21 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/busybox-with-lockfile.json.golden",
 		},
 		{
-			name: "scan pox.xml with fs command in client/server mode",
+			name: "scan pox.xml with repo command in client/server mode",
 			args: csArgs{
-				Command:          "fs",
+				Command:          "repo",
 				RemoteAddrOption: "--server",
-				Target:           "testdata/fixtures/fs/pom/",
+				Target:           "testdata/fixtures/repo/pom/",
 			},
 			golden: "testdata/pom.json.golden",
 		},
 		{
-			name: "scan sample.pem with fs command in client/server mode",
+			name: "scan sample.pem with repo command in client/server mode",
 			args: csArgs{
-				Command:          "fs",
+				Command:          "repo",
 				RemoteAddrOption: "--server",
-				secretConfig:     "testdata/fixtures/fs/secrets/trivy-secret.yaml",
-				Target:           "testdata/fixtures/fs/secrets/",
+				secretConfig:     "testdata/fixtures/repo/secrets/trivy-secret.yaml",
+				Target:           "testdata/fixtures/repo/secrets/",
 			},
 			golden: "testdata/secrets.json.golden",
 		},
@@ -279,7 +279,7 @@ func TestClientServer(t *testing.T) {
 			err := execute(osArgs)
 			require.NoError(t, err)
 
-			compareReports(t, c.golden, outputFile)
+			compareReports(t, c.golden, outputFile, nil)
 		})
 	}
 }
@@ -328,11 +328,11 @@ func TestClientServerWithFormat(t *testing.T) {
 		{
 			name: "scan secrets with ASFF template",
 			args: csArgs{
-				Command:          "fs",
+				Command:          "repo",
 				RemoteAddrOption: "--server",
 				Format:           "template",
 				TemplatePath:     "@../contrib/asff.tpl",
-				Target:           "testdata/fixtures/fs/secrets/",
+				Target:           "testdata/fixtures/repo/secrets/",
 			},
 			golden: "testdata/secrets.asff.golden",
 		},
@@ -501,7 +501,7 @@ func TestClientServerWithToken(t *testing.T) {
 			}
 
 			require.NoError(t, err, c.name)
-			compareReports(t, c.golden, outputFile)
+			compareReports(t, c.golden, outputFile, nil)
 		})
 	}
 }
@@ -528,7 +528,7 @@ func TestClientServerWithRedis(t *testing.T) {
 		err := execute(osArgs)
 		require.NoError(t, err)
 
-		compareReports(t, golden, outputFile)
+		compareReports(t, golden, outputFile, nil)
 	})
 
 	// Terminate the Redis container
