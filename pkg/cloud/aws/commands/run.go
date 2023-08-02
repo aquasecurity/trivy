@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"golang.org/x/exp/slices"
@@ -22,7 +23,7 @@ import (
 
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
 
-func getAccountIDAndRegion(ctx context.Context, region string) (string, string, error) {
+func getAccountIDAndRegion(ctx context.Context, region, endpoint string) (string, string, error) {
 	log.Logger.Debug("Looking for AWS credentials provider...")
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
@@ -31,6 +32,19 @@ func getAccountIDAndRegion(ctx context.Context, region string) (string, string, 
 	}
 	if region != "" {
 		cfg.Region = region
+	}
+
+	if endpoint != "" {
+		endpointResolver := aws.EndpointResolverWithOptionsFunc(func(_, reg string, options ...interface{}) (aws.Endpoint, error) {
+			return aws.Endpoint{
+				PartitionID:   "aws",
+				URL:           endpoint,
+				SigningRegion: reg,
+				Source:        aws.EndpointSourceCustom,
+			}, nil
+		})
+
+		cfg.EndpointResolverWithOptions = endpointResolver
 	}
 
 	svc := sts.NewFromConfig(cfg)
@@ -82,7 +96,7 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 
 	if opt.Account == "" || opt.Region == "" {
 		var err error
-		opt.Account, opt.Region, err = getAccountIDAndRegion(ctx, opt.Region)
+		opt.Account, opt.Region, err = getAccountIDAndRegion(ctx, opt.Region, opt.Endpoint)
 		if err != nil {
 			return err
 		}
