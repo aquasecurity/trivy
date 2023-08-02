@@ -109,7 +109,7 @@ func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		return false
 	}
 
-	if fileName == types.YarnLock || fileName == types.NpmPkg && strings.Count(filePath, "node_modules") <= 1 {
+	if fileName == types.YarnLock || fileName == types.NpmPkg {
 		return true
 	}
 

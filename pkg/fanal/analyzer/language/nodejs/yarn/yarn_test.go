@@ -582,7 +582,7 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 		{
 			name:     "deep package.json",
 			filePath: "somedir/node_modules/canvg/node_modules/parse5/package.json",
-			want:     false,
+			want:     true,
 		},
 	}
 	for _, tt := range tests {
