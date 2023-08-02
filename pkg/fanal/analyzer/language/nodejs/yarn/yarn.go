@@ -67,7 +67,9 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 		traverseFunc := func(pkg packagejson.Package) error {
 			// Find all licenses from package.json files under node_modules or .yarn dirs
-			licenses[pkg.ID] = pkg.License
+			if pkg.License != "" {
+				licenses[pkg.ID] = pkg.License
+			}
 			return nil
 		}
 
