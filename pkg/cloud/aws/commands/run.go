@@ -5,8 +5,6 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -14,6 +12,7 @@ import (
 	"github.com/aquasecurity/defsec/pkg/errs"
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/trivy/pkg/cloud"
+	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud/report"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -26,25 +25,9 @@ var allSupportedServicesFunc = awsScanner.AllSupportedServices
 func getAccountIDAndRegion(ctx context.Context, region, endpoint string) (string, string, error) {
 	log.Logger.Debug("Looking for AWS credentials provider...")
 
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+	cfg, err := config.LoadDefaultAWSConfig(ctx, region, endpoint)
 	if err != nil {
 		return "", "", err
-	}
-	if region != "" {
-		cfg.Region = region
-	}
-
-	if endpoint != "" {
-		endpointResolver := aws.EndpointResolverWithOptionsFunc(func(_, reg string, options ...interface{}) (aws.Endpoint, error) {
-			return aws.Endpoint{
-				PartitionID:   "aws",
-				URL:           endpoint,
-				SigningRegion: reg,
-				Source:        aws.EndpointSourceCustom,
-			}, nil
-		})
-
-		cfg.EndpointResolverWithOptions = endpointResolver
 	}
 
 	svc := sts.NewFromConfig(cfg)
