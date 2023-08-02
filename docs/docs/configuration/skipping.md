@@ -113,4 +113,4 @@ A file pattern contains the analyzer it is used for, and the pattern itself, joi
 --file-patterns "dockerfile:.*.docker" --file-patterns "kubernetes:*.tpl" --file-patterns "pip:requirements-.*\.txt"
 ```
 
-The prefixes are listed [here](../../../pkg/fanal/analyzer/const.go)
+The prefixes are listed [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go)
