@@ -6,6 +6,8 @@ body:
         Feel free to raise a bug report if something doesn't work as expected.
         Please ensure that you're not creating a duplicate report by searching the [issues](https://github.com/aquasecurity/trivy/issues)/[discussions](https://github.com/aquasecurity/trivy/discussions) beforehand.
         
+        **Do not open a GitHub issue, please.** Maintainers triage discussions and then create issues.
+        
         Please also check [our contribution guidelines](https://aquasecurity.github.io/trivy/latest/community/contribute/discussion/).
   - type: input
     attributes:
