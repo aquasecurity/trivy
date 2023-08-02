@@ -104,9 +104,15 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dirs, fileName := splitPath(filePath)
-	if fileName == types.YarnLock || fileName == types.NpmPkg {
+
+	if fileName == types.YarnLock && containsAny(filePath, "node_modules", ".yarn/unplugged") {
+		return false
+	}
+
+	if fileName == types.YarnLock || fileName == types.NpmPkg && strings.Count(filePath, "node_modules") <= 1 {
 		return true
 	}
+
 	// The path is slashed in analyzers.
 	l := len(dirs)
 	// Valid path to the zip file - **/.yarn/cache/*.zip
@@ -115,6 +121,12 @@ func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	}
 
 	return false
+}
+
+func containsAny(s string, substrings ...string) bool {
+	return lo.SomeBy(substrings, func(item string) bool {
+		return strings.Contains(s, item)
+	})
 }
 
 func (a yarnAnalyzer) Type() analyzer.Type {

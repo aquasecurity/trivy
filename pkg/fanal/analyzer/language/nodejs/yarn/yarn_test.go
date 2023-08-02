@@ -569,6 +569,21 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			filePath: "cache/is-number-npm-6.0.0-30881e83e6-f73bfced03.zip",
 			want:     false,
 		},
+		{
+			name:     "yarn.lock in node_modules",
+			filePath: "somedir/node_modules/uri-js/yarn.lock",
+			want:     false,
+		},
+		{
+			name:     "yarn.lock in unplugged",
+			filePath: "somedir/.yarn/unplugged/uri-js/yarn.lock",
+			want:     false,
+		},
+		{
+			name:     "deep package.json",
+			filePath: "somedir/node_modules/canvg/node_modules/parse5/package.json",
+			want:     false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
