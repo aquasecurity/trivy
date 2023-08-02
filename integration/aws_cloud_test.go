@@ -32,7 +32,7 @@ func TestAwsCommandRun(t *testing.T) {
 				"AWS_ACCESS_KEY_ID":     "test",
 				"AWS_SECRET_ACCESS_KEY": "test",
 			},
-			wantErr: "AWS region is required",
+			wantErr: "Invalid Configuration: Missing Region",
 		},
 		{
 			name: "fail without creds",
@@ -85,8 +85,8 @@ func setupLocalStack(t *testing.T, ctx context.Context) (*localstack.LocalStackC
 			},
 		},
 	))
-
 	require.NoError(t, err)
+
 	p, err := container.MappedPort(ctx, "4566/tcp")
 	require.NoError(t, err)
 
