@@ -3100,13 +3100,23 @@ You're not viewing the latest version.
 </tbody>
 </table>
 <p>By default, Trivy traverses directories and searches for all necessary files for scanning.
-You can skip files that you don't maintain using the <code>--skip-files</code> flag.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --skip-files &quot;/Gemfile.lock&quot; --skip-files &quot;/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock&quot; quay.io/fluentd_elasticsearch/fluentd:v2.9.0
-</code></pre></div>
+You can skip files that you don't maintain using the <code>--skip-files</code> flag, or the equivalent Trivy YAML config option.</p>
+<p>Using the <code>--skip-files</code> flag:
+<div class="highlight"><pre><span></span><code>$ trivy image --skip-files <span class="s2">&quot;/Gemfile.lock&quot;</span> --skip-files <span class="s2">&quot;/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock&quot;</span> quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+</code></pre></div></p>
+<p>Using the Trivy YAML configuration:
+<div class="highlight"><pre><span></span><code><span class="nt">image</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">skip-files</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;testdata/*/bar&quot;</span><span class="w"></span>
+</code></pre></div></p>
 <p>It's possible to specify globs as part of the value.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --skip-files <span class="s2">&quot;./testdata/*/bar&quot;</span> .
 </code></pre></div>
-<p>Will skip any file named <code>bar</code> in the subdirectories of testdata.</p>
+<p>This will skip any file named <code>bar</code> in the subdirectories of testdata.</p>
+<div class="highlight"><pre><span></span><code>$ trivy config --skip-files <span class="s2">&quot;./foo/**/*.tf&quot;</span> .
+</code></pre></div>
+<p>This will skip any files with the extension <code>.tf</code> in subdirectories of foo at any depth.</p>
 <h2 id="skip-directories">Skip Directories</h2>
 <table>
 <thead>
@@ -3135,22 +3145,33 @@ You can skip files that you don't maintain using the <code>--skip-files</code> f
 </tbody>
 </table>
 <p>By default, Trivy traverses directories and searches for all necessary files for scanning.
-You can skip directories that you don't maintain using the <code>--skip-dirs</code> flag.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --skip-dirs /var/lib/gems/2.5.0/gems/fluent-plugin-detect-exceptions-0.0.13 --skip-dirs &quot;/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0&quot; quay.io/fluentd_elasticsearch/fluentd:v2.9.0
-</code></pre></div>
+You can skip directories that you don't maintain using the <code>--skip-dirs</code> flag, or the equivalent Trivy YAML config option.</p>
+<p>Using the <code>--skip-dirs</code> flag:
+<div class="highlight"><pre><span></span><code>$ trivy image --skip-dirs /var/lib/gems/2.5.0/gems/fluent-plugin-detect-exceptions-0.0.13 --skip-dirs <span class="s2">&quot;/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0&quot;</span> quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+</code></pre></div></p>
+<p>Using the Trivy YAML configuration:
+<div class="highlight"><pre><span></span><code><span class="nt">image</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">skip-dirs</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo/bar/</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/.terraform&quot;</span><span class="w"></span>
+</code></pre></div></p>
 <p>It's possible to specify globs as part of the value.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --skip-dirs <span class="s2">&quot;./testdata/*&quot;</span> .
 </code></pre></div>
-<p>Will skip all subdirectories of the testdata directory.</p>
+<p>This will skip all subdirectories of the testdata directory.</p>
+<div class="highlight"><pre><span></span><code>$ trivy config --skip-dirs <span class="s2">&quot;**/.terraform&quot;</span> .
+</code></pre></div>
+<p>This will skip subdirectories at any depth named <code>.terraform/</code>. (Note: this will match <code>./foo/.terraform</code> or
+<code>./foo/bar/.terraform</code>, but not <code>./.terraform</code>.)</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Glob patterns work with any trivy subcommand (image, config, etc.) and can be specified to skip both directories (with <code>--skip-dirs</code>) and files (with <code>--skip-files</code>).</p>
 </div>
 <h3 id="advanced-globbing">Advanced globbing</h3>
-<p>Trivy also supports the <a href="https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching">globstar</a> pattern matching. </p>
+<p>Trivy also supports bash style <a href="https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching">extended</a> glob pattern matching.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --skip-files <span class="s2">&quot;**/foo&quot;</span> image:tag
 </code></pre></div>
-<p>Will skip the file <code>foo</code> that happens to be nested under any parent(s). </p>
+<p>This will skip the file <code>foo</code> that happens to be nested under any parent(s). </p>
 <h2 id="file-patterns">File patterns</h2>
 <table>
 <thead>
@@ -3186,7 +3207,7 @@ For example, it may be useful when your file name of Dockerfile doesn't match th
 <p>A file pattern contains the analyzer it is used for, and the pattern itself, joined by a semicolon. For example:
 <div class="highlight"><pre><span></span><code>--file-patterns &quot;dockerfile:.*.docker&quot; --file-patterns &quot;kubernetes:*.tpl&quot; --file-patterns &quot;pip:requirements-.*\.txt&quot;
 </code></pre></div></p>
-<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/d19c7d9f292759848aa77109357b405a64716c78/pkg/fanal/analyzer/const.go">here</a></p>
+<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/6d3ae3bcf2a7d50120dfd12a1366dd214ac94779/pkg/fanal/analyzer/const.go">here</a></p>
 
               
             </article>
