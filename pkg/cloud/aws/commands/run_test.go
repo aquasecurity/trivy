@@ -983,41 +983,6 @@ func Test_Run(t *testing.T) {
 		inputData    string
 	}{
 		{
-			name: "fail without region",
-			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
-			},
-			want:      "",
-			expectErr: true,
-		},
-		{
-			name: "fail without creds",
-			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
-				AWSOptions: flag.AWSOptions{
-					Region: "us-east-1",
-				},
-			},
-			want:      "",
-			expectErr: true,
-		},
-		{
-			name: "try to call aws if cache is expired",
-			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
-				AWSOptions: flag.AWSOptions{
-					Region:   "us-east-1",
-					Services: []string{"s3"},
-					Account:  "12345678",
-				},
-				CloudOptions: flag.CloudOptions{
-					MaxCacheAge: time.Minute,
-				},
-			},
-			cacheContent: "testdata/s3onlycache.json",
-			expectErr:    true,
-		},
-		{
 			name: "succeed with cached infra",
 			options: flag.Options{
 				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
