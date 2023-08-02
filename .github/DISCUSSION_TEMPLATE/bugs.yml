@@ -8,6 +8,8 @@ body:
         Please ensure that you're not creating a duplicate report by searching the [issues](https://github.com/aquasecurity/trivy/issues)/[discussions](https://github.com/aquasecurity/trivy/discussions) beforehand.
         If you see any false positives or false negatives, please file a ticket [here](https://github.com/aquasecurity/trivy/discussions/new?category=false-detection).
         
+        **Do not open a GitHub issue, please.** Maintainers triage discussions and then create issues.
+        
         Please also check [our contribution guidelines](https://aquasecurity.github.io/trivy/latest/community/contribute/discussion/).
   - type: textarea
     attributes:
