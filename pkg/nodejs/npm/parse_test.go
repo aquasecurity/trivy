@@ -41,6 +41,12 @@ func TestParse(t *testing.T) {
 			want:     npmV3WithWorkspaceLibs,
 			wantDeps: npmV3WithWorkspaceDeps,
 		},
+		{
+			name:     "lock version v3 with workspace and without direct deps field",
+			file:     "testdata/package-lock_v3_without_root_deps_field.json",
+			want:     npmV3WithoutRootDepsField,
+			wantDeps: npmV3WithoutRootDepsFieldDeps,
+		},
 	}
 
 	for _, tt := range tests {

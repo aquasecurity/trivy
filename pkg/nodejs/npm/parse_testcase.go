@@ -131,4 +131,21 @@ var (
 		{ID: "function1@", DependsOn: []string{"nested_func@1.0.0"}},
 		{ID: "nested_func@1.0.0", DependsOn: []string{"debug@2.6.9"}},
 	}
+
+	// docker run --name node --rm -it node@sha256:51dd437f31812df71108b81385e2945071ec813d5815fa3403855669c8f3432b sh
+	// mkdir node_v3_without_direct_deps && cd node_v3_without_direct_deps
+	// npm init --force
+	// npm init -w ./functions/func1 --force
+	// npm install --save debug@2.6.9 -w func1
+	// libraries are filled manually
+	npmV3WithoutRootDepsField = []types.Library{
+		{ID: "debug@2.6.9", Name: "debug", Version: "2.6.9", Indirect: true, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz"}}, Locations: []types.Location{{StartLine: 22, EndLine: 29}}},
+		{ID: "func1@1.0.0", Name: "func1", Version: "1.0.0", Indirect: false, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "functions/func1"}}, Locations: []types.Location{{StartLine: 15, EndLine: 21}}},
+		{ID: "ms@2.0.0", Name: "ms", Version: "2.0.0", Indirect: true, ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"}}, Locations: []types.Location{{StartLine: 34, EndLine: 38}}},
+	}
+
+	npmV3WithoutRootDepsFieldDeps = []types.Dependency{
+		{ID: "debug@2.6.9", DependsOn: []string{"ms@2.0.0"}},
+		{ID: "func1@1.0.0", DependsOn: []string{"debug@2.6.9"}},
+	}
 )

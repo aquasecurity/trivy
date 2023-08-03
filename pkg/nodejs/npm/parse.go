@@ -178,7 +178,12 @@ func resolveLinks(packages map[string]Package) {
 		return
 	}
 
-	workspaces := packages[""].Workspaces
+	rootPkg := packages[""]
+	if rootPkg.Dependencies == nil {
+		rootPkg.Dependencies = make(map[string]string)
+	}
+
+	workspaces := rootPkg.Workspaces
 	for pkgPath, pkg := range packages {
 		for linkPath, link := range links {
 			if !strings.HasPrefix(pkgPath, link.Resolved) {
@@ -197,11 +202,12 @@ func resolveLinks(packages map[string]Package) {
 			delete(packages, pkgPath)
 
 			if isWorkspace(pkgPath, workspaces) {
-				packages[""].Dependencies[pkgNameFromPath(linkPath)] = pkg.Version
+				rootPkg.Dependencies[pkgNameFromPath(linkPath)] = pkg.Version
 			}
 			break
 		}
 	}
+	packages[""] = rootPkg
 }
 
 func isWorkspace(pkgPath string, workspaces []string) bool {
