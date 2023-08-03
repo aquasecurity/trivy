@@ -96,8 +96,8 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		}
 
 		// Parse package.json alongside yarn.lock to find direct deps and mark dev deps
-		if err = a.analyzeDependencies(input.FS, filepath.Dir(filePath), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to remove dev dependencies: %s", filepath.Join(filepath.Dir(filePath), types.NpmPkg), err)
+		if err = a.analyzeDependencies(input.FS, path.Dir(filePath), app); err != nil {
+			log.Logger.Warnf("Unable to parse %q to remove dev dependencies: %s", path.Join(path.Dir(filePath), types.NpmPkg), err)
 		}
 
 		// Fill licenses
@@ -162,7 +162,7 @@ func (a yarnAnalyzer) parseYarnLock(path string, r dio.ReadSeekerAt) (*types.App
 // analyzeDependencies analyzes the package.json file next to yarn.lock,
 // distinguishing between direct and transitive dependencies as well as production and development dependencies.
 func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application) error {
-	packageJsonPath := filepath.Join(dir, types.NpmPkg)
+	packageJsonPath := path.Join(dir, types.NpmPkg)
 	directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		log.Logger.Debugf("Yarn: %s not found", packageJsonPath)
@@ -311,7 +311,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 type traverseFunc func(path string, pkg packagejson.Package) error
 
 func (a yarnAnalyzer) traversePkgs(fsys fs.FS, lockPath string, fn traverseFunc) error {
-	dir := filepath.Dir(lockPath)
+	dir := path.Dir(lockPath)
 
 	nodeModulesPath := path.Join(dir, "node_modules")
 
