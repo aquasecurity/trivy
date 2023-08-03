@@ -77,11 +77,11 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 			}
 
 			licenseFilePath := path.Join(pkgPath, "LICENSE")
-
-			findings, err := classifyLicense(app.FilePath, licenseFilePath, a.licenseClassifierConfidenceLevel, input.FS)
+			findings, err := classifyLicense(licenseFilePath, a.licenseClassifierConfidenceLevel, input.FS)
 			if err != nil {
 				return err
 			}
+
 			// License found
 			if len(findings) > 0 {
 				licenses[pkg.ID] = lo.Map(findings, func(finding types.LicenseFinding, _ int) string {
@@ -345,7 +345,7 @@ func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, nodeModulesPath string
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 		}
-		return fn(filepath.Dir(filePath), pkg)
+		return fn(path.Dir(filePath), pkg)
 	}
 	if err := fsutils.WalkDir(fsys, nodeModulesPath, isNodeModulesPkg, walkDirFunc); err != nil {
 		return xerrors.Errorf("walk error: %w", err)
@@ -384,7 +384,7 @@ func (a yarnAnalyzer) traverseUnpluggedFolder(fsys fs.FS, root string, fn traver
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 		}
-		return fn(filepath.Dir(filePath), pkg)
+		return fn(path.Dir(filePath), pkg)
 	})
 	if err != nil {
 		return xerrors.Errorf("walk error: %w", err)
@@ -423,7 +423,7 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 			if err != nil {
 				return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 			}
-			return fn(filepath.Dir(filePath), pkg)
+			return fn(path.Dir(filePath), pkg)
 		}
 
 		return nil
@@ -450,8 +450,8 @@ func (a yarnAnalyzer) parsePackageJsonFromZip(f *zip.File) (packagejson.Package,
 	return pkg, nil
 }
 
-func classifyLicense(dir string, licPath string, classifierConfidenceLevel float64, fsys fs.FS) (types.LicenseFindings, error) {
-	f, err := fsys.Open(path.Join(filepath.Dir(dir), licPath))
+func classifyLicense(filePath string, classifierConfidenceLevel float64, fsys fs.FS) (types.LicenseFindings, error) {
+	f, err := fsys.Open(filePath)
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, nil
 	} else if err != nil {
@@ -459,7 +459,7 @@ func classifyLicense(dir string, licPath string, classifierConfidenceLevel float
 	}
 	defer f.Close()
 
-	l, err := licensing.Classify(licPath, f, classifierConfidenceLevel)
+	l, err := licensing.Classify(filePath, f, classifierConfidenceLevel)
 	if err != nil {
 		return nil, xerrors.Errorf("license classify error: %w", err)
 	}
