@@ -111,6 +111,18 @@ jobs:
             ghcr.io/aquasecurity/trivy:canary
             public.ecr.aws/aquasecurity/trivy:canary
 
+      # size of `dist` dir for release is large
+      # we need to remove unneeded binaries and archives
+      # to avoid cases when cache will be removed due to size
+      - name: remove unneeded binaries and archives
+        if: ${{ inputs.goreleaser_config == 'goreleaser.yml' }}
+        run: |
+          ls -hl dist
+          rm -r dist/build-*
+          rm -r dist/*tar.gz
+          rm -r dist/*zip
+          ls -hl dist
+
       - name: Cache Trivy binaries
         uses: actions/cache@v3.3.1
         with:
