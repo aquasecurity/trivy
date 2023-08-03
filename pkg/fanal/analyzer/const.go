@@ -84,6 +84,7 @@ const (
 	TypeMixLock Type = "mix-lock"
 
 	// Swift
+	TypeSwift     Type = "swift"
 	TypeCocoaPods Type = "cocoapods"
 
 	// Dart
