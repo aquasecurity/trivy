@@ -24,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
+	nodepath "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
@@ -139,6 +140,17 @@ func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	}
 
 	return false
+}
+
+func splitPath(filePath string) (dirs []string, fileName string) {
+	fileName = filepath.Base(filePath)
+	// The path is slashed in analyzers.
+	dirs = strings.Split(path.Dir(filePath), "/")
+	return dirs, fileName
+}
+
+func isNodeModulesPkg(filePath string, _ fs.DirEntry) bool {
+	return nodepath.IsNodeModulesPkgJson(filePath)
 }
 
 func containsAny(s string, substrings ...string) bool {
@@ -325,17 +337,6 @@ func (a yarnAnalyzer) traversePkgs(fsys fs.FS, lockPath string, fn traverseFunc)
 	return a.traverseYarnClassicPkgs(fsys, nodeModulesPath, fn)
 }
 
-func isNodeModulesPkg(path string, _ fs.DirEntry) bool {
-	return strings.HasSuffix(path, "package.json")
-}
-
-func splitPath(filePath string) (dirs []string, fileName string) {
-	fileName = filepath.Base(filePath)
-	// The path is slashed in analyzers.
-	dirs = strings.Split(path.Dir(filePath), "/")
-	return dirs, fileName
-}
-
 func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, nodeModulesPath string, fn traverseFunc) error {
 	// Traverse node_modules dir
 	// Note that fs.FS is always slashed regardless of the platform,
@@ -416,13 +417,15 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 		}
 
 		for _, f := range zr.File {
-			if filepath.Base(f.Name) != types.NpmPkg {
+			if !isNodeModulesPkg(f.Name, nil) {
 				continue
 			}
+
 			pkg, err := a.parsePackageJsonFromZip(f)
 			if err != nil {
 				return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 			}
+
 			return fn(path.Dir(filePath), pkg)
 		}
 
