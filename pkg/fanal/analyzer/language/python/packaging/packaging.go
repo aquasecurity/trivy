@@ -142,7 +142,7 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application
 func classifyLicense(dir string, licPath string, classifierConfidenceLevel float64, fsys fs.FS) (types.LicenseFindings, error) {
 	// Note that fs.FS is always slashed regardless of the platform,
 	// and path.Join should be used rather than filepath.Join.
-	f, err := fsys.Open(path.Join(filepath.Dir(dir), licPath))
+	f, err := fsys.Open(path.Join(path.Dir(dir), licPath))
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, nil
 	} else if err != nil {
