@@ -381,7 +381,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:    "binutils",
 						Version: "2.30-93.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv3+"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "GPLv3+",
+								},
+							},
 						},
 						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 						Supplier: &cdx.OrganizationalEntity{
@@ -840,7 +844,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:    "acl",
 						Version: "2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv2+"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "GPLv2+",
+								},
+							},
 						},
 						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
@@ -882,7 +890,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:    "glibc",
 						Version: "2.28-151.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv2+"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "GPLv2+",
+								},
+							},
 						},
 						PackageURL: "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
@@ -1484,7 +1496,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Version:    "0.20.1",
 						PackageURL: "pkg:npm/ruby-typeprof@0.20.1",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "MIT"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "MIT",
+								},
+							},
 						},
 						Properties: &[]cdx.Property{
 							{
