@@ -39,5 +39,9 @@ func LoadDefaultAWSConfig(ctx context.Context, region, endpoint string) (aws.Con
 		return aws.Config{}, xerrors.Errorf("aws config load error: %w", err)
 	}
 
+	if cfg.Region == "" {
+		return aws.Config{}, xerrors.New("aws region is required")
+	}
+
 	return cfg, nil
 }
