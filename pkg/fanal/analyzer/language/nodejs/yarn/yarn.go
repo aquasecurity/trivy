@@ -4,14 +4,15 @@ import (
 	"archive/zip"
 	"context"
 	"errors"
-	"github.com/spf13/afero"
-	"github.com/spf13/afero/zipfs"
 	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/spf13/afero"
+	"github.com/spf13/afero/zipfs"
 
 	"github.com/aquasecurity/trivy/pkg/licensing"
 
@@ -72,35 +73,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 		licenses := map[string][]string{}
 
-		traverseFunc := func(fsys fs.FS, pkgJsonPath string, pkg packagejson.Package) error {
-			// Find all licenses from package.json files under node_modules or .yarn dirs
-
-			if fsys == nil {
-				fsys = input.FS
-			}
-
-			if pkg.License != "" {
-				licenses[pkg.ID] = []string{pkg.License}
-				return nil
-			}
-
-			licenseFilePath := path.Join(path.Dir(pkgJsonPath), "LICENSE")
-
-			findings, err := classifyLicense(licenseFilePath, a.licenseClassifierConfidenceLevel, input.FS)
-			if err != nil {
-				return err
-			}
-
-			// License found
-			if len(findings) > 0 {
-				licenses[pkg.ID] = lo.Map(findings, func(finding types.LicenseFinding, _ int) string {
-					return finding.Name
-				})
-			}
-			return nil
-		}
-
-		if err := a.traversePkgs(input.FS, filePath, traverseFunc); err != nil {
+		if err := a.traversePkgs(input.FS, filePath, a.parseLicenses(licenses)); err != nil {
 			log.Logger.Errorf("Unable to traverse packages: %s", err)
 		}
 
@@ -148,6 +121,54 @@ func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	}
 
 	return false
+}
+
+// Find all licenses from package.json files or LICENSE files under node_modules or .yarn dirs
+func (a yarnAnalyzer) parseLicenses(licenses map[string][]string) traverseFunc {
+	return func(fsys fs.FS, root string) error {
+		if fsys == nil {
+			return xerrors.Errorf("fs.FS required")
+		}
+
+		walkDirFunc := func(pkgJsonPath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+
+			pkg, err := a.packageJsonParser.Parse(r)
+			if err != nil {
+				return xerrors.Errorf("unable to parse %q: %w", pkgJsonPath, err)
+			}
+
+			if pkg.License != "" {
+				licenses[pkg.ID] = []string{pkg.License}
+				return nil
+			}
+
+			log.Logger.Debugf(
+				"Licenses are missing in %q, an attempt to find them in the LICENSE file", pkgJsonPath)
+			licenseFilePath := path.Join(path.Dir(pkgJsonPath), "LICENSE")
+
+			findings, err := classifyLicense(licenseFilePath, a.licenseClassifierConfidenceLevel, fsys)
+			if err != nil {
+				return err
+			}
+
+			// License found
+			if len(findings) > 0 {
+				licenses[pkg.ID] = lo.Map(findings, func(finding types.LicenseFinding, _ int) string {
+					return finding.Name
+				})
+			} else {
+				log.Logger.Debugf(
+					"The license file %q was not found or the license could not be classified", licenseFilePath)
+			}
+			return nil
+		}
+
+		if err := fsutils.WalkDir(fsys, root, isNodeModulesPkg, walkDirFunc); err != nil {
+			return xerrors.Errorf("walk error: %w", err)
+		}
+
+		return nil
+	}
 }
 
 func splitPath(filePath string) (dirs []string, fileName string) {
@@ -328,7 +349,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 	return pkgs, nil
 }
 
-type traverseFunc func(fsys fs.FS, pkgJsonPath string, pkg packagejson.Package) error
+type traverseFunc func(fsys fs.FS, root string) error
 
 func (a yarnAnalyzer) traversePkgs(fsys fs.FS, lockPath string, fn traverseFunc) error {
 	dir := path.Dir(lockPath)
@@ -346,20 +367,7 @@ func (a yarnAnalyzer) traversePkgs(fsys fs.FS, lockPath string, fn traverseFunc)
 }
 
 func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, nodeModulesPath string, fn traverseFunc) error {
-	// Traverse node_modules dir
-	// Note that fs.FS is always slashed regardless of the platform,
-	// and path.Join should be used rather than filepath.Join.
-	walkDirFunc := func(pkgJsonPath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
-		pkg, err := a.packageJsonParser.Parse(r)
-		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", pkgJsonPath, err)
-		}
-		return fn(fsys, pkgJsonPath, pkg)
-	}
-	if err := fsutils.WalkDir(fsys, nodeModulesPath, isNodeModulesPkg, walkDirFunc); err != nil {
-		return xerrors.Errorf("walk error: %w", err)
-	}
-	return nil
+	return fn(fsys, nodeModulesPath)
 }
 
 func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS, root string, fn traverseFunc) error {
@@ -388,18 +396,7 @@ func (a yarnAnalyzer) traverseUnpluggedFolder(fsys fs.FS, root string, fn traver
 	}
 
 	// Traverse .yarn/unplugged dir
-	err := fsutils.WalkDir(fsys, unpluggedPath, isNodeModulesPkg, func(pkgJsonPath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
-		pkg, err := a.packageJsonParser.Parse(r)
-		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", pkgJsonPath, err)
-		}
-		return fn(fsys, pkgJsonPath, pkg)
-	})
-	if err != nil {
-		return xerrors.Errorf("walk error: %w", err)
-	}
-
-	return nil
+	return fn(fsys, unpluggedPath)
 }
 
 func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFunc) error {
@@ -424,21 +421,7 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 			return xerrors.Errorf("zip reader error: %w", err)
 		}
 
-		iofs := afero.NewIOFS(zipfs.New(zr))
-		walkDirFunc := func(pkgJsonPath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
-			pkg, err := a.packageJsonParser.Parse(r)
-			if err != nil {
-				return xerrors.Errorf("unable to parse %q: %w", filePath, err)
-			}
-
-			return fn(iofs, pkgJsonPath, pkg)
-		}
-
-		if err := fsutils.WalkDir(iofs, "node_modules", isNodeModulesPkg, walkDirFunc); err != nil {
-			return xerrors.Errorf("walk error: %w", err)
-		}
-
-		return nil
+		return fn(afero.NewIOFS(zipfs.New(zr)), "node_modules")
 	})
 
 	if err != nil {
