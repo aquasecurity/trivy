@@ -4,6 +4,8 @@ import (
 	"archive/zip"
 	"context"
 	"errors"
+	"github.com/spf13/afero"
+	"github.com/spf13/afero/zipfs"
 	"io/fs"
 	"os"
 	"path"
@@ -70,14 +72,20 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 		licenses := map[string][]string{}
 
-		traverseFunc := func(pkgPath string, pkg packagejson.Package) error {
+		traverseFunc := func(fsys fs.FS, pkgJsonPath string, pkg packagejson.Package) error {
 			// Find all licenses from package.json files under node_modules or .yarn dirs
+
+			if fsys == nil {
+				fsys = input.FS
+			}
+
 			if pkg.License != "" {
 				licenses[pkg.ID] = []string{pkg.License}
 				return nil
 			}
 
-			licenseFilePath := path.Join(pkgPath, "LICENSE")
+			licenseFilePath := path.Join(path.Dir(pkgJsonPath), "LICENSE")
+
 			findings, err := classifyLicense(licenseFilePath, a.licenseClassifierConfidenceLevel, input.FS)
 			if err != nil {
 				return err
@@ -320,7 +328,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 	return pkgs, nil
 }
 
-type traverseFunc func(path string, pkg packagejson.Package) error
+type traverseFunc func(fsys fs.FS, pkgJsonPath string, pkg packagejson.Package) error
 
 func (a yarnAnalyzer) traversePkgs(fsys fs.FS, lockPath string, fn traverseFunc) error {
 	dir := path.Dir(lockPath)
@@ -341,12 +349,12 @@ func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, nodeModulesPath string
 	// Traverse node_modules dir
 	// Note that fs.FS is always slashed regardless of the platform,
 	// and path.Join should be used rather than filepath.Join.
-	walkDirFunc := func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	walkDirFunc := func(pkgJsonPath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
+			return xerrors.Errorf("unable to parse %q: %w", pkgJsonPath, err)
 		}
-		return fn(path.Dir(filePath), pkg)
+		return fn(fsys, pkgJsonPath, pkg)
 	}
 	if err := fsutils.WalkDir(fsys, nodeModulesPath, isNodeModulesPkg, walkDirFunc); err != nil {
 		return xerrors.Errorf("walk error: %w", err)
@@ -380,12 +388,12 @@ func (a yarnAnalyzer) traverseUnpluggedFolder(fsys fs.FS, root string, fn traver
 	}
 
 	// Traverse .yarn/unplugged dir
-	err := fsutils.WalkDir(fsys, unpluggedPath, isNodeModulesPkg, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(fsys, unpluggedPath, isNodeModulesPkg, func(pkgJsonPath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
+			return xerrors.Errorf("unable to parse %q: %w", pkgJsonPath, err)
 		}
-		return fn(path.Dir(filePath), pkg)
+		return fn(fsys, pkgJsonPath, pkg)
 	})
 	if err != nil {
 		return xerrors.Errorf("walk error: %w", err)
@@ -416,17 +424,18 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 			return xerrors.Errorf("zip reader error: %w", err)
 		}
 
-		for _, f := range zr.File {
-			if !isNodeModulesPkg(f.Name, nil) {
-				continue
-			}
-
-			pkg, err := a.parsePackageJsonFromZip(f)
+		iofs := afero.NewIOFS(zipfs.New(zr))
+		walkDirFunc := func(pkgJsonPath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+			pkg, err := a.packageJsonParser.Parse(r)
 			if err != nil {
 				return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 			}
 
-			return fn(path.Dir(filePath), pkg)
+			return fn(iofs, pkgJsonPath, pkg)
+		}
+
+		if err := fsutils.WalkDir(iofs, "node_modules", isNodeModulesPkg, walkDirFunc); err != nil {
+			return xerrors.Errorf("walk error: %w", err)
 		}
 
 		return nil
@@ -437,20 +446,6 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 	}
 
 	return nil
-}
-
-func (a yarnAnalyzer) parsePackageJsonFromZip(f *zip.File) (packagejson.Package, error) {
-	pkgFile, err := f.Open()
-	if err != nil {
-		return packagejson.Package{}, xerrors.Errorf("file open error: %w", err)
-	}
-	defer pkgFile.Close()
-	pkg, err := a.packageJsonParser.Parse(pkgFile)
-	if err != nil {
-		return packagejson.Package{}, err
-	}
-
-	return pkg, nil
 }
 
 func classifyLicense(filePath string, classifierConfidenceLevel float64, fsys fs.FS) (types.LicenseFindings, error) {
