@@ -304,7 +304,10 @@ func (c *CycloneDX) Licenses(licenses []string) *cdx.Licenses {
 		return nil
 	}
 	choices := lo.Map(licenses, func(license string, i int) cdx.LicenseChoice {
-		return cdx.LicenseChoice{Expression: license}
+		return cdx.LicenseChoice{
+			License: &cdx.License{
+				Name: license},
+		}
 	})
 	return lo.ToPtr(cdx.Licenses(choices))
 }
