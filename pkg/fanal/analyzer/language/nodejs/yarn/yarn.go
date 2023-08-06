@@ -14,8 +14,6 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/afero/zipfs"
 
-	"github.com/aquasecurity/trivy/pkg/licensing"
-
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
@@ -27,7 +25,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
-	nodepath "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
@@ -73,7 +71,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 		licenses := map[string][]string{}
 
-		if err := a.traversePkgs(input.FS, filePath, a.parseLicenses(licenses)); err != nil {
+		if err := a.traversePkgs(input.FS, filePath, nodejs.ParseLicenses(a.packageJsonParser, a.licenseClassifierConfidenceLevel, licenses)); err != nil {
 			log.Logger.Errorf("Unable to traverse packages: %s", err)
 		}
 
@@ -105,11 +103,14 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dirs, fileName := splitPath(filePath)
 
-	if fileName == types.YarnLock && containsAny(filePath, "node_modules", ".yarn/unplugged") {
+	if fileName == types.YarnLock &&
+		containsAny(filePath, "node_modules", ".yarn/unplugged") {
 		return false
 	}
 
-	if fileName == types.YarnLock || fileName == types.NpmPkg || fileName == "LICENSE" {
+	if fileName == types.YarnLock ||
+		fileName == types.NpmPkg ||
+		strings.HasPrefix(strings.ToLower(fileName), "license") {
 		return true
 	}
 
@@ -123,63 +124,11 @@ func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return false
 }
 
-// Find all licenses from package.json files or LICENSE files under node_modules or .yarn dirs
-func (a yarnAnalyzer) parseLicenses(licenses map[string][]string) traverseFunc {
-	return func(fsys fs.FS, root string) error {
-		if fsys == nil {
-			return xerrors.Errorf("fs.FS required")
-		}
-
-		walkDirFunc := func(pkgJsonPath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
-
-			pkg, err := a.packageJsonParser.Parse(r)
-			if err != nil {
-				return xerrors.Errorf("unable to parse %q: %w", pkgJsonPath, err)
-			}
-
-			if pkg.License != "" {
-				licenses[pkg.ID] = []string{pkg.License}
-				return nil
-			}
-
-			log.Logger.Debugf(
-				"Licenses are missing in %q, an attempt to find them in the LICENSE file", pkgJsonPath)
-			licenseFilePath := path.Join(path.Dir(pkgJsonPath), "LICENSE")
-
-			findings, err := classifyLicense(licenseFilePath, a.licenseClassifierConfidenceLevel, fsys)
-			if err != nil {
-				return err
-			}
-
-			// License found
-			if len(findings) > 0 {
-				licenses[pkg.ID] = lo.Map(findings, func(finding types.LicenseFinding, _ int) string {
-					return finding.Name
-				})
-			} else {
-				log.Logger.Debugf(
-					"The license file %q was not found or the license could not be classified", licenseFilePath)
-			}
-			return nil
-		}
-
-		if err := fsutils.WalkDir(fsys, root, isNodeModulesPkg, walkDirFunc); err != nil {
-			return xerrors.Errorf("walk error: %w", err)
-		}
-
-		return nil
-	}
-}
-
 func splitPath(filePath string) (dirs []string, fileName string) {
 	fileName = filepath.Base(filePath)
 	// The path is slashed in analyzers.
 	dirs = strings.Split(path.Dir(filePath), "/")
 	return dirs, fileName
-}
-
-func isNodeModulesPkg(filePath string, _ fs.DirEntry) bool {
-	return nodepath.IsNodeModulesPkgJson(filePath)
 }
 
 func containsAny(s string, substrings ...string) bool {
@@ -429,25 +378,4 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 	}
 
 	return nil
-}
-
-func classifyLicense(filePath string, classifierConfidenceLevel float64, fsys fs.FS) (types.LicenseFindings, error) {
-	f, err := fsys.Open(filePath)
-	if errors.Is(err, fs.ErrNotExist) {
-		return nil, nil
-	} else if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
-	}
-	defer f.Close()
-
-	l, err := licensing.Classify(filePath, f, classifierConfidenceLevel)
-	if err != nil {
-		return nil, xerrors.Errorf("license classify error: %w", err)
-	}
-
-	if l == nil {
-		return nil, nil
-	}
-
-	return l.Findings, nil
 }

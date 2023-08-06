@@ -1,12 +1,17 @@
 package nodejs
 
 import (
+	"io/fs"
 	"path"
 	"strings"
 )
 
 func IsNodeModulesPkgJson(filePath string) bool {
 	return IsPkgRootFile(filePath) && strings.HasSuffix(filePath, "package.json")
+}
+
+func isNodeModulesPkg(filePath string, _ fs.DirEntry) bool {
+	return IsNodeModulesPkgJson(filePath)
 }
 
 func IsPkgRootFile(filePath string) bool {

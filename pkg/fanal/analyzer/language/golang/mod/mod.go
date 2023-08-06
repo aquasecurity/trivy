@@ -298,9 +298,7 @@ func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error
 		return nil, nil
 	}
 
-	return lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
-		return finding.Name
-	}), nil
+	return license.Findings.Names(), nil
 }
 
 // normalizeModName escapes upper characters

@@ -605,7 +605,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 	}
 }
 
-func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
+func Test_yarnLibraryAnalyzer_Required(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string
@@ -649,6 +649,11 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 		{
 			name:     "license file",
 			filePath: "node_modules/@vue/compiler-sfc/LICENSE",
+			want:     true,
+		},
+		{
+			name:     "txt license file",
+			filePath: "node_modules/@vue/compiler-sfc/LICENSE.txt",
 			want:     true,
 		},
 	}
