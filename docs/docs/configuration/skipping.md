@@ -11,10 +11,19 @@ This section details ways to specify the files and directories that Trivy should
 |     License      |     ✓     |
 
 By default, Trivy traverses directories and searches for all necessary files for scanning.
-You can skip files that you don't maintain using the `--skip-files` flag.
+You can skip files that you don't maintain using the `--skip-files` flag, or the equivalent Trivy YAML config option.
 
-```
+Using the `--skip-files` flag:
+```bash
 $ trivy image --skip-files "/Gemfile.lock" --skip-files "/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock" quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+```
+
+Using the Trivy YAML configuration:
+```yaml
+image:
+  skip-files:
+    - foo
+    - "testdata/*/bar"
 ```
 
 It's possible to specify globs as part of the value.
@@ -23,7 +32,13 @@ It's possible to specify globs as part of the value.
 $ trivy image --skip-files "./testdata/*/bar" .
 ```
 
-Will skip any file named `bar` in the subdirectories of testdata.
+This will skip any file named `bar` in the subdirectories of testdata.
+
+```bash
+$ trivy config --skip-files "./foo/**/*.tf" .
+```
+
+This will skip any files with the extension `.tf` in subdirectories of foo at any depth.
 
 ## Skip Directories
 |     Scanner      | Supported |
@@ -34,10 +49,19 @@ Will skip any file named `bar` in the subdirectories of testdata.
 |     License      |     ✓     |
 
 By default, Trivy traverses directories and searches for all necessary files for scanning.
-You can skip directories that you don't maintain using the `--skip-dirs` flag.
+You can skip directories that you don't maintain using the `--skip-dirs` flag, or the equivalent Trivy YAML config option.
 
-```
+Using the `--skip-dirs` flag:
+```bash
 $ trivy image --skip-dirs /var/lib/gems/2.5.0/gems/fluent-plugin-detect-exceptions-0.0.13 --skip-dirs "/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0" quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+```
+
+Using the Trivy YAML configuration:
+```yaml
+image:
+  skip-dirs:
+    - foo/bar/
+    - "**/.terraform"
 ```
 
 It's possible to specify globs as part of the value.
@@ -46,20 +70,27 @@ It's possible to specify globs as part of the value.
 $ trivy image --skip-dirs "./testdata/*" .
 ```
 
-Will skip all subdirectories of the testdata directory.
+This will skip all subdirectories of the testdata directory.
+
+```bash
+$ trivy config --skip-dirs "**/.terraform" .
+```
+
+This will skip subdirectories at any depth named `.terraform/`. (Note: this will match `./foo/.terraform` or
+`./foo/bar/.terraform`, but not `./.terraform`.)
 
 !!! tip
     Glob patterns work with any trivy subcommand (image, config, etc.) and can be specified to skip both directories (with `--skip-dirs`) and files (with `--skip-files`).
 
 
 ### Advanced globbing
-Trivy also supports the [globstar](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching) pattern matching. 
+Trivy also supports bash style [extended](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching) glob pattern matching.
 
 ```bash
 $ trivy image --skip-files "**/foo" image:tag
 ```
 
-Will skip the file `foo` that happens to be nested under any parent(s). 
+This will skip the file `foo` that happens to be nested under any parent(s). 
 
 ## File patterns
 |     Scanner      | Supported |
