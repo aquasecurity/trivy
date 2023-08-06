@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xpath "github.com/aquasecurity/trivy/pkg/x/path"
 )
 
 func init() {
@@ -85,7 +86,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 
 func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	if fileName == types.NpmPkgLock {
+	if fileName == types.NpmPkgLock && !xpath.Contains(filePath, "node_modules") {
 		return true
 	}
 	// The file path to package.json - */node_modules/<package_name>/package.json
@@ -122,7 +123,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string) (*types.App
 }
 
 func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string]string, error) {
-	dir := filepath.Dir(lockPath)
+	dir := path.Dir(lockPath)
 	root := path.Join(dir, "node_modules")
 	if _, err := fs.Stat(fsys, root); errors.Is(err, fs.ErrNotExist) {
 		log.Logger.Infof(`To collect the license information of packages in %q, "npm install" needs to be performed beforehand`, lockPath)
