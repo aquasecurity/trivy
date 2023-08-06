@@ -1,15 +1,16 @@
 package nodejs
 
 import (
-	"github.com/aquasecurity/trivy/pkg/mapfs"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 func Test_ParseLicenses(t *testing.T) {

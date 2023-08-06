@@ -6,13 +6,14 @@ import (
 	"path"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
-	"golang.org/x/xerrors"
 )
 
 func ParseLicenses(
