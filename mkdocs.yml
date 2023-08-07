@@ -74,6 +74,11 @@ nav:
                   - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
           - Secret: docs/scanner/secret.md
           - License: docs/scanner/license.md
+      - Coverage:
+          - OS:
+              - Overview: docs/coverage/os/index.md
+              - Debian: docs/coverage/os/debian.md
+              - Ubuntu: docs/coverage/os/ubuntu.md
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md
