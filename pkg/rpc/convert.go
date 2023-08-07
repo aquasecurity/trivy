@@ -1,12 +1,12 @@
 package rpc
 
 import (
+	"strings"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
+	"github.com/samber/lo"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -161,7 +161,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			vensorSeverityMap[string(vendor)] = common.Severity(vendorSeverity)
 		}
 
-		var lastModifiedDate, publishedDate *timestamp.Timestamp
+		var lastModifiedDate, publishedDate *timestamppb.Timestamp
 		if vuln.LastModifiedDate != nil {
 			lastModifiedDate = timestamppb.New(*vuln.LastModifiedDate) // nolint: errcheck
 		}
@@ -295,9 +295,34 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
 			Packages:          ConvertFromRPCPkgs(result.Packages),
 			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
 			Secrets:           ConvertFromRPCSecretFindings(result.Secrets),
+			Licenses:          ConvertFromRPCLicenses(result.Licenses),
 		})
 	}
 	return results
+}
+
+func ConvertFromRPCLicenses(rpcLicenses []*common.DetectedLicense) []types.DetectedLicense {
+	var licenses []types.DetectedLicense
+	for _, l := range rpcLicenses {
+		severity := dbTypes.Severity(l.Severity)
+		licenses = append(licenses, types.DetectedLicense{
+			Severity:   severity.String(),
+			Category:   ConvertFromRPCLicenseCategory(l.Category),
+			PkgName:    l.PkgName,
+			FilePath:   l.FilePath,
+			Name:       l.Name,
+			Confidence: float64(l.Confidence),
+			Link:       l.Link,
+		})
+	}
+	return licenses
+}
+
+func ConvertFromRPCLicenseCategory(rpcCategory common.DetectedLicense_LicenseCategory) ftypes.LicenseCategory {
+	if rpcCategory == common.DetectedLicense_UNSPECIFIED {
+		return ""
+	}
+	return ftypes.LicenseCategory(strings.ToLower(rpcCategory.String()))
 }
 
 // ConvertFromRPCCustomResources converts array of cache.CustomResource to fanal.CustomResource
@@ -390,12 +415,10 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 
 		var lastModifiedDate, publishedDate *time.Time
 		if vuln.LastModifiedDate != nil {
-			t, _ := ptypes.Timestamp(vuln.LastModifiedDate) // nolint: errcheck
-			lastModifiedDate = &t
+			lastModifiedDate = lo.ToPtr(vuln.LastModifiedDate.AsTime())
 		}
 		if vuln.PublishedDate != nil {
-			t, _ := ptypes.Timestamp(vuln.PublishedDate) // nolint: errcheck
-			publishedDate = &t
+			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
 		}
 
 		vulns = append(vulns, types.DetectedVulnerability{
@@ -591,11 +614,10 @@ func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.M
 
 // ConvertFromRPCPutArtifactRequest converts cache.PutArtifactRequest to fanal.PutArtifactRequest
 func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.ArtifactInfo {
-	created, _ := ptypes.Timestamp(req.ArtifactInfo.Created) // nolint: errcheck
 	return ftypes.ArtifactInfo{
 		SchemaVersion:   int(req.ArtifactInfo.SchemaVersion),
 		Architecture:    req.ArtifactInfo.Architecture,
-		Created:         created,
+		Created:         req.ArtifactInfo.Created.AsTime(),
 		DockerVersion:   req.ArtifactInfo.DockerVersion,
 		OS:              req.ArtifactInfo.Os,
 		HistoryPackages: ConvertFromRPCPkgs(req.ArtifactInfo.HistoryPackages),
@@ -643,8 +665,9 @@ func ConvertToRPCRepository(repo *ftypes.Repository) *common.Repository {
 
 // ConvertToRPCArtifactInfo returns PutArtifactRequest
 func ConvertToRPCArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *cache.PutArtifactRequest {
-	t, err := ptypes.TimestampProto(imageInfo.Created)
-	if err != nil {
+
+	t := timestamppb.New(imageInfo.Created)
+	if err := t.CheckValid(); err != nil {
 		log.Logger.Warnf("invalid timestamp: %s", err)
 	}
 
@@ -765,6 +788,7 @@ func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS) *scanner.Sca
 			Packages:          ConvertToRPCPkgs(result.Packages),
 			CustomResources:   ConvertToRPCCustomResources(result.CustomResources),
 			Secrets:           ConvertToRPCSecretFindings(result.Secrets),
+			Licenses:          ConvertToRPCLicenses(result.Licenses),
 		})
 	}
 
@@ -772,6 +796,35 @@ func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS) *scanner.Sca
 		Os:      ConvertToRPCOS(fos),
 		Results: rpcResults,
 	}
+}
+
+func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLicense {
+	var rpcLicenses []*common.DetectedLicense
+	for _, l := range licenses {
+		severity, err := dbTypes.NewSeverity(l.Severity)
+		if err != nil {
+			log.Logger.Warn(err)
+		}
+		rpcLicenses = append(rpcLicenses, &common.DetectedLicense{
+			Severity:   common.Severity(severity),
+			Category:   ConvertToRPCLicenseCategory(l.Category),
+			PkgName:    l.PkgName,
+			FilePath:   l.FilePath,
+			Name:       l.Name,
+			Confidence: float32(l.Confidence),
+			Link:       l.Link,
+		})
+	}
+
+	return rpcLicenses
+}
+
+func ConvertToRPCLicenseCategory(category ftypes.LicenseCategory) common.DetectedLicense_LicenseCategory {
+	rpcCategory, ok := common.DetectedLicense_LicenseCategory_value[strings.ToUpper(string(category))]
+	if !ok {
+		return common.DetectedLicense_UNSPECIFIED
+	}
+	return common.DetectedLicense_LicenseCategory(rpcCategory)
 }
 
 func ConvertToDeleteBlobsRequest(blobIDs []string) *cache.DeleteBlobsRequest {
