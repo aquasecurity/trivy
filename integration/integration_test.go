@@ -11,18 +11,20 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/samber/lo"
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/xeipuuv/gojsonschema"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -212,6 +214,20 @@ func compareCycloneDX(t *testing.T, wantFile, gotFile string) {
 	want := readCycloneDX(t, wantFile)
 	got := readCycloneDX(t, gotFile)
 	assert.Equal(t, want, got)
+
+	// Validate CycloneDX output against the JSON schema
+	schemaLoader := gojsonschema.NewReferenceLoader(got.JSONSchema)
+	documentLoader := gojsonschema.NewGoLoader(got)
+
+	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+	require.NoError(t, err)
+
+	if valid := result.Valid(); !valid {
+		errs := lo.Map(result.Errors(), func(err gojsonschema.ResultError, _ int) string {
+			return err.String()
+		})
+		assert.True(t, valid, strings.Join(errs, "\n"))
+	}
 }
 
 func compareSpdxJson(t *testing.T, wantFile, gotFile string) {

@@ -31,7 +31,7 @@ func TestRepository(t *testing.T) {
 		skipFiles      []string
 		skipDirs       []string
 		command        string
-		format         string
+		format         types.Format
 		includeDevDeps bool
 	}
 	tests := []struct {
@@ -367,7 +367,7 @@ func TestRepository(t *testing.T) {
 				command = tt.args.command
 			}
 
-			format := "json"
+			format := types.FormatJSON
 			if tt.args.format != "" {
 				format = tt.args.format
 			}
@@ -380,7 +380,7 @@ func TestRepository(t *testing.T) {
 				"--skip-db-update",
 				"--skip-policy-update",
 				"--format",
-				format,
+				string(format),
 				"--offline-scan",
 			}
 
@@ -464,11 +464,11 @@ func TestRepository(t *testing.T) {
 
 			// Compare want and got
 			switch format {
-			case "cyclonedx":
+			case types.FormatCycloneDX:
 				compareCycloneDX(t, tt.golden, outputFile)
-			case "spdx-json":
+			case types.FormatSPDXJSON:
 				compareSpdxJson(t, tt.golden, outputFile)
-			case "json":
+			case types.FormatJSON:
 				compareReports(t, tt.golden, outputFile, tt.override)
 			default:
 				require.Fail(t, "invalid format", "format: %s", format)
