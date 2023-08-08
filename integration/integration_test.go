@@ -140,10 +140,7 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	err = decoder.Decode(bom)
 	require.NoError(t, err)
 
-	// We don't compare values which change each time an SBOM is generated
-	bom.Metadata.Timestamp = ""
-	bom.Metadata.Component.BOMRef = ""
-	bom.SerialNumber = ""
+	// Sort components
 	if bom.Components != nil {
 		sort.Slice(*bom.Components, func(i, j int) bool {
 			return (*bom.Components)[i].Name < (*bom.Components)[j].Name
@@ -153,12 +150,6 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 			sort.Slice(*(*bom.Components)[i].Properties, func(ii, jj int) bool {
 				return (*(*bom.Components)[i].Properties)[ii].Name < (*(*bom.Components)[i].Properties)[jj].Name
 			})
-		}
-	}
-	if bom.Dependencies != nil {
-		for j := range *bom.Dependencies {
-			(*bom.Dependencies)[j].Ref = ""
-			(*bom.Dependencies)[j].Dependencies = nil
 		}
 	}
 

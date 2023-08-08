@@ -18,6 +18,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 type csArgs struct {
@@ -417,6 +418,9 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 	addr, cacheDir := setup(t, setupOptions{})
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			clock.SetFakeTime(t, time.Date(2020, 9, 10, 14, 20, 30, 5, time.UTC))
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
 			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
 			// Run Trivy client

@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:b9046306-b555-4cfa-a923-3cba95e96133",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
   "version": 1,
   "metadata": {
-    "timestamp": "2023-08-07T18:13:05+00:00",
+    "timestamp": "2020-09-10T14:20:30+00:00",
     "tools": [
       {
         "vendor": "aquasecurity",
@@ -14,7 +14,7 @@
       }
     ],
     "component": {
-      "bom-ref": "8f0bc568-1970-4e60-881b-e0c712638e25",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "type": "container",
       "name": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
       "properties": [
@@ -35,7 +35,7 @@
   },
   "components": [
     {
-      "bom-ref": "c2ea9844-fc29-4c85-b3ef-5c9e5fa821f0",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000003",
       "type": "operating-system",
       "name": "debian",
       "version": "10.2",
@@ -3922,7 +3922,9 @@
       "version": "6.0.2.1",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/activesupport@6.0.2.1",
@@ -3952,7 +3954,9 @@
       "version": "2.7.0",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/addressable@2.7.0",
@@ -3982,7 +3986,9 @@
       "version": "1.1.6",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/concurrent-ruby@1.1.6",
@@ -4037,7 +4043,9 @@
       "version": "1.0.1",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/dig_rb@1.0.1",
@@ -4067,13 +4075,19 @@
       "version": "0.5.20190701",
       "licenses": [
         {
-          "expression": "BSD-2-Clause"
+          "license": {
+            "name": "BSD-2-Clause"
+          }
         },
         {
-          "expression": "BSD-3-Clause"
+          "license": {
+            "name": "BSD-3-Clause"
+          }
         },
         {
-          "expression": "MPL-2.0"
+          "license": {
+            "name": "MPL-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/domain_name@0.5.20190701",
@@ -4103,7 +4117,9 @@
       "version": "7.5.0",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/elasticsearch-api@7.5.0",
@@ -4133,7 +4149,9 @@
       "version": "7.5.0",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/elasticsearch-transport@7.5.0",
@@ -4163,7 +4181,9 @@
       "version": "7.5.0",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/elasticsearch@7.5.0",
@@ -4193,7 +4213,9 @@
       "version": "0.72.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/excon@0.72.0",
@@ -4223,7 +4245,9 @@
       "version": "0.17.3",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/faraday@0.17.3",
@@ -4253,7 +4277,9 @@
       "version": "1.0.1",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/ffi-compiler@1.0.1",
@@ -4283,7 +4309,9 @@
       "version": "1.12.2",
       "licenses": [
         {
-          "expression": "BSD-3-Clause"
+          "license": {
+            "name": "BSD-3-Clause"
+          }
         }
       ],
       "purl": "pkg:gem/ffi@1.12.2",
@@ -4313,7 +4341,9 @@
       "version": "2.4.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/fluent-plugin-concat@2.4.0",
@@ -4343,7 +4373,9 @@
       "version": "0.0.13",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/fluent-plugin-detect-exceptions@0.0.13",
@@ -4373,7 +4405,9 @@
       "version": "3.8.0",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/fluent-plugin-elasticsearch@3.8.0",
@@ -4403,7 +4437,9 @@
       "version": "2.4.1",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/fluent-plugin-kubernetes_metadata_filter@2.4.1",
@@ -4433,7 +4469,9 @@
       "version": "1.0.0",
       "licenses": [
         {
-          "expression": "Apache License (2.0)"
+          "license": {
+            "name": "Apache License (2.0)"
+          }
         }
       ],
       "purl": "pkg:gem/fluent-plugin-multi-format-parser@1.0.0",
@@ -4463,7 +4501,9 @@
       "version": "1.7.0",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/fluent-plugin-prometheus@1.7.0",
@@ -4493,7 +4533,9 @@
       "version": "1.0.2",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/fluent-plugin-systemd@1.0.2",
@@ -4523,7 +4565,9 @@
       "version": "1.8.0",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/fluentd@1.8.0",
@@ -4578,7 +4622,9 @@
       "version": "1.0.3",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/http-cookie@1.0.3",
@@ -4608,7 +4654,9 @@
       "version": "2.2.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/http-form_data@2.2.0",
@@ -4638,7 +4686,9 @@
       "version": "1.2.1",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/http-parser@1.2.1",
@@ -4668,7 +4718,9 @@
       "version": "4.3.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/http@4.3.0",
@@ -4698,7 +4750,9 @@
       "version": "0.6.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/http_parser.rb@0.6.0",
@@ -4728,7 +4782,9 @@
       "version": "1.8.2",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/i18n@1.8.2",
@@ -4758,7 +4814,9 @@
       "version": "4.6.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/kubeclient@4.6.0",
@@ -4788,7 +4846,9 @@
       "version": "1.1.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/lru_redux@1.1.0",
@@ -4818,7 +4878,9 @@
       "version": "3.2019.1009",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/mime-types-data@3.2019.1009",
@@ -4848,7 +4910,9 @@
       "version": "3.3.1",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/mime-types@3.3.1",
@@ -4878,7 +4942,9 @@
       "version": "5.14.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/minitest@5.14.0",
@@ -4908,7 +4974,9 @@
       "version": "1.3.3",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/msgpack@1.3.3",
@@ -4938,7 +5006,9 @@
       "version": "1.14.1",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/multi_json@1.14.1",
@@ -4968,7 +5038,9 @@
       "version": "2.1.1",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/multipart-post@2.1.1",
@@ -4998,7 +5070,9 @@
       "version": "0.11.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/netrc@0.11.0",
@@ -5028,7 +5102,9 @@
       "version": "3.10.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/oj@3.10.0",
@@ -5058,7 +5134,9 @@
       "version": "0.9.0",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/prometheus-client@0.9.0",
@@ -5088,7 +5166,9 @@
       "version": "4.0.3",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/public_suffix@4.0.3",
@@ -5118,7 +5198,9 @@
       "version": "0.2.1",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/quantile@0.2.1",
@@ -5148,7 +5230,9 @@
       "version": "13.0.1",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/rake@13.0.1",
@@ -5178,7 +5262,9 @@
       "version": "1.1.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/recursive-open-struct@1.1.0",
@@ -5208,7 +5294,9 @@
       "version": "2.1.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/rest-client@2.1.0",
@@ -5238,7 +5326,9 @@
       "version": "2.2.1",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/serverengine@2.2.1",
@@ -5268,7 +5358,9 @@
       "version": "0.2.4",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/sigdump@0.2.4",
@@ -5298,7 +5390,9 @@
       "version": "0.2.3",
       "licenses": [
         {
-          "expression": "BSD-2-Clause"
+          "license": {
+            "name": "BSD-2-Clause"
+          }
         }
       ],
       "purl": "pkg:gem/strptime@0.2.3",
@@ -5328,7 +5422,9 @@
       "version": "1.3.3",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/systemd-journal@1.3.3",
@@ -5358,7 +5454,9 @@
       "version": "0.3.6",
       "licenses": [
         {
-          "expression": "Apache-2.0"
+          "license": {
+            "name": "Apache-2.0"
+          }
         }
       ],
       "purl": "pkg:gem/thread_safe@0.3.6",
@@ -5388,7 +5486,9 @@
       "version": "1.2019.3",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/tzinfo-data@1.2019.3",
@@ -5418,7 +5518,9 @@
       "version": "1.2.6",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/tzinfo@1.2.6",
@@ -5448,7 +5550,9 @@
       "version": "0.1.4",
       "licenses": [
         {
-          "expression": "2-clause BSDL"
+          "license": {
+            "name": "2-clause BSDL"
+          }
         }
       ],
       "purl": "pkg:gem/unf@0.1.4",
@@ -5478,7 +5582,9 @@
       "version": "0.0.7.6",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/unf_ext@0.0.7.6",
@@ -5508,7 +5614,9 @@
       "version": "1.4.1",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/yajl-ruby@1.4.1",
@@ -5538,7 +5646,9 @@
       "version": "2.3.0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/zeitwerk@2.3.0",
@@ -5564,9 +5674,9 @@
   ],
   "dependencies": [
     {
-      "ref": "8f0bc568-1970-4e60-881b-e0c712638e25",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "dependsOn": [
-        "c2ea9844-fc29-4c85-b3ef-5c9e5fa821f0",
+        "3ff14136-e09f-4df9-80ea-000000000003",
         "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
         "pkg:gem/addressable@2.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Faddressable-2.7.0.gemspec",
         "pkg:gem/concurrent-ruby@1.1.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fconcurrent-ruby-1.1.6.gemspec",
@@ -5625,7 +5735,7 @@
       ]
     },
     {
-      "ref": "c2ea9844-fc29-4c85-b3ef-5c9e5fa821f0",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000003",
       "dependsOn": [
         "pkg:deb/debian/adduser@3.118?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/apt@1.8.2?arch=amd64\u0026distro=debian-10.2",
