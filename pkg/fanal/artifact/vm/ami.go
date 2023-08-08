@@ -3,10 +3,10 @@ package vm
 import (
 	"context"
 
+	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"golang.org/x/xerrors"
 
@@ -19,15 +19,12 @@ type AMI struct {
 	imageID string
 }
 
-func newAMI(imageID string, storage Storage, region string) (*AMI, error) {
+func newAMI(imageID string, storage Storage, region, endpoint string) (*AMI, error) {
 	// TODO: propagate context
 	ctx := context.TODO()
-	cfg, err := config.LoadDefaultConfig(ctx)
+	cfg, err := config.LoadDefaultAWSConfig(ctx, region, endpoint)
 	if err != nil {
-		return nil, xerrors.Errorf("aws config load error: %w", err)
-	}
-	if region != "" {
-		cfg.Region = region
+		return nil, err
 	}
 	client := ec2.NewFromConfig(cfg)
 	output, err := client.DescribeImages(ctx, &ec2.DescribeImagesInput{
@@ -46,7 +43,7 @@ func newAMI(imageID string, storage Storage, region string) (*AMI, error) {
 			continue
 		}
 		log.Logger.Infof("Snapshot %s found", snapshotID)
-		ebs, err := newEBS(snapshotID, storage, region)
+		ebs, err := newEBS(snapshotID, storage, region, endpoint)
 		if err != nil {
 			return nil, xerrors.Errorf("new EBS error: %w", err)
 		}
