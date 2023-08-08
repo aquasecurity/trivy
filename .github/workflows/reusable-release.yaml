@@ -26,6 +26,19 @@ jobs:
       packages: write # For GHCR
       contents: read  # Not required for public repositories, but for clarity
     steps:
+      # Goreleaser binaries and archives are large
+      # Remove pre-installed packages to free space for bins
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@v1.2.0
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - name: Cosign install
         uses: sigstore/cosign-installer@a5d81fb6bdbcbb3d239e864d6552820420254494
 
@@ -94,6 +107,22 @@ jobs:
       - name: "remove gpg key"
         run: |
           rm gpg.key
+
+      # Size of `dist` dir for release is large.
+      # We need to remove unneeded binaries and archives
+      # to avoid cases when cache will be removed due to size
+      - name: Remove unneeded binaries and archives
+        if: ${{ inputs.goreleaser_config == 'goreleaser.yml' }}
+        run: |
+          echo "Free space before remove:"
+          df -h 
+          rm -r dist/build-*
+          rm -r dist/*tar.gz*
+          rm -r dist/*zip
+          echo "Free space after remove:"
+          df -h
+          echo "List of files:"
+          ls -hl ./dist          
 
       # Push images to registries (only for canary build)
       # The custom Dockerfile.canary is necessary
