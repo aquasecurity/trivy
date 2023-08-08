@@ -33,15 +33,14 @@ func ParseLicenses(
 				return xerrors.Errorf("unable to parse %q: %w", pkgJsonPath, err)
 			}
 
-			ok, licenseFileName := IsLicenseRefToFile(pkg.License)
+			ok, licenseFileName := isLicenseRefToFile(pkg.License)
 
 			if !ok {
 				licenses[pkg.ID] = []string{pkg.License}
 				return nil
 			}
 
-			log.Logger.Debugf(
-				"Licenses are missing in %q, an attempt to find them in the LICENSE file", pkgJsonPath)
+			log.Logger.Debugf("Licenses are missing in %q, an attempt to find them in the LICENSE file", pkgJsonPath)
 			licenseFilePath := path.Join(path.Dir(pkgJsonPath), licenseFileName)
 
 			findings, err := classifyLicense(licenseFilePath, classifierConfidenceLevel, fsys)
@@ -53,8 +52,7 @@ func ParseLicenses(
 			if len(findings) > 0 {
 				licenses[pkg.ID] = findings.Names()
 			} else {
-				log.Logger.Debugf(
-					"The license file %q was not found or the license could not be classified", licenseFilePath)
+				log.Logger.Debugf("The license file %q was not found or the license could not be classified", licenseFilePath)
 			}
 			return nil
 		}
@@ -67,10 +65,11 @@ func ParseLicenses(
 	}
 }
 
-// IsLicenseRefToFile The license field can refer to a file
+// isLicenseRefToFile The license field can refer to a file
 // https://docs.npmjs.com/cli/v9/configuring-npm/package-json
-func IsLicenseRefToFile(maybeLicense string) (bool, string) {
+func isLicenseRefToFile(maybeLicense string) (bool, string) {
 	if maybeLicense == "" {
+		// trying to find at least the LICENSE file
 		return true, "LICENSE"
 	}
 

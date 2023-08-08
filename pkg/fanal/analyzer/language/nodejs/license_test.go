@@ -117,7 +117,7 @@ func Test_IsLicenseRefToFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ok, licenseFileName := IsLicenseRefToFile(tt.input)
+			ok, licenseFileName := isLicenseRefToFile(tt.input)
 			assert.Equal(t, ok, tt.wantOk)
 			assert.Equal(t, licenseFileName, tt.wantFileName)
 		})

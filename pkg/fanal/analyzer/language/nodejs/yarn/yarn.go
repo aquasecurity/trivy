@@ -104,6 +104,7 @@ func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dirs, fileName := splitPath(filePath)
 
 	if fileName == types.YarnLock &&
+		// skipping yarn.lock in cache folders
 		containsAny(filePath, "node_modules", ".yarn/unplugged") {
 		return false
 	}
