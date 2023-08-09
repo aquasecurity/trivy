@@ -2,7 +2,6 @@ package table
 
 import (
 	"fmt"
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	"io"
 	"os"
 	"runtime"
@@ -17,6 +16,7 @@ import (
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
