@@ -29,10 +29,11 @@ jobs:
       - name: Maximize build space
         uses: easimon/maximize-build-space@v7
         with:
-          root-reserve-mb: 35840 # Required for Goreleaser
+          root-reserve-mb: 35840 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
           remove-android: 'true'
           remove-docker-images: 'true'
           remove-dotnet: 'true'
+          remove-haskell: 'true'
 
       - name: Cosign install
         uses: sigstore/cosign-installer@a5d81fb6bdbcbb3d239e864d6552820420254494
@@ -102,16 +103,6 @@ jobs:
       - name: "remove gpg key"
         run: |
           rm gpg.key
-
-      # Size of `dist` dir for release is large.
-      # We need to remove unneeded binaries and archives
-      # to avoid cases when cache will be removed due to size
-      - name: Remove unneeded binaries and archives
-        if: ${{ inputs.goreleaser_config == 'goreleaser.yml' }}
-        run: |
-          rm -r dist/build-*
-          rm -r dist/*tar.gz*
-          rm -r dist/*zip
 
       # Push images to registries (only for canary build)
       # The custom Dockerfile.canary is necessary
