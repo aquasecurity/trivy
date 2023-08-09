@@ -13,8 +13,8 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.30.4
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/defsec v0.91.0
-	github.com/aquasecurity/go-dep-parser v0.0.0-20230731081423-69e49e750d15
+	github.com/aquasecurity/defsec v0.91.1
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230803125501-bd9cf68d8636
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -61,7 +61,7 @@ require (
 	github.com/magefile/mage v1.15.0
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
-	github.com/masahiro331/go-ebs-file v0.0.0-20221225061409-5ef263bb2cc3
+	github.com/masahiro331/go-ebs-file v0.0.0-20230228042409-005c81d4ae43
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20230612143131-27ccd485b7a1
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd
@@ -91,6 +91,7 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/localstack v0.21.0
 	github.com/tetratelabs/wazero v1.2.1
 	github.com/twitchtv/twirp v8.1.2+incompatible
+	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.7
 	go.uber.org/zap v1.24.0
@@ -102,7 +103,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v3 v3.0.1
-	gotest.tools v2.2.0+incompatible
 	k8s.io/api v0.27.4
 	k8s.io/utils v0.0.0-20230220204549-a5ecb0141aa5
 	modernc.org/sqlite v1.23.1
@@ -162,7 +162,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/codebuild v1.19.17 // indirect
 	github.com/aws/aws-sdk-go-v2/service/docdb v1.19.11 // indirect
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.17.7 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ebs v1.15.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ebs v1.18.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.17.18 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ecs v1.28.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/efs v1.20.3 // indirect
@@ -189,8 +189,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.16.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sns v1.20.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.20.6 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.12.10 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.10 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.13.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.15.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/workspaces v1.23.0 // indirect
 	github.com/aws/smithy-go v1.14.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -345,7 +345,6 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
-	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yashtewari/glob-intersection v0.1.0 // indirect
 	github.com/yuin/gopher-lua v1.1.0 // indirect
 	github.com/zclconf/go-cty v1.10.0 // indirect

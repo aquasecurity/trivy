@@ -32,7 +32,7 @@ func TestAwsCommandRun(t *testing.T) {
 				"AWS_ACCESS_KEY_ID":     "test",
 				"AWS_SECRET_ACCESS_KEY": "test",
 			},
-			wantErr: "Invalid Configuration: Missing Region",
+			wantErr: "aws region is required",
 		},
 		{
 			name: "fail without creds",

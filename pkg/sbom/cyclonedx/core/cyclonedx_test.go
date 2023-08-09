@@ -1,19 +1,18 @@
 package core_test
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
+	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/package-url/packageurl-go"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
-
-	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/google/uuid"
-	"github.com/package-url/packageurl-go"
-	"github.com/stretchr/testify/assert"
-	fake "k8s.io/utils/clock/testing"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 func TestMarshaler_CoreComponent(t *testing.T) {
@@ -33,7 +32,10 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 						Type: cdx.ComponentTypeApplication,
 						Name: "kube-apiserver-kind-control-plane",
 						Properties: []core.Property{
-							{Name: "control_plane_components", Value: "kube-apiserver"},
+							{
+								Name:  "control_plane_components",
+								Value: "kube-apiserver",
+							},
 						},
 						Components: []*core.Component{
 							{
@@ -58,8 +60,14 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 								},
 								Hashes: []digest.Digest{"sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f"},
 								Properties: []core.Property{
-									{Name: "PkgID", Value: "k8s.gcr.io/kube-apiserver:1.21.1"},
-									{Name: "PkgType", Value: "oci"},
+									{
+										Name:  "PkgID",
+										Value: "k8s.gcr.io/kube-apiserver:1.21.1",
+									},
+									{
+										Name:  "PkgType",
+										Value: "oci",
+									},
 								},
 							},
 						},
@@ -68,11 +76,26 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 						Type: cdx.ComponentTypeContainer,
 						Name: "kind-control-plane",
 						Properties: []core.Property{
-							{Name: "architecture", Value: "arm64"},
-							{Name: "host_name", Value: "kind-control-plane"},
-							{Name: "kernel_version", Value: "6.2.13-300.fc38.aarch64"},
-							{Name: "node_role", Value: "master"},
-							{Name: "operating_system", Value: "linux"},
+							{
+								Name:  "architecture",
+								Value: "arm64",
+							},
+							{
+								Name:  "host_name",
+								Value: "kind-control-plane",
+							},
+							{
+								Name:  "kernel_version",
+								Value: "6.2.13-300.fc38.aarch64",
+							},
+							{
+								Name:  "node_role",
+								Value: "master",
+							},
+							{
+								Name:  "operating_system",
+								Value: "linux",
+							},
 						},
 						Components: []*core.Component{
 							{
@@ -80,16 +103,28 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 								Name:    "ubuntu",
 								Version: "21.04",
 								Properties: []core.Property{
-									{Name: "Class", Value: "os-pkgs"},
-									{Name: "Type", Value: "ubuntu"},
+									{
+										Name:  "Class",
+										Value: "os-pkgs",
+									},
+									{
+										Name:  "Type",
+										Value: "ubuntu",
+									},
 								},
 							},
 							{
 								Type: cdx.ComponentTypeApplication,
 								Name: "node-core-components",
 								Properties: []core.Property{
-									{Name: "Class", Value: "lang-pkgs"},
-									{Name: "Type", Value: "golang"},
+									{
+										Name:  "Class",
+										Value: "lang-pkgs",
+									},
+									{
+										Name:  "Type",
+										Value: "golang",
+									},
 								},
 								Components: []*core.Component{
 									{
@@ -97,7 +132,10 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 										Name:    "kubelet",
 										Version: "1.21.1",
 										Properties: []core.Property{
-											{Name: "PkgType", Value: "golang"},
+											{
+												Name:  "PkgType",
+												Value: "golang",
+											},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
@@ -113,7 +151,10 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 										Name:    "containerd",
 										Version: "1.5.2",
 										Properties: []core.Property{
-											{Name: "PkgType", Value: "golang"},
+											{
+												Name:  "PkgType",
+												Value: "golang",
+											},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
@@ -321,16 +362,13 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 			},
 		},
 	}
-	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var count int
-			newUUID := func() uuid.UUID {
-				count++
-				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
-			}
-			marshaler := core.NewCycloneDX("dev", core.WithClock(clock), core.WithNewUUID(newUUID))
+			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+			marshaler := core.NewCycloneDX("dev")
 			got := marshaler.Marshal(tt.rootComponent)
 			assert.Equal(t, tt.want, got)
 		})
