@@ -2,6 +2,7 @@ package table
 
 import (
 	"fmt"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	"io"
 	"os"
 	"runtime"
@@ -137,7 +138,7 @@ func IsOutputToTerminal(output io.Writer) bool {
 		return false
 	}
 
-	if output != os.Stdout {
+	if output != xio.NopCloser(os.Stdout) {
 		return false
 	}
 	o, err := os.Stdout.Stat()
