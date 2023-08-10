@@ -336,17 +336,24 @@ You can specify a Rego file with `--ignore-policy` option.
 
 The Rego package name must be `trivy` and it must include a rule called `ignore` which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the `input` variable. 
 
-The structure of each vulnerability input is the same as for the Trivy JSON result output.  
-
 For instance, if we want to create an `--ignore-policy` option for the following container image `centos:7`, you can first create the json output of the Trivy vulnerability scan:
 
 ```bash
 $ trivy image -o result.json -f json centos:7
 ```
 
+This will save the scan result in JSON format to the `result.json` file. In the output you will find an array called `Results` which lists all the discovered vulnerabilities. An example is provided below:
+
+```json
+          "CweIDs": [
+            "CWE-20"
+          ],
+```
+
 <details>
-<summary>JSON Result section</summary>
-```bash
+
+<summary>Detailed JSON Result</summary>
+```json
 "Results": [
     {
       "Target": "centos:7 (centos 7.9.2009)",
@@ -374,9 +381,9 @@ $ trivy image -o result.json -f json centos:7
 ```
 </details>
 
-Next, you can see the JSON result output of the scan in the result.json file. In the file, you will find an array called `Result`. This will list all the Vulnerabilities and based on this information we can create the ignore policy:
+Each individual vulnerability in the `Results` array is available for the ignore policy in your Rego policy:
 
-```bash
+```rego
 package trivy
 
 import data.lib.trivy
@@ -388,7 +395,7 @@ ignore {
 }
 ```
 
-The policy can then be passed into the Trivy command throgh the `--ignore-policy` flag:
+The policy can then be passed into the Trivy command through the `--ignore-policy` flag:
 
 ```bash
 $ trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
@@ -400,7 +407,7 @@ For more advanced use cases, there is a built-in Rego library with helper functi
 
 To get started, see the [example policy][policy].
 
-Additionally, it is possible to pass in Rego policies to misconfiguration scans. Currently, this feature is part of the `trivy fs` scans:
+Additionally, it is possible to pass in Rego policies to misconfiguration scans:
 
 ```
 trivy fs --security-checks config --ignore-policy ./custom-policies/ignore/basic-two.rego ./bad_iac
