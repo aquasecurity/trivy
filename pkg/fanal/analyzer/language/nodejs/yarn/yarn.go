@@ -25,7 +25,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
@@ -71,7 +71,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 		licenses := map[string][]string{}
 
-		if err := a.traversePkgs(input.FS, filePath, nodejs.ParseLicenses(a.packageJsonParser, a.licenseClassifierConfidenceLevel, licenses)); err != nil {
+		if err := a.traversePkgs(input.FS, filePath, license.ParseLicenses(a.packageJsonParser, a.licenseClassifierConfidenceLevel, licenses)); err != nil {
 			log.Logger.Errorf("Unable to traverse packages: %s", err)
 		}
 

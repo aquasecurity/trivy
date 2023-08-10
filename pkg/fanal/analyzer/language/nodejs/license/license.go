@@ -1,4 +1,4 @@
-package nodejs
+package license
 
 import (
 	"errors"
@@ -10,6 +10,7 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -57,7 +58,7 @@ func ParseLicenses(
 			return nil
 		}
 
-		if err := fsutils.WalkDir(fsys, root, isNodeModulesPkg, walkDirFunc); err != nil {
+		if err := fsutils.WalkDir(fsys, root, nodejs.IsNodeModulesPkg, walkDirFunc); err != nil {
 			return xerrors.Errorf("walk error: %w", err)
 		}
 

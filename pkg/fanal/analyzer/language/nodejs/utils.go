@@ -10,7 +10,7 @@ func IsNodeModulesPkgJson(filePath string) bool {
 	return IsPkgRootFile(filePath) && strings.HasSuffix(filePath, "package.json")
 }
 
-func isNodeModulesPkg(filePath string, _ fs.DirEntry) bool {
+func IsNodeModulesPkg(filePath string, _ fs.DirEntry) bool {
 	return IsNodeModulesPkgJson(filePath)
 }
 
