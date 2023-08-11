@@ -44,7 +44,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.3
-	github.com/google/go-containerregistry v0.15.2
+	github.com/google/go-containerregistry v0.16.1
 	github.com/google/licenseclassifier/v2 v2.0.0
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
@@ -110,7 +110,7 @@ require (
 
 require (
 	cloud.google.com/go v0.110.0 // indirect
-	cloud.google.com/go/compute v1.19.1 // indirect
+	cloud.google.com/go/compute v1.19.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v0.13.0 // indirect
 	cloud.google.com/go/storage v1.29.0 // indirect
@@ -215,7 +215,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
-	github.com/docker/cli v23.0.5+incompatible // indirect
+	github.com/docker/cli v24.0.0+incompatible // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.7.0 // indirect
 	github.com/docker/go-events v0.0.0-20190806004212-e31b211e4f1c // indirect
@@ -359,11 +359,11 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
-	golang.org/x/oauth2 v0.7.0 // indirect
+	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.10.0 // indirect
-	google.golang.org/api v0.121.0 // indirect
+	google.golang.org/api v0.122.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230526161137-0005af68ea54 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230525234035-dd9d682886f9 // indirect
