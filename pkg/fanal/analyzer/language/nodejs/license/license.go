@@ -41,7 +41,7 @@ func ParseLicenses(
 				return nil
 			}
 
-			log.Logger.Debugf("Licenses are missing in %q, an attempt to find them in the LICENSE file", pkgJsonPath)
+			log.Logger.Debugf("License names are missing in %q, an attempt to find them in the %q file", pkgJsonPath, licenseFileName)
 			licenseFilePath := path.Join(path.Dir(pkgJsonPath), licenseFileName)
 
 			findings, err := classifyLicense(licenseFilePath, classifierConfidenceLevel, fsys)
