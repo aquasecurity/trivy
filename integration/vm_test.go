@@ -113,7 +113,7 @@ func TestVM(t *testing.T) {
 			// Run "trivy vm"
 			err = execute(osArgs)
 			require.NoError(t, err)
-			compareReports(t, goldenFile, outputFile)
+			compareReports(t, goldenFile, outputFile, nil)
 		})
 	}
 }

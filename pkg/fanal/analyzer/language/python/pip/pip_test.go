@@ -27,7 +27,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pip,
 						FilePath: "testdata/requirements.txt",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "click",
 								Version: "8.0.0",
@@ -44,7 +44,8 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 					},
 				},
 			},
-		}, {
+		},
+		{
 			name:      "happy path with not related filename",
 			inputFile: "testdata/not-related.txt",
 			want:      nil,

@@ -327,9 +327,7 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 		})
 
 		for _, app := range detail.Applications {
-			sort.Slice(app.Libraries, func(i, j int) bool {
-				return app.Libraries[i].FilePath < app.Libraries[j].FilePath
-			})
+			sort.Sort(app.Libraries)
 			for i := range app.Libraries {
 				sort.Strings(app.Libraries[i].DependsOn)
 			}

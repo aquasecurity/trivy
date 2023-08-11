@@ -212,7 +212,7 @@ func TestFilterResult(t *testing.T) {
 	type args struct {
 		result         types.Result
 		severities     []dbTypes.Severity
-		ignoreUnfixed  bool
+		ignoreStatuses []dbTypes.Status
 		ignoreFile     string
 		policyFile     string
 		ignoreLicenses []string
@@ -318,7 +318,6 @@ func TestFilterResult(t *testing.T) {
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityUnknown,
 				},
-				ignoreUnfixed: false,
 			},
 			wantVulns: []types.DetectedVulnerability{
 				{
@@ -403,14 +402,15 @@ func TestFilterResult(t *testing.T) {
 							PkgName:          "bar",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "",
+							Status:           dbTypes.StatusWillNotFix,
 							Vulnerability: dbTypes.Vulnerability{
 								Severity: dbTypes.SeverityHigh.String(),
 							},
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityHigh},
-				ignoreUnfixed: true,
+				severities:     []dbTypes.Severity{dbTypes.SeverityHigh},
+				ignoreStatuses: []dbTypes.Status{dbTypes.StatusWillNotFix, dbTypes.StatusEndOfLife},
 			},
 			wantVulns: []types.DetectedVulnerability{},
 		},
@@ -507,9 +507,8 @@ func TestFilterResult(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
-				ignoreUnfixed: false,
-				ignoreFile:    "testdata/.trivyignore",
+				severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				ignoreFile: "testdata/.trivyignore",
 			},
 
 			wantVulns: []types.DetectedVulnerability{
@@ -579,9 +578,8 @@ func TestFilterResult(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
-				ignoreUnfixed: false,
-				policyFile:    "./testdata/test.rego",
+				severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				policyFile: "./testdata/test.rego",
 			},
 			wantVulns: []types.DetectedVulnerability{
 				{
@@ -679,7 +677,6 @@ func TestFilterResult(t *testing.T) {
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityUnknown,
 				},
-				ignoreUnfixed: false,
 			},
 			wantVulns: []types.DetectedVulnerability{
 				{
@@ -811,7 +808,6 @@ func TestFilterResult(t *testing.T) {
 					dbTypes.SeverityHigh,
 					dbTypes.SeverityUnknown,
 				},
-				ignoreUnfixed: false,
 			},
 			wantVulns: []types.DetectedVulnerability{
 				{
@@ -871,7 +867,7 @@ func TestFilterResult(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := result.FilterResult(context.Background(), &tt.args.result, result.FilterOption{
 				Severities:     tt.args.severities,
-				IgnoreUnfixed:  tt.args.ignoreUnfixed,
+				IgnoreStatuses: tt.args.ignoreStatuses,
 				IgnoreFile:     tt.args.ignoreFile,
 				PolicyFile:     tt.args.policyFile,
 				IgnoreLicenses: tt.args.ignoreLicenses,

@@ -37,7 +37,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 
 	log.Logger.Debug("Writing report to output...")
-	if err = report.Write(r, opts.ReportOpts()); err != nil {
+	if err = report.Write(r, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

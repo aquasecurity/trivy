@@ -68,7 +68,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	var policyPaths []string
 	var downloadedPolicyPaths []string
 	var err error
-	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate)
+	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate, option.MisconfOptions.PolicyBundleRepository)
 	if err != nil {
 		if !option.SkipPolicyUpdate {
 			log.Logger.Errorf("Falling back to embedded policies: %s", err)
@@ -77,7 +77,8 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		log.Logger.Debug("Policies successfully loaded from disk")
 		policyPaths = append(policyPaths, downloadedPolicyPaths...)
 		scannerOpts = append(scannerOpts,
-			options.ScannerWithEmbeddedPolicies(false))
+			options.ScannerWithEmbeddedPolicies(false),
+			options.ScannerWithEmbeddedLibraries(false))
 	}
 
 	var policyFS fs.FS

@@ -1,28 +1,24 @@
 package cyclonedx_test
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
-
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/uuid"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 func TestMarshaler_Marshal(t *testing.T) {
@@ -381,7 +377,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:    "binutils",
 						Version: "2.30-93.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv3+"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "GPLv3+",
+								},
+							},
 						},
 						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 						Supplier: &cdx.OrganizationalEntity{
@@ -840,7 +840,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:    "acl",
 						Version: "2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv2+"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "GPLv2+",
+								},
+							},
 						},
 						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
@@ -882,7 +886,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:    "glibc",
 						Version: "2.28-151.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv2+"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "GPLv2+",
+								},
+							},
 						},
 						PackageURL: "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
@@ -1427,7 +1435,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "test-aggregate",
-				ArtifactType:  ftypes.ArtifactRemoteRepository,
+				ArtifactType:  ftypes.ArtifactRepository,
 				Results: types.Results{
 					{
 						Target: "Node.js",
@@ -1484,7 +1492,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Version:    "0.20.1",
 						PackageURL: "pkg:npm/ruby-typeprof@0.20.1",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "MIT"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "MIT",
+								},
+							},
 						},
 						Properties: &[]cdx.Property{
 							{
@@ -1569,17 +1581,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 		},
 	}
 
-	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var count int
-			newUUID := func() uuid.UUID {
-				count++
-				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
-			}
+			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			marshaler := cyclonedx.NewMarshaler("dev", core.WithClock(clock), core.WithNewUUID(newUUID))
+			marshaler := cyclonedx.NewMarshaler("dev")
 			got, err := marshaler.Marshal(tt.inputReport)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)

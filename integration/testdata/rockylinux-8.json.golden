@@ -57,6 +57,7 @@
           "PkgName": "openssl-libs",
           "InstalledVersion": "1:1.1.1k-4.el8",
           "FixedVersion": "1:1.1.1k-5.el8_5",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:72a2451028f11c6927678e5f1bb8f35b4e723d3b342ec1a6980d7b5591cf81d6",
             "DiffID": "sha256:65dbea0a4b39709e0a2cc8624fd99478e9f302c0a5661d7676d6d3bd3cb6d181"

@@ -58,7 +58,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 				PackageInfos: []types.PackageInfo{
 					{
 						FilePath: "var/lib/dpkg/status.d/libc",
-						Packages: []types.Package{
+						Packages: types.Packages{
 							{
 								Name:    "libc",
 								Version: "1.2.3",
@@ -70,7 +70,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "app/Gemfile.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "rails",
 								Version: "5.0.0",
@@ -84,7 +84,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "var/lib/dpkg/status.d/openssl",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "openssl",
 									Version: "1.1.1",
@@ -96,7 +96,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 						{
 							Type:     "bundler",
 							FilePath: "app2/Gemfile.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "nokogiri",
 									Version: "1.0.0",
@@ -114,7 +114,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 				PackageInfos: []types.PackageInfo{
 					{
 						FilePath: "var/lib/dpkg/status.d/libc",
-						Packages: []types.Package{
+						Packages: types.Packages{
 							{
 								Name:    "libc",
 								Version: "1.2.3",
@@ -123,7 +123,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					},
 					{
 						FilePath: "var/lib/dpkg/status.d/openssl",
-						Packages: []types.Package{
+						Packages: types.Packages{
 							{
 								Name:    "openssl",
 								Version: "1.1.1",
@@ -135,7 +135,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "app/Gemfile.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "rails",
 								Version: "5.0.0",
@@ -145,7 +145,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "app2/Gemfile.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "nokogiri",
 								Version: "1.0.0",
@@ -335,7 +335,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 				PackageInfos: []types.PackageInfo{
 					{
 						FilePath: "/lib/apk/db/installed",
-						Packages: []types.Package{
+						Packages: types.Packages{
 							{
 								ID:         "musl@1.1.24-r2",
 								Name:       "musl",
@@ -375,7 +375,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "/app/Gemfile.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "actioncable@5.2.3",
 								Name:     "actioncable",
@@ -436,7 +436,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "/app/Gemfile-dev.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "actioncable@5.2.3",
 								Name:     "actioncable",
@@ -569,7 +569,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 					{
 						Type:     string(analyzer.TypeJar),
 						FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-annotations",
 								Version:  "2.15.0-rc2",
@@ -589,7 +589,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 					{
 						Type:     string(analyzer.TypePoetry),
 						FilePath: "testdata/post-apps/poetry/happy/poetry.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "certifi@2022.12.7",
 								Name:    "certifi",

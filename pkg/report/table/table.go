@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -137,7 +138,7 @@ func IsOutputToTerminal(output io.Writer) bool {
 		return false
 	}
 
-	if output != os.Stdout {
+	if output != xio.NopCloser(os.Stdout) {
 		return false
 	}
 	o, err := os.Stdout.Stat()

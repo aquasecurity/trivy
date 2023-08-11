@@ -26,7 +26,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
@@ -78,6 +78,36 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
+								ID:      "prop-types@15.7.2",
+								Name:    "prop-types",
+								Version: "15.7.2",
+								Dev:     true,
+								Locations: []types.Location{
+									{
+										StartLine: 27,
+										EndLine:   34,
+									},
+								},
+								DependsOn: []string{
+									"loose-envify@1.4.0",
+									"object-assign@4.1.1",
+									"react-is@16.13.1",
+								},
+							},
+							{
+								ID:       "react-is@16.13.1",
+								Name:     "react-is",
+								Version:  "16.13.1",
+								Dev:      true,
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 36,
+										EndLine:   39,
+									},
+								},
+							},
+							{
 								ID:      "scheduler@0.13.6",
 								Name:    "scheduler",
 								Version: "0.13.6",
@@ -105,7 +135,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
@@ -208,7 +238,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
@@ -238,7 +268,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "is-number@6.0.0",
 								Name:     "is-number",
@@ -307,6 +337,61 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 									{
 										StartLine: 53,
 										EndLine:   62,
+									},
+								},
+							},
+							{
+								ID:       "object-assign@4.1.1",
+								Name:     "object-assign",
+								Version:  "4.1.1",
+								Indirect: true,
+								Dev:      true,
+								Locations: []types.Location{
+									{
+										StartLine: 64,
+										EndLine:   69,
+									},
+								},
+							},
+							{
+								ID:      "prettier@2.8.8",
+								Name:    "prettier",
+								Version: "2.8.8",
+								Dev:     true,
+								Locations: []types.Location{
+									{
+										StartLine: 87,
+										EndLine:   94,
+									},
+								},
+							},
+							{
+								ID:      "prop-types@15.8.1",
+								Name:    "prop-types",
+								Version: "15.8.1",
+								Dev:     true,
+								Locations: []types.Location{
+									{
+										StartLine: 96,
+										EndLine:   105,
+									},
+								},
+								DependsOn: []string{
+									"loose-envify@1.4.0",
+									"object-assign@4.1.1",
+									"react-is@16.13.1",
+								},
+							},
+							{
+								ID:       "react-is@16.13.1",
+								Name:     "react-is",
+								Version:  "16.13.1",
+								Dev:      true,
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 107,
+										EndLine:   112,
 									},
 								},
 							},

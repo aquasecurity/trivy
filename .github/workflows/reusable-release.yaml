@@ -26,8 +26,17 @@ jobs:
       packages: write # For GHCR
       contents: read  # Not required for public repositories, but for clarity
     steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@v7
+        with:
+          root-reserve-mb: 35840 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
+          remove-android: 'true'
+          remove-docker-images: 'true'
+          remove-dotnet: 'true'
+          remove-haskell: 'true'
+
       - name: Cosign install
-        uses: sigstore/cosign-installer@ef0e9691595ea19ec990a46b1a591dcafe568f34
+        uses: sigstore/cosign-installer@a5d81fb6bdbcbb3d239e864d6552820420254494
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2

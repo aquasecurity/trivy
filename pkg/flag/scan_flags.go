@@ -2,6 +2,7 @@ package flag
 
 import (
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 var (
@@ -9,13 +10,13 @@ var (
 		Name:       "skip-dirs",
 		ConfigName: "scan.skip-dirs",
 		Default:    []string{},
-		Usage:      "specify the directories where the traversal is skipped",
+		Usage:      "specify the directories or glob patterns to skip",
 	}
 	SkipFilesFlag = Flag{
 		Name:       "skip-files",
 		ConfigName: "scan.skip-files",
 		Default:    []string{},
-		Usage:      "specify the file paths to skip traversal",
+		Usage:      "specify the files or glob patterns to skip",
 	}
 	OfflineScanFlag = Flag{
 		Name:       "offline-scan",
@@ -26,16 +27,16 @@ var (
 	ScannersFlag = Flag{
 		Name:       "scanners",
 		ConfigName: "scan.scanners",
-		Default: types.Scanners{
+		Default: xstrings.ToStringSlice(types.Scanners{
 			types.VulnerabilityScanner,
 			types.SecretScanner,
-		}.StringSlice(),
-		Values: types.Scanners{
+		}),
+		Values: xstrings.ToStringSlice(types.Scanners{
 			types.VulnerabilityScanner,
 			types.MisconfigScanner,
 			types.SecretScanner,
 			types.LicenseScanner,
-		}.StringSlice(),
+		}),
 		Aliases: []Alias{
 			{
 				Name:       "security-checks",
@@ -74,7 +75,7 @@ var (
 		Name:       "include-dev-deps",
 		ConfigName: "include-dev-deps",
 		Default:    false,
-		Usage:      "include development dependencies in the report (supported: npm)",
+		Usage:      "include development dependencies in the report (supported: npm, yarn)",
 	}
 )
 

@@ -11,18 +11,20 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/samber/lo"
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/xeipuuv/gojsonschema"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -138,10 +140,7 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	err = decoder.Decode(bom)
 	require.NoError(t, err)
 
-	// We don't compare values which change each time an SBOM is generated
-	bom.Metadata.Timestamp = ""
-	bom.Metadata.Component.BOMRef = ""
-	bom.SerialNumber = ""
+	// Sort components
 	if bom.Components != nil {
 		sort.Slice(*bom.Components, func(i, j int) bool {
 			return (*bom.Components)[i].Name < (*bom.Components)[j].Name
@@ -151,12 +150,6 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 			sort.Slice(*(*bom.Components)[i].Properties, func(ii, jj int) bool {
 				return (*(*bom.Components)[i].Properties)[ii].Name < (*(*bom.Components)[i].Properties)[jj].Name
 			})
-		}
-	}
-	if bom.Dependencies != nil {
-		for j := range *bom.Dependencies {
-			(*bom.Dependencies)[j].Ref = ""
-			(*bom.Dependencies)[j].Dependencies = nil
 		}
 	}
 
@@ -199,9 +192,12 @@ func execute(osArgs []string) error {
 	return app.Execute()
 }
 
-func compareReports(t *testing.T, wantFile, gotFile string) {
+func compareReports(t *testing.T, wantFile, gotFile string, override func(*types.Report)) {
 	want := readReport(t, wantFile)
 	got := readReport(t, gotFile)
+	if override != nil {
+		override(&want)
+	}
 	assert.Equal(t, want, got)
 }
 
@@ -209,6 +205,20 @@ func compareCycloneDX(t *testing.T, wantFile, gotFile string) {
 	want := readCycloneDX(t, wantFile)
 	got := readCycloneDX(t, gotFile)
 	assert.Equal(t, want, got)
+
+	// Validate CycloneDX output against the JSON schema
+	schemaLoader := gojsonschema.NewReferenceLoader(got.JSONSchema)
+	documentLoader := gojsonschema.NewGoLoader(got)
+
+	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+	require.NoError(t, err)
+
+	if valid := result.Valid(); !valid {
+		errs := lo.Map(result.Errors(), func(err gojsonschema.ResultError, _ int) string {
+			return err.String()
+		})
+		assert.True(t, valid, strings.Join(errs, "\n"))
+	}
 }
 
 func compareSpdxJson(t *testing.T, wantFile, gotFile string) {

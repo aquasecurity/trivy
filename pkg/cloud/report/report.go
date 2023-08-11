@@ -2,12 +2,16 @@ package report
 
 import (
 	"context"
+	"io"
 	"os"
 	"sort"
 	"time"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/tml"
+	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -55,6 +59,15 @@ func (r *Report) Failed() bool {
 
 // Write writes the results in the give format
 func Write(rep *Report, opt flag.Options, fromCache bool) error {
+	output, err := opt.OutputWriter()
+	if err != nil {
+		return xerrors.Errorf("failed to create output file: %w", err)
+	}
+	defer output.Close()
+
+	if opt.Compliance.Spec.ID != "" {
+		return writeCompliance(rep, opt, output)
+	}
 
 	var filtered []types.Result
 
@@ -91,7 +104,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		// ensure color/formatting is disabled for pipes/non-pty
 		var useANSI bool
-		if opt.Output == os.Stdout {
+		if opt.Output == "" {
 			if o, err := os.Stdout.Stat(); err == nil {
 				useANSI = (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 			}
@@ -102,33 +115,44 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		switch {
 		case len(opt.Services) == 1 && opt.ARN == "":
-			if err := writeResourceTable(rep, filtered, opt.Output, opt.Services[0]); err != nil {
+			if err := writeResourceTable(rep, filtered, output, opt.Services[0]); err != nil {
 				return err
 			}
 		case len(opt.Services) == 1 && opt.ARN != "":
-			if err := writeResultsForARN(rep, filtered, opt.Output, opt.Services[0], opt.ARN, opt.Severities); err != nil {
+			if err := writeResultsForARN(rep, filtered, output, opt.Services[0], opt.ARN, opt.Severities); err != nil {
 				return err
 			}
 		default:
-			if err := writeServiceTable(rep, filtered, opt.Output); err != nil {
+			if err := writeServiceTable(rep, filtered, output); err != nil {
 				return err
 			}
 		}
 
 		// render cache info
 		if fromCache {
-			_ = tml.Fprintf(opt.Output, "\n<blue>This scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.</blue>\n")
+			_ = tml.Fprintf(output, "\n<blue>This scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.</blue>\n")
 		}
 
 		return nil
 	default:
-		return pkgReport.Write(base, pkgReport.Option{
-			Format:             opt.Format,
-			Output:             opt.Output,
-			Severities:         opt.Severities,
-			OutputTemplate:     opt.Template,
-			IncludeNonFailures: opt.IncludeNonFailures,
-			Trace:              opt.Trace,
-		})
+		return pkgReport.Write(base, opt)
 	}
+}
+
+func writeCompliance(rep *Report, opt flag.Options, output io.Writer) error {
+	var crr []types.Results
+	for _, r := range rep.Results {
+		crr = append(crr, r.Results)
+	}
+
+	complianceReport, err := cr.BuildComplianceReport(crr, opt.Compliance)
+	if err != nil {
+		return xerrors.Errorf("compliance report build error: %w", err)
+	}
+
+	return cr.Write(complianceReport, cr.Option{
+		Format: opt.Format,
+		Report: opt.ReportFormat,
+		Output: output,
+	})
 }

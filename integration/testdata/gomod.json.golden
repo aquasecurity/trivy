@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/gomod",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/gomod",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -26,6 +26,7 @@
           "PkgName": "github.com/docker/distribution",
           "InstalledVersion": "2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
+          "Status": "fixed",
           "Layer": {},
           "DataSource": {
             "ID": "ghsa",
@@ -48,6 +49,7 @@
           "PkgName": "github.com/open-policy-agent/opa",
           "InstalledVersion": "0.35.0",
           "FixedVersion": "0.37.0",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-23628",
@@ -87,6 +89,7 @@
           "PkgName": "golang.org/x/text",
           "InstalledVersion": "0.3.6",
           "FixedVersion": "0.3.7",
+          "Status": "fixed",
           "Layer": {},
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-38561",
           "DataSource": {
@@ -115,6 +118,7 @@
           "PkgName": "github.com/docker/distribution",
           "InstalledVersion": "2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
+          "Status": "fixed",
           "Layer": {},
           "DataSource": {
             "ID": "ghsa",
@@ -144,6 +148,7 @@
           "PkgName": "github.com/docker/distribution",
           "InstalledVersion": "2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
+          "Status": "fixed",
           "Layer": {},
           "DataSource": {
             "ID": "ghsa",

@@ -65,25 +65,39 @@ message Misconfiguration {
 message MisconfResult {
   string namespace = 1;
   string message   = 2;
-  string type      = 3;
-  string id        = 4;
-  string title     = 5;
-  string severity  = 6;
+  reserved 3 to 6;
+  reserved "type", "id", "title", "severity";
+  PolicyMetadata policy_metadata = 7;
+  CauseMetadata  cause_metadata  = 8;
+}
+
+message PolicyMetadata {
+  string          id                  = 1;
+  string          adv_id              = 2;
+  string          type                = 3;
+  string          title               = 4;
+  string          description         = 5;
+  string          severity            = 6;
+  string          recommended_actions = 7;
+  repeated string references          = 8;
 }
 
 message DetectedMisconfiguration {
-  string type                 = 1;
-  string id                   = 2;
-  string title                = 3;
-  string description          = 4;
-  string message              = 5;
-  string namespace            = 6;
-  string          resolution  = 7;
-  Severity        severity    = 8;
-  string          primary_url = 9;
-  repeated string references  = 10;
-  string          status      = 11;
-  Layer           layer       = 12;
+  string type                    = 1;
+  string id                      = 2;
+  string title                   = 3;
+  string description             = 4;
+  string message                 = 5;
+  string namespace               = 6;
+  string          resolution     = 7;
+  Severity        severity       = 8;
+  string          primary_url    = 9;
+  repeated string references     = 10;
+  string          status         = 11;
+  Layer           layer          = 12;
+  CauseMetadata   cause_metadata = 13;
+  string          avd_id         = 14;
+  string          query          = 15;
 }
 
 message Vulnerability {
@@ -109,6 +123,7 @@ message Vulnerability {
   map<string, Severity>     vendor_severity      = 21;
   string                    pkg_path             = 22;
   string                    pkg_id               = 23;
+  int32                     status               = 24;
 }
 
 message DataSource {
@@ -121,6 +136,15 @@ message Layer {
   string digest     = 1;
   string diff_id    = 2;
   string created_by = 3;
+}
+
+message CauseMetadata {
+  string resource   = 1;
+  string provider   = 2;
+  string service    = 3;
+  int32  start_line = 4;
+  int32  end_line   = 5;
+  Code   code       = 6;
 }
 
 enum Severity {
@@ -177,4 +201,25 @@ message SecretFinding {
 message Secret {
   string                 filepath = 1;
   repeated SecretFinding findings = 2;
+}
+
+message DetectedLicense {
+  Severity        severity   = 1;
+  LicenseCategory category   = 2;
+  string          pkg_name   = 3;
+  string          file_path  = 4;
+  string          name       = 5;
+  float           confidence = 6;
+  string          link       = 7;
+
+  enum LicenseCategory {
+    UNSPECIFIED  = 0;
+    FORBIDDEN    = 1;
+    RESTRICTED   = 2;
+    RECIPROCAL   = 3;
+    NOTICE       = 4;
+    PERMISSIVE   = 5;
+    UNENCUMBERED = 6;
+    UNKNOWN      = 7;
+  }
 }

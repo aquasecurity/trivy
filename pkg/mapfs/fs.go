@@ -12,7 +12,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/syncx"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 type allFS interface {
@@ -56,7 +56,7 @@ func New(opts ...Option) *FS {
 				modTime: time.Now(),
 				mode:    0o0700 | fs.ModeDir,
 			},
-			files: syncx.Map[string, *file]{},
+			files: xsync.Map[string, *file]{},
 		},
 	}
 	for _, opt := range opts {

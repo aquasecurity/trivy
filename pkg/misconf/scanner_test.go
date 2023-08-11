@@ -118,7 +118,6 @@ func TestScanner_Scan(t *testing.T) {
 		{
 			name:        "happy path. terraform plan file",
 			scannerFunc: NewTerraformPlanScanner,
-			fields:      fields{},
 			files: []file{
 				{
 					path:    "main.tfplan.json",

@@ -114,6 +114,7 @@
           "PkgName": "libidn2-0",
           "InstalledVersion": "2.0.5-1",
           "FixedVersion": "2.0.5-1+deb10u1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c",
             "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
@@ -175,6 +176,7 @@
           "PkgPath": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
           "InstalledVersion": "6.0.2.1",
           "FixedVersion": "6.0.3.1, 5.2.4.3",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602",
             "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"

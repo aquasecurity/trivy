@@ -11,7 +11,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Test_showVersion(t *testing.T) {
@@ -158,7 +158,7 @@ Policy Bundle:
 		t.Run(test.name, func(t *testing.T) {
 			got := new(bytes.Buffer)
 			app := NewApp("test")
-			SetOut(got)
+			app.SetOut(got)
 			app.SetArgs(test.arguments)
 
 			err := app.Execute()
@@ -170,7 +170,7 @@ Policy Bundle:
 
 func TestFlags(t *testing.T) {
 	type want struct {
-		format     string
+		format     types.Format
 		severities []dbTypes.Severity
 	}
 	tests := []struct {
@@ -185,7 +185,7 @@ func TestFlags(t *testing.T) {
 				"test",
 			},
 			want: want{
-				format: report.FormatTable,
+				format: types.FormatTable,
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityUnknown,
 					dbTypes.SeverityLow,
@@ -203,7 +203,7 @@ func TestFlags(t *testing.T) {
 				"LOW,MEDIUM",
 			},
 			want: want{
-				format: report.FormatTable,
+				format: types.FormatTable,
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityLow,
 					dbTypes.SeverityMedium,
@@ -220,7 +220,7 @@ func TestFlags(t *testing.T) {
 				"HIGH",
 			},
 			want: want{
-				format: report.FormatTable,
+				format: types.FormatTable,
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityLow,
 					dbTypes.SeverityHigh,
@@ -237,7 +237,7 @@ func TestFlags(t *testing.T) {
 				"CRITICAL",
 			},
 			want: want{
-				format: report.FormatJSON,
+				format: types.FormatJSON,
 				severities: []dbTypes.Severity{
 					dbTypes.SeverityCritical,
 				},
@@ -259,7 +259,7 @@ func TestFlags(t *testing.T) {
 			globalFlags := flag.NewGlobalFlagGroup()
 			rootCmd := NewRootCommand("dev", globalFlags)
 			rootCmd.SetErr(io.Discard)
-			SetOut(io.Discard)
+			rootCmd.SetOut(io.Discard)
 
 			flags := &flag.Flags{
 				ReportFlagGroup: flag.NewReportFlagGroup(),
@@ -270,7 +270,7 @@ func TestFlags(t *testing.T) {
 					// Bind
 					require.NoError(t, flags.Bind(cmd))
 
-					options, err := flags.ToOptions("dev", args, globalFlags, nil)
+					options, err := flags.ToOptions("dev", args, globalFlags)
 					require.NoError(t, err)
 
 					assert.Equal(t, tt.want.format, options.Format)

@@ -36,21 +36,24 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 		return "", xerrors.Errorf("json encode error: %w", err)
 	}
 
-	// Write policy and data contents
-	for _, paths := range [][]string{artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths} {
-		for _, p := range paths {
-			hash, err := hashContents(p)
-			if err != nil {
-				return "", err
-			}
+	// Write policy, data contents and secret config file
+	paths := append(artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths...)
 
-			if _, err := h.Write([]byte(hash)); err != nil {
-				return "", xerrors.Errorf("sha256 write error: %w", err)
-			}
-		}
+	// Check if the secret config exists.
+	if _, err := os.Stat(artifactOpt.SecretScannerOption.ConfigPath); err == nil {
+		paths = append(paths, artifactOpt.SecretScannerOption.ConfigPath)
 	}
 
-	// TODO: add secret scanner option here
+	for _, p := range paths {
+		hash, err := hashContents(p)
+		if err != nil {
+			return "", err
+		}
+
+		if _, err := h.Write([]byte(hash)); err != nil {
+			return "", xerrors.Errorf("sha256 write error: %w", err)
+		}
+	}
 
 	return fmt.Sprintf("sha256:%x", h.Sum(nil)), nil
 }

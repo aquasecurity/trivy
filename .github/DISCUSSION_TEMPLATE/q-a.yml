@@ -7,6 +7,8 @@ body:
         If you have any troubles/questions, feel free to ask.
         Please ensure that you're not asking a duplicate question by searching the [issues](https://github.com/aquasecurity/trivy/issues)/[discussions](https://github.com/aquasecurity/trivy/discussions) beforehand.
         
+        **Do not open a GitHub issue, please.** Maintainers triage discussions and then create issues.
+        
         Please also check [our contribution guidelines](https://aquasecurity.github.io/trivy/latest/community/contribute/discussion/).
   - type: textarea
     attributes:

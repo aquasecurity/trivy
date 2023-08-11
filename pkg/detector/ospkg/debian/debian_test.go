@@ -67,6 +67,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "htpasswd",
 					VulnerabilityID:  "CVE-2021-31618",
 					InstalledVersion: "2.4.24",
+					Status:           dbTypes.StatusWillNotFix,
 					SeveritySource:   vulnerability.Debian,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),

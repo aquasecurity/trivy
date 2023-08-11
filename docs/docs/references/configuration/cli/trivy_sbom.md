@@ -34,6 +34,7 @@ trivy sbom [flags] SBOM_PATH
   -f, --format string               format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
   -h, --help                        help for sbom
       --ignore-policy string        specify the Rego file path to evaluate each vulnerability
+      --ignore-status strings       comma-separated list of vulnerability status to ignore (unknown,not_affected,affected,fixed,under_investigation,will_not_fix,fix_deferred,end_of_life)
       --ignore-unfixed              display only fixed vulnerabilities
       --ignorefile string           specify .trivyignore file (default ".trivyignore")
       --java-db-repository string   OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
@@ -51,8 +52,8 @@ trivy sbom [flags] SBOM_PATH
       --server string               server address in client mode
   -s, --severity strings            severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --skip-db-update              skip updating vulnerability database
-      --skip-dirs strings           specify the directories where the traversal is skipped
-      --skip-files strings          specify the file paths to skip traversal
+      --skip-dirs strings           specify the directories or glob patterns to skip
+      --skip-files strings          specify the files or glob patterns to skip
       --skip-java-db-update         skip updating Java index database
       --slow                        scan over time with lower CPU and memory utilization
   -t, --template string             output template

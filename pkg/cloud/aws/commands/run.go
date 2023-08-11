@@ -5,35 +5,29 @@ import (
 	"errors"
 	"strings"
 
-	"golang.org/x/exp/slices"
-
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/defsec/pkg/errs"
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/trivy/pkg/cloud"
+	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud/report"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
-	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
 
-func getAccountIDAndRegion(ctx context.Context, region string) (string, string, error) {
+func getAccountIDAndRegion(ctx context.Context, region, endpoint string) (string, string, error) {
 	log.Logger.Debug("Looking for AWS credentials provider...")
 
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+	cfg, err := config.LoadDefaultAWSConfig(ctx, region, endpoint)
 	if err != nil {
 		return "", "", err
-	}
-	if region != "" {
-		cfg.Region = region
 	}
 
 	svc := sts.NewFromConfig(cfg)
@@ -85,7 +79,7 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 
 	if opt.Account == "" || opt.Region == "" {
 		var err error
-		opt.Account, opt.Region, err = getAccountIDAndRegion(ctx, opt.Region)
+		opt.Account, opt.Region, err = getAccountIDAndRegion(ctx, opt.Region, opt.Endpoint)
 		if err != nil {
 			return err
 		}
@@ -166,24 +160,6 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	log.Logger.Debug("Writing report to output...")
-	if opt.Compliance.Spec.ID != "" {
-		convertedResults := report.ConvertResults(results, cloud.ProviderAWS, opt.Services)
-		var crr []types.Results
-		for _, r := range convertedResults {
-			crr = append(crr, r.Results)
-		}
-
-		complianceReport, err := cr.BuildComplianceReport(crr, opt.Compliance)
-		if err != nil {
-			return xerrors.Errorf("compliance report build error: %w", err)
-		}
-
-		return cr.Write(complianceReport, cr.Option{
-			Format: opt.Format,
-			Report: opt.ReportFormat,
-			Output: opt.Output,
-		})
-	}
 
 	res := results.GetFailed()
 	if opt.MisconfOptions.IncludeNonFailures {
