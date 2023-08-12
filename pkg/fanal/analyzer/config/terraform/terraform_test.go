@@ -13,9 +13,24 @@ func TestConfigAnalyzer_Required(t *testing.T) {
 		want     bool
 	}{
 		{
-			name:     "happy path",
+			name:     "tf",
 			filePath: "/path/to/main.tf",
 			want:     true,
+		},
+		{
+			name:     "tf.json",
+			filePath: "/path/to/main.tf.json",
+			want:     true,
+		},
+		{
+			name:     "tfvars",
+			filePath: "/path/to/some.tfvars",
+			want:     true,
+		},
+		{
+			name:     "json",
+			filePath: "/path/to/some.json",
+			want:     false,
 		},
 		{
 			name:     "hcl",
