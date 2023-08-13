@@ -1,19 +1,20 @@
 # Ubuntu
 Trivy supports the following scanners.
 
-|     Scanner      | Supported |
-|:----------------:|:---------:|
-|       SBOM       |     ✓     |
-|  Vulnerability   |     ✓     |
-|     License      |     ✓     |
+|    Scanner    | Supported |
+| :-----------: | :-------: |
+|     SBOM      |     ✓     |
+| Vulnerability |     ✓     |
+|    License    |     ✓     |
+
+Please see [here](index.md#supported-os) for supported versions.
 
 The following table provides an outline of the features Trivy offers.
 
-|            Feature             |          Description          |
-|:------------------------------:|:-----------------------------:|
-|        Target packages         | Installed by apt/apt-get/dpkg |
-| Detect unfixed vulnerabilities |              YES              |
-|   Vulnerability data source    |     [Ubuntu CVE Tracker]      |
+|                Feature                | Supported |
+| :-----------------------------------: | :-------: |
+|    Detect unfixed vulnerabilities     |     ✓     |
+| [Dependency graph][dependench-graph]) |     ✓     |
 
 ## SBOM
 Same as [Debian](debian.md#sbom).
@@ -21,7 +22,10 @@ Same as [Debian](debian.md#sbom).
 ## Vulnerability
 Ubuntu offers its own security advisories, and these are utilized when scanning Ubuntu for vulnerabilities.
 
-### Fixed Versions
+### Data Source
+See [here](../../scanner/vulnerability/os#data-sources).
+
+### Fixed Version
 When looking at fixed versions, it's crucial to consider the patches supplied by Ubuntu.
 As an illustration, for CVE-2023-3269, the fixed version for Ubuntu 23.04 (lunar) is listed as `6.2.0-26.26` in [the Security Tracker][CVE-2023-3269].
 It's essential to recognize that this differs from the upstream fixed version, which stands at `6.5`.
@@ -38,7 +42,7 @@ As a result, Trivy will display it as "Medium".
 Trivy supports the following [vulnerability statuses] for Ubuntu.
 
 |       Status        | Supported |
-|:-------------------:|:---------:|
+| :-----------------: | :-------: |
 |        Fixed        |     ✓     |
 |      Affected       |     ✓     |
 | Under Investigation |           |
@@ -50,6 +54,7 @@ Trivy supports the following [vulnerability statuses] for Ubuntu.
 Same as [Debian](debian.md#license).
 
 
+[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [Ubuntu CVE Tracker]: https://ubuntu.com/security/cve
 
 [CVE-2023-3269]: https://ubuntu.com/security/CVE-2023-3269

@@ -2,12 +2,20 @@
 
 ## Features
 Trivy supports two types of Go scanning, Go Modules and binaries built by Go.
-The following table provides an outline of the features Trivy offers.
 
-| Artifact | Offline[^1] | Dev dependencies | License | Dependency graph |
-|----------|:-----------:|:-----------------|:-------:|:----------------:|
-| Modules  |      ✅      | Include          |  ✅[^2]  |      ✅[^2]       |
-| Binaries |      ✅      | Exclude          |    -    |        -         |
+The following scanners are supported.
+
+| Artifact | SBOM  | Vulnerability | License |
+| -------- | :---: | :-----------: | :-----: |
+| Modules  |   ✓   |       ✓       |  ✓[^2]  |
+| Binaries |   ✓   |       ✓       |    -    |
+
+The table below provides an outline of the features Trivy offers.
+
+| Artifact | Offline[^1] | Dev dependencies | Dependency graph |
+| -------- | :---------: | :--------------- | :--------------: |
+| Modules  |      ✅      | Include          |      ✅[^2]       |
+| Binaries |      ✅      | Exclude          |        -         |
 
 !!! note
     Trivy scans only dependencies of the Go project.
@@ -18,7 +26,7 @@ The following table provides an outline of the features Trivy offers.
 Depending on Go versions, the required files are different.
 
 | Version | Required files | Offline |
-|---------|:--------------:|:-------:|
+| ------- | :------------: | :-----: |
 | \>=1.17 |     go.mod     |    ✅    |
 | <1.17   | go.mod, go.sum |    ✅    |
 
@@ -62,6 +70,9 @@ Also, you can scan your local binaries.
 ```
 $ trivy fs ./your_binary
 ```
+
+!!! note
+    It doesn't work with UPX-compressed binaries.
 
 [^1]: It doesn't require the Internet access.
 [^2]: Need to download modules to local cache beforehand

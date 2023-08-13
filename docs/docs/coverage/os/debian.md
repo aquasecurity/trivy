@@ -1,32 +1,36 @@
 # Debian
 Trivy supports the following scanners.
 
-|     Scanner      | Supported |
-|:----------------:|:---------:|
-|       SBOM       |     ✓     |
-|  Vulnerability   |     ✓     |
-|     License      |     ✓     |
+|    Scanner    | Supported |
+| :-----------: | :-------: |
+|     SBOM      |     ✓     |
+| Vulnerability |     ✓     |
+|    License    |     ✓     |
 
-The following table provides an outline of the features Trivy offers.
+Please see [here](index.md#supported-os) for supported versions.
 
-|            Feature             |                         Description                          |
-|:------------------------------:|:------------------------------------------------------------:|
-|        Target packages         |                Installed by apt/apt-get/dpkg                 |
-| Detect unfixed vulnerabilities |                             YES                              |
-|          Data source           | [Security Bug Tracker][debian-tracker] / [OVAL][debian-oval] |
+The table below outlines the features offered by Trivy.
+
+|                Feature                | Supported |
+| :-----------------------------------: | :-------: |
+|        Unfixed vulnerabilities        |     ✓     |
+| [Dependency graph][dependench-graph]) |     ✓     |
 
 ## SBOM
-Trivy detects packages that have been installed through package managers such as apt and dpkg.
+Trivy detects packages that have been installed through package managers such as `apt` and `dpkg`.
 While there are some exceptions, like Go binaries and JAR files, it's important to note that binaries that have been custom-built using `make` or tools installed via `curl` are generally not detected.
 
 ## Vulnerability
 Debian offers its own security advisories, and these are utilized when scanning Debian for vulnerabilities.
 
-### Fixed Versions
+### Data Source
+See [here](../../scanner/vulnerability/os#data-sources).
+
+### Fixed Version
 When looking at fixed versions, it's crucial to consider the patches supplied by Debian.
-As an illustration, for CVE-2023-3269, the fixed version for Debian 12 (bookworm) is listed as `6.1.37-1` in [the Security Tracker][CVE-2023-3269].
+For example, for CVE-2023-3269, the fixed version for Debian 12 (bookworm) is listed as `6.1.37-1` in [the Security Tracker][CVE-2023-3269].
 This patch is provided in [DSA-5448-1].
-It's essential to recognize that this differs from the upstream fixed version, which stands at `6.5`.
+Note that this is different from the upstream fixed version, which is `6.5`.
 Typically, only the upstream information gets listed on [NVD], so it's important not to get confused.
 
 ### Severity
@@ -40,7 +44,7 @@ As a result, Trivy will display it as "Low".
 Trivy supports the following [vulnerability statuses] for Debian.
 
 |       Status        | Supported |
-|:-------------------:|:---------:|
+| :-----------------: | :-------: |
 |        Fixed        |     ✓     |
 |      Affected       |     ✓     |
 | Under Investigation |           |
@@ -49,13 +53,15 @@ Trivy supports the following [vulnerability statuses] for Debian.
 |     End of Life     |     ✓     |
 
 ## License
-To determine the license of a package, Trivy checks the copyright file located at `/usr/share/doc/*/copyright`.
+To identify the license of a package, Trivy checks the copyright file located at `/usr/share/doc/*/copyright`.
 
 However, this method has its limitations as the file isn't machine-readable, leading to situations where the license isn't detected.
 In such scenarios, the `--license-full` flag can be passed.
 It compares the contents of known licenses with the copyright file to discern the license in question.
 Please be aware that using this flag can increase memory usage, so it's disabled by default for efficiency.
 
+
+[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 
 [debian-tracker]: https://security-tracker.debian.org/tracker/
 [debian-oval]: https://www.debian.org/security/oval/

@@ -1,18 +1,27 @@
 # Node.js
 
 Trivy supports three types of Node.js package managers: `npm`, `Yarn` and `pnpm`.
+
+The following scanners are supported.
+
+| Artifact | SBOM  | Vulnerability | License |
+| -------- | :---: | :-----------: | :-----: |
+| npm      |   ✓   |       ✓       |    ✓    |
+| Yarn     |   ✓   |       ✓       |    -    |
+| pnpm     |   ✓   |       ✓       |    -    |
+
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File              | Transitive dependencies | Dev dependencies  | Dependency graph | Position | License |
-|:---------------:|-------------------|:-----------------------:|:-----------------:|:----------------:|:--------:|:-------:|
-|       npm       | package-lock.json |            ✅            | [Excluded](#npm)  |        ✅         |    ✅     |    ✅    |
-|      Yarn       | yarn.lock         |            ✅            | [Excluded](#yarn) |        ✅         |    ✅     |    -    |
-|      pnpm       | pnpm-lock.yaml    |            ✅            |     Excluded      |        ✅         |    -     |    -    |
+| Package manager | File              | Transitive dependencies | Dev dependencies  | Dependency graph | Position |
+| :-------------: | ----------------- | :---------------------: | :---------------: | :--------------: | :------: |
+|       npm       | package-lock.json |            ✓            | [Excluded](#npm)  |        ✓         |    ✓     |
+|      Yarn       | yarn.lock         |            ✓            | [Excluded](#yarn) |        ✓         |    ✓     |
+|      pnpm       | pnpm-lock.yaml    |            ✓            |     Excluded      |        ✓         |    -     |
 
 In addition, Trivy scans installed packages with `package.json`.
 
 | File         | Dependency graph | Position | License |
-|--------------|:----------------:|:--------:|:-------:|
+| ------------ | :--------------: | :------: | :-----: |
 | package.json |        -         |    -     |    ✅    |
 
 These may be enabled or disabled depending on the target.

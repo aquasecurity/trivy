@@ -1,12 +1,19 @@
 # PHP
 
 Trivy supports [Composer][composer], which is a tool for dependency management in PHP.
+
+The following scanners are supported.
+
+| Package manager | SBOM  | Vulnerability | License |
+| --------------- | :---: | :-----------: | :-----: |
+| Composer        |   ✓   |       ✓       |    ✓    |
+
 The following table provides an outline of the features Trivy offers.
 
 
-| Package Manager | File          | Transitive dependencies | Dev dependencies | Dependency graph | Position | License |
-|-----------------|---------------|:-----------------------:|:----------------:|:----------------:|:--------:|:-------:|
-| Composer        | composer.lock |            ✅            |     Excluded     |        ✅         |    ✅     |    ✅    |
+| Package manager | File          | Transitive dependencies | Dev dependencies | Dependency graph | Position |
+| --------------- | ------------- | :---------------------: | :--------------: | :--------------: | :------: |
+| Composer        | composer.lock |            ✓            |     Excluded     |        ✓         |    ✓     |
 
 ## Composer
 In order to detect dependencies, Trivy searches for `composer.lock`.

@@ -1,14 +1,21 @@
 # Java
-
 Trivy supports three types of Java scanning: `JAR/WAR/PAR/EAR`, `pom.xml` and `*gradle.lockfile` files.
+
+Each artifact supports the following scanners:
+
+| Artifact         | SBOM  | Vulnerability | License |
+| ---------------- | :---: | :-----------: | :-----: |
+| JAR/WAR/PAR/EAR  |   ✓   |       ✓       |    -    |
+| pom.xml          |   ✓   |       ✓       |    ✓    |
+| *gradle.lockfile |   ✓   |       ✓       |    -    |
+
 The following table provides an outline of the features Trivy offers.
 
-
-| Artifact         |    Internet access    | Dev dependencies | License |
-|------------------|:---------------------:|:-----------------|:-------:|
-| JAR/WAR/PAR/EAR  |     Trivy Java DB     | Include          |    -    |
-| pom.xml          | Maven repository [^1] | Exclude          |    ✅   |
-| *gradle.lockfile |           -           | Exclude          |     -   |
+| Artifact         |    Internet access    | Dev dependencies | Dependency graph[dependench-graph] |
+| ---------------- | :-------------------: | :--------------: | :--------------------------------: |
+| JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                 -                  |
+| pom.xml          | Maven repository [^1] |     Exclude      |                 -                  |
+| *gradle.lockfile |           -           |     Exclude      |                 -                  |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
@@ -60,3 +67,5 @@ It doesn't require the internet access.
 [^4]: e.g. when parent pom.xml file has `../pom.xml` path
 [^5]: When you use dependency path in `relativePath` field in pom.xml file
 [^6]: `/Users/<username>/.m2/repository` (for Linux and Mac) and `C:/Users/<username>/.m2/repository` (for Windows) by default
+
+[:--------------:dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

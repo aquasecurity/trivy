@@ -1,20 +1,37 @@
 # Python
 
 Trivy supports three types of Python package managers: `pip`, `Pipenv` and `Poetry`.
-The following table provides an outline of the features Trivy offers.
+The following scanners are supported for package managers.
 
-| Package manager | File             | Transitive dependencies | Dev dependencies | Dependency graph | Position | License |
-|-----------------|------------------|:-----------------------:|:----------------:|:----------------:|:--------:|:-------:|
-| pip             | requirements.txt |            -            |     Include      |        -         |    -     |    -    |
-| Pipenv          | Pipfile.lock     |            ✅            |     Include      |        -         |    ✅     |    -    |
-| Poetry          | poetry.lock      |            ✅            |     Exclude      |        ✅         |          |    -    |
+| Package manager | SBOM  | Vulnerability | License |
+| --------------- | :---: | :-----------: | :-----: |
+| pip             |   ✓   |       ✓       |    -    |
+| Pipenv          |   ✓   |       ✓       |    -    |
+| Poetry          |   ✓   |       ✓       |    -    |
 
 In addition, Trivy supports two formats of Python packages: `egg` and `wheel`.
+The following scanners are supported for Python packages.
 
-| Packaging | License |
-|-----------|:-------:|
-| Egg       |    ✅    |
-| Wheel     |    ✅    |
+| Packaging | SBOM  | Vulnerability | License |
+| --------- | :---: | :-----------: | :-----: |
+| Egg       |   ✓   |       ✓       |    ✓    |
+| Wheel     |   ✓   |       ✓       |    ✓    |
+| Conda     |   ✓   |       -       |    -    |
+
+
+The following table provides an outline of the features Trivy offers.
+
+| Package manager | File             | Transitive dependencies | Dev dependencies | Dependency graph | Position |
+| --------------- | ---------------- | :---------------------: | :--------------: | :--------------: | :------: |
+| pip             | requirements.txt |            -            |     Include      |        -         |    -     |
+| Pipenv          | Pipfile.lock     |            ✓            |     Include      |        -         |    ✓     |
+| Poetry          | poetry.lock      |            ✓            |     Exclude      |        ✓         |          |
+
+
+| Packaging | Dependency graph |
+| --------- | :--------------: |
+| Egg       |        ✓         |
+| Wheel     |        ✓         |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.

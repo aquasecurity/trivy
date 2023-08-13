@@ -185,18 +185,6 @@ Trivy supports the following packages.
 - [OS packages][os_packages]
 - [Language-specific packages][language_packages]
 
-In addition to the above packages, Trivy also supports the following packages for generating SBOM.
-
-!!! note
-    These packages are not supported for vulnerability scanning.
-
-| Language | File              | Dependency location[^1] |
-|----------|-------------------|:-----------------------:|
-| Python   | conda package[^2] |            -            |
-| Swift    | Podfile.lock      |            -            |
-
-[^1]: Use `startline == 1 and endline == 1` for unsupported file types
-[^2]: `envs/*/conda-meta/*.json`
 
 ### Formats
 #### CycloneDX
@@ -754,7 +742,7 @@ Trivy automatically detects the SBOM files and uses them for scanning.
 It is enabled in the following targets.
 
 |     Target      | Enabled |
-|:---------------:|:-------:|
+| :-------------: | :-----: |
 | Container Image |    ✓    |
 |   Filesystem    |         |
 |     Rootfs      |    ✓    |
