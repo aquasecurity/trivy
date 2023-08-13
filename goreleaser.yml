@@ -12,6 +12,8 @@ builds:
     goos:
       - linux
     goarch:
+      - 386
+      - arm
       - amd64
       - arm64
       - s390x
@@ -31,6 +33,7 @@ builds:
       - freebsd
     goarch:
       # modernc.org/sqlite doesn't support freebsd/arm64, etc.
+      - 386
       - amd64
   - id: build-macos
     main: cmd/trivy/main.go
@@ -60,6 +63,7 @@ builds:
     goos:
       - windows
     goarch:
+      # modernc.org/sqlite doesn't support windows/386 and windows/arm, etc.
       - amd64
     goarm:
       - 7
@@ -88,6 +92,7 @@ nfpms:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- title .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
+      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE
@@ -112,6 +117,7 @@ archives:
       {{- else if eq .Os "dragonfly" }}DragonFlyBSD
       {{- else}}{{- .Os }}{{ end }}-
       {{- if eq .Arch "amd64" }}64bit
+      {{- else if eq .Arch "386" }}32bit
       {{- else if eq .Arch "arm" }}ARM
       {{- else if eq .Arch "arm64" }}ARM64
       {{- else if eq .Arch "ppc64le" }}PPC64LE
