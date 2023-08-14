@@ -266,6 +266,12 @@ misconfiguration:
   # Default is false
   include-non-failures: false
 
+  # Same as '--config-type'
+  # By default, all types of configs are enabled
+  type:
+    - dockerfile
+    - terraform
+
   # helm value override configurations
   # set individual values
   helm:

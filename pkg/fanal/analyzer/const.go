@@ -1,6 +1,8 @@
 package analyzer
 
-import "github.com/aquasecurity/defsec/pkg/detection"
+import (
+	"github.com/aquasecurity/defsec/pkg/detection"
+)
 
 type Type string
 

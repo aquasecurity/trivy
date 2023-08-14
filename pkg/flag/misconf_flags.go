@@ -3,7 +3,9 @@ package flag
 import (
 	"fmt"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/policy"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // e.g. config yaml:
@@ -67,6 +69,13 @@ var (
 		Default:    fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
 		Usage:      "OCI registry URL to retrieve policy bundle from",
 	}
+	ConfigTypeFlag = Flag{
+		Name:       "config-type",
+		ConfigName: "misconfiguration.type",
+		Default:    xstrings.ToStringSlice(analyzer.TypeConfigFiles),
+		Values:     xstrings.ToStringSlice(analyzer.TypeConfigFiles),
+		Usage:      "comma-separated list of config types to be scanned for",
+	}
 )
 
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
@@ -82,6 +91,8 @@ type MisconfFlagGroup struct {
 	HelmStringValues           *Flag
 	TerraformTFVars            *Flag
 	TerraformExcludeDownloaded *Flag
+
+	ConfigType *Flag
 }
 
 type MisconfOptions struct {
@@ -96,6 +107,8 @@ type MisconfOptions struct {
 	HelmStringValues    []string
 	TerraformTFVars     []string
 	TfExcludeDownloaded bool
+
+	ConfigType []analyzer.Type
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -110,6 +123,8 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		HelmValueFiles:             &HelmValuesFileFlag,
 		TerraformTFVars:            &TfVarsFlag,
 		TerraformExcludeDownloaded: &TerraformExcludeDownloaded,
+
+		ConfigType: &ConfigTypeFlag,
 	}
 }
 
@@ -128,6 +143,7 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 		f.HelmStringValues,
 		f.TerraformTFVars,
 		f.TerraformExcludeDownloaded,
+		f.ConfigType,
 	}
 }
 
@@ -142,5 +158,6 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		HelmStringValues:       getStringSlice(f.HelmStringValues),
 		TerraformTFVars:        getStringSlice(f.TerraformTFVars),
 		TfExcludeDownloaded:    getBool(f.TerraformExcludeDownloaded),
+		ConfigType:             getUnderlyingStringSlice[analyzer.Type](f.ConfigType),
 	}, nil
 }

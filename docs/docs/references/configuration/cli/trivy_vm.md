@@ -25,6 +25,7 @@ trivy vm [flags] VM_IMAGE
       --cache-ttl duration                cache TTL when using redis as cache backend
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate
+      --config-type string                comma-separated list of config types to be scanned for (azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan) (default "all")
       --custom-headers strings            custom headers in client mode
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages

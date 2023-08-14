@@ -23,6 +23,7 @@ trivy repository [flags] REPO_URL
       --commit string                     pass the commit hash to be scanned
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
+      --config-type string                comma-separated list of config types to be scanned for (azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan) (default "all")
       --custom-headers strings            custom headers in client mode
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages

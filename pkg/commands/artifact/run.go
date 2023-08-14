@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/go-multierror"
+	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -477,6 +478,9 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
 
+	// Disable misconfig analyzers not passed in the `--config-types` flag
+	analyzers = append(analyzers, excludedAnalyzers(opts.ConfigType, analyzer.TypeConfigFiles)...)
+
 	// Do not perform secret scanning when it is not specified.
 	if !opts.Scanners.Enabled(types.SecretScanner) {
 		analyzers = append(analyzers, analyzer.TypeSecret)
@@ -512,6 +516,10 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	return analyzers
+}
+
+func excludedAnalyzers(included []analyzer.Type, all []analyzer.Type) []analyzer.Type {
+	return lo.Without(all, included...)
 }
 
 func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
