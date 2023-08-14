@@ -9,8 +9,8 @@ Trivy supports programming languages for
 ## Supported languages
 
 | Language             | File                                                                                       | Image[^5] | Rootfs[^6] | Filesystem[^7] | Repository[^8] | Dev dependencies             | Dependency location[^9] |
-| -------------------- | ------------------------------------------------------------------------------------------ | :-------: | :--------: | :------------: | :------------: | ---------------------------- | :---------------------: |
-| [Ruby](ruby.md)      | Gemfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        | included                     |            -            |
+|----------------------|--------------------------------------------------------------------------------------------|:---------:|:----------:|:--------------:|:--------------:|------------------------------|:-----------------------:|
+| [Ruby](ruby.md)      | Gemfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        | included                     |            ✅            |
 |                      | gemspec                                                                                    |     ✅     |     ✅      |       -        |       -        | included                     |            -            |
 | [Python](python.md)  | Pipfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        | excluded                     |            ✅            |
 |                      | poetry.lock                                                                                |     -     |     -      |       ✅        |       ✅        | excluded                     |            -            |

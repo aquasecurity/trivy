@@ -139,4 +139,4 @@ $ trivy conf --skip-policy-update /path/to/conf
 [allowlist]: ../references/troubleshooting.md
 [oras]: https://oras.land/cli/
 
-[^1]: This is only required to scan `jar` files. More information about `Java index db` [here](../scanner/vulnerability/language/java.md)
+[^1]: This is only required to scan `jar` files. More information about `Java index db` [here](../coverage/language/java.md)

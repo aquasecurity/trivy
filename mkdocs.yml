@@ -51,14 +51,6 @@ nav:
           - Vulnerability:
               - Overview: docs/scanner/vulnerability/index.md
               - OS Packages: docs/scanner/vulnerability/os.md
-              - Language-specific Packages:
-                  - Overview: docs/scanner/vulnerability/language/index.md
-                  - Go: docs/scanner/vulnerability/language/golang.md
-                  - Java: docs/scanner/vulnerability/language/java.md
-                  - Node.js: docs/scanner/vulnerability/language/nodejs.md
-                  - PHP: docs/scanner/vulnerability/language/php.md
-                  - Python: docs/scanner/vulnerability/language/python.md
-                  - Rust: docs/scanner/vulnerability/language/rust.md
           - Misconfiguration:
               - Overview: docs/scanner/misconfiguration/index.md
               - Policy:
@@ -81,7 +73,7 @@ nav:
               - Ubuntu: docs/coverage/os/ubuntu.md
           - Language:
               - Overview: docs/coverage/language/index.md
-              - C: docs/coverage/language/c.md
+              - C/C++: docs/coverage/language/c.md
               - Dart: docs/coverage/language/dart.md
               - .NET: docs/coverage/language/dotnet.md
               - Elixir: docs/coverage/language/elixir.md
