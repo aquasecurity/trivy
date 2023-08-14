@@ -73,6 +73,7 @@ get_binaries() {
     linux/386) BINARIES="trivy" ;;
     linux/amd64) BINARIES="trivy" ;;
     linux/ppc64le) BINARIES="trivy" ;;
+    linux/riscv64) BINARIES="trivy" ;;
     linux/arm64) BINARIES="trivy" ;;
     linux/armv7) BINARIES="trivy" ;;
     linux/s390x) BINARIES="trivy" ;;
@@ -117,6 +118,7 @@ adjust_os() {
     arm) OS=ARM ;;
     arm64) OS=ARM64 ;;
     ppc64le) OS=Linux ;;
+    riscv64) OS=Linux ;;
     s390x) OS=Linux ;;
     darwin) OS=macOS ;;
     dragonfly) OS=DragonFlyBSD ;;
@@ -136,6 +138,7 @@ adjust_arch() {
     armv7) ARCH=ARM ;;
     arm64) ARCH=ARM64 ;;
     ppc64le) ARCH=PPC64LE ;;
+    riscv64) ARCH=RISCV64 ;;
     s390x) ARCH=s390x ;;
     darwin) ARCH=macOS ;;
     dragonfly) ARCH=DragonFlyBSD ;;
@@ -258,6 +261,7 @@ uname_arch_check() {
     armv7) return 0 ;;
     ppc64) return 0 ;;
     ppc64le) return 0 ;;
+    riscv64) return 0 ;;
     mips) return 0 ;;
     mipsle) return 0 ;;
     mips64) return 0 ;;
