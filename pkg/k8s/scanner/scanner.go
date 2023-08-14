@@ -90,6 +90,21 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	onItem := func(ctx context.Context, artifact *artifacts.Artifact) (scanResult, error) {
 		scanResults := scanResult{}
 		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
+
+			// add image private regisrty credential auto detected from workload imagePullsecret / serviceAccount
+			if len(artifact.Credentials) > 0 {
+				updatedCredential := make([]ftypes.Credential, 0)
+				updatedCredential = append(updatedCredential, s.opts.Credentials...)
+				for _, cred := range artifact.Credentials {
+					updatedCredential = append(s.opts.RegistryOptions.Credentials,
+						ftypes.Credential{
+							Username: cred.Username,
+							Password: cred.Password,
+						},
+					)
+				}
+				s.opts.Credentials = updatedCredential
+			}
 			vulns, err := s.scanVulns(ctx, artifact)
 			if err != nil {
 				return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
