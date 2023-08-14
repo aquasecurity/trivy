@@ -398,5 +398,11 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
+<<<<<<< HEAD
 // oras 1.2.2 is incompatible with github.com/docker/docker v23.0.0-rc.1+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.2.3
+=======
+// oras 1.2.2 is incompatible with github.com/docker/docker v24.0.2
+// cf. https://github.com/oras-project/oras-go/pull/527
+replace oras.land/oras-go => oras.land/oras-go v1.2.4-0.20230801060855-932dd06d38af
+>>>>>>> d8c39ce15 (feat: k8s private registries support)
