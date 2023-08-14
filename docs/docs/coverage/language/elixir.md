@@ -15,7 +15,7 @@ The following table provides an outline of the features Trivy offers.
 |-----------------|--------------|:-----------------------:|:----------------:|:----------------:|:--------:|
 | [hex][hex]      | mix.lock[^1] |            ✓            |     Excluded     |        -         |    ✓     |
 
-## mix.lock
+## Hex
 In order to detect dependencies, Trivy searches for `mix.lock`[^1].
 
 [Configure](https://hexdocs.pm/mix/Mix.Project.html#module-configuration) your project to use `mix.lock`[^1] file.

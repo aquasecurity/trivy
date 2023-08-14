@@ -15,7 +15,7 @@ The following table provides an outline of the features Trivy offers.
 |-------------------------|--------------|:-----------------------:|:----------------:|:----------------:|:--------:|
 | [Dart][dart-repository] | pubspec.lock |            ✓            |     Included     |        -         |    -     |
 
-## pubspec.lock
+## Dart
 In order to detect dependencies, Trivy searches for `pubspec.lock`.
 
 Trivy marks indirect dependencies, but `pubspec.lock` file doesn't have options to separate root and dev transitive dependencies.
