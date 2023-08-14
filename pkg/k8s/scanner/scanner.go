@@ -92,8 +92,8 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
 
 			// add image private regisrty credential auto detected from workload imagePullsecret / serviceAccount
-			if len(artifact.Credentials) > 0 {
-				updatedCredential := make([]ftypes.Credential, 0)
+			if credLen := len(artifact.Credentials); credLen > 0 {
+				updatedCredential := make([]ftypes.Credential, 0, credLen+len(s.opts.Credentials))
 				updatedCredential = append(updatedCredential, s.opts.Credentials...)
 				for _, cred := range artifact.Credentials {
 					updatedCredential = append(s.opts.RegistryOptions.Credentials,
