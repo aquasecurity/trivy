@@ -57,4 +57,4 @@ Trivy searches for `package.json` files under `node_modules` and identifies inst
 It only extracts package names, versions and licenses for those packages.
 
 
-[tree]: ../../../configuration/reporting.md#show-origins-of-vulnerable-dependencies 
+[tree]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies 

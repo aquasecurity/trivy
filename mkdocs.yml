@@ -79,6 +79,21 @@ nav:
               - Overview: docs/coverage/os/index.md
               - Debian: docs/coverage/os/debian.md
               - Ubuntu: docs/coverage/os/ubuntu.md
+          - Language:
+              - Overview: docs/coverage/language/index.md
+              - C: docs/coverage/language/c.md
+              - Dart: docs/coverage/language/dart.md
+              - .NET: docs/coverage/language/dotnet.md
+              - Elixir: docs/coverage/language/elixir.md
+              - Go: docs/coverage/language/golang.md
+              - Java: docs/coverage/language/java.md
+              - Node.js: docs/coverage/language/nodejs.md
+              - PHP: docs/coverage/language/php.md
+              - Python: docs/coverage/language/python.md
+              - Ruby: docs/coverage/language/ruby.md
+              - Rust: docs/coverage/language/rust.md
+              - Swift: docs/coverage/language/swift.md
+
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md

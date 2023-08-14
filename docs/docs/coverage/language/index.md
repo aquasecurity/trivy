@@ -50,8 +50,8 @@ Example: [Dockerfile](https://github.com/aquasecurity/trivy-ci-test/blob/main/Do
 [^6]: ✅ means "enabled" and `-` means "disabled" in the rootfs scanning
 [^7]: ✅ means "enabled" and `-` means "disabled" in the filesystem scanning
 [^8]: ✅ means "enabled" and `-` means "disabled" in the git repository scanning
-[^9]: ✅ means that Trivy detects line numbers where each dependency is declared in the scanned file. Only supported in [json](../../../configuration/reporting.md#json) and [sarif](../../../configuration/reporting.md#sarif) formats. SARIF uses `startline == 1 and endline == 1` for unsupported file types
-[^13]: To scan a filename other than the default filename use [file-patterns](../../../configuration/others.md#file-patterns)
+[^9]: ✅ means that Trivy detects line numbers where each dependency is declared in the scanned file. Only supported in [json](../../configuration/reporting.md#json) and [sarif](../../configuration/reporting.md#sarif) formats. SARIF uses `startline == 1 and endline == 1` for unsupported file types
+[^13]: To scan a filename other than the default filename use [file-patterns](../../configuration/others.md#file-patterns)
 
 ## Data Sources
 
