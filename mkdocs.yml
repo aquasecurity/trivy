@@ -69,8 +69,21 @@ nav:
       - Coverage:
           - OS:
               - Overview: docs/coverage/os/index.md
+              - AlmaLinux: docs/coverage/os/alma.md
+              - Alpine Linux: docs/coverage/os/alpine.md
+              - Amazon Linux: docs/coverage/os/amazon.md
+              - CBL-Mariner: docs/coverage/os/cbl-mariner.md
+              - CentOS: docs/coverage/os/centos.md
+              - Chainguard: docs/coverage/os/chainguard.md
               - Debian: docs/coverage/os/debian.md
+              - Google Distroless: docs/coverage/os/google-distroless.md
+              - Oracle Linux: docs/coverage/os/oracle.md
+              - Photon OS: docs/coverage/os/photon.md
+              - Red Hat: docs/coverage/os/rhel.md
+              - Rocky Linux: docs/coverage/os/rocky.md
+              - SUSE: docs/coverage/os/suse.md
               - Ubuntu: docs/coverage/os/ubuntu.md
+              - Wolfi: docs/coverage/os/wolfi.md
           - Language:
               - Overview: docs/coverage/language/index.md
               - C/C++: docs/coverage/language/c.md

@@ -6,7 +6,7 @@ Trivy supports the following distributions:
 
 Please see [here](index.md#supported-os) for supported versions.
 
-Trivy supports the following scanners.
+Trivy supports these scanners for OS packages.
 
 |    Scanner    | Supported |
 | :-----------: | :-------: |

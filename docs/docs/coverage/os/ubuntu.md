@@ -1,5 +1,5 @@
 # Ubuntu
-Trivy supports the following scanners.
+Trivy supports these scanners for OS packages.
 
 |    Scanner    | Supported |
 | :-----------: | :-------: |

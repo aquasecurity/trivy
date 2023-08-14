@@ -1,5 +1,5 @@
 # Debian
-Trivy supports the following scanners.
+Trivy supports the following scanners for OS packages.
 
 |    Scanner    | Supported |
 | :-----------: | :-------: |

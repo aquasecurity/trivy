@@ -1,5 +1,5 @@
 # Red Hat Enterprise Linux
-Trivy supports the following scanners.
+Trivy supports the following scanners for OS packages.
 
 |    Scanner    | Supported |
 | :-----------: | :-------: |
@@ -11,10 +11,10 @@ Please see [here](index.md#supported-os) for supported versions.
 
 The table below outlines the features offered by Trivy.
 
-|                Feature                | Supported |
-| :-----------------------------------: | :-------: |
-|    Detect unfixed vulnerabilities     |     ✓     |
-| [Dependency graph][dependench-graph]) |     ✓     |
+|               Feature                | Supported |
+| :----------------------------------: | :-------: |
+|    Detect unfixed vulnerabilities    |     ✓     |
+| [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `dnf` and `yum`.

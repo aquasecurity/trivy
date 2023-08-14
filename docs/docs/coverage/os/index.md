@@ -4,8 +4,8 @@
 Trivy supports operating systems for 
 
 - [SBOM][sbom]
-- [vulnerabilities][vuln]
-- [licenses][license].
+- [Vulnerabilities][vuln]
+- [Licenses][license]
 
 ## Supported OS 
 

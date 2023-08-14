@@ -1,5 +1,5 @@
 # CBL-Mariner
-Trivy supports the following scanners for [CBL-Mariner][cbl-mariner].
+Trivy supports the following scanners for OS packages.
 
 | Version          | SBOM  | Vulnerability | License |
 | ---------------- | :---: | :-----------: | :-----: |

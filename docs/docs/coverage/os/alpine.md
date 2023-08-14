@@ -1,5 +1,5 @@
 # Alpine Linux
-Trivy supports the following scanners.
+Trivy supports the following scanners for OS packages.
 
 |    Scanner    | Supported |
 | :-----------: | :-------: |
@@ -32,7 +32,7 @@ Note that this is different from the upstream fixed version, which is `3.1.1`.
 Typically, only the upstream information gets listed on [NVD], so it's important not to get confused.
 
 ### Severity
-For Alpine vulnerabilities, the severity is determined using the values set by the NVD.
+For Alpine vulnerabilities, the severity is determined using the values set by NVD.
 
 ### Status
 Trivy supports the following [vulnerability statuses] for Alpine.
