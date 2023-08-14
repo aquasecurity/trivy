@@ -65,7 +65,7 @@ jobs:
             await github.rest.actions.createWorkflowDispatch({
               owner: "${{ github.repository_owner }}",
               repo: "trivy-action",
-              workflow_id: "bump_trivy.yaml",
+              workflow_id: "bump-trivy.yaml",
               ref: "master",
               inputs: {
                 trivy_version: version,
