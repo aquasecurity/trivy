@@ -7,7 +7,7 @@ Trivy supports operating systems for
 - [Vulnerabilities][vuln]
 - [Licenses][license]
 
-## Supported OS 
+## Supported OS
 
 | OS                                     | Supported Versions                  | Package Managers |
 | -------------------------------------- | ----------------------------------- | ---------------- |
@@ -27,6 +27,8 @@ Trivy supports operating systems for
 | [Debian GNU/Linux](debian.md)          | 7, 8, 9, 10, 11, 12                 | apt/dpkg         |
 | [Ubuntu](ubuntu.md)                    | All versions supported by Canonical | apt/dpkg         |
 | [Google Distroless](distroless.md)[^2] | Any                                 | apt/dpkg         |
+
+Each page gives more details.
 
 [^1]: CentOS Stream is not supported 
 [^2]: https://github.com/GoogleContainerTools/distroless
