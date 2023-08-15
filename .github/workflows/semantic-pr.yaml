@@ -73,6 +73,7 @@ jobs:
             c\+\+
             elixir
             dart
+            swift
 
             os
             lang

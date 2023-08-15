@@ -1,6 +1,6 @@
 - bucket: "swift::GitHub Security Advisory Swift"
   pairs:
-    - bucket: https://github.com/apple/swift-nio
+    - bucket: github.com/apple/swift-nio
       pairs:
         - key: CVE-2022-3215
           value:

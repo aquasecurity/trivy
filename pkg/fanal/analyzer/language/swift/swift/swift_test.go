@@ -26,7 +26,7 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 						Libraries: types.Packages{
 
 							{
-								Name:    "https://github.com/Quick/Nimble.git",
+								Name:    "github.com/Quick/Nimble",
 								Version: "9.2.1",
 								Locations: []types.Location{
 									{
@@ -36,7 +36,7 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								Name:    "https://github.com/Quick/Quick.git",
+								Name:    "github.com/Quick/Quick",
 								Version: "7.0.0",
 								Locations: []types.Location{
 									{
@@ -46,7 +46,7 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								Name:    "https://github.com/ReactiveCocoa/ReactiveSwift",
+								Name:    "github.com/ReactiveCocoa/ReactiveSwift",
 								Version: "7.1.1",
 								Locations: []types.Location{
 									{
