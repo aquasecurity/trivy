@@ -14,7 +14,7 @@ The table below outlines the features offered by Trivy.
 |                Feature                | Supported |
 | :-----------------------------------: | :-------: |
 |        Unfixed vulnerabilities        |     ✓     |
-| [Dependency graph][dependench-graph]) |     ✓     |
+| [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `apt` and `dpkg`.
@@ -24,7 +24,7 @@ While there are some exceptions, like Go binaries and JAR files, it's important 
 Debian offers its own security advisories, and these are utilized when scanning Debian for vulnerabilities.
 
 ### Data Source
-See [here](../../scanner/vulnerability/os#data-sources).
+See [here](../../scanner/vulnerability.md#data-sources).
 
 ### Fixed Version
 When looking at fixed versions, it's crucial to consider the patches supplied by Debian.

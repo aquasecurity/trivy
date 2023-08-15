@@ -9,7 +9,7 @@ Trivy supports programming languages for
 ## Supported languages
 
 | Language             | File                                                                                       | Image[^5] | Rootfs[^6] | Filesystem[^7] | Repository[^8] |
-| -------------------- | ------------------------------------------------------------------------------------------ | :-------: | :--------: | :------------: | :------------: |
+| -------------------- |--------------------------------------------------------------------------------------------| :-------: | :--------: | :------------: | :------------: |
 | [Ruby](ruby.md)      | Gemfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | gemspec                                                                                    |     ✅     |     ✅      |       -        |       -        |
 | [Python](python.md)  | Pipfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
@@ -34,13 +34,17 @@ Trivy supports programming languages for
 | [Rust](rust.md)      | Cargo.lock                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | Binaries built with [cargo-auditable](https://github.com/rust-secure-code/cargo-auditable) |     ✅     |     ✅      |       -        |       -        |
 | [C/C++](c.md)        | conan.lock                                                                                 |     -     |     -      |       ✅        |       ✅        |
-| [Elixir](elixir.md)  | mix.lock[^13]                                                                              |     -     |     -      |       ✅        |       ✅        |
+| [Elixir](elixir.md)  | mix.lock[^10]                                                                              |     -     |     -      |       ✅        |       ✅        |
 | [Dart](dart.md)      | pubspec.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Swift](swift.md)    | Podfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 
 The path of these files does not matter.
 
 Example: [Dockerfile](https://github.com/aquasecurity/trivy-ci-test/blob/main/Dockerfile)
+
+[sbom]: ../../supply-chain/sbom.md
+[vuln]: ../../scanner/vulnerability.md
+[license]: ../../scanner/license.md
 
 [^1]: `*.egg-info`, `*.egg-info/PKG-INFO`, `*.egg` and `EGG-INFO/PKG-INFO`
 [^2]: `.dist-info/META-DATA`
@@ -51,4 +55,4 @@ Example: [Dockerfile](https://github.com/aquasecurity/trivy-ci-test/blob/main/Do
 [^7]: ✅ means "enabled" and `-` means "disabled" in the filesystem scanning
 [^8]: ✅ means "enabled" and `-` means "disabled" in the git repository scanning
 [^9]: ✅ means that Trivy detects line numbers where each dependency is declared in the scanned file. Only supported in [json](../../configuration/reporting.md#json) and [sarif](../../configuration/reporting.md#sarif) formats. SARIF uses `startline == 1 and endline == 1` for unsupported file types
-[^13]: To scan a filename other than the default filename use [file-patterns](../../configuration/others.md#file-patterns)
+[^10]: To scan a filename other than the default filename use [file-patterns](../../configuration/skipping.md#file-patterns)

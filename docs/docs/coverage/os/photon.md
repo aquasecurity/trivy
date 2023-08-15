@@ -12,7 +12,7 @@ Please see [here](index.md#supported-os) for supported versions.
 The table below outlines the features offered by Trivy.
 
 |               Feature                | Supported |
-| :----------------------------------: | :-------: |
+|:------------------------------------:|:---------:|
 |       Unfixed vulnerabilities        |     -     |
 | [Dependency graph][dependency-graph] |     ✓     |
 
@@ -23,14 +23,14 @@ Trivy detects packages that have been installed through package managers such as
 Photon OS offers its own security advisories, and these are utilized when scanning Photon OS for vulnerabilities.
 
 ### Data Source
-See [here](../../scanner/vulnerability/os#data-sources).
+See [here](../../scanner/vulnerability.md#data-sources).
 
 ### Fixed Version
 Trivy takes fixed versions from [Photon CVE metadata][metadata].
 
 ### Severity
 Trivy determines the severity of vulnerabilities based on the CVSSv3 score provided by Photon OS.
-See [here](../../scanner/vulnerability/os.md#severity-selection) for the conversion table from CVSS score to severity.
+See [here](../../scanner/vulnerability.md#severity-selection) for the conversion table from CVSS score to severity.
 
 ### Status
 Trivy supports the following [vulnerability statuses] for Photon OS.

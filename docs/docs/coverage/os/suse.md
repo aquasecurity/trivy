@@ -16,19 +16,19 @@ Trivy supports these scanners for OS packages.
 
 The table below outlines the features offered by Trivy.
 
-|                Feature                | Supported |
-| :-----------------------------------: | :-------: |
-|        Unfixed vulnerabilities        |     -     |
-| [Dependency graph][dependench-graph]) |     ✓     |
+|               Feature                | Supported |
+|:------------------------------------:|:---------:|
+|       Unfixed vulnerabilities        |     -     |
+| [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `dnf` and `yum`.
 
 ## Vulnerability
-SUSE offers its [own security advisories](cvrf), and these are utilized when scanning openSUSE/SLE for vulnerabilities.
+SUSE offers its [own security advisories][cvrf], and these are utilized when scanning openSUSE/SLE for vulnerabilities.
 
 ### Data Source
-See [here](../../scanner/vulnerability/os#data-sources).
+See [here](../../scanner/vulnerability.md#data-sources).
 
 ## License
 Trivy identifies licenses by examining the metadata of RPM packages.

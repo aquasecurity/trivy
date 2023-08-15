@@ -14,7 +14,7 @@ The table below outlines the features offered by Trivy.
 |                Feature                | Supported |
 | :-----------------------------------: | :-------: |
 |        Unfixed vulnerabilities        |     ✓     |
-| [Dependency graph][dependench-graph]) |     ✓     |
+| [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
 Same as [RHEL](rhel.md).

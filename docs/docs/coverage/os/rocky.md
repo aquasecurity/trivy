@@ -11,10 +11,10 @@ Please see [here](index.md#supported-os) for supported versions.
 
 The table below outlines the features offered by Trivy.
 
-|                Feature                | Supported |
-| :-----------------------------------: | :-------: |
-|        Unfixed vulnerabilities        |     -     |
-| [Dependency graph][dependench-graph]) |     ✓     |
+|               Feature                | Supported |
+|:------------------------------------:|:---------:|
+|       Unfixed vulnerabilities        |     -     |
+| [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `dnf` and `yum`.
@@ -23,11 +23,11 @@ Trivy detects packages that have been installed through package managers such as
 Rocky Linux offers its own security advisories, and these are utilized when scanning Rocky Linux for vulnerabilities.
 
 ### Data Source
-See [here](../../scanner/vulnerability/os#data-sources).
+See [here](../../scanner/vulnerability.md#data-sources).
 
 ### Fixed Version
 Trivy takes fixed versions from [Rocky Linux Errata][errata], not NVD or somewhere else.
-See [here](overview.md#fixed-version) for more details.
+See [here](../../scanner/vulnerability.md#data-source-selection) for more details.
 
 ### Severity
 Trivy calculates the severity of an issue based on the severity provided in [Rocky Linux Errata][errata].

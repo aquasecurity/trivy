@@ -18,10 +18,10 @@ The following table provides an outline of the targets Trivy supports.
 
 The table below outlines the features offered by Trivy.
 
-|                Feature                | Supported |
-| :-----------------------------------: | :-------: |
-|    Detect unfixed vulnerabilities     |     ✓     |
-| [Dependency graph][dependench-graph]) |     ✓     |
+|               Feature                | Supported |
+|:------------------------------------:|:---------:|
+|    Detect unfixed vulnerabilities    |     ✓     |
+| [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `dnf` and `yum`.
@@ -30,7 +30,7 @@ Trivy detects packages that have been installed through package managers such as
 CBL-Mariner offers its own security advisories, and these are utilized when scanning CBL-Mariner for vulnerabilities.
 
 ### Data Source
-See [here](../../scanner/vulnerability/os#data-sources).
+See [here](../../scanner/vulnerability.md#data-sources).
 
 ### Fixed Version
 Trivy takes fixed versions from [CBL-Mariner OVAL][oval].

@@ -46,7 +46,7 @@ If your machine doesn't have the necessary files - Trivy tries to find the infor
 
 !!! Note
     Trivy only takes information about packages. We don't take a list of vulnerabilities for packages from the `maven repository`.
-    Information about data sources for Java you can see [here](./index.md#data-sources).
+    Information about data sources for Java you can see [here](../../scanner/vulnerability.md#data-sources_1).
 
 You can disable connecting to the maven repository with the `--offline-scan` flag.
 The `--offline-scan` flag does not affect the Trivy database.

@@ -11,10 +11,10 @@ Please see [here](index.md#supported-os) for supported versions.
 
 The table below outlines the features offered by Trivy.
 
-|                Feature                | Supported |
-| :-----------------------------------: | :-------: |
-|        Unfixed vulnerabilities        |     -     |
-| [Dependency graph][dependench-graph]) |     ✓     |
+|               Feature                | Supported |
+|:------------------------------------:|:---------:|
+|       Unfixed vulnerabilities        |     -     |
+| [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through `apk`.
@@ -23,7 +23,7 @@ Trivy detects packages that have been installed through `apk`.
 Alpine Linux offers its own security advisories, and these are utilized when scanning Alpine for vulnerabilities.
 
 ### Data Source
-See [here](../../scanner/vulnerability/os#data-sources).
+See [here](../../scanner/vulnerability.md#data-sources).
 
 ### Fixed Version
 When looking at fixed versions, it's crucial to consider the patches supplied by Alpine.

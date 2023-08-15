@@ -23,4 +23,4 @@ In order to detect dependencies, Trivy searches for `mix.lock`[^1].
 [elixir]: https://elixir-lang.org/
 [hex]: https://hex.pm/
 
-[^1]: `mix.lock` is default name. To scan a custom filename use [file-patterns](../../configuration/others)
+[^1]: `mix.lock` is default name. To scan a custom filename use [file-patterns](../../configuration/skipping.md#file-patterns)

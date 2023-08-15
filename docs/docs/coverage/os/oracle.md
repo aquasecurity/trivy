@@ -14,7 +14,7 @@ The table below outlines the features offered by Trivy.
 |                Feature                | Supported |
 | :-----------------------------------: | :-------: |
 |        Unfixed vulnerabilities        |     -     |
-| [Dependency graph][dependench-graph]) |     ✓     |
+| [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `dnf` and `yum`.
@@ -23,14 +23,14 @@ Trivy detects packages that have been installed through package managers such as
 Oracle Linux offers its own security advisories, and these are utilized when scanning Oracle Linux for vulnerabilities.
 
 ### Data Source
-See [here](../../scanner/vulnerability/os#data-sources).
+See [here](../../scanner/vulnerability.md#data-sources).
 
 ### Fixed Version
 Trivy takes fixed versions from [Oracle security advisories][alerts].
 
 ### Severity
 Trivy determines vulnerability severity based on the severity metric provided in [Oracle security advisories][alerts].
-For example, the security patch for [CVE-2023-0464](CVE-2023-0464) is provided as [ELSA-2023-2645](ELSA-2023-2645).
+For example, the security patch for [CVE-2023-0464][CVE-2023-0464] is provided as [ELSA-2023-2645][ELSA-2023-2645].
 Its severity is rated as "MODERATE".
 Thus, even though it's evaluated as "HIGH" in the NVD, Trivy displays it with a severity of "MEDIUM".
 

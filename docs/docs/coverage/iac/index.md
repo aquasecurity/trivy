@@ -18,4 +18,4 @@ Trivy scans Infrastructure as Code (IaC) files for
 | [Helm](helm.md)                     | *.yaml, *.tpl, *.tar.gz, etc. |
 
 [misconf]: ../../scanner/misconfiguration/index.md
-[secret]: ../../scanner/secret/index.md
+[secret]: ../../scanner/secret.md

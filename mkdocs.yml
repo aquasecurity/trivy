@@ -48,9 +48,7 @@ nav:
           - AWS: docs/target/aws.md
           - SBOM: docs/target/sbom.md
       - Scanner:
-          - Vulnerability:
-              - Overview: docs/scanner/vulnerability/index.md
-              - OS Packages: docs/scanner/vulnerability/os.md
+          - Vulnerability: docs/scanner/vulnerability.md
           - Misconfiguration:
               - Overview: docs/scanner/misconfiguration/index.md
               - Policy:

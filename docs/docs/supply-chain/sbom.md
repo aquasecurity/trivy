@@ -759,5 +759,5 @@ It is enabled in the following targets.
 [sbom]: https://cyclonedx.org/capabilities/sbom/
 [bov]: https://cyclonedx.org/capabilities/bov/
 
-[os_packages]: ../scanner/vulnerability/os.md
-[language_packages]: ../scanner/vulnerability/language/index.md
+[os_packages]: ../scanner/vulnerability.md#os-packages
+[language_packages]: ../scanner/vulnerability.md#language-specific-packages

@@ -19,4 +19,4 @@ In order to detect dependencies, Trivy searches for `conan.lock`[^1].
 
 [conan]: https://docs.conan.io/1/index.html
 
-[^1]: `conan.lock` is default name. To scan a custom filename use [file-patterns](../../configuration/others)
+[^1]: `conan.lock` is default name. To scan a custom filename use [file-patterns](../../configuration/skipping.md#file-patterns)

@@ -20,7 +20,7 @@ Trivy detects code dependencies for the purpose of SBOM generation and vulnerabi
 - Dart
 - Swift
 
-Some features might be not be universally supported. For a full supportability matrix, [see here](../docs/scanner/vulnerability/language/index.md).
+Some features might be not be universally supported. For a full supportability matrix, [see here](../docs/coverage/language/index.md).
 
 ### OS
 Trivy detects installed packages for the purpose of vulnerability detection. The following package managers are supported:
@@ -43,7 +43,7 @@ Trivy detects installed packages for the purpose of vulnerability detection. The
 - Ubuntu
 - Distroless
 
-Some features might be not be universally supported. For a full supportability matrix, [see here](../docs/scanner/vulnerability/os.md).
+Some features might be not be universally supported. For a full supportability matrix, [see here](../docs/coverage/os/index.md).
 
 ## IaC & configuration
 Trivy reads IaC & configuration languages for the purpose of misconfiguration detection and custom checks.
@@ -55,4 +55,4 @@ Trivy reads IaC & configuration languages for the purpose of misconfiguration de
 - Azure ARM Template
 - Helm Chart
 
-For more information about checks [see here](../docs/scanner/misconfiguration/policy/builtin.md).
+For more information about checks [see here](../docs/coverage/iac/index.md).

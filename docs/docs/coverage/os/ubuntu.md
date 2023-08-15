@@ -11,10 +11,10 @@ Please see [here](index.md#supported-os) for supported versions.
 
 The following table provides an outline of the features Trivy offers.
 
-|                Feature                | Supported |
-| :-----------------------------------: | :-------: |
-|    Detect unfixed vulnerabilities     |     ✓     |
-| [Dependency graph][dependench-graph]) |     ✓     |
+|               Feature                | Supported |
+|:------------------------------------:|:---------:|
+|    Detect unfixed vulnerabilities    |     ✓     |
+| [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
 Same as [Debian](debian.md#sbom).
@@ -23,7 +23,7 @@ Same as [Debian](debian.md#sbom).
 Ubuntu offers its own security advisories, and these are utilized when scanning Ubuntu for vulnerabilities.
 
 ### Data Source
-See [here](../../scanner/vulnerability/os#data-sources).
+See [here](../../scanner/vulnerability.md#data-sources).
 
 ### Fixed Version
 When looking at fixed versions, it's crucial to consider the patches supplied by Ubuntu.
