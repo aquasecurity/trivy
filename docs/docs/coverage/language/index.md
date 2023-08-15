@@ -3,13 +3,21 @@
 Trivy supports programming languages for 
 
 - [SBOM][sbom]
-- [vulnerabilities][vuln]
-- [licenses][license].
+- [Vulnerabilities][vuln]
+- [Licenses][license]
 
 ## Supported languages
+The files analyzed vary depending on the target.
+This is because Trivy primarily categorizes targets into two groups:
+
+- Pre-build
+- Post-build
+
+If the target is a pre-build project, like a code repository, Trivy will analyze files used for building, such as lock files.
+On the other hand, when the target is a post-build artifact, like a container image, Trivy will analyze installed package metadata like `.gemspec`, binary files, and so on.
 
 | Language             | File                                                                                       | Image[^5] | Rootfs[^6] | Filesystem[^7] | Repository[^8] |
-| -------------------- |--------------------------------------------------------------------------------------------| :-------: | :--------: | :------------: | :------------: |
+| -------------------- | ------------------------------------------------------------------------------------------ | :-------: | :--------: | :------------: | :------------: |
 | [Ruby](ruby.md)      | Gemfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | gemspec                                                                                    |     ✅     |     ✅      |       -        |       -        |
 | [Python](python.md)  | Pipfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |

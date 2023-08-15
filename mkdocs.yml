@@ -10,7 +10,6 @@ nav:
   - Getting Started: 
       - Overview: index.md
       - Installation: getting-started/installation.md
-      - Scanning coverage: getting-started/coverage.md
       - FAQ: getting-started/faq.md
   - Tutorials:
       - Overview: tutorials/overview.md   
@@ -65,6 +64,7 @@ nav:
           - Secret: docs/scanner/secret.md
           - License: docs/scanner/license.md
       - Coverage:
+          - Overview: docs/coverage/index.md
           - OS:
               - Overview: docs/coverage/os/index.md
               - AlmaLinux: docs/coverage/os/alma.md
