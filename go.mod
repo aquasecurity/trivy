@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.0
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.1
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.3.0
 	github.com/BurntSushi/toml v1.3.2
 	github.com/CycloneDX/cyclonedx-go v0.7.2-0.20230625092137-07e2f29defc3
