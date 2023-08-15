@@ -37,7 +37,7 @@ jobs:
         id: lint
         uses: helm/chart-testing-action@e8788873172cb653a90ca2e819d79d65a66d4e76
       - name: Setup Kubernetes cluster (KIND)
-        uses: helm/kind-action@fa81e57adff234b2908110485695db0f181f3c67
+        uses: helm/kind-action@dda0770415bac9fc20092cacbc54aa298604d140
         with:
           version: ${{ env.KIND_VERSION }}
           image: ${{ env.KIND_IMAGE }}

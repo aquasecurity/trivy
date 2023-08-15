@@ -17,6 +17,7 @@ import (
 	debVersion "github.com/knqyf263/go-deb-version"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
@@ -294,8 +295,11 @@ func (a dpkgAnalyzer) parseDepends(s string) []string {
 		for _, d := range strings.Split(dep, "|") {
 			d = a.trimVersionRequirement(d)
 
-			// Store only package names here
-			dependencies = append(dependencies, strings.TrimSpace(d))
+			// Store only uniq package names here
+			d = strings.TrimSpace(d)
+			if !slices.Contains(dependencies, d) {
+				dependencies = append(dependencies, d)
+			}
 		}
 	}
 	return dependencies

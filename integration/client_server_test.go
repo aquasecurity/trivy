@@ -4,7 +4,6 @@ package integration
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,15 +11,14 @@ import (
 	"testing"
 	"time"
 
-	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/docker/go-connections/nat"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	testcontainers "github.com/testcontainers/testcontainers-go"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 type csArgs struct {
@@ -402,14 +400,10 @@ func TestClientServerWithFormat(t *testing.T) {
 }
 
 func TestClientServerWithCycloneDX(t *testing.T) {
-	if *update {
-		t.Skipf("This test doesn't use golden files")
-	}
 	tests := []struct {
-		name                  string
-		args                  csArgs
-		wantComponentsCount   int
-		wantDependenciesCount int
+		name   string
+		args   csArgs
+		golden string
 	}{
 		{
 			name: "fluentd with RubyGems with CycloneDX format",
@@ -417,30 +411,23 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 				Format: "cyclonedx",
 				Input:  "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
 			},
-			wantComponentsCount:   161,
-			wantDependenciesCount: 162,
+			golden: "testdata/fluentd-multiple-lockfiles.cdx.json.golden",
 		},
 	}
 
 	addr, cacheDir := setup(t, setupOptions{})
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, "")
+			clock.SetFakeTime(t, time.Date(2020, 9, 10, 14, 20, 30, 5, time.UTC))
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
 			// Run Trivy client
 			err := execute(osArgs)
 			require.NoError(t, err)
 
-			f, err := os.Open(outputFile)
-			require.NoError(t, err)
-			defer f.Close()
-
-			var got cdx.BOM
-			err = json.NewDecoder(f).Decode(&got)
-			require.NoError(t, err)
-
-			assert.EqualValues(t, tt.wantComponentsCount, len(lo.FromPtr(got.Components)))
-			assert.EqualValues(t, tt.wantDependenciesCount, len(lo.FromPtr(got.Dependencies)))
+			compareCycloneDX(t, tt.golden, outputFile)
 		})
 	}
 }
