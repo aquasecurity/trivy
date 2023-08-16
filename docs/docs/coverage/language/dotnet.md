@@ -11,7 +11,7 @@ The following scanners are supported.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File               | Transitive dependencies | Dev dependencies | [Dependency graph][dependench-graph] | Position |
+| Package manager | File               | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
 |:---------------:|--------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
 |    .Net Core    | *.deps.json        |            ✓            |     Excluded     |                  -                   |    ✓     |
 |      NuGet      | packages.config    |            ✓            |     Excluded     |                  -                   |    -     |
@@ -31,4 +31,4 @@ Don't forgot to [enable][enable-lock] lock files in your project.
 
 
 [enable-lock]: https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#enabling-the-lock-file
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

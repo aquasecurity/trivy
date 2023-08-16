@@ -11,7 +11,7 @@ The following scanners are supported.
 The following table provides an outline of the features Trivy offers.
 
 
-| Package manager | File          | Transitive dependencies | Dev dependencies | [Dependency graph][dependench-graph] | Position |
+| Package manager | File          | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
 |-----------------|---------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
 | Composer        | composer.lock |            ✓            |     Excluded     |                  ✓                   |    ✓     |
 
@@ -23,4 +23,4 @@ Since this information is not included in `composer.lock`, Trivy parses `compose
 If you want to see the dependency tree, please ensure that `composer.json` is present.
 
 [composer]: https://getcomposer.org/
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

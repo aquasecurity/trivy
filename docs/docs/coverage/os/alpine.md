@@ -14,7 +14,7 @@ The table below outlines the features offered by Trivy.
 |               Feature                | Supported |
 |:------------------------------------:|:---------:|
 |       Unfixed vulnerabilities        |     -     |
-| [Dependency graph][dependench-graph] |     ✓     |
+| [Dependency graph][dependency-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through `apk`.
@@ -50,7 +50,7 @@ Trivy supports the following [vulnerability statuses] for Alpine.
 Trivy identifies licenses by examining the metadata of APK packages.
 
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [secdb]: https://secdb.alpinelinux.org/
 
 [CVE-2023-0464]: https://gitlab.alpinelinux.org/alpine/aports/-/blob/dad5b7380ab3be705951ce6fd2d7bba513d6a744/main/openssl/APKBUILD#L36-37

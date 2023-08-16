@@ -11,7 +11,7 @@ The following scanners are supported for Cargo.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File         | Transitive dependencies | Dev dependencies | [Dependency graph][dependench-graph] | Position |
+| Package manager | File         | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
 |-----------------|--------------|:-----------------------:|:-----------------|:------------------------------------:|:--------:|
 | Bundler         | Gemfile.lock |            ✓            | Included         |                  ✓                   |    ✓     |
 | RubyGems        | .gemspec     |            -            | Included         |                  -                   |    -     |
@@ -26,5 +26,5 @@ Trivy searches for `Gemfile.lock` to detect dependencies.
 
 [bundler]: https://bundler.io
 [rubygems]: https://rubygems.org/
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 

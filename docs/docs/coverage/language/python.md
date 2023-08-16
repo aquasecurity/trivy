@@ -9,7 +9,7 @@ The following scanners are supported for package managers.
 | Pipenv          |   ✓   |       ✓       |    -    |
 | Poetry          |   ✓   |       ✓       |    -    |
 
-In addition, Trivy supports two formats of Python packages: `egg` and `wheel`.
+In addition, Trivy supports three formats of Python packages: `egg`, `wheel` and `conda`.
 The following scanners are supported for Python packages.
 
 | Packaging | SBOM  | Vulnerability | License |
@@ -21,7 +21,7 @@ The following scanners are supported for Python packages.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File             | Transitive dependencies | Dev dependencies | [Dependency graph][dependench-graph] | Position |
+| Package manager | File             | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
 |-----------------|------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
 | pip             | requirements.txt |            -            |     Include      |                  -                   |    -     |
 | Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |
@@ -91,4 +91,4 @@ Trivy looks for `*.egg-info`, `*.egg-info/PKG-INFO`, `*.egg` and `EGG-INFO/PKG-I
 ### Wheel
 Trivy looks for `.dist-info/META-DATA` to identify Python packages.
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

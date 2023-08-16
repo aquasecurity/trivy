@@ -14,7 +14,7 @@ The table below outlines the features offered by Trivy.
 |                Feature                | Supported |
 | :-----------------------------------: | :-------: |
 |        Unfixed vulnerabilities        |     ✓     |
-| [Dependency graph][dependench-graph] |     ✓     |
+| [Dependency graph][dependency-graph] |     ✓     |
 
 ## SBOM
 Same as [RHEL](rhel.md#sbom).
@@ -35,4 +35,4 @@ As Trivy relies on Red Hat's advisories, please refer to [Red Hat](rhel.md) for 
 Same as [RHEL](rhel.md#license).
 
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

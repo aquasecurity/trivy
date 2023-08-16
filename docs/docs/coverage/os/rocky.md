@@ -14,7 +14,7 @@ The table below outlines the features offered by Trivy.
 |               Feature                | Supported |
 |:------------------------------------:|:---------:|
 |       Unfixed vulnerabilities        |     -     |
-| [Dependency graph][dependench-graph] |     ✓     |
+| [Dependency graph][dependency-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `dnf` and `yum`.
@@ -63,7 +63,7 @@ Trivy supports the following [vulnerability statuses] for Rocky Linux.
 ## License
 Trivy identifies licenses by examining the metadata of RPM packages.
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [updateinfo]: https://download.rockylinux.org/pub/rocky/
 [errata]: https://errata.rockylinux.org/
 

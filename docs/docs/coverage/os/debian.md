@@ -14,7 +14,7 @@ The table below outlines the features offered by Trivy.
 |                Feature                | Supported |
 | :-----------------------------------: | :-------: |
 |        Unfixed vulnerabilities        |     ✓     |
-| [Dependency graph][dependench-graph] |     ✓     |
+| [Dependency graph][dependency-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `apt` and `dpkg`.
@@ -61,7 +61,7 @@ It compares the contents of known licenses with the copyright file to discern th
 Please be aware that using this flag can increase memory usage, so it's disabled by default for efficiency.
 
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 
 [debian-tracker]: https://security-tracker.debian.org/tracker/
 [debian-oval]: https://www.debian.org/security/oval/

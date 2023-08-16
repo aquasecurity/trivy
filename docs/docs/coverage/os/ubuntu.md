@@ -14,7 +14,7 @@ The following table provides an outline of the features Trivy offers.
 |               Feature                | Supported |
 |:------------------------------------:|:---------:|
 |    Detect unfixed vulnerabilities    |     ✓     |
-| [Dependency graph][dependench-graph] |     ✓     |
+| [Dependency graph][dependency-graph] |     ✓     |
 
 ## SBOM
 Same as [Debian](debian.md#sbom).
@@ -54,7 +54,7 @@ Trivy supports the following [vulnerability statuses] for Ubuntu.
 Same as [Debian](debian.md#license).
 
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [Ubuntu CVE Tracker]: https://ubuntu.com/security/cve
 
 [CVE-2023-3269]: https://ubuntu.com/security/CVE-2023-3269

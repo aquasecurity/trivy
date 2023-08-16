@@ -77,4 +77,4 @@ $ trivy fs ./your_binary
 [^1]: It doesn't require the Internet access.
 [^2]: Need to download modules to local cache beforehand
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

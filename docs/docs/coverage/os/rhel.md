@@ -14,7 +14,7 @@ The table below outlines the features offered by Trivy.
 |               Feature                | Supported |
 |:------------------------------------:|:---------:|
 |    Detect unfixed vulnerabilities    |     ✓     |
-| [Dependency graph][dependench-graph] |     ✓     |
+| [Dependency graph][dependency-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `dnf` and `yum`.
@@ -73,7 +73,7 @@ On the other hand, for those marked "Under Investigation," the impact is unclear
 ## License
 Trivy identifies licenses by examining the metadata of RPM packages.
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [oval]: https://www.redhat.com/security/data/oval/v2/
 [api]: https://www.redhat.com/security/data/metrics/
 

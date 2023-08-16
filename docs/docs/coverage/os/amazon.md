@@ -14,7 +14,7 @@ The table below outlines the features offered by Trivy.
 |               Feature                | Supported |
 |:------------------------------------:|:---------:|
 |       Unfixed vulnerabilities        |     -     |
-| [Dependency graph][dependench-graph] |     ✓     |
+| [Dependency graph][dependency-graph] |     ✓     |
 
 ## SBOM
 Trivy detects packages that have been installed through package managers such as `dnf` and `yum`.
@@ -62,7 +62,7 @@ Trivy supports the following [vulnerability statuses] for Amazon Linux.
 Trivy identifies licenses by examining the metadata of RPM packages.
 
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [center]: https://alas.aws.amazon.com/
 
 [CVE-2023-0464]: https://alas.aws.amazon.com/cve/html/CVE-2023-0464.html

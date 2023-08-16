@@ -12,7 +12,7 @@ The following scanners are supported.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File              | Transitive dependencies | Dev dependencies  | [Dependency graph][dependench-graph] | Position |
+| Package manager | File              | Transitive dependencies | Dev dependencies  | [Dependency graph][dependency-graph] | Position |
 |:---------------:|-------------------|:-----------------------:|:-----------------:|:------------------------------------:|:--------:|
 |       npm       | package-lock.json |            ✓            | [Excluded](#npm)  |                  ✓                   |    ✓     |
 |      Yarn       | yarn.lock         |            ✓            | [Excluded](#yarn) |                  ✓                   |    ✓     |
@@ -47,7 +47,7 @@ To exclude devDependencies, `package.json` also needs to be present next to `yar
 By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
 
 ### pnpm
-Trivy parses `pnpm-lock.yaml`, then finds production dependencies and builds a [tree][dependench-graph] of dependencies with vulnerabilities.
+Trivy parses `pnpm-lock.yaml`, then finds production dependencies and builds a [tree][dependency-graph] of dependencies with vulnerabilities.
 
 ## Packages
 Trivy parses the manifest files of installed packages in container image scanning and so on.
@@ -56,4 +56,4 @@ Trivy parses the manifest files of installed packages in container image scannin
 Trivy searches for `package.json` files under `node_modules` and identifies installed packages.
 It only extracts package names, versions and licenses for those packages.
 
-[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
