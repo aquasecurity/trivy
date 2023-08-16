@@ -29,6 +29,12 @@ See [here](../../scanner/vulnerability.md#data-sources).
 Trivy takes fixed versions from [Rocky Linux Errata][errata], not NVD or somewhere else.
 See [here](../../scanner/vulnerability.md#data-source-selection) for more details.
 
+!!! architectures
+    There are cases when the vulnerability affects packages of not all architectures.
+    For example, vulnerable packages for [CVE-2023-0361](https://errata.rockylinux.org/RLSA-2023:1141) are only `aarch64` packages.
+    
+    Trivy only detects vulnerabilities for packages of your architecture.
+
 ### Severity
 Trivy calculates the severity of an issue based on the severity provided in [Rocky Linux Errata][errata].
 
