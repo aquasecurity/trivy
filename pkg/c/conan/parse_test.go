@@ -28,17 +28,35 @@ func TestParse(t *testing.T) {
 					ID:      "pkga/0.0.1",
 					Name:    "pkga",
 					Version: "0.0.1",
+					Locations: []types.Location{
+						{
+							StartLine: 13,
+							EndLine:   22,
+						},
+					},
 				},
 				{
 					ID:       "pkgb/system",
 					Name:     "pkgb",
 					Version:  "system",
 					Indirect: true,
+					Locations: []types.Location{
+						{
+							StartLine: 23,
+							EndLine:   29,
+						},
+					},
 				},
 				{
 					ID:      "pkgc/0.1.1",
 					Name:    "pkgc",
 					Version: "0.1.1",
+					Locations: []types.Location{
+						{
+							StartLine: 30,
+							EndLine:   35,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -58,12 +76,24 @@ func TestParse(t *testing.T) {
 					ID:      "openssl/3.0.3",
 					Name:    "openssl",
 					Version: "3.0.3",
+					Locations: []types.Location{
+						{
+							StartLine: 12,
+							EndLine:   22,
+						},
+					},
 				},
 				{
 					ID:       "zlib/1.2.12",
 					Name:     "zlib",
 					Version:  "1.2.12",
 					Indirect: true,
+					Locations: []types.Location{
+						{
+							StartLine: 23,
+							EndLine:   30,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
