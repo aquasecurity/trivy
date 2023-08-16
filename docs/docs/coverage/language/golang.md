@@ -12,10 +12,10 @@ The following scanners are supported.
 
 The table below provides an outline of the features Trivy offers.
 
-| Artifact | Offline[^1] | Dev dependencies | Dependency graph |
-| -------- | :---------: | :--------------- | :--------------: |
-| Modules  |      ✅      | Include          |      ✅[^2]       |
-| Binaries |      ✅      | Exclude          |        -         |
+| Artifact | Offline[^1] | Dev dependencies | [Dependency graph][dependency-graph] |
+|----------|:-----------:|:-----------------|:----------------------------------:|
+| Modules  |      ✅      | Include          |               ✅[^2]                |
+| Binaries |      ✅      | Exclude          |                 -                  |
 
 !!! note
     Trivy scans only dependencies of the Go project.
@@ -76,3 +76,5 @@ $ trivy fs ./your_binary
 
 [^1]: It doesn't require the Internet access.
 [^2]: Need to download modules to local cache beforehand
+
+[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

@@ -21,11 +21,11 @@ The following scanners are supported for Python packages.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File             | Transitive dependencies | Dev dependencies | Dependency graph | Position |
-| --------------- | ---------------- | :---------------------: | :--------------: | :--------------: | :------: |
-| pip             | requirements.txt |            -            |     Include      |        -         |    -     |
-| Pipenv          | Pipfile.lock     |            ✓            |     Include      |        -         |    ✓     |
-| Poetry          | poetry.lock      |            ✓            |     Exclude      |        ✓         |          |
+| Package manager | File             | Transitive dependencies | Dev dependencies | [Dependency graph][dependench-graph] | Position |
+|-----------------|------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
+| pip             | requirements.txt |            -            |     Include      |                  -                   |    -     |
+| Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |
+| Poetry          | poetry.lock      |            ✓            |     Exclude      |                  ✓                   |          |
 
 
 | Packaging | Dependency graph |
@@ -90,3 +90,5 @@ Trivy looks for `*.egg-info`, `*.egg-info/PKG-INFO`, `*.egg` and `EGG-INFO/PKG-I
 
 ### Wheel
 Trivy looks for `.dist-info/META-DATA` to identify Python packages.
+
+[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

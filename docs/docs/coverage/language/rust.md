@@ -16,9 +16,9 @@ In addition, it supports binaries built with [cargo-auditable](https://github.co
 ## Features
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File       | Transitive dependencies | Dev dependencies | Dependency graph | Position |
-| --------------- | ---------- | :---------------------: | :--------------- | :--------------: | :------: |
-| Cargo           | Cargo.lock |            ✓            | Excluded[^1]     |        ✓         |    ✓     |
+| Package manager | File       | Transitive dependencies | Dev dependencies | [Dependency graph][dependench-graph] | Position |
+|-----------------|------------|:-----------------------:|:-----------------|:------------------------------------:|:--------:|
+| Cargo           | Cargo.lock |            ✓            | Excluded[^1]     |                  ✓                   |    ✓     |
 
 
 | Artifact | Transitive dependencies | Dev dependencies | Dependency graph | Position |
@@ -40,3 +40,5 @@ Trivy scans binaries built with [cargo-auditable](https://github.com/rust-secure
 If such a binary exists, Trivy will identify it as being built with cargo-audit and scan it.
 
 [^1]: When you scan Cargo.lock and Cargo.toml together.
+
+[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

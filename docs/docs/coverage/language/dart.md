@@ -11,9 +11,9 @@ The following scanners are supported.
 The following table provides an outline of the features Trivy offers.
 
 
-| Package manager         | File         | Transitive dependencies | Dev dependencies | Dependency graph | Position |
-|-------------------------|--------------|:-----------------------:|:----------------:|:----------------:|:--------:|
-| [Dart][dart-repository] | pubspec.lock |            ✓            |     Included     |        -         |    -     |
+| Package manager         | File         | Transitive dependencies | Dev dependencies | [Dependency graph][dependench-graph] | Position |
+|-------------------------|--------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
+| [Dart][dart-repository] | pubspec.lock |            ✓            |     Included     |                  -                   |    -     |
 
 ## Dart
 In order to detect dependencies, Trivy searches for `pubspec.lock`.
@@ -23,3 +23,4 @@ So Trivy includes all dependencies in report.
 
 [dart]: https://dart.dev/
 [dart-repository]: https://pub.dev/
+[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

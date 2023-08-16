@@ -17,11 +17,11 @@ The table below outlines the features offered by Trivy.
 | [Dependency graph][dependench-graph] |     ✓     |
 
 ## SBOM
-Same as [RHEL](rhel.md).
+Same as [RHEL](rhel.md#sbom).
 
 ## Vulnerability
 CentOS does not provide straightforward machine-readable security advisories.
-As a result, Trivy utilizes the security advisories from [Red Hat Enterprise Linux (RHEL)](rhel.md) for detecting vulnerabilities in CentOS.
+As a result, Trivy utilizes the security advisories from [Red Hat Enterprise Linux (RHEL)](rhel.md#vulnerability) for detecting vulnerabilities in CentOS.
 This approach might lead to situations where, even though Trivy displays a fixed version, CentOS might not have the patch available yet.
 Since patches released for RHEL often become available in CentOS after some time, it's usually just a matter of waiting.
 
@@ -32,7 +32,7 @@ As Trivy relies on Red Hat's advisories, please refer to [Red Hat](rhel.md) for 
 
 
 ## License
-Same as [RHEL](rhel.md).
+Same as [RHEL](rhel.md#license).
 
 
 [dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

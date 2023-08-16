@@ -11,11 +11,11 @@ The following scanners are supported.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File               | Transitive dependencies | Dev dependencies | Dependency graph | Position |
-|:---------------:|--------------------|:-----------------------:|:----------------:|:----------------:|:--------:|
-|    .Net Core    | *.deps.json        |            ✓            |     Excluded     |        -         |    ✓     |
-|      NuGet      | packages.config    |            ✓            |     Excluded     |        -         |    -     |
-|      NuGet      | packages.lock.json |            ✓            |     Included     |        ✓         |    ✓     |
+| Package manager | File               | Transitive dependencies | Dev dependencies | [Dependency graph][dependench-graph] | Position |
+|:---------------:|--------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
+|    .Net Core    | *.deps.json        |            ✓            |     Excluded     |                  -                   |    ✓     |
+|      NuGet      | packages.config    |            ✓            |     Excluded     |                  -                   |    -     |
+|      NuGet      | packages.lock.json |            ✓            |     Included     |                  ✓                   |    ✓     |
 
 ### *.deps.json
 Trivy parses `*.deps.json` files. Trivy currently excludes dev dependencies from the report.
@@ -30,4 +30,5 @@ Don't forgot to [enable][enable-lock] lock files in your project.
     Please make sure your lock file is up-to-date after modifying dependencies.
 
 
-[enable-lock]: https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#enabling-the-lock-file 
+[enable-lock]: https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#enabling-the-lock-file
+[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

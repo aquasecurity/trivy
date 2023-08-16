@@ -11,11 +11,11 @@ Each artifact supports the following scanners:
 
 The following table provides an outline of the features Trivy offers.
 
-| Artifact         |    Internet access    | Dev dependencies | Dependency graph[dependench-graph] |
-| ---------------- | :-------------------: | :--------------: | :--------------------------------: |
-| JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                 -                  |
-| pom.xml          | Maven repository [^1] |     Exclude      |                 -                  |
-| *gradle.lockfile |           -           |     Exclude      |                 -                  |
+| Artifact         |    Internet access    | Dev dependencies | [Dependency graph][dependench-graph] |
+|------------------|:---------------------:|:----------------:|:------------------------------------:|
+| JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |
+| pom.xml          | Maven repository [^1] |     Exclude      |                  -                   |
+| *gradle.lockfile |           -           |     Exclude      |                  -                   |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
@@ -68,4 +68,4 @@ It doesn't require the internet access.
 [^5]: When you use dependency path in `relativePath` field in pom.xml file
 [^6]: `/Users/<username>/.m2/repository` (for Linux and Mac) and `C:/Users/<username>/.m2/repository` (for Windows) by default
 
-[:--------------:dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

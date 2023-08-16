@@ -1,6 +1,6 @@
 # Elixir
 
-Trivy supports [Hex][hex] for [Elixir][elixir].
+Trivy supports [Hex][hex] repository for [Elixir][elixir].
 
 The following scanners are supported.
 
@@ -11,9 +11,9 @@ The following scanners are supported.
 The following table provides an outline of the features Trivy offers.
 
 
-| Package manager | File         | Transitive dependencies | Dev dependencies | Dependency graph | Position |
-|-----------------|--------------|:-----------------------:|:----------------:|:----------------:|:--------:|
-| [hex][hex]      | mix.lock[^1] |            ✓            |     Excluded     |        -         |    ✓     |
+| Package manager | File         | Transitive dependencies | Dev dependencies | [Dependency graph][dependench-graph] | Position |
+|-----------------|--------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
+| [hex][hex]      | mix.lock[^1] |            ✓            |     Excluded     |                  -                   |    ✓     |
 
 ## Hex
 In order to detect dependencies, Trivy searches for `mix.lock`[^1].
@@ -22,5 +22,6 @@ In order to detect dependencies, Trivy searches for `mix.lock`[^1].
 
 [elixir]: https://elixir-lang.org/
 [hex]: https://hex.pm/
+[dependench-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 
 [^1]: `mix.lock` is default name. To scan a custom filename use [file-patterns](../../configuration/skipping.md#file-patterns)
