@@ -6,7 +6,7 @@ Trivy supports the scanners listed in the table below.
 | [Misconfiguration] |     ✓     |
 |      [Secret]      |     ✓     |
 
-It supports the following configigurations.
+It supports the following configurations.
 
 |    Config     | Supported |
 | :-----------: | :-------: |
