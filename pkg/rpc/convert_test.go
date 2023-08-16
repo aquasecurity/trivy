@@ -669,3 +669,147 @@ func TestConvertToRPCMiconfs(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertFromRPCLicenses(t *testing.T) {
+	tests := []struct {
+		name        string
+		rpcLicenses []*common.DetectedLicense
+		want        []types.DetectedLicense
+	}{
+		{
+			name: "happy",
+			rpcLicenses: []*common.DetectedLicense{
+				{
+					Severity:   common.Severity_HIGH,
+					Category:   common.DetectedLicense_RESTRICTED,
+					PkgName:    "alpine-baselayout",
+					FilePath:   "some-path",
+					Name:       "GPL-2.0",
+					Confidence: 1,
+					Link:       "https://some-link",
+				},
+			},
+			want: []types.DetectedLicense{
+				{
+					Severity:   "HIGH",
+					Category:   "restricted",
+					PkgName:    "alpine-baselayout",
+					FilePath:   "some-path",
+					Name:       "GPL-2.0",
+					Confidence: 1,
+					Link:       "https://some-link",
+				},
+			},
+		},
+		{
+			name:        "no licenses",
+			rpcLicenses: nil,
+			want:        nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCLicenses(tt.rpcLicenses)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertToRPCLicenses(t *testing.T) {
+	tests := []struct {
+		name     string
+		licenses []types.DetectedLicense
+		want     []*common.DetectedLicense
+	}{
+		{
+			name: "happy",
+			licenses: []types.DetectedLicense{
+				{
+					Severity:   "HIGH",
+					Category:   "restricted",
+					PkgName:    "alpine-baselayout",
+					FilePath:   "some-path",
+					Name:       "GPL-2.0",
+					Confidence: 1,
+					Link:       "https://some-link",
+				},
+			},
+			want: []*common.DetectedLicense{
+				{
+					Severity:   common.Severity_HIGH,
+					Category:   common.DetectedLicense_RESTRICTED,
+					PkgName:    "alpine-baselayout",
+					FilePath:   "some-path",
+					Name:       "GPL-2.0",
+					Confidence: 1,
+					Link:       "https://some-link",
+				},
+			},
+		},
+		{
+			name:     "no licenses",
+			licenses: nil,
+			want:     nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCLicenses(tt.licenses)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertToRPCLicenseCategory(t *testing.T) {
+	tests := []struct {
+		name     string
+		category ftypes.LicenseCategory
+		want     common.DetectedLicense_LicenseCategory
+	}{
+		{
+			name:     "happy",
+			category: ftypes.CategoryNotice,
+			want:     common.DetectedLicense_NOTICE,
+		},
+		{
+			name:     "unspecified",
+			category: "",
+			want:     common.DetectedLicense_UNSPECIFIED,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCLicenseCategory(tt.category)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertFromRPCLicenseCategory(t *testing.T) {
+	tests := []struct {
+		name        string
+		rpcCategory common.DetectedLicense_LicenseCategory
+		want        ftypes.LicenseCategory
+	}{
+		{
+			name:        "happy",
+			rpcCategory: common.DetectedLicense_RESTRICTED,
+			want:        ftypes.CategoryRestricted,
+		},
+		{
+			name:        "unspecified",
+			rpcCategory: common.DetectedLicense_UNSPECIFIED,
+			want:        "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCLicenseCategory(tt.rpcCategory)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

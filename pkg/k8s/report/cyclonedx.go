@@ -15,12 +15,12 @@ type CycloneDXWriter struct {
 }
 
 // NewCycloneDXWriter constract new CycloneDXWriter
-func NewCycloneDXWriter(output io.Writer, format cdx.BOMFileFormat, appVersion string, opts ...core.Option) CycloneDXWriter {
+func NewCycloneDXWriter(output io.Writer, format cdx.BOMFileFormat, appVersion string) CycloneDXWriter {
 	encoder := cdx.NewBOMEncoder(output, format)
 	encoder.SetPretty(true)
 	return CycloneDXWriter{
 		encoder:   encoder,
-		marshaler: core.NewCycloneDX(appVersion, opts...),
+		marshaler: core.NewCycloneDX(appVersion),
 	}
 }
 

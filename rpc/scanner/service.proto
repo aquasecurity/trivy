@@ -45,4 +45,5 @@ message Result {
   repeated common.Package packages                           = 5;
   repeated common.CustomResource custom_resources            = 7;
   repeated common.SecretFinding secrets                      = 8;
+  repeated common.DetectedLicense licenses                   = 9;
 }
