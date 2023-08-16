@@ -29,7 +29,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.322
 	github.com/aws/aws-sdk-go-v2 v1.20.1
 	github.com/aws/aws-sdk-go-v2/config v1.18.33
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.111.0
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.112.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.21.2
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/cenkalti/backoff v2.2.1+incompatible
