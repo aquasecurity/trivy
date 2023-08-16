@@ -11,7 +11,7 @@ It supports the following configurations:
 |    Format    | Supported |
 | :----------: | :-------: |
 | ARM template |     ✓     |
-|    Bicep     |     ✓     |
+|    Bicep     |   ✓[^1]   |
 
 To scan Bicep codes, you need to convert them into ARM templates first.
 
@@ -29,3 +29,5 @@ The secret scan is performed on plain text files, with no special treatment for 
 
 [Misconfiguration]: ../../scanner/misconfiguration/index.md
 [Secret]: ../../scanner/secret.md
+
+[^1]: Bicep is not natively supported. It needs to be converted into Azure ARM templates.
