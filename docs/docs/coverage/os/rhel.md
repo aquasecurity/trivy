@@ -12,8 +12,8 @@ Please see [here](index.md#supported-os) for supported versions.
 The table below outlines the features offered by Trivy.
 
 |               Feature                | Supported |
-|:------------------------------------:|:---------:|
-|    Detect unfixed vulnerabilities    |     ✓     |
+| :----------------------------------: | :-------: |
+|       Unfixed vulnerabilities        |     ✓     |
 | [Dependency graph][dependency-graph] |     ✓     |
 
 ## SBOM
