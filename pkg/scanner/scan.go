@@ -151,6 +151,24 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		}
 	}()
 
+	if options.OnlyInspectArtifact {
+		return types.Report{
+			SchemaVersion: report.SchemaVersion,
+			ArtifactName:  artifactInfo.Name,
+			ArtifactType:  artifactInfo.Type,
+			Metadata: types.Metadata{
+				// Container image
+				ImageID:     artifactInfo.ImageMetadata.ID,
+				DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
+				RepoTags:    artifactInfo.ImageMetadata.RepoTags,
+				RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
+				ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
+			},
+			CycloneDX: artifactInfo.CycloneDX,
+			Results:   types.Results{},
+		}, nil
+	}
+
 	results, osFound, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)

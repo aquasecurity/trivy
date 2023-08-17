@@ -91,6 +91,18 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get the image ID: %w", err)
 	}
 
+	if a.artifactOption.OnlyFetchDFScanRegistrationMeta {
+		return types.ArtifactReference{
+			Name: a.image.Name(),
+			Type: types.ArtifactContainerImage,
+			ImageMetadata: types.ImageMetadata{
+				ID:          imageID,
+				RepoTags:    a.image.RepoTags(),
+				RepoDigests: a.image.RepoDigests(),
+			},
+		}, nil
+	}
+
 	configFile, err := a.image.ConfigFile()
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get the image's config file: %w", err)

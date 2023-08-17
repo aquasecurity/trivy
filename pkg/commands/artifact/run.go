@@ -555,6 +555,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
+		OnlyInspectArtifact: opts.OnlyInspectArtifact,
 	}
 
 	if len(opts.ImageConfigScanners) != 0 {
@@ -670,6 +671,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 				Full:                      opts.LicenseFull,
 				ClassifierConfidenceLevel: opts.LicenseConfidenceLevel,
 			},
+			OnlyFetchDFScanRegistrationMeta: opts.OnlyFetchDFScanRegistrationMeta,
 		},
 	}, scanOptions, nil
 }

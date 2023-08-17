@@ -110,6 +110,10 @@ type Options struct {
 	// Deepfactor dfctl image url
 	DfctlImage string
 
+	OnlyFetchDFScanRegistrationMeta bool // fetch only basic metadata required to register df static scan
+
+	OnlyInspectArtifact bool // only inspect/validate artifact as part of scan and return metadata
+
 	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
 }
