@@ -37,6 +37,8 @@ type Option struct {
 	// For image scanning
 	ImageOption types.ImageOptions
 
+	OnlyFetchDFScanRegistrationMeta bool
+
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption
 	LicenseScannerOption analyzer.LicenseScannerOption

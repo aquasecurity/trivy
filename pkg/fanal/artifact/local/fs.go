@@ -127,6 +127,23 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	var terminateWalk bool
 	var terminateError string
 
+	// get hostname
+	var hostName string
+	b, err := os.ReadFile(filepath.Join(a.rootPath, "etc", "hostname"))
+	if err == nil && string(b) != "" {
+		hostName = strings.TrimSpace(string(b))
+	} else {
+		// To slash for Windows
+		hostName = filepath.ToSlash(a.rootPath)
+	}
+
+	if a.artifactOption.OnlyFetchDFScanRegistrationMeta {
+		return types.ArtifactReference{
+			Name: hostName,
+			Type: types.ArtifactFilesystem,
+		}, nil
+	}
+
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Slow)
 	opts := analyzer.AnalysisOptions{
@@ -137,7 +154,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	// Prepare filesystem for post analysis
 	files := new(syncx.Map[analyzer.Type, *mapfs.FS])
 
-	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		dir := a.rootPath
 
 		// When the directory is the same as the filePath, a file was given
@@ -199,16 +216,6 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
-	}
-
-	// get hostname
-	var hostName string
-	b, err := os.ReadFile(filepath.Join(a.rootPath, "etc", "hostname"))
-	if err == nil && string(b) != "" {
-		hostName = strings.TrimSpace(string(b))
-	} else {
-		// To slash for Windows
-		hostName = filepath.ToSlash(a.rootPath)
 	}
 
 	return types.ArtifactReference{
