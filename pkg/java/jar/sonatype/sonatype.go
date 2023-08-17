@@ -3,12 +3,13 @@ package sonatype
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/go-retryablehttp"
-	"golang.org/x/xerrors"
 	"net/http"
 	"os"
 	"sort"
 	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
 )
@@ -29,7 +30,7 @@ type apiResponse struct {
 			ArtifactID   string `json:"a"`
 			Version      string `json:"v"`
 			P            string `json:"p"`
-			VersionCount int    `json:versionCount`
+			VersionCount int    `json:"versionCount"`
 		} `json:"docs"`
 	} `json:"response"`
 }
