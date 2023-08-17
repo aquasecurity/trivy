@@ -1,20 +1,37 @@
 # Python
 
 Trivy supports three types of Python package managers: `pip`, `Pipenv` and `Poetry`.
+The following scanners are supported for package managers.
+
+| Package manager | SBOM  | Vulnerability | License |
+| --------------- | :---: | :-----------: | :-----: |
+| pip             |   ✓   |       ✓       |    -    |
+| Pipenv          |   ✓   |       ✓       |    -    |
+| Poetry          |   ✓   |       ✓       |    -    |
+
+In addition, Trivy supports three formats of Python packages: `egg`, `wheel` and `conda`.
+The following scanners are supported for Python packages.
+
+| Packaging | SBOM  | Vulnerability | License |
+| --------- | :---: | :-----------: | :-----: |
+| Egg       |   ✓   |       ✓       |    ✓    |
+| Wheel     |   ✓   |       ✓       |    ✓    |
+| Conda     |   ✓   |       -       |    -    |
+
+
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File             | Transitive dependencies | Dev dependencies | Dependency graph | Position | License |
-|-----------------|------------------|:-----------------------:|:----------------:|:----------------:|:--------:|:-------:|
-| pip             | requirements.txt |            -            |     Include      |        -         |    -     |    -    |
-| Pipenv          | Pipfile.lock     |            ✅            |     Include      |        -         |    ✅     |    -    |
-| Poetry          | poetry.lock      |            ✅            |     Exclude      |        ✅         |          |    -    |
+| Package manager | File             | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
+|-----------------|------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
+| pip             | requirements.txt |            -            |     Include      |                  -                   |    -     |
+| Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |
+| Poetry          | poetry.lock      |            ✓            |     Exclude      |                  ✓                   |          |
 
-In addition, Trivy supports two formats of Python packages: `egg` and `wheel`.
 
-| Packaging | License |
-|-----------|:-------:|
-| Egg       |    ✅    |
-| Wheel     |    ✅    |
+| Packaging | Dependency graph |
+| --------- | :--------------: |
+| Egg       |        ✓         |
+| Wheel     |        ✓         |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
@@ -73,3 +90,5 @@ Trivy looks for `*.egg-info`, `*.egg-info/PKG-INFO`, `*.egg` and `EGG-INFO/PKG-I
 
 ### Wheel
 Trivy looks for `.dist-info/META-DATA` to identify Python packages.
+
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

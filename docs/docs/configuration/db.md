@@ -8,7 +8,7 @@
 |     License      |           |
 
 The vulnerability database and the Java index database are needed only for vulnerability scanning.
-See [here](../scanner/vulnerability/index.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ## Vulnerability Database
 

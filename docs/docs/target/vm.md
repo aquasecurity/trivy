@@ -144,7 +144,7 @@ Trivy supports VM image scanning for
 It is enabled by default.
 You can simply specify your VM image location.
 It detects known vulnerabilities in your VM image.
-See [here](../scanner/vulnerability/index.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ```
 $ trivy vm [YOUR_VM_IMAGE]
