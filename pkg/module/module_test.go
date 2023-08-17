@@ -102,7 +102,7 @@ func TestManager_Register(t *testing.T) {
 	})
 	require.NoError(t, err)
 	// WASM modules must be generated before running the tests.
-	require.Equal(t, count, 3, "missing WASM modules, try 'make test' or 'make generate-test-modules'")
+	require.Equal(t, count, 3, "missing WASM modules, try 'mage test:unit' or 'mage test:generateModules'")
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
