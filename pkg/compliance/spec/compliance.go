@@ -72,7 +72,7 @@ func scannerByCheckID(checkID string) types.Scanner {
 // GetComplianceSpec accepts compliance flag name/path and return builtin or file system loaded spec
 func GetComplianceSpec(specNameOrPath string, supported map[string]ComplianceSpec) (ComplianceSpec, error) {
 	if specNameOrPath == "" {
-		return ComplianceSpec{}, xerrors.Errorf("spec name is empty")
+		return ComplianceSpec{}, nil
 	}
 
 	// Built-in specs

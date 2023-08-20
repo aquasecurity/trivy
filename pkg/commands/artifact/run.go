@@ -521,7 +521,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		target = opts.Input
 	}
 
-	if cs, err := spec.GetComplianceSpec(opts.Compliance, nil); err != nil {
+	if cs, _ := spec.GetComplianceSpec(opts.Compliance, nil); cs.Spec.ID != "" {
 		// set scanners types by spec
 		scanners, err := cs.Scanners()
 		if err != nil {
