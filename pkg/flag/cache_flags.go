@@ -108,15 +108,23 @@ func (fg *CacheFlagGroup) Name() string {
 }
 
 func (fg *CacheFlagGroup) Flags() []*Flag {
-	return []*Flag{fg.ClearCache, fg.CacheBackend, fg.CacheTTL, fg.RedisTLS, fg.RedisCACert, fg.RedisCert, fg.RedisKey}
+	return []*Flag{
+		fg.ClearCache,
+		fg.CacheBackend,
+		fg.CacheTTL,
+		fg.RedisTLS,
+		fg.RedisCACert,
+		fg.RedisCert,
+		fg.RedisKey,
+	}
 }
 
 func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
-	cacheBackend := getString(fg.CacheBackend)
+	cacheBackend := GetString(fg.CacheBackend)
 	redisOptions := RedisOptions{
-		RedisCACert: getString(fg.RedisCACert),
-		RedisCert:   getString(fg.RedisCert),
-		RedisKey:    getString(fg.RedisKey),
+		RedisCACert: GetString(fg.RedisCACert),
+		RedisCert:   GetString(fg.RedisCert),
+		RedisKey:    GetString(fg.RedisKey),
 	}
 
 	// "redis://" or "fs" are allowed for now
@@ -133,10 +141,10 @@ func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 	}
 
 	return CacheOptions{
-		ClearCache:   getBool(fg.ClearCache),
+		ClearCache:   GetBool(fg.ClearCache),
 		CacheBackend: cacheBackend,
-		CacheTTL:     getDuration(fg.CacheTTL),
-		RedisTLS:     getBool(fg.RedisTLS),
+		CacheTTL:     GetDuration(fg.CacheTTL),
+		RedisTLS:     GetBool(fg.RedisTLS),
 		RedisOptions: redisOptions,
 	}, nil
 }

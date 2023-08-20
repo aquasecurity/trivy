@@ -46,13 +46,17 @@ func (f *RepoFlagGroup) Name() string {
 }
 
 func (f *RepoFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Branch, f.Commit, f.Tag}
+	return []*Flag{
+		f.Branch,
+		f.Commit,
+		f.Tag,
+	}
 }
 
 func (f *RepoFlagGroup) ToOptions() RepoOptions {
 	return RepoOptions{
-		RepoBranch: getString(f.Branch),
-		RepoCommit: getString(f.Commit),
-		RepoTag:    getString(f.Tag),
+		RepoBranch: GetString(f.Branch),
+		RepoCommit: GetString(f.Commit),
+		RepoTag:    GetString(f.Tag),
 	}
 }

@@ -132,11 +132,11 @@ func (f *DBFlagGroup) Flags() []*Flag {
 }
 
 func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
-	skipDBUpdate := getBool(f.SkipDBUpdate)
-	skipJavaDBUpdate := getBool(f.SkipJavaDBUpdate)
-	downloadDBOnly := getBool(f.DownloadDBOnly)
-	downloadJavaDBOnly := getBool(f.DownloadJavaDBOnly)
-	light := getBool(f.Light)
+	skipDBUpdate := GetBool(f.SkipDBUpdate)
+	skipJavaDBUpdate := GetBool(f.SkipJavaDBUpdate)
+	downloadDBOnly := GetBool(f.DownloadDBOnly)
+	downloadJavaDBOnly := GetBool(f.DownloadJavaDBOnly)
+	light := GetBool(f.Light)
 
 	if downloadDBOnly && skipDBUpdate {
 		return DBOptions{}, xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
@@ -149,14 +149,14 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	}
 
 	return DBOptions{
-		Reset:              getBool(f.Reset),
+		Reset:              GetBool(f.Reset),
 		DownloadDBOnly:     downloadDBOnly,
 		SkipDBUpdate:       skipDBUpdate,
 		DownloadJavaDBOnly: downloadJavaDBOnly,
 		SkipJavaDBUpdate:   skipJavaDBUpdate,
 		Light:              light,
-		NoProgress:         getBool(f.NoProgress),
-		DBRepository:       getString(f.DBRepository),
-		JavaDBRepository:   getString(f.JavaDBRepository),
+		NoProgress:         GetBool(f.NoProgress),
+		DBRepository:       GetString(f.DBRepository),
+		JavaDBRepository:   GetString(f.JavaDBRepository),
 	}, nil
 }

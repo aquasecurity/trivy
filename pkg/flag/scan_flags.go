@@ -62,8 +62,11 @@ var (
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
 		Default:    []string{},
-		Values:     []string{"oci", "rekor"},
-		Usage:      "[EXPERIMENTAL] try to retrieve SBOM from the specified sources",
+		Values: []string{
+			"oci",
+			"rekor",
+		},
+		Usage: "[EXPERIMENTAL] try to retrieve SBOM from the specified sources",
 	}
 	RekorURLFlag = Flag{
 		Name:       "rekor-url",
@@ -144,14 +147,14 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 
 	return ScanOptions{
 		Target:         target,
-		SkipDirs:       getStringSlice(f.SkipDirs),
-		SkipFiles:      getStringSlice(f.SkipFiles),
-		OfflineScan:    getBool(f.OfflineScan),
-		Scanners:       getUnderlyingStringSlice[types.Scanner](f.Scanners),
-		FilePatterns:   getStringSlice(f.FilePatterns),
-		Slow:           getBool(f.Slow),
-		SBOMSources:    getStringSlice(f.SBOMSources),
-		RekorURL:       getString(f.RekorURL),
-		IncludeDevDeps: getBool(f.IncludeDevDeps),
+		SkipDirs:       GetStringSlice(f.SkipDirs),
+		SkipFiles:      GetStringSlice(f.SkipFiles),
+		OfflineScan:    GetBool(f.OfflineScan),
+		Scanners:       GetUnderlyingStringSlice[types.Scanner](f.Scanners),
+		FilePatterns:   GetStringSlice(f.FilePatterns),
+		Slow:           GetBool(f.Slow),
+		SBOMSources:    GetStringSlice(f.SBOMSources),
+		RekorURL:       GetString(f.RekorURL),
+		IncludeDevDeps: GetBool(f.IncludeDevDeps),
 	}, nil
 }

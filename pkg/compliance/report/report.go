@@ -25,7 +25,7 @@ type Option struct {
 	ColumnHeading []string
 }
 
-// ComplianceReport represents a kubernetes scan report
+// ComplianceReport represents a compliance scan report
 type ComplianceReport struct {
 	ID               string
 	Title            string
@@ -44,7 +44,7 @@ type ControlCheckResult struct {
 	Results       types.Results
 }
 
-// SummaryReport represents a kubernetes scan report with consolidated findings
+// SummaryReport represents a compliance scan report with consolidated findings
 type SummaryReport struct {
 	SchemaVersion   int `json:",omitempty"`
 	ID              string
@@ -68,7 +68,10 @@ type Writer interface {
 func Write(report *ComplianceReport, option Option) error {
 	switch option.Format {
 	case types.FormatJSON:
-		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
+		jwriter := JSONWriter{
+			Output: option.Output,
+			Report: option.Report,
+		}
 		return jwriter.Write(report)
 	case types.FormatTable:
 		if !report.empty() {

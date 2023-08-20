@@ -61,6 +61,12 @@ var (
 		Default:    false,
 		Usage:      "remove results for downloaded modules in .terraform folder",
 	}
+	K8sVersionFlag = Flag{
+		Name:       "k8s-version",
+		ConfigName: "kubernetes.k8s.version",
+		Default:    "",
+		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
+	}
 	PolicyBundleRepositoryFlag = Flag{
 		Name:       "policy-bundle-repository",
 		ConfigName: "misconfiguration.policy-bundle-repository",
@@ -82,6 +88,9 @@ type MisconfFlagGroup struct {
 	HelmStringValues           *Flag
 	TerraformTFVars            *Flag
 	TerraformExcludeDownloaded *Flag
+
+	// Kubernetes
+	K8sVersion *Flag
 }
 
 type MisconfOptions struct {
@@ -96,6 +105,9 @@ type MisconfOptions struct {
 	HelmStringValues    []string
 	TerraformTFVars     []string
 	TfExcludeDownloaded bool
+
+	// Kubernetes
+	K8sVersion string
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -110,6 +122,7 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		HelmValueFiles:             &HelmValuesFileFlag,
 		TerraformTFVars:            &TfVarsFlag,
 		TerraformExcludeDownloaded: &TerraformExcludeDownloaded,
+		K8sVersion:                 &K8sVersionFlag,
 	}
 }
 
@@ -128,19 +141,21 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 		f.HelmStringValues,
 		f.TerraformTFVars,
 		f.TerraformExcludeDownloaded,
+		f.K8sVersion,
 	}
 }
 
 func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 	return MisconfOptions{
-		IncludeNonFailures:     getBool(f.IncludeNonFailures),
-		ResetPolicyBundle:      getBool(f.ResetPolicyBundle),
-		PolicyBundleRepository: getString(f.PolicyBundleRepository),
-		HelmValues:             getStringSlice(f.HelmValues),
-		HelmValueFiles:         getStringSlice(f.HelmValueFiles),
-		HelmFileValues:         getStringSlice(f.HelmFileValues),
-		HelmStringValues:       getStringSlice(f.HelmStringValues),
-		TerraformTFVars:        getStringSlice(f.TerraformTFVars),
-		TfExcludeDownloaded:    getBool(f.TerraformExcludeDownloaded),
+		IncludeNonFailures:     GetBool(f.IncludeNonFailures),
+		ResetPolicyBundle:      GetBool(f.ResetPolicyBundle),
+		PolicyBundleRepository: GetString(f.PolicyBundleRepository),
+		HelmValues:             GetStringSlice(f.HelmValues),
+		HelmValueFiles:         GetStringSlice(f.HelmValueFiles),
+		HelmFileValues:         GetStringSlice(f.HelmFileValues),
+		HelmStringValues:       GetStringSlice(f.HelmStringValues),
+		TerraformTFVars:        GetStringSlice(f.TerraformTFVars),
+		TfExcludeDownloaded:    GetBool(f.TerraformExcludeDownloaded),
+		K8sVersion:             GetString(f.K8sVersion),
 	}, nil
 }

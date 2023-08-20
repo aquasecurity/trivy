@@ -39,12 +39,15 @@ func (f *CloudFlagGroup) Name() string {
 }
 
 func (f *CloudFlagGroup) Flags() []*Flag {
-	return []*Flag{f.UpdateCache, f.MaxCacheAge}
+	return []*Flag{
+		f.UpdateCache,
+		f.MaxCacheAge,
+	}
 }
 
 func (f *CloudFlagGroup) ToOptions() CloudOptions {
 	return CloudOptions{
-		UpdateCache: getBool(f.UpdateCache),
-		MaxCacheAge: getDuration(f.MaxCacheAge),
+		UpdateCache: GetBool(f.UpdateCache),
+		MaxCacheAge: GetDuration(f.MaxCacheAge),
 	}
 }

@@ -73,16 +73,23 @@ func (f *AWSFlagGroup) Name() string {
 }
 
 func (f *AWSFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Region, f.Endpoint, f.Services, f.SkipServices, f.Account, f.ARN}
+	return []*Flag{
+		f.Region,
+		f.Endpoint,
+		f.Services,
+		f.SkipServices,
+		f.Account,
+		f.ARN,
+	}
 }
 
 func (f *AWSFlagGroup) ToOptions() AWSOptions {
 	return AWSOptions{
-		Region:       getString(f.Region),
-		Endpoint:     getString(f.Endpoint),
-		Services:     getStringSlice(f.Services),
-		SkipServices: getStringSlice(f.SkipServices),
-		Account:      getString(f.Account),
-		ARN:          getString(f.ARN),
+		Region:       GetString(f.Region),
+		Endpoint:     GetString(f.Endpoint),
+		Services:     GetStringSlice(f.Services),
+		SkipServices: GetStringSlice(f.SkipServices),
+		Account:      GetString(f.Account),
+		ARN:          GetString(f.ARN),
 	}
 }

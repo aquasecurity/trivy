@@ -109,7 +109,11 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 	}
 }
 
-func (f *GlobalFlagGroup) flags() []*Flag {
+func (f *GlobalFlagGroup) Name() string {
+	return "Global"
+}
+
+func (f *GlobalFlagGroup) Flags() []*Flag {
 	return []*Flag{
 		f.ConfigFile,
 		f.ShowVersion,
@@ -123,13 +127,13 @@ func (f *GlobalFlagGroup) flags() []*Flag {
 }
 
 func (f *GlobalFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
+	for _, flag := range f.Flags() {
 		addFlag(cmd, flag)
 	}
 }
 
 func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
+	for _, flag := range f.Flags() {
 		if err := bind(cmd, flag); err != nil {
 			return err
 		}
@@ -139,16 +143,16 @@ func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 
 func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
 	// Keep TRIVY_NON_SSL for backward compatibility
-	insecure := getBool(f.Insecure) || os.Getenv("TRIVY_NON_SSL") != ""
+	insecure := GetBool(f.Insecure) || os.Getenv("TRIVY_NON_SSL") != ""
 
 	return GlobalOptions{
-		ConfigFile:            getString(f.ConfigFile),
-		ShowVersion:           getBool(f.ShowVersion),
-		Quiet:                 getBool(f.Quiet),
-		Debug:                 getBool(f.Debug),
+		ConfigFile:            GetString(f.ConfigFile),
+		ShowVersion:           GetBool(f.ShowVersion),
+		Quiet:                 GetBool(f.Quiet),
+		Debug:                 GetBool(f.Debug),
 		Insecure:              insecure,
-		Timeout:               getDuration(f.Timeout),
-		CacheDir:              getString(f.CacheDir),
-		GenerateDefaultConfig: getBool(f.GenerateDefaultConfig),
+		Timeout:               GetDuration(f.Timeout),
+		CacheDir:              GetString(f.CacheDir),
+		GenerateDefaultConfig: GetBool(f.GenerateDefaultConfig),
 	}
 }

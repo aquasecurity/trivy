@@ -104,7 +104,7 @@ func (f *ImageFlagGroup) Flags() []*Flag {
 
 func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 	var platform ftypes.Platform
-	if p := getString(f.Platform); p != "" {
+	if p := GetString(f.Platform); p != "" {
 		pl, err := v1.ParsePlatform(p)
 		if err != nil {
 			return ImageOptions{}, xerrors.Errorf("unable to parse platform: %w", err)
@@ -116,11 +116,11 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 	}
 
 	return ImageOptions{
-		Input:               getString(f.Input),
-		ImageConfigScanners: getUnderlyingStringSlice[types.Scanner](f.ImageConfigScanners),
-		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
+		Input:               GetString(f.Input),
+		ImageConfigScanners: GetUnderlyingStringSlice[types.Scanner](f.ImageConfigScanners),
+		ScanRemovedPkgs:     GetBool(f.ScanRemovedPkgs),
 		Platform:            platform,
-		DockerHost:          getString(f.DockerHost),
-		ImageSources:        getUnderlyingStringSlice[ftypes.ImageSource](f.ImageSources),
+		DockerHost:          GetString(f.DockerHost),
+		ImageSources:        GetUnderlyingStringSlice[ftypes.ImageSource](f.ImageSources),
 	}, nil
 }

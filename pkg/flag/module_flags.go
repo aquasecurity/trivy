@@ -58,7 +58,7 @@ func (f *ModuleFlagGroup) Flags() []*Flag {
 
 func (f *ModuleFlagGroup) ToOptions() ModuleOptions {
 	return ModuleOptions{
-		ModuleDir:      getString(f.Dir),
-		EnabledModules: getStringSlice(f.EnabledModules),
+		ModuleDir:      GetString(f.Dir),
+		EnabledModules: GetStringSlice(f.EnabledModules),
 	}
 }

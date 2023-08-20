@@ -73,7 +73,7 @@ func Test_getStringSlice(t *testing.T) {
 				t.Setenv(tt.env.key, tt.env.value)
 			}
 
-			sl := getStringSlice(tt.flag)
+			sl := GetStringSlice(tt.flag)
 			assert.Equal(t, tt.want, sl)
 
 			viper.Reset()

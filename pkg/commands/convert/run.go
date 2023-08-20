@@ -27,9 +27,9 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.Errorf("json decode error: %w", err)
 	}
 
-	// "convert" supports JSON results produced by Trivy scanning other than AWS and Kubernetes
+	// "convert" supports JSON results produced by Trivy scanning other than AWS
 	if r.ArtifactName == "" && r.ArtifactType == "" {
-		return xerrors.New("AWS and Kubernetes scanning reports are not yet supported")
+		return xerrors.New("AWS scanning reports are not yet supported")
 	}
 
 	if err = result.Filter(ctx, r, opts.FilterOpts()); err != nil {

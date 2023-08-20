@@ -21,40 +21,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/flag"
-	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version"
-	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 const (
-	usageTemplate = `Usage:{{if .Runnable}}
-  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
-  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
-
-Aliases:
-  {{.NameAndAliases}}{{end}}{{if .HasExample}}
-
-Examples:
-{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
-
-Available Commands:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
-
-%s
-
-Global Flags:
-{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
-
-Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
-  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
-
-Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
-`
-
 	groupScanning   = "scanning"
 	groupManagement = "management"
 	groupUtility    = "utility"
@@ -92,7 +66,6 @@ func NewApp() *cobra.Command {
 		NewConvertCommand(globalFlags),
 		NewPluginCommand(),
 		NewModuleCommand(globalFlags),
-		NewKubernetesCommand(globalFlags),
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
 		NewAWSCommand(globalFlags),
@@ -136,7 +109,7 @@ func loadPluginCommands() []*cobra.Command {
 	return commands
 }
 
-func initConfig(configFile string) error {
+func InitConfig(configFile string) error {
 	// Read from config
 	viper.SetConfigFile(configFile)
 	viper.SetConfigType("yaml")
@@ -186,7 +159,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 			// Configure environment variables and config file
 			// It cannot be called in init() because it must be called after viper.BindPFlags.
-			if err := initConfig(configPath); err != nil {
+			if err := InitConfig(configPath); err != nil {
 				return err
 			}
 
@@ -300,7 +273,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	imageFlags.AddFlags(cmd)
 	cmd.SetFlagErrorFunc(flagErrorFunc)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, imageFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(imageFlags.Usages(cmd))
 
 	return cmd
 }
@@ -359,7 +332,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	fsFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, fsFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(fsFlags.Usages(cmd))
 
 	return cmd
 }
@@ -417,7 +390,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	rootfsFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, rootfsFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(rootfsFlags.Usages(cmd))
 
 	return cmd
 }
@@ -470,7 +443,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	repoFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, repoFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(repoFlags.Usages(cmd))
 
 	return cmd
 }
@@ -511,7 +484,7 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	convertFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, convertFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(convertFlags.Usages(cmd))
 
 	return cmd
 }
@@ -567,7 +540,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	clientFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, clientFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(clientFlags.Usages(cmd))
 
 	return cmd
 }
@@ -608,7 +581,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	serverFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, serverFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(serverFlags.Usages(cmd))
 
 	return cmd
 }
@@ -636,12 +609,8 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ModuleFlagGroup:   flag.NewModuleFlagGroup(),
 		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:     flag.NewRegoFlagGroup(),
-		K8sFlagGroup: &flag.K8sFlagGroup{
-			// disable unneeded flags
-			K8sVersion: &flag.K8sVersionFlag,
-		},
-		ReportFlagGroup: reportFlagGroup,
-		ScanFlagGroup:   scanFlags,
+		ReportFlagGroup:   reportFlagGroup,
+		ScanFlagGroup:     scanFlags,
 	}
 
 	cmd := &cobra.Command{
@@ -677,7 +646,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	configFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, configFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(configFlags.Usages(cmd))
 
 	return cmd
 }
@@ -854,99 +823,6 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
-func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
-	scanFlags := flag.NewScanFlagGroup()
-	scanners := flag.ScannersFlag
-	scanners.Default = fmt.Sprintf( // overwrite the default value
-		"%s,%s,%s,%s",
-		types.VulnerabilityScanner,
-		types.MisconfigScanner,
-		types.SecretScanner,
-		types.RBACScanner,
-	)
-	scanFlags.Scanners = &scanners
-	scanFlags.IncludeDevDeps = nil // disable '--include-dev-deps'
-
-	// required only SourceFlag
-	imageFlags := &flag.ImageFlagGroup{ImageSources: &flag.SourceFlag}
-
-	reportFlagGroup := flag.NewReportFlagGroup()
-	compliance := flag.ComplianceFlag
-	compliance.Values = []string{
-		types.ComplianceK8sNsa,
-		types.ComplianceK8sCIS,
-		types.ComplianceK8sPSSBaseline,
-		types.ComplianceK8sPSSRestricted,
-	}
-	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
-
-	formatFlag := flag.FormatFlag
-	formatFlag.Values = xstrings.ToStringSlice([]types.Format{
-		types.FormatTable,
-		types.FormatJSON,
-		types.FormatCycloneDX,
-	})
-	reportFlagGroup.Format = &formatFlag
-
-	k8sFlags := &flag.Flags{
-		CacheFlagGroup:         flag.NewCacheFlagGroup(),
-		DBFlagGroup:            flag.NewDBFlagGroup(),
-		ImageFlagGroup:         imageFlags,
-		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
-		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          scanFlags,
-		SecretFlagGroup:        flag.NewSecretFlagGroup(),
-		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
-		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
-	}
-	cmd := &cobra.Command{
-		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
-		Aliases: []string{"k8s"},
-		GroupID: groupScanning,
-		Short:   "[EXPERIMENTAL] Scan kubernetes cluster",
-		Example: `  # cluster scanning
-  $ trivy k8s --report summary cluster
-
-  # namespace scanning:
-  $ trivy k8s -n kube-system --report summary all
-
-  # resources scanning:
-  $ trivy k8s --report=summary deploy
-  $ trivy k8s --namespace=kube-system --report=summary deploy,configmaps
-
-  # resource scanning:
-  $ trivy k8s deployment/orion
-`,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := k8sFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
-			}
-			return validateArgs(cmd, args)
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := k8sFlags.Bind(cmd); err != nil {
-				return xerrors.Errorf("flag bind error: %w", err)
-			}
-			opts, err := k8sFlags.ToOptions(args, globalFlags)
-			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
-			}
-
-			return k8scommands.Run(cmd.Context(), args, opts)
-		},
-		SilenceErrors: true,
-		SilenceUsage:  true,
-	}
-	cmd.SetFlagErrorFunc(flagErrorFunc)
-	k8sFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, k8sFlags.Usages(cmd)))
-
-	return cmd
-}
-
 func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
@@ -1012,7 +888,7 @@ The following services are supported:
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	awsFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, awsFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(awsFlags.Usages(cmd))
 
 	return cmd
 }
@@ -1076,7 +952,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	vmFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, vmFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(vmFlags.Usages(cmd))
 
 	return cmd
 }
@@ -1135,7 +1011,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	sbomFlags.AddFlags(cmd)
-	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, sbomFlags.Usages(cmd)))
+	cmd.SetUsageTemplate(sbomFlags.Usages(cmd))
 
 	return cmd
 }
@@ -1192,7 +1068,7 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 			return xerrors.New(`Require at least 1 argument or --input option`)
 		}
 		return xerrors.New(`Require at least 1 argument`)
-	} else if cmd.Name() != "kubernetes" && len(args) > 1 {
+	} else if len(args) > 1 {
 		if err := cmd.Help(); err != nil {
 			return err
 		}

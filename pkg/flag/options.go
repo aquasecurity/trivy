@@ -24,6 +24,32 @@ import (
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
+const (
+	UsageTemplate = `Usage:{{if .Runnable}}
+  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
+  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
+
+Aliases:
+  {{.NameAndAliases}}{{end}}{{if .HasExample}}
+
+Examples:
+{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
+
+Available Commands:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+
+%s{{end}}{{if .HasAvailableInheritedFlags}}
+
+Global Flags:
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
+
+Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
+`
+)
+
 type Flag struct {
 	// Name is for CLI flag and environment variable.
 	// If this field is empty, it will be available only in config file.
@@ -61,6 +87,8 @@ type Alias struct {
 	Deprecated bool
 }
 
+type FlagGroups []FlagGroup
+
 type FlagGroup interface {
 	Name() string
 	Flags() []*Flag
@@ -72,7 +100,6 @@ type Flags struct {
 	CloudFlagGroup         *CloudFlagGroup
 	DBFlagGroup            *DBFlagGroup
 	ImageFlagGroup         *ImageFlagGroup
-	K8sFlagGroup           *K8sFlagGroup
 	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
 	ModuleFlagGroup        *ModuleFlagGroup
@@ -95,7 +122,6 @@ type Options struct {
 	CloudOptions
 	DBOptions
 	ImageOptions
-	K8sOptions
 	LicenseOptions
 	MisconfOptions
 	ModuleOptions
@@ -124,13 +150,8 @@ func (o *Options) Align() {
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
+	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
 		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
-		o.Scanners = nil
-	}
-
-	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
-		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning`)
 		o.Scanners = nil
 	}
 }
@@ -170,6 +191,55 @@ func (o *Options) OutputWriter() (io.WriteCloser, error) {
 		return f, nil
 	}
 	return xio.NopCloser(os.Stdout), nil
+}
+
+func (fg FlagGroups) Add(cmd *cobra.Command) {
+	aliases := make(flagAliases)
+	for _, group := range fg {
+		for _, flag := range group.Flags() {
+			addFlag(cmd, flag)
+
+			// Register flag aliases
+			aliases.Add(flag)
+		}
+	}
+
+	cmd.Flags().SetNormalizeFunc(aliases.NormalizeFunc())
+}
+
+func (fg FlagGroups) Usages(cmd *cobra.Command) string {
+	var usages string
+	for _, group := range fg {
+		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
+		lflags := cmd.LocalFlags()
+		for _, flag := range group.Flags() {
+			if flag == nil || flag.Name == "" {
+				continue
+			}
+			flags.AddFlag(lflags.Lookup(flag.Name))
+		}
+		if !flags.HasAvailableFlags() {
+			continue
+		}
+
+		usages += fmt.Sprintf("%s Flags:\n", group.Name())
+		usages += flags.FlagUsages() + "\n"
+	}
+	return strings.TrimSpace(usages)
+}
+
+func (fg FlagGroups) Bind(cmd *cobra.Command) error {
+	for _, group := range fg {
+		if group == nil {
+			continue
+		}
+		for _, flag := range group.Flags() {
+			if err := bind(cmd, flag); err != nil {
+				return xerrors.Errorf("flag groups: %w", err)
+			}
+		}
+	}
+	return nil
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {
@@ -260,21 +330,21 @@ func bindEnv(flag *Flag) error {
 	return nil
 }
 
-func getString(flag *Flag) string {
-	return cast.ToString(getValue(flag))
+func GetString(flag *Flag) string {
+	return cast.ToString(GetValue(flag))
 }
 
-func getUnderlyingString[T xstrings.String](flag *Flag) T {
-	s := getString(flag)
+func GetUnderlyingString[T xstrings.String](flag *Flag) T {
+	s := GetString(flag)
 	return T(s)
 }
 
-func getStringSlice(flag *Flag) []string {
+func GetStringSlice(flag *Flag) []string {
 	// viper always returns a string for ENV
 	// https://github.com/spf13/viper/blob/419fd86e49ef061d0d33f4d1d56d5e2a480df5bb/viper.go#L545-L553
 	// and uses strings.Field to separate values (whitespace only)
 	// we need to separate env values with ','
-	v := cast.ToStringSlice(getValue(flag))
+	v := cast.ToStringSlice(GetValue(flag))
 	switch {
 	case len(v) == 0: // no strings
 		return nil
@@ -284,31 +354,31 @@ func getStringSlice(flag *Flag) []string {
 	return v
 }
 
-func getUnderlyingStringSlice[T xstrings.String](flag *Flag) []T {
-	ss := getStringSlice(flag)
+func GetUnderlyingStringSlice[T xstrings.String](flag *Flag) []T {
+	ss := GetStringSlice(flag)
 	if len(ss) == 0 {
 		return nil
 	}
 	return xstrings.ToTSlice[T](ss)
 }
 
-func getInt(flag *Flag) int {
-	return cast.ToInt(getValue(flag))
+func GetInt(flag *Flag) int {
+	return cast.ToInt(GetValue(flag))
 }
 
-func getFloat(flag *Flag) float64 {
-	return cast.ToFloat64(getValue(flag))
+func GetFloat(flag *Flag) float64 {
+	return cast.ToFloat64(GetValue(flag))
 }
 
-func getBool(flag *Flag) bool {
-	return cast.ToBool(getValue(flag))
+func GetBool(flag *Flag) bool {
+	return cast.ToBool(GetValue(flag))
 }
 
-func getDuration(flag *Flag) time.Duration {
-	return cast.ToDuration(getValue(flag))
+func GetDuration(flag *Flag) time.Duration {
+	return cast.ToDuration(GetValue(flag))
 }
 
-func getValue(flag *Flag) any {
+func GetValue(flag *Flag) any {
 	if flag == nil {
 		return nil
 	}
@@ -329,7 +399,7 @@ func getValue(flag *Flag) any {
 	return viper.Get(flag.ConfigName)
 }
 
-func (f *Flags) groups() []FlagGroup {
+func (f *Flags) Groups() FlagGroups {
 	var groups []FlagGroup
 	// This order affects the usage message, so they are sorted by frequency of use.
 	if f.ScanFlagGroup != nil {
@@ -377,9 +447,6 @@ func (f *Flags) groups() []FlagGroup {
 	if f.AWSFlagGroup != nil {
 		groups = append(groups, f.AWSFlagGroup)
 	}
-	if f.K8sFlagGroup != nil {
-		groups = append(groups, f.K8sFlagGroup)
-	}
 	if f.RemoteFlagGroup != nil {
 		groups = append(groups, f.RemoteFlagGroup)
 	}
@@ -391,7 +458,7 @@ func (f *Flags) groups() []FlagGroup {
 
 func (f *Flags) AddFlags(cmd *cobra.Command) {
 	aliases := make(flagAliases)
-	for _, group := range f.groups() {
+	for _, group := range f.Groups() {
 		for _, flag := range group.Flags() {
 			addFlag(cmd, flag)
 
@@ -404,39 +471,11 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 }
 
 func (f *Flags) Usages(cmd *cobra.Command) string {
-	var usages string
-	for _, group := range f.groups() {
-
-		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
-		lflags := cmd.LocalFlags()
-		for _, flag := range group.Flags() {
-			if flag == nil || flag.Name == "" {
-				continue
-			}
-			flags.AddFlag(lflags.Lookup(flag.Name))
-		}
-		if !flags.HasAvailableFlags() {
-			continue
-		}
-
-		usages += fmt.Sprintf("%s Flags\n", group.Name())
-		usages += flags.FlagUsages() + "\n"
-	}
-	return strings.TrimSpace(usages)
+	return fmt.Sprintf(UsageTemplate, f.Groups().Usages(cmd))
 }
 
 func (f *Flags) Bind(cmd *cobra.Command) error {
-	for _, group := range f.groups() {
-		if group == nil {
-			continue
-		}
-		for _, flag := range group.Flags() {
-			if err := bind(cmd, flag); err != nil {
-				return xerrors.Errorf("flag groups: %w", err)
-			}
-		}
-	}
-	return nil
+	return f.Groups().Bind(cmd)
 }
 
 // nolint: gocyclo
@@ -473,13 +512,6 @@ func (f *Flags) ToOptions(args []string, globalFlags *GlobalFlagGroup) (Options,
 		opts.ImageOptions, err = f.ImageFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("image flag error: %w", err)
-		}
-	}
-
-	if f.K8sFlagGroup != nil {
-		opts.K8sOptions, err = f.K8sFlagGroup.ToOptions()
-		if err != nil {
-			return Options{}, xerrors.Errorf("k8s flag error: %w", err)
 		}
 	}
 

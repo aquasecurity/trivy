@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -70,14 +69,27 @@ func scannerByCheckID(checkID string) types.Scanner {
 	}
 }
 
-// GetComplianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
-func GetComplianceSpec(specNameOrPath string) (ComplianceSpec, error) {
+// GetComplianceSpec accepts compliance flag name/path and return builtin or file system loaded spec
+func GetComplianceSpec(specNameOrPath string, supported map[string]ComplianceSpec) (ComplianceSpec, error) {
+	if specNameOrPath == "" {
+		return ComplianceSpec{}, xerrors.Errorf("spec name is empty")
+	}
+
+	// Built-in specs
+	if !strings.HasPrefix(specNameOrPath, "@") {
+		if cs, ok := supported[specNameOrPath]; ok {
+			return cs, nil
+		} else {
+			return ComplianceSpec{}, xerrors.Errorf("the specified spec (%s) is not found", specNameOrPath)
+		}
+	}
+
 	var b []byte
 	var err error
 	if strings.HasPrefix(specNameOrPath, "@") {
 		b, err = os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
 		if err != nil {
-			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
+			return ComplianceSpec{}, xerrors.Errorf("error retrieving compliance spec from path: %w", err)
 		}
 	} else {
 		// TODO: GetSpecByName() should return []byte

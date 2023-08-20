@@ -99,8 +99,8 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 
 	scannerOpts = addPolicyNamespaces(option.RegoOptions.PolicyNamespaces, scannerOpts)
 
-	if option.Compliance.Spec.ID != "" {
-		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance.Spec.ID))
+	if option.Compliance != "" && !strings.HasPrefix(option.Compliance, "@") {
+		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance))
 	} else {
 		scannerOpts = append(scannerOpts, options.ScannerWithFrameworks(
 			framework.Default,

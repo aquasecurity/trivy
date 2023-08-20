@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
@@ -31,7 +32,7 @@ func Write(report types.Report, option flag.Options) error {
 	defer output.Close()
 
 	// Compliance report
-	if option.Compliance.Spec.ID != "" {
+	if option.Compliance != "" {
 		return complianceWrite(report, option, output)
 	}
 
@@ -92,7 +93,12 @@ func Write(report types.Report, option flag.Options) error {
 }
 
 func complianceWrite(report types.Report, opt flag.Options, output io.Writer) error {
-	complianceReport, err := cr.BuildComplianceReport([]types.Results{report.Results}, opt.Compliance)
+	cs, err := spec.GetComplianceSpec(opt.Compliance, nil)
+	if err != nil {
+		return xerrors.Errorf("compliance spec error: %w", err)
+	}
+
+	complianceReport, err := cr.BuildComplianceReport([]types.Results{report.Results}, cs)
 	if err != nil {
 		return xerrors.Errorf("compliance report build error: %w", err)
 	}

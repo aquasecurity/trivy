@@ -8,9 +8,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -136,35 +134,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				Format:      "table",
 				Severities:  []dbTypes.Severity{dbTypes.SeverityLow},
 				ListAllPkgs: true,
-			},
-		},
-		{
-			name: "happy path with compliance",
-			fields: fields{
-				compliane:  "@testdata/example-spec.yaml",
-				severities: dbTypes.SeverityLow.String(),
-			},
-			want: flag.ReportOptions{
-				Compliance: spec.ComplianceSpec{
-					Spec: defsecTypes.Spec{
-						ID:          "0001",
-						Title:       "my-custom-spec",
-						Description: "My fancy spec",
-						Version:     "1.2",
-						Controls: []defsecTypes.Control{
-							{
-								ID:          "1.1",
-								Name:        "Unencrypted S3 bucket",
-								Description: "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.",
-								Checks: []defsecTypes.SpecCheck{
-									{ID: "AVD-AWS-0088"},
-								},
-								Severity: "HIGH",
-							},
-						},
-					},
-				},
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
 		},
 	}

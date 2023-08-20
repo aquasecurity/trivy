@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -520,9 +521,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		target = opts.Input
 	}
 
-	if opts.Compliance.Spec.ID != "" {
+	if cs, err := spec.GetComplianceSpec(opts.Compliance, nil); err != nil {
 		// set scanners types by spec
-		scanners, err := opts.Compliance.Scanners()
+		scanners, err := cs.Scanners()
 		if err != nil {
 			return ScannerConfig{}, types.ScanOptions{}, xerrors.Errorf("scanner error: %w", err)
 		}
@@ -530,7 +531,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		opts.Scanners = scanners
 		opts.ImageConfigScanners = nil
 		// TODO: define image-config-scanners in the spec
-		if opts.Compliance.Spec.ID == "docker-cis" {
+		if cs.Spec.ID == "docker-cis" {
 			opts.Scanners = types.Scanners{types.VulnerabilityScanner}
 			opts.ImageConfigScanners = types.Scanners{
 				types.MisconfigScanner,

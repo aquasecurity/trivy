@@ -90,15 +90,21 @@ func (f *RemoteFlagGroup) Name() string {
 }
 
 func (f *RemoteFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Token, f.TokenHeader, f.ServerAddr, f.CustomHeaders, f.Listen}
+	return []*Flag{
+		f.Token,
+		f.TokenHeader,
+		f.ServerAddr,
+		f.CustomHeaders,
+		f.Listen,
+	}
 }
 
 func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
-	serverAddr := getString(f.ServerAddr)
-	customHeaders := splitCustomHeaders(getStringSlice(f.CustomHeaders))
-	listen := getString(f.Listen)
-	token := getString(f.Token)
-	tokenHeader := getString(f.TokenHeader)
+	serverAddr := GetString(f.ServerAddr)
+	customHeaders := splitCustomHeaders(GetStringSlice(f.CustomHeaders))
+	listen := GetString(f.Listen)
+	token := GetString(f.Token)
+	tokenHeader := GetString(f.TokenHeader)
 
 	if serverAddr == "" && listen == "" {
 		switch {

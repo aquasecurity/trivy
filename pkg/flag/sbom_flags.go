@@ -60,8 +60,8 @@ func (f *SBOMFlagGroup) Flags() []*Flag {
 }
 
 func (f *SBOMFlagGroup) ToOptions() (SBOMOptions, error) {
-	artifactType := getString(f.ArtifactType)
-	sbomFormat := getString(f.SBOMFormat)
+	artifactType := GetString(f.ArtifactType)
+	sbomFormat := GetString(f.SBOMFormat)
 
 	if artifactType != "" || sbomFormat != "" {
 		log.Logger.Error("'trivy sbom' is now for scanning SBOM. " +
@@ -70,6 +70,6 @@ func (f *SBOMFlagGroup) ToOptions() (SBOMOptions, error) {
 	}
 
 	return SBOMOptions{
-		VEXPath: getString(f.VEXPath),
+		VEXPath: GetString(f.VEXPath),
 	}, nil
 }

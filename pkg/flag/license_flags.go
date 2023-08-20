@@ -104,23 +104,32 @@ func (f *LicenseFlagGroup) Name() string {
 }
 
 func (f *LicenseFlagGroup) Flags() []*Flag {
-	return []*Flag{f.LicenseFull, f.IgnoredLicenses, f.LicenseForbidden, f.LicenseRestricted, f.LicenseReciprocal,
-		f.LicenseNotice, f.LicensePermissive, f.LicenseUnencumbered, f.LicenseConfidenceLevel}
+	return []*Flag{
+		f.LicenseFull,
+		f.IgnoredLicenses,
+		f.LicenseForbidden,
+		f.LicenseRestricted,
+		f.LicenseReciprocal,
+		f.LicenseNotice,
+		f.LicensePermissive,
+		f.LicenseUnencumbered,
+		f.LicenseConfidenceLevel,
+	}
 }
 
 func (f *LicenseFlagGroup) ToOptions() LicenseOptions {
 	licenseCategories := map[types.LicenseCategory][]string{}
-	licenseCategories[types.CategoryForbidden] = getStringSlice(f.LicenseForbidden)
-	licenseCategories[types.CategoryRestricted] = getStringSlice(f.LicenseRestricted)
-	licenseCategories[types.CategoryReciprocal] = getStringSlice(f.LicenseReciprocal)
-	licenseCategories[types.CategoryNotice] = getStringSlice(f.LicenseNotice)
-	licenseCategories[types.CategoryPermissive] = getStringSlice(f.LicensePermissive)
-	licenseCategories[types.CategoryUnencumbered] = getStringSlice(f.LicenseUnencumbered)
+	licenseCategories[types.CategoryForbidden] = GetStringSlice(f.LicenseForbidden)
+	licenseCategories[types.CategoryRestricted] = GetStringSlice(f.LicenseRestricted)
+	licenseCategories[types.CategoryReciprocal] = GetStringSlice(f.LicenseReciprocal)
+	licenseCategories[types.CategoryNotice] = GetStringSlice(f.LicenseNotice)
+	licenseCategories[types.CategoryPermissive] = GetStringSlice(f.LicensePermissive)
+	licenseCategories[types.CategoryUnencumbered] = GetStringSlice(f.LicenseUnencumbered)
 
 	return LicenseOptions{
-		LicenseFull:            getBool(f.LicenseFull),
-		IgnoredLicenses:        getStringSlice(f.IgnoredLicenses),
-		LicenseConfidenceLevel: getFloat(f.LicenseConfidenceLevel),
+		LicenseFull:            GetBool(f.LicenseFull),
+		IgnoredLicenses:        GetStringSlice(f.IgnoredLicenses),
+		LicenseConfidenceLevel: GetFloat(f.LicenseConfidenceLevel),
 		LicenseCategories:      licenseCategories,
 	}
 }

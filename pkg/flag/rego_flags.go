@@ -91,10 +91,10 @@ func (f *RegoFlagGroup) Flags() []*Flag {
 
 func (f *RegoFlagGroup) ToOptions() (RegoOptions, error) {
 	return RegoOptions{
-		SkipPolicyUpdate: getBool(f.SkipPolicyUpdate),
-		Trace:            getBool(f.Trace),
-		PolicyPaths:      getStringSlice(f.PolicyPaths),
-		DataPaths:        getStringSlice(f.DataPaths),
-		PolicyNamespaces: getStringSlice(f.PolicyNamespaces),
+		SkipPolicyUpdate: GetBool(f.SkipPolicyUpdate),
+		Trace:            GetBool(f.Trace),
+		PolicyPaths:      GetStringSlice(f.PolicyPaths),
+		DataPaths:        GetStringSlice(f.DataPaths),
+		PolicyNamespaces: GetStringSlice(f.PolicyNamespaces),
 	}, nil
 }

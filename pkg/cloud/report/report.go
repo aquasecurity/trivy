@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/tml"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -65,7 +66,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	}
 	defer output.Close()
 
-	if opt.Compliance.Spec.ID != "" {
+	if opt.Compliance != "" {
 		return writeCompliance(rep, opt, output)
 	}
 
@@ -140,12 +141,17 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 }
 
 func writeCompliance(rep *Report, opt flag.Options, output io.Writer) error {
+	cs, err := spec.GetComplianceSpec(opt.Compliance, nil)
+	if err != nil {
+		return xerrors.Errorf("compliance spec loading error: %w", err)
+	}
+
 	var crr []types.Results
 	for _, r := range rep.Results {
 		crr = append(crr, r.Results)
 	}
 
-	complianceReport, err := cr.BuildComplianceReport(crr, opt.Compliance)
+	complianceReport, err := cr.BuildComplianceReport(crr, cs)
 	if err != nil {
 		return xerrors.Errorf("compliance report build error: %w", err)
 	}

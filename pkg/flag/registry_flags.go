@@ -62,8 +62,8 @@ func (f *RegistryFlagGroup) Flags() []*Flag {
 
 func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 	var credentials []types.Credential
-	users := getStringSlice(f.Username)
-	passwords := getStringSlice(f.Password)
+	users := GetStringSlice(f.Username)
+	passwords := GetStringSlice(f.Password)
 	if len(users) != len(passwords) {
 		return RegistryOptions{}, xerrors.New("the length of usernames and passwords must match")
 	}
@@ -76,6 +76,6 @@ func (f *RegistryFlagGroup) ToOptions() (RegistryOptions, error) {
 
 	return RegistryOptions{
 		Credentials:   credentials,
-		RegistryToken: getString(f.RegistryToken),
+		RegistryToken: GetString(f.RegistryToken),
 	}, nil
 }

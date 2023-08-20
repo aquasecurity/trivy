@@ -33,6 +33,6 @@ func (f *SecretFlagGroup) Flags() []*Flag {
 
 func (f *SecretFlagGroup) ToOptions() SecretOptions {
 	return SecretOptions{
-		SecretConfigPath: getString(f.SecretConfig),
+		SecretConfigPath: GetString(f.SecretConfig),
 	}
 }

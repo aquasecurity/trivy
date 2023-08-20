@@ -15,11 +15,16 @@ import (
 var (
 	_ analyzer.PostAnalyzer = (*Analyzer)(nil)
 
-	requiredExts = []string{".json", ".yaml", ".yml", ".tfvars"}
+	requiredExts = []string{
+		".json",
+		".yaml",
+		".yml",
+		".tfvars",
+	}
 )
 
 // Analyzer represents an analyzer for config files,
-// which is embedded into each config analyzer such as Kubernetes.
+// which is embedded into each config analyzer such as Terraform.
 type Analyzer struct {
 	typ     analyzer.Type
 	version int
