@@ -47,6 +47,7 @@ trivy filesystem [flags] PATH
       --include-dev-deps                  include development dependencies in the report (supported: npm, yarn)
       --include-non-failures              include successes and exceptions, available with '--scanners config'
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
+      --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability

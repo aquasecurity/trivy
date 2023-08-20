@@ -48,7 +48,6 @@ trivy [global flags] command [flags] target
 * [trivy convert](trivy_convert.md)	 - Convert Trivy JSON report into a different format
 * [trivy filesystem](trivy_filesystem.md)	 - Scan local filesystem
 * [trivy image](trivy_image.md)	 - Scan a container image
-* [trivy kubernetes](trivy_kubernetes.md)	 - [EXPERIMENTAL] Scan kubernetes cluster
 * [trivy module](trivy_module.md)	 - Manage modules
 * [trivy plugin](trivy_plugin.md)	 - Manage plugins
 * [trivy repository](trivy_repository.md)	 - Scan a remote repository

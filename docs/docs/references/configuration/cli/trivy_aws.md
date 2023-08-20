@@ -82,6 +82,7 @@ trivy aws [flags]
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-non-failures              include successes and exceptions, available with '--scanners config'
+      --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
       --max-cache-age duration            The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this. (default 24h0m0s)
   -o, --output string                     output file name
