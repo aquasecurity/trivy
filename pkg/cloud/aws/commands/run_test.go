@@ -7,9 +7,6 @@ import (
 	"testing"
 	"time"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/stretchr/testify/assert"
@@ -1068,26 +1065,7 @@ deny {
 					MaxCacheAge: time.Hour * 24 * 365 * 100,
 				},
 				ReportOptions: flag.ReportOptions{
-					Compliance: spec.ComplianceSpec{
-						Spec: defsecTypes.Spec{
-							// TODO: refactor defsec so that the parsed spec can be passed
-							ID:          "@testdata/example-spec.yaml",
-							Title:       "my-custom-spec",
-							Description: "My fancy spec",
-							Version:     "1.2",
-							Controls: []defsecTypes.Control{
-								{
-									ID:          "1.1",
-									Name:        "Unencrypted S3 bucket",
-									Description: "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.",
-									Checks: []defsecTypes.SpecCheck{
-										{ID: "AVD-AWS-0088"},
-									},
-									Severity: "HIGH",
-								},
-							},
-						},
-					},
+					Compliance:   "@testdata/example-spec.yaml",
 					Format:       "table",
 					ReportFormat: "summary",
 				},
@@ -1135,8 +1113,11 @@ Summary Report for compliance: my-custom-spec
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
 			cacheContent: "testdata/s3andcloudtrailcache.json",
-			allServices:  []string{"s3", "cloudtrail"},
-			want:         expectedS3AndCloudTrailResult,
+			allServices: []string{
+				"s3",
+				"cloudtrail",
+			},
+			want: expectedS3AndCloudTrailResult,
 		},
 		{
 			name: "skip certain services and include specific services",
@@ -1154,7 +1135,10 @@ Summary Report for compliance: my-custom-spec
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
 			cacheContent: "testdata/s3andcloudtrailcache.json",
-			allServices:  []string{"s3", "cloudtrail"},
+			allServices: []string{
+				"s3",
+				"cloudtrail",
+			},
 			// we skip cloudtrail but still expect results from it as it is cached
 			want: expectedS3AndCloudTrailResult,
 		},
@@ -1163,16 +1147,23 @@ Summary Report for compliance: my-custom-spec
 			options: flag.Options{
 				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
-					Region:       "us-east-1",
-					SkipServices: []string{"cloudtrail", "iam"},
-					Account:      "12345678",
+					Region: "us-east-1",
+					SkipServices: []string{
+						"cloudtrail",
+						"iam",
+					},
+					Account: "12345678",
 				},
 				CloudOptions: flag.CloudOptions{
 					MaxCacheAge: time.Hour * 24 * 365 * 100,
 				},
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
-			allServices:  []string{"s3", "cloudtrail", "iam"},
+			allServices: []string{
+				"s3",
+				"cloudtrail",
+				"iam",
+			},
 			cacheContent: "testdata/s3onlycache.json",
 			want:         expectedS3ScanResult,
 		},
