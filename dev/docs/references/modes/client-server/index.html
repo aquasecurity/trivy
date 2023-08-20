@@ -3142,6 +3142,33 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    Endpoints
+  </a>
+  
+    <nav class="md-nav" aria-label="Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#health" class="md-nav__link">
+    Health
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    Version
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#architecture" class="md-nav__link">
     Architecture
   </a>
@@ -3538,6 +3565,33 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    Endpoints
+  </a>
+  
+    <nav class="md-nav" aria-label="Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#health" class="md-nav__link">
+    Health
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    Version
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#architecture" class="md-nav__link">
     Architecture
   </a>
@@ -3831,6 +3885,39 @@ Total: 8 (UNKNOWN: 0, LOW: 0, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>$ trivy image --server http://localhost:8080 --token dummy alpine:3.10
 </code></pre></div>
+<h2 id="endpoints">Endpoints</h2>
+<h3 id="health">Health</h3>
+<p>Checks whether the Trivy server is running. Authentication is not required.</p>
+<p>Example request:
+<div class="highlight"><pre><span></span><code>curl -s <span class="m">0</span>.0.0.0:8080/healthz
+ok
+</code></pre></div></p>
+<p>Returns the <code>200 OK</code> status if the request was successful.</p>
+<h3 id="version">Version</h3>
+<p>Returns the version of the Trivy and all components (db, policy). Authentication is not required.</p>
+<p>Example request:
+<div class="highlight"><pre><span></span><code>curl -s <span class="m">0</span>.0.0.0:8080/version <span class="p">|</span> jq
+<span class="o">{</span>
+  <span class="s2">&quot;Version&quot;</span>: <span class="s2">&quot;dev&quot;</span>,
+  <span class="s2">&quot;VulnerabilityDB&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;Version&quot;</span>: <span class="m">2</span>,
+    <span class="s2">&quot;NextUpdate&quot;</span>: <span class="s2">&quot;2023-07-25T14:15:29.876639806Z&quot;</span>,
+    <span class="s2">&quot;UpdatedAt&quot;</span>: <span class="s2">&quot;2023-07-25T08:15:29.876640206Z&quot;</span>,
+    <span class="s2">&quot;DownloadedAt&quot;</span>: <span class="s2">&quot;2023-07-25T09:36:25.599004Z&quot;</span>
+  <span class="o">}</span>,
+  <span class="s2">&quot;JavaDB&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;Version&quot;</span>: <span class="m">1</span>,
+    <span class="s2">&quot;NextUpdate&quot;</span>: <span class="s2">&quot;2023-07-28T01:03:52.169192565Z&quot;</span>,
+    <span class="s2">&quot;UpdatedAt&quot;</span>: <span class="s2">&quot;2023-07-25T01:03:52.169192765Z&quot;</span>,
+    <span class="s2">&quot;DownloadedAt&quot;</span>: <span class="s2">&quot;2023-07-25T09:37:48.906152Z&quot;</span>
+  <span class="o">}</span>,
+  <span class="s2">&quot;PolicyBundle&quot;</span>: <span class="o">{</span>
+    <span class="s2">&quot;Digest&quot;</span>: <span class="s2">&quot;sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43&quot;</span>,
+    <span class="s2">&quot;DownloadedAt&quot;</span>: <span class="s2">&quot;2023-07-23T11:40:33.122462Z&quot;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></p>
+<p>Returns the <code>200 OK</code> status if the request was successful.</p>
 <h2 id="architecture">Architecture</h2>
 <p><img alt="architecture" src="../../../../imgs/client-server.png" /></p>
 
