@@ -25,7 +25,6 @@ require (
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230726112157-167ba4f2faeb
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
-	github.com/aquasecurity/trivy-kubernetes v0.5.7-0.20230814115812-7afa52705226
 	github.com/aws/aws-sdk-go v1.44.273
 	github.com/aws/aws-sdk-go-v2 v1.20.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.25
@@ -67,7 +66,6 @@ require (
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd
 	github.com/masahiro331/go-xfs-filesystem v0.0.0-20230608043311-a335f4599b70
 	github.com/mitchellh/hashstructure/v2 v2.0.2
-	github.com/mitchellh/mapstructure v1.5.0
 	github.com/moby/buildkit v0.11.6
 	github.com/open-policy-agent/opa v0.45.0
 	github.com/opencontainers/go-digest v1.0.0
@@ -103,7 +101,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.27.4
 	k8s.io/utils v0.0.0-20230220204549-a5ecb0141aa5
 	modernc.org/sqlite v1.23.1
 )
@@ -296,6 +293,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/moby/locker v1.0.1 // indirect
 	github.com/moby/patternmatcher v0.5.0 // indirect
@@ -371,6 +369,7 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	helm.sh/helm/v3 v3.12.1 // indirect
+	k8s.io/api v0.27.4 // indirect
 	k8s.io/apiextensions-apiserver v0.27.2 // indirect
 	k8s.io/apimachinery v0.27.4 // indirect
 	k8s.io/apiserver v0.27.2 // indirect
