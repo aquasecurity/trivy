@@ -97,13 +97,13 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 // Marshal converts the Trivy report to the CycloneDX format
 func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 	bom := cdx.NewBOM()
-	bom.SerialNumber = e.newUUID().URN()
+	bom.SerialNumber = report.DfScanMeta.ScanID.URN()
 	metadataComponent, err := e.reportToCdxComponent(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
 	}
 
-	bom.Metadata = e.cdxMetadata()
+	bom.Metadata = e.cdxMetadata(report)
 	bom.Metadata.Component = metadataComponent
 
 	bom.Components, bom.Dependencies, bom.Vulnerabilities, err = e.marshalComponents(report, bom.Metadata.Component.BOMRef)
@@ -137,7 +137,7 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	})
 
 	bom := cdx.NewBOM()
-	bom.Metadata = e.cdxMetadata()
+	bom.Metadata = e.cdxMetadata(report)
 
 	// Fill the detected vulnerabilities
 	bom.Vulnerabilities = &vulns
@@ -166,9 +166,9 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	return bom, nil
 }
 
-func (e *Marshaler) cdxMetadata() *cdx.Metadata {
+func (e *Marshaler) cdxMetadata(report types.Report) *cdx.Metadata {
 	return &cdx.Metadata{
-		Timestamp: e.clock.Now().UTC().Format(timeLayout),
+		Timestamp: report.DfScanMeta.Created.Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
 				Vendor:  ToolVendor,
@@ -197,6 +197,12 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 	metadataDependencies := make([]string, 0) // To export an empty array in JSON
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
+
+	// sort for consistent report
+	sort.Slice(r.Results, func(i, j int) bool {
+		return r.Results[i].Target < r.Results[j].Target
+	})
+
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
 		pkgIDToRef := map[string]string{}
@@ -259,6 +265,11 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			}
 		}
 		sort.Strings(directDepRefs)
+
+		// sort vulnerabilities for consistent report
+		sort.Slice(result.Vulnerabilities, func(i, j int) bool {
+			return result.Vulnerabilities[i].PkgName < result.Vulnerabilities[j].PkgName
+		})
 
 		for _, vuln := range result.Vulnerabilities {
 			// Take a bom-ref
@@ -333,6 +344,24 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 	sort.Slice(dependencyList, func(i, j int) bool {
 		return dependencyList[i].Ref < dependencyList[j].Ref
 	})
+
+	// sort for consistent report
+	sort.Slice(components, func(i, j int) bool {
+		return components[i].BOMRef < components[j].BOMRef
+	})
+
+	for _, v := range vulns {
+		if v.Affects == nil {
+			continue
+		}
+
+		sort.Slice(*v.Affects, func(i, j int) bool {
+			v1 := (*v.Affects)[i]
+			v2 := (*v.Affects)[j]
+			return v1.Ref < v2.Ref
+		})
+	}
+
 	return &components, &dependencyList, &vulns, nil
 }
 
@@ -352,10 +381,13 @@ func toCdxVulnerability(bomRef string, vuln types.DetectedVulnerability) cdx.Vul
 	if vuln.FixedVersion != "" {
 		v.Recommendation = fmt.Sprintf("Upgrade %s to version %s", vuln.PkgName, vuln.FixedVersion)
 	}
-	if vuln.PublishedDate != nil {
+
+	// check for zero value
+	// zero value stored in db is the unix time 0 (i.e 1970-01-01)
+	if vuln.PublishedDate != nil && vuln.PublishedDate.Unix() != 0 {
 		v.Published = vuln.PublishedDate.Format(timeLayout)
 	}
-	if vuln.LastModifiedDate != nil {
+	if vuln.LastModifiedDate != nil && vuln.LastModifiedDate.Unix() != 0 {
 		v.Updated = vuln.LastModifiedDate.Format(timeLayout)
 	}
 
@@ -387,7 +419,9 @@ func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error)
 		properties = appendProperties(properties, PropertyImageID, r.Metadata.ImageID)
 
 		if p.Type == "" {
-			component.BOMRef = e.newUUID().String()
+			// component.BOMRef = e.newUUID().String()
+			// using available values instead of UUID to have consistent report, though the condition is rare
+			component.BOMRef = bomRef(string(r.ArtifactType), r.ArtifactName, r.Metadata.ImageID)
 		} else {
 			component.BOMRef = p.ToString()
 			component.PackageURL = p.ToString()
@@ -397,15 +431,31 @@ func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error)
 		component.BOMRef = e.newUUID().String()
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
-		component.BOMRef = e.newUUID().String()
+		// component.BOMRef = e.newUUID().String()
+		// custom logic for consistent report
+		component.BOMRef = bomRef(string(r.ArtifactType), r.ArtifactName)
 	}
 
+	// sort for consistent report
+	sort.Slice(r.Metadata.RepoDigests, func(i, j int) bool {
+		return r.Metadata.RepoDigests[i] < r.Metadata.RepoDigests[j]
+	})
 	for _, d := range r.Metadata.RepoDigests {
 		properties = appendProperties(properties, PropertyRepoDigest, d)
 	}
+
+	// sort for consistent report
+	sort.Slice(r.Metadata.DiffIDs, func(i, j int) bool {
+		return r.Metadata.DiffIDs[i] < r.Metadata.DiffIDs[j]
+	})
 	for _, d := range r.Metadata.DiffIDs {
 		properties = appendProperties(properties, PropertyDiffID, d)
 	}
+
+	// sort for consistent report
+	sort.Slice(r.Metadata.RepoTags, func(i, j int) bool {
+		return r.Metadata.RepoTags[i] < r.Metadata.RepoTags[j]
+	})
 	for _, t := range r.Metadata.RepoTags {
 		properties = appendProperties(properties, PropertyRepoTag, t)
 	}
@@ -428,16 +478,22 @@ func (e *Marshaler) resultToCdxComponent(r types.Result, osFound *ftypes.OS) cdx
 	case types.ClassOSPkg:
 		// UUID needs to be generated since Operating System Component cannot generate PURL.
 		// https://cyclonedx.org/use-cases/#known-vulnerabilities
-		component.BOMRef = e.newUUID().String()
+		// component.BOMRef = e.newUUID().String()
+		// custom logic instead of UUID for consistent report
+		component.BOMRef = bomRef(string(r.Class))
+
 		if osFound != nil {
 			component.Name = osFound.Family
 			component.Version = osFound.Name
+			component.BOMRef = bomRef(string(r.Class), osFound.Family, osFound.Name)
 		}
 		component.Type = cdx.ComponentTypeOS
 	case types.ClassLangPkg:
 		// UUID needs to be generated since Application Component cannot generate PURL.
 		// https://cyclonedx.org/use-cases/#known-vulnerabilities
-		component.BOMRef = e.newUUID().String()
+		// component.BOMRef = e.newUUID().String()
+		// custom logic instead of UUID for consistent report
+		component.BOMRef = bomRef(string(r.Class), r.Target)
 		component.Type = cdx.ComponentTypeApplication
 	case types.ClassConfig:
 		// TODO: Config support
@@ -564,7 +620,8 @@ func cdxAdvisories(refs []string) *[]cdx.Advisory {
 func cwes(cweIDs []string) *[]int {
 	// to skip cdx.Vulnerability.CWEs when generating json
 	// we should return 'clear' nil without 'type' interface part
-	if cweIDs == nil {
+	// set nil if empty
+	if len(cweIDs) == 0 {
 		return nil
 	}
 	var ret []int
@@ -702,4 +759,9 @@ func cdxAffects(ref, version string) cdx.Affects {
 			},
 		},
 	}
+}
+
+// custom bomRef logic
+func bomRef(values ...string) string {
+	return strings.Join(values, "/")
 }
