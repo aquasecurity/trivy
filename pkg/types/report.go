@@ -41,11 +41,13 @@ type Metadata struct {
 	OS   *ftypes.OS `json:",omitempty"`
 
 	// Container image
-	ImageID     string        `json:",omitempty"`
-	DiffIDs     []string      `json:",omitempty"`
-	RepoTags    []string      `json:",omitempty"`
-	RepoDigests []string      `json:",omitempty"`
-	ImageConfig v1.ConfigFile `json:",omitempty"`
+	ImageID               string        `json:",omitempty"`
+	DiffIDs               []string      `json:",omitempty"`
+	BaseImageLayerDiffIDs []string      `json:",omitempty"` // base image layer diff ids
+	BaseImageHistoryIndex int           `json:",omitempty"` // starting point of base image layer index  in image history
+	RepoTags              []string      `json:",omitempty"`
+	RepoDigests           []string      `json:",omitempty"`
+	ImageConfig           v1.ConfigFile `json:",omitempty"`
 }
 
 // Results to hold list of Result

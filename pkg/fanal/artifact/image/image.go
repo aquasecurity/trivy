@@ -124,7 +124,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	}
 
 	// Try to detect base layers.
-	baseDiffIDs := a.guessBaseLayers(diffIDs, configFile)
+	baseDiffIDs, baseImageIndex := a.guessBaseLayers(diffIDs, configFile)
 	log.Logger.Debugf("Base Layers: %v", baseDiffIDs)
 
 	// Convert image ID and layer IDs to cache keys
@@ -158,11 +158,13 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		ID:      imageKey,
 		BlobIDs: layerKeys,
 		ImageMetadata: types.ImageMetadata{
-			ID:          imageID,
-			DiffIDs:     diffIDs,
-			RepoTags:    a.image.RepoTags(),
-			RepoDigests: a.image.RepoDigests(),
-			ConfigFile:  *configFile,
+			ID:                    imageID,
+			DiffIDs:               diffIDs,
+			RepoTags:              a.image.RepoTags(),
+			RepoDigests:           a.image.RepoDigests(),
+			ConfigFile:            *configFile,
+			BaseImageHistoryIndex: baseImageIndex,
+			BaseImageLayerDiffIDs: baseDiffIDs,
 		},
 	}, nil
 }
@@ -516,9 +518,9 @@ func (a Artifact) inspectConfig(ctx context.Context, imageID string, osFound typ
 //  2. Skip all the empty layers at the bottom. In the above example, "entrypoint.sh" and "somecmd" will be skipped
 //  3. If it finds CMD, it assumes that it is the end of base layers.
 //  4. It gets all the layers as base layers above the CMD found in #3.
-func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) []string {
+func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) ([]string, int) {
 	if configFile == nil {
-		return nil
+		return nil, -1
 	}
 
 	baseImageIndex := -1
@@ -561,10 +563,10 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) [
 
 		if diffIDIndex >= len(diffIDs) {
 			// something wrong...
-			return nil
+			return nil, -1
 		}
 		baseDiffIDs = append(baseDiffIDs, diffIDs[diffIDIndex])
 		diffIDIndex++
 	}
-	return baseDiffIDs
+	return baseDiffIDs, baseImageIndex
 }
