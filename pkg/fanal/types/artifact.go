@@ -209,11 +209,13 @@ type ArtifactReference struct {
 }
 
 type ImageMetadata struct {
-	ID          string   // image ID
-	DiffIDs     []string // uncompressed layer IDs
-	RepoTags    []string
-	RepoDigests []string
-	ConfigFile  v1.ConfigFile
+	ID                    string   // image ID
+	DiffIDs               []string // uncompressed layer IDs
+	RepoTags              []string
+	RepoDigests           []string
+	BaseImageLayerDiffIDs []string // base image layer diff ids
+	BaseImageHistoryIndex int      // starting point of base image layer index  in image history
+	ConfigFile            v1.ConfigFile
 }
 
 // ArtifactInfo is stored in cache
