@@ -25,6 +25,7 @@ type Option struct {
 	RekorURL          string
 	Slow              bool // Lower CPU and memory
 	AWSRegion         string
+	AWSEndpoint       string
 	FileChecksum      bool // For SPDX
 
 	// Git repositories

@@ -51,6 +51,7 @@ message Package {
   repeated string depends_on  = 14;
   string          digest      = 16;
   bool            dev         = 17;
+  bool            indirect    = 18;
 }
 
 message Misconfiguration {
@@ -201,4 +202,25 @@ message SecretFinding {
 message Secret {
   string                 filepath = 1;
   repeated SecretFinding findings = 2;
+}
+
+message DetectedLicense {
+  Severity        severity   = 1;
+  LicenseCategory category   = 2;
+  string          pkg_name   = 3;
+  string          file_path  = 4;
+  string          name       = 5;
+  float           confidence = 6;
+  string          link       = 7;
+
+  enum LicenseCategory {
+    UNSPECIFIED  = 0;
+    FORBIDDEN    = 1;
+    RESTRICTED   = 2;
+    RECIPROCAL   = 3;
+    NOTICE       = 4;
+    PERMISSIVE   = 5;
+    UNENCUMBERED = 6;
+    UNKNOWN      = 7;
+  }
 }

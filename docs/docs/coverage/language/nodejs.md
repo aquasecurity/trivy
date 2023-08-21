@@ -1,18 +1,27 @@
 # Node.js
 
 Trivy supports three types of Node.js package managers: `npm`, `Yarn` and `pnpm`.
+
+The following scanners are supported.
+
+| Artifact | SBOM  | Vulnerability | License |
+| -------- | :---: | :-----------: | :-----: |
+| npm      |   ✓   |       ✓       |    ✓    |
+| Yarn     |   ✓   |       ✓       |    -    |
+| pnpm     |   ✓   |       ✓       |    -    |
+
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File              | Transitive dependencies | Dev dependencies  | Dependency graph | Position | License |
-|:---------------:|-------------------|:-----------------------:|:-----------------:|:----------------:|:--------:|:-------:|
-|       npm       | package-lock.json |            ✅            | [Excluded](#npm)  |        ✅         |    ✅     |    ✅    |
-|      Yarn       | yarn.lock         |            ✅            | [Excluded](#yarn) |        ✅         |    ✅     |    ✅    |
-|      pnpm       | pnpm-lock.yaml    |            ✅            |     Excluded      |        ✅         |    -     |    -    |
+| Package manager | File              | Transitive dependencies | Dev dependencies  | [Dependency graph][dependency-graph] | Position |
+|:---------------:|-------------------|:-----------------------:|:-----------------:|:------------------------------------:|:--------:|
+|       npm       | package-lock.json |            ✓            | [Excluded](#npm)  |                  ✓                   |    ✓     |
+|      Yarn       | yarn.lock         |            ✓            | [Excluded](#yarn) |                  ✓                   |    ✓     |
+|      pnpm       | pnpm-lock.yaml    |            ✓            |     Excluded      |                  ✓                   |    -     |
 
 In addition, Trivy scans installed packages with `package.json`.
 
 | File         | Dependency graph | Position | License |
-|--------------|:----------------:|:--------:|:-------:|
+| ------------ | :--------------: | :------: | :-----: |
 | package.json |        -         |    -     |    ✅    |
 
 These may be enabled or disabled depending on the target.
@@ -39,7 +48,7 @@ Trivy analyzes `.yarn` (Yarn 2+) or `node_modules` (Yarn Classic) folder next to
 By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
 
 ### pnpm
-Trivy parses `pnpm-lock.yaml`, then finds production dependencies and builds a [tree] of dependencies with vulnerabilities.
+Trivy parses `pnpm-lock.yaml`, then finds production dependencies and builds a [tree][dependency-graph] of dependencies with vulnerabilities.
 
 ## Packages
 Trivy parses the manifest files of installed packages in container image scanning and so on.
@@ -48,5 +57,4 @@ Trivy parses the manifest files of installed packages in container image scannin
 Trivy searches for `package.json` files under `node_modules` and identifies installed packages.
 It only extracts package names, versions and licenses for those packages.
 
-
-[tree]: ../../../configuration/reporting.md#show-origins-of-vulnerable-dependencies 
+[dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
