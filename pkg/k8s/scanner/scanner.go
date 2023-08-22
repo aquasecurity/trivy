@@ -144,7 +144,7 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, o
 
 	for _, image := range artifact.Images {
 
-		s.opts.Target = image
+		opts.Target = image
 
 		imageReport, err := s.runner.ScanImage(ctx, opts)
 
