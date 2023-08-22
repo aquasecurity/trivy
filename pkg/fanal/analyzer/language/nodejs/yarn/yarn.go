@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
@@ -305,14 +306,14 @@ func (a yarnAnalyzer) traverseLicenses(fsys fs.FS, lockPath string) (map[string]
 	if err == nil {
 		return licenses, nil
 	}
-	errs = errors.Join(errs, err)
+	errs = multierror.Append(errs, err)
 
 	// Yarn v2+
 	licenses, err = a.traverseYarnModernPkgs(sub)
 	if err == nil {
 		return licenses, nil
 	}
-	errs = errors.Join(errs, err)
+	errs = multierror.Append(errs, err)
 
 	return nil, errs
 }
@@ -331,13 +332,13 @@ func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS) (map[string][]string, e
 	licenses := map[string][]string{}
 
 	if ll, err := a.traverseUnpluggedDir(sub); err != nil {
-		errs = errors.Join(errs, err)
+		errs = multierror.Append(errs, err)
 	} else {
 		licenses = lo.Assign(licenses, ll)
 	}
 
 	if ll, err := a.traverseCacheDir(sub); err != nil {
-		errs = errors.Join(errs, err)
+		errs = multierror.Append(errs, err)
 	} else {
 		licenses = lo.Assign(licenses, ll)
 	}
