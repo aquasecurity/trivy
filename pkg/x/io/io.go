@@ -2,9 +2,11 @@ package io
 
 import (
 	"bytes"
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"golang.org/x/xerrors"
 	"io"
+
+	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
 // NopCloser returns a WriteCloser with a no-op Close method wrapping
