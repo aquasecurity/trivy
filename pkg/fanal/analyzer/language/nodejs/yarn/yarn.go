@@ -33,7 +33,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(types.Yarn, newYarnAnalyzer)
 }
 
-const version = 1
+const version = 2
 
 type yarnAnalyzer struct {
 	packageJsonParser *packagejson.Parser
