@@ -371,7 +371,7 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 			return xerrors.Errorf("zip reader error: %w", err)
 		}
 
-		return fn(afero.NewIOFS(zipfs.New(zr)), "node_modules")
+		return fn(zr, "node_modules")
 	})
 
 	if err != nil {
