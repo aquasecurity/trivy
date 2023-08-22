@@ -102,7 +102,10 @@ func (a yarnAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 	if fileName == types.YarnLock &&
 		// skipping yarn.lock in cache folders
-		containsAny(filePath, "node_modules", ".yarn/unplugged") {
+		lo.Some(dirs, []string{
+			"node_modules",
+			".yarn",
+		}) {
 		return false
 	}
 
@@ -127,12 +130,6 @@ func splitPath(filePath string) (dirs []string, fileName string) {
 	// The path is slashed in analyzers.
 	dirs = strings.Split(path.Dir(filePath), "/")
 	return dirs, fileName
-}
-
-func containsAny(s string, substrings ...string) bool {
-	return lo.SomeBy(substrings, func(item string) bool {
-		return strings.Contains(s, item)
-	})
 }
 
 func (a yarnAnalyzer) Type() analyzer.Type {
