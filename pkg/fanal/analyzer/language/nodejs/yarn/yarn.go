@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"context"
 	"errors"
+	"io"
 	"io/fs"
 	"os"
 	"path"
@@ -11,13 +12,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/spf13/afero"
-	"github.com/spf13/afero/zipfs"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/yarn"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -28,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -59,7 +58,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return filepath.Base(path) == types.YarnLock
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		// Parse yarn.lock
 		app, err := a.parseYarnLock(filePath, r)
 		if err != nil {
@@ -301,60 +300,65 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 type traverseFunc func(fsys fs.FS, root string) error
 
 func (a yarnAnalyzer) traversePkgs(fsys fs.FS, lockPath string, fn traverseFunc) error {
-	dir := path.Dir(lockPath)
-
-	nodeModulesPath := path.Join(dir, "node_modules")
-
-	if _, err := fs.Stat(fsys, nodeModulesPath); errors.Is(err, fs.ErrNotExist) {
-		// try to find for yarn v2+
-		return a.traverseYarnModernPkgs(fsys, dir, fn)
-	} else if err != nil {
-		return xerrors.Errorf("unable to parse %q: %w", nodeModulesPath, err)
+	sub, err := fs.Sub(fsys, path.Dir(lockPath))
+	if err != nil {
+		return xerrors.Errorf("fs error: %w", err)
 	}
 
-	return a.traverseYarnClassicPkgs(fsys, nodeModulesPath, fn)
-}
-
-func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, nodeModulesPath string, fn traverseFunc) error {
-	return fn(fsys, nodeModulesPath)
-}
-
-func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS, root string, fn traverseFunc) error {
-	yarnDir := path.Join(root, ".yarn")
-	if _, err := fs.Stat(fsys, yarnDir); errors.Is(err, fs.ErrNotExist) {
-		return nil
-	} else if err != nil {
-		return xerrors.Errorf("unable to parse %q: %w", yarnDir, err)
-	}
-
-	if err := a.traverseUnpluggedFolder(fsys, yarnDir, fn); err != nil {
+	// Yarn v1
+	if err = a.traverseYarnClassicPkgs(sub, fn); err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err
 	}
-	if err := a.traverseCacheFolder(fsys, yarnDir, fn); err != nil {
+
+	// Yarn v2+
+	if err = a.traverseYarnModernPkgs(fsys, fn); err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err
 	}
 
 	return nil
 }
 
-func (a yarnAnalyzer) traverseUnpluggedFolder(fsys fs.FS, root string, fn traverseFunc) error {
+func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS, fn traverseFunc) error {
+	sub, err := fs.Sub(fsys, "node_modules")
+	if err != nil {
+		return xerrors.Errorf("fs error: %w", err)
+	}
+	return fn(sub, ".")
+}
+
+func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS, fn traverseFunc) error {
+	sub, err := fs.Sub(fsys, ".yarn")
+	if err != nil {
+		return xerrors.Errorf("fs error: %w", err)
+	}
+
+	if err = a.traverseUnpluggedDir(sub, fn); err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
+	if err = a.traverseCacheDir(sub, fn); err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
+
+	return nil
+}
+
+func (a yarnAnalyzer) traverseUnpluggedDir(fsys fs.FS, fn traverseFunc) error {
 	// `unplugged` hold machine-specific build artifacts
-	unpluggedPath := path.Join(root, "unplugged")
-	if _, err := fs.Stat(fsys, unpluggedPath); err != nil {
-		return nil
+	sub, err := fs.Sub(fsys, "unplugged")
+	if err != nil {
+		return xerrors.Errorf("fs error: %w", err)
 	}
 
 	// Traverse .yarn/unplugged dir
-	return fn(fsys, unpluggedPath)
+	return fn(sub, ".")
 }
 
-func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFunc) error {
-	cachePath := path.Join(root, "cache")
-	if _, err := fs.Stat(fsys, cachePath); err != nil {
-		return nil
+func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS, fn traverseFunc) error {
+	sub, err := fs.Sub(fsys, "cache")
+	if err != nil {
+		return xerrors.Errorf("fs error: %w", err)
 	}
 
-	required := func(path string, _ fs.DirEntry) bool {
 	// Traverse .yarn/cache dir
 	err = fsutils.WalkDir(sub, ".", fsutils.RequiredExt(".zip"),
 		func(filePath string, d fs.DirEntry, r io.Reader) error {
