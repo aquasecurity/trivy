@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -111,11 +112,12 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 
 func RequiredExt(exts ...string) WalkDirRequiredFunc {
 	return func(filePath string, _ fs.DirEntry) bool {
-		for _, ext := range exts {
-			if filepath.Ext(filePath) == ext {
-				return true
-			}
-		}
-		return false
+		return slices.Contains(exts, filepath.Ext(filePath))
+	}
+}
+
+func RequiredFile(fileNames ...string) WalkDirRequiredFunc {
+	return func(filePath string, _ fs.DirEntry) bool {
+		return slices.Contains(fileNames, filepath.Base(filePath))
 	}
 }

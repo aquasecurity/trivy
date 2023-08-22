@@ -1,15 +1,13 @@
-package license
+package license_test
 
 import (
-	"io/fs"
-	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
@@ -35,44 +33,19 @@ func Test_ParseLicenses(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			licenses := map[string][]string{}
-			pkgJsonParser := packagejson.NewParser()
+			fsys := mapfs.New()
+			require.NoError(t, fsys.CopyFilesUnder(tt.dir))
 
-			fsys := mapfsFromDir(t, tt.dir)
-
-			err := ParseLicenses(pkgJsonParser, 0.9, licenses)(fsys, ".")
+			l := license.NewLicense(0.9)
+			licenses, err := l.Traverse(fsys, ".")
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				assert.ErrorContainsf(t, err, tt.wantErr, tt.name)
 				return
 			}
 			require.NoError(t, err)
-
 			assert.Equal(t, tt.want, licenses)
 		})
 	}
-}
-
-func mapfsFromDir(t *testing.T, dir string) fs.FS {
-
-	fsys := mapfs.New()
-
-	walkDirFunc := func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if d.IsDir() {
-			return fsys.MkdirAll(path, os.ModePerm)
-		}
-
-		return fsys.WriteFile(path, filepath.Join(dir, path))
-	}
-
-	err := fs.WalkDir(os.DirFS(dir), ".", walkDirFunc)
-	require.NoError(t, err)
-
-	return fsys
 }
 
 func Test_IsLicenseRefToFile(t *testing.T) {
@@ -117,7 +90,7 @@ func Test_IsLicenseRefToFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ok, licenseFileName := isLicenseRefToFile(tt.input)
+			ok, licenseFileName := license.IsLicenseRefToFile(tt.input)
 			assert.Equal(t, ok, tt.wantOk)
 			assert.Equal(t, licenseFileName, tt.wantFileName)
 		})
