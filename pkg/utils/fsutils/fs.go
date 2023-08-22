@@ -10,7 +10,6 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -87,7 +86,7 @@ func DirExists(path string) bool {
 
 type WalkDirRequiredFunc func(path string, d fs.DirEntry) bool
 
-type WalkDirFunc func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error
+type WalkDirFunc func(path string, d fs.DirEntry, r io.Reader) error
 
 func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFunc) error {
 	return fs.WalkDir(fsys, root, func(path string, d fs.DirEntry, err error) error {
@@ -101,16 +100,22 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		if err != nil {
 			return xerrors.Errorf("file open error: %w", err)
 		}
-
-		file, ok := f.(dio.ReadSeekCloserAt)
-		if !ok {
-			return xerrors.Errorf("type assertion error: %w", err)
-		}
 		defer f.Close()
 
-		if err = fn(path, d, file); err != nil {
+		if err = fn(path, d, f); err != nil {
 			log.Logger.Debugw("Walk error", zap.String("file_path", path), zap.Error(err))
 		}
 		return nil
 	})
+}
+
+func RequiredExt(exts ...string) WalkDirRequiredFunc {
+	return func(filePath string, _ fs.DirEntry) bool {
+		for _, ext := range exts {
+			if filepath.Ext(filePath) == ext {
+				return true
+			}
+		}
+		return false
+	}
 }

@@ -2,15 +2,15 @@ package license
 
 import (
 	"errors"
+	"io"
 	"io/fs"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -27,15 +27,17 @@ func ParseLicenses(
 			return xerrors.New("fs.FS required")
 		}
 
-		walkDirFunc := func(pkgJsonPath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+		isPkgJSON := func(filePath string, d fs.DirEntry) bool {
+			return filepath.Base(filePath) == types.NpmPkg
+		}
 
+		walkDirFunc := func(pkgJsonPath string, d fs.DirEntry, r io.Reader) error {
 			pkg, err := packageJsonParser.Parse(r)
 			if err != nil {
 				return xerrors.Errorf("unable to parse %q: %w", pkgJsonPath, err)
 			}
 
 			ok, licenseFileName := isLicenseRefToFile(pkg.License)
-
 			if !ok {
 				licenses[pkg.ID] = []string{pkg.License}
 				return nil
@@ -58,7 +60,7 @@ func ParseLicenses(
 			return nil
 		}
 
-		if err := fsutils.WalkDir(fsys, root, nodejs.IsNodeModulesPkg, walkDirFunc); err != nil {
+		if err := fsutils.WalkDir(fsys, root, isPkgJSON, walkDirFunc); err != nil {
 			return xerrors.Errorf("walk error: %w", err)
 		}
 

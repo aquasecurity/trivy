@@ -1,6 +1,11 @@
 package io
 
-import "io"
+import (
+	"bytes"
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"golang.org/x/xerrors"
+	"io"
+)
 
 // NopCloser returns a WriteCloser with a no-op Close method wrapping
 // the provided Writer w.
@@ -13,3 +18,16 @@ type nopCloser struct {
 }
 
 func (nopCloser) Close() error { return nil }
+
+func NewReadSeekerAt(r io.Reader) (dio.ReadSeekerAt, error) {
+	if rr, ok := r.(dio.ReadSeekerAt); ok {
+		return rr, nil
+	}
+
+	buff := bytes.NewBuffer([]byte{})
+	if _, err := io.Copy(buff, r); err != nil {
+		return nil, xerrors.Errorf("copy error: %w", err)
+	}
+
+	return bytes.NewReader(buff.Bytes()), nil
+}

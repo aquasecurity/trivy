@@ -13,7 +13,6 @@ import (
 
 	"github.com/spf13/afero"
 	"github.com/spf13/afero/zipfs"
-
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
@@ -146,7 +145,7 @@ func (a yarnAnalyzer) Version() int {
 	return version
 }
 
-func (a yarnAnalyzer) parseYarnLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
+func (a yarnAnalyzer) parseYarnLock(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Yarn, path, r, a.lockParser)
 }
 
@@ -275,7 +274,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 		return filepath.Base(path) == types.NpmPkg
 	}
 
-	walkDirFunc := func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	walkDirFunc := func(path string, d fs.DirEntry, r io.Reader) error {
 		pkg, err := a.packageJsonParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", path, err)
@@ -356,23 +355,26 @@ func (a yarnAnalyzer) traverseCacheFolder(fsys fs.FS, root string, fn traverseFu
 	}
 
 	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Ext(path) == ".zip"
-	}
-
 	// Traverse .yarn/cache dir
-	err := fsutils.WalkDir(fsys, cachePath, required, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
-		fi, err := d.Info()
-		if err != nil {
-			return xerrors.Errorf("file stat error: %w", err)
-		}
+	err = fsutils.WalkDir(sub, ".", fsutils.RequiredExt(".zip"),
+		func(filePath string, d fs.DirEntry, r io.Reader) error {
+			fi, err := d.Info()
+			if err != nil {
+				return xerrors.Errorf("file stat error: %w", err)
+			}
 
-		zr, err := zip.NewReader(r, fi.Size())
-		if err != nil {
-			return xerrors.Errorf("zip reader error: %w", err)
-		}
+			rr, err := xio.NewReadSeekerAt(r)
+			if err != nil {
+				return xerrors.Errorf("reader error: %w", err)
+			}
 
-		return fn(zr, "node_modules")
-	})
+			zr, err := zip.NewReader(rr, fi.Size())
+			if err != nil {
+				return xerrors.Errorf("zip reader error: %w", err)
+			}
+
+			return fn(zr, "node_modules")
+		})
 
 	if err != nil {
 		return xerrors.Errorf("walk error: %w", err)

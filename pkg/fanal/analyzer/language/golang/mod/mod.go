@@ -70,7 +70,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return filepath.Base(path) == types.GoMod
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, _ io.Reader) error {
 		// Parse go.mod
 		gomod, err := parse(input.FS, path, a.modParser)
 		if err != nil {
