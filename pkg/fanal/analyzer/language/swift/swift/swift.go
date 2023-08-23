@@ -3,6 +3,7 @@ package swift
 import (
 	"context"
 	"os"
+	"path"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/swift/swift"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -32,8 +33,8 @@ func (a swiftLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	return res, nil
 }
 
-func (a swiftLockAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
-	return fileInfo.Name() == types.SwiftResolved
+func (a swiftLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return path.Base(filePath) == types.SwiftResolved
 }
 
 func (a swiftLockAnalyzer) Type() analyzer.Type {
