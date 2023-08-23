@@ -24,11 +24,13 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/happy-v1-Package.resolved",
 			want: []types.Library{
 				{
+					ID:        "github.com/Quick/Nimble@9.2.1",
 					Name:      "github.com/Quick/Nimble",
 					Version:   "9.2.1",
 					Locations: []types.Location{{StartLine: 4, EndLine: 12}},
 				},
 				{
+					ID:        "github.com/ReactiveCocoa/ReactiveSwift@7.1.1",
 					Name:      "github.com/ReactiveCocoa/ReactiveSwift",
 					Version:   "7.1.1",
 					Locations: []types.Location{{StartLine: 13, EndLine: 21}},
@@ -46,26 +48,31 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/happy-v2-Package.resolved",
 			want: []types.Library{
 				{
+					ID:        "github.com/Quick/Nimble@9.2.1",
 					Name:      "github.com/Quick/Nimble",
 					Version:   "9.2.1",
 					Locations: []types.Location{{StartLine: 21, EndLine: 29}},
 				},
 				{
+					ID:        "github.com/Quick/Quick@7.2.0",
 					Name:      "github.com/Quick/Quick",
 					Version:   "7.2.0",
 					Locations: []types.Location{{StartLine: 30, EndLine: 38}},
 				},
 				{
+					ID:        "github.com/ReactiveCocoa/ReactiveSwift@7.1.1",
 					Name:      "github.com/ReactiveCocoa/ReactiveSwift",
 					Version:   "7.1.1",
 					Locations: []types.Location{{StartLine: 39, EndLine: 47}},
 				},
 				{
+					ID:        "github.com/mattgallagher/CwlCatchException@2.1.2",
 					Name:      "github.com/mattgallagher/CwlCatchException",
 					Version:   "2.1.2",
 					Locations: []types.Location{{StartLine: 3, EndLine: 11}},
 				},
 				{
+					ID:        "github.com/mattgallagher/CwlPreconditionTesting@2.1.2",
 					Name:      "github.com/mattgallagher/CwlPreconditionTesting",
 					Version:   "2.1.2",
 					Locations: []types.Location{{StartLine: 12, EndLine: 20}},
