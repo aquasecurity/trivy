@@ -20,6 +20,7 @@ const (
 	sarifLanguageSpecificVulnerability = "LanguageSpecificPackageVulnerability"
 	sarifConfigFiles                   = "Misconfiguration"
 	sarifSecretFiles                   = "Secret"
+	sarifLicenseFiles                  = "License"
 	sarifUnknownIssue                  = "UnknownIssue"
 
 	sarifError   = "error"
@@ -213,6 +214,29 @@ func (sw *SarifWriter) Write(report types.Report) error {
 					res.Target, res.Type, secret.Title, secret.Severity, secret.Match),
 			})
 		}
+		for _, license := range res.Licenses {
+			id := fmt.Sprintf("%s:%s", license.PkgName, license.Name)
+			desc := fmt.Sprintf("%s in %s", license.Name, license.PkgName)
+			sw.addSarifResult(&sarifData{
+				title:            "license",
+				vulnerabilityId:  id,
+				severity:         license.Severity,
+				cvssScore:        severityToScore(license.Severity),
+				url:              license.Link,
+				resourceClass:    string(res.Class),
+				artifactLocation: target,
+				resultIndex:      getRuleIndex(id, ruleIndexes),
+				shortDescription: desc,
+				fullDescription:  desc,
+				helpText: fmt.Sprintf("License %s\nClassification: %s\nPkgName: %s\nPath: %s",
+					license.Name, license.Category, license.PkgName, license.FilePath),
+				helpMarkdown: fmt.Sprintf("**License %s**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|%s|%s|%s|",
+					license.Name, license.PkgName, license.Category, license.FilePath),
+				message: fmt.Sprintf("Artifact: %s\nLicense %s\nPkgName: %s\n Classification: %s\n Path: %s",
+					res.Target, license.Name, license.Category, license.PkgName, license.FilePath),
+			})
+		}
+
 	}
 	sw.run.ColumnKind = columnKind
 	sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
@@ -259,6 +283,8 @@ func toSarifRuleName(class string) string {
 		return sarifConfigFiles
 	case types.ClassSecret:
 		return sarifSecretFiles
+	case types.ClassLicense, types.ClassLicenseFile:
+		return sarifLicenseFiles
 	default:
 		return sarifUnknownIssue
 	}
