@@ -211,6 +211,11 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			filePath: "npm/node_modules/package.json",
 			want:     false,
 		},
+		{
+			name:     "lock file in node_modules",
+			filePath: "npm/node_modules/html2canvas/package-lock.json",
+			want:     false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

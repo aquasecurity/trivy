@@ -7,15 +7,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
 	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
@@ -24,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 const (
@@ -77,29 +77,13 @@ var (
 
 type Marshaler struct {
 	format     spdx.Document
-	clock      clock.Clock
-	newUUID    newUUID
 	hasher     Hash
 	appVersion string // Trivy version. It needed for `creator` field
 }
 
 type Hash func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
 
-type newUUID func() uuid.UUID
-
 type marshalOption func(*Marshaler)
-
-func WithClock(clock clock.Clock) marshalOption {
-	return func(opts *Marshaler) {
-		opts.clock = clock
-	}
-}
-
-func WithNewUUID(newUUID newUUID) marshalOption {
-	return func(opts *Marshaler) {
-		opts.newUUID = newUUID
-	}
-}
 
 func WithHasher(hasher Hash) marshalOption {
 	return func(opts *Marshaler) {
@@ -110,8 +94,6 @@ func WithHasher(hasher Hash) marshalOption {
 func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 	m := &Marshaler{
 		format:     spdx.Document{},
-		clock:      clock.RealClock{},
-		newUUID:    uuid.New,
 		hasher:     hashstructure.Hash,
 		appVersion: version,
 	}
@@ -192,7 +174,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 					CreatorType: "Tool",
 				},
 			},
-			Created: m.clock.Now().UTC().Format(time.RFC3339),
+			Created: clock.Now().UTC().Format(time.RFC3339),
 		},
 		Packages:      toPackages(packages),
 		Relationships: relationShips,
@@ -456,7 +438,7 @@ func getDocumentNamespace(r types.Report, m *Marshaler) string {
 		DocumentNamespace,
 		string(r.ArtifactType),
 		strings.ReplaceAll(strings.ReplaceAll(r.ArtifactName, "https://", ""), "http://", ""), // remove http(s):// prefix when scanning repos
-		m.newUUID().String(),
+		uuid.New().String(),
 	)
 }
 
@@ -497,7 +479,7 @@ func getPackageDownloadLocation(t ftypes.ArtifactType, artifactName string) stri
 	location := noneField
 	// this field is used for git/mercurial/subversion/bazaar:
 	// https://spdx.github.io/spdx-spec/v2.2.2/package-information/#77-package-download-location-field
-	if t == ftypes.ArtifactRemoteRepository {
+	if t == ftypes.ArtifactRepository {
 		// Trivy currently only supports git repositories. Format examples:
 		// git+https://git.myproject.org/MyProject.git
 		// git+http://git.myproject.org/MyProject

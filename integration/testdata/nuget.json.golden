@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/nuget",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/nuget",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

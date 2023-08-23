@@ -40,8 +40,8 @@ trivy config [flags] DIR
       --report string                     specify a compliance report format for the output (all,summary) (default "all")
       --reset-policy-bundle               remove policy bundle
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
-      --skip-dirs strings                 specify the directories where the traversal is skipped
-      --skip-files strings                specify the file paths to skip traversal
+      --skip-dirs strings                 specify the directories or glob patterns to skip
+      --skip-files strings                specify the files or glob patterns to skip
       --skip-policy-update                skip fetching rego policy updates
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder

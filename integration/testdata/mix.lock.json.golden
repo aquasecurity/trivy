@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/mixlock",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/mixlock",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
