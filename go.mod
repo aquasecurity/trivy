@@ -14,7 +14,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.30.4
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/defsec v0.91.1
-	github.com/aquasecurity/go-dep-parser v0.0.0-20230816082938-c86bfd152132
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230823065420-e39b9645d9b8
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -23,7 +23,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-db v0.0.0-20230817085355-15ce04b6527c
+	github.com/aquasecurity/trivy-db v0.0.0-20230823084507-315928e846ff
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.5.7-0.20230814115812-7afa52705226
 	github.com/aws/aws-sdk-go v1.44.273
@@ -403,7 +403,3 @@ require (
 // oras 1.2.2 is incompatible with github.com/docker/docker v24.0.2
 // cf. https://github.com/oras-project/oras-go/pull/527
 replace oras.land/oras-go => oras.land/oras-go v1.2.4-0.20230801060855-932dd06d38af
-
-replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20230802111732-8c360541bf36
-
-replace github.com/aquasecurity/go-dep-parser => github.com/DmitriyLewen/go-dep-parser v0.0.0-20230823055443-ec6151858b68
