@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -16,7 +17,6 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/rust/cargo"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/go-version/pkg/semver"
@@ -59,7 +59,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		return filepath.Base(path) == types.CargoLock
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		// Parse Cargo.lock
 		app, err := a.parseCargoLock(path, r)
 		if err != nil {
@@ -99,7 +99,7 @@ func (a cargoAnalyzer) Version() int {
 	return version
 }
 
-func (a cargoAnalyzer) parseCargoLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
+func (a cargoAnalyzer) parseCargoLock(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Cargo, path, r, a.lockParser)
 }
 

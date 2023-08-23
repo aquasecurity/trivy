@@ -24,6 +24,9 @@
           "ID": "jquery@3.2.1",
           "Name": "jquery",
           "Version": "3.2.1",
+          "Licenses": [
+            "MIT"
+          ],
           "Layer": {},
           "Locations": [
             {
