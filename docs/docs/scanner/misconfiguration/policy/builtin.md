@@ -1,22 +1,11 @@
 # Built-in Policies
 
 ## Policy Sources
-
 Built-in policies are mainly written in [Rego][rego] and Go.
 Those policies are managed under [defsec repository][defsec].
-
-| Config type               | Source               |
-|---------------------------|----------------------|
-| Kubernetes                | [defsec][kubernetes] |
-| Dockerfile, Containerfile | [defsec][docker]     |
-| Terraform                 | [defsec][defsec]     |
-| CloudFormation            | [defsec][defsec]     |
-| Azure ARM Template        | [defsec][defsec]     |
-| Helm Chart                | [defsec][kubernetes] |      
+See [here](../../../coverage/iac/index.md) for the list of supported config types.
 
 For suggestions or issues regarding policy content, please open an issue under the [defsec][defsec] repository.
-
-Helm Chart scanning will resolve the chart to Kubernetes manifests then run the [kubernetes][kubernetes] checks.
 
 ## Policy Distribution
 defsec policies are distributed as an OPA bundle on [GitHub Container Registry][ghcr] (GHCR).
@@ -28,7 +17,8 @@ If Trivy is unable to pull down newer policies, it will use the embedded set of 
 Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.
 
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
+
+[kubernetes-policies]: https://github.com/aquasecurity/defsec/tree/master/rules/kubernetes/policies
+[docker-policies]: https://github.com/aquasecurity/defsec/tree/master/rules/docker/policies
 [defsec]: https://github.com/aquasecurity/defsec
-[kubernetes]: https://github.com/aquasecurity/defsec/tree/master/rules/kubernetes/policies
-[docker]: https://github.com/aquasecurity/defsec/tree/master/rules/docker/policies
 [ghcr]: https://github.com/aquasecurity/defsec/pkgs/container/defsec

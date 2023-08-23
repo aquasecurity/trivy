@@ -90,7 +90,21 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	onItem := func(ctx context.Context, artifact *artifacts.Artifact) (scanResult, error) {
 		scanResults := scanResult{}
 		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
-			vulns, err := s.scanVulns(ctx, artifact)
+			opts := s.opts
+			opts.Credentials = make([]ftypes.Credential, len(s.opts.Credentials))
+			copy(opts.Credentials, s.opts.Credentials)
+			// add image private registry credential auto detected from workload imagePullsecret / serviceAccount
+			if len(artifact.Credentials) > 0 {
+				for _, cred := range artifact.Credentials {
+					opts.RegistryOptions.Credentials = append(opts.RegistryOptions.Credentials,
+						ftypes.Credential{
+							Username: cred.Username,
+							Password: cred.Password,
+						},
+					)
+				}
+			}
+			vulns, err := s.scanVulns(ctx, artifact, opts)
 			if err != nil {
 				return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
 			}
@@ -125,14 +139,14 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 
 }
 
-func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
+func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, opts flag.Options) ([]report.Resource, error) {
 	resources := make([]report.Resource, 0, len(artifact.Images))
 
 	for _, image := range artifact.Images {
 
-		s.opts.Target = image
+		opts.Target = image
 
-		imageReport, err := s.runner.ScanImage(ctx, s.opts)
+		imageReport, err := s.runner.ScanImage(ctx, opts)
 
 		if err != nil {
 			log.Logger.Warnf("failed to scan image %s: %s", image, err)

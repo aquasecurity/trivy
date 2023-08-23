@@ -10,7 +10,6 @@ nav:
   - Getting Started: 
       - Overview: index.md
       - Installation: getting-started/installation.md
-      - Scanning coverage: getting-started/coverage.md
       - FAQ: getting-started/faq.md
   - Tutorials:
       - Overview: tutorials/overview.md   
@@ -48,17 +47,7 @@ nav:
           - AWS: docs/target/aws.md
           - SBOM: docs/target/sbom.md
       - Scanner:
-          - Vulnerability:
-              - Overview: docs/scanner/vulnerability/index.md
-              - OS Packages: docs/scanner/vulnerability/os.md
-              - Language-specific Packages:
-                  - Overview: docs/scanner/vulnerability/language/index.md
-                  - Go: docs/scanner/vulnerability/language/golang.md
-                  - Java: docs/scanner/vulnerability/language/java.md
-                  - Node.js: docs/scanner/vulnerability/language/nodejs.md
-                  - PHP: docs/scanner/vulnerability/language/php.md
-                  - Python: docs/scanner/vulnerability/language/python.md
-                  - Rust: docs/scanner/vulnerability/language/rust.md
+          - Vulnerability: docs/scanner/vulnerability.md
           - Misconfiguration:
               - Overview: docs/scanner/misconfiguration/index.md
               - Policy:
@@ -74,6 +63,47 @@ nav:
                   - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
           - Secret: docs/scanner/secret.md
           - License: docs/scanner/license.md
+      - Coverage:
+          - Overview: docs/coverage/index.md
+          - OS:
+              - Overview: docs/coverage/os/index.md
+              - AlmaLinux: docs/coverage/os/alma.md
+              - Alpine Linux: docs/coverage/os/alpine.md
+              - Amazon Linux: docs/coverage/os/amazon.md
+              - CBL-Mariner: docs/coverage/os/cbl-mariner.md
+              - CentOS: docs/coverage/os/centos.md
+              - Chainguard: docs/coverage/os/chainguard.md
+              - Debian: docs/coverage/os/debian.md
+              - Google Distroless: docs/coverage/os/google-distroless.md
+              - Oracle Linux: docs/coverage/os/oracle.md
+              - Photon OS: docs/coverage/os/photon.md
+              - Red Hat: docs/coverage/os/rhel.md
+              - Rocky Linux: docs/coverage/os/rocky.md
+              - SUSE: docs/coverage/os/suse.md
+              - Ubuntu: docs/coverage/os/ubuntu.md
+              - Wolfi: docs/coverage/os/wolfi.md
+          - Language:
+              - Overview: docs/coverage/language/index.md
+              - C/C++: docs/coverage/language/c.md
+              - Dart: docs/coverage/language/dart.md
+              - .NET: docs/coverage/language/dotnet.md
+              - Elixir: docs/coverage/language/elixir.md
+              - Go: docs/coverage/language/golang.md
+              - Java: docs/coverage/language/java.md
+              - Node.js: docs/coverage/language/nodejs.md
+              - PHP: docs/coverage/language/php.md
+              - Python: docs/coverage/language/python.md
+              - Ruby: docs/coverage/language/ruby.md
+              - Rust: docs/coverage/language/rust.md
+              - Swift: docs/coverage/language/swift.md
+          - IaC:
+              - Overview: docs/coverage/iac/index.md
+              - Azure ARM Template: docs/coverage/iac/azure-arm.md
+              - CloudFormation: docs/coverage/iac/cloudformation.md
+              - Docker: docs/coverage/iac/docker.md
+              - Helm: docs/coverage/iac/helm.md
+              - Kubernetes: docs/coverage/iac/kubernetes.md
+              - Terraform: docs/coverage/iac/terraform.md
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md

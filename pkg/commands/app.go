@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -15,8 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
-	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	javadb "github.com/aquasecurity/trivy-java-db/pkg/db"
+
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
@@ -27,18 +25,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/version"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
-
-// VersionInfo holds the trivy DB version Info
-type VersionInfo struct {
-	Version         string             `json:",omitempty"`
-	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
-	JavaDB          *metadata.Metadata `json:",omitempty"`
-	PolicyBundle    *policy.Metadata   `json:",omitempty"`
-}
 
 const (
 	usageTemplate = `Usage:{{if .Runnable}}
@@ -72,9 +62,9 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 )
 
 // NewApp is the factory method to return Trivy CLI
-func NewApp(version string) *cobra.Command {
+func NewApp() *cobra.Command {
 	globalFlags := flag.NewGlobalFlagGroup()
-	rootCmd := NewRootCommand(version, globalFlags)
+	rootCmd := NewRootCommand(globalFlags)
 	rootCmd.AddGroup(
 		&cobra.Group{
 			ID:    groupScanning,
@@ -161,7 +151,7 @@ func initConfig(configFile string) error {
 	return nil
 }
 
-func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	var versionFormat string
 	cmd := &cobra.Command{
 		Use:   "trivy [global flags] command [flags] target",
@@ -181,7 +171,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 		Args: cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			// Set the Trivy version here so that we can override version printer.
-			cmd.Version = version
+			cmd.Version = version.AppVersion()
 
 			// viper.BindPFlag cannot be called in init().
 			// cf. https://github.com/spf13/cobra/issues/875
@@ -213,7 +203,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 			globalOptions := globalFlags.ToOptions()
 			if globalOptions.ShowVersion {
 				// Customize version output
-				return showVersion(globalOptions.CacheDir, versionFormat, version, cmd.OutOrStdout())
+				return showVersion(globalOptions.CacheDir, versionFormat, cmd.OutOrStdout())
 			} else {
 				return cmd.Help()
 			}
@@ -298,7 +288,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags)
+			options, err := imageFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -357,7 +347,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := fsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := fsFlags.ToOptions(cmd.Version, args, globalFlags)
+			options, err := fsFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -416,7 +406,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := rootfsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := rootfsFlags.ToOptions(cmd.Version, args, globalFlags)
+			options, err := rootfsFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -469,7 +459,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := repoFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := repoFlags.ToOptions(cmd.Version, args, globalFlags)
+			options, err := repoFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -509,7 +499,7 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := convertFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			opts, err := convertFlags.ToOptions(cmd.Version, args, globalFlags)
+			opts, err := convertFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -566,7 +556,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := clientFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := clientFlags.ToOptions(cmd.Version, args, globalFlags)
+			options, err := clientFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -607,7 +597,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := serverFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := serverFlags.ToOptions(cmd.Version, args, globalFlags)
+			options, err := serverFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -669,7 +659,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := configFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := configFlags.ToOptions(cmd.Version, args, globalFlags)
+			options, err := configFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -742,7 +732,7 @@ func NewPluginCommand() *cobra.Command {
 				if err != nil {
 					return xerrors.Errorf("plugin list display error: %w", err)
 				}
-				if _, err = fmt.Fprintf(os.Stdout, info); err != nil {
+				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
 					return xerrors.Errorf("print error: %w", err)
 				}
 				return nil
@@ -759,7 +749,7 @@ func NewPluginCommand() *cobra.Command {
 				if err != nil {
 					return xerrors.Errorf("plugin information display error: %w", err)
 				}
-				if _, err = fmt.Fprintf(os.Stdout, info); err != nil {
+				if _, err := fmt.Fprint(os.Stdout, info); err != nil {
 					return xerrors.Errorf("print error: %w", err)
 				}
 				return nil
@@ -827,7 +817,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				}
 
 				repo := args[0]
-				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags)
+				opts, err := moduleFlags.ToOptions(args, globalFlags)
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
@@ -851,7 +841,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				}
 
 				repo := args[0]
-				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags)
+				opts, err := moduleFlags.ToOptions(args, globalFlags)
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
@@ -940,7 +930,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := k8sFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			opts, err := k8sFlags.ToOptions(cmd.Version, args, globalFlags)
+			opts, err := k8sFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -1007,7 +997,7 @@ The following services are supported:
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := awsFlags.ToOptions(cmd.Version, args, globalFlags)
+			opts, err := awsFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -1071,7 +1061,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := vmFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := vmFlags.ToOptions(cmd.Version, args, globalFlags)
+			options, err := vmFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -1130,7 +1120,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := sbomFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := sbomFlags.ToOptions(cmd.Version, args, globalFlags)
+			options, err := sbomFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -1159,7 +1149,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := globalFlags.ToOptions()
-			return showVersion(options.CacheDir, versionFormat, cmd.Version, cmd.OutOrStdout())
+			return showVersion(options.CacheDir, versionFormat, cmd.OutOrStdout())
 		},
 		SilenceErrors: true,
 		SilenceUsage:  true,
@@ -1172,85 +1162,15 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
-func showVersion(cacheDir, outputFormat, version string, w io.Writer) error {
-	var dbMeta *metadata.Metadata
-	var javadbMeta *metadata.Metadata
-
-	mc := metadata.NewClient(cacheDir)
-	meta, err := mc.Get()
-	if err != nil {
-		log.Logger.Debugw("Failed to get DB metadata", "error", err)
-	}
-	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
-		dbMeta = &metadata.Metadata{
-			Version:      meta.Version,
-			NextUpdate:   meta.NextUpdate.UTC(),
-			UpdatedAt:    meta.UpdatedAt.UTC(),
-			DownloadedAt: meta.DownloadedAt.UTC(),
-		}
-	}
-
-	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
-	metaJava, err := mcJava.Get()
-	if err != nil {
-		log.Logger.Debugw("Failed to get Java DB metadata", "error", err)
-	}
-	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
-		javadbMeta = &metadata.Metadata{
-			Version:      metaJava.Version,
-			NextUpdate:   metaJava.NextUpdate.UTC(),
-			UpdatedAt:    metaJava.UpdatedAt.UTC(),
-			DownloadedAt: metaJava.DownloadedAt.UTC(),
-		}
-	}
-
-	var pbMeta *policy.Metadata
-	pc, err := policy.NewClient(cacheDir, false, "")
-	if pc != nil && err == nil {
-		pbMeta, err = pc.GetMetadata()
-		if err != nil {
-			log.Logger.Debugw("Failed to get policy metadata", "error", err)
-		}
-	}
-
+func showVersion(cacheDir, outputFormat string, w io.Writer) error {
+	versionInfo := version.NewVersionInfo(cacheDir)
 	switch outputFormat {
 	case "json":
-		err = json.NewEncoder(w).Encode(VersionInfo{
-			Version:         version,
-			VulnerabilityDB: dbMeta,
-			JavaDB:          javadbMeta,
-			PolicyBundle:    pbMeta,
-		})
-		if err != nil {
+		if err := json.NewEncoder(w).Encode(versionInfo); err != nil {
 			return xerrors.Errorf("json encode error: %w", err)
 		}
 	default:
-		output := fmt.Sprintf("Version: %s\n", version)
-		if dbMeta != nil {
-			output += fmt.Sprintf(`Vulnerability DB:
-  Version: %d
-  UpdatedAt: %s
-  NextUpdate: %s
-  DownloadedAt: %s
-`, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
-		}
-
-		if javadbMeta != nil {
-			output += fmt.Sprintf(`Java DB:
-  Version: %d
-  UpdatedAt: %s
-  NextUpdate: %s
-  DownloadedAt: %s
-`, javadbMeta.Version, javadbMeta.UpdatedAt.UTC(), javadbMeta.NextUpdate.UTC(), javadbMeta.DownloadedAt.UTC())
-		}
-
-		if pbMeta != nil {
-			output += fmt.Sprintf(`Policy Bundle:
-  Digest: %s
-  DownloadedAt: %s
-`, pbMeta.Digest, pbMeta.DownloadedAt.UTC())
-		}
-		fmt.Fprintf(w, output)
+		fmt.Fprint(w, versionInfo.String())
 	}
 	return nil
 }

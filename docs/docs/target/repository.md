@@ -34,13 +34,13 @@ $ trivy repo https://github.com/aquasecurity/trivy-ci-test
 ## Rationale
 `trivy repo` is  designed to scan code repositories, and it is intended to be used for scanning local/remote repositories in your machine or in your CI environment.
 Therefore, unlike container/VM image scanning, it targets lock files such as package-lock.json and does not target artifacts like JAR files, binary files, etc.
-See [here](../scanner/vulnerability/language/index.md) for the detail.
+See [here](../scanner/vulnerability.md#language-specific-packages) for the detail.
 
 ## Scanners
 ### Vulnerabilities
 It is enabled by default.
 Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
-See [here](../scanner/vulnerability/index.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ```
 $ trivy repo ~/src/github.com/aquasecurity/trivy-ci-test

@@ -60,6 +60,13 @@ type Metadata struct {
 	DownloadedAt time.Time
 }
 
+func (m Metadata) String() string {
+	return fmt.Sprintf(`Policy Bundle:
+  Digest: %s
+  DownloadedAt: %s
+`, m.Digest, m.DownloadedAt.UTC())
+}
+
 // NewClient is the factory method for policy client
 func NewClient(cacheDir string, quiet bool, policyBundleRepo string, opts ...Option) (*Client, error) {
 	o := &options{
