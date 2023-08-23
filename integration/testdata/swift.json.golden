@@ -21,6 +21,7 @@
       "Type": "swift",
       "Packages": [
         {
+          "ID": "github.com/apple/swift-atomics@1.1.0",
           "Name": "github.com/apple/swift-atomics",
           "Version": "1.1.0",
           "Layer": {},
@@ -32,6 +33,7 @@
           ]
         },
         {
+          "ID": "github.com/apple/swift-nio@2.41.0",
           "Name": "github.com/apple/swift-nio",
           "Version": "2.41.0",
           "Layer": {},
@@ -46,6 +48,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2022-3215",
+          "PkgID": "github.com/apple/swift-nio@2.41.0",
           "PkgName": "github.com/apple/swift-nio",
           "InstalledVersion": "2.41.0",
           "FixedVersion": "2.29.1, 2.39.1, 2.42.0",
