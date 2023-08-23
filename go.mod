@@ -404,6 +404,6 @@ require (
 // cf. https://github.com/oras-project/oras-go/pull/527
 replace oras.land/oras-go => oras.land/oras-go v1.2.4-0.20230801060855-932dd06d38af
 
-replace github.com/aquasecurity/go-dep-parser => github.com/DmitriyLewen/go-dep-parser v0.0.0-20230815035816-8c16abb12849
-
 replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20230802111732-8c360541bf36
+
+replace github.com/aquasecurity/go-dep-parser => github.com/DmitriyLewen/go-dep-parser v0.0.0-20230823055443-ec6151858b68
