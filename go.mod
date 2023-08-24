@@ -89,7 +89,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/testcontainers/testcontainers-go v0.23.0
 	github.com/testcontainers/testcontainers-go/modules/localstack v0.23.0
-	github.com/tetratelabs/wazero v1.4.0
+	github.com/tetratelabs/wazero v1.5.0
 	github.com/twitchtv/twirp v8.1.3+incompatible
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xlab/treeprint v1.2.0
