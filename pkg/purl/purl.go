@@ -109,6 +109,8 @@ func (p *PackageURL) PackageType() string {
 	case packageurl.TypeNuget:
 		return ftypes.NuGet
 	case packageurl.TypeSwift:
+		return ftypes.Swift
+	case packageurl.TypeCocoapods:
 		return ftypes.Cocoapods
 	case packageurl.TypeHex:
 		return ftypes.Hex
@@ -180,6 +182,8 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		namespace, name = parseGolang(name)
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
+	case packageurl.TypeSwift:
+		namespace, name = parseSwift(name)
 	case packageurl.TypeOCI:
 		purl, err := parseOCI(metadata)
 		if err != nil {
@@ -306,6 +310,11 @@ func parseComposer(pkgName string) (string, string) {
 	return parsePkgName(pkgName)
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#swift
+func parseSwift(pkgName string) (string, string) {
+	return parsePkgName(pkgName)
+}
+
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#npm
 func parseNpm(pkgName string) (string, string) {
 	// the name must be lowercased
@@ -330,6 +339,8 @@ func purlType(t string) string {
 	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm:
 		return packageurl.TypeNPM
 	case ftypes.Cocoapods:
+		return packageurl.TypeCocoapods
+	case ftypes.Swift:
 		return packageurl.TypeSwift
 	case ftypes.Hex:
 		return packageurl.TypeHex

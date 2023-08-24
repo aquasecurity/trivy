@@ -214,6 +214,38 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "swift package",
+			typ:  ftypes.Swift,
+			pkg: ftypes.Package{
+				ID:      "github.com/apple/swift-atomics@1.1.0",
+				Name:    "github.com/apple/swift-atomics",
+				Version: "1.1.0",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeSwift,
+					Name:    "github.com/apple/swift-atomics",
+					Version: "1.1.0",
+				},
+			},
+		},
+		{
+			name: "cocoapods package",
+			typ:  ftypes.Cocoapods,
+			pkg: ftypes.Package{
+				ID:      "_NIODataStructures@2.41.0",
+				Name:    "_NIODataStructures",
+				Version: "2.41.0",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeCocoapods,
+					Name:    "_NIODataStructures",
+					Version: "2.41.0",
+				},
+			},
+		},
+		{
 			name: "os package",
 			typ:  os.RedHat,
 			pkg: ftypes.Package{
