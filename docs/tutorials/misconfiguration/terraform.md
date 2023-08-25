@@ -92,7 +92,7 @@ trivy conf --tf-vars terraform.tfvars ./
 
 We have lots of examples in the [documentation](https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/custom/) on how you can write and pass custom Rego policies into terraform misconfiguration scans. 
 
-## Secret scans and vulnerability scans as part of misconfiguration scans 
+## Secret and vulnerability scans
 
 The `trivy config` command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your `trivy fs` scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: 
 
@@ -104,7 +104,7 @@ The `trivy config` command is a sub-command of the `trivy fs` command. You can l
 
 ## Scanning Terraform Plan files
 
-Instead of scanning your different Terraform resources individually, you could also scan your terraform plan output for misconfiguration. [Here](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/examples/#terraform-plan) is the link to the documentation.
+Instead of scanning your different Terraform resources individually, you could also scan your terraform plan output before it is deployed for misconfiguration. This will give you insights into any misconfiguration of your resources as they would become deployed. [Here](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/examples/#terraform-plan) is the link to the documentation.
 
 First, create a terraform plan and save it to a file:
 ```
