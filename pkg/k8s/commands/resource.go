@@ -21,15 +21,20 @@ func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster 
 		return err
 	}
 
-	trivyk8s := trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
 	runner := newRunner(opts, cluster.GetCurrentContext())
+	var trivyk trivyk8s.TrivyK8S
+	if opts.AllNamespaces {
+		trivyk = trivyk8s.New(cluster, log.Logger).AllNamespaces()
+	} else {
+		trivyk = trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
+	}
 
 	if len(name) == 0 { // pods or configmaps etc
 		if err = validateReportArguments(opts); err != nil {
 			return err
 		}
 
-		targets, err := trivyk8s.Resources(kind).ListArtifacts(ctx)
+		targets, err := trivyk.Resources(kind).ListArtifacts(ctx)
 		if err != nil {
 			return err
 		}
@@ -38,7 +43,7 @@ func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster 
 	}
 
 	// pod/NAME or pod NAME etc
-	artifact, err := trivyk8s.GetArtifact(ctx, kind, name)
+	artifact, err := trivyk.GetArtifact(ctx, kind, name)
 	if err != nil {
 		return err
 	}
