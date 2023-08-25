@@ -1,7 +1,7 @@
 package cocoapods
 
 import (
-	"fmt"
+	"sort"
 	"strings"
 
 	"golang.org/x/exp/maps"
@@ -14,8 +14,6 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 )
 
-const idFormat = "%s/%s"
-
 type Parser struct{}
 
 func NewParser() types.Parser {
@@ -23,7 +21,7 @@ func NewParser() types.Parser {
 }
 
 type lockFile struct {
-	Pods []interface{} `yaml:"PODS"` // pod can be string or map[string]interface{}
+	Pods []any `yaml:"PODS"` // pod can be string or map[string]interface{}
 }
 
 func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -38,7 +36,7 @@ func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 	for _, pod := range lock.Pods {
 		switch p := pod.(type) {
 		case string: // dependency with version number
-			lib, err := parseDep(pod.(string))
+			lib, err := parseDep(p)
 			if err != nil {
 				log.Logger.Debug(err)
 				continue
@@ -74,7 +72,7 @@ func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		var dependsOn []string
 		// find versions for child dependencies
 		for _, childDep := range childDeps {
-			dependsOn = append(dependsOn, pkgID(childDep, parsedDeps[childDep].Version))
+			dependsOn = append(dependsOn, utils.PackageID(childDep, parsedDeps[childDep].Version))
 		}
 		deps = append(deps, types.Dependency{
 			ID:        parsedDeps[dep].ID,
@@ -82,6 +80,7 @@ func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		})
 	}
 
+	sort.Sort(types.Dependencies(deps))
 	return utils.UniqueLibraries(maps.Values(parsedDeps)), deps, nil
 }
 
@@ -100,14 +99,10 @@ func parseDep(dep string) (types.Library, error) {
 	name := ss[0]
 	version := strings.Trim(strings.TrimSpace(ss[1]), "()")
 	lib := types.Library{
-		ID:      pkgID(name, version),
+		ID:      utils.PackageID(name, version),
 		Name:    name,
 		Version: version,
 	}
 
 	return lib, nil
-}
-
-func pkgID(name, version string) string {
-	return fmt.Sprintf(idFormat, name, version)
 }
