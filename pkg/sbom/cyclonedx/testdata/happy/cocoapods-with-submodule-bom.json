@@ -1,0 +1,176 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:94e2b1f4-cbaf-43bc-a6d4-88a10a03c23b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2023-08-25T05:50:30+00:00",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "0.36.6-32-g94125c49f"
+      }
+    ],
+    "component": {
+      "bom-ref": "02d273d1-fb20-4e8b-8a4b-40147b74f873",
+      "type": "application",
+      "name": "Podfile.lock",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "7bd638fb-e214-49cb-9207-4303a4460cd8",
+      "type": "application",
+      "name": "Podfile.lock",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "cocoapods"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cocoapods/AppCenter@4.2.0",
+      "type": "library",
+      "name": "AppCenter",
+      "version": "4.2.0",
+      "purl": "pkg:cocoapods/AppCenter@4.2.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "AppCenter@4.2.0"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "cocoapods"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cocoapods/AppCenter@4.2.0#Analytics",
+      "type": "library",
+      "name": "AppCenter/Analytics",
+      "version": "4.2.0",
+      "purl": "pkg:cocoapods/AppCenter@4.2.0#Analytics",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "AppCenter/Analytics@4.2.0"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "cocoapods"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cocoapods/AppCenter@4.2.0#Core",
+      "type": "library",
+      "name": "AppCenter/Core",
+      "version": "4.2.0",
+      "purl": "pkg:cocoapods/AppCenter@4.2.0#Core",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "AppCenter/Core@4.2.0"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "cocoapods"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cocoapods/AppCenter@4.2.0#Crashes",
+      "type": "library",
+      "name": "AppCenter/Crashes",
+      "version": "4.2.0",
+      "purl": "pkg:cocoapods/AppCenter@4.2.0#Crashes",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "AppCenter/Crashes@4.2.0"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "cocoapods"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cocoapods/KeychainAccess@4.2.1",
+      "type": "library",
+      "name": "KeychainAccess",
+      "version": "4.2.1",
+      "purl": "pkg:cocoapods/KeychainAccess@4.2.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "KeychainAccess@4.2.1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "cocoapods"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "02d273d1-fb20-4e8b-8a4b-40147b74f873",
+      "dependsOn": [
+        "7bd638fb-e214-49cb-9207-4303a4460cd8"
+      ]
+    },
+    {
+      "ref": "7bd638fb-e214-49cb-9207-4303a4460cd8",
+      "dependsOn": [
+        "pkg:cocoapods/AppCenter@4.2.0",
+        "pkg:cocoapods/AppCenter@4.2.0#Analytics",
+        "pkg:cocoapods/AppCenter@4.2.0#Core",
+        "pkg:cocoapods/AppCenter@4.2.0#Crashes",
+        "pkg:cocoapods/KeychainAccess@4.2.1"
+      ]
+    },
+    {
+      "ref": "pkg:cocoapods/AppCenter@4.2.0",
+      "dependsOn": [
+        "pkg:cocoapods/AppCenter@4.2.0#Analytics",
+        "pkg:cocoapods/AppCenter@4.2.0#Crashes"
+      ]
+    },
+    {
+      "ref": "pkg:cocoapods/AppCenter@4.2.0#Analytics",
+      "dependsOn": [
+        "pkg:cocoapods/AppCenter@4.2.0#Core"
+      ]
+    },
+    {
+      "ref": "pkg:cocoapods/AppCenter@4.2.0#Core",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:cocoapods/AppCenter@4.2.0#Crashes",
+      "dependsOn": [
+        "pkg:cocoapods/AppCenter@4.2.0#Core"
+      ]
+    },
+    {
+      "ref": "pkg:cocoapods/KeychainAccess@4.2.1",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": []
+}

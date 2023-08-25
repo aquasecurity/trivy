@@ -223,9 +223,10 @@ func TestNewPackageURL(t *testing.T) {
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeSwift,
-					Name:    "github.com/apple/swift-atomics",
-					Version: "1.1.0",
+					Type:      packageurl.TypeSwift,
+					Namespace: "github.com/apple",
+					Name:      "swift-atomics",
+					Version:   "1.1.0",
 				},
 			},
 		},
@@ -233,15 +234,16 @@ func TestNewPackageURL(t *testing.T) {
 			name: "cocoapods package",
 			typ:  ftypes.Cocoapods,
 			pkg: ftypes.Package{
-				ID:      "_NIODataStructures@2.41.0",
-				Name:    "_NIODataStructures",
-				Version: "2.41.0",
+				ID:      "GoogleUtilities/NSData+zlib@7.5.2",
+				Name:    "GoogleUtilities/NSData+zlib",
+				Version: "7.5.2",
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    packageurl.TypeCocoapods,
-					Name:    "_NIODataStructures",
-					Version: "2.41.0",
+					Name:    "GoogleUtilities",
+					Version: "7.5.2",
+					Subpath: "NSData+zlib",
 				},
 			},
 		},
@@ -444,6 +446,19 @@ func TestFromString(t *testing.T) {
 							Value: "app/app/package.json",
 						},
 					},
+				},
+			},
+		},
+		{
+			name: "happy path for coocapods",
+			purl: "pkg:cocoapods/GoogleUtilities@7.5.2#NSData+zlib",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeCocoapods,
+					Name:       "GoogleUtilities",
+					Version:    "7.5.2",
+					Subpath:    "NSData+zlib",
+					Qualifiers: packageurl.Qualifiers{},
 				},
 			},
 		},

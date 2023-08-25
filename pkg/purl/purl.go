@@ -57,6 +57,15 @@ func (p *PackageURL) Package() *ftypes.Package {
 		}
 	}
 
+	// Cocoapods purl has no namespace, but has subpath
+	// https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#cocoapods
+	if p.Type == packageurl.TypeCocoapods && p.Subpath != "" {
+		pkg.Name = strings.Join([]string{
+			p.Name,
+			p.Subpath,
+		}, "/")
+	}
+
 	if p.Type == packageurl.TypeRPM {
 		rpmVer := version.NewVersion(p.Version)
 		pkg.Release = rpmVer.Release()
@@ -156,6 +165,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 	name := pkg.Name
 	ver := utils.FormatVersion(pkg)
 	namespace := ""
+	subpath := ""
 
 	switch ptype {
 	case packageurl.TypeRPM:
@@ -184,6 +194,8 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		namespace, name = parseNpm(name)
 	case packageurl.TypeSwift:
 		namespace, name = parseSwift(name)
+	case packageurl.TypeCocoapods:
+		name, subpath = parseCocoapods(name)
 	case packageurl.TypeOCI:
 		purl, err := parseOCI(metadata)
 		if err != nil {
@@ -193,7 +205,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 	}
 
 	return PackageURL{
-		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, ""),
+		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, subpath),
 		FilePath:   pkg.FilePath,
 	}, nil
 }
@@ -313,6 +325,17 @@ func parseComposer(pkgName string) (string, string) {
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#swift
 func parseSwift(pkgName string) (string, string) {
 	return parsePkgName(pkgName)
+}
+
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#cocoapods
+func parseCocoapods(pkgName string) (string, string) {
+	var subpath string
+	index := strings.Index(pkgName, "/")
+	if index != -1 {
+		subpath = pkgName[index+1:]
+		pkgName = pkgName[:index]
+	}
+	return pkgName, subpath
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#npm
