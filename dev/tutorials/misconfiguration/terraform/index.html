@@ -10,21 +10,21 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/ecosystem/prod/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/tutorials/misconfiguration/terraform/">
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Production and Clouds - Trivy</title>
+        <title>Terraform scanning - Trivy</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.1d29e8d0.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.1d29e8d0.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
         
       
       
@@ -40,7 +40,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#production-and-cloud-integrations" class="md-skip">
+        <a href="#scanning-terraform-files-with-trivy" class="md-skip">
           Skip to content
         </a>
       
@@ -79,7 +79,7 @@
             <div class="md-banner__inner md-grid md-typeset">
               
 You're not viewing the latest version.
-<a href="../../..">
+<a href="../../../..">
     <strong>Click here to go to latest.</strong>
 </a>
 
@@ -96,9 +96,9 @@ You're not viewing the latest version.
 
 <header class="md-header md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -114,7 +114,7 @@ You're not viewing the latest version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Production and Clouds
+              Terraform scanning
             
           </span>
         </div>
@@ -186,40 +186,8 @@ You're not viewing the latest version.
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         Getting Started
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-
-
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../../tutorials/overview/" class="md-tabs__link">
-        Tutorials
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-
-
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../../docs/" class="md-tabs__link">
-        Docs
       </a>
     </li>
   
@@ -236,7 +204,39 @@ You're not viewing the latest version.
   
   
     <li class="md-tabs__item">
-      <a href="../" class="md-tabs__link md-tabs__link--active">
+      <a href="../../overview/" class="md-tabs__link md-tabs__link--active">
+        Tutorials
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../docs/" class="md-tabs__link">
+        Docs
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../ecosystem/" class="md-tabs__link">
         Ecosystem
       </a>
     </li>
@@ -257,7 +257,7 @@ You're not viewing the latest version.
   
   
     <li class="md-tabs__item">
-      <a href="../../community/contribute/issue/" class="md-tabs__link">
+      <a href="../../../community/contribute/issue/" class="md-tabs__link">
         Contributing
       </a>
     </li>
@@ -293,9 +293,9 @@ You're not viewing the latest version.
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     Trivy
@@ -349,7 +349,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         Overview
       </a>
     </li>
@@ -363,7 +363,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/installation/" class="md-nav__link">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -377,7 +377,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/faq/" class="md-nav__link">
+      <a href="../../../getting-started/faq/" class="md-nav__link">
         FAQ
       </a>
     </li>
@@ -397,12 +397,14 @@ You're not viewing the latest version.
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
       
       
       
@@ -425,7 +427,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/overview/" class="md-nav__link">
+      <a href="../../overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -467,7 +469,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/integrations/" class="md-nav__link">
+      <a href="../../integrations/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -481,7 +483,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/integrations/github-actions/" class="md-nav__link">
+      <a href="../../integrations/github-actions/" class="md-nav__link">
         GitHub Actions
       </a>
     </li>
@@ -495,7 +497,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/integrations/circleci/" class="md-nav__link">
+      <a href="../../integrations/circleci/" class="md-nav__link">
         CircleCI
       </a>
     </li>
@@ -509,7 +511,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/integrations/travis-ci/" class="md-nav__link">
+      <a href="../../integrations/travis-ci/" class="md-nav__link">
         Travis CI
       </a>
     </li>
@@ -523,7 +525,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/integrations/gitlab-ci/" class="md-nav__link">
+      <a href="../../integrations/gitlab-ci/" class="md-nav__link">
         GitLab CI
       </a>
     </li>
@@ -537,7 +539,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/integrations/bitbucket/" class="md-nav__link">
+      <a href="../../integrations/bitbucket/" class="md-nav__link">
         Bitbucket Pipelines
       </a>
     </li>
@@ -551,7 +553,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/integrations/aws-codepipeline/" class="md-nav__link">
+      <a href="../../integrations/aws-codepipeline/" class="md-nav__link">
         AWS CodePipeline
       </a>
     </li>
@@ -565,7 +567,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/integrations/aws-security-hub/" class="md-nav__link">
+      <a href="../../integrations/aws-security-hub/" class="md-nav__link">
         AWS Security Hub
       </a>
     </li>
@@ -579,7 +581,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/integrations/azure-devops/" class="md-nav__link">
+      <a href="../../integrations/azure-devops/" class="md-nav__link">
         Azure
       </a>
     </li>
@@ -628,7 +630,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/kubernetes/cluster-scanning/" class="md-nav__link">
+      <a href="../../kubernetes/cluster-scanning/" class="md-nav__link">
         Cluster Scanning
       </a>
     </li>
@@ -642,7 +644,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/kubernetes/kyverno/" class="md-nav__link">
+      <a href="../../kubernetes/kyverno/" class="md-nav__link">
         Kyverno
       </a>
     </li>
@@ -656,7 +658,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/kubernetes/gitops/" class="md-nav__link">
+      <a href="../../kubernetes/gitops/" class="md-nav__link">
         GitOps
       </a>
     </li>
@@ -675,14 +677,16 @@ You're not viewing the latest version.
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_4" type="checkbox" id="__nav_2_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_4" type="checkbox" id="__nav_2_4" checked>
       
       
       
@@ -703,11 +707,134 @@ You're not viewing the latest version.
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../tutorials/misconfiguration/terraform/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Terraform scanning
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Terraform scanning
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#trivy-config-command" class="md-nav__link">
+    Trivy Config Command
+  </a>
+  
+    <nav class="md-nav" aria-label="Trivy Config Command">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#different-types-of-trivy-config-scans" class="md-nav__link">
+    Different types of trivy config scans
+  </a>
+  
+    <nav class="md-nav" aria-label="Different types of trivy config scans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specify-the-scan-format" class="md-nav__link">
+    Specify the scan format
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-the-output-location" class="md-nav__link">
+    Specifying the output location
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-by-severity" class="md-nav__link">
+    Filtering by severity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passing-tftfvars-files-into-trivy-config-scans" class="md-nav__link">
+    Passing tf.tfvars files into trivy config scans
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-checks" class="md-nav__link">
+    Custom Checks
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#secret-and-vulnerability-scans" class="md-nav__link">
+    Secret and vulnerability scans
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scanning-terraform-plan-files" class="md-nav__link">
+    Scanning Terraform Plan files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-trivy-in-your-cicd-pipeline" class="md-nav__link">
+    Using Trivy in your CI/CD pipeline
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -754,7 +881,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/signing/vuln-attestation/" class="md-nav__link">
+      <a href="../../signing/vuln-attestation/" class="md-nav__link">
         Vulnerability Scan Record Attestation
       </a>
     </li>
@@ -803,7 +930,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/shell/shell-completion/" class="md-nav__link">
+      <a href="../../shell/shell-completion/" class="md-nav__link">
         Completion
       </a>
     </li>
@@ -852,7 +979,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/additional-resources/references/" class="md-nav__link">
+      <a href="../../additional-resources/references/" class="md-nav__link">
         Additional Resources
       </a>
     </li>
@@ -866,7 +993,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/additional-resources/community/" class="md-nav__link">
+      <a href="../../additional-resources/community/" class="md-nav__link">
         Community References
       </a>
     </li>
@@ -880,7 +1007,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/additional-resources/cks/" class="md-nav__link">
+      <a href="../../additional-resources/cks/" class="md-nav__link">
         CKS Reference
       </a>
     </li>
@@ -935,7 +1062,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/" class="md-nav__link">
+      <a href="../../../docs/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -977,7 +1104,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/target/container_image/" class="md-nav__link">
+      <a href="../../../docs/target/container_image/" class="md-nav__link">
         Container Image
       </a>
     </li>
@@ -991,7 +1118,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/target/filesystem/" class="md-nav__link">
+      <a href="../../../docs/target/filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -1005,7 +1132,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/target/rootfs/" class="md-nav__link">
+      <a href="../../../docs/target/rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -1019,7 +1146,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/target/repository/" class="md-nav__link">
+      <a href="../../../docs/target/repository/" class="md-nav__link">
         Code Repository
       </a>
     </li>
@@ -1033,7 +1160,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/target/vm/" class="md-nav__link">
+      <a href="../../../docs/target/vm/" class="md-nav__link">
         Virtual Machine Image
       </a>
     </li>
@@ -1047,7 +1174,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/target/kubernetes/" class="md-nav__link">
+      <a href="../../../docs/target/kubernetes/" class="md-nav__link">
         Kubernetes
       </a>
     </li>
@@ -1061,7 +1188,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/target/aws/" class="md-nav__link">
+      <a href="../../../docs/target/aws/" class="md-nav__link">
         AWS
       </a>
     </li>
@@ -1075,7 +1202,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/target/sbom/" class="md-nav__link">
+      <a href="../../../docs/target/sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -1124,7 +1251,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/vulnerability/" class="md-nav__link">
+      <a href="../../../docs/scanner/vulnerability/" class="md-nav__link">
         Vulnerability
       </a>
     </li>
@@ -1164,7 +1291,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1204,7 +1331,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/policy/builtin/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/policy/builtin/" class="md-nav__link">
         Built-in Policies
       </a>
     </li>
@@ -1218,7 +1345,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/policy/exceptions/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/policy/exceptions/" class="md-nav__link">
         Exceptions
       </a>
     </li>
@@ -1265,7 +1392,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/custom/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/custom/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1279,7 +1406,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/custom/data/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/custom/data/" class="md-nav__link">
         Data
       </a>
     </li>
@@ -1293,7 +1420,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/custom/combine/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/custom/combine/" class="md-nav__link">
         Combine
       </a>
     </li>
@@ -1307,7 +1434,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/custom/selectors/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/custom/selectors/" class="md-nav__link">
         Selectors
       </a>
     </li>
@@ -1321,7 +1448,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/custom/schema/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/custom/schema/" class="md-nav__link">
         Schemas
       </a>
     </li>
@@ -1335,7 +1462,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/custom/testing/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/custom/testing/" class="md-nav__link">
         Testing
       </a>
     </li>
@@ -1349,7 +1476,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/misconfiguration/custom/debug/" class="md-nav__link">
+      <a href="../../../docs/scanner/misconfiguration/custom/debug/" class="md-nav__link">
         Debugging Policies
       </a>
     </li>
@@ -1377,7 +1504,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/secret/" class="md-nav__link">
+      <a href="../../../docs/scanner/secret/" class="md-nav__link">
         Secret
       </a>
     </li>
@@ -1391,7 +1518,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/scanner/license/" class="md-nav__link">
+      <a href="../../../docs/scanner/license/" class="md-nav__link">
         License
       </a>
     </li>
@@ -1440,7 +1567,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/" class="md-nav__link">
+      <a href="../../../docs/coverage/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1480,7 +1607,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1494,7 +1621,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/alma/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/alma/" class="md-nav__link">
         AlmaLinux
       </a>
     </li>
@@ -1508,7 +1635,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/alpine/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/alpine/" class="md-nav__link">
         Alpine Linux
       </a>
     </li>
@@ -1522,7 +1649,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/amazon/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/amazon/" class="md-nav__link">
         Amazon Linux
       </a>
     </li>
@@ -1536,7 +1663,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/cbl-mariner/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/cbl-mariner/" class="md-nav__link">
         CBL-Mariner
       </a>
     </li>
@@ -1550,7 +1677,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/centos/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/centos/" class="md-nav__link">
         CentOS
       </a>
     </li>
@@ -1564,7 +1691,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/chainguard/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/chainguard/" class="md-nav__link">
         Chainguard
       </a>
     </li>
@@ -1578,7 +1705,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/debian/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/debian/" class="md-nav__link">
         Debian
       </a>
     </li>
@@ -1592,7 +1719,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/google-distroless/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/google-distroless/" class="md-nav__link">
         Google Distroless
       </a>
     </li>
@@ -1606,7 +1733,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/oracle/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/oracle/" class="md-nav__link">
         Oracle Linux
       </a>
     </li>
@@ -1620,7 +1747,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/photon/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/photon/" class="md-nav__link">
         Photon OS
       </a>
     </li>
@@ -1634,7 +1761,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/rhel/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/rhel/" class="md-nav__link">
         Red Hat
       </a>
     </li>
@@ -1648,7 +1775,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/rocky/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/rocky/" class="md-nav__link">
         Rocky Linux
       </a>
     </li>
@@ -1662,7 +1789,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/suse/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/suse/" class="md-nav__link">
         SUSE
       </a>
     </li>
@@ -1676,7 +1803,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/ubuntu/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/ubuntu/" class="md-nav__link">
         Ubuntu
       </a>
     </li>
@@ -1690,7 +1817,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/os/wolfi/" class="md-nav__link">
+      <a href="../../../docs/coverage/os/wolfi/" class="md-nav__link">
         Wolfi
       </a>
     </li>
@@ -1737,7 +1864,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1751,7 +1878,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/c/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/c/" class="md-nav__link">
         C/C++
       </a>
     </li>
@@ -1765,7 +1892,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/dart/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/dart/" class="md-nav__link">
         Dart
       </a>
     </li>
@@ -1779,7 +1906,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/dotnet/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/dotnet/" class="md-nav__link">
         .NET
       </a>
     </li>
@@ -1793,7 +1920,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/elixir/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/elixir/" class="md-nav__link">
         Elixir
       </a>
     </li>
@@ -1807,7 +1934,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/golang/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/golang/" class="md-nav__link">
         Go
       </a>
     </li>
@@ -1821,7 +1948,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/java/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/java/" class="md-nav__link">
         Java
       </a>
     </li>
@@ -1835,7 +1962,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/nodejs/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/nodejs/" class="md-nav__link">
         Node.js
       </a>
     </li>
@@ -1849,7 +1976,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/php/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/php/" class="md-nav__link">
         PHP
       </a>
     </li>
@@ -1863,7 +1990,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/python/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/python/" class="md-nav__link">
         Python
       </a>
     </li>
@@ -1877,7 +2004,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/ruby/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/ruby/" class="md-nav__link">
         Ruby
       </a>
     </li>
@@ -1891,7 +2018,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/rust/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/rust/" class="md-nav__link">
         Rust
       </a>
     </li>
@@ -1905,7 +2032,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/language/swift/" class="md-nav__link">
+      <a href="../../../docs/coverage/language/swift/" class="md-nav__link">
         Swift
       </a>
     </li>
@@ -1952,7 +2079,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/iac/" class="md-nav__link">
+      <a href="../../../docs/coverage/iac/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1966,7 +2093,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/iac/azure-arm/" class="md-nav__link">
+      <a href="../../../docs/coverage/iac/azure-arm/" class="md-nav__link">
         Azure ARM Template
       </a>
     </li>
@@ -1980,7 +2107,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/iac/cloudformation/" class="md-nav__link">
+      <a href="../../../docs/coverage/iac/cloudformation/" class="md-nav__link">
         CloudFormation
       </a>
     </li>
@@ -1994,7 +2121,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/iac/docker/" class="md-nav__link">
+      <a href="../../../docs/coverage/iac/docker/" class="md-nav__link">
         Docker
       </a>
     </li>
@@ -2008,7 +2135,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/iac/helm/" class="md-nav__link">
+      <a href="../../../docs/coverage/iac/helm/" class="md-nav__link">
         Helm
       </a>
     </li>
@@ -2022,7 +2149,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/iac/kubernetes/" class="md-nav__link">
+      <a href="../../../docs/coverage/iac/kubernetes/" class="md-nav__link">
         Kubernetes
       </a>
     </li>
@@ -2036,7 +2163,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/coverage/iac/terraform/" class="md-nav__link">
+      <a href="../../../docs/coverage/iac/terraform/" class="md-nav__link">
         Terraform
       </a>
     </li>
@@ -2092,7 +2219,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/configuration/" class="md-nav__link">
+      <a href="../../../docs/configuration/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2106,7 +2233,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/configuration/filtering/" class="md-nav__link">
+      <a href="../../../docs/configuration/filtering/" class="md-nav__link">
         Filtering
       </a>
     </li>
@@ -2120,7 +2247,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/configuration/skipping/" class="md-nav__link">
+      <a href="../../../docs/configuration/skipping/" class="md-nav__link">
         Skipping Files
       </a>
     </li>
@@ -2134,7 +2261,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/configuration/reporting/" class="md-nav__link">
+      <a href="../../../docs/configuration/reporting/" class="md-nav__link">
         Reporting
       </a>
     </li>
@@ -2148,7 +2275,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/configuration/cache/" class="md-nav__link">
+      <a href="../../../docs/configuration/cache/" class="md-nav__link">
         Cache
       </a>
     </li>
@@ -2162,7 +2289,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/configuration/db/" class="md-nav__link">
+      <a href="../../../docs/configuration/db/" class="md-nav__link">
         DB
       </a>
     </li>
@@ -2176,7 +2303,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/configuration/others/" class="md-nav__link">
+      <a href="../../../docs/configuration/others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -2225,7 +2352,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/supply-chain/sbom/" class="md-nav__link">
+      <a href="../../../docs/supply-chain/sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -2265,7 +2392,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/supply-chain/attestation/sbom/" class="md-nav__link">
+      <a href="../../../docs/supply-chain/attestation/sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -2279,7 +2406,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/supply-chain/attestation/vuln/" class="md-nav__link">
+      <a href="../../../docs/supply-chain/attestation/vuln/" class="md-nav__link">
         Cosign Vulnerability Scan Record
       </a>
     </li>
@@ -2293,7 +2420,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/supply-chain/attestation/rekor/" class="md-nav__link">
+      <a href="../../../docs/supply-chain/attestation/rekor/" class="md-nav__link">
         SBOM Attestation in Rekor
       </a>
     </li>
@@ -2314,7 +2441,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/supply-chain/vex/" class="md-nav__link">
+      <a href="../../../docs/supply-chain/vex/" class="md-nav__link">
         VEX
       </a>
     </li>
@@ -2363,7 +2490,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/compliance/compliance/" class="md-nav__link">
+      <a href="../../../docs/compliance/compliance/" class="md-nav__link">
         Reports
       </a>
     </li>
@@ -2412,7 +2539,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/modules/" class="md-nav__link">
+      <a href="../../../docs/advanced/modules/" class="md-nav__link">
         Modules
       </a>
     </li>
@@ -2426,7 +2553,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/plugins/" class="md-nav__link">
+      <a href="../../../docs/advanced/plugins/" class="md-nav__link">
         Plugins
       </a>
     </li>
@@ -2440,7 +2567,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/air-gap/" class="md-nav__link">
+      <a href="../../../docs/advanced/air-gap/" class="md-nav__link">
         Air-Gapped Environment
       </a>
     </li>
@@ -2480,7 +2607,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../../docs/advanced/container/embed-in-dockerfile/" class="md-nav__link">
         Embed in Dockerfile
       </a>
     </li>
@@ -2494,7 +2621,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../../docs/advanced/container/unpacked-filesystem/" class="md-nav__link">
         Unpacked container image filesystem
       </a>
     </li>
@@ -2534,7 +2661,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/private-registries/" class="md-nav__link">
+      <a href="../../../docs/advanced/private-registries/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2548,7 +2675,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/private-registries/docker-hub/" class="md-nav__link">
+      <a href="../../../docs/advanced/private-registries/docker-hub/" class="md-nav__link">
         Docker Hub
       </a>
     </li>
@@ -2562,7 +2689,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/private-registries/ecr/" class="md-nav__link">
+      <a href="../../../docs/advanced/private-registries/ecr/" class="md-nav__link">
         AWS ECR (Elastic Container Registry)
       </a>
     </li>
@@ -2576,7 +2703,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../../../docs/advanced/private-registries/gcr/" class="md-nav__link">
         GCR (Google Container Registry)
       </a>
     </li>
@@ -2590,7 +2717,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/private-registries/acr/" class="md-nav__link">
+      <a href="../../../docs/advanced/private-registries/acr/" class="md-nav__link">
         ACR (Azure Container Registry)
       </a>
     </li>
@@ -2604,7 +2731,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/advanced/private-registries/self/" class="md-nav__link">
+      <a href="../../../docs/advanced/private-registries/self/" class="md-nav__link">
         Self-Hosted
       </a>
     </li>
@@ -2719,7 +2846,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2733,7 +2860,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_aws/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_aws/" class="md-nav__link">
         AWS
       </a>
     </li>
@@ -2747,7 +2874,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_config/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_config/" class="md-nav__link">
         Config
       </a>
     </li>
@@ -2761,7 +2888,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_convert/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_convert/" class="md-nav__link">
         Convert
       </a>
     </li>
@@ -2775,7 +2902,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_filesystem/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -2789,7 +2916,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_image/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_image/" class="md-nav__link">
         Image
       </a>
     </li>
@@ -2803,7 +2930,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_kubernetes/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_kubernetes/" class="md-nav__link">
         Kubernetes
       </a>
     </li>
@@ -2817,7 +2944,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_module/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_module/" class="md-nav__link">
         Module
       </a>
     </li>
@@ -2831,7 +2958,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_module_install/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_module_install/" class="md-nav__link">
         Module Install
       </a>
     </li>
@@ -2845,7 +2972,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_module_uninstall/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_module_uninstall/" class="md-nav__link">
         Module Uninstall
       </a>
     </li>
@@ -2859,7 +2986,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_plugin/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_plugin/" class="md-nav__link">
         Plugin
       </a>
     </li>
@@ -2873,7 +3000,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_plugin_info/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_plugin_info/" class="md-nav__link">
         Plugin Info
       </a>
     </li>
@@ -2887,7 +3014,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_plugin_install/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_plugin_install/" class="md-nav__link">
         Plugin Install
       </a>
     </li>
@@ -2901,7 +3028,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_plugin_list/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_plugin_list/" class="md-nav__link">
         Plugin List
       </a>
     </li>
@@ -2915,7 +3042,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_plugin_run/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_plugin_run/" class="md-nav__link">
         Plugin Run
       </a>
     </li>
@@ -2929,7 +3056,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_plugin_uninstall/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_plugin_uninstall/" class="md-nav__link">
         Plugin Uninstall
       </a>
     </li>
@@ -2943,7 +3070,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_plugin_update/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_plugin_update/" class="md-nav__link">
         Plugin Update
       </a>
     </li>
@@ -2957,7 +3084,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_repository/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_repository/" class="md-nav__link">
         Repository
       </a>
     </li>
@@ -2971,7 +3098,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_rootfs/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -2985,7 +3112,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_sbom/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -2999,7 +3126,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_server/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_server/" class="md-nav__link">
         Server
       </a>
     </li>
@@ -3013,7 +3140,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_version/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_version/" class="md-nav__link">
         Version
       </a>
     </li>
@@ -3027,7 +3154,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/cli/trivy_vm/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/cli/trivy_vm/" class="md-nav__link">
         VM
       </a>
     </li>
@@ -3048,7 +3175,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/configuration/config-file/" class="md-nav__link">
+      <a href="../../../docs/references/configuration/config-file/" class="md-nav__link">
         Config file
       </a>
     </li>
@@ -3095,7 +3222,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/modes/standalone/" class="md-nav__link">
+      <a href="../../../docs/references/modes/standalone/" class="md-nav__link">
         Standalone
       </a>
     </li>
@@ -3109,7 +3236,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/modes/client-server/" class="md-nav__link">
+      <a href="../../../docs/references/modes/client-server/" class="md-nav__link">
         Client/Server
       </a>
     </li>
@@ -3130,7 +3257,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../docs/references/troubleshooting/" class="md-nav__link">
+      <a href="../../../docs/references/troubleshooting/" class="md-nav__link">
         Troubleshooting
       </a>
     </li>
@@ -3157,14 +3284,12 @@ You're not viewing the latest version.
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
       
       
       
@@ -3187,7 +3312,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../../ecosystem/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -3201,7 +3326,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../cicd/" class="md-nav__link">
+      <a href="../../../ecosystem/cicd/" class="md-nav__link">
         CI/CD
       </a>
     </li>
@@ -3215,7 +3340,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../ide/" class="md-nav__link">
+      <a href="../../../ecosystem/ide/" class="md-nav__link">
         IDE and Dev tools
       </a>
     </li>
@@ -3227,79 +3352,11 @@ You're not viewing the latest version.
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Production and Clouds
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../ecosystem/prod/" class="md-nav__link">
         Production and Clouds
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#kubernetes" class="md-nav__link">
-    Kubernetes
-  </a>
-  
-    <nav class="md-nav" aria-label="Kubernetes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#trivy-operator-official" class="md-nav__link">
-    Trivy Operator (Official)
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#harbor-official" class="md-nav__link">
-    Harbor (Official)
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#kyverno-community" class="md-nav__link">
-    Kyverno (Community)
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3311,7 +3368,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../security/" class="md-nav__link">
+      <a href="../../../ecosystem/security/" class="md-nav__link">
         Security Management
       </a>
     </li>
@@ -3387,7 +3444,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../community/contribute/issue/" class="md-nav__link">
+      <a href="../../../community/contribute/issue/" class="md-nav__link">
         Issues
       </a>
     </li>
@@ -3401,7 +3458,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../community/contribute/discussion/" class="md-nav__link">
+      <a href="../../../community/contribute/discussion/" class="md-nav__link">
         Discussions
       </a>
     </li>
@@ -3415,7 +3472,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../community/contribute/pr/" class="md-nav__link">
+      <a href="../../../community/contribute/pr/" class="md-nav__link">
         Pull Requests
       </a>
     </li>
@@ -3464,7 +3521,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../community/maintainer/help-wanted/" class="md-nav__link">
+      <a href="../../../community/maintainer/help-wanted/" class="md-nav__link">
         Help Wanted
       </a>
     </li>
@@ -3478,7 +3535,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../community/maintainer/triage/" class="md-nav__link">
+      <a href="../../../community/maintainer/triage/" class="md-nav__link">
         Triage
       </a>
     </li>
@@ -3526,16 +3583,16 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#kubernetes" class="md-nav__link">
-    Kubernetes
+  <a href="#trivy-config-command" class="md-nav__link">
+    Trivy Config Command
   </a>
   
-    <nav class="md-nav" aria-label="Kubernetes">
+    <nav class="md-nav" aria-label="Trivy Config Command">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#trivy-operator-official" class="md-nav__link">
-    Trivy Operator (Official)
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
   </a>
   
 </li>
@@ -3546,15 +3603,70 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#harbor-official" class="md-nav__link">
-    Harbor (Official)
+  <a href="#different-types-of-trivy-config-scans" class="md-nav__link">
+    Different types of trivy config scans
+  </a>
+  
+    <nav class="md-nav" aria-label="Different types of trivy config scans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specify-the-scan-format" class="md-nav__link">
+    Specify the scan format
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specifying-the-output-location" class="md-nav__link">
+    Specifying the output location
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-by-severity" class="md-nav__link">
+    Filtering by severity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passing-tftfvars-files-into-trivy-config-scans" class="md-nav__link">
+    Passing tf.tfvars files into trivy config scans
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-checks" class="md-nav__link">
+    Custom Checks
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#secret-and-vulnerability-scans" class="md-nav__link">
+    Secret and vulnerability scans
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#kyverno-community" class="md-nav__link">
-    Kyverno (Community)
+  <a href="#scanning-terraform-plan-files" class="md-nav__link">
+    Scanning Terraform Plan files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-trivy-in-your-cicd-pipeline" class="md-nav__link">
+    Using Trivy in your CI/CD pipeline
   </a>
   
 </li>
@@ -3571,25 +3683,89 @@ You're not viewing the latest version.
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/ecosystem/prod.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/tutorials/misconfiguration/terraform.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
 
-<h1 id="production-and-cloud-integrations">Production and cloud Integrations</h1>
-<h2 id="kubernetes">Kubernetes</h2>
-<p><a href="https://kubernetes.io/">Kubernetes</a> is an open-source system for automating deployment, scaling, and management of containerized applications.</p>
-<h3 id="trivy-operator-official">Trivy Operator (Official)</h3>
-<p>Using the Trivy Operator you can install Trivy into a Kubernetes cluster so that it automatically and continuously scan your workloads and cluster for security issues.</p>
-<p>👉 Get it at: <a href="https://github.com/aquasecurity/trivy-operator">https://github.com/aquasecurity/trivy-operator</a></p>
-<h2 id="harbor-official">Harbor (Official)</h2>
-<p><a href="https://goharbor.io/">Harbor</a> is an open source cloud native container and artifact registry.</p>
-<p>Trivy is natively integrated into Harbor, no installation is needed. More info in Harbor documentation: <a href="https://goharbor.io/docs/2.6.0/administration/vulnerability-scanning">https://goharbor.io/docs/2.6.0/administration/vulnerability-scanning</a></p>
-<h2 id="kyverno-community">Kyverno (Community)</h2>
-<p><a href="https://kyverno.io/">Kyverno</a> is a policy management tool for Kubernetes.</p>
-<p>You can use Kyverno to ensure and enforce that deployed workloads' images are scanned for vulnerabilities.</p>
-<p>👉 Get it at: <a href="https://neonmirrors.net/post/2022-07/attesting-image-scans-kyverno">https://neonmirrors.net/post/2022-07/attesting-image-scans-kyverno</a></p>
+<h1 id="scanning-terraform-files-with-trivy">Scanning Terraform files with Trivy</h1>
+<p>This tutorial is focused on ways Trivy can scan Terraform IaC configuration files. </p>
+<p>A video tutorial on Terraform Misconfiguration scans can be found on the <a href="https://youtu.be/BWp5JLXkbBc">Aqua Open Source YouTube account.</a></p>
+<p><strong>A note to tfsec users</strong> 
+We have been consolidating all of our scanning-related efforts in one place, and that is Trivy. You can read more on the decision in the <a href="https://github.com/aquasecurity/tfsec/discussions/1994">tfsec discussions.</a></p>
+<h2 id="trivy-config-command">Trivy Config Command</h2>
+<p>Terraform configuration scanning is available as part of the <code>trivy config</code> command. This command scans all configuration files for misconfiguration issues. You can find the details within <a href="https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/scanning/">misconfiguration scans in the Trivy documentation.</a> </p>
+<p>Command structure: 
+<div class="highlight"><pre><span></span><code>trivy config &lt;any flags you want to use&gt; &lt;file or directory that you would like to scan&gt; 
+</code></pre></div></p>
+<p>The <code>trivy config</code> command can scan Terraform configuration, CloudFormation, Dockerfile, Kubernetes manifests, and Helm Charts for misconfiguration. Trivy will compare the configuration found in the file with a set of best practices.  </p>
+<ul>
+<li>If the configuration is following best practices, the check will pass,  </li>
+<li>If the configuration does not define the resource of some configuration, Trivy will assume the default configuration for the resource creation is used. In this case, the check might fail.</li>
+<li>If the configuration that has been defined does not follow best practices, the check will fail.  </li>
+</ul>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Install Trivy on your local machines. The documentation provides several <a href="https://aquasecurity.github.io/trivy/latest/getting-started/installation/">different installation options.</a> 
+This tutorial will use this example <a href="https://github.com/Cloud-Native-Security/trivy-demo/tree/main/bad_iac/terraform">Terraform tutorial</a> for terraform misconfiguration scanning with Trivy. </p>
+<p>Git clone the tutorial and cd into the directory: 
+<div class="highlight"><pre><span></span><code>git clone git@github.com:Cloud-Native-Security/trivy-demo.git
+cd bad_iac/terraform
+</code></pre></div>
+In this case, the folder only containes Terraform configuration files. However, you could scan a directory that contains several different configurations e.g. Kubernetes YAML manifests, Dockerfile, and Terraform. Trivy will then detect the different configuration files and apply the right rules automatically. </p>
+<h2 id="different-types-of-trivy-config-scans">Different types of <code>trivy config</code> scans</h2>
+<p>Below are several examples of how the trivy config scan can be used. </p>
+<p>General Terraform scan with trivy: 
+<div class="highlight"><pre><span></span><code>trivy config &lt;specify the directory&gt; 
+</code></pre></div></p>
+<p>So if we are already in the directory that we want to scan: 
+<div class="highlight"><pre><span></span><code>trivy config ./ 
+</code></pre></div></p>
+<h3 id="specify-the-scan-format">Specify the scan format</h3>
+<p>The <code>--format</code> flag changes the way that Trivy displays the scan result: </p>
+<p>JSON: 
+<div class="highlight"><pre><span></span><code>trivy config -f json terraform-infra 
+</code></pre></div></p>
+<p>Sarif: 
+<div class="highlight"><pre><span></span><code>trivy config -f sarif terraform-infra 
+</code></pre></div></p>
+<h3 id="specifying-the-output-location">Specifying the output location</h3>
+<p>The <code>--output</code> flag specifies the file location in which the scan result should be saved: </p>
+<p>JSON: 
+<div class="highlight"><pre><span></span><code>trivy config -f json -o example.json terraform-infra 
+</code></pre></div></p>
+<p>Sarif: 
+<div class="highlight"><pre><span></span><code>trivy config -f sarif -o example.sarif terraform-infra 
+</code></pre></div></p>
+<h3 id="filtering-by-severity">Filtering by severity</h3>
+<p>If you are presented with lots and lots of misconfiguration across different files, you might want to filter or the misconfiguration with the highest severity: </p>
+<div class="highlight"><pre><span></span><code>trivy config --severity CRITICAL, MEDIUM terraform-infra 
+</code></pre></div>
+<h3 id="passing-tftfvars-files-into-trivy-config-scans">Passing tf.tfvars files into <code>trivy config</code> scans</h3>
+<p>You can pass terraform values to Trivy to override default values found in the Terraform HCL code. More information are provided <a href="https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/options/values/">in the documentation.</a> </p>
+<div class="highlight"><pre><span></span><code>trivy conf --tf-vars terraform.tfvars ./
+</code></pre></div>
+<h3 id="custom-checks">Custom Checks</h3>
+<p>We have lots of examples in the <a href="https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/custom/">documentation</a> on how you can write and pass custom Rego policies into terraform misconfiguration scans. </p>
+<h2 id="secret-and-vulnerability-scans">Secret and vulnerability scans</h2>
+<p>The <code>trivy config</code> command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your <code>trivy fs</code> scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: </p>
+<div class="highlight"><pre><span></span><code>trivy fs --scanners secret,config ./
+</code></pre></div>
+<p>The <code>trivy config</code> command is a sub-command of the <code>trivy fs</code> command. You can learn more about this command in the <a href="https://aquasecurity.github.io/trivy/latest/docs/target/filesystem/">documentation.</a> </p>
+<h2 id="scanning-terraform-plan-files">Scanning Terraform Plan files</h2>
+<p>Instead of scanning your different Terraform resources individually, you could also scan your terraform plan output before it is deployed for misconfiguration. This will give you insights into any misconfiguration of your resources as they would become deployed. <a href="https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/examples/#terraform-plan">Here</a> is the link to the documentation.</p>
+<p>First, create a terraform plan and save it to a file:
+<div class="highlight"><pre><span></span><code>terraform plan --out tfplan.binary
+</code></pre></div></p>
+<p>Next, convert the file into json format:
+<div class="highlight"><pre><span></span><code>terraform show -json tfplan.binary &gt; tfplan.json
+</code></pre></div></p>
+<p>Lastly, scan the file with the <code>trivy config</code> command:
+<div class="highlight"><pre><span></span><code>trivy config ./tfplan.json
+</code></pre></div></p>
+<p>Note that you need to be able to create a terraform init and plan without any errors. </p>
+<h2 id="using-trivy-in-your-cicd-pipeline">Using Trivy in your CI/CD pipeline</h2>
+<p>Similar to tfsec, Trivy can be used either on local developer machines or integrated into your CI/CD pipeline. There are several steps available for different pipelines, including GitHub Actions, Circle CI, GitLab, Travis and more in the tutorials section of the documentation: <a href="https://aquasecurity.github.io/trivy/latest/tutorials/integrations/">https://aquasecurity.github.io/trivy/latest/tutorials/integrations/</a> </p>
 
               
             </article>
@@ -3607,7 +3783,7 @@ You're not viewing the latest version.
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../ide/" class="md-footer__link md-footer__link--prev" aria-label="Previous: IDE and Dev tools" rel="prev">
+        <a href="../../kubernetes/gitops/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GitOps" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3616,20 +3792,20 @@ You're not viewing the latest version.
               <span class="md-footer__direction">
                 Previous
               </span>
-              IDE and Dev tools
+              GitOps
             </div>
           </div>
         </a>
       
       
         
-        <a href="../security/" class="md-footer__link md-footer__link--next" aria-label="Next: Security Management" rel="next">
+        <a href="../../signing/vuln-attestation/" class="md-footer__link md-footer__link--next" aria-label="Next: Vulnerability Scan Record Attestation" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Security Management
+              Vulnerability Scan Record Attestation
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -3685,10 +3861,10 @@ You're not viewing the latest version.
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.footer", "content.action.edit", "content.tabs.link", "content.code.annotate", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"default": "latest", "method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.footer", "content.action.edit", "content.tabs.link", "content.code.annotate", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"default": "latest", "method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
       
     
   </body>
