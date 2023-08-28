@@ -108,10 +108,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 											V3Score:  5.3,
 										},
 									},
-									References: []string{
-										"http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
-										"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
-									},
 									PublishedDate:    lo.ToPtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
 									LastModifiedDate: lo.ToPtr(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
 								},
@@ -525,16 +521,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 							416,
 						},
 						Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
-						Advisories: &[]cdx.Advisory{
-							{
-								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
-							},
-							{
-								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
-							},
-						},
-						Published: "2018-12-31T19:29:00+00:00",
-						Updated:   "2019-10-31T01:15:00+00:00",
+						Published:   "2018-12-31T19:29:00+00:00",
+						Updated:     "2019-10-31T01:15:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
 								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
@@ -1418,174 +1406,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 							{
 								Ref: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
-								Range: &[]cdx.AffectedVersions{
-									{
-										Version: "1.20.0",
-										Status:  cdx.VulnerabilityStatusAffected,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "happy path. Vuln has no References",
-			inputReport: types.Report{
-				SchemaVersion: report.SchemaVersion,
-				ArtifactName:  "CVE-2023-34468",
-				ArtifactType:  ftypes.ArtifactFilesystem,
-				Results: types.Results{
-					{
-						Target: "Java",
-						Class:  types.ClassLangPkg,
-						Type:   ftypes.Jar,
-						Packages: []ftypes.Package{
-							{
-								Name:     "org.apache.nifi:nifi-dbcp-base",
-								Version:  "1.20.0",
-								FilePath: "nifi-dbcp-base-1.20.0.jar",
-							},
-						},
-						Vulnerabilities: []types.DetectedVulnerability{
-							{
-								VulnerabilityID:  "CVE-2023-34468",
-								PkgName:          "org.apache.nifi:nifi-dbcp-base",
-								PkgPath:          "nifi-dbcp-base-1.20.0.jar",
-								InstalledVersion: "1.20.0",
-								FixedVersion:     "1.22.0",
-								SeveritySource:   vulnerability.GHSA,
-								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2023-34468",
-								DataSource: &dtypes.DataSource{
-									ID:   vulnerability.GHSA,
-									Name: "GitHub Security Advisory Maven",
-									URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
-								},
-								Vulnerability: dtypes.Vulnerability{
-									Title:       "Apache NiFi vulnerable to Code Injection",
-									Description: "The DBCPConnectionPool and HikariCPConnectionPool Controller Services in Apache NiFi 0.0.2 through 1.21.0...",
-									Severity:    dtypes.SeverityHigh.String(),
-									CweIDs: []string{
-										"CWE-94",
-									},
-									VendorSeverity: dtypes.VendorSeverity{
-										vulnerability.GHSA: dtypes.SeverityHigh,
-										vulnerability.NVD:  dtypes.SeverityHigh,
-									},
-									CVSS: dtypes.VendorCVSS{
-										vulnerability.GHSA: dtypes.CVSS{
-											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-											V3Score:  8.8,
-										},
-										vulnerability.NVD: dtypes.CVSS{
-											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-											V3Score:  8.8,
-										},
-									},
-									PublishedDate:    lo.ToPtr(time.Date(2023, 6, 12, 16, 15, 0, 0, time.UTC)),
-									LastModifiedDate: lo.ToPtr(time.Date(2023, 6, 21, 02, 20, 0, 0, time.UTC)),
-								},
-							},
-						},
-					},
-				},
-			},
-			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
-				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_5,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
-				Version:      1,
-				Metadata: &cdx.Metadata{
-					Timestamp: "2021-08-25T12:20:30+00:00",
-					Tools: &[]cdx.Tool{
-						{
-							Name:    "trivy",
-							Vendor:  "aquasecurity",
-							Version: "dev",
-						},
-					},
-					Component: &cdx.Component{
-						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
-						Type:   cdx.ComponentTypeApplication,
-						Name:   "CVE-2023-34468",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:SchemaVersion",
-								Value: "2",
-							},
-						},
-					},
-				},
-				Components: &[]cdx.Component{
-					{
-						BOMRef:     "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
-						Type:       "library",
-						Name:       "nifi-dbcp-base",
-						Group:      "org.apache.nifi",
-						Version:    "1.20.0",
-						PackageURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "nifi-dbcp-base-1.20.0.jar",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "jar",
-							},
-						},
-					},
-				},
-				Dependencies: &[]cdx.Dependency{
-					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]string{
-							"pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
-						},
-					},
-					{
-						Ref:          "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
-						Dependencies: lo.ToPtr([]string{}),
-					},
-				},
-				Vulnerabilities: &[]cdx.Vulnerability{
-					{
-						ID: "CVE-2023-34468",
-						Source: &cdx.Source{
-							Name: string(vulnerability.GHSA),
-							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
-						},
-						Recommendation: "Upgrade org.apache.nifi:nifi-dbcp-base to version 1.22.0",
-						Ratings: &[]cdx.VulnerabilityRating{
-							{
-								Source: &cdx.Source{
-									Name: string(vulnerability.GHSA),
-								},
-								Score:    lo.ToPtr(8.8),
-								Severity: cdx.SeverityHigh,
-								Method:   cdx.ScoringMethodCVSSv31,
-								Vector:   "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-							},
-							{
-								Source: &cdx.Source{
-									Name: string(vulnerability.NVD),
-								},
-								Score:    lo.ToPtr(8.8),
-								Severity: cdx.SeverityHigh,
-								Method:   cdx.ScoringMethodCVSSv31,
-								Vector:   "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-							},
-						},
-						CWEs:        lo.ToPtr([]int{94}),
-						Description: "The DBCPConnectionPool and HikariCPConnectionPool Controller Services in Apache NiFi 0.0.2 through 1.21.0...",
-						Published:   "2023-06-12T16:15:00+00:00",
-						Updated:     "2023-06-21T02:20:00+00:00",
-						Affects: &[]cdx.Affects{
-							{
-								Ref: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "1.20.0",
