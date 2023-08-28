@@ -443,12 +443,14 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	repoFlags.ReportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
 	cmd := &cobra.Command{
-		Use:     "repository [flags] REPO_URL",
+		Use:     "repository [flags] (REPO_PATH | REPO_URL)",
 		Aliases: []string{"repo"},
 		GroupID: groupScanning,
-		Short:   "Scan a remote repository",
+		Short:   "Scan a repository",
 		Example: `  # Scan your remote git repository
-  $ trivy repo https://github.com/knqyf263/trivy-ci-test`,
+  $ trivy repo https://github.com/knqyf263/trivy-ci-test
+  # Scan your local git repository
+  $ trivy repo /path/to/your/repository`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := repoFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)

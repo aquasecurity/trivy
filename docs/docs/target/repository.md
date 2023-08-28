@@ -86,7 +86,7 @@ It is disabled by default and can be enabled with `--scanners config`.
 See [here](../scanner/misconfiguration/index.md) for the detail.
 
 ```shell
-$ trivy repo --scanners config [YOUR_REPO_URL]
+$ trivy repo --scanners config (REPO_PATH | REPO_URL)
 ```
 
 ### Secrets
@@ -94,7 +94,7 @@ It is enabled by default.
 See [here](../scanner/secret.md) for the detail.
 
 ```shell
-$ trivy repo [YOUR_REPO_URL]
+$ trivy repo (REPO_PATH | REPO_URL)
 ```
 
 ### Licenses
@@ -102,7 +102,7 @@ It is disabled by default.
 See [here](../scanner/license.md) for the detail.
 
 ```shell
-$ trivy repo --scanners license [YOUR_REPO_URL]
+$ trivy repo --scanners license (REPO_PATH | REPO_URL)
 ```
 
 ## SBOM generation
