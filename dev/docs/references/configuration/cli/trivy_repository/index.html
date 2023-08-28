@@ -3594,12 +3594,14 @@ You're not viewing the latest version.
   <h1>Repository</h1>
 
 <h2 id="trivy-repository">trivy repository</h2>
-<p>Scan a remote repository</p>
-<div class="highlight"><pre><span></span><code>trivy repository [flags] REPO_URL
+<p>Scan a repository</p>
+<div class="highlight"><pre><span></span><code>trivy repository [flags] (REPO_PATH | REPO_URL)
 </code></pre></div>
 <h3 id="examples">Examples</h3>
 <div class="highlight"><pre><span></span><code>  # Scan your remote git repository
   $ trivy repo https://github.com/knqyf263/trivy-ci-test
+  # Scan your local git repository
+  $ trivy repo /path/to/your/repository
 </code></pre></div>
 <h3 id="options">Options</h3>
 <div class="highlight"><pre><span></span><code>      --branch string                     pass the branch name to be scanned

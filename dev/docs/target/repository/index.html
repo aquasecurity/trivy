@@ -3771,17 +3771,17 @@ Total: 10 (UNKNOWN: 2, LOW: 0, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
 <h3 id="misconfigurations">Misconfigurations</h3>
 <p>It is disabled by default and can be enabled with <code>--scanners config</code>.
 See <a href="../../scanner/misconfiguration/">here</a> for the detail.</p>
-<div class="highlight"><pre><span></span><code>$ trivy repo --scanners config <span class="o">[</span>YOUR_REPO_URL<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>$ trivy repo --scanners config <span class="o">(</span>REPO_PATH <span class="p">|</span> REPO_URL<span class="o">)</span>
 </code></pre></div>
 <h3 id="secrets">Secrets</h3>
 <p>It is enabled by default.
 See <a href="../../scanner/secret/">here</a> for the detail.</p>
-<div class="highlight"><pre><span></span><code>$ trivy repo <span class="o">[</span>YOUR_REPO_URL<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>$ trivy repo <span class="o">(</span>REPO_PATH <span class="p">|</span> REPO_URL<span class="o">)</span>
 </code></pre></div>
 <h3 id="licenses">Licenses</h3>
 <p>It is disabled by default.
 See <a href="../../scanner/license/">here</a> for the detail.</p>
-<div class="highlight"><pre><span></span><code>$ trivy repo --scanners license <span class="o">[</span>YOUR_REPO_URL<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>$ trivy repo --scanners license <span class="o">(</span>REPO_PATH <span class="p">|</span> REPO_URL<span class="o">)</span>
 </code></pre></div>
 <h2 id="sbom-generation">SBOM generation</h2>
 <p>Trivy can generate SBOM for code repositories.
