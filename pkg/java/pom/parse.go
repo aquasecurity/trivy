@@ -9,10 +9,12 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	multierror "github.com/hashicorp/go-multierror"
+	"github.com/samber/lo"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
@@ -115,6 +117,7 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		deps              []types.Dependency
 		rootDepManagement []pomDependency
 		uniqArtifacts     = map[string]artifact{}
+		uniqDeps          = map[string][]string{}
 	)
 
 	// Iterate direct and transitive dependencies
@@ -129,7 +132,7 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 				return nil, nil, err
 			}
 			libs = append(libs, moduleLibs...)
-			if deps != nil {
+			if moduleDeps != nil {
 				deps = append(deps, moduleDeps...)
 			}
 			continue
@@ -139,6 +142,11 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		if uniqueArt, ok := uniqArtifacts[art.Name()]; ok {
 			if !uniqueArt.Version.shouldOverride(art.Version) {
 				continue
+			}
+			// mark artifact as Direct, if saved artifact is Direct
+			// take a look `hard requirement for the specified version` test
+			if uniqueArt.Direct {
+				art.Direct = true
 			}
 		}
 
@@ -150,6 +158,13 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		if art.Root {
 			// Managed dependencies in the root POM affect transitive dependencies
 			rootDepManagement = p.resolveDepManagement(result.properties, result.dependencyManagement)
+
+			// mark root artifact and its dependencies as Direct
+			art.Direct = true
+			result.dependencies = lo.Map(result.dependencies, func(dep artifact, _ int) artifact {
+				dep.Direct = true
+				return dep
+			})
 		}
 
 		// Parse, cache, and enqueue modules.
@@ -172,20 +187,56 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 			uniqArtifacts[art.Name()] = artifact{
 				Version:  art.Version,
 				Licenses: art.Licenses,
+				Direct:   art.Direct,
 			}
+
+			// save only dependency names
+			// version will be determined later
+			dependsOn := lo.Map(result.dependencies, func(a artifact, _ int) string {
+				return a.Name()
+			})
+			uniqDeps[packageID(art.Name(), art.Version.String())] = dependsOn
 		}
 	}
 
-	// Convert to []types.Library
+	// Convert to []types.Library and []types.Dependency
 	for name, art := range uniqArtifacts {
-		libs = append(libs, types.Library{
-			Name:    name,
-			Version: art.Version.String(),
-			License: art.JoinLicenses(),
+		lib := types.Library{
+			ID:       packageID(name, art.Version.String()),
+			Name:     name,
+			Version:  art.Version.String(),
+			License:  art.JoinLicenses(),
+			Indirect: !art.Direct,
+		}
+		libs = append(libs, lib)
+
+		// Convert dependency names into dependency IDs
+		dependsOn := lo.FilterMap(uniqDeps[lib.ID], func(dependOnName string, _ int) (string, bool) {
+			ver := depVersion(dependOnName, uniqArtifacts)
+			return packageID(dependOnName, ver), ver != ""
 		})
+
+		sort.Strings(dependsOn)
+		if len(dependsOn) > 0 {
+			deps = append(deps, types.Dependency{
+				ID:        lib.ID,
+				DependsOn: dependsOn,
+			})
+		}
 	}
 
+	sort.Sort(types.Libraries(libs))
+	sort.Sort(types.Dependencies(deps))
+
 	return libs, deps, nil
+}
+
+// depVersion finds dependency in uniqArtifacts and return its version
+func depVersion(depName string, uniqArtifacts map[string]artifact) string {
+	if art, ok := uniqArtifacts[depName]; ok {
+		return art.Version.String()
+	}
+	return ""
 }
 
 func (p *parser) parseModule(currentPath, relativePath string) (artifact, error) {

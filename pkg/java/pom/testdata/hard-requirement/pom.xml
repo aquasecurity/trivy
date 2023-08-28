@@ -24,15 +24,11 @@
         </developer>
     </developers>
 
-    <properties>
-        <api.version>1.7.30</api.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
-            <artifactId>example-api</artifactId>
-            <version>${api.version}</version>
+            <artifactId>example-nested</artifactId>
+            <version>3.3.4</version>
         </dependency>
         <dependency>
             <groupId>org.example</groupId>

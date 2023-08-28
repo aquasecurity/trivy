@@ -1,6 +1,7 @@
 package pom
 
 import (
+	"fmt"
 	"os"
 	"strings"
 )
@@ -18,4 +19,8 @@ func isProperty(version string) bool {
 		return true
 	}
 	return false
+}
+
+func packageID(name, version string) string {
+	return fmt.Sprintf("%s:%s", name, version)
 }
