@@ -65,6 +65,9 @@ func NewDriver(libType string) (Driver, bool) {
 		// https://www.swift.org/package-manager/#importing-dependencies
 		ecosystem = vulnerability.Swift
 		comparer = compare.GenericComparer{}
+	case ftypes.Bitnami:
+		ecosystem = vulnerability.Bitnami
+		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
 		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, false

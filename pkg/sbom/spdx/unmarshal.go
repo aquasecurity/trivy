@@ -115,7 +115,14 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 		case isApplication(pkgB.PackageSPDXIdentifier):
 			// pass
 		// Relationship: application => language-specific package
-		case isApplication(pkgA.PackageSPDXIdentifier):
+		case isApplication(pkgA.PackageSPDXIdentifier) ||
+			// Package identifiers fields may NOT use "OperatingSystem", "Application", etc. suffixes
+			// for distinguishing between OS packages, application, language-specific packages, etc. since
+			// the SPDX specification does not require it.
+			// ref: https://spdx.github.io/spdx-spec/v2.3/package-information/#72-package-spdx-identifier-field
+			// In this case, we should relying on the relationship type and assumes B is a language-specific package
+			// of A if the relationship type is "CONTAINS".
+			rel.Relationship == "CONTAINS":
 			app, ok := apps[pkgA.PackageSPDXIdentifier]
 			if !ok {
 				app = initApplication(*pkgA)

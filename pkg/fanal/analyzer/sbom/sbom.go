@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 )
 
@@ -39,24 +40,27 @@ func (a sbomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 		return nil, xerrors.Errorf("SBOM decode error: %w", err)
 	}
 
-	// For Bitnami images
+	// Bitnami images
+	// SPDX files are are located under the /opt/bitnami/<component> directory
+	// and named with the pattern .spdx-<component>.spdx
+	// ref: https://github.com/bitnami/vulndb#how-to-consume-this-cve-feed
 	if strings.HasPrefix(input.FilePath, "opt/bitnami/") {
-		dir, file := path.Split(input.FilePath)
-		bin := strings.TrimPrefix(file, ".spdx-")
-		bin = strings.TrimSuffix(bin, ".spdx")
-		binPath := path.Join(input.FilePath, "../bin", bin)
+		componentPath := path.Dir(input.FilePath)
 		for i, app := range bom.Applications {
-			// Replace the SBOM path with the binary path
-			bom.Applications[i].FilePath = binPath
+			// Force the application type to "bitnami"
+			bom.Applications[i].Type = ftypes.Bitnami
+			// Replace the SBOM path with the component path
+			bom.Applications[i].FilePath = componentPath
 
 			for j, pkg := range app.Libraries {
 				if pkg.FilePath == "" {
 					continue
 				}
+
 				// Set the absolute path since SBOM in Bitnami images contain a relative path
 				// e.g. modules/apm/elastic-apm-agent-1.36.0.jar
 				//      => opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar
-				bom.Applications[i].Libraries[j].FilePath = path.Join(dir, pkg.FilePath)
+				bom.Applications[i].Libraries[j].FilePath = path.Join(componentPath, pkg.FilePath)
 			}
 		}
 	}

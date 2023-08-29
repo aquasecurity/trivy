@@ -2,38 +2,41 @@ package sbom
 
 import (
 	"context"
+	"os"
+	"testing"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"os"
-	"testing"
 )
 
 func Test_sbomAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name    string
-		file    string
-		want    *analyzer.AnalysisResult
-		wantErr require.ErrorAssertionFunc
+		name     string
+		file     string
+		filePath string
+		want     *analyzer.AnalysisResult
+		wantErr  require.ErrorAssertionFunc
 	}{
 		{
-			name: "valid spdx file",
-			file: "testdata/spdx.json",
+			name:     "valid elasticsearch spdx file",
+			file:     "testdata/elasticsearch.spdx.json",
+			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.Jar,
-						FilePath: "opt/bitnami/bin/elasticsearch",
+						Type:     types.Bitnami,
+						FilePath: "opt/bitnami/elasticsearch",
 						Libraries: types.Packages{
 							{
-								FilePath: "opt/bitnami/modules/apm/elastic-apm-agent-1.36.0.jar",
+								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
 								Ref:      "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 							},
 							{
-								FilePath: "opt/bitnami/modules/apm/elastic-apm-agent-1.36.0.jar",
+								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
 								Ref:      "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
@@ -45,22 +48,23 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			wantErr: require.NoError,
 		},
 		{
-			name: "valid cdx file",
-			file: "testdata/cdx.json",
+			name:     "valid elasticsearch cdx file",
+			file:     "testdata/cdx.json",
+			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.Jar,
-						FilePath: "opt/bitnami/bin/elasticsearch",
+						Type:     types.Bitnami,
+						FilePath: "opt/bitnami/elasticsearch",
 						Libraries: types.Packages{
 							{
-								FilePath: "opt/bitnami/modules/apm/elastic-apm-agent-1.36.0.jar",
+								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
 								Ref:      "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 							},
 							{
-								FilePath: "opt/bitnami/modules/apm/elastic-apm-agent-1.36.0.jar",
+								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
 								Ref:      "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
@@ -72,10 +76,45 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			wantErr: require.NoError,
 		},
 		{
-			name:    "invalid spdx file",
-			file:    "testdata/invalid_spdx.json",
-			want:    nil,
-			wantErr: require.Error,
+			name:     "invalid spdx file",
+			file:     "testdata/invalid_spdx.json",
+			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
+			want:     nil,
+			wantErr:  require.Error,
+		},
+		{
+			name:     "valid postgresql spdx file",
+			file:     "testdata/postgresql.spdx.json",
+			filePath: "opt/bitnami/postgresql/.spdx-postgresql.spdx",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Bitnami,
+						FilePath: "opt/bitnami/postgresql",
+						Libraries: types.Packages{
+							{
+								Name:     "geos",
+								Version:  "3.8.3",
+								Ref:      "pkg:bitnami/geos@3.8.3",
+								Licenses: []string{"LGPL-2.1-only"},
+							},
+							{
+								Name:     "proj",
+								Version:  "6.3.2",
+								Ref:      "pkg:bitnami/proj@6.3.2",
+								Licenses: []string{"MIT"},
+							},
+							{
+								Name:     "gdal",
+								Version:  "3.7.1",
+								Ref:      "pkg:bitnami/gdal@3.7.1",
+								Licenses: []string{"MIT"},
+							},
+						},
+					},
+				},
+			},
+			wantErr: require.NoError,
 		},
 	}
 	for _, tt := range tests {
@@ -86,7 +125,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 
 			a := sbomAnalyzer{}
 			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
-				FilePath: "opt/bitnami/.spdx-elasticsearch.spdx",
+				FilePath: tt.filePath,
 				Content:  f,
 			})
 			tt.wantErr(t, err)

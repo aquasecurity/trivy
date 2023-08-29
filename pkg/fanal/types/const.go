@@ -34,6 +34,7 @@ const (
 	Swift      = "swift"
 	Pub        = "pub"
 	Hex        = "hex"
+	Bitnami    = "bitnami"
 
 	// Config files
 	YAML           = "yaml"
