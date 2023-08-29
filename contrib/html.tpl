@@ -128,7 +128,7 @@
         <td>{{ escapeXML .ID }}</td>
         <td class="misconf-check">{{ escapeXML .Title }}</td>
         <td class="severity">{{ escapeXML .Severity }}</td>
-        <td class="link" data-more-links="off"  style="white-space:normal;"">
+        <td class="link" data-more-links="off"  style="white-space:normal;">
           {{ escapeXML .Message }}
           <br>
             <a href={{ escapeXML .PrimaryURL | printf "%q" }}>{{ escapeXML .PrimaryURL }}</a>

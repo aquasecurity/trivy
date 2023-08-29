@@ -6,7 +6,7 @@ builds:
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X main.version={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -26,7 +26,7 @@ builds:
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X main.version={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -41,7 +41,7 @@ builds:
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X main.version={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
@@ -57,7 +57,7 @@ builds:
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X main.version={{.Version}}
+      - -X github.com/aquasecurity/trivy/pkg/version.ver={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:

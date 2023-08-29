@@ -6,7 +6,7 @@
 
 ### Does Trivy support X?
 
-Check out the [Scanning coverage page](./coverage.md)
+Check out the [Scanning coverage page](../docs/coverage/index.md).
 
 ### Is there a paid version of Trivy?
 

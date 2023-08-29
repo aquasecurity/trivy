@@ -14,7 +14,7 @@ As for `--namespaces` option, the detail is described as below.
 If a file name matches the following file patterns, Trivy will parse the file and pass it as input to your Rego policy.
 
 | File format   | File pattern                                              |
-|---------------|-----------------------------------------------------------|
+| ------------- | --------------------------------------------------------- |
 | JSON          | `*.json`                                                  |
 | YAML          | `*.yaml` and `*.yml`                                      |
 | Dockerfile    | `Dockerfile`, `Dockerfile.*`, and `*.Dockerfile`          |
@@ -125,14 +125,14 @@ schema that will be used is based on the input document type. It is recommended 
 correct and do not reference incorrect properties/values.
 
 | Field name                 | Allowed values                                                    |        Default value         |     In table     |     In JSON      |
-|----------------------------|-------------------------------------------------------------------|:----------------------------:|:----------------:|:----------------:|
+| -------------------------- | ----------------------------------------------------------------- | :--------------------------: | :--------------: | :--------------: |
 | title                      | Any characters                                                    |             N/A              | :material-check: | :material-check: |
 | description                | Any characters                                                    |                              | :material-close: | :material-check: |
 | schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) | :material-close: | :material-close: |
 | custom.id                  | Any characters                                                    |             N/A              | :material-check: | :material-check: |
 | custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            | :material-check: | :material-check: |
-| custom.recommended_actions | Any characters                                                    |                              | :material-close: | :material-check: | 
-| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              | :material-close: | :material-check: | 
+| custom.recommended_actions | Any characters                                                    |                              | :material-close: | :material-check: |
+| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              | :material-close: | :material-check: |
 | url                        | Any characters                                                    |                              | :material-close: | :material-check: |
 
 
@@ -178,6 +178,7 @@ You can specify input format via the `custom.input` annotation.
     Even if a Dockerfile exists in the specified directory, it will not be passed to the policy as input.
 
     Possible values for input types are:
+
     - `dockerfile` (Dockerfile)
     - `kubernetes` (Kubernetes YAML/JSON)
     - `rbac` (Kubernetes RBAC YAML/JSON)

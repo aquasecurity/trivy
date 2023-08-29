@@ -22,7 +22,7 @@ By default, vulnerability and secret scanning are enabled, and you can configure
 It is enabled by default.
 You can simply specify your image name (and a tag).
 It detects known vulnerabilities in your container image.
-See [here](../scanner/vulnerability/index.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ```
 $ trivy image [YOUR_IMAGE_NAME]

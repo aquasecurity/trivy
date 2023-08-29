@@ -184,7 +184,7 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 
 func execute(osArgs []string) error {
 	// Setup CLI App
-	app := commands.NewApp("dev")
+	app := commands.NewApp()
 	app.SetOut(io.Discard)
 
 	// Run Trivy

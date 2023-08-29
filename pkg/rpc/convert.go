@@ -40,6 +40,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
 			Digest:     pkg.Digest.String(),
+			Indirect:   pkg.Indirect,
 		})
 	}
 	return rpcPkgs
@@ -134,6 +135,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
 			Digest:     digest.Digest(pkg.Digest),
+			Indirect:   pkg.Indirect,
 		})
 	}
 	return pkgs

@@ -70,7 +70,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return filepath.Base(path) == types.GoMod
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, _ io.Reader) error {
 		// Parse go.mod
 		gomod, err := parse(input.FS, path, a.modParser)
 		if err != nil {
@@ -298,9 +298,7 @@ func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error
 		return nil, nil
 	}
 
-	return lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
-		return finding.Name
-	}), nil
+	return license.Findings.Names(), nil
 }
 
 // normalizeModName escapes upper characters

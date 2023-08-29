@@ -1,9 +1,9 @@
 ## trivy repository
 
-Scan a remote repository
+Scan a repository
 
 ```
-trivy repository [flags] REPO_URL
+trivy repository [flags] (REPO_PATH | REPO_URL)
 ```
 
 ### Examples
@@ -11,6 +11,8 @@ trivy repository [flags] REPO_URL
 ```
   # Scan your remote git repository
   $ trivy repo https://github.com/knqyf263/trivy-ci-test
+  # Scan your local git repository
+  $ trivy repo /path/to/your/repository
 ```
 
 ### Options
