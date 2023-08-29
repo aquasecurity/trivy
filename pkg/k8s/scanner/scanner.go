@@ -71,7 +71,7 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	}()
 
 	if s.opts.Format == types.FormatCycloneDX {
-		rootComponent, err := clusterInfoToReportResources(artifactsData, s.cluster)
+		rootComponent, err := clusterInfoToReportResources(artifactsData)
 		if err != nil {
 			return report.Report{}, err
 		}
@@ -202,7 +202,7 @@ const (
 	nodeCoreComponents = "node-core-components"
 )
 
-func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName string) (*core.Component, error) {
+func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Component, error) {
 	coreComponents := make([]*core.Component, 0)
 	var cInfo *core.Component
 	for _, artifact := range allArtifact {
