@@ -32,6 +32,7 @@ const (
 	RustBinary        = "rustbinary"
 	Conan             = "conan"
 	Cocoapods         = "cocoapods"
+	Swift             = "swift"
 	Pub               = "pub"
 	Hex               = "hex"
 
@@ -82,6 +83,7 @@ const (
 	ConanLock = "conan.lock"
 
 	CocoaPodsLock = "Podfile.lock"
+	SwiftResolved = "Package.resolved"
 
 	PubSpecLock = "pubspec.lock"
 

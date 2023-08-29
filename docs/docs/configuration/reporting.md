@@ -246,7 +246,7 @@ $ trivy image -f json -o results.json golang:1.12-alpine
 |  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
-|     License      |           |
+|     License      |     ✓     |
 
 [SARIF][sarif] can be generated with the `--format sarif` flag.
 

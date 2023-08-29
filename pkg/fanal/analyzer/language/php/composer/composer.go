@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -13,7 +14,6 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/php/composer"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -51,7 +51,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 		return filepath.Base(path) == types.ComposerLock
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		// Parse composer.lock
 		app, err := a.parseComposerLock(path, r)
 		if err != nil {
@@ -99,7 +99,7 @@ func (a composerAnalyzer) Version() int {
 	return version
 }
 
-func (a composerAnalyzer) parseComposerLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
+func (a composerAnalyzer) parseComposerLock(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Composer, path, r, a.lockParser)
 }
 

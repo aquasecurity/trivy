@@ -24,7 +24,7 @@ Since this information is not included in `composer.lock`, Trivy parses `compose
 If you want to see the dependency tree, please ensure that `composer.json` is present.
 
 ## installed.json
-By default, you can find this file at `path_to_app/vendor/composer/installed.json`. Trivy doesn't support dependency detection for `installed.json` files, because this file doesn't contain Direct/Indirect dependency information.
+By default, you can find this file at `path_to_app/vendor/composer/installed.json`. Trivy doesn't support dependency graph for `installed.json` files, because this file doesn't contain Direct/Indirect dependency information.
 
 [composer]: https://getcomposer.org/
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

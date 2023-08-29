@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 // Analyze returns an analysis result of the lock file
@@ -44,8 +45,12 @@ func AnalyzePackage(fileType, filePath string, r dio.ReadSeekerAt, parser godept
 }
 
 // Parse returns a parsed result of the lock file
-func Parse(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*types.Application, error) {
-	parsedLibs, parsedDependencies, err := parser.Parse(r)
+func Parse(fileType, filePath string, r io.Reader, parser godeptypes.Parser) (*types.Application, error) {
+	rr, err := xio.NewReadSeekerAt(r)
+	if err != nil {
+		return nil, xerrors.Errorf("reader error: %w", err)
+	}
+	parsedLibs, parsedDependencies, err := parser.Parse(rr)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}

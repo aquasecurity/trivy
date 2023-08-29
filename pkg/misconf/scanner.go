@@ -425,6 +425,16 @@ func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
 		StartLine: flat.Location.StartLine,
 		EndLine:   flat.Location.EndLine,
 	}
+	for _, o := range flat.Occurrences {
+		cause.Occurrences = append(cause.Occurrences, types.Occurrence{
+			Resource: o.Resource,
+			Filename: o.Filename,
+			Location: types.Location{
+				StartLine: o.StartLine,
+				EndLine:   o.EndLine,
+			},
+		})
+	}
 	if code, err := underlying.GetCode(); err == nil {
 		cause.Code = types.Code{
 			Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {
