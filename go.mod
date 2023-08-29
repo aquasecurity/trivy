@@ -72,7 +72,7 @@ require (
 	github.com/open-policy-agent/opa v0.55.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0-rc4
-	github.com/openvex/go-vex v0.2.1
+	github.com/openvex/go-vex v0.2.5
 	github.com/owenrumney/go-sarif/v2 v2.2.0
 	github.com/package-url/packageurl-go v0.1.1
 	github.com/samber/lo v1.38.1
