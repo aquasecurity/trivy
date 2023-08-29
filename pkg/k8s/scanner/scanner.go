@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	k8sCoreComponentNamespace = core.Namespace + "k8s:component" + ":"
+	k8sCoreComponentNamespace = core.Namespace + "resource:"
 	k8sComponentType          = "Type"
 	k8sComponentName          = "Name"
 	k8sComponentNode          = "node"
@@ -197,12 +197,14 @@ const (
 	oci                = "oci"
 	kubelet            = "k8s.io/kubelet"
 	pod                = "PodInfo"
+	clusterInfo        = "ClusterInfo"
 	nodeInfo           = "NodeInfo"
 	nodeCoreComponents = "node-core-components"
 )
 
 func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName string) (*core.Component, error) {
 	coreComponents := make([]*core.Component, 0)
+	var cInfo *core.Component
 	for _, artifact := range allArtifact {
 		switch artifact.Kind {
 		case pod:
@@ -255,13 +257,22 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 				return nil, err
 			}
 			coreComponents = append(coreComponents, nodeComponent(nf))
+		case clusterInfo:
+			var cf bom.ClusterInfo
+			err := ms.Decode(artifact.RawResource, &cf)
+			if err != nil {
+				return nil, err
+			}
+			cInfo = &core.Component{Name: cf.Name, Version: cf.Version, Properties: toProperties(cf.Properties, "")}
 		default:
 			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
 		}
 	}
 	rootComponent := &core.Component{
-		Name:       clusterName,
+		Name:       cInfo.Name,
+		Version:    cInfo.Version,
 		Type:       cdx.ComponentTypePlatform,
+		Properties: cInfo.Properties,
 		Components: coreComponents,
 	}
 	return rootComponent, nil
