@@ -181,6 +181,7 @@ var (
 		TypeRustBinary,
 		TypeConanLock,
 		TypeCocoaPods,
+		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
 	}
@@ -199,6 +200,7 @@ var (
 		TypeConanLock,
 		TypeGradleLock,
 		TypeCocoaPods,
+		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
 	}
