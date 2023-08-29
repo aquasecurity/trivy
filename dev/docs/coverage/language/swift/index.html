@@ -1920,9 +1920,47 @@ You're not viewing the latest version.
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Swift
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Swift
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#swift_1" class="md-nav__link">
+    Swift
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cocoapods" class="md-nav__link">
+    CocoaPods
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -3465,6 +3503,28 @@ You're not viewing the latest version.
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#swift_1" class="md-nav__link">
+    Swift
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cocoapods" class="md-nav__link">
+    CocoaPods
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -3482,8 +3542,8 @@ You're not viewing the latest version.
 
 
 <h1 id="swift">Swift</h1>
-<p>Trivy supports <a href="https://cocoapods.org/">CocoaPods</a> for Swift packages.
-The following scanners are supported.</p>
+<p>Trivy supports <a href="https://cocoapods.org/">CocoaPods</a> and <a href="https://www.swift.org/package-manager/">Swift</a> package managers.</p>
+<p>The following scanners are supported.</p>
 <table>
 <thead>
 <tr>
@@ -3495,13 +3555,65 @@ The following scanners are supported.</p>
 </thead>
 <tbody>
 <tr>
-<td>CocoaPods</td>
+<td>Swift</td>
+<td align="center">✓</td>
 <td align="center">✓</td>
 <td align="center">-</td>
+</tr>
+<tr>
+<td>CocoaPods</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
 <td align="center">-</td>
 </tr>
 </tbody>
 </table>
+<p>The following table provides an outline of the features Trivy offers.</p>
+<table>
+<thead>
+<tr>
+<th align="center">Package manager</th>
+<th>File</th>
+<th align="center">Transitive dependencies</th>
+<th align="center">Dev dependencies</th>
+<th align="center"><a href="../../../configuration/reporting/#show-origins-of-vulnerable-dependencies">Dependency graph</a></th>
+<th align="center">Position</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Swift</td>
+<td>Package.resolved</td>
+<td align="center">✓</td>
+<td align="center">Included</td>
+<td align="center">-</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">CocoaPods</td>
+<td>Podfile.lock</td>
+<td align="center">✓</td>
+<td align="center">Included</td>
+<td align="center">✓</td>
+<td align="center">-</td>
+</tr>
+</tbody>
+</table>
+<p>These may be enabled or disabled depending on the target.
+See <a href="../">here</a> for the detail.</p>
+<h2 id="swift_1">Swift</h2>
+<p>Trivy parses <a href="https://github.com/apple/swift-package-manager/blob/4a42f2519e3f7b8a731c5ed89b47ed577df8f86c/Documentation/Usage.md#resolving-versions-packageresolved-file">Package.resolved</a> file to find dependencies.
+Don't forget to update (<code>swift package update</code> command) this file before scanning.</p>
+<h2 id="cocoapods">CocoaPods</h2>
+<p>CocoaPods uses package names in <code>PodFile.lock</code>, but <a href="https://github.com/advisories?query=type%3Areviewed+ecosystem%3Aswift">GitHub Advisory Database (GHSA)</a> Trivy relies on uses Git URLs. 
+We parse <a href="https://github.com/CocoaPods/Specs">the CocoaPods Specs</a> to match package names and links.</p>
+<div class="admonition note">
+<p class="admonition-title">Limitation</p>
+<p>Since <a href="https://github.com/advisories?query=type%3Areviewed+ecosystem%3Aswift">GHSA</a> holds only Git URLs, such as github.com/apple/swift-nio, 
+Trivy can't identify affected submodules, and detect all submodules maintained by the same URL.
+For example, <a href="https://cocoapods.org/pods/SwiftNIOHTTP1">SwiftNIOHTTP1</a> and <a href="https://cocoapods.org/pods/SwiftNIOWebSocket">SwiftNIOWebSocket</a> both are maintained under <code>github.com/apple/swift-nio</code>,
+and Trivy detect CVE-2022-3215 for both of them, even though only <a href="https://cocoapods.org/pods/SwiftNIOHTTP1">SwiftNIOHTTP1</a> is actually affected.</p>
+</div>
 
               
             </article>
