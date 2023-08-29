@@ -33,6 +33,18 @@ func TestK8sClusterInfoReport(t *testing.T) {
 			artifacts: []*artifacts.Artifact{
 				{
 					Namespace: "kube-system",
+					Kind:      "ClusterInfo",
+					Name:      "k8s.io/kubernetes",
+					RawResource: map[string]interface{}{
+						"Properties": map[string]string{
+							"Name": "kube-cluster",
+						},
+						"Name":    "kube-apiserver-kind-control-plane",
+						"Version": "1.21.1",
+					},
+				},
+				{
+					Namespace: "kube-system",
 					Kind:      "PodInfo",
 					Name:      "kube-apiserver-kind-control-plane",
 					RawResource: map[string]interface{}{
@@ -72,8 +84,12 @@ func TestK8sClusterInfoReport(t *testing.T) {
 				},
 			},
 			want: &core.Component{
-				Type: cdx.ComponentTypePlatform,
-				Name: "test-cluster",
+				Type:    cdx.ComponentTypePlatform,
+				Name:    "kube-apiserver-kind-control-plane",
+				Version: "1.21.1",
+				Properties: []core.Property{
+					{Name: "Name", Value: "kube-cluster", Namespace: k8sCoreComponentNamespace},
+				},
 				Components: []*core.Component{
 					{
 						Type: cdx.ComponentTypeApplication,
@@ -140,13 +156,12 @@ func TestK8sClusterInfoReport(t *testing.T) {
 								},
 								Components: []*core.Component{
 									{
-										Type:    cdx.ComponentTypeLibrary,
+										Type:    cdx.ComponentTypeApplication,
 										Name:    "k8s.io/kubelet",
 										Version: "1.21.1",
 										Properties: []core.Property{
 											{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
 											{Name: k8sComponentName, Value: "k8s.io/kubelet", Namespace: k8sCoreComponentNamespace},
-											{Name: "PkgType", Value: "golang", Namespace: ""},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
@@ -158,13 +173,12 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										},
 									},
 									{
-										Type:    cdx.ComponentTypeLibrary,
+										Type:    cdx.ComponentTypeApplication,
 										Name:    "github.com/containerd/containerd",
 										Version: "1.5.2",
 										Properties: []core.Property{
 											{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
 											{Name: k8sComponentName, Value: "github.com/containerd/containerd", Namespace: k8sCoreComponentNamespace},
-											{Name: "PkgType", Value: "golang", Namespace: ""},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{

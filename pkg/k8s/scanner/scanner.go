@@ -263,7 +263,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 			if err != nil {
 				return nil, err
 			}
-			cInfo = &core.Component{Name: cf.Name, Version: cf.Version, Properties: toProperties(cf.Properties, "")}
+			cInfo = &core.Component{Name: cf.Name, Version: cf.Version, Properties: toProperties(cf.Properties, k8sCoreComponentNamespace)}
 		default:
 			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
 		}
