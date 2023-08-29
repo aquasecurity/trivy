@@ -651,6 +651,28 @@ func TestPackage(t *testing.T) {
 				Version: "4.2.0",
 			},
 		},
+		{
+			name: "wrong epoch",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeRPM,
+					Namespace: "redhat",
+					Name:      "acl",
+					Version:   "2.2.53-1.el8",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "epoch",
+							Value: "wrong",
+						},
+					},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:    "acl",
+				Version: "2.2.53",
+				Release: "1.el8",
+			},
+		},
 	}
 
 	for _, tt := range tests {
