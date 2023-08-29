@@ -411,7 +411,6 @@ func TestNewPackageURL(t *testing.T) {
 }
 
 func TestFromString(t *testing.T) {
-
 	testCases := []struct {
 		name    string
 		purl    string
@@ -558,6 +557,106 @@ func TestFromString(t *testing.T) {
 			}
 			assert.NoError(t, err)
 			assert.Equal(t, tc.want, *pkg, tc.name)
+		})
+	}
+}
+
+func TestPackage(t *testing.T) {
+	tests := []struct {
+		name    string
+		pkgURL  *purl.PackageURL
+		wantPkg *ftypes.Package
+	}{
+		{
+			name: "rpm + Qualifiers",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeRPM,
+					Namespace: "redhat",
+					Name:      "nodejs-full-i18n",
+					Version:   "10.21.0-3.module_el8.2.0+391+8da3adc6",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "arch",
+							Value: "x86_64",
+						},
+						{
+							Key:   "epoch",
+							Value: "1",
+						},
+						{
+							Key:   "modularitylabel",
+							Value: "nodejs:10:8020020200707141642:6a468ee4",
+						},
+						{
+							Key:   "distro",
+							Value: "redhat-8",
+						},
+					},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:            "nodejs-full-i18n",
+				Version:         "10.21.0",
+				Release:         "3.module_el8.2.0+391+8da3adc6",
+				Arch:            "x86_64",
+				Epoch:           1,
+				Modularitylabel: "nodejs:10:8020020200707141642:6a468ee4",
+			},
+		},
+		{
+			name: "composer with namespace",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeComposer,
+					Namespace: "symfony",
+					Name:      "contracts",
+					Version:   "v1.0.2",
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:    "symfony/contracts",
+				Version: "v1.0.2",
+			},
+		},
+		{
+			name: "maven with namespace",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeMaven,
+					Namespace:  "org.springframework",
+					Name:       "spring-core",
+					Version:    "5.0.4.RELEASE",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:    "org.springframework:spring-core",
+				Version: "5.0.4.RELEASE",
+			},
+		},
+		{
+			name: "cocoapods with subpath",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeCocoapods,
+					Version:    "4.2.0",
+					Name:       "AppCenter",
+					Subpath:    "Analytics",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:    "AppCenter/Analytics",
+				Version: "4.2.0",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.pkgURL.Package()
+			assert.Equal(t, tt.wantPkg, got)
 		})
 	}
 }
