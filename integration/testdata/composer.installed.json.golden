@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/composer-installed",
+  "ArtifactName": "testdata/fixtures/repo/composer-installed",
   "ArtifactType": "filesystem",
   "Metadata": {
     "ImageConfig": {
