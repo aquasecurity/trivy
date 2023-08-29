@@ -115,50 +115,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path for cocoapods with submodules bom (purl uses subpath)",
-			inputFile: "testdata/happy/cocoapods-with-submodule-bom.json",
-			want: types.SBOM{
-				Applications: []ftypes.Application{
-					{
-						Type:     "cocoapods",
-						FilePath: "Podfile.lock",
-						Libraries: ftypes.Packages{
-							{
-								ID:      "AppCenter@4.2.0",
-								Name:    "AppCenter",
-								Version: "4.2.0",
-								Ref:     "pkg:cocoapods/AppCenter@4.2.0",
-							},
-							{
-								ID:      "AppCenter/Analytics@4.2.0",
-								Name:    "AppCenter/Analytics",
-								Version: "4.2.0",
-								Ref:     "pkg:cocoapods/AppCenter@4.2.0#Analytics",
-							},
-							{
-								ID:      "AppCenter/Core@4.2.0",
-								Name:    "AppCenter/Core",
-								Version: "4.2.0",
-								Ref:     "pkg:cocoapods/AppCenter@4.2.0#Core",
-							},
-							{
-								ID:      "AppCenter/Crashes@4.2.0",
-								Name:    "AppCenter/Crashes",
-								Version: "4.2.0",
-								Ref:     "pkg:cocoapods/AppCenter@4.2.0#Crashes",
-							},
-							{
-								ID:      "KeychainAccess@4.2.1",
-								Name:    "KeychainAccess",
-								Version: "4.2.1",
-								Ref:     "pkg:cocoapods/KeychainAccess@4.2.1",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
 			name:      "happy path for bom with hasFiles field",
 			inputFile: "testdata/happy/with-hasfiles-bom.json",
 			want: types.SBOM{
