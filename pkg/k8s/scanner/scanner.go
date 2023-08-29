@@ -242,6 +242,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 			}
 			rootComponent := &core.Component{
 				Name:       comp.Name,
+				Version:    comp.Version,
 				Type:       cdx.ComponentTypeApplication,
 				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
 				Components: imageComponents,
@@ -336,26 +337,24 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 				},
 				Components: []*core.Component{
 					{
-						Type:    cdx.ComponentTypeLibrary,
+						Type:    cdx.ComponentTypeApplication,
 						Name:    kubelet,
 						Version: kubeletVersion,
 						Properties: []core.Property{
 							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
 							{Name: k8sComponentName, Value: kubelet, Namespace: k8sCoreComponentNamespace},
-							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", kubelet, kubeletVersion, packageurl.Qualifiers{}, ""),
 						},
 					},
 					{
-						Type:    cdx.ComponentTypeLibrary,
+						Type:    cdx.ComponentTypeApplication,
 						Name:    runtimeName,
 						Version: runtimeVersion,
 						Properties: []core.Property{
 							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
 							{Name: k8sComponentName, Value: runtimeName, Namespace: k8sCoreComponentNamespace},
-							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
