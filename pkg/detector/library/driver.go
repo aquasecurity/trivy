@@ -66,7 +66,7 @@ func NewDriver(libType string) (Driver, bool) {
 		ecosystem = vulnerability.Swift
 		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
-		// Cocoapods uses RubyGems version specifiers
+		// CocoaPods uses RubyGems version specifiers
 		// https://guides.cocoapods.org/making/making-a-cocoapod.html#cocoapods-versioning-specifics
 		ecosystem = vulnerability.Cocoapods
 		comparer = rubygems.Comparer{}

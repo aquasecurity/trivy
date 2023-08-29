@@ -57,9 +57,11 @@ func (p *PackageURL) Package() *ftypes.Package {
 		}
 	}
 
-	// Cocoapods purl has no namespace, but has subpath
+	// CocoaPods purl has no namespace, but has subpath
 	// https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#cocoapods
 	if p.Type == packageurl.TypeCocoapods && p.Subpath != "" {
+		// CocoaPods uses <moduleName>/<submoduleName> format for package name
+		// e.g. `pkg:cocoapods/GoogleUtilities@7.5.2#NSData+zlib` => `GoogleUtilities/NSData+zlib`
 		pkg.Name = strings.Join([]string{
 			p.Name,
 			p.Subpath,
