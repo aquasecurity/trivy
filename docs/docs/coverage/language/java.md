@@ -14,7 +14,7 @@ The following table provides an outline of the features Trivy offers.
 | Artifact         |    Internet access    | Dev dependencies | [Dependency graph][dependency-graph] |
 |------------------|:---------------------:|:----------------:|:------------------------------------:|
 | JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |
-| pom.xml          | Maven repository [^1] |     Exclude      |                  -                   |
+| pom.xml          | Maven repository [^1] |     Exclude      |                  ✓                   |
 | *gradle.lockfile |           -           |     Exclude      |                  -                   |
 
 These may be enabled or disabled depending on the target.
