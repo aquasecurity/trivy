@@ -55,7 +55,9 @@ func (v *OpenVEX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVu
 			return true
 		}
 
-		// Take the effective statement
+		// Take the latest statement for a given vulnerability and product
+		// as a sequence of statements can be overridden by the newer one.
+		// cf. https://github.com/openvex/spec/blob/fa5ba0c0afedb008dc5ebad418548cacf16a3ca7/OPENVEX-SPEC.md#the-vex-statement
 		stmt := stmts[len(stmts)-1]
 		if stmt.Status == openvex.StatusNotAffected || stmt.Status == openvex.StatusFixed {
 			v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
