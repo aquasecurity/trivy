@@ -163,7 +163,7 @@ In the above example, PURLs, located in `packages.externalRefs.referenceLocator`
 !!! note
     If a qualifier is specified in the PURL used as the product id in the VEX, the qualifier is compared.
     Other qualifiers are ignored in the comparison.
-    `pkg:deb/debian/curl@7.50.3-1` in OpenVEX matches `pkg:deb/debian/curl@7.50.3-1?arch=i386, 
+    `pkg:deb/debian/curl@7.50.3-1` in OpenVEX matches `pkg:deb/debian/curl@7.50.3-1?arch=i386`, 
     while `pkg:deb/debian/curl@7.50.3-1?arch=amd64` does not match `pkg:deb/debian/curl@7.50.3-1?arch=i386`.
 
 ### Scan SBOM with VEX
