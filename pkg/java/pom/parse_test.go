@@ -39,6 +39,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -65,6 +66,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -104,6 +106,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -129,6 +132,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:2.0.0",
 					Name:    "org.example:example-api",
 					Version: "2.0.0",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -154,6 +158,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:2.0.0",
 					Name:    "org.example:example-api",
 					Version: "2.0.0",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -217,6 +222,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -243,6 +249,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -269,12 +276,14 @@ func TestPom_Parse(t *testing.T) {
 					ID:       "org.example:example-api:1.7.30",
 					Name:     "org.example:example-api",
 					Version:  "1.7.30",
+					License:  "The Apache Software License, Version 2.0",
 					Indirect: true,
 				},
 				{
 					ID:      "org.example:example-child:2.0.0",
 					Name:    "org.example:example-child",
 					Version: "2.0.0",
+					License: "Apache 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -307,6 +316,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -358,6 +368,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -389,6 +400,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 				{
 					ID:      "org.example:example-dependency:1.2.3",
@@ -432,6 +444,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:       "org.example:example-api:2.0.0",
 					Name:     "org.example:example-api",
 					Version:  "2.0.0",
+					License:  "The Apache Software License, Version 2.0",
 					Indirect: true,
 				},
 				{
@@ -488,6 +501,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:       "org.example:example-api:2.0.0",
 					Name:     "org.example:example-api",
 					Version:  "2.0.0",
+					License:  "The Apache Software License, Version 2.0",
 					Indirect: true,
 				},
 				{
@@ -551,6 +565,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -577,6 +592,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -683,6 +699,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:       "org.example:example-api:2.0.0",
 					Name:     "org.example:example-api",
 					Version:  "2.0.0",
+					License:  "The Apache Software License, Version 2.0",
 					Indirect: true,
 				},
 				{
@@ -747,11 +764,13 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 				{
 					ID:      "org.example:example-api:2.0.0",
 					Name:    "org.example:example-api",
 					Version: "2.0.0",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -783,6 +802,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:       "org.example:example-api:2.0.0",
 					Name:     "org.example:example-api",
 					Version:  "2.0.0",
+					License:  "The Apache Software License, Version 2.0",
 					Indirect: true,
 				},
 				// dependency version is taken from `com.example:root-pom-dep-management` from dependencyManagement
@@ -831,6 +851,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:       "org.example:example-api:2.0.0",
 					Name:     "org.example:example-api",
 					Version:  "2.0.0",
+					License:  "The Apache Software License, Version 2.0",
 					Indirect: true,
 				},
 				{
@@ -886,6 +907,7 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.7.30",
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
+					License: "The Apache Software License, Version 2.0",
 				},
 			},
 			wantDeps: []types.Dependency{

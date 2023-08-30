@@ -186,7 +186,7 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 			// Override the version
 			uniqArtifacts[art.Name()] = artifact{
 				Version:  art.Version,
-				Licenses: art.Licenses,
+				Licenses: result.artifact.Licenses,
 				Direct:   art.Direct,
 			}
 
