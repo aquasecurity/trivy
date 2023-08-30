@@ -9,7 +9,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 )
 
@@ -47,8 +46,6 @@ func (a sbomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 	if strings.HasPrefix(input.FilePath, "opt/bitnami/") {
 		componentPath := path.Dir(input.FilePath)
 		for i, app := range bom.Applications {
-			// Force the application type to "bitnami"
-			bom.Applications[i].Type = ftypes.Bitnami
 			// Replace the SBOM path with the component path
 			bom.Applications[i].FilePath = componentPath
 

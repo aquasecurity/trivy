@@ -27,6 +27,11 @@
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
           "referenceLocator": "cpe:2.3:*:elasticsearch:elasticsearch:8.7.1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:bitnami/elasticsearch@8.7.1?arch=arm64"
         }
       ]
     },

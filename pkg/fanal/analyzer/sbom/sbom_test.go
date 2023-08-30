@@ -3,6 +3,7 @@ package sbom
 import (
 	"context"
 	"os"
+	"sort"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -30,6 +31,19 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/elasticsearch",
 						Libraries: types.Packages{
 							{
+								Name:     "elasticsearch",
+								Version:  "8.7.1",
+								Ref:      "pkg:bitnami/elasticsearch@8.7.1?arch=arm64",
+								Arch:     "arm64",
+								Licenses: []string{"Elastic-2.0"},
+							},
+						},
+					},
+					{
+						Type:     types.Jar,
+						FilePath: "opt/bitnami/elasticsearch",
+						Libraries: types.Packages{
+							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
@@ -50,11 +64,11 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 		{
 			name:     "valid elasticsearch cdx file",
 			file:     "testdata/cdx.json",
-			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
+			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.cdx",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.Bitnami,
+						Type:     types.Jar,
 						FilePath: "opt/bitnami/elasticsearch",
 						Libraries: types.Packages{
 							{
@@ -93,21 +107,27 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/postgresql",
 						Libraries: types.Packages{
 							{
+								Name:     "gdal",
+								Version:  "3.7.1",
+								Ref:      "pkg:bitnami/gdal@3.7.1",
+								Licenses: []string{"MIT"},
+							},
+							{
 								Name:     "geos",
 								Version:  "3.8.3",
 								Ref:      "pkg:bitnami/geos@3.8.3",
 								Licenses: []string{"LGPL-2.1-only"},
 							},
 							{
+								Name:     "postgresql",
+								Version:  "15.3.0",
+								Ref:      "pkg:bitnami/postgresql@15.3.0",
+								Licenses: []string{"PostgreSQL"},
+							},
+							{
 								Name:     "proj",
 								Version:  "6.3.2",
 								Ref:      "pkg:bitnami/proj@6.3.2",
-								Licenses: []string{"MIT"},
-							},
-							{
-								Name:     "gdal",
-								Version:  "3.7.1",
-								Ref:      "pkg:bitnami/gdal@3.7.1",
 								Licenses: []string{"MIT"},
 							},
 						},
@@ -129,6 +149,12 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 			})
 			tt.wantErr(t, err)
+
+			if got != nil {
+				sort.Slice(got.Applications, func(i, j int) bool {
+					return got.Applications[i].Type < got.Applications[j].Type
+				})
+			}
 			assert.Equal(t, tt.want, got)
 		})
 	}
