@@ -17,7 +17,7 @@ If the target is a pre-build project, like a code repository, Trivy will analyze
 On the other hand, when the target is a post-build artifact, like a container image, Trivy will analyze installed package metadata like `.gemspec`, binary files, and so on.
 
 | Language             | File                                                                                       | Image[^5] | Rootfs[^6] | Filesystem[^7] | Repository[^8] |
-| -------------------- | ------------------------------------------------------------------------------------------ | :-------: | :--------: | :------------: | :------------: |
+|----------------------|--------------------------------------------------------------------------------------------|:---------:|:----------:|:--------------:|:--------------:|
 | [Ruby](ruby.md)      | Gemfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | gemspec                                                                                    |     ✅     |     ✅      |       -        |       -        |
 | [Python](python.md)  | Pipfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
@@ -45,6 +45,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Elixir](elixir.md)  | mix.lock[^10]                                                                              |     -     |     -      |       ✅        |       ✅        |
 | [Dart](dart.md)      | pubspec.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Swift](swift.md)    | Podfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
+|                      | Package.resolved                                                                           |     -     |     -      |       ✅        |       ✅        |
 
 The path of these files does not matter.
 
