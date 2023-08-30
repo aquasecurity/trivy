@@ -30,6 +30,7 @@ func (*parser) Parse(r dio.ReadSeekerAt) ([]godeptypes.Library, []godeptypes.Dep
 	if err != nil {
 		return nil, nil, err
 	}
+
 	// package.json may contain version range in `dependencies` fields
 	// e.g.   "devDependencies": { "mocha": "^5.2.0", }
 	// so we get only information about project
