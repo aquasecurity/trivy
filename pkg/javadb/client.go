@@ -7,13 +7,14 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-java-db/pkg/db"
-	"github.com/aquasecurity/trivy-java-db/pkg/types"
 	"github.com/deepfactor-io/go-dep-parser/pkg/java/jar"
+	"github.com/deepfactor-io/javadb/pkg/db"
+	"github.com/deepfactor-io/javadb/pkg/types"
 	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/log"
 	"github.com/deepfactor-io/trivy/pkg/oci"
@@ -124,6 +125,12 @@ func (d *DB) Exists(groupID, artifactID string) (bool, error) {
 	return index.ArtifactID != "", nil
 }
 
+func getLicense(license string) string {
+	// TODO: Figure out a way to return list since license strings can contain `,` . Trivy does not support it currently
+	// Keeping it consistent for the time being
+	return strings.ReplaceAll(license, "|", ",")
+}
+
 func (d *DB) SearchBySHA1(sha1 string) (jar.Properties, error) {
 	index, err := d.driver.SelectIndexBySha1(sha1)
 	if err != nil {
@@ -135,6 +142,22 @@ func (d *DB) SearchBySHA1(sha1 string) (jar.Properties, error) {
 		GroupID:    index.GroupID,
 		ArtifactID: index.ArtifactID,
 		Version:    index.Version,
+		License:    getLicense(index.License),
+	}, nil
+}
+
+func (d *DB) SearchByGAV(groupID, artifactID, version string) (jar.Properties, error) {
+	index, err := d.driver.SelectIndexByGAV(artifactID, groupID, version)
+	if err != nil {
+		return jar.Properties{}, xerrors.Errorf("select error: %w", err)
+	} else if index.ArtifactID == "" {
+		return jar.Properties{}, xerrors.Errorf("groupID %s: artifactID %s : version %s :  %w", groupID, artifactID, version, jar.ArtifactNotFoundErr)
+	}
+	return jar.Properties{
+		GroupID:    index.GroupID,
+		ArtifactID: index.ArtifactID,
+		Version:    index.Version,
+		License:    getLicense(index.License),
 	}, nil
 }
 

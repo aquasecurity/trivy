@@ -16,7 +16,7 @@ import (
 
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	javadb "github.com/aquasecurity/trivy-java-db/pkg/db"
+	javadb "github.com/deepfactor-io/javadb/pkg/db"
 	awscommands "github.com/deepfactor-io/trivy/pkg/cloud/aws/commands"
 	"github.com/deepfactor-io/trivy/pkg/commands/artifact"
 	"github.com/deepfactor-io/trivy/pkg/commands/server"
