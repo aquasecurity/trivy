@@ -76,7 +76,6 @@ nav:
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
               - Debian: docs/coverage/os/debian.md
-              - Google Distroless: docs/coverage/os/google-distroless.md
               - Oracle Linux: docs/coverage/os/oracle.md
               - Photon OS: docs/coverage/os/photon.md
               - Red Hat: docs/coverage/os/rhel.md
@@ -84,6 +83,8 @@ nav:
               - SUSE: docs/coverage/os/suse.md
               - Ubuntu: docs/coverage/os/ubuntu.md
               - Wolfi: docs/coverage/os/wolfi.md
+              - Google Distroless (Images): docs/coverage/os/google-distroless.md
+              - Bitnami (Images): docs/coverage/os/bitnami.md
           - Language:
               - Overview: docs/coverage/language/index.md
               - C/C++: docs/coverage/language/c.md

@@ -1,4 +1,4 @@
-# Google Distroless
+# Google Distroless Images
 Trivy supports the following scanners for OS packages.
 
 |    Scanner    | Supported |

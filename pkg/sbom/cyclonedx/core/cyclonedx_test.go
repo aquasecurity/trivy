@@ -293,7 +293,7 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 						},
 					},
 					{
-						BOMRef: "pkg:oci/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver&arch=",
+						BOMRef: "pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?arch=&repository_url=k8s.gcr.io%2Fkube-apiserver",
 						Hashes: &[]cdx.Hash{
 							{
 								Algorithm: "SHA-256",
@@ -303,7 +303,7 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 						Type:       "container",
 						Name:       "k8s.gcr.io/kube-apiserver",
 						Version:    "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-						PackageURL: "pkg:oci/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver&arch=",
+						PackageURL: "pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?arch=&repository_url=k8s.gcr.io%2Fkube-apiserver",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgID",
@@ -326,7 +326,7 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 					},
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]string{"pkg:oci/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver&arch="},
+						Dependencies: &[]string{"pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?arch=&repository_url=k8s.gcr.io%2Fkube-apiserver"},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
@@ -355,7 +355,7 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 						Dependencies: &noDepRefs,
 					},
 					{
-						Ref:          "pkg:oci/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver&arch=",
+						Ref:          "pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?arch=&repository_url=k8s.gcr.io%2Fkube-apiserver",
 						Dependencies: &noDepRefs,
 					},
 				},
