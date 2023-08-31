@@ -204,6 +204,10 @@ See https://avd.aquasec.com/misconfig/avd-aws-0081
 
 ## By Finding IDs
 
+Trivy supports [.trivyignore](#trivyignore) and [.trivyignore.yaml](#trivyignoreyaml) ignore files.
+
+### .trivyignore
+
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -211,7 +215,6 @@ See https://avd.aquasec.com/misconfig/avd-aws-0081
 |      Secret      |     ✓     |
 |     License      |           |
 
-Use `.trivyignore`.
 
 ```bash
 $ cat .trivyignore
@@ -250,6 +253,88 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 ```
 
 </details>
+
+### .trivyignore.yaml
+
+|     Scanner      | Supported |
+|:----------------:|:---------:|
+|  Vulnerability   |     ✓     |
+| Misconfiguration |     ✓     |
+|      Secret      |     ✓     |
+|     License      |     ✓     |
+
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+Trivy supports `.yml` or `.yaml` extensions.
+
+For `.trivyignore.yaml` file you separately set ignored IDs for `vulnerabilities`, `misconfigurations`, `secrets` or `licenses`[^1].
+
+Available fields:
+
+- `ID` - **Required** string field. ID is the identifier of the vulnerability, misconfiguration, secret, or license[^1] (e.g. CVE-2019-8331, AVD-AWS-0175, etc.).
+- `Path` - string array field. Paths is the list of file paths to be ignored. If Paths is not set, the ignore finding is applied to all files.
+- `ExpiredAt` - data field (`yyyy-mm-dd` format). ExpiredAt is the expiration date of the ignore finding. If ExpiredAt is not set, the ignore finding is always valid.
+- `Statement` - sting field. Statement describes the reason for ignoring the finding (field is not used for filtering).
+
+```bash
+$ cat .trivyignore.yaml
+vulnerabilities:
+  - id: CVE-2022-40897
+    paths:
+      - "usr/local/lib/python3.9/site-packages/setuptools-58.1.0.dist-info/METADATA"
+    statement: Accept the risk
+  - id: CVE-2023-2650
+  - id: CVE-2023-3446
+  - id: CVE-2023-3817
+  - id: CVE-2023-29491
+    expired_at: 2023-09-01
+
+misconfigurations:
+  - id: AVD-DS-0002
+  - id: AVD-DS-0003
+    paths:
+        - "docs/Dockerfile"
+    statement: The container image is not deployed
+
+secrets:
+  - id: aws-access-key-id
+  - id: aws-secret-access-key
+    paths:
+      - "foo/bar/aws.secret"
+
+licenses:
+  - id: GPL-3.0 # License name is used as ID
+    paths:
+      - "usr/share/gcc/python/libstdcxx/v6/__init__.py"
+```
+
+```bash
+$ trivy image --ignorefile ./.trivyignore.yaml python:3.9.16-alpine3.16
+```
+
+<details>
+<summary>Result</summary>
+
+```bash
+2023-08-31T11:10:27.155+0600	INFO	Vulnerability scanning is enabled
+2023-08-31T11:10:27.155+0600	INFO	Secret scanning is enabled
+2023-08-31T11:10:27.155+0600	INFO	If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2023-08-31T11:10:27.155+0600	INFO	Please see also https://aquasecurity.github.io/trivy/dev/docs/scanner/secret/#recommendation for faster secret detection
+2023-08-31T11:10:29.164+0600	INFO	Detected OS: alpine
+2023-08-31T11:10:29.164+0600	INFO	Detecting Alpine vulnerabilities...
+2023-08-31T11:10:29.169+0600	INFO	Number of language-specific files: 1
+2023-08-31T11:10:29.170+0600	INFO	Detecting python-pkg vulnerabilities...
+
+python:3.9.16-alpine3.16 (alpine 3.16.5)
+
+Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+
+```
+
+</details>
+
 
 ## By Vulnerability Target
 |     Scanner      | Supported |
@@ -425,3 +510,5 @@ resource "google_container_cluster" "one_off_test" {
   location = var.region
 }
 ```
+
+[^1]: license name is used as id for `.trivyignore.yaml` files
