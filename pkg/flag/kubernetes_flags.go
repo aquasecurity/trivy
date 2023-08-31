@@ -82,7 +82,6 @@ var (
 	ExcludeOwned = Flag{
 		Name:       "exclude-owned",
 		ConfigName: "kubernetes.exclude.owned",
-		Shorthand:  "E",
 		Default:    false,
 		Usage:      "exclude resources that have an owner reference",
 	}
