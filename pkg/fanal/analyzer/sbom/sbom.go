@@ -77,6 +77,7 @@ func handleBitnamiImages(componentPath string, bom types.SBOM) {
 		if app.Type == ftypes.Bitnami {
 			// Set the component dir path to the application
 			bom.Applications[i].FilePath = componentPath
+			// Either Application.FilePath or Application.Libraries[].FilePath should be set
 			continue
 		}
 
