@@ -182,8 +182,6 @@ func (s *SPDX) parsePackages(pkgs map[common.ElementID]*spdx.Package) error {
 			app, ok := apps[pkgType]
 			if !ok {
 				app.Type = pkgType
-			} else {
-
 			}
 			app.Libraries = append(app.Libraries, *pkg)
 			apps[pkgType] = app
