@@ -97,7 +97,7 @@ func TestK8s(t *testing.T) {
 		err = json.NewDecoder(f).Decode(&got)
 		require.NoError(t, err)
 
-		assert.Equal(t, got.Metadata.Component.Name, "kind-kind-test")
+		assert.Equal(t, got.Metadata.Component.Name, "k8s.io/kubernetes")
 		assert.Equal(t, got.Metadata.Component.Type, cdx.ComponentType("platform"))
 
 		// Has components
