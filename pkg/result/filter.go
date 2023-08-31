@@ -40,8 +40,13 @@ func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
 		return xerrors.Errorf("VEX error: %w", err)
 	}
 
+	ignoreConf, err := getIgnoredFindings(opt.IgnoreFile)
+	if err != nil {
+		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
+	}
+
 	for i := range report.Results {
-		if err := FilterResult(ctx, &report.Results[i], opt); err != nil {
+		if err = FilterResult(ctx, &report.Results[i], ignoreConf, opt); err != nil {
 			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 	}
@@ -49,12 +54,7 @@ func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
 }
 
 // FilterResult filters out the result
-func FilterResult(ctx context.Context, result *types.Result, opt FilterOption) error {
-	ignoreConf, err := getIgnoredFindings(opt.IgnoreFile)
-	if err != nil {
-		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
-	}
-
+func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreConfig, opt FilterOption) error {
 	// Convert dbTypes.Severity to string
 	severities := lo.Map(opt.Severities, func(s dbTypes.Severity, _ int) string {
 		return s.String()
