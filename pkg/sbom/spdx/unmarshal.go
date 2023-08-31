@@ -226,14 +226,14 @@ func isFile(elementID spdx.ElementID) bool {
 }
 
 func initApplication(pkg spdx.Package) *ftypes.Application {
-	app := &ftypes.Application{
-		Type:     pkg.PackageName,
-		FilePath: pkg.PackageSourceInfo,
-	}
-	if pkg.PackageName == ftypes.NodePkg || pkg.PackageName == ftypes.PythonPkg ||
-		pkg.PackageName == ftypes.GemSpec || pkg.PackageName == ftypes.Jar || pkg.PackageName == ftypes.CondaPkg {
+	app := &ftypes.Application{Type: pkg.PackageName}
+	switch pkg.PackageName {
+	case ftypes.NodePkg, ftypes.PythonPkg, ftypes.GemSpec, ftypes.Jar, ftypes.CondaPkg:
 		app.FilePath = ""
+	default:
+		app.FilePath = pkg.PackageSourceInfo
 	}
+
 	return app
 }
 

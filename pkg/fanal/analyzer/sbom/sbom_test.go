@@ -32,28 +32,35 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						Libraries: types.Packages{
 							{
 								Name:     "elasticsearch",
-								Version:  "8.7.1",
-								Ref:      "pkg:bitnami/elasticsearch@8.7.1?arch=arm64",
+								Version:  "8.9.1",
+								Ref:      "pkg:bitnami/elasticsearch@8.9.1?arch=arm64",
 								Arch:     "arm64",
 								Licenses: []string{"Elastic-2.0"},
 							},
 						},
 					},
 					{
-						Type:     types.Jar,
-						FilePath: "opt/bitnami/elasticsearch",
+						Type: types.Jar,
 						Libraries: types.Packages{
 							{
-								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
-								Name:     "co.elastic.apm:apm-agent",
-								Version:  "1.36.0",
-								Ref:      "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
+								Name:    "co.elastic.apm:apm-agent",
+								Version: "1.36.0",
+								Ref:     "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 							},
 							{
-								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
-								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
-								Version:  "1.36.0",
-								Ref:      "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+								Name:    "co.elastic.apm:apm-agent-cached-lookup-key",
+								Version: "1.36.0",
+								Ref:     "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+							},
+							{
+								Name:    "co.elastic.apm:apm-agent-common",
+								Version: "1.36.0",
+								Ref:     "pkg:maven/co.elastic.apm/apm-agent-common@1.36.0",
+							},
+							{
+								Name:    "co.elastic.apm:apm-agent-core",
+								Version: "1.36.0",
+								Ref:     "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0",
 							},
 						},
 					},
@@ -68,8 +75,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.Jar,
-						FilePath: "opt/bitnami/elasticsearch",
+						Type: types.Jar,
 						Libraries: types.Packages{
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",

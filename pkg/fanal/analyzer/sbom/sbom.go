@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 )
 
@@ -46,10 +47,17 @@ func (a sbomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 	if strings.HasPrefix(input.FilePath, "opt/bitnami/") {
 		componentPath := path.Dir(input.FilePath)
 		for i, app := range bom.Applications {
-			// Replace the SBOM path with the component path
-			bom.Applications[i].FilePath = componentPath
+			switch app.Type {
+			case ftypes.Bitnami:
+				// Replace the SBOM path with the component path
+				bom.Applications[i].FilePath = componentPath
+			default:
+				bom.Applications[i].Type = app.Type
+			}
 
 			for j, pkg := range app.Libraries {
+				// package file path might be empty if "filesAnalyzed" is false
+				// ref: https://spdx.github.io/spdx-spec/v2.3/package-information/#78-files-analyzed-field
 				if pkg.FilePath == "" {
 					continue
 				}

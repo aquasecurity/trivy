@@ -2,23 +2,23 @@
   "SPDXID": "SPDXRef-elasticsearch",
   "spdxVersion": "SPDX-2.3",
   "creationInfo": {
-    "created": "2023-05-17T15:59:30.511Z",
+    "created": "2023-08-18T20:09:40.708Z",
     "creators": [
       "Organization: VMware, Inc."
     ]
   },
-  "name": "SPDX document for Elasticsearch 8.7.1",
+  "name": "SPDX document for Elasticsearch 8.9.1",
   "dataLicense": "CC0-1.0",
   "documentDescribes": [
     "SPDXRef-elasticsearch"
   ],
-  "documentNamespace": "elasticsearch-8.7.1",
+  "documentNamespace": "elasticsearch-8.9.1",
   "packages": [
     {
       "SPDXID": "SPDXRef-elasticsearch",
       "name": "Elasticsearch",
-      "versionInfo": "8.7.1",
-      "downloadLocation": "https://github.com/elastic/elasticsearch/archive/v8.7.1.tar.gz",
+      "versionInfo": "8.9.1",
+      "downloadLocation": "https://github.com/elastic/elasticsearch/archive/v8.9.1.tar.gz",
       "licenseConcluded": "Elastic-2.0",
       "licenseDeclared": "Elastic-2.0",
       "filesAnalyzed": false,
@@ -26,77 +26,125 @@
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:*:elasticsearch:elasticsearch:8.7.1:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:*:elastic:elasticsearch:8.9.1:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "PACKAGE_MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:bitnami/elasticsearch@8.7.1?arch=arm64"
+          "referenceLocator": "pkg:bitnami/elasticsearch@8.9.1?arch=arm64"
         }
-      ]
+      ],
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "name": "jar",
+      "SPDXID": "SPDXRef-Application-150e605f5f17224d",
+      "downloadLocation": "NONE",
+      "sourceInfo": "Java",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "filesAnalyzed": false
     },
     {
       "name": "co.elastic.apm:apm-agent",
-      "SPDXID": "SPDXRef-Package-d6465ccdd5385c16",
+      "SPDXID": "SPDXRef-Package-f0db45781e6813a1",
       "versionInfo": "1.36.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
       "licenseConcluded": "NONE",
       "licenseDeclared": "NONE",
-      "copyrightText": "",
+      "copyrightText": "NOASSERTION",
       "externalRefs": [
         {
-          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceCategory": "PACKAGE_MANAGER",
           "referenceType": "purl",
           "referenceLocator": "pkg:maven/co.elastic.apm/apm-agent@1.36.0"
         }
       ],
-      "primaryPackagePurpose": "LIBRARY",
-      "files": [
-        {
-          "fileName":"modules/apm/elastic-apm-agent-1.36.0.jar",
-          "SPDXID": "SPDXRef-File-4d457bf4ff3526ea",
-          "checksums": [
-            {
-              "algorithm": "SHA1",
-              "checksumValue": "d2a9ad9b159eb650d25add9395c4f4198f200066"
-            }
-          ],
-          "copyrightText": ""
-        }
-      ]
+      "filesAnalyzed": false
     },
     {
       "name": "co.elastic.apm:apm-agent-cached-lookup-key",
-      "SPDXID": "SPDXRef-Package-8e3a2cf58d7bd790",
+      "SPDXID": "SPDXRef-Package-efe22bf5916f985f",
       "versionInfo": "1.36.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
       "licenseConcluded": "NONE",
       "licenseDeclared": "NONE",
-      "copyrightText": "",
+      "copyrightText": "NOASSERTION",
       "externalRefs": [
         {
-          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceCategory": "PACKAGE_MANAGER",
           "referenceType": "purl",
           "referenceLocator": "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0"
         }
       ],
-      "primaryPackagePurpose": "LIBRARY",
-      "files": [
+      "filesAnalyzed": false
+    },
+    {
+      "name": "co.elastic.apm:apm-agent-common",
+      "SPDXID": "SPDXRef-Package-33d86d2d11abe114",
+      "versionInfo": "1.36.0",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "NONE",
+      "licenseDeclared": "NONE",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
         {
-          "fileName": "modules/apm/elastic-apm-agent-1.36.0.jar",
-          "SPDXID": "SPDXRef-File-4d457bf4ff3526ea",
-          "checksums": [
-            {
-              "algorithm": "SHA1",
-              "checksumValue": "d2a9ad9b159eb650d25add9395c4f4198f200066"
-            }
-          ],
-          "copyrightText": ""
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/co.elastic.apm/apm-agent-common@1.36.0"
         }
-      ]
+      ],
+      "filesAnalyzed": false
+    },
+    {
+      "name": "co.elastic.apm:apm-agent-core",
+      "SPDXID": "SPDXRef-Package-b905fcf69ca61281",
+      "versionInfo": "1.36.0",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "NONE",
+      "licenseDeclared": "NONE",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0"
+        }
+      ],
+      "filesAnalyzed": false
     }
   ],
-  "files": []
+  "files": [],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-elasticsearch",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Application-150e605f5f17224d"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-150e605f5f17224d",
+      "relatedSpdxElement": "SPDXRef-Package-f0db45781e6813a1",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-150e605f5f17224d",
+      "relatedSpdxElement": "SPDXRef-Package-efe22bf5916f985f",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-150e605f5f17224d",
+      "relatedSpdxElement": "SPDXRef-Package-33d86d2d11abe114",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-150e605f5f17224d",
+      "relatedSpdxElement": "SPDXRef-Package-b905fcf69ca61281",
+      "relationshipType": "CONTAINS"
+    }
+  ]
 }
