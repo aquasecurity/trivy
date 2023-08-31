@@ -79,6 +79,12 @@ var (
 		Default:    "trivy-temp",
 		Usage:      "specify the namespace in which the node-collector job should be deployed",
 	}
+	ExcludeOwned = Flag{
+		Name:       "exclude-owned",
+		ConfigName: "kubernetes.exclude.owned",
+		Default:    false,
+		Usage:      "exclude resources that have an owner reference",
+	}
 	ExcludeNodes = Flag{
 		Name:       "exclude-nodes",
 		ConfigName: "exclude.nodes",
@@ -97,6 +103,7 @@ type K8sFlagGroup struct {
 	Tolerations            *Flag
 	AllNamespaces          *Flag
 	NodeCollectorNamespace *Flag
+	ExcludeOwned           *Flag
 	ExcludeNodes           *Flag
 }
 
@@ -110,6 +117,7 @@ type K8sOptions struct {
 	Tolerations            []corev1.Toleration
 	AllNamespaces          bool
 	NodeCollectorNamespace string
+	ExcludeOwned           bool
 	ExcludeNodes           map[string]string
 }
 
@@ -124,6 +132,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		Tolerations:            &TolerationsFlag,
 		AllNamespaces:          &AllNamespaces,
 		NodeCollectorNamespace: &NodeCollectorNamespace,
+		ExcludeOwned:           &ExcludeOwned,
 		ExcludeNodes:           &ExcludeNodes,
 	}
 }
@@ -143,6 +152,7 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.Tolerations,
 		f.AllNamespaces,
 		f.NodeCollectorNamespace,
+		f.ExcludeOwned,
 		f.ExcludeNodes,
 	}
 }
@@ -180,6 +190,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		Tolerations:            tolerations,
 		AllNamespaces:          getBool(f.AllNamespaces),
 		NodeCollectorNamespace: getString(f.NodeCollectorNamespace),
+		ExcludeOwned:           getBool(f.ExcludeOwned),
 		ExcludeNodes:           exludeNodeLabels,
 	}, nil
 }
