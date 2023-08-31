@@ -2,7 +2,9 @@ package result_test
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -224,6 +226,7 @@ func TestFilterResult(t *testing.T) {
 		wantMisconfSummary *types.MisconfSummary
 		wantMisconfs       []types.DetectedMisconfiguration
 		wantSecrets        []ftypes.SecretFinding
+		wantLicense        []types.DetectedLicense
 	}{
 		{
 			name: "happy path",
@@ -539,6 +542,205 @@ func TestFilterResult(t *testing.T) {
 					StartLine: 1,
 					EndLine:   2,
 					Match:     "*****",
+				},
+			},
+		},
+		{
+			name: "happy path with ignore-file yaml",
+			args: args{
+				result: types.Result{
+					Target: "foo/package-lock.json",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							// this vulnerability is ignored
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityLow.String(),
+							},
+						},
+						{
+							// this vulnerability is ignored
+							VulnerabilityID:  "CVE-2019-0002",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityLow.String(),
+							},
+							PkgPath: "bar/package.json",
+						},
+						{
+							// this vulnerability is ignored
+							VulnerabilityID:  "CVE-2019-0003",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityLow.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0004",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityLow.String(),
+							},
+						},
+						{
+							// this vulnerability is ignored
+							VulnerabilityID:  "CVE-2019-0005",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityLow.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0006",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityLow.String(),
+							},
+						},
+					},
+					Misconfigurations: []types.DetectedMisconfiguration{
+						{
+							// this misconfiguration is ignored
+							Type:     ftypes.Kubernetes,
+							ID:       "ID100",
+							Title:    "Bad Deployment",
+							Message:  "something bad",
+							Severity: dbTypes.SeverityLow.String(),
+							Status:   types.StatusFailure,
+						},
+						{
+							// this misconfiguration is ignored
+							Type:     ftypes.Kubernetes,
+							ID:       "ID200",
+							Title:    "Bad Deployment",
+							Message:  "something bad",
+							Severity: dbTypes.SeverityLow.String(),
+							Status:   types.StatusFailure,
+						},
+						{
+							Type:     ftypes.Kubernetes,
+							ID:       "ID300",
+							Title:    "Bad Deployment",
+							Message:  "something bad",
+							Severity: dbTypes.SeverityLow.String(),
+							Status:   types.StatusFailure,
+						},
+					},
+					Secrets: []ftypes.SecretFinding{
+						{
+							RuleID:    "generic-wanted-rule",
+							Severity:  dbTypes.SeverityLow.String(),
+							Title:     "Secret that should pass filter on rule id",
+							StartLine: 1,
+							EndLine:   2,
+							Match:     "*****",
+						},
+						{
+							// this secret is ignored
+							RuleID:    "generic-unwanted-rule",
+							Severity:  dbTypes.SeverityLow.String(),
+							Title:     "Secret that should not pass filter on rule id",
+							StartLine: 3,
+							EndLine:   4,
+							Match:     "*****",
+						},
+						{
+							// this secret is ignored
+							RuleID:    "generic-unwanted-rule2",
+							Severity:  dbTypes.SeverityLow.String(),
+							Title:     "Secret that should not pass filter on rule id",
+							StartLine: 5,
+							EndLine:   6,
+							Match:     "*****",
+						},
+					},
+					Licenses: []types.DetectedLicense{
+						{
+							// this license is ignored
+							Name:       "GPL-3.0",
+							Severity:   dbTypes.SeverityLow.String(),
+							FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
+							Category:   "restricted",
+							Confidence: 1,
+						},
+						{
+							Name:       "GPL-3.0",
+							Severity:   dbTypes.SeverityLow.String(),
+							FilePath:   "usr/share/gcc/python/libstdcxx/v6/printers.py",
+							Category:   "restricted",
+							Confidence: 1,
+						},
+					},
+				},
+				ignoreFile: "testdata/.trivyignore.yaml",
+				severities: []dbTypes.Severity{dbTypes.SeverityLow},
+			},
+
+			wantVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2019-0004",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityLow.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0006",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityLow.String(),
+					},
+				},
+			},
+			wantMisconfSummary: &types.MisconfSummary{
+				Successes:  0,
+				Failures:   1,
+				Exceptions: 0,
+			},
+			wantMisconfs: []types.DetectedMisconfiguration{
+				{
+					Type:     ftypes.Kubernetes,
+					ID:       "ID300",
+					Title:    "Bad Deployment",
+					Message:  "something bad",
+					Severity: dbTypes.SeverityLow.String(),
+					Status:   types.StatusFailure,
+				},
+			},
+			wantSecrets: []ftypes.SecretFinding{
+				{
+					RuleID:    "generic-wanted-rule",
+					Severity:  dbTypes.SeverityLow.String(),
+					Title:     "Secret that should pass filter on rule id",
+					StartLine: 1,
+					EndLine:   2,
+					Match:     "*****",
+				},
+			},
+			wantLicense: []types.DetectedLicense{
+				{
+					Name:       "GPL-3.0",
+					Severity:   dbTypes.SeverityLow.String(),
+					FilePath:   "usr/share/gcc/python/libstdcxx/v6/printers.py",
+					Category:   "restricted",
+					Confidence: 1,
 				},
 			},
 		},
@@ -865,6 +1067,9 @@ func TestFilterResult(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
+			clock.SetFakeTime(t, fakeTime)
+
 			err := result.FilterResult(context.Background(), &tt.args.result, result.FilterOption{
 				Severities:     tt.args.severities,
 				IgnoreStatuses: tt.args.ignoreStatuses,
@@ -877,6 +1082,7 @@ func TestFilterResult(t *testing.T) {
 			assert.Equal(t, tt.wantMisconfSummary, tt.args.result.MisconfSummary)
 			assert.Equal(t, tt.wantMisconfs, tt.args.result.Misconfigurations)
 			assert.Equal(t, tt.wantSecrets, tt.args.result.Secrets)
+			assert.Equal(t, tt.wantLicense, tt.args.result.Licenses)
 		})
 	}
 }

@@ -3,13 +3,14 @@ package result
 import (
 	"context"
 	"fmt"
+	"os"
+	"sort"
+
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
-	"os"
-	"sort"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"

@@ -3,6 +3,7 @@ package result
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -43,7 +45,7 @@ type IgnoreFindings []IgnoreFinding
 
 func (findings IgnoreFindings) Match(path, id string) bool {
 	for _, finding := range findings {
-		if len(finding.Paths) != 0 && slices.Contains(finding.Paths, path) {
+		if len(finding.Paths) != 0 && !slices.Contains(finding.Paths, path) {
 			continue
 		}
 		if id == finding.ID {
@@ -86,13 +88,14 @@ func getIgnoredFindings(ignoreFile string) (IgnoreConfig, error) {
 			Licenses:          ignoredFindings,
 		}
 	}
-
+	t := clock.Now()
+	fmt.Print(t)
 	// Filter out expired ignore findings
 	filterExpired := func(item IgnoreFinding, index int) bool {
 		if item.ExpiredAt.IsZero() {
 			return true
 		}
-		return !item.ExpiredAt.Before(time.Now())
+		return !item.ExpiredAt.Before(clock.Now())
 	}
 	conf.Vulnerabilities = lo.Filter(conf.Vulnerabilities, filterExpired)
 	conf.Misconfigurations = lo.Filter(conf.Misconfigurations, filterExpired)
