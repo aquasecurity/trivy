@@ -95,6 +95,7 @@ jobs:
             cyclonedx
             spdx
             purl
+            vex
 
             helm
             report

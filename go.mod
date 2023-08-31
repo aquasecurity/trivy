@@ -1,6 +1,6 @@
 module github.com/aquasecurity/trivy
 
-go 1.19
+go 1.20
 
 require (
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
@@ -13,8 +13,8 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.30.4
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/defsec v0.91.1
-	github.com/aquasecurity/go-dep-parser v0.0.0-20230823094455-40c1f85cc942
+	github.com/aquasecurity/defsec v0.92.0
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230828120518-ef5e9409fc43
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -23,7 +23,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-db v0.0.0-20230823084507-315928e846ff
+	github.com/aquasecurity/trivy-db v0.0.0-20230828105148-2c9c4da5a321
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.5.7-0.20230828123538-ef13fef6ce5b
 	github.com/aws/aws-sdk-go v1.44.273
@@ -72,7 +72,7 @@ require (
 	github.com/open-policy-agent/opa v0.45.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0-rc4
-	github.com/openvex/go-vex v0.2.1
+	github.com/openvex/go-vex v0.2.5
 	github.com/owenrumney/go-sarif/v2 v2.2.0
 	github.com/package-url/packageurl-go v0.1.2-0.20230812223828-f8bb31c1f10b
 	github.com/samber/lo v1.38.1
@@ -266,7 +266,7 @@ require (
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/hashicorp/hcl/v2 v2.14.1 // indirect
+	github.com/hashicorp/hcl/v2 v2.17.0 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.15 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -348,8 +348,8 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/yashtewari/glob-intersection v0.1.0 // indirect
 	github.com/yuin/gopher-lua v1.1.0 // indirect
-	github.com/zclconf/go-cty v1.10.0 // indirect
-	github.com/zclconf/go-cty-yaml v1.0.2 // indirect
+	github.com/zclconf/go-cty v1.13.0 // indirect
+	github.com/zclconf/go-cty-yaml v1.0.3 // indirect
 	go.mongodb.org/mongo-driver v1.11.3 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/otel v1.14.0 // indirect
@@ -373,10 +373,10 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	helm.sh/helm/v3 v3.12.1 // indirect
-	k8s.io/apiextensions-apiserver v0.27.2 // indirect
+	helm.sh/helm/v3 v3.12.3 // indirect
+	k8s.io/apiextensions-apiserver v0.27.3 // indirect
 	k8s.io/apimachinery v0.28.0 // indirect
-	k8s.io/apiserver v0.27.2 // indirect
+	k8s.io/apiserver v0.27.3 // indirect
 	k8s.io/cli-runtime v0.28.0 // indirect
 	k8s.io/client-go v0.28.0 // indirect
 	k8s.io/component-base v0.28.0 // indirect
@@ -392,7 +392,7 @@ require (
 	modernc.org/opt v0.1.3 // indirect
 	modernc.org/strutil v1.1.3 // indirect
 	modernc.org/token v1.0.1 // indirect
-	oras.land/oras-go v1.2.2 // indirect
+	oras.land/oras-go v1.2.3 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/kustomize/api v0.13.5-0.20230601165947-6ce0bf390ce3 // indirect
 	sigs.k8s.io/kustomize/kyaml v0.14.3-0.20230601165947-6ce0bf390ce3 // indirect
