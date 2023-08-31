@@ -204,7 +204,7 @@ See https://avd.aquasec.com/misconfig/avd-aws-0081
 
 ## By Finding IDs
 
-Trivy supports [.trivyignore](#trivyignore) and [.trivyignore.yaml](#trivyignoreyaml) ignore files.
+Trivy supports the [.trivyignore](#trivyignore) and [.trivyignore.yaml](#trivyignoreyaml) ignore files.
 
 ### .trivyignore
 
@@ -266,16 +266,17 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Trivy supports `.yml` or `.yaml` extensions.
-
-For `.trivyignore.yaml` file you separately set ignored IDs for `vulnerabilities`, `misconfigurations`, `secrets` or `licenses`[^1].
+When the extension of the specified ignore file is either `.yml` or `.yaml`, Trivy will load the file as YAML.
+For the `.trivyignore.yaml` file, you can set ignored IDs separately for `vulnerabilities`, `misconfigurations`, `secrets`, or `licenses`[^1].
 
 Available fields:
 
-- `ID` - **Required** string field. ID is the identifier of the vulnerability, misconfiguration, secret, or license[^1] (e.g. CVE-2019-8331, AVD-AWS-0175, etc.).
-- `Path` - string array field. Paths is the list of file paths to be ignored. If Paths is not set, the ignore finding is applied to all files.
-- `ExpiredAt` - data field (`yyyy-mm-dd` format). ExpiredAt is the expiration date of the ignore finding. If ExpiredAt is not set, the ignore finding is always valid.
-- `Statement` - sting field. Statement describes the reason for ignoring the finding (field is not used for filtering).
+| Field      | Required | Type                | Description                                                                                                |
+|------------|:--------:|---------------------|------------------------------------------------------------------------------------------------------------|
+| id         |    ✓     | string              | The identifier of the vulnerability, misconfiguration, secret, or license[^1].                             |
+| paths      |          | string array        | The list of file paths to be ignored. If `paths` is not set, the ignore finding is applied to all files.   |
+| expired_at |          | date (`yyyy-mm-dd`) | The expiration date of the ignore finding. If `expired_at` is not set, the ignore finding is always valid. |
+| statement  |          | string              | The reason for ignoring the finding. (This field is not used for filtering.)                               |
 
 ```bash
 $ cat .trivyignore.yaml
@@ -291,11 +292,11 @@ vulnerabilities:
     expired_at: 2023-09-01
 
 misconfigurations:
+  - id: AVD-DS-0001
   - id: AVD-DS-0002
-  - id: AVD-DS-0003
     paths:
-        - "docs/Dockerfile"
-    statement: The container image is not deployed
+      - "docs/Dockerfile"
+    statement: The image needs root privileges
 
 secrets:
   - id: aws-access-key-id
@@ -308,6 +309,9 @@ licenses:
     paths:
       - "usr/share/gcc/python/libstdcxx/v6/__init__.py"
 ```
+
+Since this feature is experimental, you must explicitly specify the YAML file path using the `--ignorefile` flag.
+Once this functionality is stable, the YAML file will be loaded automatically.
 
 ```bash
 $ trivy image --ignorefile ./.trivyignore.yaml python:3.9.16-alpine3.16
@@ -327,7 +331,7 @@ $ trivy image --ignorefile ./.trivyignore.yaml python:3.9.16-alpine3.16
 2023-08-31T11:10:29.170+0600	INFO	Detecting python-pkg vulnerabilities...
 
 python:3.9.16-alpine3.16 (alpine 3.16.5)
-
+========================================
 Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 
