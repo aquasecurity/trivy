@@ -8,7 +8,7 @@ vulnerabilities:
   - id: CVE-2019-0003
   - id: CVE-2019-0004
     paths:
-      - "bar/package.json"
+      - "**/*.json"
   - id: CVE-2019-0005
     expired_at: 2023-01-01
   - id: CVE-2019-0006

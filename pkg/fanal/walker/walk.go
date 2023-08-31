@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/bmatcuk/doublestar"
+	"github.com/bmatcuk/doublestar/v4"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
@@ -15,7 +15,11 @@ import (
 var (
 	// These variables are exported so that a tool importing Trivy as a library can override these values.
 	AppDirs    = []string{".git"}
-	SystemDirs = []string{"proc", "sys", "dev"}
+	SystemDirs = []string{
+		"proc",
+		"sys",
+		"dev",
+	}
 )
 
 const (

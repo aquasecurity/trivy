@@ -3,15 +3,14 @@ package result
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -43,16 +42,54 @@ type IgnoreFinding struct {
 
 type IgnoreFindings []IgnoreFinding
 
-func (findings IgnoreFindings) Match(path, id string) bool {
-	for _, finding := range findings {
-		if len(finding.Paths) != 0 && !slices.Contains(finding.Paths, path) {
+func (f *IgnoreFindings) Match(path, id string) bool {
+	for _, finding := range *f {
+		if id != finding.ID {
 			continue
 		}
-		if id == finding.ID {
+
+		if !pathMatch(path, finding.Paths) {
+			continue
+		}
+		return true
+
+	}
+	return false
+}
+
+func pathMatch(path string, patterns []string) bool {
+	if len(patterns) == 0 {
+		return true
+	}
+
+	for _, pattern := range patterns {
+		// Patterns are already validated, so we ignore errors here
+		if matched, _ := doublestar.Match(pattern, path); matched {
 			return true
 		}
 	}
 	return false
+}
+
+func (f *IgnoreFindings) Filter() {
+	var findings IgnoreFindings
+	for _, finding := range *f {
+		// Filter out expired ignore findings
+		if !finding.ExpiredAt.IsZero() && finding.ExpiredAt.Before(clock.Now()) {
+			continue
+		}
+
+		// Filter out invalid path patterns
+		finding.Paths = lo.Filter(finding.Paths, func(pattern string, _ int) bool {
+			if !doublestar.ValidatePattern(pattern) {
+				log.Logger.Errorf("Invalid path pattern in the ignore file: %q", pattern)
+				return false
+			}
+			return true
+		})
+		findings = append(findings, finding)
+	}
+	*f = findings
 }
 
 // IgnoreConfig represents the structure of .trivyignore.yaml.
@@ -88,19 +125,11 @@ func getIgnoredFindings(ignoreFile string) (IgnoreConfig, error) {
 			Licenses:          ignoredFindings,
 		}
 	}
-	t := clock.Now()
-	fmt.Print(t)
-	// Filter out expired ignore findings
-	filterExpired := func(item IgnoreFinding, index int) bool {
-		if item.ExpiredAt.IsZero() {
-			return true
-		}
-		return !item.ExpiredAt.Before(clock.Now())
-	}
-	conf.Vulnerabilities = lo.Filter(conf.Vulnerabilities, filterExpired)
-	conf.Misconfigurations = lo.Filter(conf.Misconfigurations, filterExpired)
-	conf.Secrets = lo.Filter(conf.Secrets, filterExpired)
-	conf.Licenses = lo.Filter(conf.Licenses, filterExpired)
+
+	conf.Vulnerabilities.Filter()
+	conf.Misconfigurations.Filter()
+	conf.Secrets.Filter()
+	conf.Licenses.Filter()
 
 	return conf, nil
 }
@@ -146,12 +175,6 @@ func parseIgnore(ignoreFile string) (IgnoreFindings, error) {
 			if err != nil {
 				log.Logger.Warnf("Error while parsing expiration date in .trivyignore file: %s", err)
 				continue
-			}
-			if !exp.IsZero() {
-				now := time.Now()
-				if exp.Before(now) {
-					continue
-				}
 			}
 		}
 		ignoredFindings = append(ignoredFindings, IgnoreFinding{
