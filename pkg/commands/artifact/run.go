@@ -273,7 +273,7 @@ func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initialize
 
 func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error) {
 	// Filter results
-	if err := result.Filter(ctx, &report, opts.FilterOpts()); err != nil {
+	if err := result.Filter(ctx, report, opts.FilterOpts()); err != nil {
 		return types.Report{}, xerrors.Errorf("filtering error: %w", err)
 	}
 	return report, nil

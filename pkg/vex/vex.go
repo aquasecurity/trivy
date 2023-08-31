@@ -146,7 +146,7 @@ func cdxStatus(s cdx.ImpactAnalysisState) Status {
 	return StatusUnknown
 }
 
-func New(filePath string, report *types.Report) (VEX, error) {
+func New(filePath string, report types.Report) (VEX, error) {
 	if filePath == "" {
 		return nil, nil
 	}
@@ -175,7 +175,7 @@ func New(filePath string, report *types.Report) (VEX, error) {
 	return nil, xerrors.Errorf("unable to load VEX: %w", errs)
 }
 
-func decodeCycloneDXJSON(r io.ReadSeeker, report *types.Report) (VEX, error) {
+func decodeCycloneDXJSON(r io.ReadSeeker, report types.Report) (VEX, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return nil, xerrors.Errorf("seek error: %w", err)
 	}

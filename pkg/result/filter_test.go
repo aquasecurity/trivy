@@ -207,6 +207,7 @@ func TestFilter(t *testing.T) {
 				report: types.Report{
 					Results: types.Results{
 						types.Result{
+							Target: "debian:11 (debian 11)",
 							Vulnerabilities: []types.DetectedVulnerability{
 								{
 									VulnerabilityID:  "CVE-2019-0001",
@@ -237,7 +238,13 @@ func TestFilter(t *testing.T) {
 					dbTypes.StatusEndOfLife,
 				},
 			},
-			want: types.Report{},
+			want: types.Report{
+				Results: types.Results{
+					{
+						Target: "debian:11 (debian 11)",
+					},
+				},
+			},
 		},
 		{
 			name: "ignore file",
@@ -245,6 +252,8 @@ func TestFilter(t *testing.T) {
 				report: types.Report{
 					Results: types.Results{
 						{
+							Target: "package-lock.json",
+							Class:  types.ClassLangPkg,
 							Vulnerabilities: []types.DetectedVulnerability{
 								{
 									// this vulnerability is ignored
@@ -307,6 +316,8 @@ func TestFilter(t *testing.T) {
 							},
 						},
 						{
+							Target: "Dockerfile",
+							Class:  types.ClassConfig,
 							Misconfigurations: []types.DetectedMisconfiguration{
 								{
 									Type:     ftypes.Kubernetes,
@@ -346,6 +357,8 @@ func TestFilter(t *testing.T) {
 			want: types.Report{
 				Results: types.Results{
 					{
+						Target: "package-lock.json",
+						Class:  types.ClassLangPkg,
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2019-0003",
@@ -366,6 +379,10 @@ func TestFilter(t *testing.T) {
 								},
 							},
 						},
+					},
+					{
+						Target: "Dockerfile",
+						Class:  types.ClassConfig,
 					},
 					{
 						Secrets: []ftypes.SecretFinding{
@@ -963,7 +980,7 @@ func TestFilter(t *testing.T) {
 			fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
 			clock.SetFakeTime(t, fakeTime)
 
-			err := result.Filter(context.Background(), &tt.args.report, result.FilterOption{
+			err := result.Filter(context.Background(), tt.args.report, result.FilterOption{
 				Severities:     tt.args.severities,
 				VEXPath:        tt.args.vexPath,
 				IgnoreStatuses: tt.args.ignoreStatuses,
