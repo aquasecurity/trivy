@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 
 	version "github.com/knqyf263/go-rpm-version"
@@ -73,6 +74,9 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	packageSPDXIdentifierMap := createPackageSPDXIdentifierMap(spdxDocument.Packages)
 	packageFilePaths := getPackageFilePaths(spdxDocument)
 
+	// Hold packages that are not processed by relationships
+	orphanPkgs := createPackageSPDXIdentifierMap(spdxDocument.Packages)
+
 	relationships := lo.Filter(spdxDocument.Relationships, func(rel *spdx.Relationship, _ int) bool {
 		// Skip the DESCRIBES relationship.
 		return rel.Relationship != common.TypeRelationshipDescribe && rel.Relationship != "DESCRIBE"
@@ -90,8 +94,8 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	//     - Python package A
 	//     - Python package B
 	for _, rel := range relationships {
-		pkgA := packageSPDXIdentifierMap[string(rel.RefA.ElementRefID)]
-		pkgB := packageSPDXIdentifierMap[string(rel.RefB.ElementRefID)]
+		pkgA := packageSPDXIdentifierMap[rel.RefA.ElementRefID]
+		pkgB := packageSPDXIdentifierMap[rel.RefB.ElementRefID]
 
 		if pkgA == nil || pkgB == nil {
 			// Skip the missing pkg relationship.
@@ -102,6 +106,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 		// Relationship: root package => OS
 		case isOperatingSystem(pkgB.PackageSPDXIdentifier):
 			s.SBOM.OS = parseOS(*pkgB)
+			delete(orphanPkgs, pkgB.PackageSPDXIdentifier)
 		// Relationship: OS => OS package
 		case isOperatingSystem(pkgA.PackageSPDXIdentifier):
 			pkg, _, err := parsePkg(*pkgB, packageFilePaths)
@@ -111,18 +116,12 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 				return xerrors.Errorf("failed to parse os package: %w", err)
 			}
 			osPkgs = append(osPkgs, *pkg)
+			delete(orphanPkgs, pkgB.PackageSPDXIdentifier)
 		// Relationship: root package => application
 		case isApplication(pkgB.PackageSPDXIdentifier):
 			// pass
 		// Relationship: application => language-specific package
-		case isApplication(pkgA.PackageSPDXIdentifier) ||
-			// Package identifiers fields may NOT use "OperatingSystem", "Application", etc. suffixes
-			// for distinguishing between OS packages, application, language-specific packages, etc. since
-			// the SPDX specification does not require it.
-			// ref: https://spdx.github.io/spdx-spec/v2.3/package-information/#72-package-spdx-identifier-field
-			// In this case, we should relying on the relationship type and assumes B is a language-specific package
-			// of A if the relationship type is "CONTAINS".
-			rel.Relationship == "CONTAINS":
+		case isApplication(pkgA.PackageSPDXIdentifier):
 			app, ok := apps[pkgA.PackageSPDXIdentifier]
 			if !ok {
 				app = initApplication(*pkgA)
@@ -136,6 +135,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 				return xerrors.Errorf("failed to parse language-specific package: %w", err)
 			}
 			app.Libraries = append(app.Libraries, *lib)
+			delete(orphanPkgs, pkgB.PackageSPDXIdentifier)
 		}
 	}
 
@@ -150,10 +150,8 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	}
 
 	// Fallback for when there are no effective relationships.
-	if len(relationships) == 0 {
-		if err := s.parsePackages(spdxDocument); err != nil {
-			return err
-		}
+	if err := s.parsePackages(orphanPkgs); err != nil {
+		return err
 	}
 
 	// Keep the original document
@@ -163,13 +161,13 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 
 // parsePackages processes the packages and categorizes them into OS packages and application packages.
 // Note that all language-specific packages are treated as a single application.
-func (s *SPDX) parsePackages(spdxDocument *spdx.Document) error {
+func (s *SPDX) parsePackages(pkgs map[common.ElementID]*spdx.Package) error {
 	var (
 		osPkgs []ftypes.Package
-		app    ftypes.Application
+		apps   = map[string]ftypes.Application{}
 	)
 
-	for _, p := range spdxDocument.Packages {
+	for _, p := range pkgs {
 		pkg, pkgType, err := parsePkg(*p, nil)
 		if errors.Is(err, errUnknownPackageFormat) {
 			continue
@@ -181,27 +179,30 @@ func (s *SPDX) parsePackages(spdxDocument *spdx.Document) error {
 			osPkgs = append(osPkgs, *pkg)
 		default:
 			// Language-specific packages
-			if app.Type == "" {
+			app, ok := apps[pkgType]
+			if !ok {
 				app.Type = pkgType
+			} else {
+
 			}
 			app.Libraries = append(app.Libraries, *pkg)
+			apps[pkgType] = app
 		}
 	}
 	if len(osPkgs) > 0 {
 		s.Packages = []ftypes.PackageInfo{{Packages: osPkgs}}
 	}
-	if len(app.Libraries) > 0 {
+	for _, app := range apps {
+		sort.Sort(app.Libraries)
 		s.SBOM.Applications = append(s.SBOM.Applications, app)
 	}
 	return nil
 }
 
-func createPackageSPDXIdentifierMap(packages []*spdx.Package) map[string]*spdx.Package {
-	ret := make(map[string]*spdx.Package)
-	for _, info := range packages {
-		ret[string(info.PackageSPDXIdentifier)] = info
-	}
-	return ret
+func createPackageSPDXIdentifierMap(packages []*spdx.Package) map[common.ElementID]*spdx.Package {
+	return lo.SliceToMap(packages, func(pkg *spdx.Package) (common.ElementID, *spdx.Package) {
+		return pkg.PackageSPDXIdentifier, pkg
+	})
 }
 
 func createFileSPDXIdentifierMap(files []*spdx.File) map[string]*spdx.File {
