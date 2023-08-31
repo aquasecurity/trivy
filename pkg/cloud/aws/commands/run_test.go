@@ -38,7 +38,7 @@ const expectedS3ScanResult = `{
       "Type": "cloud",
       "MisconfSummary": {
         "Successes": 1,
-        "Failures": 9,
+        "Failures": 8,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -102,30 +102,6 @@ const expectedS3ScanResult = `{
           "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0088",
           "References": [
             "https://avd.aquasec.com/misconfig/avd-aws-0088"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
-          "ID": "AVD-AWS-0089",
-          "AVDID": "AVD-AWS-0089",
-          "Title": "S3 Bucket does not have logging enabled.",
-          "Description": "Buckets should have logging enabled so that access can be audited.",
-          "Message": "Bucket does not have logging enabled",
-          "Resolution": "Add a logging block to the resource to enable access logging",
-          "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0089",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0089"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -342,7 +318,7 @@ const expectedCustomScanResult = `{
       "Type": "cloud",
       "MisconfSummary": {
         "Successes": 1,
-        "Failures": 9,
+        "Failures": 8,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -406,30 +382,6 @@ const expectedCustomScanResult = `{
           "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0088",
           "References": [
             "https://avd.aquasec.com/misconfig/avd-aws-0088"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
-          "ID": "AVD-AWS-0089",
-          "AVDID": "AVD-AWS-0089",
-          "Title": "S3 Bucket does not have logging enabled.",
-          "Description": "Buckets should have logging enabled so that access can be audited.",
-          "Message": "Bucket does not have logging enabled",
-          "Resolution": "Add a logging block to the resource to enable access logging",
-          "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0089",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0089"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -720,7 +672,7 @@ const expectedS3AndCloudTrailResult = `{
       "Type": "cloud",
       "MisconfSummary": {
         "Successes": 1,
-        "Failures": 9,
+        "Failures": 8,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -784,30 +736,6 @@ const expectedS3AndCloudTrailResult = `{
           "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0088",
           "References": [
             "https://avd.aquasec.com/misconfig/avd-aws-0088"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
-          "ID": "AVD-AWS-0089",
-          "AVDID": "AVD-AWS-0089",
-          "Title": "S3 Bucket does not have logging enabled.",
-          "Description": "Buckets should have logging enabled so that access can be audited.",
-          "Message": "Bucket does not have logging enabled",
-          "Resolution": "Add a logging block to the resource to enable access logging",
-          "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0089",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0089"
           ],
           "Status": "FAIL",
           "Layer": {},

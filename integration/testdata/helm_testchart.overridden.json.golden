@@ -20,8 +20,8 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 144,
-        "Failures": 6,
+        "Successes": 149,
+        "Failures": 7,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -268,7 +268,7 @@
           "ID": "KSV030",
           "AVDID": "AVD-KSV-0030",
           "Title": "Runtime/Default Seccomp profile not set",
-          "Description": "The RuntimeDefault/Localhost seccomp profile must be required, or allow specific additional profiles.",
+          "Description": "According to pod security standard 'Seccomp', the RuntimeDefault seccomp profile must be required, or allow specific additional profiles.",
           "Message": "Either Pod or Container should set 'securityContext.seccompProfile.type' to 'RuntimeDefault'",
           "Namespace": "builtin.kubernetes.KSV030",
           "Query": "data.builtin.kubernetes.KSV030.deny",
@@ -387,11 +387,11 @@
           "ID": "KSV104",
           "AVDID": "AVD-KSV-0104",
           "Title": "Seccomp policies disabled",
-          "Description": "Seccomp profile must not be explicitly set to 'Unconfined'.",
+          "Description": "A program inside the container can bypass Seccomp protection policies.",
           "Message": "container testchart of deployment testchart in default namespace should specify a seccomp profile",
           "Namespace": "builtin.kubernetes.KSV104",
           "Query": "data.builtin.kubernetes.KSV104.deny",
-          "Resolution": "Do not set seccomp profile to 'Unconfined'",
+          "Resolution": "Specify seccomp either by annotation or by seccomp profile type having allowed values as per pod security standards",
           "Severity": "MEDIUM",
           "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv104",
           "References": [
@@ -525,6 +525,32 @@
               "Lines": null
             }
           }
+        },
+        {
+          "Type": "Helm Security Check",
+          "ID": "KSV117",
+          "AVDID": "AVD-KSV-0117",
+          "Title": "Prevent binding to privileged ports",
+          "Description": "The ports which are lower than 1024 receive and transmit various sensitive and privileged data. Allowing containers to use them can bring serious implications.",
+          "Message": "deployment testchart in default namespace should not set spec.template.spec.containers.ports.containerPort to less than 1024",
+          "Namespace": "builtin.kubernetes.KSV117",
+          "Query": "data.builtin.kubernetes.KSV117.deny",
+          "Resolution": "Do not map the container ports to privileged host ports when starting a container.",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv117",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+            "https://avd.aquasec.com/misconfig/ksv117"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
         }
       ]
     },
@@ -533,7 +559,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 149,
+        "Successes": 155,
         "Failures": 1,
         "Exceptions": 0
       },
@@ -571,7 +597,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 149,
+        "Successes": 155,
         "Failures": 1,
         "Exceptions": 0
       },

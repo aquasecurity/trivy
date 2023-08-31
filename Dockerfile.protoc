@@ -1,13 +1,18 @@
-FROM --platform=linux/amd64 golang:1.19
+FROM --platform=linux/amd64 golang:1.20
 
-# Install protoc (cf. http://google.github.io/proto-lens/installing-protoc.html)
+# Set environment variable for protoc
 ENV PROTOC_ZIP=protoc-3.19.4-linux-x86_64.zip
-RUN apt-get update && apt-get install -y unzip
+
+# Install unzip for protoc installation and clean up cache
+RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
+
+# Download and install protoc
 RUN curl --retry 5 -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.19.4/$PROTOC_ZIP \
     && unzip -o $PROTOC_ZIP -d /usr/local bin/protoc \
-    && unzip -o $PROTOC_ZIP -d /usr/local 'include/*' \ 
+    && unzip -o $PROTOC_ZIP -d /usr/local 'include/*' \
     && rm -f $PROTOC_ZIP
 
+# Install Go tools
 RUN go install github.com/twitchtv/twirp/protoc-gen-twirp@v8.1.0
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1
 RUN go install github.com/magefile/mage@v1.14.0

@@ -22,6 +22,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2020-9548",
+          "PkgID": "com.fasterxml.jackson.core:jackson-databind:2.9.1",
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.4",
@@ -78,6 +79,7 @@
         },
         {
           "VulnerabilityID": "CVE-2021-20190",
+          "PkgID": "com.fasterxml.jackson.core:jackson-databind:2.9.1",
           "PkgName": "com.fasterxml.jackson.core:jackson-databind",
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.7",
