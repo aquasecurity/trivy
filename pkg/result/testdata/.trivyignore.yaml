@@ -18,7 +18,7 @@ misconfigurations:
   - id: ID100
   - id: ID200
     paths:
-      - "foo/package-lock.json" # changed to check `.trivyignore.yaml` in one test
+      - "app/Dockerfile"
   - id: ID300
     paths:
       - "docs/Dockerfile"
@@ -26,7 +26,7 @@ secrets:
   - id: generic-unwanted-rule
   - id: generic-unwanted-rule2
     paths:
-      - "foo/package-lock.json" # changed to check `.trivyignore.yaml` in one test
+      - "**/config.yaml"
   - id: generic-wanted-rule
     paths:
       - "foo/secret.txt"
