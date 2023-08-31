@@ -135,6 +135,9 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 				return xerrors.Errorf("failed to parse language-specific package: %w", err)
 			}
 			app.Libraries = append(app.Libraries, *lib)
+
+			// They are no longer orphan packages
+			delete(orphanPkgs, pkgA.PackageSPDXIdentifier)
 			delete(orphanPkgs, pkgB.PackageSPDXIdentifier)
 		}
 	}
