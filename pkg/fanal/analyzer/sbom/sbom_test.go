@@ -3,7 +3,6 @@ package sbom
 import (
 	"context"
 	"os"
-	"sort"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -27,19 +26,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.Bitnami,
-						FilePath: "opt/bitnami/elasticsearch",
-						Libraries: types.Packages{
-							{
-								Name:     "elasticsearch",
-								Version:  "8.9.1",
-								Ref:      "pkg:bitnami/elasticsearch@8.9.1?arch=arm64",
-								Arch:     "arm64",
-								Licenses: []string{"Elastic-2.0"},
-							},
-						},
-					},
-					{
 						Type: types.Jar,
 						Libraries: types.Packages{
 							{
@@ -61,6 +47,19 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								Name:    "co.elastic.apm:apm-agent-core",
 								Version: "1.36.0",
 								Ref:     "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0",
+							},
+						},
+					},
+					{
+						Type:     types.Bitnami,
+						FilePath: "opt/bitnami/elasticsearch",
+						Libraries: types.Packages{
+							{
+								Name:     "elasticsearch",
+								Version:  "8.9.1",
+								Ref:      "pkg:bitnami/elasticsearch@8.9.1?arch=arm64",
+								Arch:     "arm64",
+								Licenses: []string{"Elastic-2.0"},
 							},
 						},
 					},
@@ -157,9 +156,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			tt.wantErr(t, err)
 
 			if got != nil {
-				sort.Slice(got.Applications, func(i, j int) bool {
-					return got.Applications[i].Type < got.Applications[j].Type
-				})
+				got.Sort()
 			}
 			assert.Equal(t, tt.want, got)
 		})
