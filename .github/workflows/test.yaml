@@ -172,6 +172,7 @@ jobs:
         remove-docker-images: 'true'
         remove-dotnet: 'true'
         remove-haskell: 'true'
+      if: matrix.operating-system == 'ubuntu-latest'
 
     - name: Determine GoReleaser ID
       id: goreleaser_id
