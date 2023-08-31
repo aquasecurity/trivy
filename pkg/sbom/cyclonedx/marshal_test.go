@@ -108,10 +108,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 											V3Score:  5.3,
 										},
 									},
-									References: []string{
-										"http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
-										"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
-									},
 									PublishedDate:    lo.ToPtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
 									LastModifiedDate: lo.ToPtr(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
 								},
@@ -525,16 +521,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 							416,
 						},
 						Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
-						Advisories: &[]cdx.Advisory{
-							{
-								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
-							},
-							{
-								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
-							},
-						},
-						Published: "2018-12-31T19:29:00+00:00",
-						Updated:   "2019-10-31T01:15:00+00:00",
+						Published:   "2018-12-31T19:29:00+00:00",
+						Updated:     "2019-10-31T01:15:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
 								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",

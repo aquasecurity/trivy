@@ -341,6 +341,13 @@ func UnmarshalProperties(properties *[]cdx.Property) map[string]string {
 }
 
 func cdxAdvisories(refs []string) *[]cdx.Advisory {
+	// cyclonedx converts link to empty `[]cdx.Advisory` to `null`
+	// `bom-1.5.schema.json` doesn't support this - `Invalid type. Expected: array, given: null`
+	// we need to explicitly set `nil` for empty `refs` slice
+	if len(refs) == 0 {
+		return nil
+	}
+
 	var advs []cdx.Advisory
 	for _, ref := range refs {
 		advs = append(advs, cdx.Advisory{

@@ -328,6 +328,16 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/conda-cyclonedx.json.golden",
 		},
 		{
+			name: "pom.xml generating CycloneDX SBOM (with vulnerabilities)",
+			args: args{
+				command: "fs",
+				scanner: types.VulnerabilityScanner,
+				format:  "cyclonedx",
+				input:   "testdata/fixtures/repo/pom",
+			},
+			golden: "testdata/pom-cyclonedx.json.golden",
+		},
+		{
 			name: "conda generating SPDX SBOM",
 			args: args{
 				command: "rootfs",

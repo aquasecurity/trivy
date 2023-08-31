@@ -151,6 +151,9 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 				return (*(*bom.Components)[i].Properties)[ii].Name < (*(*bom.Components)[i].Properties)[jj].Name
 			})
 		}
+		sort.Slice(*bom.Vulnerabilities, func(i, j int) bool {
+			return (*bom.Vulnerabilities)[i].ID < (*bom.Vulnerabilities)[j].ID
+		})
 	}
 
 	return bom
