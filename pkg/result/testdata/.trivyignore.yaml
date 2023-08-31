@@ -1,14 +1,14 @@
 vulnerabilities:
   - id: CVE-2019-0001
     paths:
-      - "foo/package-lock.json"
+      - "**/*-lock.json"
   - id: CVE-2019-0002
     paths:
       - "bar/package.json"
   - id: CVE-2019-0003
   - id: CVE-2019-0004
     paths:
-      - "**/*.json"
+      - "bar/package.json"
   - id: CVE-2019-0005
     expired_at: 2023-01-01
   - id: CVE-2019-0006
