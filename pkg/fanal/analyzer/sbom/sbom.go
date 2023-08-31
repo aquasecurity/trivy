@@ -41,7 +41,7 @@ func (a sbomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 	}
 
 	// Bitnami images
-	// SPDX files are are located under the /opt/bitnami/<component> directory
+	// SPDX files are located under the /opt/bitnami/<component> directory
 	// and named with the pattern .spdx-<component>.spdx
 	// ref: https://github.com/bitnami/vulndb#how-to-consume-this-cve-feed
 	if strings.HasPrefix(input.FilePath, "opt/bitnami/") {
