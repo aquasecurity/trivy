@@ -29,24 +29,28 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						Type: types.Jar,
 						Libraries: types.Packages{
 							{
-								Name:    "co.elastic.apm:apm-agent",
-								Version: "1.36.0",
-								Ref:     "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
+								Name:     "co.elastic.apm:apm-agent",
+								Version:  "1.36.0",
+								Ref:      "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
+								FilePath: "opt/bitnami/elasticsearch",
 							},
 							{
-								Name:    "co.elastic.apm:apm-agent-cached-lookup-key",
-								Version: "1.36.0",
-								Ref:     "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
+								Version:  "1.36.0",
+								Ref:      "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+								FilePath: "opt/bitnami/elasticsearch",
 							},
 							{
-								Name:    "co.elastic.apm:apm-agent-common",
-								Version: "1.36.0",
-								Ref:     "pkg:maven/co.elastic.apm/apm-agent-common@1.36.0",
+								Name:     "co.elastic.apm:apm-agent-common",
+								Version:  "1.36.0",
+								Ref:      "pkg:maven/co.elastic.apm/apm-agent-common@1.36.0",
+								FilePath: "opt/bitnami/elasticsearch",
 							},
 							{
-								Name:    "co.elastic.apm:apm-agent-core",
-								Version: "1.36.0",
-								Ref:     "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0",
+								Name:     "co.elastic.apm:apm-agent-core",
+								Version:  "1.36.0",
+								Ref:      "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0",
+								FilePath: "opt/bitnami/elasticsearch",
 							},
 						},
 					},
@@ -95,13 +99,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			wantErr: require.NoError,
 		},
 		{
-			name:     "invalid spdx file",
-			file:     "testdata/invalid_spdx.json",
-			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
-			want:     nil,
-			wantErr:  require.Error,
-		},
-		{
 			name:     "valid postgresql spdx file",
 			file:     "testdata/postgresql.spdx.json",
 			filePath: "opt/bitnami/postgresql/.spdx-postgresql.spdx",
@@ -140,6 +137,13 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 			wantErr: require.NoError,
+		},
+		{
+			name:     "invalid spdx file",
+			file:     "testdata/invalid_spdx.json",
+			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",
+			want:     nil,
+			wantErr:  require.Error,
 		},
 	}
 	for _, tt := range tests {

@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func init() {
@@ -45,29 +46,7 @@ func (a sbomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 	// and named with the pattern .spdx-<component>.spdx
 	// ref: https://github.com/bitnami/vulndb#how-to-consume-this-cve-feed
 	if strings.HasPrefix(input.FilePath, "opt/bitnami/") {
-		componentPath := path.Dir(input.FilePath)
-		for i, app := range bom.Applications {
-			switch app.Type {
-			case ftypes.Bitnami:
-				// Replace the SBOM path with the component path
-				bom.Applications[i].FilePath = componentPath
-			default:
-				bom.Applications[i].Type = app.Type
-			}
-
-			for j, pkg := range app.Libraries {
-				// package file path might be empty if "filesAnalyzed" is false
-				// ref: https://spdx.github.io/spdx-spec/v2.3/package-information/#78-files-analyzed-field
-				if pkg.FilePath == "" {
-					continue
-				}
-
-				// Set the absolute path since SBOM in Bitnami images contain a relative path
-				// e.g. modules/apm/elastic-apm-agent-1.36.0.jar
-				//      => opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar
-				bom.Applications[i].Libraries[j].FilePath = path.Join(componentPath, pkg.FilePath)
-			}
-		}
+		handleBitnamiImages(path.Dir(input.FilePath), bom)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -91,4 +70,22 @@ func (a sbomAnalyzer) Type() analyzer.Type {
 
 func (a sbomAnalyzer) Version() int {
 	return version
+}
+
+func handleBitnamiImages(componentPath string, bom types.SBOM) {
+	for i, app := range bom.Applications {
+		if app.Type == ftypes.Bitnami {
+			// Set the component dir path to the application
+			bom.Applications[i].FilePath = componentPath
+			continue
+		}
+
+		for j, pkg := range app.Libraries {
+			// Set the absolute path since SBOM in Bitnami images contain a relative path
+			// e.g. modules/apm/elastic-apm-agent-1.36.0.jar
+			//      => opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar
+			// If the file path is empty, the file path will be set to the component dir path.
+			bom.Applications[i].Libraries[j].FilePath = path.Join(componentPath, pkg.FilePath)
+		}
+	}
 }
