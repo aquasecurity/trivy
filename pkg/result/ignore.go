@@ -51,6 +51,7 @@ func (f *IgnoreFindings) Match(path, id string) bool {
 		if !pathMatch(path, finding.Paths) {
 			continue
 		}
+		log.Logger.Debugw("Ignored", log.String("id", id), log.String("path", path))
 		return true
 
 	}
