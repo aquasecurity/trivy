@@ -156,14 +156,6 @@ jobs:
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3.5.3
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version-file: go.mod
-
     - name: Maximize build space
       uses: easimon/maximize-build-space@v7
       with:
@@ -173,6 +165,14 @@ jobs:
         remove-dotnet: 'true'
         remove-haskell: 'true'
       if: matrix.operating-system == 'ubuntu-latest'
+
+    - name: Checkout
+      uses: actions/checkout@v3.5.3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version-file: go.mod
 
     - name: Determine GoReleaser ID
       id: goreleaser_id
