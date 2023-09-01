@@ -41,7 +41,7 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v3.6.0
+        uses: golangci/golangci-lint-action@v3.7.0
         with:
           version: v1.52
           args: --deadline=30m
