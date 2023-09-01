@@ -28,7 +28,7 @@ require (
 	github.com/aquasecurity/trivy-kubernetes v0.5.7-0.20230708090141-f44c2292c9a9
 	github.com/aws/aws-sdk-go v1.45.0
 	github.com/aws/aws-sdk-go-v2 v1.21.0
-	github.com/aws/aws-sdk-go-v2/config v1.18.37
+	github.com/aws/aws-sdk-go-v2/config v1.18.38
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.115.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.21.5
 	github.com/bmatcuk/doublestar v1.3.4
@@ -146,7 +146,7 @@ require (
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.12 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.13.35 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.13.36 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.11 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.41 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.35 // indirect
@@ -190,7 +190,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.16.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sns v1.20.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.20.6 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.13.5 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.13.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.15.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/workspaces v1.23.0 // indirect
 	github.com/aws/smithy-go v1.14.2 // indirect
