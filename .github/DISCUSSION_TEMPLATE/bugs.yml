@@ -121,4 +121,4 @@ body:
   - type: markdown
     attributes:
       value: |
-        We would be happy if you could share how you are using Trivy [here](https://github.com/aquasecurity/trivy/discussions/new?category=show-and-tell).
+        We would be happy if you could share how you are using Trivy [here](https://github.com/aquasecurity/trivy/discussions/new?category=adopters).
