@@ -46,8 +46,6 @@ const (
 
 	PropertySchemaVersion = "SchemaVersion"
 
-	NoAssertion = "NOASSERTION"
-
 	// Image properties
 	PropertySize       = "Size"
 	PropertyImageID    = "ImageID"
@@ -134,15 +132,11 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 // The function augmentSpdxData updates each package in packages key,
 // ensuring the spdx json is valid as per https://tools.spdx.org/app/validate/
 // The following keys are being updated
-//  1. licenseConcluded (incorrect delimiter and string value throws error)
-//  2. licenseDeclared (incorrect delimiter and string value throws error)
-//  3. copyrightText (throws a warning if the value is empty)
-//  4. downloadLocation (throws a warning if the value is empty)
+// - copyrightText (throws a warning if the value is empty)
 func augmentSpdxData(p *spdx.Package) {
-	p.PackageLicenseConcluded = NoAssertion
-	p.PackageLicenseDeclared = NoAssertion
-	p.PackageCopyrightText = NoAssertion
-	p.PackageDownloadLocation = NoAssertion
+	if p.PackageCopyrightText == "" {
+		p.PackageCopyrightText = noneField
+	}
 }
 
 func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
