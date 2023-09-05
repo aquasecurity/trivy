@@ -34,6 +34,8 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
+const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/development/v2.3.1/schemas/spdx-schema.json"
+
 func initDB(t *testing.T) string {
 	fixtureDir := filepath.Join("testdata", "fixtures", "db")
 	entries, err := os.ReadDir(fixtureDir)
@@ -210,9 +212,21 @@ func compareCycloneDX(t *testing.T, wantFile, gotFile string) {
 	assert.Equal(t, want, got)
 
 	// Validate CycloneDX output against the JSON schema
-	schemaLoader := gojsonschema.NewReferenceLoader(got.JSONSchema)
-	documentLoader := gojsonschema.NewGoLoader(got)
+	validateReport(t, got.JSONSchema, got)
+}
 
+func compareSPDXJson(t *testing.T, wantFile, gotFile string) {
+	want := readSpdxJson(t, wantFile)
+	got := readSpdxJson(t, gotFile)
+	assert.Equal(t, want, got)
+
+	// Validate SPDX output against the JSON schema
+	validateReport(t, SPDXSchema, got)
+}
+
+func validateReport(t *testing.T, schema string, report any) {
+	schemaLoader := gojsonschema.NewReferenceLoader(schema)
+	documentLoader := gojsonschema.NewGoLoader(report)
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	require.NoError(t, err)
 
@@ -222,10 +236,4 @@ func compareCycloneDX(t *testing.T, wantFile, gotFile string) {
 		})
 		assert.True(t, valid, strings.Join(errs, "\n"))
 	}
-}
-
-func compareSpdxJson(t *testing.T, wantFile, gotFile string) {
-	want := readSpdxJson(t, wantFile)
-	got := readSpdxJson(t, gotFile)
-	assert.Equal(t, want, got)
 }
