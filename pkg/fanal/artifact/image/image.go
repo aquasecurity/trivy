@@ -523,6 +523,7 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) (
 		return nil, -1
 	}
 
+	var entrypointIndexFound bool
 	baseImageIndex := -1
 	var foundNonEmpty bool
 	for i := len(configFile.History) - 1; i >= 0; i-- {
@@ -540,11 +541,27 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) (
 			continue
 		}
 
+		// Assumptions:
+		// 1. Most base image have a CMD instruction
+		// 2. In case  ENTRYPOINT instruction is encountered then check if next instruction is CMD. If yes, then CMD is the last base image layer, else ENTRYPOINT
+
 		// Detect CMD instruction in base image
 		if strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)  CMD") ||
 			strings.HasPrefix(h.CreatedBy, "CMD") { // BuildKit
 			baseImageIndex = i
 			break
+		}
+
+		// if entry point exists but command is missing  then assume entrypoint as base image index
+		if entrypointIndexFound {
+			break
+		}
+
+		// if entry point exsists then update entrypointIndex and baseImageIndex
+		if strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)  ENTRYPOINT") ||
+			strings.HasPrefix(h.CreatedBy, "ENTRYPOINT") { // BuildKit
+			entrypointIndexFound = true
+			baseImageIndex = i
 		}
 	}
 
