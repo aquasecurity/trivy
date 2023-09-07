@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -46,6 +47,7 @@ type SarifWriter struct {
 	Version       string
 	run           *sarif.Run
 	locationCache map[string][]location
+	Target        string
 }
 
 type sarifData struct {
@@ -134,6 +136,10 @@ func (sw *SarifWriter) Write(report types.Report) error {
 			"repoTags":    report.Metadata.RepoTags,
 			"repoDigests": report.Metadata.RepoDigests,
 		}
+	}
+	if sw.Target != "" {
+		absPath, _ := filepath.Abs(sw.Target)
+		rootPath = fmt.Sprintf("file://%s/", absPath)
 	}
 
 	ruleIndexes := map[string]int{}
