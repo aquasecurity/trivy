@@ -7,6 +7,7 @@ import (
 	"io"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 
@@ -410,8 +411,26 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 
 func getPackageName(typ string, component cdx.Component) string {
 	// Jar uses `Group` field for `GroupID`
-	if typ == packageurl.TypeMaven && component.Group != "" {
-		return fmt.Sprintf("%s:%s", component.Group, component.Name)
+	if typ == packageurl.TypeMaven {
+		return convertMavenPackage(component.PackageURL)
 	}
 	return component.Name
+}
+
+func convertMavenPackage(pkg string) string {
+	// Split the package into its parts
+	parts := strings.Split(pkg, "/")
+
+	// Get Group
+	group := parts[1]
+
+	// Get FullName with Version
+	nameWithVersion := parts[len(parts)-1]
+
+	// Remove the Version from the package
+	nameWOVersion := strings.Split(nameWithVersion, "@")[0]
+
+	pkgWithoutVersion := fmt.Sprintf("%s:%s", group, nameWOVersion)
+
+	return pkgWithoutVersion
 }
