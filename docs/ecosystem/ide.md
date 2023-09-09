@@ -54,3 +54,13 @@ Web application that allows to load a Trivy report in json format and displays t
 A trivy pre-commit hook that runs a `trivy fs` in your git repo before commiting, preventing you from commiting secrets in the first place.
 
 👉 Get it at: <https://github.com/mxab/pre-commit-trivy>
+
+## AWS CDK
+
+[The AWS Cloud Development Kit (AWS CDK)](https://aws.amazon.com/cdk/) is an open-source software development framework to define cloud infrastructure in code and provision it through AWS CloudFormation.
+
+### image-scanner-with-trivy (Community)
+
+A CDK Construct Library to scan an image with trivy in CDK codes.
+
+👉 Get it at: <https://constructs.dev/packages/image-scanner-with-trivy>
