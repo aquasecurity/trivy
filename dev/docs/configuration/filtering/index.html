@@ -3764,7 +3764,7 @@ Total: 527 (UNKNOWN: 0, LOW: 276, MEDIUM: 83, HIGH: 158, CRITICAL: 10)
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>To skip all unfixed vulnerabilities, you can use the <code>--ignore-unfixed</code> flag .
-It is a shorthand of <code>-ignore-status affected,will_not_fix,fix_deferred,end_of_life</code>.
+It is a shorthand of <code>--ignore-status affected,will_not_fix,fix_deferred,end_of_life</code>.
 It displays "fixed" vulnerabilities only.</p>
 </div>
 <div class="highlight"><pre><span></span><code>$ trivy image --ignore-unfixed ruby:2.4.0
@@ -4208,8 +4208,8 @@ Total: <span class="m">7</span> <span class="o">(</span>UNKNOWN: <span class="m"
 <p>Trivy supports Open Policy Agent (OPA) to filter vulnerabilities.
 You can specify a Rego file with <code>--ignore-policy</code> option.</p>
 <p>The Rego package name must be <code>trivy</code> and it must include a rule called <code>ignore</code> which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the <code>input</code> variable. The structure of each vulnerability input is the same as for the Trivy JSON output.<br />
-There is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>. For more info about the helper functions, look at the library <a href="https://github.com/aquasecurity/trivy/tree/v0.44.1/pkg/result/module.go">here</a></p>
-<p>To get started, see the <a href="https://github.com/aquasecurity/trivy/tree/v0.44.1/contrib/example_policy">example policy</a>.</p>
+There is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>. For more info about the helper functions, look at the library <a href="https://github.com/aquasecurity/trivy/tree/v0.45.0/pkg/result/module.go">here</a></p>
+<p>To get started, see the <a href="https://github.com/aquasecurity/trivy/tree/v0.45.0/contrib/example_policy">example policy</a>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
 </code></pre></div>
 <details>
