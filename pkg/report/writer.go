@@ -16,6 +16,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report/spdx"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 const (
@@ -75,9 +77,14 @@ func Write(report types.Report, option flag.Options) error {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	case types.FormatSarif:
+		target := ""
+		if report.ArtifactType == ftypes.ArtifactFilesystem {
+			target = option.Target
+		}
 		writer = &SarifWriter{
 			Output:  output,
 			Version: option.AppVersion,
+			Target:  target,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)
