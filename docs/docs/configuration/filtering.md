@@ -68,7 +68,7 @@ Total: 527 (UNKNOWN: 0, LOW: 276, MEDIUM: 83, HIGH: 158, CRITICAL: 10)
 
 !!! tip
     To skip all unfixed vulnerabilities, you can use the `--ignore-unfixed` flag .
-    It is a shorthand of `-ignore-status affected,will_not_fix,fix_deferred,end_of_life`.
+    It is a shorthand of `--ignore-status affected,will_not_fix,fix_deferred,end_of_life`.
     It displays "fixed" vulnerabilities only.
 
 ```bash
