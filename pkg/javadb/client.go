@@ -52,7 +52,7 @@ func (u *Updater) Update() error {
 	if (meta.Version != db.SchemaVersion || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
 		// Download DB
 		log.Logger.Infof("Java DB Repository: %s", u.repo)
-		clog.Print("Downloading the Java DB...")
+		clog.Println("Downloading the Java DB...")
 
 		// TODO: support remote options
 		var a *oci.Artifact
