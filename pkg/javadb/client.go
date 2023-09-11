@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	clog "log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -51,7 +52,7 @@ func (u *Updater) Update() error {
 	if (meta.Version != db.SchemaVersion || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
 		// Download DB
 		log.Logger.Infof("Java DB Repository: %s", u.repo)
-		log.Logger.Info("Downloading the Java DB...")
+		clog.Println("Downloading the Java DB...")
 
 		// TODO: support remote options
 		var a *oci.Artifact
@@ -73,6 +74,8 @@ func (u *Updater) Update() error {
 		if err = metac.Update(meta); err != nil {
 			return xerrors.Errorf("Java DB metadata update error: %w", err)
 		}
+		clog.Printf("Java DB download complete. Last Updated At: %s", meta.UpdatedAt.String())
+
 		log.Logger.Info("The Java DB is cached for 3 days. If you want to update the database more frequently, " +
 			"the '--reset' flag clears the DB cache.")
 	}
