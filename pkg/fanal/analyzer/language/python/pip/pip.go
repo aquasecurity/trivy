@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -31,7 +32,7 @@ func (a pipLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 
 func (a pipLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	return fileName == types.PipRequirements
+	return strings.HasPrefix(fileName, "req") && strings.HasSuffix(fileName, ".txt")
 }
 
 func (a pipLibraryAnalyzer) Type() analyzer.Type {
