@@ -29,7 +29,7 @@ require (
 	github.com/aws/aws-sdk-go v1.45.2
 	github.com/aws/aws-sdk-go-v2 v1.21.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.39
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.115.0
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.117.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.21.5
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/cenkalti/backoff v2.2.1+incompatible
@@ -98,8 +98,8 @@ require (
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	golang.org/x/mod v0.12.0
 	golang.org/x/sync v0.3.0
-	golang.org/x/text v0.13.0
 	golang.org/x/term v0.12.0
+	golang.org/x/text v0.13.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v3 v3.0.1
