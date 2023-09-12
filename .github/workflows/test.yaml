@@ -177,7 +177,7 @@ jobs:
         fi
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v4
+      uses: goreleaser/goreleaser-action@v5
       with:
         version: v1.16.2
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}
