@@ -194,16 +194,14 @@ func (r *AnalysisResult) Sort() {
 
 	// Language-specific packages
 	sort.Slice(r.Applications, func(i, j int) bool {
-		return r.Applications[i].FilePath < r.Applications[j].FilePath
+		if r.Applications[i].FilePath != r.Applications[j].FilePath {
+			return r.Applications[i].FilePath < r.Applications[j].FilePath
+		}
+		return r.Applications[i].Type < r.Applications[j].Type
 	})
 
 	for _, app := range r.Applications {
-		sort.Slice(app.Libraries, func(i, j int) bool {
-			if app.Libraries[i].Name != app.Libraries[j].Name {
-				return app.Libraries[i].Name < app.Libraries[j].Name
-			}
-			return app.Libraries[i].Version < app.Libraries[j].Version
-		})
+		sort.Sort(app.Libraries)
 	}
 
 	// Custom resources

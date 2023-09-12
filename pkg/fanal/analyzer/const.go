@@ -84,6 +84,7 @@ const (
 	TypeMixLock Type = "mix-lock"
 
 	// Swift
+	TypeSwift     Type = "swift"
 	TypeCocoaPods Type = "cocoapods"
 
 	// Dart
@@ -180,6 +181,7 @@ var (
 		TypeRustBinary,
 		TypeConanLock,
 		TypeCocoaPods,
+		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
 	}
@@ -198,6 +200,7 @@ var (
 		TypeConanLock,
 		TypeGradleLock,
 		TypeCocoaPods,
+		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
 	}

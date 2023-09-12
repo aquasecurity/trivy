@@ -104,6 +104,13 @@ func Test_shouldSkipDir(t *testing.T) {
 				filepath.Join("/etc/foo/bar"): false,
 			},
 		},
+		{
+			skipDirs: []string{"**/.terraform"},
+			skipMap: map[string]bool{
+				".terraform":              true,
+				"test/foo/bar/.terraform": true,
+			},
+		},
 	}
 
 	for i, tc := range testCases {

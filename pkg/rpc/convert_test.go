@@ -44,7 +44,8 @@ func TestConvertToRpcPkgs(t *testing.T) {
 							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 							DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 						},
-						Digest: "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+						Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+						Indirect: true,
 					},
 				},
 			},
@@ -64,7 +65,8 @@ func TestConvertToRpcPkgs(t *testing.T) {
 						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 						DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 					},
-					Digest: "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+					Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+					Indirect: true,
 				},
 			},
 		},
@@ -104,7 +106,8 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 							DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 						},
-						Digest: "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+						Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+						Indirect: true,
 					},
 				},
 			},
@@ -124,7 +127,8 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 						DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 					},
-					Digest: "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+					Digest:   "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+					Indirect: true,
 				},
 			},
 		},
@@ -462,6 +466,354 @@ func TestConvertFromRPCResults(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ConvertFromRPCResults(tt.args.rpcResults)
 			assert.Equal(t, tt.want, got, tt.name)
+		})
+	}
+}
+
+func TestConvertFromRPCMisconfs(t *testing.T) {
+	type args struct {
+		misconfs []*common.DetectedMisconfiguration
+	}
+	tests := []struct {
+		name string
+		args args
+		want []types.DetectedMisconfiguration
+	}{
+		{
+			name: "happy path misconf",
+			args: args{misconfs: []*common.DetectedMisconfiguration{
+				{
+					Type:        "Dockerfile Security Check",
+					Id:          "DS005",
+					AvdId:       "AVD-DS-0005",
+					Title:       "ADD instead of COPY",
+					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					Namespace:   "builtin.dockerfile.DS005",
+					Query:       "data.builtin.dockerfile.DS005.deny",
+					Resolution:  "Use COPY instead of ADD",
+					Severity:    common.Severity_LOW,
+					PrimaryUrl:  "https://avd.aquasec.com/misconfig/ds005",
+					References: []string{
+						"https://docs.docker.com/engine/reference/builder/#add",
+						"https://avd.aquasec.com/misconfig/ds005",
+					},
+					Status: "FAIL",
+					Layer:  &common.Layer{},
+					CauseMetadata: &common.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: &common.Code{
+							Lines: []*common.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									Annotation: "",
+									Truncated:  false,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			}},
+			want: []types.DetectedMisconfiguration{
+				{
+					Type:        "Dockerfile Security Check",
+					ID:          "DS005",
+					AVDID:       "AVD-DS-0005",
+					Title:       "ADD instead of COPY",
+					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					Namespace:   "builtin.dockerfile.DS005",
+					Query:       "data.builtin.dockerfile.DS005.deny",
+					Resolution:  "Use COPY instead of ADD",
+					Severity:    "LOW",
+					PrimaryURL:  "https://avd.aquasec.com/misconfig/ds005",
+					References: []string{
+						"https://docs.docker.com/engine/reference/builder/#add",
+						"https://avd.aquasec.com/misconfig/ds005",
+					},
+					Status: "FAIL",
+					Layer:  ftypes.Layer{},
+					CauseMetadata: ftypes.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									Annotation: "",
+									Truncated:  false,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCMisconfs(tt.args.misconfs)
+			assert.Equal(t, tt.want, got, tt.name)
+		})
+	}
+}
+
+func TestConvertToRPCMiconfs(t *testing.T) {
+	type args struct {
+		misconfs []types.DetectedMisconfiguration
+	}
+	tests := []struct {
+		name string
+		args args
+		want []*common.DetectedMisconfiguration
+	}{
+		{
+			name: "happy path misconf",
+			args: args{misconfs: []types.DetectedMisconfiguration{
+				{
+					Type:        "Dockerfile Security Check",
+					ID:          "DS005",
+					AVDID:       "AVD-DS-0005",
+					Title:       "ADD instead of COPY",
+					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					Namespace:   "builtin.dockerfile.DS005",
+					Query:       "data.builtin.dockerfile.DS005.deny",
+					Resolution:  "Use COPY instead of ADD",
+					Severity:    "LOW",
+					PrimaryURL:  "https://avd.aquasec.com/misconfig/ds005",
+					References: []string{
+						"https://docs.docker.com/engine/reference/builder/#add",
+						"https://avd.aquasec.com/misconfig/ds005",
+					},
+					Status: "FAIL",
+					Layer:  ftypes.Layer{},
+					CauseMetadata: ftypes.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									Annotation: "",
+									Truncated:  false,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			}},
+			want: []*common.DetectedMisconfiguration{
+				{
+					Type:        "Dockerfile Security Check",
+					Id:          "DS005",
+					AvdId:       "AVD-DS-0005",
+					Title:       "ADD instead of COPY",
+					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					Namespace:   "builtin.dockerfile.DS005",
+					Query:       "data.builtin.dockerfile.DS005.deny",
+					Resolution:  "Use COPY instead of ADD",
+					Severity:    common.Severity_LOW,
+					PrimaryUrl:  "https://avd.aquasec.com/misconfig/ds005",
+					References: []string{
+						"https://docs.docker.com/engine/reference/builder/#add",
+						"https://avd.aquasec.com/misconfig/ds005",
+					},
+					Status: "FAIL",
+					Layer:  &common.Layer{},
+					CauseMetadata: &common.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: &common.Code{
+							Lines: []*common.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									Annotation: "",
+									Truncated:  false,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCMisconfs(tt.args.misconfs)
+			assert.Equal(t, tt.want, got, tt.name)
+		})
+	}
+}
+
+func TestConvertFromRPCLicenses(t *testing.T) {
+	tests := []struct {
+		name        string
+		rpcLicenses []*common.DetectedLicense
+		want        []types.DetectedLicense
+	}{
+		{
+			name: "happy",
+			rpcLicenses: []*common.DetectedLicense{
+				{
+					Severity:   common.Severity_HIGH,
+					Category:   common.DetectedLicense_RESTRICTED,
+					PkgName:    "alpine-baselayout",
+					FilePath:   "some-path",
+					Name:       "GPL-2.0",
+					Confidence: 1,
+					Link:       "https://some-link",
+				},
+			},
+			want: []types.DetectedLicense{
+				{
+					Severity:   "HIGH",
+					Category:   "restricted",
+					PkgName:    "alpine-baselayout",
+					FilePath:   "some-path",
+					Name:       "GPL-2.0",
+					Confidence: 1,
+					Link:       "https://some-link",
+				},
+			},
+		},
+		{
+			name:        "no licenses",
+			rpcLicenses: nil,
+			want:        nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCLicenses(tt.rpcLicenses)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertToRPCLicenses(t *testing.T) {
+	tests := []struct {
+		name     string
+		licenses []types.DetectedLicense
+		want     []*common.DetectedLicense
+	}{
+		{
+			name: "happy",
+			licenses: []types.DetectedLicense{
+				{
+					Severity:   "HIGH",
+					Category:   "restricted",
+					PkgName:    "alpine-baselayout",
+					FilePath:   "some-path",
+					Name:       "GPL-2.0",
+					Confidence: 1,
+					Link:       "https://some-link",
+				},
+			},
+			want: []*common.DetectedLicense{
+				{
+					Severity:   common.Severity_HIGH,
+					Category:   common.DetectedLicense_RESTRICTED,
+					PkgName:    "alpine-baselayout",
+					FilePath:   "some-path",
+					Name:       "GPL-2.0",
+					Confidence: 1,
+					Link:       "https://some-link",
+				},
+			},
+		},
+		{
+			name:     "no licenses",
+			licenses: nil,
+			want:     nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCLicenses(tt.licenses)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertToRPCLicenseCategory(t *testing.T) {
+	tests := []struct {
+		name     string
+		category ftypes.LicenseCategory
+		want     common.DetectedLicense_LicenseCategory
+	}{
+		{
+			name:     "happy",
+			category: ftypes.CategoryNotice,
+			want:     common.DetectedLicense_NOTICE,
+		},
+		{
+			name:     "unspecified",
+			category: "",
+			want:     common.DetectedLicense_UNSPECIFIED,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCLicenseCategory(tt.category)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertFromRPCLicenseCategory(t *testing.T) {
+	tests := []struct {
+		name        string
+		rpcCategory common.DetectedLicense_LicenseCategory
+		want        ftypes.LicenseCategory
+	}{
+		{
+			name:        "happy",
+			rpcCategory: common.DetectedLicense_RESTRICTED,
+			want:        ftypes.CategoryRestricted,
+		},
+		{
+			name:        "unspecified",
+			rpcCategory: common.DetectedLicense_UNSPECIFIED,
+			want:        "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCLicenseCategory(tt.rpcCategory)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

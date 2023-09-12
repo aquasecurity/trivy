@@ -31,8 +31,10 @@ const (
 	RustBinary = "rustbinary"
 	Conan      = "conan"
 	Cocoapods  = "cocoapods"
+	Swift      = "swift"
 	Pub        = "pub"
 	Hex        = "hex"
+	Bitnami    = "bitnami"
 
 	// Config files
 	YAML           = "yaml"
@@ -80,6 +82,7 @@ const (
 	ConanLock = "conan.lock"
 
 	CocoaPodsLock = "Podfile.lock"
+	SwiftResolved = "Package.resolved"
 
 	PubSpecLock = "pubspec.lock"
 

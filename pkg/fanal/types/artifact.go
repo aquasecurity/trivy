@@ -69,6 +69,7 @@ type Package struct {
 	Release    string   `json:",omitempty"`
 	Epoch      int      `json:",omitempty"`
 	Arch       string   `json:",omitempty"`
+	Dev        bool     `json:",omitempty"`
 	SrcName    string   `json:",omitempty"`
 	SrcVersion string   `json:",omitempty"`
 	SrcRelease string   `json:",omitempty"`
@@ -171,7 +172,7 @@ type Application struct {
 	FilePath string `json:",omitempty"`
 
 	// Libraries is a list of lang-specific packages
-	Libraries []Package
+	Libraries Packages
 }
 
 type File struct {
@@ -184,13 +185,13 @@ type File struct {
 type ArtifactType string
 
 const (
-	ArtifactContainerImage   ArtifactType = "container_image"
-	ArtifactFilesystem       ArtifactType = "filesystem"
-	ArtifactRemoteRepository ArtifactType = "repository"
-	ArtifactCycloneDX        ArtifactType = "cyclonedx"
-	ArtifactSPDX             ArtifactType = "spdx"
-	ArtifactAWSAccount       ArtifactType = "aws_account"
-	ArtifactVM               ArtifactType = "vm"
+	ArtifactContainerImage ArtifactType = "container_image"
+	ArtifactFilesystem     ArtifactType = "filesystem"
+	ArtifactRepository     ArtifactType = "repository"
+	ArtifactCycloneDX      ArtifactType = "cyclonedx"
+	ArtifactSPDX           ArtifactType = "spdx"
+	ArtifactAWSAccount     ArtifactType = "aws_account"
+	ArtifactVM             ArtifactType = "vm"
 )
 
 // ArtifactReference represents a reference of container image, local filesystem and repository

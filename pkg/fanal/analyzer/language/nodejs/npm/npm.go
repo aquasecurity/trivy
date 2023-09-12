@@ -3,6 +3,7 @@ package npm
 import (
 	"context"
 	"errors"
+	"io"
 	"io/fs"
 	"os"
 	"path"
@@ -20,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xpath "github.com/aquasecurity/trivy/pkg/x/path"
 )
 
 func init() {
@@ -49,7 +51,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 	}
 
 	var apps []types.Application
-	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		// Find all licenses from package.json files under node_modules dirs
 		licenses, err := a.findLicenses(input.FS, filePath)
 		if err != nil {
@@ -85,7 +87,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 
 func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	if fileName == types.NpmPkgLock {
+	if fileName == types.NpmPkgLock && !xpath.Contains(filePath, "node_modules") {
 		return true
 	}
 	// The file path to package.json - */node_modules/<package_name>/package.json
@@ -122,7 +124,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string) (*types.App
 }
 
 func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string]string, error) {
-	dir := filepath.Dir(lockPath)
+	dir := path.Dir(lockPath)
 	root := path.Join(dir, "node_modules")
 	if _, err := fs.Stat(fsys, root); errors.Is(err, fs.ErrNotExist) {
 		log.Logger.Infof(`To collect the license information of packages in %q, "npm install" needs to be performed beforehand`, lockPath)
@@ -138,7 +140,7 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 	// Note that fs.FS is always slashed regardless of the platform,
 	// and path.Join should be used rather than filepath.Join.
 	licenses := map[string]string{}
-	err := fsutils.WalkDir(fsys, root, required, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(fsys, root, required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		pkg, err := a.packageParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)

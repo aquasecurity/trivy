@@ -7,16 +7,13 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/xerrors"
-
+	cdx "github.com/CycloneDX/cyclonedx-go"
 	ms "github.com/mitchellh/mapstructure"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-version/pkg/version"
-
-	cdx "github.com/CycloneDX/cyclonedx-go"
-
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/bom"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -27,7 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	rep "github.com/aquasecurity/trivy/pkg/report"
 	cyc "github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
@@ -35,7 +31,7 @@ import (
 )
 
 const (
-	k8sCoreComponentNamespace = core.Namespace + "k8s:component" + ":"
+	k8sCoreComponentNamespace = core.Namespace + "resource:"
 	k8sComponentType          = "Type"
 	k8sComponentName          = "Name"
 	k8sComponentNode          = "node"
@@ -74,8 +70,8 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 		}
 	}()
 
-	if s.opts.Format == rep.FormatCycloneDX {
-		rootComponent, err := clusterInfoToReportResources(artifactsData, s.cluster)
+	if s.opts.Format == types.FormatCycloneDX {
+		rootComponent, err := clusterInfoToReportResources(artifactsData)
 		if err != nil {
 			return report.Report{}, err
 		}
@@ -94,7 +90,21 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	onItem := func(ctx context.Context, artifact *artifacts.Artifact) (scanResult, error) {
 		scanResults := scanResult{}
 		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
-			vulns, err := s.scanVulns(ctx, artifact)
+			opts := s.opts
+			opts.Credentials = make([]ftypes.Credential, len(s.opts.Credentials))
+			copy(opts.Credentials, s.opts.Credentials)
+			// add image private registry credential auto detected from workload imagePullsecret / serviceAccount
+			if len(artifact.Credentials) > 0 {
+				for _, cred := range artifact.Credentials {
+					opts.RegistryOptions.Credentials = append(opts.RegistryOptions.Credentials,
+						ftypes.Credential{
+							Username: cred.Username,
+							Password: cred.Password,
+						},
+					)
+				}
+			}
+			vulns, err := s.scanVulns(ctx, artifact, opts)
 			if err != nil {
 				return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
 			}
@@ -129,14 +139,14 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 
 }
 
-func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
+func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, opts flag.Options) ([]report.Resource, error) {
 	resources := make([]report.Resource, 0, len(artifact.Images))
 
 	for _, image := range artifact.Images {
 
-		s.opts.Target = image
+		opts.Target = image
 
-		imageReport, err := s.runner.ScanImage(ctx, s.opts)
+		imageReport, err := s.runner.ScanImage(ctx, opts)
 
 		if err != nil {
 			log.Logger.Warnf("failed to scan image %s: %s", image, err)
@@ -187,12 +197,14 @@ const (
 	oci                = "oci"
 	kubelet            = "k8s.io/kubelet"
 	pod                = "PodInfo"
+	clusterInfo        = "ClusterInfo"
 	nodeInfo           = "NodeInfo"
 	nodeCoreComponents = "node-core-components"
 )
 
-func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName string) (*core.Component, error) {
+func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Component, error) {
 	coreComponents := make([]*core.Component, 0)
+	var cInfo *core.Component
 	for _, artifact := range allArtifact {
 		switch artifact.Kind {
 		case pod:
@@ -232,6 +244,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 			}
 			rootComponent := &core.Component{
 				Name:       comp.Name,
+				Version:    comp.Version,
 				Type:       cdx.ComponentTypeApplication,
 				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
 				Components: imageComponents,
@@ -244,13 +257,22 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact, clusterName
 				return nil, err
 			}
 			coreComponents = append(coreComponents, nodeComponent(nf))
+		case clusterInfo:
+			var cf bom.ClusterInfo
+			err := ms.Decode(artifact.RawResource, &cf)
+			if err != nil {
+				return nil, err
+			}
+			cInfo = &core.Component{Name: cf.Name, Version: cf.Version, Properties: toProperties(cf.Properties, k8sCoreComponentNamespace)}
 		default:
 			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
 		}
 	}
 	rootComponent := &core.Component{
-		Name:       clusterName,
+		Name:       cInfo.Name,
+		Version:    cInfo.Version,
 		Type:       cdx.ComponentTypePlatform,
+		Properties: cInfo.Properties,
 		Components: coreComponents,
 	}
 	return rootComponent, nil
@@ -326,26 +348,24 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 				},
 				Components: []*core.Component{
 					{
-						Type:    cdx.ComponentTypeLibrary,
+						Type:    cdx.ComponentTypeApplication,
 						Name:    kubelet,
 						Version: kubeletVersion,
 						Properties: []core.Property{
 							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
 							{Name: k8sComponentName, Value: kubelet, Namespace: k8sCoreComponentNamespace},
-							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", kubelet, kubeletVersion, packageurl.Qualifiers{}, ""),
 						},
 					},
 					{
-						Type:    cdx.ComponentTypeLibrary,
+						Type:    cdx.ComponentTypeApplication,
 						Name:    runtimeName,
 						Version: runtimeVersion,
 						Properties: []core.Property{
 							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
 							{Name: k8sComponentName, Value: runtimeName, Namespace: k8sCoreComponentNamespace},
-							{Name: cyc.PropertyPkgType, Value: golang},
 						},
 						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),

@@ -62,6 +62,8 @@ The following packages/languages are currently supported:
     - Modules: go.mod
 - PHP
     - Composer
+- Java
+    - Maven: pom.xml
 
 This tree is the reverse of the npm list command.
 However, if you want to resolve a vulnerability in a particular indirect dependency, the reversed tree is useful to know where that dependency comes from and identify which package you actually need to update.
@@ -246,7 +248,7 @@ $ trivy image -f json -o results.json golang:1.12-alpine
 |  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
-|     License      |           |
+|     License      |     ✓     |
 
 [SARIF][sarif] can be generated with the `--format sarif` flag.
 

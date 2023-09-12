@@ -1,25 +1,24 @@
 package spdx_test
 
 import (
-	"fmt"
 	"hash/fnv"
 	"testing"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	tspdx "github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 func TestMarshaler_Marshal(t *testing.T) {
@@ -210,7 +209,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
+								Locator:  "pkg:oci/rails@sha256%3Aa27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
 							},
 						},
 						PackageAttributionTexts: []string{
@@ -371,7 +370,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+								Locator:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
 							},
 						},
 						PackageSourceInfo:     "built package from: acl 1:2.2.53-1.el8",
@@ -619,7 +618,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "http://test-aggregate",
-				ArtifactType:  ftypes.ArtifactRemoteRepository,
+				ArtifactType:  ftypes.ArtifactRepository,
 				Results: types.Results{
 					{
 						Target: "Node.js",
@@ -839,16 +838,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 		},
 	}
 
-	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			var count int
-			newUUID := func() uuid.UUID {
-				count++
-				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
-			}
-
 			// Fake function calculating the hash value
 			h := fnv.New64()
 			hasher := func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error) {
@@ -873,7 +864,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				return h.Sum64(), nil
 			}
 
-			marshaler := tspdx.NewMarshaler("0.38.1", tspdx.WithClock(clock), tspdx.WithNewUUID(newUUID), tspdx.WithHasher(hasher))
+			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+			marshaler := tspdx.NewMarshaler("0.38.1", tspdx.WithHasher(hasher))
 			spdxDoc, err := marshaler.Marshal(tc.inputReport)
 			require.NoError(t, err)
 

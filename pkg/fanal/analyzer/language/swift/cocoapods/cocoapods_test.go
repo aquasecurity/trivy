@@ -25,39 +25,39 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Cocoapods,
 						FilePath: "testdata/happy.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
-								ID:      "AppCenter/4.2.0",
+								ID:      "AppCenter@4.2.0",
 								Name:    "AppCenter",
 								Version: "4.2.0",
 								DependsOn: []string{
-									"AppCenter/Analytics/4.2.0",
-									"AppCenter/Crashes/4.2.0",
+									"AppCenter/Analytics@4.2.0",
+									"AppCenter/Crashes@4.2.0",
 								},
 							},
 							{
-								ID:      "AppCenter/Analytics/4.2.0",
+								ID:      "AppCenter/Analytics@4.2.0",
 								Name:    "AppCenter/Analytics",
 								Version: "4.2.0",
 								DependsOn: []string{
-									"AppCenter/Core/4.2.0",
+									"AppCenter/Core@4.2.0",
 								},
 							},
 							{
-								ID:      "AppCenter/Core/4.2.0",
+								ID:      "AppCenter/Core@4.2.0",
 								Name:    "AppCenter/Core",
 								Version: "4.2.0",
 							},
 							{
-								ID:      "AppCenter/Crashes/4.2.0",
+								ID:      "AppCenter/Crashes@4.2.0",
 								Name:    "AppCenter/Crashes",
 								Version: "4.2.0",
 								DependsOn: []string{
-									"AppCenter/Core/4.2.0",
+									"AppCenter/Core@4.2.0",
 								},
 							},
 							{
-								ID:      "KeychainAccess/4.2.1",
+								ID:      "KeychainAccess@4.2.1",
 								Name:    "KeychainAccess",
 								Version: "4.2.1",
 							},
@@ -86,9 +86,7 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 
 			if got != nil {
 				for _, app := range got.Applications {
-					sort.Slice(app.Libraries, func(i, j int) bool {
-						return app.Libraries[i].ID < app.Libraries[j].ID
-					})
+					sort.Sort(app.Libraries)
 				}
 			}
 

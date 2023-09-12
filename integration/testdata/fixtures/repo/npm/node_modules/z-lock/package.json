@@ -1,0 +1,26 @@
+{
+  "name": "z-lock",
+  "version": "1.0.0",
+  "description": "This CommonJS module can create a simple \"lock\" that can be checked, locked/unlocked.",
+  "main": "lock.js",
+  "scripts": {
+    "test": "mocha test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZeeCoder/z-lock.git"
+  },
+  "keywords": [
+    "lock"
+  ],
+  "author": "Hubert Viktor",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ZeeCoder/z-lock/issues"
+  },
+  "homepage": "https://github.com/ZeeCoder/z-lock",
+  "devDependencies": {
+    "clone": "^1.0.2",
+    "mocha": "^2.2.5"
+  }
+}

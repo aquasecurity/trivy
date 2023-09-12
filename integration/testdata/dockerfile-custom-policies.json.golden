@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/custom-policy",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/custom-policy",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

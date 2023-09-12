@@ -1,10 +1,11 @@
 {
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:e1f49b6f-018f-4bf3-97c8-85cd92a82c7c",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
   "version": 1,
   "metadata": {
-    "timestamp": "2023-05-19T10:38:39+00:00",
+    "timestamp": "2020-09-10T14:20:30+00:00",
     "tools": [
       {
         "vendor": "aquasecurity",
@@ -13,9 +14,9 @@
       }
     ],
     "component": {
-      "bom-ref": "cd0ebb00-5c53-4b82-a3f7-271add663c51",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "type": "application",
-      "name": "testdata/fixtures/fs/conda",
+      "name": "testdata/fixtures/repo/conda",
       "properties": [
         {
           "name": "aquasecurity:trivy:SchemaVersion",
@@ -26,63 +27,69 @@
   },
   "components": [
     {
-      "bom-ref": "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json",
-      "type": "library",
-      "name": "pip",
-      "version": "22.2.2",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ],
-      "purl": "pkg:conda/pip@22.2.2",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "conda-pkg"
-        },
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json",
       "type": "library",
       "name": "openssl",
       "version": "1.1.1q",
       "licenses": [
         {
-          "expression": "OpenSSL"
+          "license": {
+            "name": "OpenSSL"
+          }
         }
       ],
       "purl": "pkg:conda/openssl@1.1.1q",
       "properties": [
         {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "conda-pkg"
-        },
-        {
           "name": "aquasecurity:trivy:FilePath",
           "value": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "conda-pkg"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json",
+      "type": "library",
+      "name": "pip",
+      "version": "22.2.2",
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:conda/pip@22.2.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "conda-pkg"
         }
       ]
     }
   ],
   "dependencies": [
     {
-      "ref": "cd0ebb00-5c53-4b82-a3f7-271add663c51",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "dependsOn": [
         "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json",
         "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json"
       ]
     },
     {
-      "ref": "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json"
+      "ref": "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json",
+      "dependsOn": []
     },
     {
-      "ref": "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json"
+      "ref": "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json",
+      "dependsOn": []
     }
   ],
   "vulnerabilities": []

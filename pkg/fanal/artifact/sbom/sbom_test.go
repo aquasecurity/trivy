@@ -38,11 +38,14 @@ func TestArtifact_Inspect(t *testing.T) {
 						},
 						PackageInfos: []types.PackageInfo{
 							{
-								Packages: []types.Package{
+								Packages: types.Packages{
 									{
-										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0",
-										Licenses: []string{"MIT"},
-										Ref:      "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+										Name:       "musl",
+										Version:    "1.2.3-r0",
+										SrcName:    "musl",
+										SrcVersion: "1.2.3-r0",
+										Licenses:   []string{"MIT"},
+										Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
@@ -54,7 +57,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "app/composer/composer.lock",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "pear/log",
 										Version: "1.13.1",
@@ -77,7 +80,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "gobinary",
 								FilePath: "app/gobinary/gobinary",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
@@ -91,7 +94,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "jar",
 								FilePath: "",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "org.codehaus.mojo:child-project",
 										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
@@ -106,7 +109,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "node-pkg",
 								FilePath: "",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:     "bootstrap",
 										Version:  "5.0.2",
@@ -147,11 +150,14 @@ func TestArtifact_Inspect(t *testing.T) {
 						},
 						PackageInfos: []types.PackageInfo{
 							{
-								Packages: []types.Package{
+								Packages: types.Packages{
 									{
-										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0",
-										Licenses: []string{"MIT"},
-										Ref:      "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+										Name:       "musl",
+										Version:    "1.2.3-r0",
+										SrcName:    "musl",
+										SrcVersion: "1.2.3-r0",
+										Licenses:   []string{"MIT"},
+										Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
@@ -163,7 +169,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "app/composer/composer.lock",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "pear/log",
 										Version: "1.13.1",
@@ -186,7 +192,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "gobinary",
 								FilePath: "app/gobinary/gobinary",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
@@ -200,7 +206,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "jar",
 								FilePath: "",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "org.codehaus.mojo:child-project",
 										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
@@ -215,7 +221,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "node-pkg",
 								FilePath: "",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:     "bootstrap",
 										Version:  "5.0.2",
@@ -245,7 +251,10 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:     "sad path with no such directory",
 			filePath: filepath.Join("testdata", "unknown.json"),
-			wantErr:  []string{"no such file or directory", "The system cannot find the file specified"},
+			wantErr: []string{
+				"no such file or directory",
+				"The system cannot find the file specified",
+			},
 		},
 		{
 			name:     "sad path PutBlob returns an error",

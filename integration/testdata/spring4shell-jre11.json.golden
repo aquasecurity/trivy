@@ -137,7 +137,7 @@
           "empty_layer": true
         },
         {
-          "created": "2022-06-06T13:51:56.544179Z",
+          "created": "2022-06-07T03:41:13.228952Z",
           "created_by": "/bin/sh -c #(nop) COPY file:4a1136b54136f8775efe918c4cd6af1ad1e507b36a49286d4f2c6bde722d33f4 in /usr/local/tomcat/webapps/ "
         }
       ],
@@ -199,8 +199,9 @@
           "PkgPath": "usr/local/tomcat/webapps/helloworld.war/WEB-INF/lib/spring-beans-5.3.15.jar",
           "InstalledVersion": "5.3.15",
           "FixedVersion": "5.3.18",
+          "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:8eeeb69b4f5af871d1bc14ebb077b478a8260542f2c2a3897e8942bd90a8a62a",
+            "Digest": "sha256:b47862f824700e0ea830e568e989fba777d8223c1f8321c6256b0c965b9f61ee",
             "DiffID": "sha256:192960b65b1579403b36581de471fd2bd75a043b4743552f27ba16623f02c68f"
           },
           "SeveritySource": "ghsa",

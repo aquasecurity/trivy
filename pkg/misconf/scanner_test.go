@@ -2,6 +2,7 @@ package misconf
 
 import (
 	"context"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -117,7 +118,6 @@ func TestScanner_Scan(t *testing.T) {
 		{
 			name:        "happy path. terraform plan file",
 			scannerFunc: NewTerraformPlanScanner,
-			fields:      fields{},
 			files: []file{
 				{
 					path:    "main.tfplan.json",
@@ -156,14 +156,29 @@ func Test_createPolicyFS(t *testing.T) {
 	t.Run("outside pwd", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		require.NoError(t, os.MkdirAll(filepath.Join(tmpDir, "subdir/testdir"), 0750))
-		f, got, err := createPolicyFS([]string{filepath.Join(tmpDir, "subdir/testdir")})
-		require.NoError(t, err)
-		assert.Equal(t, []string{"."}, got)
-
-		d, err := f.Open(tmpDir)
-		require.NoError(t, err)
-		stat, err := d.Stat()
-		require.NoError(t, err)
-		assert.True(t, stat.IsDir())
+		f, got, err := CreatePolicyFS([]string{filepath.Join(tmpDir, "subdir/testdir")})
+		assertFS(t, tmpDir, f, got, err)
 	})
+}
+
+func Test_CreateDataFS(t *testing.T) {
+	t.Run("outside pwd", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		require.NoError(t, os.MkdirAll(filepath.Join(tmpDir, "subdir/testdir"), 0750))
+		f, got, err := CreateDataFS([]string{filepath.Join(tmpDir, "subdir/testdir")})
+		assertFS(t, tmpDir, f, got, err)
+	})
+}
+
+func assertFS(t *testing.T, tmpDir string, f fs.FS, got []string, err error) {
+	t.Helper()
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"."}, got)
+
+	d, err := f.Open(tmpDir)
+	require.NoError(t, err)
+	stat, err := d.Stat()
+	require.NoError(t, err)
+	assert.True(t, stat.IsDir())
 }

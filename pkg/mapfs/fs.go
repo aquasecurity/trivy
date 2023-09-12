@@ -1,6 +1,7 @@
 package mapfs
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -11,7 +12,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/syncx"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 type allFS interface {
@@ -55,7 +56,7 @@ func New(opts ...Option) *FS {
 				modTime: time.Now(),
 				mode:    0o0700 | fs.ModeDir,
 			},
-			files: syncx.Map[string, *file]{},
+			files: xsync.Map[string, *file]{},
 		},
 	}
 	for _, opt := range opts {
@@ -233,11 +234,11 @@ func (m *FS) RemoveAll(path string) error {
 }
 
 func cleanPath(path string) string {
-	// Return if the file path is a volume name only.
-	// Otherwise, `filepath.Clean` changes "C:" to "C:." and
-	// it will no longer match the pathname held by mapfs.
-	if path == filepath.VolumeName(path) {
-		return path
+	// Convert the volume name like 'C:' into dir like 'C\'
+	if vol := filepath.VolumeName(path); len(vol) > 0 {
+		newVol := strings.TrimSuffix(vol, ":")
+		newVol = fmt.Sprintf("%s%c", newVol, filepath.Separator)
+		path = strings.Replace(path, vol, newVol, 1)
 	}
 	path = filepath.Clean(path)
 	path = filepath.ToSlash(path)

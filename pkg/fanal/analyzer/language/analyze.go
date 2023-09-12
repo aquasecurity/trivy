@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 // Analyze returns an analysis result of the lock file
@@ -44,8 +45,12 @@ func AnalyzePackage(fileType, filePath string, r dio.ReadSeekerAt, parser godept
 }
 
 // Parse returns a parsed result of the lock file
-func Parse(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*types.Application, error) {
-	parsedLibs, parsedDependencies, err := parser.Parse(r)
+func Parse(fileType, filePath string, r io.Reader, parser godeptypes.Parser) (*types.Application, error) {
+	rr, err := xio.NewReadSeekerAt(r)
+	if err != nil {
+		return nil, xerrors.Errorf("reader error: %w", err)
+	}
+	parsedLibs, parsedDependencies, err := parser.Parse(rr)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -92,7 +97,7 @@ func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 	for _, lib := range libs {
 		var licenses []string
 		if lib.License != "" {
-			licenses = strings.Split(lib.License, ",")
+			licenses = licensing.SplitLicenses(lib.License)
 			for i, license := range licenses {
 				licenses[i] = licensing.Normalize(strings.TrimSpace(license))
 			}
@@ -115,6 +120,7 @@ func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 			ID:        lib.ID,
 			Name:      lib.Name,
 			Version:   lib.Version,
+			Dev:       lib.Dev,
 			FilePath:  libPath,
 			Indirect:  lib.Indirect,
 			Licenses:  licenses,

@@ -114,3 +114,10 @@ func Fatal(err error) {
 	}
 	Logger.Fatal(err)
 }
+
+func String(key, val string) zap.Field {
+	if key == "" || val == "" {
+		return zap.Skip()
+	}
+	return zap.String(key, val)
+}

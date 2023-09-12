@@ -148,11 +148,11 @@ func showDBInfo(cacheDir string) error {
 }
 
 // InitBuiltinPolicies downloads the built-in policies and loads them
-func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool) ([]string, error) {
+func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool, policyBundleRepository string) ([]string, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	client, err := policy.NewClient(cacheDir, quiet)
+	client, err := policy.NewClient(cacheDir, quiet, policyBundleRepository)
 	if err != nil {
 		return nil, xerrors.Errorf("policy client error: %w", err)
 	}

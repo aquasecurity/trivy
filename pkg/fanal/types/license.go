@@ -1,5 +1,7 @@
 package types
 
+import "github.com/samber/lo"
+
 type LicenseType string
 
 const (
@@ -40,6 +42,12 @@ func (findings LicenseFindings) Swap(i, j int) {
 
 func (findings LicenseFindings) Less(i, j int) bool {
 	return findings[i].Name < findings[j].Name
+}
+
+func (findings LicenseFindings) Names() []string {
+	return lo.Map(findings, func(finding LicenseFinding, _ int) string {
+		return finding.Name
+	})
 }
 
 type LicenseFinding struct {

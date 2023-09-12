@@ -17,9 +17,9 @@ import (
 	debVersion "github.com/knqyf263/go-deb-version"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -66,7 +66,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	}
 
 	// parse other files
-	err = fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err = fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		// parse list files
 		if a.isListFile(filepath.Split(path)) {
 			scanner := bufio.NewScanner(r)
@@ -158,7 +158,7 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 }
 
 // parseDpkgStatus parses /var/lib/dpkg/status or /var/lib/dpkg/status/*
-func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r dio.ReadSeekerAt, digests map[string]digest.Digest) ([]types.PackageInfo, error) {
+func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[string]digest.Digest) ([]types.PackageInfo, error) {
 	var pkg *types.Package
 	pkgs := map[string]*types.Package{}
 	pkgIDs := map[string]string{}
@@ -294,8 +294,11 @@ func (a dpkgAnalyzer) parseDepends(s string) []string {
 		for _, d := range strings.Split(dep, "|") {
 			d = a.trimVersionRequirement(d)
 
-			// Store only package names here
-			dependencies = append(dependencies, strings.TrimSpace(d))
+			// Store only uniq package names here
+			d = strings.TrimSpace(d)
+			if !slices.Contains(dependencies, d) {
+				dependencies = append(dependencies, d)
+			}
 		}
 	}
 	return dependencies

@@ -1,38 +1,42 @@
 package flag
 
 import (
-	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/types"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 var (
 	SkipDirsFlag = Flag{
 		Name:       "skip-dirs",
 		ConfigName: "scan.skip-dirs",
-		Value:      []string{},
-		Usage:      "specify the directories where the traversal is skipped",
+		Default:    []string{},
+		Usage:      "specify the directories or glob patterns to skip",
 	}
 	SkipFilesFlag = Flag{
 		Name:       "skip-files",
 		ConfigName: "scan.skip-files",
-		Value:      []string{},
-		Usage:      "specify the file paths to skip traversal",
+		Default:    []string{},
+		Usage:      "specify the files or glob patterns to skip",
 	}
 	OfflineScanFlag = Flag{
 		Name:       "offline-scan",
 		ConfigName: "scan.offline",
-		Value:      false,
+		Default:    false,
 		Usage:      "do not issue API requests to identify dependencies",
 	}
 	ScannersFlag = Flag{
 		Name:       "scanners",
 		ConfigName: "scan.scanners",
-		Value: types.Scanners{
+		Default: xstrings.ToStringSlice(types.Scanners{
 			types.VulnerabilityScanner,
 			types.SecretScanner,
-		}.StringSlice(),
+		}),
+		Values: xstrings.ToStringSlice(types.Scanners{
+			types.VulnerabilityScanner,
+			types.MisconfigScanner,
+			types.SecretScanner,
+			types.LicenseScanner,
+		}),
 		Aliases: []Alias{
 			{
 				Name:       "security-checks",
@@ -40,67 +44,77 @@ var (
 				Deprecated: true, // --security-checks was renamed to --scanners
 			},
 		},
-		Usage: "comma-separated list of what security issues to detect (vuln,config,secret,license)",
+		Usage: "comma-separated list of what security issues to detect",
 	}
 	FilePatternsFlag = Flag{
 		Name:       "file-patterns",
 		ConfigName: "scan.file-patterns",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify config file patterns",
 	}
 	SlowFlag = Flag{
 		Name:       "slow",
 		ConfigName: "scan.slow",
-		Value:      false,
+		Default:    false,
 		Usage:      "scan over time with lower CPU and memory utilization",
 	}
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
-		Value:      []string{},
-		Usage:      "[EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)",
+		Default:    []string{},
+		Values:     []string{"oci", "rekor"},
+		Usage:      "[EXPERIMENTAL] try to retrieve SBOM from the specified sources",
 	}
 	RekorURLFlag = Flag{
 		Name:       "rekor-url",
 		ConfigName: "scan.rekor-url",
-		Value:      "https://rekor.sigstore.dev",
+		Default:    "https://rekor.sigstore.dev",
 		Usage:      "[EXPERIMENTAL] address of rekor STL server",
+	}
+	IncludeDevDepsFlag = Flag{
+		Name:       "include-dev-deps",
+		ConfigName: "include-dev-deps",
+		Default:    false,
+		Usage:      "include development dependencies in the report (supported: npm, yarn)",
 	}
 )
 
 type ScanFlagGroup struct {
-	SkipDirs     *Flag
-	SkipFiles    *Flag
-	OfflineScan  *Flag
-	Scanners     *Flag
-	FilePatterns *Flag
-	Slow         *Flag
-	SBOMSources  *Flag
-	RekorURL     *Flag
+	SkipDirs       *Flag
+	SkipFiles      *Flag
+	OfflineScan    *Flag
+	Scanners       *Flag
+	FilePatterns   *Flag
+	Slow           *Flag
+	SBOMSources    *Flag
+	RekorURL       *Flag
+	IncludeDevDeps *Flag
 }
 
 type ScanOptions struct {
-	Target       string
-	SkipDirs     []string
-	SkipFiles    []string
-	OfflineScan  bool
-	Scanners     types.Scanners
-	FilePatterns []string
-	Slow         bool
-	SBOMSources  []string
-	RekorURL     string
+	Target         string
+	SkipDirs       []string
+	SkipFiles      []string
+	OfflineScan    bool
+	Scanners       types.Scanners
+	FilePatterns   []string
+	Slow           bool
+	SBOMSources    []string
+	RekorURL       string
+	IncludeDevDeps bool
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:     &SkipDirsFlag,
-		SkipFiles:    &SkipFilesFlag,
-		OfflineScan:  &OfflineScanFlag,
-		Scanners:     &ScannersFlag,
-		FilePatterns: &FilePatternsFlag,
-		Slow:         &SlowFlag,
-		SBOMSources:  &SBOMSourcesFlag,
-		RekorURL:     &RekorURLFlag,
+		SkipDirs:       &SkipDirsFlag,
+		SkipFiles:      &SkipFilesFlag,
+		OfflineScan:    &OfflineScanFlag,
+		Scanners:       &ScannersFlag,
+		FilePatterns:   &FilePatternsFlag,
+		Slow:           &SlowFlag,
+		SBOMSources:    &SBOMSourcesFlag,
+		RekorURL:       &RekorURLFlag,
+		IncludeDevDeps: &IncludeDevDepsFlag,
 	}
 }
 
@@ -118,6 +132,7 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 		f.Slow,
 		f.SBOMSources,
 		f.RekorURL,
+		f.IncludeDevDeps,
 	}
 }
 
@@ -126,46 +141,17 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	if len(args) == 1 {
 		target = args[0]
 	}
-	scanners, err := parseScanners(getStringSlice(f.Scanners), types.AllScanners)
-	if err != nil {
-		return ScanOptions{}, xerrors.Errorf("unable to parse scanners: %w", err)
-	}
-
-	sbomSources := getStringSlice(f.SBOMSources)
-	if err = validateSBOMSources(sbomSources); err != nil {
-		return ScanOptions{}, xerrors.Errorf("unable to parse SBOM sources: %w", err)
-	}
 
 	return ScanOptions{
-		Target:       target,
-		SkipDirs:     getStringSlice(f.SkipDirs),
-		SkipFiles:    getStringSlice(f.SkipFiles),
-		OfflineScan:  getBool(f.OfflineScan),
-		Scanners:     scanners,
-		FilePatterns: getStringSlice(f.FilePatterns),
-		Slow:         getBool(f.Slow),
-		SBOMSources:  sbomSources,
-		RekorURL:     getString(f.RekorURL),
+		Target:         target,
+		SkipDirs:       getStringSlice(f.SkipDirs),
+		SkipFiles:      getStringSlice(f.SkipFiles),
+		OfflineScan:    getBool(f.OfflineScan),
+		Scanners:       getUnderlyingStringSlice[types.Scanner](f.Scanners),
+		FilePatterns:   getStringSlice(f.FilePatterns),
+		Slow:           getBool(f.Slow),
+		SBOMSources:    getStringSlice(f.SBOMSources),
+		RekorURL:       getString(f.RekorURL),
+		IncludeDevDeps: getBool(f.IncludeDevDeps),
 	}, nil
-}
-
-func parseScanners(scanner []string, allowedScanners []types.Scanner) (types.Scanners, error) {
-	var scanners types.Scanners
-	for _, v := range scanner {
-		s := types.Scanner(v)
-		if !slices.Contains(allowedScanners, s) {
-			return nil, xerrors.Errorf("unknown scanner: %s", v)
-		}
-		scanners = append(scanners, s)
-	}
-	return scanners, nil
-}
-
-func validateSBOMSources(sbomSources []string) error {
-	for _, v := range sbomSources {
-		if !slices.Contains(types.SBOMSources, v) {
-			return xerrors.Errorf("unknown SBOM source: %s", v)
-		}
-	}
-	return nil
 }

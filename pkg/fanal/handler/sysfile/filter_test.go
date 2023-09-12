@@ -46,7 +46,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 				PackageInfos: []types.PackageInfo{
 					{
 						FilePath: "var/lib/rpm/Packages",
-						Packages: []types.Package{
+						Packages: types.Packages{
 							{
 								Name:    "python",
 								Version: "2.7.5",
@@ -64,7 +64,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.Pipenv,
 						FilePath: "app/Pipfile.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "django",
 								Version: "3.1.2",
@@ -73,7 +73,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					},
 					{
 						Type: types.PythonPkg,
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "python",
 								Version:  "2.7.5",
@@ -89,7 +89,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "usr/lib64/python2.7/wsgiref.egg-info",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "wsgiref",
 								Version: "0.1.2",
@@ -99,7 +99,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.GoBinary,
 						FilePath: "usr/local/bin/goBinariryFile",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "cloud.google.com/go",
 								Version:  "v0.81.0",
@@ -123,7 +123,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 				PackageInfos: []types.PackageInfo{
 					{
 						FilePath: "var/lib/rpm/Packages",
-						Packages: []types.Package{
+						Packages: types.Packages{
 							{
 								Name:    "python",
 								Version: "2.7.5",
@@ -141,7 +141,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.Pipenv,
 						FilePath: "app/Pipfile.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "django",
 								Version: "3.1.2",
@@ -150,7 +150,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					},
 					{
 						Type: types.PythonPkg,
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "pycurl",
 								Version:  "7.19.0",
@@ -161,7 +161,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.GoBinary,
 						FilePath: "usr/local/bin/goBinariryFile",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "cloud.google.com/go",
 								Version: "v0.81.0",
@@ -186,7 +186,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "usr/lib/python2.7/lib-dynload/Python-2.7.egg-info",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "python",
 								Version:  "2.7.14",
@@ -210,7 +210,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.GoBinary,
 						FilePath: "usr/local/bin/goreleaser",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "github.com/sassoftware/go-rpmutils",
 								Version: "v0.0.0-20190420191620-a8f1baeba37b",
@@ -233,7 +233,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.Cargo,
 						FilePath: "app/Cargo.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "ghash",
 								Version: "0.4.4",
@@ -247,7 +247,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.Cargo,
 						FilePath: "app/Cargo.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "ghash",
 								Version: "0.4.4",
