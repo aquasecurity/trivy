@@ -417,9 +417,9 @@ func getPackageName(typ string, component cdx.Component) string {
 }
 
 func convertMavenPackage(pkg string) string {
+	// Split the package into its parts
 	parts := strings.Split(pkg, "/")
 
-	// Get Group
 	group := parts[1]
 
 	// Get FullName with Version
