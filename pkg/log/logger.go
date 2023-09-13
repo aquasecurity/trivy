@@ -84,7 +84,7 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 	// High-priority output should also go to standard error, and low-priority
 	// output should also go to standard out.
 	consoleLogs := zapcore.Lock(os.Stdout)
-	consoleErrors := zapcore.Lock(os.Stdout)
+	consoleErrors := zapcore.Lock(os.Stderr)
 	if disable {
 		devNull, err := os.Create(os.DevNull)
 		if err != nil {
@@ -99,7 +99,7 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 		zapcore.NewCore(consoleEncoder, consoleLogs, logPriority),
 	)
 
-	opts := []zap.Option{zap.ErrorOutput(zapcore.Lock(os.Stdout))}
+	opts := []zap.Option{zap.ErrorOutput(zapcore.Lock(os.Stderr))}
 	if debug {
 		opts = append(opts, zap.Development())
 	}
