@@ -20,6 +20,7 @@ import (
 	"github.com/samber/lo"
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
+	"github.com/spdx/tools-golang/spdxlib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/xeipuuv/gojsonschema"
@@ -223,6 +224,8 @@ func compareSPDXJson(t *testing.T, wantFile, gotFile string) {
 
 	SPDXVersion, ok := strings.CutPrefix(want.SPDXVersion, "SPDX-")
 	assert.True(t, ok)
+
+	assert.NoError(t, spdxlib.ValidateDocument(got))
 
 	// Validate SPDX output against the JSON schema
 	validateReport(t, fmt.Sprintf(SPDXSchema, SPDXVersion), got)
