@@ -1,4 +1,4 @@
-name: Auto Close Issue
+name: Auto-close issues
 
 on:
   issues:
@@ -38,7 +38,8 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.issue.number,
-                state: 'closed'
+                state: 'closed',
+                state_reason: 'not_planned'
               });
             
               console.log(`Issue #${context.payload.issue.number} closed because ${issueCreator} does not have sufficient permissions.`);
