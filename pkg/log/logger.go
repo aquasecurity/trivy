@@ -2,7 +2,6 @@ package log
 
 import (
 	"os"
-	"runtime"
 
 	xlog "github.com/masahiro331/go-xfs-filesystem/log"
 	"go.uber.org/zap"
@@ -59,11 +58,13 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 		return zapcore.DebugLevel < lvl && lvl < zapcore.ErrorLevel
 	})
 
-	encoderLevel := zapcore.CapitalColorLevelEncoder
+	//encoderLevel := zapcore.CapitalColorLevelEncoder
 	// when running on Windows, don't log with color
-	if runtime.GOOS == "windows" {
-		encoderLevel = zapcore.CapitalLevelEncoder
-	}
+	//if runtime.GOOS == "windows" {
+	//	encoderLevel = zapcore.CapitalLevelEncoder
+	//}
+
+	encoderLevel := zapcore.LowercaseLevelEncoder
 
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "Time",
@@ -82,7 +83,7 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 
 	// High-priority output should also go to standard error, and low-priority
 	// output should also go to standard out.
-	consoleLogs := zapcore.Lock(os.Stderr)
+	consoleLogs := zapcore.Lock(os.Stdout)
 	consoleErrors := zapcore.Lock(os.Stderr)
 	if disable {
 		devNull, err := os.Create(os.DevNull)
