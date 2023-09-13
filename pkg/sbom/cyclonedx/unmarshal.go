@@ -410,7 +410,6 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 }
 
 func getPackageName(typ string, component cdx.Component) string {
-	// Jar uses `Group` field for `GroupID`
 	if typ == packageurl.TypeMaven {
 		return convertMavenPackage(component.PackageURL)
 	}
@@ -418,7 +417,6 @@ func getPackageName(typ string, component cdx.Component) string {
 }
 
 func convertMavenPackage(pkg string) string {
-	// Split the package into its parts
 	parts := strings.Split(pkg, "/")
 
 	// Get Group
@@ -430,7 +428,5 @@ func convertMavenPackage(pkg string) string {
 	// Remove the Version from the package
 	nameWOVersion := strings.Split(nameWithVersion, "@")[0]
 
-	pkgWithoutVersion := fmt.Sprintf("%s:%s", group, nameWOVersion)
-
-	return pkgWithoutVersion
+	return fmt.Sprintf("%s:%s", group, nameWOVersion)
 }
