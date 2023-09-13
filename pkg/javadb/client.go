@@ -38,6 +38,7 @@ type Updater struct {
 func (u *Updater) Update() error {
 	dbDir := u.dbDir
 	metac := db.NewMetadata(dbDir)
+	clog.SetOutput(os.Stdout)
 
 	meta, err := metac.Get()
 	if err != nil {
