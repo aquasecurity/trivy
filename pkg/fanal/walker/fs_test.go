@@ -69,19 +69,19 @@ func TestDir_Walk(t *testing.T) {
 				return nil
 			},
 		},
-		//{ The test doesn't pass with github.com/saracen/walker.
-		//	name:    "ignore all errors",
-		//	rootDir: "testdata/fs/nosuch",
-		//	fields: fields{
-		//		errCallback: func(pathname string, err error) error {
-		//			return nil
-		//		},
-		//	},
-		//	analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		//		// Ignore errors
-		//		return nil
-		//	},
-		//},
+		{
+			name:    "ignore all errors",
+			rootDir: "testdata/fs/nosuch",
+			fields: fields{
+				errCallback: func(pathname string, err error) error {
+					return nil
+				},
+			},
+			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+				// Ignore errors
+				return nil
+			},
+		},
 		{
 			name:    "sad path",
 			rootDir: "testdata/fs",
@@ -96,7 +96,6 @@ func TestDir_Walk(t *testing.T) {
 			w := walker.NewFS(tt.fields.skipFiles, tt.fields.skipDirs, walker.Option{
 				ErrCallback: tt.fields.errCallback,
 			})
-
 			err := w.Walk(tt.rootDir, tt.analyzeFn)
 			if tt.wantErr != "" {
 				require.Error(t, err)
