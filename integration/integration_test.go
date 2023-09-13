@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -34,7 +35,7 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/development/v2.3.1/schemas/spdx-schema.json"
+const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/development/v%s/schemas/spdx-schema.json"
 
 func initDB(t *testing.T) string {
 	fixtureDir := filepath.Join("testdata", "fixtures", "db")
@@ -220,8 +221,11 @@ func compareSPDXJson(t *testing.T, wantFile, gotFile string) {
 	got := readSpdxJson(t, gotFile)
 	assert.Equal(t, want, got)
 
+	SPDXVersion, ok := strings.CutPrefix(want.SPDXVersion, "SPDX-")
+	assert.True(t, ok)
+
 	// Validate SPDX output against the JSON schema
-	validateReport(t, SPDXSchema, got)
+	validateReport(t, fmt.Sprintf(SPDXSchema, SPDXVersion), got)
 }
 
 func validateReport(t *testing.T, schema string, report any) {
