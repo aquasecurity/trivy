@@ -492,7 +492,7 @@ func TestRepository(t *testing.T) {
 			case types.FormatCycloneDX:
 				compareCycloneDX(t, tt.golden, outputFile)
 			case types.FormatSPDXJSON:
-				compareSpdxJson(t, tt.golden, outputFile)
+				compareSPDXJson(t, tt.golden, outputFile)
 			case types.FormatJSON:
 				compareReports(t, tt.golden, outputFile, tt.override)
 			default:
