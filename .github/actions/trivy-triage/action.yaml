@@ -1,0 +1,20 @@
+name: 'trivy-discussion-triage'
+description: 'automatic triage of Trivy discussions'
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        # save the discussion event to a file so it's accessible to the script
+        echo '${{ toJson(github.event.discussion) }}' > ./discussion-created.json
+        # validate the config file
+        config_discussion_labels=$(echo '${{ github.action_path }}/config-discussion-labels')
+        if ! [ -f "$config_discussion_labels" ]; then
+          echo "invalid discussion labels config file"
+          exit 1
+        fi
+        # run the script
+        ${{ github.action_path }}/discussion-created.sh "./discussion-created.json" "$config_discussion_labels"
+      if: ${{ github.event_name == 'discussion' && github.event.action == 'created' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
