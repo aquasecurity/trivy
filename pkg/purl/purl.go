@@ -408,6 +408,9 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 
 func parsePkgName(name string) (string, string) {
 	var namespace string
+	if len(name) > 0 && name[len(name)-1] == '/' {
+		name = name[:len(name)-1]
+	}
 	index := strings.LastIndex(name, "/")
 	if index != -1 {
 		namespace = name[:index]
