@@ -1,0 +1,46 @@
+name: Auto-close issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  close_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close issue if user does not have write or admin permissions
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Get the issue creator's username
+            const issueCreator = context.payload.issue.user.login;
+            
+            // Check the user's permissions for the repository
+            const repoPermissions = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: issueCreator
+            });
+            
+            const permission = repoPermissions.data.permission;
+            
+            // If the user does not have write or admin permissions, leave a comment and close the issue
+            if (permission !== 'write' && permission !== 'admin') {
+              const commentBody = "Please see https://aquasecurity.github.io/trivy/latest/community/contribute/issue/";
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                body: commentBody
+              });
+            
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                state: 'closed',
+                state_reason: 'not_planned'
+              });
+            
+              console.log(`Issue #${context.payload.issue.number} closed because ${issueCreator} does not have sufficient permissions.`);
+            }
