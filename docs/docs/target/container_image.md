@@ -171,11 +171,10 @@ See [here](../scanner/secret.md) for the detail.
 $ trivy image --image-config-scanners secret [YOUR_IMAGE_NAME]
 ```
 
-If you just want to scan the image config, you can disable scanners with `--scanners none`.
-For example:
+If you just want to scan the image config.For example:
 
 ```shell
-$ trivy image --scanners none --image-config-scanners secret vuln-image
+$ trivy image --image-config-scanners secret vuln-image
 ```
 
 <details>
