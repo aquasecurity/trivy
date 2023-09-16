@@ -170,11 +170,6 @@ See [here](../scanner/secret.md) for the detail.
 ```shell
 $ trivy image --image-config-scanners secret [YOUR_IMAGE_NAME]
 ```
-
-If you just want to scan the image config.For example:
-
-```shell
-$ trivy image --image-config-scanners secret vuln-image
 ```
 
 <details>
