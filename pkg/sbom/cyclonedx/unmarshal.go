@@ -420,7 +420,7 @@ func convertMavenPackage(component cdx.Component) string {
 	// Check if both Group and Name are present
 	if component.Group != "" {
 		return fmt.Sprintf("%s:%s", component.Group, component.Name)
-	} else {
+	} else if component.PackageURL != "" {
 		// Split the package into its parts
 		parts := strings.Split(component.PackageURL, "/")
 
@@ -433,5 +433,8 @@ func convertMavenPackage(component cdx.Component) string {
 		nameWOVersion := strings.Split(nameWithVersion, "@")[0]
 
 		return fmt.Sprintf("%s:%s", group, nameWOVersion)
+		// In case we don't have Group or PURL
+	} else {
+		return component.Name
 	}
 }
