@@ -1,0 +1,30 @@
+name: Auto-update labels
+on:
+  push:
+    paths:
+      - 'misc/triage/labels.yaml'
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Auto-update labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3.6.0
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+
+      - name: Install aqua tools
+        uses: aquaproj/aqua-installer@v2.1.2
+        with:
+          aqua_version: v1.25.0
+
+      - name: update labels
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mage label
