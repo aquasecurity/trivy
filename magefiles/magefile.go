@@ -360,7 +360,7 @@ func Clean() error {
 // Label updates labels
 func Label() error {
 	mg.Deps(Tool{}.Labeler)
-	return sh.RunV("labeler", "apply", "labels.yaml", "-l", "5")
+	return sh.RunV("labeler", "apply", "misc/triage/labels.yaml", "-l", "5")
 }
 
 type Docs mg.Namespace
