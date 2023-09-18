@@ -411,22 +411,27 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 
 func getPackageName(typ string, component cdx.Component) string {
 	if typ == packageurl.TypeMaven {
-		return convertMavenPackage(component.PackageURL)
+		return convertMavenPackage(component)
 	}
 	return component.Name
 }
 
-func convertMavenPackage(pkg string) string {
-	// Split the package into its parts
-	parts := strings.Split(pkg, "/")
+func convertMavenPackage(component cdx.Component) string {
+	// Check if both Group and Name are present
+	if component.Group != "" {
+		return fmt.Sprintf("%s:%s", component.Group, component.Name)
+	} else {
+		// Split the package into its parts
+		parts := strings.Split(component.PackageURL, "/")
 
-	group := parts[1]
+		group := parts[1]
 
-	// Get FullName with Version
-	nameWithVersion := parts[len(parts)-1]
+		// Get FullName with Version
+		nameWithVersion := parts[len(parts)-1]
 
-	// Remove the Version from the package
-	nameWOVersion := strings.Split(nameWithVersion, "@")[0]
+		// Remove the Version from the package
+		nameWOVersion := strings.Split(nameWithVersion, "@")[0]
 
-	return fmt.Sprintf("%s:%s", group, nameWOVersion)
+		return fmt.Sprintf("%s:%s", group, nameWOVersion)
+	}
 }
