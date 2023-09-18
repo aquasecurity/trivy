@@ -5,9 +5,9 @@ labels:
   - name: bug
     color: d73a4a
     description: Something isn't working
-  - name: test_label
+  - name: test_label2
     color: d73a7a
-    description: test_label
+    description: test_label2
   - name: documentation
     color: 0075ca
     description: Improvements or additions to documentation
