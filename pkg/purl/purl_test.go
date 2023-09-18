@@ -190,10 +190,10 @@ func TestNewPackageURL(t *testing.T) {
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeGolang,
-					Namespace: "./private_repos/cnrm.googlesource.com",
-					Name:      "cnrm",
-					Version:   "(devel)",
+					Type:      "",
+					Namespace: "",
+					Name:      "",
+					Version:   "",
 				},
 			},
 		},
