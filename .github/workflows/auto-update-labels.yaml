@@ -27,4 +27,6 @@ jobs:
           aqua_version: v1.25.0
 
       - name: update labels
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mage label
