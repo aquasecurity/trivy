@@ -346,7 +346,7 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 	pkg := p.Package()
 	// Trivy's marshall loses case-sensitivity in PURL used in SBOM for packages (Go, Npm, PyPI),
 	// so we have to use an original package name
-	pkg.Name = getPackageName(p, component)
+	pkg.Name = getPackageName(p.Type, pkg.Name, component)
 	pkg.Ref = component.BOMRef
 
 	for _, license := range lo.FromPtr(component.Licenses) {
@@ -408,22 +408,15 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 	}
 }
 
-func getPackageName(purl *purl.PackageURL, component cdx.Component) string {
-	if purl.Type == packageurl.TypeMaven {
-		return convertMavenPackage(purl, component)
+func getPackageName(typ, pkgNameFromPurl string, component cdx.Component) string {
+	if typ == packageurl.TypeMaven {
+		// Jar uses `Group` field for `GroupID`
+		if component.Group != "" {
+			return fmt.Sprintf("%s:%s", component.Group, component.Name)
+		} else {
+			// use name derived from purl if `Group` doesn't exist
+			return pkgNameFromPurl
+		}
 	}
 	return component.Name
-}
-
-func convertMavenPackage(purl *purl.PackageURL, component cdx.Component) string {
-	// Check if both Group and Name are present
-	if component.Group != "" {
-		return fmt.Sprintf("%s:%s", component.Group, component.Name)
-		// Check if PURL is present in case if there is no Group
-	} else if component.PackageURL != "" {
-		return fmt.Sprintf("%s:%s", purl.Namespace, purl.Name)
-		// In case we don't have Group or PURL
-	} else {
-		return component.Name
-	}
 }
