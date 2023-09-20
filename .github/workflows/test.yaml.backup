@@ -63,9 +63,8 @@ jobs:
           fi
         if: matrix.operating-system == 'ubuntu-latest'
 
-     # Skip unit test run
-     # - name: Run unit tests
-     #   run: mage test:unit
+      - name: Run unit tests
+        run: mage test:unit
 
   integration:
     name: Integration Test
@@ -84,9 +83,8 @@ jobs:
         with:
           aqua_version: v1.25.0
 
-      #  Skip run integration tests
-      #- name: Run integration tests
-      #  run: mage test:integration
+      - name: Run integration tests
+        run: mage test:integration
 
   k8s-integration:
     name: K8s Integration Test
@@ -105,9 +103,8 @@ jobs:
         with:
           aqua_version: v1.25.0
 
-      # Skip run k8s integration tests
-      #- name: Run k8s integration tests
-      #  run: mage test:k8s
+      - name: Run k8s integration tests
+        run: mage test:k8s
 
   module-test:
     name: Module Integration Test
@@ -125,11 +122,11 @@ jobs:
         uses: aquaproj/aqua-installer@v2.1.2
         with:
           aqua_version: v1.25.0
-    # Skip Module Integration Tests
-    #  - name: Run module integration tests
-    #    shell: bash
-    #    run: |
-    #      mage test:module
+
+      - name: Run module integration tests
+        shell: bash
+        run: |
+          mage test:module
 
   vm-test:
     name: VM Integration Test
@@ -146,11 +143,9 @@ jobs:
         uses: aquaproj/aqua-installer@v2.1.2
         with:
           aqua_version: v1.25.0
-
-    # Skip run vm integration tests
-    # - name: Run vm integration tests
-    #    run: |
-    #      mage test:vm
+      - name: Run vm integration tests
+        run: |
+          mage test:vm
 
   build-test:
     name: Build Test
@@ -179,20 +174,20 @@ jobs:
       with:
         go-version-file: go.mod
 
- #   - name: Determine GoReleaser ID
- #     id: goreleaser_id
- #     shell: bash
- #     run: |
- #       if [ "${{ matrix.operating-system }}" == "windows-latest" ]; then
- #         echo "id=--id build-windows" >> $GITHUB_OUTPUT
- #       elif [ "${{ matrix.operating-system }}" == "macos-latest" ]; then
- #         echo "id=--id build-macos --id build-bsd" >> $GITHUB_OUTPUT
- #       else
- #         echo "id=--id build-linux" >> $GITHUB_OUTPUT
- #       fi
+    - name: Determine GoReleaser ID
+      id: goreleaser_id
+      shell: bash
+      run: |
+        if [ "${{ matrix.operating-system }}" == "windows-latest" ]; then
+          echo "id=--id build-windows" >> $GITHUB_OUTPUT
+        elif [ "${{ matrix.operating-system }}" == "macos-latest" ]; then
+          echo "id=--id build-macos --id build-bsd" >> $GITHUB_OUTPUT
+        else
+          echo "id=--id build-linux" >> $GITHUB_OUTPUT
+        fi
 
- #   - name: Run GoReleaser
- #     uses: goreleaser/goreleaser-action@v4
- #     with:
- #       version: v1.16.2
- #       args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v4
+      with:
+        version: v1.16.2
+        args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}
