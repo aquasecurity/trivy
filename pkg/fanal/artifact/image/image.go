@@ -277,9 +277,13 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	}
 	defer composite.Cleanup()
 
+	if err := artifact.AddConfigFilesToFS(composite, a.artifactOption); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("failed write config files to fs: %w", err)
+	}
+
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
+		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 
@@ -294,7 +298,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		if err != nil {
 			return xerrors.Errorf("failed to copy file to temp: %w", err)
 		}
-		if err = composite.CreateLink(analyzerTypes, "", filePath, tmpFilePath); err != nil {
+		if err := composite.CreateLink(analyzerTypes, "", filePath, tmpFilePath); err != nil {
 			return xerrors.Errorf("failed to write a file: %w", err)
 		}
 
@@ -308,7 +312,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	wg.Wait()
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+	if err := a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
@@ -336,7 +340,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	}
 
 	// Call post handlers to modify blob info
-	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
+	if err := a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("post handler error: %w", err)
 	}
 

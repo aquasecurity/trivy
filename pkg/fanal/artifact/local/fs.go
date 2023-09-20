@@ -134,6 +134,10 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return types.ArtifactReference{}, xerrors.Errorf("failed to prepare filesystem for post analysis: %w", err)
 	}
 
+	if err := artifact.AddConfigFilesToFS(composite, a.artifactOption); err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed write config files to fs: %w", err)
+	}
+
 	err = a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		dir := a.rootPath
 
@@ -143,7 +147,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 			dir, filePath = path.Split(a.rootPath)
 		}
 
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
+		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 
@@ -154,7 +158,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		}
 
 		// Build filesystem for post analysis
-		if err = composite.CreateLink(analyzerTypes, dir, filePath, filepath.Join(dir, filePath)); err != nil {
+		if err := composite.CreateLink(analyzerTypes, dir, filePath, filepath.Join(dir, filePath)); err != nil {
 			return xerrors.Errorf("failed to create link: %w", err)
 		}
 
@@ -168,7 +172,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	wg.Wait()
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+	if err := a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
@@ -187,7 +191,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		CustomResources:   result.CustomResources,
 	}
 
-	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
+	if err := a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to call hooks: %w", err)
 	}
 
@@ -196,7 +200,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
 	}
 
-	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
+	if err := a.cache.PutBlob(cacheKey, blobInfo); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 

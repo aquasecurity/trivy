@@ -2,12 +2,15 @@ package artifact
 
 import (
 	"context"
+	"golang.org/x/xerrors"
+	"os"
 	"sort"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type Option struct {
@@ -59,7 +62,29 @@ func (o *Option) Sort() {
 	sort.Strings(o.FilePatterns)
 }
 
+func (o *Option) ConfigFiles() []string {
+	// data paths and policy paths are ignored because their own file systems are created for them
+	return slices.Merge(
+		o.MisconfScannerOption.TerraformTFVars,
+		o.MisconfScannerOption.HelmFileValues,
+		o.MisconfScannerOption.HelmValueFiles,
+	)
+}
+
 type Artifact interface {
 	Inspect(ctx context.Context) (reference types.ArtifactReference, err error)
 	Clean(reference types.ArtifactReference) error
+}
+
+func AddConfigFilesToFS(composite *analyzer.CompositeFS, opt Option) error {
+	for _, configFile := range opt.ConfigFiles() {
+		if _, err := os.Stat(configFile); err != nil {
+			return xerrors.Errorf("config file %q not found: %w", configFile, err)
+		}
+		if err := composite.CreateLink(analyzer.TypeConfigFiles, "", configFile, configFile); err != nil {
+			return xerrors.Errorf("failed to create link: %w", err)
+		}
+	}
+
+	return nil
 }
