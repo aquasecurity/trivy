@@ -67,6 +67,7 @@ var (
 	CategoryLinkedIn             = types.SecretRuleCategory("LinkedIn")
 	CategoryTwitch               = types.SecretRuleCategory("Twitch")
 	CategoryTypeform             = types.SecretRuleCategory("Typeform")
+	CategoryAzure                = types.SecretRuleCategory("Azure")
 )
 
 // Reusable regex patterns
@@ -782,5 +783,14 @@ var builtinRules = []Rule{
 		Regex:           MustCompile(`(?i)(?P<key>typeform[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}(?P<secret>tfp_[a-z0-9\-_\.=]{59})`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"typeform"},
+	},
+	{
+		ID:              "data_factory-api-token",
+		Category:        CategoryAzure,
+		Title:           "Azure Data Factory Self-Hosted Integration Runtime API token",
+		Severity:        "MEDIUM",
+		Regex:           MustCompile(`dsdsd`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"azure_data_factory"},
 	},
 }
