@@ -374,15 +374,22 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	helm.sh/helm/v3 v3.12.3 // indirect
-	k8s.io/apiextensions-apiserver v0.27.3 // indirect
-	k8s.io/apimachinery v0.28.1 // indirect
-	k8s.io/apiserver v0.27.3 // indirect
-	k8s.io/cli-runtime v0.28.1 // indirect
-	k8s.io/client-go v0.28.1 // indirect
-	k8s.io/component-base v0.28.1 // indirect
+	#k8s.io/apiextensions-apiserver v0.27.3 // indirect
+	k8s.io/apiextensions-apiserver v0.28.2
+	#k8s.io/apimachinery v0.28.1 // indirect
+	k8s.io/apimachinery v0.28.2 // indirect
+	#k8s.io/apiserver v0.27.3 // indirect #latest v0.28.2
+	k8s.io/apiserver v0.28.2
+	#k8s.io/cli-runtime v0.28.1 // indirect #latest  v0.28.2
+	k8s.io/cli-runtime v0.28.2
+	#k8s.io/client-go v0.28.1 // indirect #latest  v0.28.2
+	k8s.io/client-go v0.28.2
+	#k8s.io/component-base v0.28.1 // indirect #latest  v0.28.2
+	k8s.io/component-base v0.28.2
 	k8s.io/klog/v2 v2.100.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20230717233707-2695361300d9 // indirect
-	k8s.io/kubectl v0.28.1 // indirect
+	k8s.io/kube-openapi v0.0.0-20230918164632-68afd615200d
+	#k8s.io/kube-openapi v0.0.0-20230717233707-2695361300d9 // indirect
+	k8s.io/kubectl v0.28.2 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
 	modernc.org/ccgo/v3 v3.16.13 // indirect
