@@ -2,9 +2,10 @@ package artifact
 
 import (
 	"context"
-	"golang.org/x/xerrors"
 	"os"
 	"sort"
+
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
