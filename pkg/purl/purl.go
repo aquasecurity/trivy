@@ -194,6 +194,9 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		namespace, name = parseComposer(name)
 	case packageurl.TypeGolang:
 		namespace, name = parseGolang(name)
+		if name == "" {
+			return PackageURL{PackageURL: *packageurl.NewPackageURL("", "", "", "", nil, "")}, nil
+		}
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
 	case packageurl.TypeSwift:
@@ -310,6 +313,10 @@ func parseMaven(pkgName string) (string, string) {
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#golang
 func parseGolang(pkgName string) (string, string) {
+	// The PURL will be skipped when the package name is a local path, since it can't identify a software package.
+	if strings.HasPrefix(pkgName, "./") || strings.HasPrefix(pkgName, "../") {
+		return "", ""
+	}
 	name := strings.ToLower(pkgName)
 	return parsePkgName(name)
 }

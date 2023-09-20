@@ -325,7 +325,11 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 	if err != nil {
 		return spdx.Package{}, xerrors.Errorf("failed to parse purl (%s): %w", pkg.Name, err)
 	}
-	pkgExtRefs := []*spdx.PackageExternalReference{purlExternalReference(packageURL.String())}
+
+	var pkgExtRefs []*spdx.PackageExternalReference
+	if packageURL.Type != "" {
+		pkgExtRefs = []*spdx.PackageExternalReference{purlExternalReference(packageURL.String())}
+	}
 
 	var attrTexts []string
 	attrTexts = appendAttributionText(attrTexts, PropertyPkgID, pkg.ID)
