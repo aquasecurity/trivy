@@ -185,10 +185,15 @@ func TestNewPackageURL(t *testing.T) {
 			name: "hex package",
 			typ:  ftypes.Hex,
 			pkg: ftypes.Package{
-				ID:        "bunt@0.2.0",
-				Name:      "bunt",
-				Version:   "0.2.0",
-				Locations: []ftypes.Location{{StartLine: 2, EndLine: 2}},
+				ID:      "bunt@0.2.0",
+				Name:    "bunt",
+				Version: "0.2.0",
+				Locations: []ftypes.Location{
+					{
+						StartLine: 2,
+						EndLine:   2,
+					},
+				},
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
@@ -244,6 +249,22 @@ func TestNewPackageURL(t *testing.T) {
 					Name:    "GoogleUtilities",
 					Version: "7.5.2",
 					Subpath: "NSData+zlib",
+				},
+			},
+		},
+		{
+			name: "rust binary",
+			typ:  ftypes.RustBinary,
+			pkg: ftypes.Package{
+				ID:      "abomonation@0.7.3",
+				Name:    "abomonation",
+				Version: "0.7.3",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeCargo,
+					Name:    "abomonation",
+					Version: "0.7.3",
 				},
 			},
 		},

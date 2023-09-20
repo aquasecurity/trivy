@@ -375,6 +375,8 @@ func purlType(t string) string {
 		return packageurl.TypeConan
 	case ftypes.Pub:
 		return TypeDart // TODO: replace with packageurl.TypeDart once they add it.
+	case ftypes.RustBinary, ftypes.Cargo:
+		return packageurl.TypeCargo
 	case os.Alpine:
 		return TypeAPK
 	case os.Debian, os.Ubuntu:
