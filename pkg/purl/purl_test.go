@@ -182,6 +182,22 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "golang package with a local path",
+			typ:  ftypes.GoModule,
+			pkg: ftypes.Package{
+				Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
+				Version: "(devel)",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      "",
+					Namespace: "",
+					Name:      "",
+					Version:   "",
+				},
+			},
+		},
+		{
 			name: "hex package",
 			typ:  ftypes.Hex,
 			pkg: ftypes.Package{
