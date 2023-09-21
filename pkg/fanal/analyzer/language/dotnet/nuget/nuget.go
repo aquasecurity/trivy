@@ -73,7 +73,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 			license, err := a.licenseParser.findLicense(lib.Name, lib.Version)
 			if err != nil {
 				if !errors.Is(err, fs.ErrNotExist) {
-					return xerrors.Errorf("find license error: %w", err)
+					return xerrors.Errorf("license find error: %w", err)
 				}
 			}
 			app.Libraries[i].Licenses = license
@@ -84,7 +84,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+		return nil, xerrors.Errorf("NuGet walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{

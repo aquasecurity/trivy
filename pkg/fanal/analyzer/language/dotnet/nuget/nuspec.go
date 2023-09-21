@@ -30,11 +30,11 @@ type License struct {
 }
 
 type nuspecParser struct {
-	packagesDir string // dir with all local packages
+	packagesDir string // global packages folder - https: //learn.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders
 }
 
 func newNuspecParser() nuspecParser {
-	// https: //learn.microsoft.com/en-us/nuget/reference/cli-reference/cli-ref-environment-variables
+	// https: //learn.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders
 	packagesDir := os.Getenv("NUGET_PACKAGES")
 	if packagesDir == "" {
 		packagesDir = filepath.Join(os.Getenv("HOME"), ".nuget", "packages")
@@ -56,6 +56,8 @@ func (p nuspecParser) findLicense(name, version string) ([]string, error) {
 	}
 
 	// package path uses lowercase letters only
+	// e.g. `$HOME/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.nuspec`
+	// for `Newtonsoft.Json` v13.0.3
 	name = strings.ToLower(name)
 	version = strings.ToLower(version)
 

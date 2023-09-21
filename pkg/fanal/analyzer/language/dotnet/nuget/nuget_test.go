@@ -23,7 +23,7 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 			name: "happy path config file.",
 			dir:  "testdata/config",
 			env: map[string]string{
-				"NUGET_PACKAGES": "testdata/repository/.nuget/packages",
+				"HOME": "testdata/repository",
 			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{

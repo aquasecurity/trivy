@@ -27,7 +27,7 @@ Trivy only finds dependency names and versions from `packages.config` files. To 
 `packages.config` files don't have information about the licenses used.
 Trivy uses [*.nuspec][nuspec] files from [global packages folder][global-packages] to detect licenses.
 !!! note
-    The `licenseUrl` field is [deprecated][license-url]. Trivy doesn't parse this field and only checks the [license] field (license `expression` only).
+    The `licenseUrl` field is [deprecated][license-url]. Trivy doesn't parse this field and only checks the [license] field (license `expression` type only).
 Currently only the default path and `NUGET_PACKAGES` environment variable are supported.
 
 ## packages.lock.json
