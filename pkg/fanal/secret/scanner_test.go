@@ -527,6 +527,27 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingDataFactoryRegistrationKey := types.SecretFinding{
+		RuleID:    "azure-data-factory-registration-key",
+		Category:  secret.CategoryAzure,
+		Title:     "Azure DataFactory SHIR key",
+		Severity:  "HIGH",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "***********************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "***********************************************************************************",
+					Highlighted: "***********************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},				
+			},
+		},
+	}
 
 	tests := []struct {
 		name          string
@@ -764,6 +785,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: "testdata/multi-line.txt",
 				Findings: []types.SecretFinding{wantMultiLine},
+			},
+		},
+		{
+			name:          "find Azure Data Factory SHIR key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: "testdata/azure-secrets.txt",
+			want: types.Secret{
+				FilePath: "testdata/azure-secrets.txt",
+				Findings: []types.SecretFinding{wantFindingDataFactoryRegistrationKey},
 			},
 		},
 	}
