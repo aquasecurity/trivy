@@ -49,6 +49,7 @@ func newNugetLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer,
 
 func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
+	foundLicenses := make(map[string][]string)
 
 	required := func(path string, d fs.DirEntry) bool {
 		fileName := filepath.Base(path)
@@ -70,12 +71,17 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 		}
 
 		for i, lib := range app.Libraries {
-			license, err := a.licenseParser.findLicense(lib.Name, lib.Version)
-			if err != nil {
-				if !errors.Is(err, fs.ErrNotExist) {
-					return xerrors.Errorf("license find error: %w", err)
+			license, ok := foundLicenses[lib.ID]
+			if !ok {
+				license, err = a.licenseParser.findLicense(lib.Name, lib.Version)
+				if err != nil {
+					if !errors.Is(err, fs.ErrNotExist) {
+						return xerrors.Errorf("license find error: %w", err)
+					}
 				}
+				foundLicenses[lib.ID] = license
 			}
+
 			app.Libraries[i].Licenses = license
 		}
 
