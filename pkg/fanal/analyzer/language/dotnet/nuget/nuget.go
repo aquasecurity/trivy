@@ -51,9 +51,10 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 	var apps []types.Application
 	foundLicenses := make(map[string][]string)
 
+	// We saved only config and lock files in the FS,
+	// so we need to parse all saved files
 	required := func(path string, d fs.DirEntry) bool {
-		fileName := filepath.Base(path)
-		return slices.Contains(requiredFiles, fileName)
+		return true
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
