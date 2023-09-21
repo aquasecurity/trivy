@@ -3,13 +3,11 @@ package suse
 import (
 	"time"
 
+	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	version "github.com/knqyf263/go-rpm-version"
-
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -149,13 +147,13 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if OSFamily can be scanned using SUSE scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	var eolDate time.Time
 	var ok bool
 
-	if osFamily == fos.SLES {
+	if osFamily == ftypes.SLES {
 		eolDate, ok = slesEolDates[osVer]
-	} else if osFamily == fos.OpenSUSELeap {
+	} else if osFamily == ftypes.OpenSUSELeap {
 		eolDate, ok = opensuseEolDates[osVer]
 	}
 

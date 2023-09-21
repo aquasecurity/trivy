@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	tspdx "github.com/aquasecurity/trivy/pkg/sbom/spdx"
@@ -36,7 +35,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: fos.CentOS,
+						Family: ftypes.CentOS,
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
@@ -52,7 +51,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "rails:latest (centos 8.3.2011)",
 						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
 								Name:            "binutils",
@@ -279,7 +278,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: fos.CentOS,
+						Family: ftypes.CentOS,
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
@@ -294,7 +293,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "centos:latest (centos 8.3.2011)",
 						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
 								Name:            "acl",

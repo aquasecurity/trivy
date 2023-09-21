@@ -8,8 +8,6 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
-
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
@@ -19,6 +17,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -277,8 +276,8 @@ func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 }
 
 func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Application, error) {
-	osPkgMap := map[string]ftypes.Packages{}
-	langPkgMap := map[string]ftypes.Packages{}
+	osPkgMap := map[ftypes.OSType]ftypes.Packages{}
+	langPkgMap := map[ftypes.LangType]ftypes.Packages{}
 	for _, lib := range libs {
 		isOSPkg, pkgType, pkg, err := toPackage(lib)
 		if err != nil {
@@ -321,19 +320,19 @@ func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Applica
 
 func toOS(component cdx.Component) ftypes.OS {
 	return ftypes.OS{
-		Family: component.Name,
+		Family: ftypes.OSType(component.Name),
 		Name:   component.Version,
 	}
 }
 
 func toApplication(component cdx.Component) *ftypes.Application {
 	return &ftypes.Application{
-		Type:     core.LookupProperty(component.Properties, PropertyType),
+		Type:     ftypes.LangType(core.LookupProperty(component.Properties, PropertyType)),
 		FilePath: component.Name,
 	}
 }
 
-func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
+func toPackage(component cdx.Component) (bool, ftypes.TargetType, *ftypes.Package, error) {
 	if component.PackageURL == "" {
 		log.Logger.Warnf("Skip the component (BOM-Ref: %s) as the PURL is empty", component.BOMRef)
 		return false, "", nil, ErrPURLEmpty
@@ -394,7 +393,7 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 		}
 	}
 
-	return isOSPkg, p.PackageType(), pkg, nil
+	return isOSPkg, p.LangType(), pkg, nil
 }
 
 func toTrivyCdxComponent(component cdx.Component) ftypes.Component {

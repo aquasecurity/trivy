@@ -1,14 +1,12 @@
 package flag
 
 import (
-	"strconv"
-
 	"fmt"
+	"strconv"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 	corev1 "k8s.io/api/core/v1"
 )
 

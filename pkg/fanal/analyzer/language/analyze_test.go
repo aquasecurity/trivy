@@ -41,9 +41,9 @@ func (p *mockParser) Parse(r dio.ReadSeekerAt) ([]godeptypes.Library, []godeptyp
 
 func TestAnalyze(t *testing.T) {
 	type args struct {
-		analyzerType string
-		filePath     string
-		content      dio.ReadSeekerAt
+		fileType types.LangType
+		filePath string
+		content  dio.ReadSeekerAt
 	}
 	tests := []struct {
 		name    string
@@ -54,9 +54,9 @@ func TestAnalyze(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				analyzerType: types.GoBinary,
-				filePath:     "app/myweb",
-				content:      strings.NewReader("happy"),
+				fileType: types.GoBinary,
+				filePath: "app/myweb",
+				content:  strings.NewReader("happy"),
 			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -76,18 +76,18 @@ func TestAnalyze(t *testing.T) {
 		{
 			name: "empty",
 			args: args{
-				analyzerType: types.GoBinary,
-				filePath:     "app/myweb",
-				content:      strings.NewReader(""),
+				fileType: types.GoBinary,
+				filePath: "app/myweb",
+				content:  strings.NewReader(""),
 			},
 			want: nil,
 		},
 		{
 			name: "sad path",
 			args: args{
-				analyzerType: types.Jar,
-				filePath:     "app/myweb",
-				content:      strings.NewReader("sad"),
+				fileType: types.Jar,
+				filePath: "app/myweb",
+				content:  strings.NewReader("sad"),
 			},
 			wantErr: "unexpected error",
 		},
@@ -96,7 +96,7 @@ func TestAnalyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mp := &mockParser{t: t}
 
-			got, err := language.Analyze(tt.args.analyzerType, tt.args.filePath, tt.args.content, mp)
+			got, err := language.Analyze(tt.args.fileType, tt.args.filePath, tt.args.content, mp)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

@@ -3,10 +3,9 @@ package report
 import (
 	"io"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
 	"golang.org/x/xerrors"
 
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/types"

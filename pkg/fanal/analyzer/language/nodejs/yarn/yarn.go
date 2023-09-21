@@ -31,7 +31,7 @@ import (
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(types.Yarn, newYarnAnalyzer)
+	analyzer.RegisterPostAnalyzer(analyzer.TypeYarn, newYarnAnalyzer)
 }
 
 const version = 2
