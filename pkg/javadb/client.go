@@ -26,11 +26,11 @@ const (
 var updater *Updater
 
 type Updater struct {
-	repo     string
-	dbDir    string
-	skip     bool
-	quiet    bool
-	insecure bool
+	repo           string
+	dbDir          string
+	skip           bool
+	quiet          bool
+	registryOption ftypes.RegistryOptions
 }
 
 func (u *Updater) Update() error {
@@ -54,7 +54,7 @@ func (u *Updater) Update() error {
 
 		// TODO: support remote options
 		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo, u.quiet, ftypes.RegistryOptions{Insecure: u.insecure}); err != nil {
+		if a, err = oci.NewArtifact(u.repo, u.quiet, u.registryOption); err != nil {
 			return xerrors.Errorf("oci error: %w", err)
 		}
 		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
@@ -79,13 +79,13 @@ func (u *Updater) Update() error {
 	return nil
 }
 
-func Init(cacheDir string, javaDBRepository string, skip, quiet, insecure bool) {
+func Init(cacheDir string, javaDBRepository string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
 	updater = &Updater{
-		repo:     fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
-		dbDir:    filepath.Join(cacheDir, "java-db"),
-		skip:     skip,
-		quiet:    quiet,
-		insecure: insecure,
+		repo:           fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
+		dbDir:          filepath.Join(cacheDir, "java-db"),
+		skip:           skip,
+		quiet:          quiet,
+		registryOption: registryOption,
 	}
 }
 
