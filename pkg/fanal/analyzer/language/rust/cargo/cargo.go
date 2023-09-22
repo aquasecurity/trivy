@@ -10,12 +10,11 @@ import (
 	"path/filepath"
 	"sort"
 
+	"github.com/BurntSushi/toml"
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
-
-	"github.com/BurntSushi/toml"
-	"github.com/samber/lo"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/rust/cargo"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"

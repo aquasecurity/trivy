@@ -2,7 +2,6 @@ package misconf
 
 import (
 	"context"
-	_ "embed"
 	"errors"
 	"fmt"
 	"io"
@@ -30,6 +29,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+
+	_ "embed"
 )
 
 var enabledDefsecTypes = map[detection.FileType]string{

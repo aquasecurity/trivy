@@ -3,10 +3,9 @@ package suse
 import (
 	"time"
 
+	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
-
-	version "github.com/knqyf263/go-rpm-version"
 
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"

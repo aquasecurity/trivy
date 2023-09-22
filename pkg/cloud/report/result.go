@@ -5,10 +5,8 @@ import (
 	"io"
 
 	"github.com/aquasecurity/tml"
-
-	renderer "github.com/aquasecurity/trivy/pkg/report/table"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	renderer "github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

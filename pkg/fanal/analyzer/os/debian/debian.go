@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )

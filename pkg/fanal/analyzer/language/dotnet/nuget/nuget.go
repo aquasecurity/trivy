@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"golang.org/x/exp/slices"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/nuget/config"

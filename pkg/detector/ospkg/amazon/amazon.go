@@ -4,11 +4,10 @@ import (
 	"strings"
 	"time"
 
-	"k8s.io/utils/clock"
-
 	version "github.com/knqyf263/go-deb-version"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"

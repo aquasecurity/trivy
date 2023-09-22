@@ -8,8 +8,6 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
-
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
@@ -19,6 +17,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

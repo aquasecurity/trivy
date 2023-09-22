@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"github.com/samber/lo"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/digest"

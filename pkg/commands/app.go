@@ -14,7 +14,6 @@ import (
 	"golang.org/x/xerrors"
 
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
-
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"

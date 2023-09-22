@@ -2,9 +2,8 @@ package ubuntu
 
 import (
 	"context"
-	"os"
-
 	"encoding/json"
+	"os"
 
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"

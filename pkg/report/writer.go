@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
@@ -16,8 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report/spdx"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 const (
