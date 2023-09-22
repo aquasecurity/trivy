@@ -70,8 +70,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "skip modular package",
-			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "skip modular package",
+			fixtures: []string{
+				"testdata/fixtures/modular.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{
@@ -94,8 +97,11 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "modular package",
-			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "modular package",
+			fixtures: []string{
+				"testdata/fixtures/modular.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.6",
 				pkgs: []ftypes.Package{
@@ -131,8 +137,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{
@@ -167,7 +176,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {

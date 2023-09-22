@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"github.com/samber/lo"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
@@ -293,7 +292,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
 			Vulnerabilities:   ConvertFromRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertFromRPCMisconfs(result.Misconfigurations),
 			Class:             types.ResultClass(result.Class),
-			Type:              result.Type,
+			Type:              ftypes.TargetType(result.Type),
 			Packages:          ConvertFromRPCPkgs(result.Packages),
 			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
 			Secrets:           ConvertFromRPCSecretFindings(result.Secrets),
@@ -528,7 +527,7 @@ func ConvertFromRPCOS(rpcOS *common.OS) ftypes.OS {
 		return ftypes.OS{}
 	}
 	return ftypes.OS{
-		Family:   rpcOS.Family,
+		Family:   ftypes.OSType(rpcOS.Family),
 		Name:     rpcOS.Name,
 		Eosl:     rpcOS.Eosl,
 		Extended: rpcOS.Extended,
@@ -541,7 +540,7 @@ func ConvertFromRPCRepository(rpcRepo *common.Repository) *ftypes.Repository {
 		return nil
 	}
 	return &ftypes.Repository{
-		Family:  rpcRepo.Family,
+		Family:  ftypes.OSType(rpcRepo.Family),
 		Release: rpcRepo.Release,
 	}
 }
@@ -575,7 +574,7 @@ func ConvertFromRPCApplications(rpcApps []*common.Application) []ftypes.Applicat
 	var apps []ftypes.Application
 	for _, rpcApp := range rpcApps {
 		apps = append(apps, ftypes.Application{
-			Type:      rpcApp.Type,
+			Type:      ftypes.LangType(rpcApp.Type),
 			FilePath:  rpcApp.FilePath,
 			Libraries: ConvertFromRPCPkgs(rpcApp.Libraries),
 		})
@@ -588,7 +587,7 @@ func ConvertFromRPCMisconfigurations(rpcMisconfs []*common.Misconfiguration) []f
 	var misconfs []ftypes.Misconfiguration
 	for _, rpcMisconf := range rpcMisconfs {
 		misconfs = append(misconfs, ftypes.Misconfiguration{
-			FileType:   rpcMisconf.FileType,
+			FileType:   ftypes.ConfigType(rpcMisconf.FileType),
 			FilePath:   rpcMisconf.FilePath,
 			Successes:  ConvertFromRPCMisconfResults(rpcMisconf.Successes),
 			Warnings:   ConvertFromRPCMisconfResults(rpcMisconf.Warnings),
@@ -647,7 +646,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 // ConvertToRPCOS returns common.OS
 func ConvertToRPCOS(fos ftypes.OS) *common.OS {
 	return &common.OS{
-		Family:   fos.Family,
+		Family:   string(fos.Family),
 		Name:     fos.Name,
 		Eosl:     fos.Eosl,
 		Extended: fos.Extended,
@@ -660,7 +659,7 @@ func ConvertToRPCRepository(repo *ftypes.Repository) *common.Repository {
 		return nil
 	}
 	return &common.Repository{
-		Family:  repo.Family,
+		Family:  string(repo.Family),
 		Release: repo.Release,
 	}
 }
@@ -699,7 +698,7 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 	var applications []*common.Application
 	for _, app := range blobInfo.Applications {
 		applications = append(applications, &common.Application{
-			Type:      app.Type,
+			Type:      string(app.Type),
 			FilePath:  app.FilePath,
 			Libraries: ConvertToRPCPkgs(app.Libraries),
 		})
@@ -708,7 +707,7 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 	var misconfigurations []*common.Misconfiguration
 	for _, m := range blobInfo.Misconfigurations {
 		misconfigurations = append(misconfigurations, &common.Misconfiguration{
-			FileType:   m.FileType,
+			FileType:   string(m.FileType),
 			FilePath:   m.FilePath,
 			Successes:  ConvertToMisconfResults(m.Successes),
 			Warnings:   ConvertToMisconfResults(m.Warnings),
@@ -784,7 +783,7 @@ func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS) *scanner.Sca
 		rpcResults = append(rpcResults, &scanner.Result{
 			Target:            result.Target,
 			Class:             string(result.Class),
-			Type:              result.Type,
+			Type:              string(result.Type),
 			Vulnerabilities:   ConvertToRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertToRPCMisconfs(result.Misconfigurations),
 			Packages:          ConvertToRPCPkgs(result.Packages),

@@ -236,7 +236,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 func aggregate(detail *types.ArtifactDetail) {
 	var apps []types.Application
 
-	aggregatedApps := map[string]*types.Application{
+	aggregatedApps := map[types.LangType]*types.Application{
 		types.PythonPkg: {Type: types.PythonPkg},
 		types.CondaPkg:  {Type: types.CondaPkg},
 		types.GemSpec:   {Type: types.GemSpec},

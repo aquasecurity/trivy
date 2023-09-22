@@ -47,7 +47,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Applications: []ftypes.Application{
 					{
-						Type:     "composer",
+						Type:     ftypes.Composer,
 						FilePath: "app/composer/composer.lock",
 						Libraries: ftypes.Packages{
 							{
@@ -70,7 +70,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type:     "gobinary",
+						Type:     ftypes.GoBinary,
 						FilePath: "app/gobinary/gobinary",
 						Libraries: ftypes.Packages{
 							{
@@ -84,21 +84,21 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type: "gradle",
+						Type:     ftypes.Gradle,
+						FilePath: "app/gradle/target/gradle.lockfile",
 						Libraries: ftypes.Packages{
 							{
 								Name:    "com.example:example",
-								Ref:     "pkg:gradle/com.example/example@0.0.1",
+								Ref:     "pkg:maven/com.example/example@0.0.1",
 								Version: "0.0.1",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
-								FilePath: "app/gradle/target/gradle.lockfile",
 							},
 						},
 					},
 					{
-						Type: "jar",
+						Type: ftypes.Jar,
 						Libraries: ftypes.Packages{
 							{
 								Name:    "org.codehaus.mojo:child-project",
@@ -112,7 +112,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type:     "node-pkg",
+						Type:     ftypes.NodePkg,
 						FilePath: "",
 						Libraries: ftypes.Packages{
 							{

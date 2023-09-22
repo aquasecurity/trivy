@@ -4,11 +4,10 @@ import (
 	"strings"
 	"time"
 
-	"k8s.io/utils/clock"
-
 	version "github.com/knqyf263/go-deb-version"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -119,7 +118,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if os can be scanned using amazon scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	osVer = strings.Fields(osVer)[0]
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"

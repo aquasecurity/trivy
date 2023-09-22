@@ -11,7 +11,6 @@ import (
 
 	ver "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -31,7 +30,8 @@ type apkRepoAnalyzer struct{}
 
 func (a apkRepoAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	scanner := bufio.NewScanner(input.Content)
-	var osFamily, repoVer string
+	var osFamily types.OSType
+	var repoVer string
 	for scanner.Scan() {
 		line := scanner.Text()
 
@@ -40,7 +40,7 @@ func (a apkRepoAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 			continue
 		}
 
-		newOSFamily := m[2]
+		newOSFamily := types.OSType(m[2])
 		newVersion := m[3]
 
 		// Find OS Family
@@ -73,7 +73,7 @@ func (a apkRepoAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 	}
 
 	// Currently, we support only Alpine Linux in apk repositories.
-	if osFamily != aos.Alpine || repoVer == "" {
+	if osFamily != types.Alpine || repoVer == "" {
 		return nil, nil
 	}
 

@@ -237,8 +237,14 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 					Name:       name,
 					Version:    cDigest,
 					Properties: []core.Property{
-						{Name: cyc.PropertyPkgID, Value: fmt.Sprintf("%s:%s", name, version)},
-						{Name: cyc.PropertyPkgType, Value: oci},
+						{
+							Name:  cyc.PropertyPkgID,
+							Value: fmt.Sprintf("%s:%s", name, version),
+						},
+						{
+							Name:  cyc.PropertyPkgType,
+							Value: oci,
+						},
 					},
 				})
 			}
@@ -263,7 +269,11 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 			if err != nil {
 				return nil, err
 			}
-			cInfo = &core.Component{Name: cf.Name, Version: cf.Version, Properties: toProperties(cf.Properties, k8sCoreComponentNamespace)}
+			cInfo = &core.Component{
+				Name:       cf.Name,
+				Version:    cf.Version,
+				Properties: toProperties(cf.Properties, k8sCoreComponentNamespace),
+			}
 		default:
 			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
 		}
@@ -335,16 +345,28 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 				Name:    osName,
 				Version: osVersion,
 				Properties: []core.Property{
-					{Name: "Class", Value: types.ClassOSPkg},
-					{Name: "Type", Value: osName},
+					{
+						Name:  "Class",
+						Value: string(types.ClassOSPkg),
+					},
+					{
+						Name:  "Type",
+						Value: osName,
+					},
 				},
 			},
 			{
 				Type: cdx.ComponentTypeApplication,
 				Name: nodeCoreComponents,
 				Properties: []core.Property{
-					{Name: "Class", Value: types.ClassLangPkg},
-					{Name: "Type", Value: golang},
+					{
+						Name:  "Class",
+						Value: string(types.ClassLangPkg),
+					},
+					{
+						Name:  "Type",
+						Value: golang,
+					},
 				},
 				Components: []*core.Component{
 					{
@@ -352,8 +374,16 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Name:    kubelet,
 						Version: kubeletVersion,
 						Properties: []core.Property{
-							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
-							{Name: k8sComponentName, Value: kubelet, Namespace: k8sCoreComponentNamespace},
+							{
+								Name:      k8sComponentType,
+								Value:     k8sComponentNode,
+								Namespace: k8sCoreComponentNamespace,
+							},
+							{
+								Name:      k8sComponentName,
+								Value:     kubelet,
+								Namespace: k8sCoreComponentNamespace,
+							},
 						},
 						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", kubelet, kubeletVersion, packageurl.Qualifiers{}, ""),
@@ -364,8 +394,16 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Name:    runtimeName,
 						Version: runtimeVersion,
 						Properties: []core.Property{
-							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
-							{Name: k8sComponentName, Value: runtimeName, Namespace: k8sCoreComponentNamespace},
+							{
+								Name:      k8sComponentType,
+								Value:     k8sComponentNode,
+								Namespace: k8sCoreComponentNamespace,
+							},
+							{
+								Name:      k8sComponentName,
+								Value:     runtimeName,
+								Namespace: k8sCoreComponentNamespace,
+							},
 						},
 						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),

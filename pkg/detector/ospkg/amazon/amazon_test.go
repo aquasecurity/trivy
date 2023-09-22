@@ -30,8 +30,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "amazon linux 1",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 1",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1.2",
 				pkgs: []ftypes.Package{
@@ -64,8 +67,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "amazon linux 2",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 2",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -96,8 +102,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "amazon linux 2023",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 2023",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2023",
 				pkgs: []ftypes.Package{
@@ -128,8 +137,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "empty version",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "empty version",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -140,8 +152,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1",
 				pkgs: []ftypes.Package{
@@ -176,7 +191,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {

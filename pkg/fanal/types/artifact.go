@@ -7,11 +7,10 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 )
 
 type OS struct {
-	Family string
+	Family OSType
 	Name   string
 	Eosl   bool `json:"EOSL,omitempty"`
 
@@ -33,7 +32,7 @@ func (o *OS) Merge(new OS) {
 	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
-	case o.Family == aos.RedHat, o.Family == aos.Debian:
+	case o.Family == RedHat, o.Family == Debian:
 		*o = new
 	default:
 		if o.Family == "" {
@@ -52,7 +51,7 @@ func (o *OS) Merge(new OS) {
 }
 
 type Repository struct {
-	Family  string `json:",omitempty"`
+	Family  OSType `json:",omitempty"`
 	Release string `json:",omitempty"`
 }
 
@@ -166,7 +165,7 @@ type PackageInfo struct {
 
 type Application struct {
 	// e.g. bundler and pipenv
-	Type string
+	Type LangType
 
 	// Lock files have the file path here, while each package metadata do not have
 	FilePath string `json:",omitempty"`

@@ -8,10 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
@@ -29,7 +28,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 			},
 			want: &analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Amazon,
+					Family: types.Amazon,
 					Name:   "AMI release 2018.03",
 				},
 			},
@@ -42,7 +41,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 			},
 			want: &analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Amazon,
+					Family: types.Amazon,
 					Name:   "2 (Karoo)",
 				},
 			},
@@ -55,7 +54,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 			},
 			want: &analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Amazon,
+					Family: types.Amazon,
 					Name:   "2022 (Amazon Linux)",
 				},
 			},
@@ -68,7 +67,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 			},
 			want: &analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Amazon,
+					Family: types.Amazon,
 					Name:   "2023 (Amazon Linux)",
 				},
 			},
@@ -79,7 +78,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 				FilePath: "etc/system-release",
 				Content:  strings.NewReader(`Amazon Linux release 2`),
 			},
-			wantErr: aos.AnalyzeOSError.Error(),
+			wantErr: fos.AnalyzeOSError.Error(),
 		},
 		{
 			name: "sad path",
@@ -87,7 +86,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 				FilePath: "etc/system-release",
 				Content:  strings.NewReader(`foo bar`),
 			},
-			wantErr: aos.AnalyzeOSError.Error(),
+			wantErr: fos.AnalyzeOSError.Error(),
 		},
 	}
 	for _, tt := range tests {

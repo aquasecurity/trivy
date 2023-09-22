@@ -9,13 +9,10 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 func init() {
@@ -52,17 +49,17 @@ func (a amazonlinuxOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 				continue
 			}
 			return types.OS{
-				Family: aos.Amazon,
+				Family: types.Amazon,
 				Name:   strings.Join(fields[3:], " "),
 			}, nil
 		} else if strings.HasPrefix(line, "Amazon Linux") {
 			return types.OS{
-				Family: aos.Amazon,
+				Family: types.Amazon,
 				Name:   strings.Join(fields[2:], " "),
 			}, nil
 		}
 	}
-	return types.OS{}, xerrors.Errorf("amazon: %w", aos.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("amazon: %w", fos.AnalyzeOSError)
 }
 
 func (a amazonlinuxOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

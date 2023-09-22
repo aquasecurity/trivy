@@ -13,7 +13,6 @@ import (
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
@@ -36,7 +35,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: fos.CentOS,
+						Family: ftypes.CentOS,
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
@@ -52,7 +51,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "rails:latest (centos 8.3.2011)",
 						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
 								ID:              "binutils@2.30-93.el8",
@@ -547,7 +546,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: fos.CentOS,
+						Family: ftypes.CentOS,
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
@@ -562,7 +561,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "centos:latest (centos 8.3.2011)",
 						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
 								ID:              "acl@2.2.53-1.el8",
@@ -759,7 +758,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
 						Type:    cdx.ComponentTypeOS,
-						Name:    fos.CentOS,
+						Name:    string(ftypes.CentOS),
 						Version: "8.3.2011",
 						Properties: &[]cdx.Property{
 							{
