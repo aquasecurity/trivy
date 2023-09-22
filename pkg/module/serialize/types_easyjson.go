@@ -4,15 +4,14 @@ package serialize
 
 import (
 	json "encoding/json"
-	time "time"
-
+	types2 "github.com/aquasecurity/trivy-db/pkg/types"
+	digest "github.com/aquasecurity/trivy/pkg/digest"
+	types1 "github.com/aquasecurity/trivy/pkg/fanal/types"
+	types "github.com/aquasecurity/trivy/pkg/types"
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
-
-	types2 "github.com/aquasecurity/trivy-db/pkg/types"
-	types1 "github.com/aquasecurity/trivy/pkg/fanal/types"
-	types "github.com/aquasecurity/trivy/pkg/types"
+	time "time"
 )
 
 // suppress unused package warning
@@ -179,7 +178,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize2(in *jle
 		case "Class":
 			out.Class = types.ResultClass(in.String())
 		case "Type":
-			out.Type = string(in.String())
+			out.Type = types1.TargetType(in.String())
 		case "Packages":
 			if in.IsNull() {
 				in.Skip()
@@ -282,6 +281,29 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize2(in *jle
 				}
 				in.Delim(']')
 			}
+		case "Licenses":
+			if in.IsNull() {
+				in.Skip()
+				out.Licenses = nil
+			} else {
+				in.Delim('[')
+				if out.Licenses == nil {
+					if !in.IsDelim(']') {
+						out.Licenses = make([]types.DetectedLicense, 0, 0)
+					} else {
+						out.Licenses = []types.DetectedLicense{}
+					}
+				} else {
+					out.Licenses = (out.Licenses)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v11 types.DetectedLicense
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes3(in, &v11)
+					out.Licenses = append(out.Licenses, v11)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		case "CustomResources":
 			if in.IsNull() {
 				in.Skip()
@@ -298,9 +320,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize2(in *jle
 					out.CustomResources = (out.CustomResources)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v11 types1.CustomResource
-					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes2(in, &v11)
-					out.CustomResources = append(out.CustomResources, v11)
+					var v12 types1.CustomResource
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes2(in, &v12)
+					out.CustomResources = append(out.CustomResources, v12)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -339,11 +361,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize2(out *jw
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v12, v13 := range in.Packages {
-				if v12 > 0 {
+			for v13, v14 := range in.Packages {
+				if v13 > 0 {
 					out.RawByte(',')
 				}
-				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out, v13)
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out, v14)
 			}
 			out.RawByte(']')
 		}
@@ -353,11 +375,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize2(out *jw
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v14, v15 := range in.Vulnerabilities {
-				if v14 > 0 {
+			for v15, v16 := range in.Vulnerabilities {
+				if v15 > 0 {
 					out.RawByte(',')
 				}
-				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out, v15)
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out, v16)
 			}
 			out.RawByte(']')
 		}
@@ -372,11 +394,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize2(out *jw
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v16, v17 := range in.Misconfigurations {
-				if v16 > 0 {
+			for v17, v18 := range in.Misconfigurations {
+				if v17 > 0 {
 					out.RawByte(',')
 				}
-				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes2(out, v17)
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes2(out, v18)
 			}
 			out.RawByte(']')
 		}
@@ -386,11 +408,25 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize2(out *jw
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v18, v19 := range in.Secrets {
-				if v18 > 0 {
+			for v19, v20 := range in.Secrets {
+				if v19 > 0 {
 					out.RawByte(',')
 				}
-				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes1(out, v19)
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes1(out, v20)
+			}
+			out.RawByte(']')
+		}
+	}
+	if len(in.Licenses) != 0 {
+		const prefix string = ",\"Licenses\":"
+		out.RawString(prefix)
+		{
+			out.RawByte('[')
+			for v21, v22 := range in.Licenses {
+				if v21 > 0 {
+					out.RawByte(',')
+				}
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes3(out, v22)
 			}
 			out.RawByte(']')
 		}
@@ -400,11 +436,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize2(out *jw
 		out.RawString(prefix)
 		{
 			out.RawByte('[')
-			for v20, v21 := range in.CustomResources {
-				if v20 > 0 {
+			for v23, v24 := range in.CustomResources {
+				if v23 > 0 {
 					out.RawByte(',')
 				}
-				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes2(out, v21)
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes2(out, v24)
 			}
 			out.RawByte(']')
 		}
@@ -533,6 +569,8 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes3(in *jlexer.L
 			out.Digest = string(in.String())
 		case "DiffID":
 			out.DiffID = string(in.String())
+		case "CreatedBy":
+			out.CreatedBy = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -562,6 +600,100 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes3(out *jwriter
 			out.RawString(prefix)
 		}
 		out.String(string(in.DiffID))
+	}
+	if in.CreatedBy != "" {
+		const prefix string = ",\"CreatedBy\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.CreatedBy))
+	}
+	out.RawByte('}')
+}
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes3(in *jlexer.Lexer, out *types.DetectedLicense) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "Severity":
+			out.Severity = string(in.String())
+		case "Category":
+			out.Category = types1.LicenseCategory(in.String())
+		case "PkgName":
+			out.PkgName = string(in.String())
+		case "FilePath":
+			out.FilePath = string(in.String())
+		case "Name":
+			out.Name = string(in.String())
+		case "Confidence":
+			out.Confidence = float64(in.Float64())
+		case "Link":
+			out.Link = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes3(out *jwriter.Writer, in types.DetectedLicense) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"Severity\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Severity))
+	}
+	{
+		const prefix string = ",\"Category\":"
+		out.RawString(prefix)
+		out.String(string(in.Category))
+	}
+	{
+		const prefix string = ",\"PkgName\":"
+		out.RawString(prefix)
+		out.String(string(in.PkgName))
+	}
+	{
+		const prefix string = ",\"FilePath\":"
+		out.RawString(prefix)
+		out.String(string(in.FilePath))
+	}
+	{
+		const prefix string = ",\"Name\":"
+		out.RawString(prefix)
+		out.String(string(in.Name))
+	}
+	{
+		const prefix string = ",\"Confidence\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.Confidence))
+	}
+	{
+		const prefix string = ",\"Link\":"
+		out.RawString(prefix)
+		out.String(string(in.Link))
 	}
 	out.RawByte('}')
 }
@@ -596,8 +728,12 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes1(in *jlexer.L
 			out.StartLine = int(in.Int())
 		case "EndLine":
 			out.EndLine = int(in.Int())
+		case "Code":
+			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes4(in, &out.Code)
 		case "Match":
 			out.Match = string(in.String())
+		case "Layer":
+			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes3(in, &out.Layer)
 		default:
 			in.SkipRecursive()
 		}
@@ -643,9 +779,184 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes1(out *jwriter
 		out.Int(int(in.EndLine))
 	}
 	{
+		const prefix string = ",\"Code\":"
+		out.RawString(prefix)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes4(out, in.Code)
+	}
+	{
 		const prefix string = ",\"Match\":"
 		out.RawString(prefix)
 		out.String(string(in.Match))
+	}
+	if true {
+		const prefix string = ",\"Layer\":"
+		out.RawString(prefix)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes3(out, in.Layer)
+	}
+	out.RawByte('}')
+}
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes4(in *jlexer.Lexer, out *types1.Code) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "Lines":
+			if in.IsNull() {
+				in.Skip()
+				out.Lines = nil
+			} else {
+				in.Delim('[')
+				if out.Lines == nil {
+					if !in.IsDelim(']') {
+						out.Lines = make([]types1.Line, 0, 0)
+					} else {
+						out.Lines = []types1.Line{}
+					}
+				} else {
+					out.Lines = (out.Lines)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v25 types1.Line
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes5(in, &v25)
+					out.Lines = append(out.Lines, v25)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes4(out *jwriter.Writer, in types1.Code) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"Lines\":"
+		out.RawString(prefix[1:])
+		if in.Lines == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v26, v27 := range in.Lines {
+				if v26 > 0 {
+					out.RawByte(',')
+				}
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes5(out, v27)
+			}
+			out.RawByte(']')
+		}
+	}
+	out.RawByte('}')
+}
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes5(in *jlexer.Lexer, out *types1.Line) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "Number":
+			out.Number = int(in.Int())
+		case "Content":
+			out.Content = string(in.String())
+		case "IsCause":
+			out.IsCause = bool(in.Bool())
+		case "Annotation":
+			out.Annotation = string(in.String())
+		case "Truncated":
+			out.Truncated = bool(in.Bool())
+		case "Highlighted":
+			out.Highlighted = string(in.String())
+		case "FirstCause":
+			out.FirstCause = bool(in.Bool())
+		case "LastCause":
+			out.LastCause = bool(in.Bool())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes5(out *jwriter.Writer, in types1.Line) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"Number\":"
+		out.RawString(prefix[1:])
+		out.Int(int(in.Number))
+	}
+	{
+		const prefix string = ",\"Content\":"
+		out.RawString(prefix)
+		out.String(string(in.Content))
+	}
+	{
+		const prefix string = ",\"IsCause\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.IsCause))
+	}
+	{
+		const prefix string = ",\"Annotation\":"
+		out.RawString(prefix)
+		out.String(string(in.Annotation))
+	}
+	{
+		const prefix string = ",\"Truncated\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.Truncated))
+	}
+	if in.Highlighted != "" {
+		const prefix string = ",\"Highlighted\":"
+		out.RawString(prefix)
+		out.String(string(in.Highlighted))
+	}
+	{
+		const prefix string = ",\"FirstCause\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.FirstCause))
+	}
+	{
+		const prefix string = ",\"LastCause\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.LastCause))
 	}
 	out.RawByte('}')
 }
@@ -672,6 +983,8 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes2(in *jlexer.Lexer,
 			out.Type = string(in.String())
 		case "ID":
 			out.ID = string(in.String())
+		case "AVDID":
+			out.AVDID = string(in.String())
 		case "Title":
 			out.Title = string(in.String())
 		case "Description":
@@ -704,9 +1017,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes2(in *jlexer.Lexer,
 					out.References = (out.References)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v22 string
-					v22 = string(in.String())
-					out.References = append(out.References, v22)
+					var v28 string
+					v28 = string(in.String())
+					out.References = append(out.References, v28)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -716,7 +1029,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes2(in *jlexer.Lexer,
 		case "Layer":
 			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes3(in, &out.Layer)
 		case "CauseMetadata":
-			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes4(in, &out.CauseMetadata)
+			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes6(in, &out.CauseMetadata)
 		case "Traces":
 			if in.IsNull() {
 				in.Skip()
@@ -733,9 +1046,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes2(in *jlexer.Lexer,
 					out.Traces = (out.Traces)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v23 string
-					v23 = string(in.String())
-					out.Traces = append(out.Traces, v23)
+					var v29 string
+					v29 = string(in.String())
+					out.Traces = append(out.Traces, v29)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -769,6 +1082,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes2(out *jwriter.Writ
 			out.RawString(prefix)
 		}
 		out.String(string(in.ID))
+	}
+	if in.AVDID != "" {
+		const prefix string = ",\"AVDID\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.AVDID))
 	}
 	if in.Title != "" {
 		const prefix string = ",\"Title\":"
@@ -860,11 +1183,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes2(out *jwriter.Writ
 		}
 		{
 			out.RawByte('[')
-			for v24, v25 := range in.References {
-				if v24 > 0 {
+			for v30, v31 := range in.References {
+				if v30 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v25))
+				out.String(string(v31))
 			}
 			out.RawByte(']')
 		}
@@ -897,7 +1220,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes2(out *jwriter.Writ
 		} else {
 			out.RawString(prefix)
 		}
-		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes4(out, in.CauseMetadata)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes6(out, in.CauseMetadata)
 	}
 	if len(in.Traces) != 0 {
 		const prefix string = ",\"Traces\":"
@@ -909,18 +1232,18 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes2(out *jwriter.Writ
 		}
 		{
 			out.RawByte('[')
-			for v26, v27 := range in.Traces {
-				if v26 > 0 {
+			for v32, v33 := range in.Traces {
+				if v32 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v27))
+				out.String(string(v33))
 			}
 			out.RawByte(']')
 		}
 	}
 	out.RawByte('}')
 }
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes4(in *jlexer.Lexer, out *types1.CauseMetadata) {
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes6(in *jlexer.Lexer, out *types1.CauseMetadata) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -950,7 +1273,30 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes4(in *jlexer.L
 		case "EndLine":
 			out.EndLine = int(in.Int())
 		case "Code":
-			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes5(in, &out.Code)
+			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes4(in, &out.Code)
+		case "Occurrences":
+			if in.IsNull() {
+				in.Skip()
+				out.Occurrences = nil
+			} else {
+				in.Delim('[')
+				if out.Occurrences == nil {
+					if !in.IsDelim(']') {
+						out.Occurrences = make([]types1.Occurrence, 0, 1)
+					} else {
+						out.Occurrences = []types1.Occurrence{}
+					}
+				} else {
+					out.Occurrences = (out.Occurrences)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v34 types1.Occurrence
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes7(in, &v34)
+					out.Occurrences = append(out.Occurrences, v34)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -961,7 +1307,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes4(in *jlexer.L
 		in.Consumed()
 	}
 }
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes4(out *jwriter.Writer, in types1.CauseMetadata) {
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes6(out *jwriter.Writer, in types1.CauseMetadata) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1019,85 +1365,30 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes4(out *jwriter
 		} else {
 			out.RawString(prefix)
 		}
-		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes5(out, in.Code)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes4(out, in.Code)
 	}
-	out.RawByte('}')
-}
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes5(in *jlexer.Lexer, out *types1.Code) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "Lines":
-			if in.IsNull() {
-				in.Skip()
-				out.Lines = nil
-			} else {
-				in.Delim('[')
-				if out.Lines == nil {
-					if !in.IsDelim(']') {
-						out.Lines = make([]types1.Line, 0, 0)
-					} else {
-						out.Lines = []types1.Line{}
-					}
-				} else {
-					out.Lines = (out.Lines)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v28 types1.Line
-					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes6(in, &v28)
-					out.Lines = append(out.Lines, v28)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes5(out *jwriter.Writer, in types1.Code) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"Lines\":"
-		out.RawString(prefix[1:])
-		if in.Lines == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
+	if len(in.Occurrences) != 0 {
+		const prefix string = ",\"Occurrences\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
 		} else {
+			out.RawString(prefix)
+		}
+		{
 			out.RawByte('[')
-			for v29, v30 := range in.Lines {
-				if v29 > 0 {
+			for v35, v36 := range in.Occurrences {
+				if v35 > 0 {
 					out.RawByte(',')
 				}
-				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes6(out, v30)
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes7(out, v36)
 			}
 			out.RawByte(']')
 		}
 	}
 	out.RawByte('}')
 }
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes6(in *jlexer.Lexer, out *types1.Line) {
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes7(in *jlexer.Lexer, out *types1.Occurrence) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1116,22 +1407,12 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes6(in *jlexer.L
 			continue
 		}
 		switch key {
-		case "Number":
-			out.Number = int(in.Int())
-		case "Content":
-			out.Content = string(in.String())
-		case "IsCause":
-			out.IsCause = bool(in.Bool())
-		case "Annotation":
-			out.Annotation = string(in.String())
-		case "Truncated":
-			out.Truncated = bool(in.Bool())
-		case "Highlighted":
-			out.Highlighted = string(in.String())
-		case "FirstCause":
-			out.FirstCause = bool(in.Bool())
-		case "LastCause":
-			out.LastCause = bool(in.Bool())
+		case "Resource":
+			out.Resource = string(in.String())
+		case "Filename":
+			out.Filename = string(in.String())
+		case "Location":
+			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes8(in, &out.Location)
 		default:
 			in.SkipRecursive()
 		}
@@ -1142,49 +1423,90 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes6(in *jlexer.L
 		in.Consumed()
 	}
 }
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes6(out *jwriter.Writer, in types1.Line) {
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes7(out *jwriter.Writer, in types1.Occurrence) {
 	out.RawByte('{')
 	first := true
 	_ = first
-	{
-		const prefix string = ",\"Number\":"
+	if in.Resource != "" {
+		const prefix string = ",\"Resource\":"
+		first = false
 		out.RawString(prefix[1:])
-		out.Int(int(in.Number))
+		out.String(string(in.Resource))
+	}
+	if in.Filename != "" {
+		const prefix string = ",\"Filename\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Filename))
 	}
 	{
-		const prefix string = ",\"Content\":"
-		out.RawString(prefix)
-		out.String(string(in.Content))
+		const prefix string = ",\"Location\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes8(out, in.Location)
 	}
-	{
-		const prefix string = ",\"IsCause\":"
-		out.RawString(prefix)
-		out.Bool(bool(in.IsCause))
+	out.RawByte('}')
+}
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes8(in *jlexer.Lexer, out *types1.Location) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
 	}
-	{
-		const prefix string = ",\"Annotation\":"
-		out.RawString(prefix)
-		out.String(string(in.Annotation))
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "StartLine":
+			out.StartLine = int(in.Int())
+		case "EndLine":
+			out.EndLine = int(in.Int())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
 	}
-	{
-		const prefix string = ",\"Truncated\":"
-		out.RawString(prefix)
-		out.Bool(bool(in.Truncated))
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
 	}
-	if in.Highlighted != "" {
-		const prefix string = ",\"Highlighted\":"
-		out.RawString(prefix)
-		out.String(string(in.Highlighted))
+}
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes8(out *jwriter.Writer, in types1.Location) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.StartLine != 0 {
+		const prefix string = ",\"StartLine\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.StartLine))
 	}
-	{
-		const prefix string = ",\"FirstCause\":"
-		out.RawString(prefix)
-		out.Bool(bool(in.FirstCause))
-	}
-	{
-		const prefix string = ",\"LastCause\":"
-		out.RawString(prefix)
-		out.Bool(bool(in.LastCause))
+	if in.EndLine != 0 {
+		const prefix string = ",\"EndLine\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int(int(in.EndLine))
 	}
 	out.RawByte('}')
 }
@@ -1281,9 +1603,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 					out.VendorIDs = (out.VendorIDs)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v31 string
-					v31 = string(in.String())
-					out.VendorIDs = append(out.VendorIDs, v31)
+					var v37 string
+					v37 = string(in.String())
+					out.VendorIDs = append(out.VendorIDs, v37)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1298,6 +1620,10 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 			out.InstalledVersion = string(in.String())
 		case "FixedVersion":
 			out.FixedVersion = string(in.String())
+		case "Status":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Status).UnmarshalJSON(data))
+			}
 		case "Layer":
 			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes3(in, &out.Layer)
 		case "SeveritySource":
@@ -1346,9 +1672,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 					out.CweIDs = (out.CweIDs)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v32 string
-					v32 = string(in.String())
-					out.CweIDs = append(out.CweIDs, v32)
+					var v38 string
+					v38 = string(in.String())
+					out.CweIDs = append(out.CweIDs, v38)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1366,9 +1692,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 				for !in.IsDelim('}') {
 					key := types2.SourceID(in.String())
 					in.WantColon()
-					var v33 types2.Severity
-					v33 = types2.Severity(in.Int())
-					(out.VendorSeverity)[key] = v33
+					var v39 types2.Severity
+					v39 = types2.Severity(in.Int())
+					(out.VendorSeverity)[key] = v39
 					in.WantComma()
 				}
 				in.Delim('}')
@@ -1386,9 +1712,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 				for !in.IsDelim('}') {
 					key := types2.SourceID(in.String())
 					in.WantColon()
-					var v34 types2.CVSS
-					easyjson6601e8cdDecodeGithubComAquasecurityTrivyDbPkgTypes1(in, &v34)
-					(out.CVSS)[key] = v34
+					var v40 types2.CVSS
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyDbPkgTypes1(in, &v40)
+					(out.CVSS)[key] = v40
 					in.WantComma()
 				}
 				in.Delim('}')
@@ -1409,9 +1735,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 					out.References = (out.References)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v35 string
-					v35 = string(in.String())
-					out.References = append(out.References, v35)
+					var v41 string
+					v41 = string(in.String())
+					out.References = append(out.References, v41)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1470,11 +1796,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 		}
 		{
 			out.RawByte('[')
-			for v36, v37 := range in.VendorIDs {
-				if v36 > 0 {
+			for v42, v43 := range in.VendorIDs {
+				if v42 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v37))
+				out.String(string(v43))
 			}
 			out.RawByte(']')
 		}
@@ -1528,6 +1854,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 			out.RawString(prefix)
 		}
 		out.String(string(in.FixedVersion))
+	}
+	if in.Status != 0 {
+		const prefix string = ",\"Status\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Raw((in.Status).MarshalJSON())
 	}
 	if true {
 		const prefix string = ",\"Layer\":"
@@ -1635,11 +1971,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 		}
 		{
 			out.RawByte('[')
-			for v38, v39 := range in.CweIDs {
-				if v38 > 0 {
+			for v44, v45 := range in.CweIDs {
+				if v44 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v39))
+				out.String(string(v45))
 			}
 			out.RawByte(']')
 		}
@@ -1654,16 +1990,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 		}
 		{
 			out.RawByte('{')
-			v40First := true
-			for v40Name, v40Value := range in.VendorSeverity {
-				if v40First {
-					v40First = false
+			v46First := true
+			for v46Name, v46Value := range in.VendorSeverity {
+				if v46First {
+					v46First = false
 				} else {
 					out.RawByte(',')
 				}
-				out.String(string(v40Name))
+				out.String(string(v46Name))
 				out.RawByte(':')
-				out.Int(int(v40Value))
+				out.Int(int(v46Value))
 			}
 			out.RawByte('}')
 		}
@@ -1678,16 +2014,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 		}
 		{
 			out.RawByte('{')
-			v41First := true
-			for v41Name, v41Value := range in.CVSS {
-				if v41First {
-					v41First = false
+			v47First := true
+			for v47Name, v47Value := range in.CVSS {
+				if v47First {
+					v47First = false
 				} else {
 					out.RawByte(',')
 				}
-				out.String(string(v41Name))
+				out.String(string(v47Name))
 				out.RawByte(':')
-				easyjson6601e8cdEncodeGithubComAquasecurityTrivyDbPkgTypes1(out, v41Value)
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyDbPkgTypes1(out, v47Value)
 			}
 			out.RawByte('}')
 		}
@@ -1702,11 +2038,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 		}
 		{
 			out.RawByte('[')
-			for v42, v43 := range in.References {
-				if v42 > 0 {
+			for v48, v49 := range in.References {
+				if v48 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v43))
+				out.String(string(v49))
 			}
 			out.RawByte(']')
 		}
@@ -1910,6 +2246,8 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 			out.Epoch = int(in.Int())
 		case "Arch":
 			out.Arch = string(in.String())
+		case "Dev":
+			out.Dev = bool(in.Bool())
 		case "SrcName":
 			out.SrcName = string(in.String())
 		case "SrcVersion":
@@ -1934,13 +2272,15 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 					out.Licenses = (out.Licenses)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v44 string
-					v44 = string(in.String())
-					out.Licenses = append(out.Licenses, v44)
+					var v50 string
+					v50 = string(in.String())
+					out.Licenses = append(out.Licenses, v50)
 					in.WantComma()
 				}
 				in.Delim(']')
 			}
+		case "Maintainer":
+			out.Maintainer = string(in.String())
 		case "Modularitylabel":
 			out.Modularitylabel = string(in.String())
 		case "BuildInfo":
@@ -1951,9 +2291,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 				if out.BuildInfo == nil {
 					out.BuildInfo = new(types1.BuildInfo)
 				}
-				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes7(in, out.BuildInfo)
+				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, out.BuildInfo)
 			}
-		case "PkgRef":
+		case "Ref":
 			out.Ref = string(in.String())
 		case "Indirect":
 			out.Indirect = bool(in.Bool())
@@ -1973,9 +2313,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 					out.DependsOn = (out.DependsOn)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v45 string
-					v45 = string(in.String())
-					out.DependsOn = append(out.DependsOn, v45)
+					var v51 string
+					v51 = string(in.String())
+					out.DependsOn = append(out.DependsOn, v51)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1984,6 +2324,31 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes3(in, &out.Layer)
 		case "FilePath":
 			out.FilePath = string(in.String())
+		case "Digest":
+			out.Digest = digest.Digest(in.String())
+		case "Locations":
+			if in.IsNull() {
+				in.Skip()
+				out.Locations = nil
+			} else {
+				in.Delim('[')
+				if out.Locations == nil {
+					if !in.IsDelim(']') {
+						out.Locations = make([]types1.Location, 0, 4)
+					} else {
+						out.Locations = []types1.Location{}
+					}
+				} else {
+					out.Locations = (out.Locations)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v52 types1.Location
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes8(in, &v52)
+					out.Locations = append(out.Locations, v52)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -2054,6 +2419,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		}
 		out.String(string(in.Arch))
 	}
+	if in.Dev {
+		const prefix string = ",\"Dev\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.Dev))
+	}
 	if in.SrcName != "" {
 		const prefix string = ",\"SrcName\":"
 		if first {
@@ -2104,14 +2479,24 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		}
 		{
 			out.RawByte('[')
-			for v46, v47 := range in.Licenses {
-				if v46 > 0 {
+			for v53, v54 := range in.Licenses {
+				if v53 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v47))
+				out.String(string(v54))
 			}
 			out.RawByte(']')
 		}
+	}
+	if in.Maintainer != "" {
+		const prefix string = ",\"Maintainer\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Maintainer))
 	}
 	if in.Modularitylabel != "" {
 		const prefix string = ",\"Modularitylabel\":"
@@ -2131,10 +2516,10 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		} else {
 			out.RawString(prefix)
 		}
-		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes7(out, *in.BuildInfo)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, *in.BuildInfo)
 	}
 	if in.Ref != "" {
-		const prefix string = ",\"PkgRef\":"
+		const prefix string = ",\"Ref\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
@@ -2163,11 +2548,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		}
 		{
 			out.RawByte('[')
-			for v48, v49 := range in.DependsOn {
-				if v48 > 0 {
+			for v55, v56 := range in.DependsOn {
+				if v55 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v49))
+				out.String(string(v56))
 			}
 			out.RawByte(']')
 		}
@@ -2192,9 +2577,38 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		}
 		out.String(string(in.FilePath))
 	}
+	if in.Digest != "" {
+		const prefix string = ",\"Digest\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Digest))
+	}
+	if len(in.Locations) != 0 {
+		const prefix string = ",\"Locations\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		{
+			out.RawByte('[')
+			for v57, v58 := range in.Locations {
+				if v57 > 0 {
+					out.RawByte(',')
+				}
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes8(out, v58)
+			}
+			out.RawByte(']')
+		}
+	}
 	out.RawByte('}')
 }
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes7(in *jlexer.Lexer, out *types1.BuildInfo) {
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in *jlexer.Lexer, out *types1.BuildInfo) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2229,9 +2643,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes7(in *jlexer.L
 					out.ContentSets = (out.ContentSets)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v50 string
-					v50 = string(in.String())
-					out.ContentSets = append(out.ContentSets, v50)
+					var v59 string
+					v59 = string(in.String())
+					out.ContentSets = append(out.ContentSets, v59)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2250,7 +2664,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes7(in *jlexer.L
 		in.Consumed()
 	}
 }
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes7(out *jwriter.Writer, in types1.BuildInfo) {
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out *jwriter.Writer, in types1.BuildInfo) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2260,11 +2674,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes7(out *jwriter
 		out.RawString(prefix[1:])
 		{
 			out.RawByte('[')
-			for v51, v52 := range in.ContentSets {
-				if v51 > 0 {
+			for v60, v61 := range in.ContentSets {
+				if v60 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v52))
+				out.String(string(v61))
 			}
 			out.RawByte(']')
 		}
@@ -2328,9 +2742,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(in *jle
 					out.IDs = (out.IDs)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v53 string
-					v53 = string(in.String())
-					out.IDs = append(out.IDs, v53)
+					var v62 string
+					v62 = string(in.String())
+					out.IDs = append(out.IDs, v62)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2361,11 +2775,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize3(out *jw
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v54, v55 := range in.IDs {
-				if v54 > 0 {
+			for v63, v64 := range in.IDs {
+				if v63 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v55))
+				out.String(string(v64))
 			}
 			out.RawByte(']')
 		}
@@ -2431,9 +2845,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(in *jle
 					out.CustomResources = (out.CustomResources)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v56 CustomResource
-					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize5(in, &v56)
-					out.CustomResources = append(out.CustomResources, v56)
+					var v65 CustomResource
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize5(in, &v65)
+					out.CustomResources = append(out.CustomResources, v65)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2459,11 +2873,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(out *jw
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v57, v58 := range in.CustomResources {
-				if v57 > 0 {
+			for v66, v67 := range in.CustomResources {
+				if v66 > 0 {
 					out.RawByte(',')
 				}
-				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize5(out, v58)
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize5(out, v67)
 			}
 			out.RawByte(']')
 		}

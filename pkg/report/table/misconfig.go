@@ -6,13 +6,10 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	"golang.org/x/term"
 
 	"github.com/aquasecurity/tml"
-
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

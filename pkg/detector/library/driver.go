@@ -20,7 +20,7 @@ import (
 )
 
 // NewDriver returns a driver according to the library type
-func NewDriver(libType string) (Driver, bool) {
+func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	var ecosystem dbTypes.Ecosystem
 	var comparer compare.Comparer
 

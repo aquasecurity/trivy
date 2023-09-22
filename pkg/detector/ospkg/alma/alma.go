@@ -108,7 +108,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks the OSFamily can be scanned using AlmaLinux scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}

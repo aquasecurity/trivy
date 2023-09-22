@@ -6,11 +6,10 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/aquasecurity/tml"
-
 	"golang.org/x/term"
 
 	"github.com/aquasecurity/table"
+	"github.com/aquasecurity/tml"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
 )

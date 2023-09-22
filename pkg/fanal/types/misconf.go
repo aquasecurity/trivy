@@ -8,7 +8,7 @@ import (
 )
 
 type Misconfiguration struct {
-	FileType   string         `json:",omitempty"`
+	FileType   ConfigType     `json:",omitempty"`
 	FilePath   string         `json:",omitempty"`
 	Successes  MisconfResults `json:",omitempty"`
 	Warnings   MisconfResults `json:",omitempty"`

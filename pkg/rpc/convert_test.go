@@ -9,7 +9,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -300,52 +299,57 @@ func TestConvertFromRPCResults(t *testing.T) {
 	}{
 		{
 			name: "happy path",
-			args: args{rpcResults: []*scanner.Result{
-				{
-					Target: "alpine:3.10",
-					Type:   fos.Alpine,
-					Vulnerabilities: []*common.Vulnerability{
-						{
-							VulnerabilityId:  "CVE-2019-0001",
-							PkgName:          "musl",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "1.2.4",
-							Title:            "DoS",
-							Description:      "Denial of Service",
-							Severity:         common.Severity_MEDIUM,
-							SeveritySource:   string(vulnerability.NVD),
-							CweIds:           []string{"CWE-123", "CWE-456"},
-							VendorSeverity: map[string]common.Severity{
-								string(vulnerability.RedHat): common.Severity_MEDIUM,
-							},
-							Cvss: map[string]*common.CVSS{
-								string(vulnerability.RedHat): {
-									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
-									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-									V2Score:  7.2,
-									V3Score:  7.8,
+			args: args{
+				rpcResults: []*scanner.Result{
+					{
+						Target: "alpine:3.10",
+						Type:   string(ftypes.Alpine),
+						Vulnerabilities: []*common.Vulnerability{
+							{
+								VulnerabilityId:  "CVE-2019-0001",
+								PkgName:          "musl",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Title:            "DoS",
+								Description:      "Denial of Service",
+								Severity:         common.Severity_MEDIUM,
+								SeveritySource:   string(vulnerability.NVD),
+								CweIds: []string{
+									"CWE-123",
+									"CWE-456",
 								},
-							},
-							References: []string{"http://example.com"},
-							Layer: &common.Layer{
-								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
-								DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
-							},
-							PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
-							PublishedDate:    timestamppb.New(fixedPublishedDate),
-							LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
-							DataSource: &common.DataSource{
-								Name: "GitHub Security Advisory Maven",
-								Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+								VendorSeverity: map[string]common.Severity{
+									string(vulnerability.RedHat): common.Severity_MEDIUM,
+								},
+								Cvss: map[string]*common.CVSS{
+									string(vulnerability.RedHat): {
+										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  7.2,
+										V3Score:  7.8,
+									},
+								},
+								References: []string{"http://example.com"},
+								Layer: &common.Layer{
+									Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+									DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+								},
+								PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
+								PublishedDate:    timestamppb.New(fixedPublishedDate),
+								LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
+								DataSource: &common.DataSource{
+									Name: "GitHub Security Advisory Maven",
+									Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+								},
 							},
 						},
 					},
-				}},
+				},
 			},
 			want: []types.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
@@ -365,7 +369,10 @@ func TestConvertFromRPCResults(t *testing.T) {
 								VendorSeverity: dbTypes.VendorSeverity{
 									vulnerability.RedHat: dbTypes.SeverityMedium,
 								},
-								CweIDs: []string{"CWE-123", "CWE-456"},
+								CweIDs: []string{
+									"CWE-123",
+									"CWE-456",
+								},
 								CVSS: dbTypes.VendorCVSS{
 									vulnerability.RedHat: {
 										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -389,45 +396,50 @@ func TestConvertFromRPCResults(t *testing.T) {
 		},
 		{
 			name: "happy path - with nil dates",
-			args: args{rpcResults: []*scanner.Result{
-				{
-					Target: "alpine:3.10",
-					Type:   fos.Alpine,
-					Vulnerabilities: []*common.Vulnerability{
-						{
-							VulnerabilityId:  "CVE-2019-0001",
-							PkgName:          "musl",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "1.2.4",
-							Title:            "DoS",
-							Description:      "Denial of Service",
-							Severity:         common.Severity_MEDIUM,
-							SeveritySource:   string(vulnerability.NVD),
-							CweIds:           []string{"CWE-123", "CWE-456"},
-							Cvss: map[string]*common.CVSS{
-								"redhat": {
-									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
-									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-									V2Score:  7.2,
-									V3Score:  7.8,
+			args: args{
+				rpcResults: []*scanner.Result{
+					{
+						Target: "alpine:3.10",
+						Type:   string(ftypes.Alpine),
+						Vulnerabilities: []*common.Vulnerability{
+							{
+								VulnerabilityId:  "CVE-2019-0001",
+								PkgName:          "musl",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Title:            "DoS",
+								Description:      "Denial of Service",
+								Severity:         common.Severity_MEDIUM,
+								SeveritySource:   string(vulnerability.NVD),
+								CweIds: []string{
+									"CWE-123",
+									"CWE-456",
 								},
+								Cvss: map[string]*common.CVSS{
+									"redhat": {
+										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  7.2,
+										V3Score:  7.8,
+									},
+								},
+								References: []string{"http://example.com"},
+								Layer: &common.Layer{
+									Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+									DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+								},
+								PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
+								PublishedDate:    nil,
+								LastModifiedDate: nil,
 							},
-							References: []string{"http://example.com"},
-							Layer: &common.Layer{
-								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
-								DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
-							},
-							PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
-							PublishedDate:    nil,
-							LastModifiedDate: nil,
 						},
 					},
-				}},
+				},
 			},
 			want: []types.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
@@ -441,10 +453,13 @@ func TestConvertFromRPCResults(t *testing.T) {
 							SeveritySource: vulnerability.NVD,
 							PrimaryURL:     "https://avd.aquasec.com/nvd/CVE-2019-0001",
 							Vulnerability: dbTypes.Vulnerability{
-								Title:          "DoS",
-								Description:    "Denial of Service",
-								Severity:       common.Severity_MEDIUM.String(),
-								CweIDs:         []string{"CWE-123", "CWE-456"},
+								Title:       "DoS",
+								Description: "Denial of Service",
+								Severity:    common.Severity_MEDIUM.String(),
+								CweIDs: []string{
+									"CWE-123",
+									"CWE-456",
+								},
 								VendorSeverity: make(dbTypes.VendorSeverity),
 								CVSS: dbTypes.VendorCVSS{
 									vulnerability.RedHat: {
@@ -481,46 +496,48 @@ func TestConvertFromRPCMisconfs(t *testing.T) {
 	}{
 		{
 			name: "happy path misconf",
-			args: args{misconfs: []*common.DetectedMisconfiguration{
-				{
-					Type:        "Dockerfile Security Check",
-					Id:          "DS005",
-					AvdId:       "AVD-DS-0005",
-					Title:       "ADD instead of COPY",
-					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
-					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
-					Namespace:   "builtin.dockerfile.DS005",
-					Query:       "data.builtin.dockerfile.DS005.deny",
-					Resolution:  "Use COPY instead of ADD",
-					Severity:    common.Severity_LOW,
-					PrimaryUrl:  "https://avd.aquasec.com/misconfig/ds005",
-					References: []string{
-						"https://docs.docker.com/engine/reference/builder/#add",
-						"https://avd.aquasec.com/misconfig/ds005",
-					},
-					Status: "FAIL",
-					Layer:  &common.Layer{},
-					CauseMetadata: &common.CauseMetadata{
-						Provider:  "Dockerfile",
-						Service:   "general",
-						StartLine: 3,
-						EndLine:   3,
-						Code: &common.Code{
-							Lines: []*common.Line{
-								{
-									Number:     3,
-									Content:    "ADD . /app",
-									IsCause:    true,
-									Annotation: "",
-									Truncated:  false,
-									FirstCause: true,
-									LastCause:  true,
+			args: args{
+				misconfs: []*common.DetectedMisconfiguration{
+					{
+						Type:        "Dockerfile Security Check",
+						Id:          "DS005",
+						AvdId:       "AVD-DS-0005",
+						Title:       "ADD instead of COPY",
+						Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+						Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+						Namespace:   "builtin.dockerfile.DS005",
+						Query:       "data.builtin.dockerfile.DS005.deny",
+						Resolution:  "Use COPY instead of ADD",
+						Severity:    common.Severity_LOW,
+						PrimaryUrl:  "https://avd.aquasec.com/misconfig/ds005",
+						References: []string{
+							"https://docs.docker.com/engine/reference/builder/#add",
+							"https://avd.aquasec.com/misconfig/ds005",
+						},
+						Status: "FAIL",
+						Layer:  &common.Layer{},
+						CauseMetadata: &common.CauseMetadata{
+							Provider:  "Dockerfile",
+							Service:   "general",
+							StartLine: 3,
+							EndLine:   3,
+							Code: &common.Code{
+								Lines: []*common.Line{
+									{
+										Number:     3,
+										Content:    "ADD . /app",
+										IsCause:    true,
+										Annotation: "",
+										Truncated:  false,
+										FirstCause: true,
+										LastCause:  true,
+									},
 								},
 							},
 						},
 					},
 				},
-			}},
+			},
 			want: []types.DetectedMisconfiguration{
 				{
 					Type:        "Dockerfile Security Check",
@@ -583,46 +600,48 @@ func TestConvertToRPCMiconfs(t *testing.T) {
 	}{
 		{
 			name: "happy path misconf",
-			args: args{misconfs: []types.DetectedMisconfiguration{
-				{
-					Type:        "Dockerfile Security Check",
-					ID:          "DS005",
-					AVDID:       "AVD-DS-0005",
-					Title:       "ADD instead of COPY",
-					Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
-					Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
-					Namespace:   "builtin.dockerfile.DS005",
-					Query:       "data.builtin.dockerfile.DS005.deny",
-					Resolution:  "Use COPY instead of ADD",
-					Severity:    "LOW",
-					PrimaryURL:  "https://avd.aquasec.com/misconfig/ds005",
-					References: []string{
-						"https://docs.docker.com/engine/reference/builder/#add",
-						"https://avd.aquasec.com/misconfig/ds005",
-					},
-					Status: "FAIL",
-					Layer:  ftypes.Layer{},
-					CauseMetadata: ftypes.CauseMetadata{
-						Provider:  "Dockerfile",
-						Service:   "general",
-						StartLine: 3,
-						EndLine:   3,
-						Code: ftypes.Code{
-							Lines: []ftypes.Line{
-								{
-									Number:     3,
-									Content:    "ADD . /app",
-									IsCause:    true,
-									Annotation: "",
-									Truncated:  false,
-									FirstCause: true,
-									LastCause:  true,
+			args: args{
+				misconfs: []types.DetectedMisconfiguration{
+					{
+						Type:        "Dockerfile Security Check",
+						ID:          "DS005",
+						AVDID:       "AVD-DS-0005",
+						Title:       "ADD instead of COPY",
+						Description: "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+						Message:     "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+						Namespace:   "builtin.dockerfile.DS005",
+						Query:       "data.builtin.dockerfile.DS005.deny",
+						Resolution:  "Use COPY instead of ADD",
+						Severity:    "LOW",
+						PrimaryURL:  "https://avd.aquasec.com/misconfig/ds005",
+						References: []string{
+							"https://docs.docker.com/engine/reference/builder/#add",
+							"https://avd.aquasec.com/misconfig/ds005",
+						},
+						Status: "FAIL",
+						Layer:  ftypes.Layer{},
+						CauseMetadata: ftypes.CauseMetadata{
+							Provider:  "Dockerfile",
+							Service:   "general",
+							StartLine: 3,
+							EndLine:   3,
+							Code: ftypes.Code{
+								Lines: []ftypes.Line{
+									{
+										Number:     3,
+										Content:    "ADD . /app",
+										IsCause:    true,
+										Annotation: "",
+										Truncated:  false,
+										FirstCause: true,
+										LastCause:  true,
+									},
 								},
 							},
 						},
 					},
 				},
-			}},
+			},
 			want: []*common.DetectedMisconfiguration{
 				{
 					Type:        "Dockerfile Security Check",
