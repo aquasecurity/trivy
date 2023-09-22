@@ -7,11 +7,12 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
-	"github.com/samber/lo"
 )
 
 type Option struct {
