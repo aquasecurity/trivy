@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
-	"github.com/aquasecurity/trivy/pkg/x/slices"
+	"github.com/samber/lo"
 )
 
 type Option struct {
@@ -65,10 +65,12 @@ func (o *Option) Sort() {
 
 func (o *Option) ConfigFiles() []string {
 	// data paths and policy paths are ignored because their own file systems are created for them
-	return slices.Merge(
-		o.MisconfScannerOption.TerraformTFVars,
-		o.MisconfScannerOption.HelmFileValues,
-		o.MisconfScannerOption.HelmValueFiles,
+	return lo.Flatten(
+		[][]string{
+			o.MisconfScannerOption.TerraformTFVars,
+			o.MisconfScannerOption.HelmFileValues,
+			o.MisconfScannerOption.HelmValueFiles,
+		},
 	)
 }
 
