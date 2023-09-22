@@ -36,6 +36,11 @@ $ trivy image --format cyclonedx --output debian11.sbom.cdx debian:11
 
 ### Create the VEX
 Next, create a VEX based on the generated SBOM.
+
+```shell
+$ trivy sbom <path-to-your-SBOM-file> --vex trivy.vex.cdx
+```
+
 Multiple vulnerability statuses can be defined under `vulnerabilities`.
 Take a look at the example below.
 
