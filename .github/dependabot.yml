@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
   - package-ecosystem: docker
     directory: /
     schedule:
@@ -12,4 +12,4 @@ updates:
     open-pull-requests-limit: 10
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
