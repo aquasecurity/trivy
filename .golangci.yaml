@@ -17,6 +17,8 @@ linters-settings:
     min-occurrences: 3
   misspell:
     locale: US
+    ignore-words:
+      - licence
   gosec:
     excludes:
       - G101
