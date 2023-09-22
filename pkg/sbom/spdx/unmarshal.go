@@ -178,7 +178,7 @@ func (s *SPDX) parsePackages(pkgs map[common.ElementID]*spdx.Package) error {
 			return xerrors.Errorf("failed to parse package: %w", err)
 		}
 		switch pkgType {
-		case purl.TypeAPK, packageurl.TypeDebian, packageurl.TypeRPM:
+		case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM:
 			osPkgs = append(osPkgs, *pkg)
 		default:
 			// Language-specific packages

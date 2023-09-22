@@ -17,7 +17,6 @@ import (
 )
 
 const (
-	TypeAPK  = "apk" // not defined in github.com/package-url/packageurl-go
 	TypeOCI  = "oci"
 	TypeDart = "dart"
 )
@@ -136,7 +135,7 @@ func (p *PackageURL) PackageType() string {
 }
 
 func (p *PackageURL) IsOSPkg() bool {
-	return p.Type == TypeAPK || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
+	return p.Type == packageurl.TypeApk || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
 }
 
 func (p *PackageURL) BOMRef() string {
@@ -181,11 +180,11 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		if metadata.OS != nil {
 			namespace = metadata.OS.Family
 		}
-	case TypeAPK: // TODO: replace with packageurl.TypeApk once they add it.
-		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
-		if metadata.OS != nil {
-			namespace = metadata.OS.Family
-		}
+	case packageurl.TypeApk:
+		n, ns, qs := parseApk(name, metadata.OS)
+		name = n
+		namespace = ns
+		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
@@ -247,17 +246,24 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 }
 
-func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
-	if fos == nil {
-		return packageurl.Qualifiers{}
-	}
+// ref. https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#apk
+func parseApk(pkgName string, fos *ftypes.OS) (string, string, packageurl.Qualifiers) {
+	ns := ""
+	qs := packageurl.Qualifiers{}
 
-	return packageurl.Qualifiers{
-		{
+	// the name must be lowercase
+	pkgName = strings.ToLower(pkgName)
+
+	if fos != nil {
+		// the namespace must be lowercase
+		ns = strings.ToLower(fos.Family)
+		qs = append(qs, packageurl.Qualifier{
 			Key:   "distro",
 			Value: fos.Name,
-		},
+		})
 	}
+
+	return pkgName, ns, qs
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#deb
@@ -385,7 +391,7 @@ func purlType(t string) string {
 	case ftypes.RustBinary, ftypes.Cargo:
 		return packageurl.TypeCargo
 	case os.Alpine:
-		return TypeAPK
+		return packageurl.TypeApk
 	case os.Debian, os.Ubuntu:
 		return packageurl.TypeDebian
 	case os.RedHat, os.CentOS, os.Rocky, os.Alma,
