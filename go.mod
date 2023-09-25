@@ -25,7 +25,7 @@ require (
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-aws v0.0.0-20230925225917-0b177fa2bbe9
 	github.com/aquasecurity/trivy-db v0.0.0-20230831170347-f732860d4917
-	github.com/aquasecurity/trivy-iac v0.0.0-20230925224330-0d815a11a26a
+	github.com/aquasecurity/trivy-iac v0.0.0-20230925234548-b7ae8d17f008
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.5.7
 	github.com/aquasecurity/trivy-policies v0.0.6
