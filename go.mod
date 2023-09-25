@@ -29,7 +29,7 @@ require (
 	github.com/aws/aws-sdk-go v1.45.8
 	github.com/aws/aws-sdk-go-v2 v1.21.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.42
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.118.0
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.120.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.22.0
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/cenkalti/backoff v2.2.1+incompatible
@@ -73,7 +73,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0-rc5
 	github.com/openvex/go-vex v0.2.5
-	github.com/owenrumney/go-sarif/v2 v2.2.0
+	github.com/owenrumney/go-sarif/v2 v2.2.2
 	github.com/package-url/packageurl-go v0.1.1
 	github.com/samber/lo v1.38.1
 	github.com/saracen/walker v0.1.3
