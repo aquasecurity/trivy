@@ -9,14 +9,13 @@ jobs:
     name: Unit Test
     runs-on: ubuntu-latest
     steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v4
 
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: 1.18
-
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
+        go-version-file: go.mod
 
     - name: Run unit tests
       run: go test ./...
