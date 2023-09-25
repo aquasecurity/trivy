@@ -6,17 +6,15 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/fatih/color"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
 	"github.com/aquasecurity/table"
+	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	"github.com/fatih/color"
-
-	"github.com/aquasecurity/tml"
 )
 
 type pkgLicenseRenderer struct {

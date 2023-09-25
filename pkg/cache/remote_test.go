@@ -8,8 +8,6 @@ import (
 	"testing"
 	"time"
 
-	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
-
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,6 +18,7 @@ import (
 	fcache "github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
+	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
 type mockCacheServer struct {

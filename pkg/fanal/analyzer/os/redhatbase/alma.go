@@ -6,11 +6,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-
 	"golang.org/x/xerrors"
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
@@ -35,12 +34,15 @@ func (a almaOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 		switch strings.ToLower(result[1]) {
 		case "alma", "almalinux", "alma linux":
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Alma, Name: result[2]},
+				OS: types.OS{
+					Family: types.Alma,
+					Name:   result[2],
+				},
 			}, nil
 		}
 	}
 
-	return nil, xerrors.Errorf("alma: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("alma: %w", fos.AnalyzeOSError)
 }
 
 func (a almaOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

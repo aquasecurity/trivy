@@ -6,17 +6,15 @@ import (
 	"testing"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/package-url/packageurl-go"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
-	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/package-url/packageurl-go"
-
 	"github.com/aquasecurity/trivy/pkg/flag"
-
+	"github.com/aquasecurity/trivy/pkg/purl"
 	cyc "github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestK8sClusterInfoReport(t *testing.T) {

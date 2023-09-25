@@ -16,7 +16,6 @@ import (
 	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
 	redhat "github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat-oval"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -209,16 +208,16 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 }
 
 // IsSupportedVersion checks is OSFamily can be scanned with Redhat scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
 
 	var eolDate time.Time
 	var ok bool
-	if osFamily == os.RedHat {
+	if osFamily == ftypes.RedHat {
 		eolDate, ok = redhatEOLDates[osVer]
-	} else if osFamily == os.CentOS {
+	} else if osFamily == ftypes.CentOS {
 		eolDate, ok = centosEOLDates[osVer]
 	}
 	if !ok {

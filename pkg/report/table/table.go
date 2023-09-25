@@ -11,9 +11,8 @@ import (
 	"github.com/fatih/color"
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/tml"
-
 	"github.com/aquasecurity/table"
+	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
