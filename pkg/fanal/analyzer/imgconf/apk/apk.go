@@ -16,7 +16,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -284,7 +283,7 @@ func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs 
 }
 
 func (a alpineCmdAnalyzer) Required(targetOS types.OS) bool {
-	return targetOS.Family == os.Alpine
+	return targetOS.Family == types.Alpine
 }
 
 func (a alpineCmdAnalyzer) Type() analyzer.Type {

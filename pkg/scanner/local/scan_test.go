@@ -14,7 +14,6 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
@@ -58,7 +57,7 @@ func TestScanner_Scan(t *testing.T) {
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
 						OS: ftypes.OS{
-							Family: fos.Alpine,
+							Family: ftypes.Alpine,
 							Name:   "3.11",
 						},
 						Packages: []ftypes.Package{
@@ -94,7 +93,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-9999",
@@ -216,7 +215,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Packages: []ftypes.Package{
 						{
 							Name:       "ausl",
@@ -368,7 +367,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Packages: []ftypes.Package{
 						{
 							Name:       "ausl",
@@ -639,7 +638,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",

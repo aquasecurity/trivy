@@ -33,7 +33,7 @@ import (
 	_ "embed"
 )
 
-var enabledDefsecTypes = map[detection.FileType]string{
+var enabledDefsecTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeAzureARM:       types.AzureARM,
 	detection.FileTypeCloudFormation: types.CloudFormation,
 	detection.FileTypeTerraform:      types.Terraform,
@@ -357,7 +357,7 @@ func CreateDataFS(dataPaths []string, options ...string) (fs.FS, []string, error
 }
 
 // ResultsToMisconf is exported for trivy-plugin-aqua purposes only
-func ResultsToMisconf(configType string, scannerName string, results scan.Results) []types.Misconfiguration {
+func ResultsToMisconf(configType types.ConfigType, scannerName string, results scan.Results) []types.Misconfiguration {
 	misconfs := map[string]types.Misconfiguration{}
 
 	for _, result := range results {

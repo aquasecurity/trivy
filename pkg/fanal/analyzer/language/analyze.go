@@ -17,7 +17,7 @@ import (
 )
 
 // Analyze returns an analysis result of the lock file
-func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
+func Analyze(fileType types.LangType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
 	app, err := Parse(fileType, filePath, r, parser)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
@@ -31,7 +31,7 @@ func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Pa
 }
 
 // AnalyzePackage returns an analysis result of the package file other than lock files
-func AnalyzePackage(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*analyzer.AnalysisResult, error) {
+func AnalyzePackage(fileType types.LangType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*analyzer.AnalysisResult, error) {
 	app, err := ParsePackage(fileType, filePath, r, parser, checksum)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
@@ -45,7 +45,7 @@ func AnalyzePackage(fileType, filePath string, r dio.ReadSeekerAt, parser godept
 }
 
 // Parse returns a parsed result of the lock file
-func Parse(fileType, filePath string, r io.Reader, parser godeptypes.Parser) (*types.Application, error) {
+func Parse(fileType types.LangType, filePath string, r io.Reader, parser godeptypes.Parser) (*types.Application, error) {
 	rr, err := xio.NewReadSeekerAt(r)
 	if err != nil {
 		return nil, xerrors.Errorf("reader error: %w", err)
@@ -61,7 +61,7 @@ func Parse(fileType, filePath string, r io.Reader, parser godeptypes.Parser) (*t
 }
 
 // ParsePackage returns a parsed result of the package file
-func ParsePackage(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*types.Application, error) {
+func ParsePackage(fileType types.LangType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*types.Application, error) {
 	parsedLibs, parsedDependencies, err := parser.Parse(r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
@@ -77,7 +77,7 @@ func ParsePackage(fileType, filePath string, r dio.ReadSeekerAt, parser godeptyp
 	return toApplication(fileType, filePath, filePath, r, parsedLibs, parsedDependencies), nil
 }
 
-func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
+func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
 	if len(libs) == 0 {
 		return nil
 	}

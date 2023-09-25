@@ -5,13 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"github.com/aws/aws-sdk-go/aws/request"
-
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/ecr"
 	"github.com/aws/aws-sdk-go/service/ecr/ecriface"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestCheckOptions(t *testing.T) {

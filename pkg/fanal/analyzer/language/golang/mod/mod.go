@@ -30,7 +30,7 @@ import (
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(types.GoMod, newGoModAnalyzer)
+	analyzer.RegisterPostAnalyzer(analyzer.TypeGoMod, newGoModAnalyzer)
 }
 
 const version = 2

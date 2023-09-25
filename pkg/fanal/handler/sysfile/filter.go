@@ -27,7 +27,7 @@ var (
 		"/usr/lib/python2.7/wsgiref.egg-info",
 	}
 
-	affectedTypes = []string{
+	affectedTypes = []types.LangType{
 		// ruby
 		types.GemSpec,
 

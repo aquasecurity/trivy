@@ -57,7 +57,7 @@ func TestFilter(t *testing.T) {
 							},
 							Misconfigurations: []types.DetectedMisconfiguration{
 								{
-									Type:     ftypes.Kubernetes,
+									Type:     "Kubernetes Security Check",
 									ID:       "ID100",
 									Title:    "Bad Deployment",
 									Message:  "something bad",
@@ -65,7 +65,7 @@ func TestFilter(t *testing.T) {
 									Status:   types.StatusFailure,
 								},
 								{
-									Type:     ftypes.Kubernetes,
+									Type:     "Kubernetes Security Check",
 									ID:       "ID200",
 									Title:    "Bad Pod",
 									Message:  "something bad",
@@ -120,7 +120,7 @@ func TestFilter(t *testing.T) {
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								Type:     ftypes.Kubernetes,
+								Type:     "Kubernetes Security Check",
 								ID:       "ID100",
 								Title:    "Bad Deployment",
 								Message:  "something bad",
@@ -320,7 +320,7 @@ func TestFilter(t *testing.T) {
 							Class:  types.ClassConfig,
 							Misconfigurations: []types.DetectedMisconfiguration{
 								{
-									Type:     ftypes.Kubernetes,
+									Type:     "Kubernetes Security Check",
 									ID:       "ID100",
 									Title:    "Bad Deployment",
 									Message:  "something bad",
@@ -473,7 +473,7 @@ func TestFilter(t *testing.T) {
 							Misconfigurations: []types.DetectedMisconfiguration{
 								{
 									// this misconfiguration is ignored
-									Type:     ftypes.Kubernetes,
+									Type:     "Kubernetes Security Check",
 									ID:       "ID100",
 									Title:    "Bad Deployment",
 									Message:  "something bad",
@@ -482,7 +482,7 @@ func TestFilter(t *testing.T) {
 								},
 								{
 									// this misconfiguration is ignored
-									Type:     ftypes.Kubernetes,
+									Type:     "Kubernetes Security Check",
 									ID:       "ID200",
 									Title:    "Bad Deployment",
 									Message:  "something bad",
@@ -490,7 +490,7 @@ func TestFilter(t *testing.T) {
 									Status:   types.StatusFailure,
 								},
 								{
-									Type:     ftypes.Kubernetes,
+									Type:     "Kubernetes Security Check",
 									ID:       "ID300",
 									Title:    "Bad Deployment",
 									Message:  "something bad",
@@ -588,7 +588,7 @@ func TestFilter(t *testing.T) {
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								Type:     ftypes.Kubernetes,
+								Type:     "Kubernetes Security Check",
 								ID:       "ID300",
 								Title:    "Bad Deployment",
 								Message:  "something bad",

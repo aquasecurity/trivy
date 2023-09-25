@@ -5,18 +5,14 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aquasecurity/trivy-db/pkg/types"
-
-	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/flag"
-
-	"github.com/stretchr/testify/assert"
-
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
 func Test_ServiceReport(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
@@ -48,20 +48,38 @@ func (a redhatOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 
 		switch strings.ToLower(result[1]) {
 		case "centos", "centos linux":
-			return types.OS{Family: aos.CentOS, Name: result[2]}, nil
+			return types.OS{
+				Family: types.CentOS,
+				Name:   result[2],
+			}, nil
 		case "rocky", "rocky linux":
-			return types.OS{Family: aos.Rocky, Name: result[2]}, nil
+			return types.OS{
+				Family: types.Rocky,
+				Name:   result[2],
+			}, nil
 		case "alma", "almalinux", "alma linux":
-			return types.OS{Family: aos.Alma, Name: result[2]}, nil
+			return types.OS{
+				Family: types.Alma,
+				Name:   result[2],
+			}, nil
 		case "oracle", "oracle linux", "oracle linux server":
-			return types.OS{Family: aos.Oracle, Name: result[2]}, nil
+			return types.OS{
+				Family: types.Oracle,
+				Name:   result[2],
+			}, nil
 		case "fedora", "fedora linux":
-			return types.OS{Family: aos.Fedora, Name: result[2]}, nil
+			return types.OS{
+				Family: types.Fedora,
+				Name:   result[2],
+			}, nil
 		default:
-			return types.OS{Family: aos.RedHat, Name: result[2]}, nil
+			return types.OS{
+				Family: types.RedHat,
+				Name:   result[2],
+			}, nil
 		}
 	}
-	return types.OS{}, xerrors.Errorf("redhatbase: %w", aos.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("redhatbase: %w", fos.AnalyzeOSError)
 }
 
 func (a redhatOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

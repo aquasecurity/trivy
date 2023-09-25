@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
@@ -31,11 +31,14 @@ func (a oracleOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 			return nil, xerrors.New("oracle: invalid oracle-release")
 		}
 		return &analyzer.AnalysisResult{
-			OS: types.OS{Family: aos.Oracle, Name: result[2]},
+			OS: types.OS{
+				Family: types.Oracle,
+				Name:   result[2],
+			},
 		}, nil
 	}
 
-	return nil, xerrors.Errorf("oracle: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("oracle: %w", fos.AnalyzeOSError)
 }
 
 func (a oracleOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

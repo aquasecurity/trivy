@@ -106,23 +106,15 @@
       ]
     },
     {
-      "bom-ref": "pkg:gradle/com.example/example@0.0.1",
+      "bom-ref": "pkg:maven/com.example/example@0.0.1",
       "type": "library",
       "name": "com.example:example",
       "version": "0.0.1",
-      "purl": "pkg:gradle/com.example/example@0.0.1",
+      "purl": "pkg:maven/com.example/example@0.0.1",
       "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "app/gradle/target/gradle.lockfile"
-        },
         {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gradle"
         }
       ]
     },
@@ -220,6 +212,21 @@
           "value": "lang-pkgs"
         }
       ]
+    },
+    {
+      "bom-ref": "43b87f73-4b96-25ab-845b-489321cea146",
+      "type": "application",
+      "name": "app/gradle/target/gradle.lockfile",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "gradle"
+        },
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        }
+      ]
     }
   ],
   "dependencies": [
@@ -243,11 +250,17 @@
       ]
     },
     {
+      "ref": "43b87f73-4b96-25ab-845b-489321cea146",
+      "dependsOn": [
+        "pkg:maven/com.example/example@0.0.1"
+      ]
+    },
+    {
       "ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
       "dependsOn": [
         "60e9f57b-d4a6-4f71-ad14-0893ac609182",
         "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
-        "pkg:gradle/com.example/example@0.0.1",
+        "pkg:maven/com.example/example@0.0.1",
         "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
         "100925ff-7c0a-470f-a725-8fb973b40e7b",
         "1a111e6b-a682-470e-8b0e-aaa49d93cd39"

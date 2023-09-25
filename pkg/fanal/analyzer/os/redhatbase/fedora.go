@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
@@ -34,11 +34,14 @@ func (a fedoraOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 		switch strings.ToLower(result[1]) {
 		case "fedora", "fedora linux":
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Fedora, Name: result[2]},
+				OS: types.OS{
+					Family: types.Fedora,
+					Name:   result[2],
+				},
 			}, nil
 		}
 	}
-	return nil, xerrors.Errorf("fedora: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("fedora: %w", fos.AnalyzeOSError)
 }
 
 func (a fedoraOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

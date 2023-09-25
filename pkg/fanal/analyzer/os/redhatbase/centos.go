@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
@@ -34,12 +34,15 @@ func (a centOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 		switch strings.ToLower(result[1]) {
 		case "centos", "centos linux":
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.CentOS, Name: result[2]},
+				OS: types.OS{
+					Family: types.CentOS,
+					Name:   result[2],
+				},
 			}, nil
 		}
 	}
 
-	return nil, xerrors.Errorf("centos: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("centos: %w", fos.AnalyzeOSError)
 }
 
 func (a centOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
