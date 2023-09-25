@@ -133,7 +133,7 @@ archives:
 
 brews:
   -
-    tap:
+    repository:
       owner: aquasecurity
       name: homebrew-trivy
     homepage: "https://github.com/aquasecurity/trivy"
