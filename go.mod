@@ -34,7 +34,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/containerd/containerd v1.7.0
-	github.com/deepfactor-io/javadb v0.0.0-20230830075353-5fa10a72f17f
+	github.com/deepfactor-io/javadb v0.0.0-20230926085610-948da55b95f1
 	github.com/docker/docker v23.0.3+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.15.0

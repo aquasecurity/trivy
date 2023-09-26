@@ -687,8 +687,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/deepfactor-io/go-dep-parser v0.0.0-20230830122156-66593f9bf465 h1:vLO5OIvcd7wZFCKrBPuaxNwu8w7t5s67XjjK1jjZqXQ=
 github.com/deepfactor-io/go-dep-parser v0.0.0-20230830122156-66593f9bf465/go.mod h1:jcQWJiFiiK3ZHRVCgh8tn82C+34cvSXxuHRvzfGwABU=
-github.com/deepfactor-io/javadb v0.0.0-20230830075353-5fa10a72f17f h1:+7bH1fVQCWiiIiNxk57aJ+1OuJayzjk9ztd09CLmN/k=
-github.com/deepfactor-io/javadb v0.0.0-20230830075353-5fa10a72f17f/go.mod h1:zXNZz1juHXVG9R5uBX5JCHovznTqSXb+iT9ALsjv8Qk=
+github.com/deepfactor-io/javadb v0.0.0-20230926085610-948da55b95f1 h1:WBQqysQYBabsxAKuKogNmE8Mvxg3Ibjc3ma4BTTiUYE=
+github.com/deepfactor-io/javadb v0.0.0-20230926085610-948da55b95f1/go.mod h1:zXNZz1juHXVG9R5uBX5JCHovznTqSXb+iT9ALsjv8Qk=
 github.com/denisenkom/go-mssqldb v0.9.0/go.mod h1:xbL0rPBG9cCiLr28tMa8zpbdarY27NDyej4t/EjAShU=
 github.com/denverdino/aliyungo v0.0.0-20190125010748-a747050bb1ba/go.mod h1:dV8lFg6daOBZbT6/BDGIz6Y3WFGn8juu6G+CQ6LHtl0=
 github.com/dgraph-io/badger/v3 v3.2103.2 h1:dpyM5eCJAtQCBcMCZcT4UBZchuTJgCywerHHgmxfxM8=
