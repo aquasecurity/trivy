@@ -36,7 +36,7 @@ jobs:
         uses: golangci/golangci-lint-action@v3.7.0
         with:
           version: v1.54
-          args: --deadline=30m --out-format=line-number
+          args: --deadline=30m
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
         if: matrix.operating-system == 'ubuntu-latest'
 
