@@ -5,8 +5,9 @@ import (
 	"os"
 	"sort"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
