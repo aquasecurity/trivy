@@ -41,12 +41,19 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Lint
+        id: lint
         uses: golangci/golangci-lint-action@v3.7.0
         with:
           version: v1.54
           args: --deadline=30m --out-format=line-number
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
         if: matrix.operating-system == 'ubuntu-latest'
+
+      - name: Check if linter failed
+        run: |
+          echo "Linter failed, please run mage lint:fix to correct any errors"
+          exit 1
+        if: ${{ failure() && steps.lint.conclusion == 'failure' }}
 
       - name: Install tools
         uses: aquaproj/aqua-installer@v2.1.2
