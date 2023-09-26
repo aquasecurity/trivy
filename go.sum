@@ -1667,8 +1667,8 @@ github.com/testcontainers/testcontainers-go v0.23.0 h1:ERYTSikX01QczBLPZpqsETTBO
 github.com/testcontainers/testcontainers-go v0.23.0/go.mod h1:3gzuZfb7T9qfcH2pHpV4RLlWrPjeWNQah6XlYQ32c4I=
 github.com/testcontainers/testcontainers-go/modules/localstack v0.21.0 h1:G6tMC/cUrv0wgFcQc3gyyxPeSxffLTzx5F1PjuJewXw=
 github.com/testcontainers/testcontainers-go/modules/localstack v0.21.0/go.mod h1:L7h8f9DfHYKbmkCUS4FsQqiWBenCtiJAHerkUnzj/e8=
-github.com/tetratelabs/wazero v1.2.1 h1:J4X2hrGzJvt+wqltuvcSjHQ7ujQxA9gb6PeMs4qlUWs=
-github.com/tetratelabs/wazero v1.2.1/go.mod h1:wYx2gNRg8/WihJfSDxA1TIL8H+GkfLYm+bIfbblu9VQ=
+github.com/tetratelabs/wazero v1.5.0 h1:Yz3fZHivfDiZFUXnWMPUoiW7s8tC1sjdBtlJn08qYa0=
+github.com/tetratelabs/wazero v1.5.0/go.mod h1:0U0G41+ochRKoPKCJlh0jMg1CHkyfK8kDqiirMmKY8A=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tidwall/pretty v1.2.0 h1:RWIZEg2iJ8/g6fDDYzMpobmaoGh5OLl4AXtGUGPcqCs=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
