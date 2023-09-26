@@ -38,11 +38,11 @@ linters-settings:
         - github.com/hashicorp/go-version:
             recommendations:
               - github.com/aquasecurity/go-version
-            reason: "`aquasecurity/go-version` is degisned for our use-cases"
+            reason: "`aquasecurity/go-version` is designed for our use-cases"
         - github.com/Masterminds/semver:
             recommendations:
               - github.com/aquasecurity/go-version
-            reason: "`aquasecurity/go-version` is degisned for our use-cases"
+            reason: "`aquasecurity/go-version` is designed for our use-cases"
 
 linters:
   disable-all: true
