@@ -14,7 +14,6 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
@@ -28,7 +27,6 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
-
 	_ "modernc.org/sqlite"
 )
 
@@ -52,7 +50,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 			name: "happy path",
 			fields: fields{
 				OS: types.OS{
-					Family: aos.Debian,
+					Family: types.Debian,
 					Name:   "9.8",
 				},
 				PackageInfos: []types.PackageInfo{
@@ -108,7 +106,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 			},
 			want: analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Debian,
+					Family: types.Debian,
 					Name:   "9.8",
 				},
 				PackageInfos: []types.PackageInfo{
@@ -159,21 +157,21 @@ func TestAnalysisResult_Merge(t *testing.T) {
 			name: "redhat must be replaced with oracle",
 			fields: fields{
 				OS: types.OS{
-					Family: aos.RedHat, // this must be overwritten
+					Family: types.RedHat, // this must be overwritten
 					Name:   "8.0",
 				},
 			},
 			args: args{
 				new: &analyzer.AnalysisResult{
 					OS: types.OS{
-						Family: aos.Oracle,
+						Family: types.Oracle,
 						Name:   "8.0",
 					},
 				},
 			},
 			want: analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Oracle,
+					Family: types.Oracle,
 					Name:   "8.0",
 				},
 			},
@@ -182,21 +180,21 @@ func TestAnalysisResult_Merge(t *testing.T) {
 			name: "debian must be replaced with ubuntu",
 			fields: fields{
 				OS: types.OS{
-					Family: aos.Debian, // this must be overwritten
+					Family: types.Debian, // this must be overwritten
 					Name:   "9.0",
 				},
 			},
 			args: args{
 				new: &analyzer.AnalysisResult{
 					OS: types.OS{
-						Family: aos.Ubuntu,
+						Family: types.Ubuntu,
 						Name:   "18.04",
 					},
 				},
 			},
 			want: analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Ubuntu,
+					Family: types.Ubuntu,
 					Name:   "18.04",
 				},
 			},
@@ -206,21 +204,21 @@ func TestAnalysisResult_Merge(t *testing.T) {
 			fields: fields{
 				// This must be overwritten
 				OS: types.OS{
-					Family: aos.Ubuntu,
+					Family: types.Ubuntu,
 					Name:   "16.04",
 				},
 			},
 			args: args{
 				new: &analyzer.AnalysisResult{
 					OS: types.OS{
-						Family:   aos.Ubuntu,
+						Family:   types.Ubuntu,
 						Extended: true,
 					},
 				},
 			},
 			want: analyzer.AnalysisResult{
 				OS: types.OS{
-					Family:   aos.Ubuntu,
+					Family:   types.Ubuntu,
 					Name:     "16.04",
 					Extended: true,
 				},
@@ -230,25 +228,25 @@ func TestAnalysisResult_Merge(t *testing.T) {
 			name: "alpine OS needs to be extended with apk repositories",
 			fields: fields{
 				OS: types.OS{
-					Family: aos.Alpine,
+					Family: types.Alpine,
 					Name:   "3.15.3",
 				},
 			},
 			args: args{
 				new: &analyzer.AnalysisResult{
 					Repository: &types.Repository{
-						Family:  aos.Alpine,
+						Family:  types.Alpine,
 						Release: "edge",
 					},
 				},
 			},
 			want: analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Alpine,
+					Family: types.Alpine,
 					Name:   "3.15.3",
 				},
 				Repository: &types.Repository{
-					Family:  aos.Alpine,
+					Family:  types.Alpine,
 					Release: "edge",
 				},
 			},
@@ -257,21 +255,21 @@ func TestAnalysisResult_Merge(t *testing.T) {
 			name: "alpine must not be replaced with oracle",
 			fields: fields{
 				OS: types.OS{
-					Family: aos.Alpine, // this must not be overwritten
+					Family: types.Alpine, // this must not be overwritten
 					Name:   "3.11",
 				},
 			},
 			args: args{
 				new: &analyzer.AnalysisResult{
 					OS: types.OS{
-						Family: aos.Oracle,
+						Family: types.Oracle,
 						Name:   "8.0",
 					},
 				},
 			},
 			want: analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.Alpine, // this must not be overwritten
+					Family: types.Alpine, // this must not be overwritten
 					Name:   "3.11",
 				},
 			},
@@ -567,7 +565,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     string(analyzer.TypeJar),
+						Type:     types.Jar,
 						FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
 						Libraries: types.Packages{
 							{
@@ -587,7 +585,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     string(analyzer.TypePoetry),
+						Type:     types.Poetry,
 						FilePath: "testdata/post-apps/poetry/happy/poetry.lock",
 						Libraries: types.Packages{
 							{

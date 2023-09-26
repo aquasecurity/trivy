@@ -4,13 +4,12 @@ import (
 	"context"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"golang.org/x/xerrors"
-
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/config"
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/credhelper"
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/store"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type Registry struct {

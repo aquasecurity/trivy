@@ -178,7 +178,7 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 
 type Package struct {
 	ftypes.Package
-	Type            string
+	Type            ftypes.TargetType
 	Metadata        types.Metadata
 	Vulnerabilities []types.DetectedVulnerability
 }
@@ -281,7 +281,7 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 		Properties: []core.Property{
 			{
 				Name:  PropertyType,
-				Value: r.Type,
+				Value: string(r.Type),
 			},
 			{
 				Name:  PropertyClass,
@@ -295,7 +295,7 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 		// UUID needs to be generated since Operating System Component cannot generate PURL.
 		// https://cyclonedx.org/use-cases/#known-vulnerabilities
 		if osFound != nil {
-			component.Name = osFound.Family
+			component.Name = string(osFound.Family)
 			component.Version = osFound.Name
 		}
 		component.Type = cdx.ComponentTypeOS
@@ -329,7 +329,7 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		},
 		{
 			Name:  PropertyPkgType,
-			Value: pkg.Type,
+			Value: string(pkg.Type),
 		},
 		{
 			Name:  PropertyFilePath,

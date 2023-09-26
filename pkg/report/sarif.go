@@ -57,7 +57,7 @@ type sarifData struct {
 	fullDescription  string
 	helpText         string
 	helpMarkdown     string
-	resourceClass    string
+	resourceClass    types.ResultClass
 	severity         string
 	url              string
 	resultIndex      int
@@ -161,7 +161,7 @@ func (sw *SarifWriter) Write(report types.Report) error {
 				severity:         vuln.Severity,
 				cvssScore:        getCVSSScore(vuln),
 				url:              vuln.PrimaryURL,
-				resourceClass:    string(res.Class),
+				resourceClass:    res.Class,
 				artifactLocation: path,
 				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
 				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
@@ -183,10 +183,15 @@ func (sw *SarifWriter) Write(report types.Report) error {
 				severity:         misconf.Severity,
 				cvssScore:        severityToScore(misconf.Severity),
 				url:              misconf.PrimaryURL,
-				resourceClass:    string(res.Class),
+				resourceClass:    res.Class,
 				artifactLocation: target,
 				locationMessage:  target,
-				locations:        []location{{startLine: misconf.CauseMetadata.StartLine, endLine: misconf.CauseMetadata.EndLine}},
+				locations: []location{
+					{
+						startLine: misconf.CauseMetadata.StartLine,
+						endLine:   misconf.CauseMetadata.EndLine,
+					},
+				},
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
 				shortDescription: html.EscapeString(misconf.Title),
 				fullDescription:  html.EscapeString(misconf.Description),
@@ -205,10 +210,15 @@ func (sw *SarifWriter) Write(report types.Report) error {
 				severity:         secret.Severity,
 				cvssScore:        severityToScore(secret.Severity),
 				url:              builtinRulesUrl,
-				resourceClass:    string(res.Class),
+				resourceClass:    res.Class,
 				artifactLocation: target,
 				locationMessage:  target,
-				locations:        []location{{startLine: secret.StartLine, endLine: secret.EndLine}},
+				locations: []location{
+					{
+						startLine: secret.StartLine,
+						endLine:   secret.EndLine,
+					},
+				},
 				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
 				shortDescription: html.EscapeString(secret.Title),
 				fullDescription:  html.EscapeString(secret.Match),
@@ -229,7 +239,7 @@ func (sw *SarifWriter) Write(report types.Report) error {
 				severity:         license.Severity,
 				cvssScore:        severityToScore(license.Severity),
 				url:              license.Link,
-				resourceClass:    string(res.Class),
+				resourceClass:    res.Class,
 				artifactLocation: target,
 				resultIndex:      getRuleIndex(id, ruleIndexes),
 				shortDescription: desc,
@@ -256,7 +266,10 @@ func toSarifLocations(locations []location, artifactLocation, locationMessage st
 	var sarifLocs []*sarif.Location
 	// add default (hardcoded) location for vulnerabilities that don't support locations
 	if len(locations) == 0 {
-		locations = append(locations, location{startLine: 1, endLine: 1})
+		locations = append(locations, location{
+			startLine: 1,
+			endLine:   1,
+		})
 	}
 
 	// some dependencies can be placed in multiple places.
@@ -279,7 +292,7 @@ func toSarifLocations(locations []location, artifactLocation, locationMessage st
 	return sarifLocs
 }
 
-func toSarifRuleName(class string) string {
+func toSarifRuleName(class types.ResultClass) string {
 	switch class {
 	case types.ClassOSPkg:
 		return sarifOsPackageVulnerability
@@ -334,7 +347,10 @@ func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Pa
 		for _, pkg := range pkgs {
 			if name == pkg.Name && version == pkg.Version {
 				for _, l := range pkg.Locations {
-					loc := location{startLine: l.StartLine, endLine: l.EndLine}
+					loc := location{
+						startLine: l.StartLine,
+						endLine:   l.EndLine,
+					}
 					locs = append(locs, loc)
 				}
 				sw.locationCache[id] = locs

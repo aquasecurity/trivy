@@ -3,11 +3,10 @@ package licensing_test
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/licensing"
-
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 func TestScanner_Scan(t *testing.T) {

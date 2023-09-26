@@ -24,7 +24,7 @@ import (
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(types.Composer, newComposerAnalyzer)
+	analyzer.RegisterPostAnalyzer(analyzer.TypeComposer, newComposerAnalyzer)
 }
 
 const version = 1
