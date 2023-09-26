@@ -87,7 +87,7 @@ func (u *Updater) Update() error {
 
 func Init(cacheDir string, javaDBRepository string, skip, quiet, insecure bool) {
 	updater = &Updater{
-		repo:     fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
+		repo:     fmt.Sprintf("%s", javaDBRepository),
 		dbDir:    filepath.Join(cacheDir, "java-db"),
 		skip:     skip,
 		quiet:    quiet,
