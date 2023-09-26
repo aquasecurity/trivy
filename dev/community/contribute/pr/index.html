@@ -3737,11 +3737,14 @@ $ ./trivy -h
 </code></pre></div>
 <h3 id="lint">Lint</h3>
 <p>You must pass the linter checks:</p>
-<div class="highlight"><pre><span></span><code>$ mage lint
+<div class="highlight"><pre><span></span><code>$ mage lint:run
 </code></pre></div>
 <p>Additionally, you need to have run <code>go mod tidy</code>, so execute the following command as well:</p>
 <div class="highlight"><pre><span></span><code>$ mage tidy
 </code></pre></div>
+<p>To autofix linters use the following command:
+<div class="highlight"><pre><span></span><code>$ mage lint:fix
+</code></pre></div></p>
 <h3 id="unit-tests">Unit tests</h3>
 <p>Your PR must pass all the unit tests. You can test it as below.</p>
 <div class="highlight"><pre><span></span><code>$ mage test:unit
