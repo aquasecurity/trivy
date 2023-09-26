@@ -180,9 +180,8 @@ func NewPackageURL(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Pack
 			namespace = string(metadata.OS.Family)
 		}
 	case packageurl.TypeApk:
-		n, ns, qs := parseApk(name, metadata.OS)
-		name = n
-		namespace = ns
+		var qs packageurl.Qualifiers
+		name, namespace, qs = parseApk(name, metadata.OS)
 		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
 		namespace, name = parseMaven(name)
@@ -247,19 +246,20 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 
 // ref. https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#apk
 func parseApk(pkgName string, fos *ftypes.OS) (string, string, packageurl.Qualifiers) {
-	ns := ""
-	qs := packageurl.Qualifiers{}
-
 	// the name must be lowercase
 	pkgName = strings.ToLower(pkgName)
 
-	if fos != nil {
-		// the namespace must be lowercase
-		ns = strings.ToLower(string(fos.Family))
-		qs = append(qs, packageurl.Qualifier{
+	if fos == nil {
+		return pkgName, "", nil
+	}
+
+	// the namespace must be lowercase
+	ns := strings.ToLower(string(fos.Family))
+	qs := packageurl.Qualifiers{
+		{
 			Key:   "distro",
 			Value: fos.Name,
-		})
+		},
 	}
 
 	return pkgName, ns, qs
