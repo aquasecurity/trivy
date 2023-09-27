@@ -1,0 +1,14 @@
+{
+    "discussionLabels": {
+        "Container Image":"LA_kwDOCsUTCM75TTQU",
+        "Filesystem":"LA_kwDOCsUTCM75TTQX",
+        "Git Repository":"LA_kwDOCsUTCM75TTQk",
+        "Virtual Machine Image":"LA_kwDOCsUTCM8AAAABMpz1bw",
+        "Kubernetes":"LA_kwDOCsUTCM75TTQv",
+        "AWS":"LA_kwDOCsUTCM8AAAABMpz1aA",
+        "Vulnerability":"LA_kwDOCsUTCM75TTPa",
+        "Misconfiguration":"LA_kwDOCsUTCM75TTP8",
+        "License":"LA_kwDOCsUTCM77ztRR",
+        "Secret":"LA_kwDOCsUTCM75TTQL"
+    }
+}
