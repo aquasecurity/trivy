@@ -82,6 +82,7 @@ func NewApp() *cobra.Command {
 	rootCmd.SetHelpCommandGroupID(groupUtility)
 	rootCmd.AddCommand(
 		NewImageCommand(globalFlags),
+		NewReportCommand(globalFlags),
 		NewFilesystemCommand(globalFlags),
 		NewRootfsCommand(globalFlags),
 		NewRepositoryCommand(globalFlags),
@@ -292,6 +293,65 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				return xerrors.Errorf("flag error: %w", err)
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetContainerImage)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+
+	imageFlags.AddFlags(cmd)
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, imageFlags.Usages(cmd)))
+
+	return cmd
+}
+
+func NewReportCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
+	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+
+	imageFlags := &flag.Flags{
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
+		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+	}
+
+	cmd := &cobra.Command{
+		Use:     "report [flags] REPORT_NAME",
+		Aliases: []string{"i"},
+		Short:   "Scan a report",
+		Example: `  # Scan a json report
+  $ trivy report python:3.4-alpine_report.json
+
+  # Json report creation example
+  $ trivy image --format json --output result.json alpine:3.15`,
+
+		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
+		// cmd.Args     -> cannot validate args here
+		// cmd.PreRunE  -> configure viper && validate args
+		// cmd.RunE     -> run the command
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			// viper.BindPFlag cannot be called in init(), so it is called in PreRunE.
+			// cf. https://github.com/spf13/cobra/issues/875
+			//     https://github.com/spf13/viper/issues/233
+			if err := imageFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			return artifact.Run(cmd.Context(), options, artifact.TargetArtifactReport)
 		},
 		SilenceErrors: true,
 		SilenceUsage:  true,

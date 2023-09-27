@@ -1122,7 +1122,7 @@ func TestScanner_Scan(t *testing.T) {
 			applier.ApplyApplyLayersExpectation(tt.applyLayersExpectation)
 
 			s := NewScanner(applier, ospkg.NewScanner(), langpkg.NewScanner(), vulnerability.NewClient(db.Config{}))
-			gotResults, gotOS, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
+			gotResults, gotOS, _, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -1136,4 +1136,120 @@ func TestScanner_Scan(t *testing.T) {
 			applier.AssertExpectations(t)
 		})
 	}
+}
+
+func TestArtifactReportScanner(t *testing.T) {
+
+	layerId := "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"
+	artifactDetail := ftypes.ArtifactDetail{
+		OS: &ftypes.OS{
+			Family: fos.Alpine,
+			Name:   "3.11",
+		},
+		Packages: []ftypes.Package{
+			{
+				Name:       "musl",
+				Version:    "1.2.3",
+				SrcName:    "musl",
+				SrcVersion: "1.2.3",
+				Layer: ftypes.Layer{
+					DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+				},
+			},
+		},
+		Applications: []ftypes.Application{
+			{
+				Type:     ftypes.Bundler,
+				FilePath: "/app/Gemfile.lock",
+				Libraries: []ftypes.Package{
+					{
+						Name:    "rails",
+						Version: "4.0.2",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	wantResults := types.Results{
+		{
+			Target: "alpine:latest (alpine 3.11)",
+			Class:  types.ClassOSPkg,
+			Type:   fos.Alpine,
+			Vulnerabilities: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2020-9999",
+					PkgName:          "musl",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+					},
+					PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "dos",
+						Description: "dos vulnerability",
+						Severity:    "HIGH",
+					},
+				},
+			},
+		},
+		{
+			Target: "/app/Gemfile.lock",
+			Class:  types.ClassLangPkg,
+			Type:   ftypes.Bundler,
+			Vulnerabilities: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2014-0081",
+					PkgName:          "rails",
+					InstalledVersion: "4.0.2",
+					FixedVersion:     "4.0.3, 3.2.17",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+					},
+					PrimaryURL: "https://avd.aquasec.com/nvd/cve-2014-0081",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "xss",
+						Description: "xss vulnerability",
+						Severity:    "MEDIUM",
+						References: []string{
+							"http://example.com",
+						},
+						LastModifiedDate: lo.ToPtr(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
+						PublishedDate:    lo.ToPtr(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
+					},
+				},
+			},
+		},
+	}
+
+	options := types.ScanOptions{
+		VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+		SecurityChecks: []string{types.SecurityCheckVulnerability},
+	}
+
+	applyLayersExpectation := ApplierApplyLayersExpectation{
+		Args: ApplierApplyLayersArgs{
+			BlobIDs: []string{layerId},
+		},
+		Returns: ApplierApplyLayersReturns{
+			Detail: artifactDetail,
+		},
+	}
+
+	_ = dbtest.InitDB(t, []string{"testdata/fixtures/happy.yaml"})
+	defer db.Close()
+
+	applier := new(MockApplier)
+	applier.ApplyApplyLayersExpectation(applyLayersExpectation)
+
+	s := NewScanner(applier, ospkg.Detector{}, vulnerability.NewClient(db.Config{}))
+	gotResults, _, err := s.ScanArtifactDetail(artifactDetail, context.Background(), options)
+	require.NoError(t, err)
+
+	assert.Equal(t, wantResults, gotResults)
+
 }

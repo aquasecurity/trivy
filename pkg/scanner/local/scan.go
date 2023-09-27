@@ -57,7 +57,7 @@ func NewScanner(applier applier.Applier, osPkgScanner ospkg.Scanner, langPkgScan
 }
 
 // Scan scans the artifact and return results.
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, ftypes.OS, error) {
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, ftypes.OS, ftypes.ArtifactDetail, error) {
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -81,11 +81,18 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
-		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
+		return nil, ftypes.OS{}, artifactDetail, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
+	results, os, err := s.ScanVulnerabilities(ctx, target, options, artifactDetail)
+	return results, os, artifactDetail, err
+}
+
+// ScanVulnerabilities scans the artifact and return vulnerabilities.
+func (s Scanner) ScanVulnerabilities(ctx context.Context, target string, options types.ScanOptions, artifactDetail ftypes.ArtifactDetail) (types.Results, ftypes.OS, error) {
 	var eosl bool
 	var results, pkgResults types.Results
+	var err error
 
 	// By default, we need to remove dev dependencies from the result
 	// IncludeDevDeps option allows you not to remove them
@@ -171,6 +178,11 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	return results, artifactDetail.OS, nil
+}
+
+// ScanArtifactDetail scans the artifact detail and return results.
+func (s Scanner) ScanArtifactDetail(artifactDetail ftypes.ArtifactDetail, ctx context.Context, options types.ScanOptions) (types.Results, ftypes.OS, error) {
+	return s.ScanVulnerabilities(ctx, "", options, artifactDetail)
 }
 
 func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
@@ -408,6 +420,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 func ShouldScanMisconfigOrRbac(scanners types.Scanners) bool {
 	return scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner)
 }
+
 
 // excludeDevDeps removes development dependencies from the list of applications
 func excludeDevDeps(apps []ftypes.Application, include bool) {

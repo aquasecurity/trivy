@@ -13,5 +13,6 @@ type ScanOptions struct {
 	ListAllPackages     bool
 	LicenseCategories   map[types.LicenseCategory][]string
 	FilePatterns        []string
+	ReportDetails       bool
 	IncludeDevDeps      bool
 }

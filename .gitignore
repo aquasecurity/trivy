@@ -5,6 +5,7 @@
 *.so
 *.dylib
 /trivy
+goreleaser
 
 ## chart release
 .cr-release-packages
