@@ -14,9 +14,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -25,6 +23,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 )
 
 // SuperSet binds dependencies for Local scan

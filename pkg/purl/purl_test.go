@@ -9,17 +9,15 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestNewPackageURL(t *testing.T) {
-
 	testCases := []struct {
 		name     string
-		typ      string
+		typ      ftypes.TargetType
 		pkg      ftypes.Package
 		metadata types.Metadata
 		want     purl.PackageURL
@@ -182,6 +180,22 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "golang package with a local path",
+			typ:  ftypes.GoModule,
+			pkg: ftypes.Package{
+				Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
+				Version: "(devel)",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      "",
+					Namespace: "",
+					Name:      "",
+					Version:   "",
+				},
+			},
+		},
+		{
 			name: "hex package",
 			typ:  ftypes.Hex,
 			pkg: ftypes.Package{
@@ -256,21 +270,21 @@ func TestNewPackageURL(t *testing.T) {
 			name: "rust binary",
 			typ:  ftypes.RustBinary,
 			pkg: ftypes.Package{
-				ID:      "abomonation@0.7.3",
-				Name:    "abomonation",
+				ID:      "abomination@0.7.3",
+				Name:    "abomination",
 				Version: "0.7.3",
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    packageurl.TypeCargo,
-					Name:    "abomonation",
+					Name:    "abomination",
 					Version: "0.7.3",
 				},
 			},
 		},
 		{
 			name: "os package",
-			typ:  os.RedHat,
+			typ:  ftypes.RedHat,
 			pkg: ftypes.Package{
 				Name:            "acl",
 				Version:         "2.2.53",
@@ -286,7 +300,7 @@ func TestNewPackageURL(t *testing.T) {
 
 			metadata: types.Metadata{
 				OS: &ftypes.OS{
-					Family: os.RedHat,
+					Family: ftypes.RedHat,
 					Name:   "8",
 				},
 			},

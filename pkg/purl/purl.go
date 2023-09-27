@@ -10,14 +10,12 @@ import (
 	packageurl "github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
-	TypeAPK  = "apk" // not defined in github.com/package-url/packageurl-go
 	TypeOCI  = "oci"
 	TypeDart = "dart"
 )
@@ -81,7 +79,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 	}
 
 	// TODO: replace with packageurl.TypeGradle once they add it.
-	if p.Type == packageurl.TypeMaven || p.Type == ftypes.Gradle {
+	if p.Type == packageurl.TypeMaven || p.Type == string(ftypes.Gradle) {
 		// Maven and Gradle packages separate ":"
 		// e.g. org.springframework:spring-core
 		pkg.Name = strings.Join([]string{
@@ -98,8 +96,8 @@ func (p *PackageURL) Package() *ftypes.Package {
 	return pkg
 }
 
-// PackageType returns an application type in Trivy
-func (p *PackageURL) PackageType() string {
+// LangType returns an application type in Trivy
+func (p *PackageURL) LangType() ftypes.LangType {
 	switch p.Type {
 	case packageurl.TypeComposer:
 		return ftypes.Composer
@@ -132,11 +130,11 @@ func (p *PackageURL) PackageType() string {
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
 	}
-	return p.Type
+	return "unknown"
 }
 
 func (p *PackageURL) IsOSPkg() bool {
-	return p.Type == TypeAPK || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
+	return p.Type == packageurl.TypeApk || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
 }
 
 func (p *PackageURL) BOMRef() string {
@@ -158,7 +156,7 @@ func (p *PackageURL) BOMRef() string {
 }
 
 // nolint: gocyclo
-func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (PackageURL, error) {
+func NewPackageURL(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (PackageURL, error) {
 	var qualifiers packageurl.Qualifiers
 	if metadata.OS != nil {
 		qualifiers = parseQualifier(pkg)
@@ -174,18 +172,17 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 	switch ptype {
 	case packageurl.TypeRPM:
 		ns, qs := parseRPM(metadata.OS, pkg.Modularitylabel)
-		namespace = ns
+		namespace = string(ns)
 		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeDebian:
 		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
 		if metadata.OS != nil {
-			namespace = metadata.OS.Family
+			namespace = string(metadata.OS.Family)
 		}
-	case TypeAPK: // TODO: replace with packageurl.TypeApk once they add it.
-		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
-		if metadata.OS != nil {
-			namespace = metadata.OS.Family
-		}
+	case packageurl.TypeApk:
+		var qs packageurl.Qualifiers
+		name, namespace, qs = parseApk(name, metadata.OS)
+		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
@@ -194,6 +191,9 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		namespace, name = parseComposer(name)
 	case packageurl.TypeGolang:
 		namespace, name = parseGolang(name)
+		if name == "" {
+			return PackageURL{PackageURL: *packageurl.NewPackageURL("", "", "", "", nil, "")}, nil
+		}
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
 	case packageurl.TypeSwift:
@@ -244,17 +244,25 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 }
 
-func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
+// ref. https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#apk
+func parseApk(pkgName string, fos *ftypes.OS) (string, string, packageurl.Qualifiers) {
+	// the name must be lowercase
+	pkgName = strings.ToLower(pkgName)
+
 	if fos == nil {
-		return packageurl.Qualifiers{}
+		return pkgName, "", nil
 	}
 
-	return packageurl.Qualifiers{
+	// the namespace must be lowercase
+	ns := strings.ToLower(string(fos.Family))
+	qs := packageurl.Qualifiers{
 		{
 			Key:   "distro",
 			Value: fos.Name,
 		},
 	}
+
+	return pkgName, ns, qs
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#deb
@@ -274,14 +282,14 @@ func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#rpm
-func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualifiers) {
+func parseRPM(fos *ftypes.OS, modularityLabel string) (ftypes.OSType, packageurl.Qualifiers) {
 	if fos == nil {
 		return "", packageurl.Qualifiers{}
 	}
 
 	// SLES string has whitespace
 	family := fos.Family
-	if fos.Family == os.SLES {
+	if fos.Family == ftypes.SLES {
 		family = "sles"
 	}
 
@@ -310,6 +318,10 @@ func parseMaven(pkgName string) (string, string) {
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#golang
 func parseGolang(pkgName string) (string, string) {
+	// The PURL will be skipped when the package name is a local path, since it can't identify a software package.
+	if strings.HasPrefix(pkgName, "./") || strings.HasPrefix(pkgName, "../") {
+		return "", ""
+	}
 	name := strings.ToLower(pkgName)
 	return parsePkgName(name)
 }
@@ -349,7 +361,7 @@ func parseNpm(pkgName string) (string, string) {
 	return parsePkgName(name)
 }
 
-func purlType(t string) string {
+func purlType(t ftypes.TargetType) string {
 	switch t {
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
 		return packageurl.TypeMaven
@@ -377,18 +389,18 @@ func purlType(t string) string {
 		return TypeDart // TODO: replace with packageurl.TypeDart once they add it.
 	case ftypes.RustBinary, ftypes.Cargo:
 		return packageurl.TypeCargo
-	case os.Alpine:
-		return TypeAPK
-	case os.Debian, os.Ubuntu:
+	case ftypes.Alpine:
+		return packageurl.TypeApk
+	case ftypes.Debian, ftypes.Ubuntu:
 		return packageurl.TypeDebian
-	case os.RedHat, os.CentOS, os.Rocky, os.Alma,
-		os.Amazon, os.Fedora, os.Oracle, os.OpenSUSE,
-		os.OpenSUSELeap, os.OpenSUSETumbleweed, os.SLES, os.Photon:
+	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
+		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
+		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.Photon:
 		return packageurl.TypeRPM
 	case TypeOCI:
 		return packageurl.TypeOCI
 	}
-	return t
+	return string(t)
 }
 
 func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {

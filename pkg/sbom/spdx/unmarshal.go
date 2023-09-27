@@ -167,21 +167,22 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 func (s *SPDX) parsePackages(pkgs map[common.ElementID]*spdx.Package) error {
 	var (
 		osPkgs []ftypes.Package
-		apps   = map[string]ftypes.Application{}
+		apps   = map[ftypes.LangType]ftypes.Application{}
 	)
 
 	for _, p := range pkgs {
-		pkg, pkgType, err := parsePkg(*p, nil)
+		pkg, pkgURL, err := parsePkg(*p, nil)
 		if errors.Is(err, errUnknownPackageFormat) {
 			continue
 		} else if err != nil {
 			return xerrors.Errorf("failed to parse package: %w", err)
 		}
-		switch pkgType {
-		case purl.TypeAPK, packageurl.TypeDebian, packageurl.TypeRPM:
+		switch pkgURL.Type {
+		case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM:
 			osPkgs = append(osPkgs, *pkg)
 		default:
 			// Language-specific packages
+			pkgType := pkgURL.LangType()
 			app, ok := apps[pkgType]
 			if !ok {
 				app.Type = pkgType
@@ -227,8 +228,8 @@ func isFile(elementID spdx.ElementID) bool {
 }
 
 func initApplication(pkg spdx.Package) *ftypes.Application {
-	app := &ftypes.Application{Type: pkg.PackageName}
-	switch pkg.PackageName {
+	app := &ftypes.Application{Type: ftypes.LangType(pkg.PackageName)}
+	switch app.Type {
 	case ftypes.NodePkg, ftypes.PythonPkg, ftypes.GemSpec, ftypes.Jar, ftypes.CondaPkg:
 		app.FilePath = ""
 	default:
@@ -240,15 +241,15 @@ func initApplication(pkg spdx.Package) *ftypes.Application {
 
 func parseOS(pkg spdx.Package) ftypes.OS {
 	return ftypes.OS{
-		Family: pkg.PackageName,
+		Family: ftypes.OSType(pkg.PackageName),
 		Name:   pkg.PackageVersion,
 	}
 }
 
-func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes.Package, string, error) {
-	pkg, pkgType, err := parseExternalReferences(spdxPkg.PackageExternalReferences)
+func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes.Package, *purl.PackageURL, error) {
+	pkg, pkgURL, err := parseExternalReferences(spdxPkg.PackageExternalReferences)
 	if err != nil {
-		return nil, "", xerrors.Errorf("external references error: %w", err)
+		return nil, nil, xerrors.Errorf("external references error: %w", err)
 	}
 
 	if spdxPkg.PackageLicenseDeclared != "NONE" {
@@ -257,9 +258,9 @@ func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes
 
 	if strings.HasPrefix(spdxPkg.PackageSourceInfo, SourcePackagePrefix) {
 		srcPkgName := strings.TrimPrefix(spdxPkg.PackageSourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
-		pkg.SrcEpoch, pkg.SrcName, pkg.SrcVersion, pkg.SrcRelease, err = parseSourceInfo(pkgType, srcPkgName)
+		pkg.SrcEpoch, pkg.SrcName, pkg.SrcVersion, pkg.SrcRelease, err = parseSourceInfo(pkgURL.Type, srcPkgName)
 		if err != nil {
-			return nil, "", xerrors.Errorf("failed to parse source info: %w", err)
+			return nil, nil, xerrors.Errorf("failed to parse source info: %w", err)
 		}
 	}
 
@@ -274,23 +275,23 @@ func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes
 	pkg.Layer.Digest = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDigest)
 	pkg.Layer.DiffID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDiffID)
 
-	return pkg, pkgType, nil
+	return pkg, pkgURL, nil
 }
 
-func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Package, string, error) {
+func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Package, *purl.PackageURL, error) {
 	for _, ref := range refs {
 		// Extract the package information from PURL
 		if ref.RefType == RefTypePurl && ref.Category == CategoryPackageManager {
 			packageURL, err := purl.FromString(ref.Locator)
 			if err != nil {
-				return nil, "", xerrors.Errorf("failed to parse purl from string: %w", err)
+				return nil, nil, xerrors.Errorf("failed to parse purl from string: %w", err)
 			}
 			pkg := packageURL.Package()
 			pkg.Ref = ref.Locator
-			return pkg, packageURL.PackageType(), nil
+			return pkg, packageURL, nil
 		}
 	}
-	return nil, "", errUnknownPackageFormat
+	return nil, nil, errUnknownPackageFormat
 }
 
 func lookupAttributionTexts(attributionTexts []string, key string) string {
@@ -302,7 +303,7 @@ func lookupAttributionTexts(attributionTexts []string, key string) string {
 	return ""
 }
 
-func parseSourceInfo(pkgType, sourceInfo string) (epoch int, name, ver, rel string, err error) {
+func parseSourceInfo(pkgType string, sourceInfo string) (epoch int, name, ver, rel string, err error) {
 	srcNameVersion := strings.TrimPrefix(sourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
 	ss := strings.Split(srcNameVersion, " ")
 	if len(ss) != 2 {

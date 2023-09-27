@@ -202,7 +202,7 @@ func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS, pkgD
 		}
 		return osPkg, nil
 	case types.ClassLangPkg:
-		langPkg, err := m.langPackage(result.Target, result.Type, pkgDownloadLocation)
+		langPkg, err := m.langPackage(result.Target, pkgDownloadLocation, result.Type)
 		if err != nil {
 			return spdx.Package{}, xerrors.Errorf("failed to parse application package: %w", err)
 		}
@@ -285,7 +285,7 @@ func (m *Marshaler) osPackage(osFound *ftypes.OS, pkgDownloadLocation string) (s
 	}
 
 	return spdx.Package{
-		PackageName:             osFound.Family,
+		PackageName:             string(osFound.Family),
 		PackageVersion:          osFound.Name,
 		PackageSPDXIdentifier:   elementID(ElementOperatingSystem, pkgID),
 		PackageDownloadLocation: pkgDownloadLocation,
@@ -293,14 +293,14 @@ func (m *Marshaler) osPackage(osFound *ftypes.OS, pkgDownloadLocation string) (s
 	}, nil
 }
 
-func (m *Marshaler) langPackage(target, appType, pkgDownloadLocation string) (spdx.Package, error) {
+func (m *Marshaler) langPackage(target, pkgDownloadLocation string, appType ftypes.LangType) (spdx.Package, error) {
 	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", target, appType))
 	if err != nil {
 		return spdx.Package{}, xerrors.Errorf("failed to get %s package ID: %w", target, err)
 	}
 
 	return spdx.Package{
-		PackageName:             appType,
+		PackageName:             string(appType),
 		PackageSourceInfo:       target, // TODO: Files seems better
 		PackageSPDXIdentifier:   elementID(ElementApplication, pkgID),
 		PackageDownloadLocation: pkgDownloadLocation,
@@ -308,7 +308,7 @@ func (m *Marshaler) langPackage(target, appType, pkgDownloadLocation string) (sp
 	}, nil
 }
 
-func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package, error) {
+func (m *Marshaler) pkgToSpdxPackage(t ftypes.TargetType, pkgDownloadLocation string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package, error) {
 	license := GetLicense(pkg)
 
 	pkgID, err := calcPkgID(m.hasher, pkg)
@@ -325,7 +325,11 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 	if err != nil {
 		return spdx.Package{}, xerrors.Errorf("failed to parse purl (%s): %w", pkg.Name, err)
 	}
-	pkgExtRefs := []*spdx.PackageExternalReference{purlExternalReference(packageURL.String())}
+
+	var pkgExtRefs []*spdx.PackageExternalReference
+	if packageURL.Type != "" {
+		pkgExtRefs = []*spdx.PackageExternalReference{purlExternalReference(packageURL.String())}
+	}
 
 	var attrTexts []string
 	attrTexts = appendAttributionText(attrTexts, PropertyPkgID, pkg.ID)
