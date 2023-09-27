@@ -22,7 +22,7 @@ import (
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(analyzer.TypeGoMod, newNugetLibraryAnalyzer)
+	analyzer.RegisterPostAnalyzer(analyzer.TypeNuget, newNugetLibraryAnalyzer)
 }
 
 const (
