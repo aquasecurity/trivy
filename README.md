@@ -101,7 +101,7 @@ trivy k8s --report summary cluster
 
 ## FAQ
 
-### How to pronounce the name "Trivy"?
+### How to pronounce test the name "Trivy"?
 
 `tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
 
