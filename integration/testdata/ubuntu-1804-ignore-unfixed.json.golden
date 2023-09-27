@@ -5,7 +5,8 @@
   "Metadata": {
     "OS": {
       "Family": "ubuntu",
-      "Name": "18.04"
+      "Name": "18.04",
+      "EOSL": true
     },
     "ImageID": "sha256:a2a15febcdf362f6115e801d37b5e60d6faaeedcb9896155e5fe9d754025be12",
     "DiffIDs": [
@@ -76,6 +77,7 @@
           "PkgName": "e2fsprogs",
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
             "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
@@ -133,6 +135,7 @@
           "PkgName": "libcom-err2",
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
             "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
@@ -190,6 +193,7 @@
           "PkgName": "libext2fs2",
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
             "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
@@ -247,6 +251,7 @@
           "PkgName": "libss2",
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:35c102085707f703de2d9eaad8752d6fe1b8f02b5d2149f1d8357c9cc7fb7d0a",
             "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"

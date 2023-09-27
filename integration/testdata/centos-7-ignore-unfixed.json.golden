@@ -73,6 +73,7 @@
           "PkgName": "openssl-libs",
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
             "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
@@ -154,6 +155,7 @@
           "PkgName": "openssl-libs",
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
             "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"

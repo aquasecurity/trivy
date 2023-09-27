@@ -4,16 +4,13 @@ import (
 	"sort"
 	"testing"
 
-	fanaltypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
-
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/defsec/pkg/scan"
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	fanaltypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Test_ResultConversion(t *testing.T) {

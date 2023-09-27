@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579
+        uses: actions/checkout@v3.6.0
         with:
           fetch-depth: 0
       - name: Install Helm
@@ -37,7 +37,7 @@ jobs:
         id: lint
         uses: helm/chart-testing-action@e8788873172cb653a90ca2e819d79d65a66d4e76
       - name: Setup Kubernetes cluster (KIND)
-        uses: helm/kind-action@d8ccf8fb623ce1bb360ae2f45f323d9d5c5e9f00
+        uses: helm/kind-action@dda0770415bac9fc20092cacbc54aa298604d140
         with:
           version: ${{ env.KIND_VERSION }}
           image: ${{ env.KIND_IMAGE }}
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579
+        uses: actions/checkout@v3.6.0
         with:
           fetch-depth: 0
       - name: Install chart-releaser

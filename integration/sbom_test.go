@@ -30,28 +30,56 @@ func TestSBOM(t *testing.T) {
 			name: "centos7 cyclonedx",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.json",
-				format:       "cyclonedx",
+				format:       "json",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/centos-7-cyclonedx.json.golden",
+			golden: "testdata/centos-7.json.golden",
+			override: types.Report{
+				ArtifactName: "testdata/fixtures/sbom/centos-7-cyclonedx.json",
+				ArtifactType: ftypes.ArtifactType("cyclonedx"),
+				Results: types.Results{
+					{
+						Target: "testdata/fixtures/sbom/centos-7-cyclonedx.json (centos 7.6.1810)",
+						Vulnerabilities: []types.DetectedVulnerability{
+							{PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"},
+							{PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"},
+							{PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"},
+						},
+					},
+				},
+			},
 		},
 		{
 			name: "fluentd-multiple-lockfiles cyclonedx",
 			args: args{
 				input:        "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json",
-				format:       "cyclonedx",
+				format:       "json",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/fluentd-multiple-lockfiles-cyclonedx.json.golden",
+			golden: "testdata/fluentd-multiple-lockfiles.json.golden",
 		},
 		{
 			name: "centos7 in in-toto attestation",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl",
-				format:       "cyclonedx",
+				format:       "json",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/centos-7-cyclonedx.json.golden",
+			golden: "testdata/centos-7.json.golden",
+			override: types.Report{
+				ArtifactName: "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl",
+				ArtifactType: ftypes.ArtifactType("cyclonedx"),
+				Results: types.Results{
+					{
+						Target: "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl (centos 7.6.1810)",
+						Vulnerabilities: []types.DetectedVulnerability{
+							{PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"},
+							{PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"},
+							{PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"},
+						},
+					},
+				},
+			},
 		},
 		{
 			name: "centos7 spdx tag-value",
@@ -131,8 +159,6 @@ func TestSBOM(t *testing.T) {
 
 			// Compare want and got
 			switch tt.args.format {
-			case "cyclonedx":
-				compareCycloneDX(t, tt.golden, outputFile)
 			case "json":
 				compareSBOMReports(t, tt.golden, outputFile, tt.override)
 			default:
@@ -146,8 +172,12 @@ func TestSBOM(t *testing.T) {
 func compareSBOMReports(t *testing.T, wantFile, gotFile string, overrideWant types.Report) {
 	want := readReport(t, wantFile)
 
-	want.ArtifactName = overrideWant.ArtifactName
-	want.ArtifactType = overrideWant.ArtifactType
+	if overrideWant.ArtifactName != "" {
+		want.ArtifactName = overrideWant.ArtifactName
+	}
+	if overrideWant.ArtifactType != "" {
+		want.ArtifactType = overrideWant.ArtifactType
+	}
 	want.Metadata.ImageID = ""
 	want.Metadata.ImageConfig = v1.ConfigFile{}
 	want.Metadata.DiffIDs = nil

@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.6.0
         with:
           fetch-depth: 0
 
@@ -35,7 +35,7 @@ jobs:
           sudo apt-get -y install rpm reprepro createrepo-c distro-info
 
       - name: Checkout trivy-repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.6.0
         with:
           repository: ${{ github.repository_owner }}/trivy-repo
           path: trivy-repo

@@ -6,13 +6,10 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	"golang.org/x/term"
 
 	"github.com/aquasecurity/tml"
-
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -163,6 +160,21 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 			}
 		}
 		r.printf(" <blue>%s%s\r\n", r.result.Target, lineInfo)
+		for i, occ := range misconf.CauseMetadata.Occurrences {
+			lineInfo := fmt.Sprintf("%d-%d", occ.Location.StartLine, occ.Location.EndLine)
+			if occ.Location.StartLine >= occ.Location.EndLine {
+				lineInfo = fmt.Sprintf("%d", occ.Location.StartLine)
+			}
+
+			r.printf(
+				" %s<dim>via </dim><italic>%s<dim>:%s (%s)\n",
+				strings.Repeat(" ", i+2),
+				occ.Filename,
+				lineInfo,
+				occ.Resource,
+			)
+		}
+
 		r.printSingleDivider()
 		for i, line := range lines {
 			if line.Truncated {

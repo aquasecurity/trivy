@@ -48,6 +48,7 @@ var (
 		"17.04":     time.Date(2018, 1, 13, 23, 59, 59, 0, time.UTC),
 		"17.10":     time.Date(2018, 7, 19, 23, 59, 59, 0, time.UTC),
 		"18.04":     time.Date(2023, 5, 31, 23, 59, 59, 0, time.UTC),
+		"18.04-ESM": time.Date(2028, 3, 31, 23, 59, 59, 0, time.UTC),
 		"18.10":     time.Date(2019, 7, 18, 23, 59, 59, 0, time.UTC),
 		"19.04":     time.Date(2020, 1, 18, 23, 59, 59, 0, time.UTC),
 		"19.10":     time.Date(2020, 7, 17, 23, 59, 59, 0, time.UTC),
@@ -147,7 +148,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks is OSFamily can be scanned using Ubuntu scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	eol, ok := eolDates[s.versionFromEolDates(osVer)]
 	if !ok {
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)

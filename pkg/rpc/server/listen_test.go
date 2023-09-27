@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -20,7 +21,9 @@ import (
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/aquasecurity/trivy/pkg/version"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
@@ -251,7 +254,7 @@ func Test_newServeMux(t *testing.T) {
 			defer func() { _ = c.Close() }()
 
 			ts := httptest.NewServer(newServeMux(
-				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader),
+				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader, ""),
 			)
 			defer ts.Close()
 
@@ -273,4 +276,40 @@ func Test_newServeMux(t *testing.T) {
 			defer resp.Body.Close()
 		})
 	}
+}
+
+func Test_VersionEndpoint(t *testing.T) {
+	dbUpdateWg, requestWg := &sync.WaitGroup{}, &sync.WaitGroup{}
+	c, err := cache.NewFSCache(t.TempDir())
+	require.NoError(t, err)
+	defer func() { _ = c.Close() }()
+
+	ts := httptest.NewServer(newServeMux(
+		c, dbUpdateWg, requestWg, "", "", "testdata/testcache"),
+	)
+	defer ts.Close()
+
+	resp, err := http.Get(ts.URL + "/version")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	var versionInfo version.VersionInfo
+	require.NoError(t, json.NewDecoder(resp.Body).Decode(&versionInfo))
+
+	expected := version.VersionInfo{
+		Version: "dev",
+		VulnerabilityDB: &metadata.Metadata{
+			Version:      2,
+			NextUpdate:   time.Date(2023, 7, 20, 18, 11, 37, 696263532, time.UTC),
+			UpdatedAt:    time.Date(2023, 7, 20, 12, 11, 37, 696263932, time.UTC),
+			DownloadedAt: time.Date(2023, 7, 25, 7, 1, 41, 239158000, time.UTC),
+		},
+		PolicyBundle: &policy.Metadata{
+			Digest:       "sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43",
+			DownloadedAt: time.Date(2023, 7, 23, 16, 40, 33, 122462000, time.UTC),
+		},
+	}
+	assert.Equal(t, expected, versionInfo)
 }

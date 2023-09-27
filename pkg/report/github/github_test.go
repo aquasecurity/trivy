@@ -9,7 +9,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/report/github"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -136,22 +135,19 @@ func TestWriter_Write(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			jw := github.Writer{}
-			written := bytes.Buffer{}
-			jw.Output = &written
+			written := bytes.NewBuffer(nil)
+			w := github.Writer{
+				Output: written,
+			}
 
 			inputResults := tt.report
 
-			err := report.Write(inputResults, report.Option{
-				Format: "github",
-				Output: &written,
-			})
+			err := w.Write(inputResults)
 			assert.NoError(t, err)
 
 			var got github.DependencySnapshot
 			err = json.Unmarshal(written.Bytes(), &got)
 			assert.NoError(t, err, "invalid github written")
-
 			assert.Equal(t, tt.want, got.Manifests, tt.name)
 		})
 	}

@@ -1,14 +1,12 @@
 package flag
 
 import (
-	"strconv"
-
 	"fmt"
+	"strconv"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -16,7 +14,7 @@ var (
 	ClusterContextFlag = Flag{
 		Name:       "context",
 		ConfigName: "kubernetes.context",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify a context to scan",
 		Aliases: []Alias{
 			{Name: "ctx"},
@@ -26,19 +24,23 @@ var (
 		Name:       "namespace",
 		ConfigName: "kubernetes.namespace",
 		Shorthand:  "n",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify a namespace to scan",
 	}
 	KubeConfigFlag = Flag{
 		Name:       "kubeconfig",
 		ConfigName: "kubernetes.kubeconfig",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify the kubeconfig file path to use",
 	}
 	ComponentsFlag = Flag{
 		Name:       "components",
 		ConfigName: "kubernetes.components",
-		Value: []string{
+		Default: []string{
+			"workload",
+			"infra",
+		},
+		Values: []string{
 			"workload",
 			"infra",
 		},
@@ -47,33 +49,45 @@ var (
 	K8sVersionFlag = Flag{
 		Name:       "k8s-version",
 		ConfigName: "kubernetes.k8s.version",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
 	}
 	ParallelFlag = Flag{
 		Name:       "parallel",
 		ConfigName: "kubernetes.parallel",
-		Value:      5,
+		Default:    5,
 		Usage:      "number (between 1-20) of goroutines enabled for parallel scanning",
 	}
 	TolerationsFlag = Flag{
 		Name:       "tolerations",
 		ConfigName: "kubernetes.tolerations",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)",
 	}
 	AllNamespaces = Flag{
 		Name:       "all-namespaces",
 		ConfigName: "kubernetes.all.namespaces",
 		Shorthand:  "A",
-		Value:      false,
+		Default:    false,
 		Usage:      "fetch resources from all cluster namespaces",
 	}
 	NodeCollectorNamespace = Flag{
 		Name:       "node-collector-namespace",
 		ConfigName: "node.collector.namespace",
-		Value:      "trivy-temp",
+		Default:    "trivy-temp",
 		Usage:      "specify the namespace in which the node-collector job should be deployed",
+	}
+	ExcludeOwned = Flag{
+		Name:       "exclude-owned",
+		ConfigName: "kubernetes.exclude.owned",
+		Default:    false,
+		Usage:      "exclude resources that have an owner reference",
+	}
+	ExcludeNodes = Flag{
+		Name:       "exclude-nodes",
+		ConfigName: "exclude.nodes",
+		Default:    []string{},
+		Usage:      "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)",
 	}
 )
 
@@ -87,6 +101,8 @@ type K8sFlagGroup struct {
 	Tolerations            *Flag
 	AllNamespaces          *Flag
 	NodeCollectorNamespace *Flag
+	ExcludeOwned           *Flag
+	ExcludeNodes           *Flag
 }
 
 type K8sOptions struct {
@@ -99,6 +115,8 @@ type K8sOptions struct {
 	Tolerations            []corev1.Toleration
 	AllNamespaces          bool
 	NodeCollectorNamespace string
+	ExcludeOwned           bool
+	ExcludeNodes           map[string]string
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
@@ -112,6 +130,8 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		Tolerations:            &TolerationsFlag,
 		AllNamespaces:          &AllNamespaces,
 		NodeCollectorNamespace: &NodeCollectorNamespace,
+		ExcludeOwned:           &ExcludeOwned,
+		ExcludeNodes:           &ExcludeNodes,
 	}
 }
 
@@ -130,6 +150,8 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.Tolerations,
 		f.AllNamespaces,
 		f.NodeCollectorNamespace,
+		f.ExcludeOwned,
+		f.ExcludeNodes,
 	}
 }
 
@@ -146,6 +168,16 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 			return K8sOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
 		}
 	}
+	exludeNodeLabels := make(map[string]string)
+	exludeNodes := getStringSlice(f.ExcludeNodes)
+	for _, exludeNodeValue := range exludeNodes {
+		excludeNodeParts := strings.Split(exludeNodeValue, ":")
+		if len(excludeNodeParts) != 2 {
+			return K8sOptions{}, fmt.Errorf("exclude node %s must be a key:value", exludeNodeValue)
+		}
+		exludeNodeLabels[excludeNodeParts[0]] = excludeNodeParts[1]
+	}
+
 	return K8sOptions{
 		ClusterContext:         getString(f.ClusterContext),
 		Namespace:              getString(f.Namespace),
@@ -156,6 +188,8 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		Tolerations:            tolerations,
 		AllNamespaces:          getBool(f.AllNamespaces),
 		NodeCollectorNamespace: getString(f.NodeCollectorNamespace),
+		ExcludeOwned:           getBool(f.ExcludeOwned),
+		ExcludeNodes:           exludeNodeLabels,
 	}, nil
 }
 

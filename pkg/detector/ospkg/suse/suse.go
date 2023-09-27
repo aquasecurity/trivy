@@ -3,13 +3,11 @@ package suse
 import (
 	"time"
 
+	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	version "github.com/knqyf263/go-rpm-version"
-
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -39,9 +37,10 @@ var (
 		"15.1": time.Date(2021, 1, 31, 23, 59, 59, 0, time.UTC),
 		"15.2": time.Date(2021, 12, 31, 23, 59, 59, 0, time.UTC),
 		"15.3": time.Date(2022, 12, 31, 23, 59, 59, 0, time.UTC),
-		// 6 months after SLES 15 SP5 release
-		"15.4": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
-		//"15.5": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
+		"15.4": time.Date(2023, 12, 31, 23, 59, 59, 0, time.UTC),
+		"15.5": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
+		// 6 months after SLES 15 SP7 release
+		//"15.6": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
 	}
 
 	opensuseEolDates = map[string]time.Time{
@@ -54,6 +53,7 @@ var (
 		"15.2": time.Date(2021, 11, 30, 23, 59, 59, 0, time.UTC),
 		"15.3": time.Date(2022, 11, 30, 23, 59, 59, 0, time.UTC),
 		"15.4": time.Date(2023, 11, 30, 23, 59, 59, 0, time.UTC),
+		"15.5": time.Date(2024, 12, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -147,13 +147,13 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if OSFamily can be scanned using SUSE scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	var eolDate time.Time
 	var ok bool
 
-	if osFamily == fos.SLES {
+	if osFamily == ftypes.SLES {
 		eolDate, ok = slesEolDates[osVer]
-	} else if osFamily == fos.OpenSUSELeap {
+	} else if osFamily == ftypes.OpenSUSELeap {
 		eolDate, ok = opensuseEolDates[osVer]
 	}
 

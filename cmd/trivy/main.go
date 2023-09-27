@@ -13,10 +13,6 @@ import (
 	_ "modernc.org/sqlite" // sqlite driver for RPM DB and Java DB
 )
 
-var (
-	version = "dev"
-)
-
 func main() {
 	if err := run(); err != nil {
 		log.Fatal(err)
@@ -35,7 +31,7 @@ func run() error {
 		return nil
 	}
 
-	app := commands.NewApp(version)
+	app := commands.NewApp()
 	if err := app.Execute(); err != nil {
 		return err
 	}

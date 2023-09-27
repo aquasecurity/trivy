@@ -84,6 +84,7 @@ const (
 	TypeMixLock Type = "mix-lock"
 
 	// Swift
+	TypeSwift     Type = "swift"
 	TypeCocoaPods Type = "cocoapods"
 
 	// Dart
@@ -93,6 +94,7 @@ const (
 	// Non-packaged
 	// ============
 	TypeExecutable Type = "executable"
+	TypeSBOM       Type = "sbom"
 
 	// ============
 	// Image Config
@@ -110,6 +112,7 @@ const (
 	TypeHelm           Type = Type(detection.FileTypeHelm)
 	TypeKubernetes     Type = Type(detection.FileTypeKubernetes)
 	TypeTerraform      Type = Type(detection.FileTypeTerraform)
+	TypeTerraformPlan  Type = Type(detection.FileTypeTerraformPlan)
 
 	// ========
 	// License
@@ -178,6 +181,7 @@ var (
 		TypeRustBinary,
 		TypeConanLock,
 		TypeCocoaPods,
+		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
 	}
@@ -196,6 +200,7 @@ var (
 		TypeConanLock,
 		TypeGradleLock,
 		TypeCocoaPods,
+		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
 	}
@@ -219,5 +224,6 @@ var (
 		TypeHelm,
 		TypeKubernetes,
 		TypeTerraform,
+		TypeTerraformPlan,
 	}
 )

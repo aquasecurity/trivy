@@ -9,7 +9,6 @@ import (
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -47,27 +46,30 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 			continue
 		}
 
-		var family string
+		var family types.OSType
 		switch id {
 		case "alpine":
-			family = aos.Alpine
+			family = types.Alpine
 		case "opensuse-tumbleweed":
-			family = aos.OpenSUSETumbleweed
+			family = types.OpenSUSETumbleweed
 		case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
-			family = aos.OpenSUSELeap
+			family = types.OpenSUSELeap
 		case "sles":
-			family = aos.SLES
+			family = types.SLES
 		case "photon":
-			family = aos.Photon
+			family = types.Photon
 		case "wolfi":
-			family = aos.Wolfi
+			family = types.Wolfi
 		case "chainguard":
-			family = aos.Chainguard
+			family = types.Chainguard
 		}
 
 		if family != "" && versionID != "" {
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: family, Name: versionID},
+				OS: types.OS{
+					Family: family,
+					Name:   versionID,
+				},
 			}, nil
 		}
 	}

@@ -91,7 +91,7 @@ func TestVM(t *testing.T) {
 			// Set up the output file
 			outputFile := filepath.Join(tmpDir, "output.json")
 			if *update {
-				outputFile = tt.golden
+				outputFile = filepath.Join(currentDir, tt.golden)
 			}
 
 			// Get the absolute path of the golden file
@@ -100,7 +100,7 @@ func TestVM(t *testing.T) {
 
 			// Decompress the gzipped image file
 			imagePath := filepath.Join(tmpDir, imageFile)
-			testutil.DecompressGzip(t, tt.args.input, imagePath)
+			testutil.DecompressSparseGzip(t, tt.args.input, imagePath)
 
 			// Change the current working directory so that targets in the result could be the same as golden files.
 			err = os.Chdir(tmpDir)
@@ -113,7 +113,7 @@ func TestVM(t *testing.T) {
 			// Run "trivy vm"
 			err = execute(osArgs)
 			require.NoError(t, err)
-			compareReports(t, goldenFile, outputFile)
+			compareReports(t, goldenFile, outputFile, nil)
 		})
 	}
 }

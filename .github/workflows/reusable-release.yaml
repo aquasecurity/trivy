@@ -26,8 +26,17 @@ jobs:
       packages: write # For GHCR
       contents: read  # Not required for public repositories, but for clarity
     steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@v8
+        with:
+          root-reserve-mb: 35840 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
+          remove-android: 'true'
+          remove-docker-images: 'true'
+          remove-dotnet: 'true'
+          remove-haskell: 'true'
+
       - name: Cosign install
-        uses: sigstore/cosign-installer@204a51a57a74d190b284a0ce69b44bc37201f343
+        uses: sigstore/cosign-installer@4a861528be5e691840a69536975ada1d4c30349d
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -60,7 +69,7 @@ jobs:
           password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.6.0
         with:
           fetch-depth: 0
 
@@ -70,7 +79,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Generate SBOM
-        uses: CycloneDX/gh-gomod-generate-sbom@v1
+        uses: CycloneDX/gh-gomod-generate-sbom@v2
         with:
           args: mod -licenses -json -output bom.json
           version: ^v1
@@ -84,7 +93,7 @@ jobs:
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
-          version: v1.16.2
+          version: v1.20.0
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}

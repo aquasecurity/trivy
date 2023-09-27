@@ -6,23 +6,27 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io"
 	"net"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/samber/lo"
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
+	"github.com/spdx/tools-golang/spdxlib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/xeipuuv/gojsonschema"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -31,6 +35,8 @@ import (
 )
 
 var update = flag.Bool("update", false, "update golden files")
+
+const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/development/v%s/schemas/spdx-schema.json"
 
 func initDB(t *testing.T) string {
 	fixtureDir := filepath.Join("testdata", "fixtures", "db")
@@ -138,10 +144,7 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	err = decoder.Decode(bom)
 	require.NoError(t, err)
 
-	// We don't compare values which change each time an SBOM is generated
-	bom.Metadata.Timestamp = ""
-	bom.Metadata.Component.BOMRef = ""
-	bom.SerialNumber = ""
+	// Sort components
 	if bom.Components != nil {
 		sort.Slice(*bom.Components, func(i, j int) bool {
 			return (*bom.Components)[i].Name < (*bom.Components)[j].Name
@@ -152,12 +155,9 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 				return (*(*bom.Components)[i].Properties)[ii].Name < (*(*bom.Components)[i].Properties)[jj].Name
 			})
 		}
-	}
-	if bom.Dependencies != nil {
-		for j := range *bom.Dependencies {
-			(*bom.Dependencies)[j].Ref = ""
-			(*bom.Dependencies)[j].Dependencies = nil
-		}
+		sort.Slice(*bom.Vulnerabilities, func(i, j int) bool {
+			return (*bom.Vulnerabilities)[i].ID < (*bom.Vulnerabilities)[j].ID
+		})
 	}
 
 	return bom
@@ -178,6 +178,10 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 		return bom.Relationships[i].RefB.ElementRefID < bom.Relationships[j].RefB.ElementRefID
 	})
 
+	sort.Slice(bom.Files, func(i, j int) bool {
+		return bom.Files[i].FileSPDXIdentifier < bom.Files[j].FileSPDXIdentifier
+	})
+
 	// We don't compare values which change each time an SBOM is generated
 	bom.CreationInfo.Created = ""
 	bom.DocumentNamespace = ""
@@ -187,7 +191,7 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 
 func execute(osArgs []string) error {
 	// Setup CLI App
-	app := commands.NewApp("dev")
+	app := commands.NewApp()
 	app.SetOut(io.Discard)
 
 	// Run Trivy
@@ -195,9 +199,12 @@ func execute(osArgs []string) error {
 	return app.Execute()
 }
 
-func compareReports(t *testing.T, wantFile, gotFile string) {
+func compareReports(t *testing.T, wantFile, gotFile string, override func(*types.Report)) {
 	want := readReport(t, wantFile)
 	got := readReport(t, gotFile)
+	if override != nil {
+		override(&want)
+	}
 	assert.Equal(t, want, got)
 }
 
@@ -205,10 +212,35 @@ func compareCycloneDX(t *testing.T, wantFile, gotFile string) {
 	want := readCycloneDX(t, wantFile)
 	got := readCycloneDX(t, gotFile)
 	assert.Equal(t, want, got)
+
+	// Validate CycloneDX output against the JSON schema
+	validateReport(t, got.JSONSchema, got)
 }
 
-func compareSpdxJson(t *testing.T, wantFile, gotFile string) {
+func compareSPDXJson(t *testing.T, wantFile, gotFile string) {
 	want := readSpdxJson(t, wantFile)
 	got := readSpdxJson(t, gotFile)
 	assert.Equal(t, want, got)
+
+	SPDXVersion, ok := strings.CutPrefix(want.SPDXVersion, "SPDX-")
+	assert.True(t, ok)
+
+	assert.NoError(t, spdxlib.ValidateDocument(got))
+
+	// Validate SPDX output against the JSON schema
+	validateReport(t, fmt.Sprintf(SPDXSchema, SPDXVersion), got)
+}
+
+func validateReport(t *testing.T, schema string, report any) {
+	schemaLoader := gojsonschema.NewReferenceLoader(schema)
+	documentLoader := gojsonschema.NewGoLoader(report)
+	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+	require.NoError(t, err)
+
+	if valid := result.Valid(); !valid {
+		errs := lo.Map(result.Errors(), func(err gojsonschema.ResultError, _ int) string {
+			return err.String()
+		})
+		assert.True(t, valid, strings.Join(errs, "\n"))
+	}
 }

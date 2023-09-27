@@ -27,11 +27,16 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.DotNetCore,
 						FilePath: "testdata/datacollector.deps.json",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
-								Name:      "Newtonsoft.Json",
-								Version:   "9.0.1",
-								Locations: []types.Location{{StartLine: 8, EndLine: 14}},
+								Name:    "Newtonsoft.Json",
+								Version: "9.0.1",
+								Locations: []types.Location{
+									{
+										StartLine: 8,
+										EndLine:   14,
+									},
+								},
 							},
 						},
 					},

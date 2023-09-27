@@ -16,10 +16,11 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -109,7 +110,7 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(ctx context.Context, appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool, opt types.RegistryOptions) error {
+func DownloadDB(ctx context.Context, appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool, opt ftypes.RegistryOptions) error {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -147,11 +148,11 @@ func showDBInfo(cacheDir string) error {
 }
 
 // InitBuiltinPolicies downloads the built-in policies and loads them
-func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool) ([]string, error) {
+func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool, policyBundleRepository string) ([]string, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	client, err := policy.NewClient(cacheDir, quiet)
+	client, err := policy.NewClient(cacheDir, quiet, policyBundleRepository)
 	if err != nil {
 		return nil, xerrors.Errorf("policy client error: %w", err)
 	}
@@ -200,4 +201,17 @@ func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Cer
 	caCertPool.AppendCertsFromPEM(caCert)
 
 	return caCertPool, cert, nil
+}
+
+func Exit(opts flag.Options, failedResults bool) {
+	if opts.ExitCode != 0 && failedResults {
+		os.Exit(opts.ExitCode)
+	}
+}
+
+func ExitOnEOL(opts flag.Options, m types.Metadata) {
+	if opts.ExitOnEOL != 0 && m.OS != nil && m.OS.Eosl {
+		log.Logger.Errorf("Detected EOL OS: %s %s", m.OS.Family, m.OS.Name)
+		os.Exit(opts.ExitOnEOL)
+	}
 }

@@ -1,8 +1,6 @@
 package library
 
 import (
-	"errors"
-
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -10,13 +8,10 @@ import (
 )
 
 // Detect scans and returns vulnerabilities of library
-func Detect(libType string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	driver, err := NewDriver(libType)
-	if err != nil {
-		if errors.Is(err, ErrSBOMSupportOnly) {
-			return nil, nil
-		}
-		return nil, xerrors.Errorf("failed to initialize a driver: %w", err)
+func Detect(libType ftypes.LangType, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+	driver, ok := NewDriver(libType)
+	if !ok {
+		return nil, nil
 	}
 
 	vulns, err := detect(driver, pkgs)

@@ -4,6 +4,9 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
 
 	"golang.org/x/mod/sumdb/dirhash"
 	"golang.org/x/xerrors"
@@ -33,21 +36,48 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 		return "", xerrors.Errorf("json encode error: %w", err)
 	}
 
-	// Write policy and data contents
-	for _, paths := range [][]string{artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths} {
-		for _, p := range paths {
-			s, err := dirhash.HashDir(p, "", dirhash.DefaultHash)
-			if err != nil {
-				return "", xerrors.Errorf("hash dir error (%s): %w", p, err)
-			}
+	// Write policy, data contents and secret config file
+	paths := append(artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths...)
 
-			if _, err = h.Write([]byte(s)); err != nil {
-				return "", xerrors.Errorf("sha256 write error: %w", err)
-			}
+	// Check if the secret config exists.
+	if _, err := os.Stat(artifactOpt.SecretScannerOption.ConfigPath); err == nil {
+		paths = append(paths, artifactOpt.SecretScannerOption.ConfigPath)
+	}
+
+	for _, p := range paths {
+		hash, err := hashContents(p)
+		if err != nil {
+			return "", err
+		}
+
+		if _, err := h.Write([]byte(hash)); err != nil {
+			return "", xerrors.Errorf("sha256 write error: %w", err)
 		}
 	}
 
-	// TODO: add secret scanner option here
-
 	return fmt.Sprintf("sha256:%x", h.Sum(nil)), nil
+}
+
+func hashContents(path string) (string, error) {
+	fi, err := os.Stat(path)
+	if err != nil {
+		return "", xerrors.Errorf("file %q stat error: %w", path, err)
+	}
+
+	var hash string
+
+	if fi.IsDir() {
+		hash, err = dirhash.HashDir(path, "", dirhash.DefaultHash)
+		if err != nil {
+			return "", xerrors.Errorf("hash dir error (%s): %w", path, err)
+		}
+	} else {
+		hash, err = dirhash.DefaultHash([]string{filepath.Base(path)}, func(_ string) (io.ReadCloser, error) {
+			return os.Open(path)
+		})
+		if err != nil {
+			return "", xerrors.Errorf("hash file error (%s): %w", path, err)
+		}
+	}
+	return hash, nil
 }

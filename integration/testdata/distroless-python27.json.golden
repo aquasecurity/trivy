@@ -73,6 +73,7 @@
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
           "InstalledVersion": "1.1.0k-1~deb9u1",
+          "Status": "affected",
           "Layer": {
             "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
             "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
@@ -146,6 +147,7 @@
           "PkgName": "libssl1.1",
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
             "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
@@ -223,6 +225,7 @@
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
           "InstalledVersion": "1.1.0k-1~deb9u1",
+          "Status": "affected",
           "Layer": {
             "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
             "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
@@ -296,6 +299,7 @@
           "PkgName": "openssl",
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:e005d777a298a3529b1c8cf890883359e050cc966089ce84fea4d17b111907db",
             "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"

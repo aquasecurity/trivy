@@ -4,11 +4,10 @@ import (
 	"strings"
 	"time"
 
-	"k8s.io/utils/clock"
-
 	version "github.com/knqyf263/go-deb-version"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -19,7 +18,8 @@ import (
 
 var (
 	eolDates = map[string]time.Time{
-		"1": time.Date(2023, 6, 30, 23, 59, 59, 0, time.UTC),
+		// https://aws.amazon.com/jp/blogs/aws/update-on-amazon-linux-ami-end-of-life/
+		"1": time.Date(2023, 12, 31, 23, 59, 59, 0, time.UTC),
 		// https://aws.amazon.com/amazon-linux-2/faqs/?nc1=h_ls
 		"2": time.Date(2025, 6, 30, 23, 59, 59, 0, time.UTC),
 		// Amazon Linux 2022 was renamed to 2023. AL2022 is not currently supported.
@@ -118,7 +118,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if os can be scanned using amazon scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	osVer = strings.Fields(osVer)[0]
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"

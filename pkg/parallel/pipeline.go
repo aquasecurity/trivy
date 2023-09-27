@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/cheggaaa/pb/v3"
-
 	"golang.org/x/sync/errgroup"
 )
 
@@ -19,13 +18,17 @@ type Pipeline[T, U any] struct {
 }
 
 // onItem represents a function type that takes an input element and returns an output element.
-type onItem[T, U any] func(T) (U, error)
+type onItem[T, U any] func(context.Context, T) (U, error)
 
 // onResult represents a function type that takes an output element.
 type onResult[U any] func(U) error
 
 func NewPipeline[T, U any](numWorkers int, progress bool, items []T,
 	fn1 onItem[T, U], fn2 onResult[U]) Pipeline[T, U] {
+	if fn2 == nil {
+		// In case where there is no need to process the return values
+		fn2 = func(_ U) error { return nil }
+	}
 	return Pipeline[T, U]{
 		numWorkers: numWorkers,
 		progress:   progress,
@@ -71,7 +74,7 @@ func (p *Pipeline[T, U]) Do(ctx context.Context) error {
 	for i := 0; i < p.numWorkers; i++ {
 		g.Go(func() error {
 			for item := range itemCh {
-				res, err := p.onItem(item)
+				res, err := p.onItem(ctx, item)
 				if err != nil {
 					return err
 				}

@@ -35,6 +35,8 @@ Scanners (what Trivy can find there):
 - Sensitive information and secrets
 - Software licenses
 
+Trivy supports most popular programming languages, operating systems, and platforms. For a complete list, see the [Scanning Coverage] page.
+
 To learn more, go to the [Trivy homepage][homepage] for feature highlights, or to the [Documentation site][Docs] for detailed information.
 
 ## Quick Start
@@ -108,6 +110,14 @@ trivy k8s --report summary cluster
 </figure>
 
 </details>
+
+# Want more? Check out Aqua
+
+If you liked Trivy, you will love Aqua which builds on top of Trivy to provide even more enhanced capabilities for a complete security management offering.  
+You can find a high level comparison table specific to Trivy users [here](https://github.com/aquasecurity/resources/blob/main/trivy-aqua.md).  
+In addition check out the <https://aquasec.com> website for more information about our products and services.
+If you'd like to contact Aqua or request a demo, please use this form: <https://www.aquasec.com/demo>
+
 ---
 
 Trivy is an [Aqua Security][aquasec] open source project.  
@@ -117,6 +127,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [Ecosystem]: ./ecosystem/index.md
 [Installation]: getting-started/installation.md
 [pronunciation]: #how-to-pronounce-the-name-trivy
+[Scanning Coverage]: ./docs/coverage/index.md
 
 [aquasec]: https://aquasec.com
 [oss]: https://www.aquasec.com/products/open-source-projects/

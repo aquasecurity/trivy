@@ -27,7 +27,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Conan,
 						FilePath: "testdata/happy.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "openssl/3.0.5",
 								Name:    "openssl",
@@ -35,12 +35,24 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{
 									"zlib/1.2.12",
 								},
+								Locations: []types.Location{
+									{
+										StartLine: 12,
+										EndLine:   21,
+									},
+								},
 							},
 							{
 								ID:       "zlib/1.2.12",
 								Name:     "zlib",
 								Version:  "1.2.12",
 								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 22,
+										EndLine:   28,
+									},
+								},
 							},
 						},
 					},
@@ -67,9 +79,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 
 			if got != nil {
 				for _, app := range got.Applications {
-					sort.Slice(app.Libraries, func(i, j int) bool {
-						return app.Libraries[i].ID < app.Libraries[j].ID
-					})
+					sort.Sort(app.Libraries)
 				}
 			}
 

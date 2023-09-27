@@ -23,7 +23,7 @@ func TestDriver_Detect(t *testing.T) {
 	tests := []struct {
 		name     string
 		fixtures []string
-		libType  string
+		libType  ftypes.LangType
 		args     args
 		want     []types.DetectedVulnerability
 		wantErr  string
@@ -164,8 +164,8 @@ func TestDriver_Detect(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			driver, err := library.NewDriver(tt.libType)
-			require.NoError(t, err)
+			driver, ok := library.NewDriver(tt.libType)
+			require.True(t, ok)
 
 			got, err := driver.DetectVulnerabilities("", tt.args.pkgName, tt.args.pkgVer)
 			if tt.wantErr != "" {

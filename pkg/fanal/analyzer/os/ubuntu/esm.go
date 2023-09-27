@@ -2,15 +2,13 @@ package ubuntu
 
 import (
 	"context"
-	"os"
-
 	"encoding/json"
+	"os"
 
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -40,7 +38,7 @@ func (a ubuntuESMAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	if esmEnabled(st) {
 		return &analyzer.AnalysisResult{
 			OS: types.OS{
-				Family:   aos.Ubuntu,
+				Family:   types.Ubuntu,
 				Extended: true,
 			},
 		}, nil

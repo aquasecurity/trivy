@@ -17,7 +17,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/version"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 type Flag struct {
@@ -31,8 +35,12 @@ type Flag struct {
 	// Shorthand is a shorthand letter.
 	Shorthand string
 
-	// Value is the default value. It must be filled to determine the flag type.
-	Value interface{}
+	// Default is the default value. It must be filled to determine the flag type.
+	Default any
+
+	// Values is a list of allowed values.
+	// It currently supports string flags and string slice flags only.
+	Values []string
 
 	// Usage explains how to use the flag.
 	Usage string
@@ -110,20 +118,25 @@ type Options struct {
 
 // Align takes consistency of options
 func (o *Options) Align() {
-	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
+	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
 		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
 		o.Scanners = nil
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == report.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
+	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
 		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+		o.Scanners = nil
+	}
+
+	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
+		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning`)
 		o.Scanners = nil
 	}
 }
 
-// Registry returns options for OCI registries
-func (o *Options) Registry() ftypes.RegistryOptions {
+// RegistryOpts returns options for OCI registries
+func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 	return ftypes.RegistryOptions{
 		Credentials:   o.Credentials,
 		RegistryToken: o.RegistryToken,
@@ -131,6 +144,32 @@ func (o *Options) Registry() ftypes.RegistryOptions {
 		Platform:      o.Platform,
 		AWSRegion:     o.AWSOptions.Region,
 	}
+}
+
+// FilterOpts returns options for filtering
+func (o *Options) FilterOpts() result.FilterOption {
+	return result.FilterOption{
+		Severities:         o.Severities,
+		IgnoreStatuses:     o.IgnoreStatuses,
+		IncludeNonFailures: o.IncludeNonFailures,
+		IgnoreFile:         o.IgnoreFile,
+		PolicyFile:         o.IgnorePolicy,
+		IgnoreLicenses:     o.IgnoredLicenses,
+		VEXPath:            o.VEXPath,
+	}
+}
+
+// OutputWriter returns an output writer.
+// If the output file is not specified, it returns os.Stdout.
+func (o *Options) OutputWriter() (io.WriteCloser, error) {
+	if o.Output != "" {
+		f, err := os.Create(o.Output)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to create output file: %w", err)
+		}
+		return f, nil
+	}
+	return xio.NopCloser(os.Stdout), nil
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {
@@ -144,13 +183,21 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 		flags = cmd.Flags()
 	}
 
-	switch v := flag.Value.(type) {
+	switch v := flag.Default.(type) {
 	case int:
 		flags.IntP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case string:
-		flags.StringP(flag.Name, flag.Shorthand, v, flag.Usage)
+		usage := flag.Usage
+		if len(flag.Values) > 0 {
+			usage += fmt.Sprintf(" (%s)", strings.Join(flag.Values, ","))
+		}
+		flags.VarP(newCustomStringValue(v, flag.Values), flag.Name, flag.Shorthand, usage)
 	case []string:
-		flags.StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
+		usage := flag.Usage
+		if len(flag.Values) > 0 {
+			usage += fmt.Sprintf(" (%s)", strings.Join(flag.Values, ","))
+		}
+		flags.VarP(newCustomStringSliceValue(v, flag.Values), flag.Name, flag.Shorthand, usage)
 	case bool:
 		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:
@@ -169,7 +216,7 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 		return nil
 	} else if flag.Name == "" {
 		// This flag is available only in trivy.yaml
-		viper.SetDefault(flag.ConfigName, flag.Value)
+		viper.SetDefault(flag.ConfigName, flag.Default)
 		return nil
 	}
 
@@ -217,6 +264,11 @@ func getString(flag *Flag) string {
 	return cast.ToString(getValue(flag))
 }
 
+func getUnderlyingString[T xstrings.String](flag *Flag) T {
+	s := getString(flag)
+	return T(s)
+}
+
 func getStringSlice(flag *Flag) []string {
 	// viper always returns a string for ENV
 	// https://github.com/spf13/viper/blob/419fd86e49ef061d0d33f4d1d56d5e2a480df5bb/viper.go#L545-L553
@@ -230,6 +282,14 @@ func getStringSlice(flag *Flag) []string {
 		v = strings.Split(v[0], ",")
 	}
 	return v
+}
+
+func getUnderlyingStringSlice[T xstrings.String](flag *Flag) []T {
+	ss := getStringSlice(flag)
+	if len(ss) == 0 {
+		return nil
+	}
+	return xstrings.ToTSlice[T](ss)
 }
 
 func getInt(flag *Flag) int {
@@ -380,10 +440,10 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 }
 
 // nolint: gocyclo
-func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup, output io.Writer) (Options, error) {
+func (f *Flags) ToOptions(args []string, globalFlags *GlobalFlagGroup) (Options, error) {
 	var err error
 	opts := Options{
-		AppVersion:    appVersion,
+		AppVersion:    version.AppVersion(),
 		GlobalOptions: globalFlags.ToOptions(),
 	}
 
@@ -461,7 +521,7 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.ReportFlagGroup != nil {
-		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions(output)
+		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("report flag error: %w", err)
 		}

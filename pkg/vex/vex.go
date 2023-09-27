@@ -11,7 +11,6 @@ import (
 	"github.com/samber/lo"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -36,62 +35,37 @@ type Statement struct {
 }
 
 type OpenVEX struct {
-	statements []Statement
-	logger     *zap.SugaredLogger
+	vex    openvex.VEX
+	logger *zap.SugaredLogger
 }
 
-func newOpenVEX(cycloneDX *ftypes.CycloneDX, vex openvex.VEX) VEX {
+func newOpenVEX(vex openvex.VEX) VEX {
 	logger := log.Logger.With(zap.String("VEX format", "OpenVEX"))
 
-	openvex.SortStatements(vex.Statements, lo.FromPtr(vex.Timestamp))
-
-	// Convert openvex.Statement to Statement
-	stmts := lo.Map(vex.Statements, func(stmt openvex.Statement, index int) Statement {
-		return Statement{
-			// TODO: add subcomponents, etc.
-			VulnerabilityID: stmt.Vulnerability,
-			Affects:         stmt.Products,
-			Status:          Status(stmt.Status),
-			Justification:   string(stmt.Justification),
-		}
-	})
-	// Reverse sorted statements so that the latest statement can come first.
-	stmts = lo.Reverse(stmts)
-
-	// If the SBOM format referenced by OpenVEX is CycloneDX
-	if cycloneDX != nil {
-		return &CycloneDX{
-			sbom:       cycloneDX,
-			statements: stmts,
-			logger:     logger,
-		}
-	}
 	return &OpenVEX{
-		statements: stmts,
-		logger:     logger,
+		vex:    vex,
+		logger: logger,
 	}
 }
 
 func (v *OpenVEX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulnerability {
 	return lo.Filter(vulns, func(vuln types.DetectedVulnerability, _ int) bool {
-		stmt, ok := lo.Find(v.statements, func(item Statement) bool {
-			return item.VulnerabilityID == vuln.VulnerabilityID
-		})
-		if !ok {
+		stmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgRef, nil)
+		if len(stmts) == 0 {
 			return true
 		}
-		return v.affected(vuln, stmt)
-	})
-}
 
-func (v *OpenVEX) affected(vuln types.DetectedVulnerability, stmt Statement) bool {
-	if slices.Contains(stmt.Affects, vuln.PkgRef) &&
-		(stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
-		v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
-			zap.String("status", string(stmt.Status)), zap.String("justification", stmt.Justification))
-		return false
-	}
-	return true
+		// Take the latest statement for a given vulnerability and product
+		// as a sequence of statements can be overridden by the newer one.
+		// cf. https://github.com/openvex/spec/blob/fa5ba0c0afedb008dc5ebad418548cacf16a3ca7/OPENVEX-SPEC.md#the-vex-statement
+		stmt := stmts[len(stmts)-1]
+		if stmt.Status == openvex.StatusNotAffected || stmt.Status == openvex.StatusFixed {
+			v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
+				zap.String("status", string(stmt.Status)), zap.String("justification", string(stmt.Justification)))
+			return false
+		}
+		return true
+	})
 }
 
 type CycloneDX struct {
@@ -192,7 +166,7 @@ func New(filePath string, report types.Report) (VEX, error) {
 	}
 
 	// Try OpenVEX
-	if v, err := decodeOpenVEX(f, report); err != nil {
+	if v, err := decodeOpenVEX(f); err != nil {
 		errs = multierror.Append(errs, err)
 	} else {
 		return v, nil
@@ -215,7 +189,7 @@ func decodeCycloneDXJSON(r io.ReadSeeker, report types.Report) (VEX, error) {
 	return newCycloneDX(report.CycloneDX, vex), nil
 }
 
-func decodeOpenVEX(r io.ReadSeeker, report types.Report) (VEX, error) {
+func decodeOpenVEX(r io.ReadSeeker) (VEX, error) {
 	// openvex/go-vex outputs log messages by default
 	logrus.SetOutput(io.Discard)
 
@@ -229,5 +203,5 @@ func decodeOpenVEX(r io.ReadSeeker, report types.Report) (VEX, error) {
 	if openVEX.Context == "" {
 		return nil, nil
 	}
-	return newOpenVEX(report.CycloneDX, openVEX), nil
+	return newOpenVEX(openVEX), nil
 }

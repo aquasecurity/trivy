@@ -17,14 +17,32 @@ linters-settings:
     min-occurrences: 3
   misspell:
     locale: US
-  goimports:
-    local-prefixes: github.com/aquasecurity
+    ignore-words:
+      - licence
   gosec:
     excludes:
       - G101
       - G114
       - G204
       - G402
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/aquasecurity/)
+      - blank
+      - dot
+  gomodguard:
+    blocked:
+      modules:
+        - github.com/hashicorp/go-version:
+            recommendations:
+              - github.com/aquasecurity/go-version
+            reason: "`aquasecurity/go-version` is designed for our use-cases"
+        - github.com/Masterminds/semver:
+            recommendations:
+              - github.com/aquasecurity/go-version
+            reason: "`aquasecurity/go-version` is designed for our use-cases"
 
 linters:
   disable-all: true
@@ -39,14 +57,17 @@ linters:
     - goconst
     - gocyclo
     - gofmt
-    - goimports
     - misspell
+    - bodyclose
+    - gci
+    - gomodguard
+    - tenv
 
 run:
-  go: 1.19
+  go: '1.20'
   skip-files:
-    - ".*._mock.go$"
-    - ".*._test.go$"
+    - ".*_mock.go$"
+    - ".*_test.go$"
     - "integration/*"
     - "examples/*"
 

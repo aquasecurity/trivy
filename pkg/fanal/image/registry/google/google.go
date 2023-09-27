@@ -4,13 +4,12 @@ import (
 	"context"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"golang.org/x/xerrors"
-
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/config"
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/credhelper"
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/store"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type Registry struct {
@@ -35,7 +34,7 @@ func (g *Registry) CheckOptions(domain string, option types.RegistryOptions) err
 	return nil
 }
 
-func (g *Registry) GetCredential(ctx context.Context) (username, password string, err error) {
+func (g *Registry) GetCredential(_ context.Context) (username, password string, err error) {
 	var credStore store.GCRCredStore
 	if g.Store == nil {
 		credStore, err = store.DefaultGCRCredStore()

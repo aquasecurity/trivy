@@ -174,7 +174,7 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 }
 
 // IsSupportedVersion checks the OSFamily can be scanned using Alpine scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	if strings.Count(osVer, ".") > 1 {
 		osVer = osVer[:strings.LastIndex(osVer, ".")]
 	}

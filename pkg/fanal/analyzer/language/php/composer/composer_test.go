@@ -2,12 +2,14 @@ package composer
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
@@ -24,7 +26,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 					{
 						Type:     types.Composer,
 						FilePath: "composer.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "pear/log@1.13.3",
 								Name:     "pear/log",
@@ -65,7 +67,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 					{
 						Type:     types.Composer,
 						FilePath: "composer.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "pear/log@1.13.3",
 								Name:     "pear/log",
@@ -106,7 +108,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 					{
 						Type:     types.Composer,
 						FilePath: "composer.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "pear/log@1.13.3",
 								Name:     "pear/log",

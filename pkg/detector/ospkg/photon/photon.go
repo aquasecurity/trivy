@@ -95,7 +95,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if the OS version reached end-of-support.
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	eol, ok := eolDates[osVer]
 	if !ok {
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)

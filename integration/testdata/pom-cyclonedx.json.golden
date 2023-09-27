@@ -1,0 +1,314 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2020-09-10T14:20:30+00:00",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ],
+    "component": {
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "type": "application",
+      "name": "testdata/fixtures/repo/pom",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000003",
+      "type": "application",
+      "name": "pom.xml",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "pom"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:maven/com.example/log4shell@1.0-SNAPSHOT",
+      "type": "library",
+      "name": "com.example:log4shell",
+      "version": "1.0-SNAPSHOT",
+      "purl": "pkg:maven/com.example/log4shell@1.0-SNAPSHOT",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "com.example:log4shell:1.0-SNAPSHOT"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "pom"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
+      "type": "library",
+      "name": "com.fasterxml.jackson.core:jackson-databind",
+      "version": "2.9.1",
+      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "com.fasterxml.jackson.core:jackson-databind:2.9.1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "pom"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "dependsOn": [
+        "3ff14136-e09f-4df9-80ea-000000000003"
+      ]
+    },
+    {
+      "ref": "3ff14136-e09f-4df9-80ea-000000000003",
+      "dependsOn": [
+        "pkg:maven/com.example/log4shell@1.0-SNAPSHOT",
+        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1"
+      ]
+    },
+    {
+      "ref": "pkg:maven/com.example/log4shell@1.0-SNAPSHOT",
+      "dependsOn": [
+        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1"
+      ]
+    },
+    {
+      "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "id": "CVE-2020-9548",
+      "source": {
+        "name": "ghsa",
+        "url": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
+      },
+      "ratings": [
+        {
+          "source": {
+            "name": "ghsa"
+          },
+          "severity": "critical"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 6.8,
+          "severity": "medium",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 9.8,
+          "severity": "critical",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "source": {
+            "name": "redhat"
+          },
+          "score": 8.1,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes": [
+        502
+      ],
+      "description": "FasterXML jackson-databind 2.x before 2.9.10.4 mishandles the interaction between serialization gadgets and typing, related to br.com.anteros.dbcp.AnterosDBCPConfig (aka anteros-core).",
+      "recommendation": "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.9.10.4",
+      "advisories": [
+        {
+          "url": "https://access.redhat.com/security/cve/CVE-2020-9548"
+        },
+        {
+          "url": "https://github.com/FasterXML/jackson-databind/issues/2634"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-p43x-xfjf-5jhr"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/r35d30db00440ef63b791c4b7f7acb036e14d4a23afa2a249cb66c0fd@%3Cissues.zookeeper.apache.org%3E"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/r9464a40d25c3ba1a55622db72f113eb494a889656962d098c70c5bb1@%3Cdev.zookeeper.apache.org%3E"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/r98c9b6e4c9e17792e2cd1ec3e4aa20b61a791939046d3f10888176bb@%3Cissues.zookeeper.apache.org%3E"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/rb6fecb5e96a6d61e175ff49f33f2713798dd05cf03067c169d195596@%3Cissues.zookeeper.apache.org%3E"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/rd5a4457be4623038c3989294429bc063eec433a2e55995d81591e2ca@%3Cissues.zookeeper.apache.org%3E"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/rdd49ab9565bec436a896bc00c4b9fc9dce1598e106c318524fbdfec6@%3Cissues.zookeeper.apache.org%3E"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/rdd4df698d5d8e635144d2994922bf0842e933809eae259521f3b5097@%3Cissues.zookeeper.apache.org%3E"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/rf1bbc0ea4a9f014cf94df9a12a6477d24a27f52741dbc87f2fd52ff2@%3Cissues.geode.apache.org%3E"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2020/03/msg00008.html"
+        },
+        {
+          "url": "https://medium.com/@cowtowncoder/on-jackson-cves-dont-panic-here-is-what-you-need-to-know-54cd0d6e8062"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-9548"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20200904-0006/"
+        },
+        {
+          "url": "https://www.oracle.com/security-alerts/cpujan2021.html"
+        },
+        {
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },
+        {
+          "url": "https://www.oracle.com/security-alerts/cpuoct2020.html"
+        },
+        {
+          "url": "https://www.oracle.com/security-alerts/cpuoct2021.html"
+        }
+      ],
+      "published": "2020-03-02T04:15:00+00:00",
+      "updated": "2021-12-02T21:23:00+00:00",
+      "affects": [
+        {
+          "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
+          "versions": [
+            {
+              "version": "2.9.1",
+              "status": "affected"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CVE-2021-20190",
+      "source": {
+        "name": "glad",
+        "url": "https://gitlab.com/gitlab-org/advisories-community"
+      },
+      "ratings": [
+        {
+          "source": {
+            "name": "ghsa"
+          },
+          "severity": "high"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 8.3,
+          "severity": "high",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:C"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 8.1,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "source": {
+            "name": "redhat"
+          },
+          "score": 8.1,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes": [
+        502
+      ],
+      "description": "A flaw was found in jackson-databind before 2.9.10.7. FasterXML mishandles the interaction between serialization gadgets and typing. The highest threat from this vulnerability is to data confidentiality and integrity as well as system availability.",
+      "recommendation": "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.9.10.7",
+      "advisories": [
+        {
+          "url": "https://access.redhat.com/security/cve/CVE-2021-20190"
+        },
+        {
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=1916633"
+        },
+        {
+          "url": "https://github.com/FasterXML/jackson-databind/commit/7dbf51bf78d157098074a20bd9da39bd48c18e4a"
+        },
+        {
+          "url": "https://github.com/FasterXML/jackson-databind/issues/2854"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-5949-rw7g-wx7w"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/r380e9257bacb8551ee6fcf2c59890ae9477b2c78e553fa9ea08e9d9a@%3Ccommits.nifi.apache.org%3E"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2021/04/msg00025.html"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-20190"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20210219-0008/"
+        }
+      ],
+      "published": "2021-01-19T17:15:00+00:00",
+      "updated": "2021-07-20T23:15:00+00:00",
+      "affects": [
+        {
+          "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
+          "versions": [
+            {
+              "version": "2.9.1",
+              "status": "affected"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,6 @@ package types
 
 import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/samber/lo"
 )
 
 const (
@@ -85,6 +84,10 @@ type RegistryOptions struct {
 	// SSL/TLS
 	Insecure bool
 
+	// For internal use. Needed for mTLS authentication.
+	ClientCert []byte
+	ClientKey  []byte
+
 	// Architecture
 	Platform Platform
 
@@ -101,10 +104,4 @@ type RegistryOptions struct {
 type Credential struct {
 	Username string
 	Password string
-}
-
-func (runtimes ImageSources) StringSlice() []string {
-	return lo.Map(runtimes, func(r ImageSource, _ int) string {
-		return string(r)
-	})
 }

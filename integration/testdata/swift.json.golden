@@ -1,0 +1,79 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/repo/swift",
+  "ArtifactType": "repository",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "Package.resolved",
+      "Class": "lang-pkgs",
+      "Type": "swift",
+      "Packages": [
+        {
+          "ID": "github.com/apple/swift-atomics@1.1.0",
+          "Name": "github.com/apple/swift-atomics",
+          "Version": "1.1.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 12
+            }
+          ]
+        },
+        {
+          "ID": "github.com/apple/swift-nio@2.41.0",
+          "Name": "github.com/apple/swift-nio",
+          "Version": "2.41.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 21
+            }
+          ]
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-3215",
+          "PkgID": "github.com/apple/swift-nio@2.41.0",
+          "PkgName": "github.com/apple/swift-nio",
+          "InstalledVersion": "2.41.0",
+          "FixedVersion": "2.29.1, 2.39.1, 2.42.0",
+          "Status": "fixed",
+          "Layer": {},
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-3215",
+          "Title": "SwiftNIO vulnerable to Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Response Splitting')",
+          "Description": "`NIOHTTP1` and projects using it for generating HTTP responses, including SwiftNIO, can be subject to a HTTP Response Injection attack...",
+          "Severity": "MEDIUM",
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "https://github.com/apple/swift-nio/security/advisories/GHSA-7fj7-39wj-c64f",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-3215",
+            "https://github.com/apple/swift-nio/commit/a16e2f54a25b2af217044e5168997009a505930f",
+            "https://github.com/advisories/GHSA-7fj7-39wj-c64f"
+          ],
+          "PublishedDate": "2023-06-07T16:01:53Z",
+          "LastModifiedDate": "2023-06-19T16:45:07Z"
+        }
+      ]
+    }
+  ]
+}

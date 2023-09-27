@@ -14,9 +14,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -25,6 +23,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 )
 
 // SuperSet binds dependencies for Local scan
@@ -92,6 +93,10 @@ func (s Scanner) ScanVulnerabilities(ctx context.Context, target string, options
 	var eosl bool
 	var results, pkgResults types.Results
 	var err error
+
+	// By default, we need to remove dev dependencies from the result
+	// IncludeDevDeps option allows you not to remove them
+	excludeDevDeps(artifactDetail.Applications, options.IncludeDevDeps)
 
 	// Fill OS packages and language-specific packages
 	if options.ListAllPackages {
@@ -213,7 +218,7 @@ func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Re
 	}
 	for _, result := range pkgResults {
 		if r, found := lo.Find(vulnResults, func(r types.Result) bool {
-			return r.Class == result.Class && r.Target == result.Target
+			return r.Class == result.Class && r.Target == result.Target && r.Type == result.Type
 		}); found {
 			r.Packages = result.Packages
 			results = append(results, r)
@@ -401,12 +406,13 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Layer:       layer,
 		Traces:      res.Traces,
 		CauseMetadata: ftypes.CauseMetadata{
-			Resource:  res.Resource,
-			Provider:  res.Provider,
-			Service:   res.Service,
-			StartLine: res.StartLine,
-			EndLine:   res.EndLine,
-			Code:      res.Code,
+			Resource:    res.Resource,
+			Provider:    res.Provider,
+			Service:     res.Service,
+			StartLine:   res.StartLine,
+			EndLine:     res.EndLine,
+			Code:        res.Code,
+			Occurrences: res.Occurrences,
 		},
 	}
 }
@@ -415,4 +421,15 @@ func ShouldScanMisconfigOrRbac(scanners types.Scanners) bool {
 	return scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner)
 }
 
-//
+
+// excludeDevDeps removes development dependencies from the list of applications
+func excludeDevDeps(apps []ftypes.Application, include bool) {
+	if include {
+		return
+	}
+	for i := range apps {
+		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
+			return !lib.Dev
+		})
+	}
+}

@@ -25,40 +25,42 @@
       "Type": "amazon",
       "Vulnerabilities": [
         {
-          "VulnerabilityID": "CVE-2022-21233",
-          "PkgID": "microcode_ctl@2.1-47.amzn2.0.12.x86_64",
-          "PkgName": "microcode_ctl",
-          "InstalledVersion": "2:2.1-47.amzn2.0.12",
-          "FixedVersion": "2:2.1-47.amzn2.0.13",
+          "VulnerabilityID": "CVE-2022-38177",
+          "PkgID": "bind-export-libs@9.11.4-26.P2.amzn2.5.2.x86_64",
+          "PkgName": "bind-export-libs",
+          "InstalledVersion": "32:9.11.4-26.P2.amzn2.5.2",
+          "FixedVersion": "99:9.11.4-26.P2.amzn2.13",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "nvd",
-          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-21233",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-38177",
           "DataSource": {
             "ID": "amazon",
             "Name": "Amazon Linux Security Center",
             "URL": "https://alas.aws.amazon.com/"
           },
-          "Title": "hw: cpu: Intel: Stale Data Read from legacy xAPIC vulnerability",
-          "Description": "Improper isolation of shared resources in some Intel(R) Processors may allow",
+          "Title": "bind: memory leak in ECDSA DNSSEC verification code",
+          "Description": "By spoofing the target resolver with responses that have a malformed ECDSA signature, an attacker can trigger a small memory leak. It is possible to gradually erode available memory to the point where named crashes for lack of resources.",
           "Severity": "MEDIUM",
           "CVSS": {
             "nvd": {
-              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-              "V3Score": 5.5
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N",
+              "V3Score": 7.5
             },
             "redhat": {
               "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N",
-              "V3Score": 6
+              "V3Score": 7.5
             }
           },
           "References": [
-            "https://access.redhat.com/security/cve/CVE-2022-21233",
-            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-21233",
-            "https://security.netapp.com/advisory/ntap-20220923-0002/",
-            "https://ubuntu.com/security/notices/USN-5612-1"
+            "http://www.openwall.com/lists/oss-security/2022/09/21/3",
+            "https://access.redhat.com/errata/RHSA-2022:6763",
+            "https://access.redhat.com/hydra/rest/securitydata/cve/CVE-2022-38177.json",
+            "https://access.redhat.com/hydra/rest/securitydata/cve/CVE-2022-38178.json",
+            "https://access.redhat.com/security/cve/CVE-2022-38177"
           ],
-          "PublishedDate": "2022-08-18T20:15:00Z",
-          "LastModifiedDate": "2022-09-23T15:15:00Z"
+          "PublishedDate": "2022-09-21T11:15:00Z",
+          "LastModifiedDate": "2022-09-21T11:15:00Z"
         }
       ]
     }

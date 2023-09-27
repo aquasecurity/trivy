@@ -32,6 +32,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/rust/binary"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/rust/cargo"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/swift/cocoapods"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/swift/swift"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/amazonlinux"
@@ -44,5 +45,6 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/dpkg"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/sbom"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 )

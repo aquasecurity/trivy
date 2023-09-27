@@ -79,6 +79,7 @@
           "PkgID": "glibc@2.12-1.212.el6.x86_64",
           "PkgName": "glibc",
           "InstalledVersion": "2.12-1.212.el6",
+          "Status": "end_of_life",
           "Layer": {
             "Digest": "sha256:ff50d722b38227ec8f2bbf0cdbce428b66745077c173d8117d91376128fa532e",
             "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
@@ -124,6 +125,7 @@
           "PkgName": "openssl",
           "InstalledVersion": "1.0.1e-57.el6",
           "FixedVersion": "1.0.1e-58.el6_10",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:ff50d722b38227ec8f2bbf0cdbce428b66745077c173d8117d91376128fa532e",
             "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"

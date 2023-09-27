@@ -37,7 +37,7 @@ func buildLdflags() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("-s -w -X=main.version=%s", ver), nil
+	return fmt.Sprintf("-s -w -X=github.com/aquasecurity/trivy/pkg/version.ver=%s", ver), nil
 }
 
 type Tool mg.Namespace
@@ -60,7 +60,7 @@ func (Tool) Wire() error {
 
 // GolangciLint installs golangci-lint
 func (Tool) GolangciLint() error {
-	const version = "v1.52.2"
+	const version = "v1.54.2"
 	if exists(filepath.Join(GOBIN, "golangci-lint")) {
 		return nil
 	}
@@ -154,7 +154,7 @@ func Protoc() error {
 	if err := sh.RunV("bash", "-c", "docker build -t trivy-protoc - < Dockerfile.protoc"); err != nil {
 		return err
 	}
-	return sh.Run("docker", "run", "--rm", "-it", "-v", "${PWD}:/app", "-w", "/app", "trivy-protoc", "mage", "protoc")
+	return sh.Run("docker", "run", "--rm", "-it", "--platform", "linux/x86_64", "-v", "${PWD}:/app", "-w", "/app", "trivy-protoc", "mage", "protoc")
 }
 
 // Yacc generates parser
@@ -239,7 +239,7 @@ func (t Test) Unit() error {
 // Integration runs integration tests
 func (t Test) Integration() error {
 	mg.Deps(t.FixtureContainerImages)
-	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
+	return sh.RunWithV(ENV, "go", "test", "-timeout", "15m", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
 }
 
 // K8s runs k8s integration tests
@@ -272,10 +272,23 @@ func (t Test) VM() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...")
 }
 
-// Lint runs linters
-func Lint() error {
+// UpdateVMGolden updates golden files for integration tests
+func (Test) UpdateVMGolden() error {
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
+}
+
+type Lint mg.Namespace
+
+// Run runs linters
+func (Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint)
 	return sh.RunV("golangci-lint", "run", "--timeout", "5m")
+}
+
+// Fix auto fixes linters
+func (Lint) Fix() error {
+	mg.Deps(Tool{}.GolangciLint)
+	return sh.RunV("golangci-lint", "run", "--timeout", "5m", "--fix")
 }
 
 // Fmt formats Go code and proto files
@@ -350,6 +363,12 @@ func Clean() error {
 		}
 	}
 	return nil
+}
+
+// Label updates labels
+func Label() error {
+	mg.Deps(Tool{}.Labeler)
+	return sh.RunV("labeler", "apply", "misc/triage/labels.yaml", "-l", "5")
 }
 
 type Docs mg.Namespace

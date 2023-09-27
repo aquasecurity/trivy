@@ -1,5 +1,6 @@
 # Reporting
 
+## Supported Formats
 Trivy supports the following formats:
 
 - Table
@@ -8,7 +9,7 @@ Trivy supports the following formats:
 - Template
 - SBOM
 
-## Table (Default)
+### Table (Default)
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -21,7 +22,7 @@ Trivy supports the following formats:
 $ trivy image -f table golang:1.12-alpine
 ```
 
-### Show origins of vulnerable dependencies
+#### Show origins of vulnerable dependencies
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -61,6 +62,8 @@ The following packages/languages are currently supported:
     - Modules: go.mod
 - PHP
     - Composer
+- Java
+    - Maven: pom.xml
 
 This tree is the reverse of the npm list command.
 However, if you want to resolve a vulnerability in a particular indirect dependency, the reversed tree is useful to know where that dependency comes from and identify which package you actually need to update.
@@ -105,7 +108,7 @@ Also, **glob-parent@3.1.0** with some vulnerabilities is included through chain 
 
 Then, you can try to update **axios@0.21.4** and **cra-append-sw@2.7.0** to resolve vulnerabilities in **follow-redirects@1.14.6** and **glob-parent@3.1.0**.
 
-## JSON
+### JSON
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -239,13 +242,13 @@ $ trivy image -f json -o results.json golang:1.12-alpine
 
 `VulnerabilityID`, `PkgName`, `InstalledVersion`, and `Severity` in `Vulnerabilities` are always filled with values, but other fields might be empty.
 
-## SARIF
+### SARIF
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
-|     License      |           |
+|     License      |     ✓     |
 
 [SARIF][sarif] can be generated with the `--format sarif` flag.
 
@@ -255,7 +258,7 @@ $ trivy image --format sarif -o report.sarif  golang:1.12-alpine
 
 This SARIF file can be uploaded to GitHub code scanning results, and there is a [Trivy GitHub Action][action] for automating this process.
 
-## Template
+### Template
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -264,7 +267,7 @@ This SARIF file can be uploaded to GitHub code scanning results, and there is a 
 |      Secret      |     ✓     |
 |     License      |     ✓     |
 
-### Custom Template
+#### Custom Template
 
 {% raw %}
 ```
@@ -301,18 +304,18 @@ Critical: 0, High: 2
 
 For other features of sprig, see the official [sprig][sprig] documentation.
 
-### Load templates from a file
+#### Load templates from a file
 You can load templates from a file prefixing the template path with an @.
 
 ```
 $ trivy image --format template --template "@/path/to/template" golang:1.12-alpine
 ```
 
-### Default Templates
+#### Default Templates
 
 If Trivy is installed using rpm then default templates can be found at `/usr/local/share/trivy/templates`.
 
-#### JUnit
+##### JUnit
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -325,7 +328,7 @@ In the following example using the template `junit.tpl` XML can be generated.
 $ trivy image --format template --template "@contrib/junit.tpl" -o junit-report.xml  golang:1.12-alpine
 ```
 
-#### ASFF
+##### ASFF
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -335,7 +338,7 @@ $ trivy image --format template --template "@contrib/junit.tpl" -o junit-report.
 
 Trivy also supports an [ASFF template for reporting findings to AWS Security Hub][asff]
 
-#### HTML
+##### HTML
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -353,8 +356,33 @@ The following example shows use of default HTML template when Trivy is installed
 $ trivy image --format template --template "@/usr/local/share/trivy/templates/html.tpl" -o report.html golang:1.12-alpine
 ```
 
-## SBOM
+### SBOM
 See [here](../supply-chain/sbom.md) for details.
+
+## Converting
+To generate multiple reports, you can generate the JSON report first and convert it to other formats with the `convert` subcommand.
+
+```shell
+$ trivy image --format json -o result.json --list-all-pkgs debian:11
+$ trivy convert --format cyclonedx --output result.cdx result.json
+```
+
+!!! note
+    Please note that if you want to convert to a format that requires a list of packages, 
+    such as SBOM, you need to add the `--list-all-pkgs` flag when outputting in JSON.
+
+[Filtering options](./filtering.md) such as `--severity` are also available with `convert`.
+
+```shell
+# Output all severities in JSON
+$ trivy image --format json -o result.json --list-all-pkgs debian:11
+
+# Output only critical issues in table format
+$ trivy convert --format table --severity CRITICAL result.json
+```
+
+!!! note
+    JSON reports from "trivy aws" and "trivy k8s" are not yet supported.
 
 [cargo-auditable]: https://github.com/rust-secure-code/cargo-auditable/
 [action]: https://github.com/aquasecurity/trivy-action

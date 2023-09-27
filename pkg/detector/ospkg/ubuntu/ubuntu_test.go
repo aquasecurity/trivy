@@ -32,8 +32,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/ubuntu.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/ubuntu.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "20.04",
 				now:   time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
@@ -81,8 +84,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "ubuntu 20.04-ESM. 20.04 is not outdated",
-			fixtures: []string{"testdata/fixtures/ubuntu.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "ubuntu 20.04-ESM. 20.04 is not outdated",
+			fixtures: []string{
+				"testdata/fixtures/ubuntu.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "20.04-ESM",
 				now:   time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
@@ -130,8 +136,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "ubuntu 20.04-ESM. 20.04 is outdated",
-			fixtures: []string{"testdata/fixtures/ubuntu.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "ubuntu 20.04-ESM. 20.04 is outdated",
+			fixtures: []string{
+				"testdata/fixtures/ubuntu.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "20.04-ESM",
 				now:   time.Date(2031, 3, 31, 23, 59, 59, 0, time.UTC),
@@ -149,8 +158,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "broken bucket",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "broken bucket",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "21.04",
 				now:   time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
@@ -189,7 +201,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {

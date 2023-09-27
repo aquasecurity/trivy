@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/composer",
-  "ArtifactType": "filesystem",
+  "ArtifactName": "testdata/fixtures/repo/composer",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -62,6 +62,7 @@
           "PkgName": "guzzlehttp/psr7",
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",

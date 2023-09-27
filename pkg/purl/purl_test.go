@@ -9,17 +9,15 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestNewPackageURL(t *testing.T) {
-
 	testCases := []struct {
 		name     string
-		typ      string
+		typ      ftypes.TargetType
 		pkg      ftypes.Package
 		metadata types.Metadata
 		want     purl.PackageURL
@@ -182,13 +180,34 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "golang package with a local path",
+			typ:  ftypes.GoModule,
+			pkg: ftypes.Package{
+				Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
+				Version: "(devel)",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      "",
+					Namespace: "",
+					Name:      "",
+					Version:   "",
+				},
+			},
+		},
+		{
 			name: "hex package",
 			typ:  ftypes.Hex,
 			pkg: ftypes.Package{
-				ID:        "bunt@0.2.0",
-				Name:      "bunt",
-				Version:   "0.2.0",
-				Locations: []ftypes.Location{{StartLine: 2, EndLine: 2}},
+				ID:      "bunt@0.2.0",
+				Name:    "bunt",
+				Version: "0.2.0",
+				Locations: []ftypes.Location{
+					{
+						StartLine: 2,
+						EndLine:   2,
+					},
+				},
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
@@ -214,8 +233,58 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "swift package",
+			typ:  ftypes.Swift,
+			pkg: ftypes.Package{
+				ID:      "github.com/apple/swift-atomics@1.1.0",
+				Name:    "github.com/apple/swift-atomics",
+				Version: "1.1.0",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeSwift,
+					Namespace: "github.com/apple",
+					Name:      "swift-atomics",
+					Version:   "1.1.0",
+				},
+			},
+		},
+		{
+			name: "cocoapods package",
+			typ:  ftypes.Cocoapods,
+			pkg: ftypes.Package{
+				ID:      "GoogleUtilities/NSData+zlib@7.5.2",
+				Name:    "GoogleUtilities/NSData+zlib",
+				Version: "7.5.2",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeCocoapods,
+					Name:    "GoogleUtilities",
+					Version: "7.5.2",
+					Subpath: "NSData+zlib",
+				},
+			},
+		},
+		{
+			name: "rust binary",
+			typ:  ftypes.RustBinary,
+			pkg: ftypes.Package{
+				ID:      "abomination@0.7.3",
+				Name:    "abomination",
+				Version: "0.7.3",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeCargo,
+					Name:    "abomination",
+					Version: "0.7.3",
+				},
+			},
+		},
+		{
 			name: "os package",
-			typ:  os.RedHat,
+			typ:  ftypes.RedHat,
 			pkg: ftypes.Package{
 				Name:            "acl",
 				Version:         "2.2.53",
@@ -231,7 +300,7 @@ func TestNewPackageURL(t *testing.T) {
 
 			metadata: types.Metadata{
 				OS: &ftypes.OS{
-					Family: os.RedHat,
+					Family: ftypes.RedHat,
 					Name:   "8",
 				},
 			},
@@ -377,7 +446,6 @@ func TestNewPackageURL(t *testing.T) {
 }
 
 func TestFromString(t *testing.T) {
-
 	testCases := []struct {
 		name    string
 		purl    string
@@ -412,6 +480,19 @@ func TestFromString(t *testing.T) {
 							Value: "app/app/package.json",
 						},
 					},
+				},
+			},
+		},
+		{
+			name: "happy path for coocapods",
+			purl: "pkg:cocoapods/GoogleUtilities@7.5.2#NSData+zlib",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeCocoapods,
+					Name:       "GoogleUtilities",
+					Version:    "7.5.2",
+					Subpath:    "NSData+zlib",
+					Qualifiers: packageurl.Qualifiers{},
 				},
 			},
 		},
@@ -511,6 +592,128 @@ func TestFromString(t *testing.T) {
 			}
 			assert.NoError(t, err)
 			assert.Equal(t, tc.want, *pkg, tc.name)
+		})
+	}
+}
+
+func TestPackage(t *testing.T) {
+	tests := []struct {
+		name    string
+		pkgURL  *purl.PackageURL
+		wantPkg *ftypes.Package
+	}{
+		{
+			name: "rpm + Qualifiers",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeRPM,
+					Namespace: "redhat",
+					Name:      "nodejs-full-i18n",
+					Version:   "10.21.0-3.module_el8.2.0+391+8da3adc6",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "arch",
+							Value: "x86_64",
+						},
+						{
+							Key:   "epoch",
+							Value: "1",
+						},
+						{
+							Key:   "modularitylabel",
+							Value: "nodejs:10:8020020200707141642:6a468ee4",
+						},
+						{
+							Key:   "distro",
+							Value: "redhat-8",
+						},
+					},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:            "nodejs-full-i18n",
+				Version:         "10.21.0",
+				Release:         "3.module_el8.2.0+391+8da3adc6",
+				Arch:            "x86_64",
+				Epoch:           1,
+				Modularitylabel: "nodejs:10:8020020200707141642:6a468ee4",
+			},
+		},
+		{
+			name: "composer with namespace",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeComposer,
+					Namespace: "symfony",
+					Name:      "contracts",
+					Version:   "v1.0.2",
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:    "symfony/contracts",
+				Version: "v1.0.2",
+			},
+		},
+		{
+			name: "maven with namespace",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeMaven,
+					Namespace:  "org.springframework",
+					Name:       "spring-core",
+					Version:    "5.0.4.RELEASE",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:    "org.springframework:spring-core",
+				Version: "5.0.4.RELEASE",
+			},
+		},
+		{
+			name: "cocoapods with subpath",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeCocoapods,
+					Version:    "4.2.0",
+					Name:       "AppCenter",
+					Subpath:    "Analytics",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:    "AppCenter/Analytics",
+				Version: "4.2.0",
+			},
+		},
+		{
+			name: "wrong epoch",
+			pkgURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeRPM,
+					Namespace: "redhat",
+					Name:      "acl",
+					Version:   "2.2.53-1.el8",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "epoch",
+							Value: "wrong",
+						},
+					},
+				},
+			},
+			wantPkg: &ftypes.Package{
+				Name:    "acl",
+				Version: "2.2.53",
+				Release: "1.el8",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.pkgURL.Package()
+			assert.Equal(t, tt.wantPkg, got)
 		})
 	}
 }

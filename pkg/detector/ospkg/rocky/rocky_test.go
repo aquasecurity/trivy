@@ -30,8 +30,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/rocky.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/rocky.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -40,7 +43,7 @@ func TestScanner_Detect(t *testing.T) {
 						Epoch:           0,
 						Version:         "4.18.0",
 						Release:         "348.el8.0.3",
-						Arch:            "x86_64",
+						Arch:            "aarch64",
 						SrcName:         "kernel",
 						SrcEpoch:        0,
 						SrcVersion:      "4.18.0",
@@ -56,7 +59,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "bpftool",
 					VulnerabilityID:  "CVE-2021-20317",
 					InstalledVersion: "4.18.0-348.el8.0.3",
-					FixedVersion:     "4.18.0-348.2.1.el8_5",
+					FixedVersion:     "5.18.0-348.2.1.el8_5",
 					Layer:            ftypes.Layer{},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Rocky,
@@ -67,8 +70,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "skip modular package",
-			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "skip modular package",
+			fixtures: []string{
+				"testdata/fixtures/modular.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -91,8 +97,11 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -127,7 +136,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {

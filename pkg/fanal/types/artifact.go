@@ -7,11 +7,10 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 )
 
 type OS struct {
-	Family string
+	Family OSType
 	Name   string
 	Eosl   bool `json:"EOSL,omitempty"`
 
@@ -33,7 +32,7 @@ func (o *OS) Merge(new OS) {
 	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
-	case o.Family == aos.RedHat, o.Family == aos.Debian:
+	case o.Family == RedHat, o.Family == Debian:
 		*o = new
 	default:
 		if o.Family == "" {
@@ -52,7 +51,7 @@ func (o *OS) Merge(new OS) {
 }
 
 type Repository struct {
-	Family  string `json:",omitempty"`
+	Family  OSType `json:",omitempty"`
 	Release string `json:",omitempty"`
 }
 
@@ -69,6 +68,7 @@ type Package struct {
 	Release    string   `json:",omitempty"`
 	Epoch      int      `json:",omitempty"`
 	Arch       string   `json:",omitempty"`
+	Dev        bool     `json:",omitempty"`
 	SrcName    string   `json:",omitempty"`
 	SrcVersion string   `json:",omitempty"`
 	SrcRelease string   `json:",omitempty"`
@@ -165,13 +165,13 @@ type PackageInfo struct {
 
 type Application struct {
 	// e.g. bundler and pipenv
-	Type string
+	Type LangType
 
 	// Lock files have the file path here, while each package metadata do not have
 	FilePath string `json:",omitempty"`
 
 	// Libraries is a list of lang-specific packages
-	Libraries []Package
+	Libraries Packages
 }
 
 type File struct {
@@ -184,13 +184,13 @@ type File struct {
 type ArtifactType string
 
 const (
-	ArtifactContainerImage   ArtifactType = "container_image"
-	ArtifactFilesystem       ArtifactType = "filesystem"
-	ArtifactRemoteRepository ArtifactType = "repository"
-	ArtifactCycloneDX        ArtifactType = "cyclonedx"
-	ArtifactSPDX             ArtifactType = "spdx"
-	ArtifactAWSAccount       ArtifactType = "aws_account"
-	ArtifactVM               ArtifactType = "vm"
+	ArtifactContainerImage ArtifactType = "container_image"
+	ArtifactFilesystem     ArtifactType = "filesystem"
+	ArtifactRepository     ArtifactType = "repository"
+	ArtifactCycloneDX      ArtifactType = "cyclonedx"
+	ArtifactSPDX           ArtifactType = "spdx"
+	ArtifactAWSAccount     ArtifactType = "aws_account"
+	ArtifactVM             ArtifactType = "vm"
 )
 
 // ArtifactReference represents a reference of container image, local filesystem and repository
