@@ -78,14 +78,18 @@ build:
 # image: configure-env
 # 	./goreleaser release --snapshot --skip-validate --rm-dist --config=goreleaser.yml
 image: build
-	docker build -t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:latest .
+	docker build \
+		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:latest \
+		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(LAST_COMMIT) \
+		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(LOCAL_BRANCH) \
+		.
 
 # publish the built image to the registry used by the project
 # need be authenticate to the docker registry before, for example using this command:
 # aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 889956758113.dkr.ecr.us-west-2.amazonaws.com
 publish-image: docker_auth
 	docker tag ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:latest ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:${LOCAL_BRANCH}
-	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:latest
+	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(LAST_COMMIT)
 	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(LOCAL_BRANCH)
 
 docker-shell:
