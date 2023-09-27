@@ -1,5 +1,3 @@
-include go-releaser.mk
-
 VERSION := $(patsubst v%,%,$(shell git describe --tags --always)) #Strips the v prefix from the tag
 LDFLAGS := -ldflags "-s -w -X=main.version=$(VERSION)"
 
@@ -124,3 +122,5 @@ mkdocs-serve:
 .PHONY: easyjson
 easyjson: $(GOBIN)/easyjson
 	easyjson pkg/module/serialize/types.go
+
+include go-releaser.mk

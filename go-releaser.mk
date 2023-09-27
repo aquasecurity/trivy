@@ -69,13 +69,16 @@ test:
 # for example:
 # 		java → JAR, go → executable binary and/or lib. 
 # If the output is just a dockerfile or something else, this target may point to the relevant build step (e.g. "image")
-build: configure-env
-	./goreleaser build --snapshot --rm-dist --config=goreleaser.yml
-
+# build: configure-env
+# 	./goreleaser build --snapshot --rm-dist --config=goreleaser.yml
+build:
+	go build $(LDFLAGS) ./cmd/trivy
 # If a dockerfile is present, this command will build the docker image.
 # for goreleaser - it will build the binary and the image (without push the image).
-image: configure-env
-	./goreleaser release --snapshot --skip-validate --rm-dist --config=goreleaser.yml
+# image: configure-env
+# 	./goreleaser release --snapshot --skip-validate --rm-dist --config=goreleaser.yml
+image: build
+	docker build -t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:latest .
 
 # publish the built image to the registry used by the project
 # need be authenticate to the docker registry before, for example using this command:
