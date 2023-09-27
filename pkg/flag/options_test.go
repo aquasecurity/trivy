@@ -1,6 +1,9 @@
 package flag
 
 import (
+	"github.com/aquasecurity/trivy/pkg/log"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -77,6 +80,161 @@ func Test_getStringSlice(t *testing.T) {
 			assert.Equal(t, tt.want, sl)
 
 			viper.Reset()
+		})
+	}
+}
+
+func Test_Align(t *testing.T) {
+	tests := []struct {
+		name         string
+		options      *Options
+		wantScanners types.Scanners
+		wantLogs     []string
+	}{
+		{
+			name: "table format with sbom scanner",
+			options: &Options{
+				ReportOptions: ReportOptions{
+					Format: types.FormatTable,
+				},
+				ScanOptions: ScanOptions{
+					Scanners: types.Scanners{
+						types.VulnerabilityScanner,
+						types.SbomScanner,
+					},
+				},
+			},
+			wantScanners: types.Scanners{
+				types.VulnerabilityScanner,
+			},
+			wantLogs: []string{
+				`"--scanners sbom" cannot be used with "--format table". Try "--format json" or other formats.`,
+			},
+		},
+		{
+			name: "--dependency-tree flag without sbom scanner",
+			options: &Options{
+				ReportOptions: ReportOptions{
+					Format:         types.FormatJSON,
+					DependencyTree: true,
+				},
+				ScanOptions: ScanOptions{
+					Scanners: types.Scanners{
+						types.VulnerabilityScanner,
+					},
+				},
+			},
+			wantScanners: types.Scanners{
+				types.VulnerabilityScanner,
+				types.SbomScanner,
+			},
+			wantLogs: []string{
+				`'--dependency-tree' enables '--scanners sbom'.`,
+			},
+		},
+		{
+			name: "sarif format without sbom scanner",
+			options: &Options{
+				ReportOptions: ReportOptions{
+					Format: types.FormatSarif,
+				},
+				ScanOptions: ScanOptions{
+					Scanners: types.Scanners{
+						types.VulnerabilityScanner,
+					},
+				},
+			},
+			wantScanners: types.Scanners{
+				types.VulnerabilityScanner,
+				types.SbomScanner,
+			},
+			wantLogs: []string{
+				`Sarif format automatically enables '--scanners sbom' to get locations.`,
+			},
+		},
+		{
+			name: "spdx format without sbom scanner",
+			options: &Options{
+				ReportOptions: ReportOptions{
+					Format: types.FormatSPDX,
+				},
+				ScanOptions: ScanOptions{
+					Scanners: types.Scanners{
+						types.VulnerabilityScanner,
+					},
+				},
+			},
+			wantScanners: types.Scanners{
+				types.SbomScanner,
+			},
+			wantLogs: []string{
+				`"--format spdx" and "--format spdx-json" disable security scanning.`,
+				`["cyclonedx" "spdx" "spdx-json" "github"] automatically enables '--scanners sbom'.`,
+			},
+		},
+		{
+			name: "cyclonedx format without sbom scanner",
+			options: &Options{
+				ReportOptions: ReportOptions{
+					Format: types.FormatCycloneDX,
+				},
+				ScanOptions: ScanOptions{
+					Scanners: types.Scanners{
+						types.VulnerabilityScanner,
+					},
+				},
+			},
+			wantScanners: types.Scanners{
+				types.SbomScanner,
+			},
+			wantLogs: []string{
+				`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`,
+				`"cyclonedx" automatically enables '--scanners sbom'.`,
+			},
+		},
+		{
+			name: "k8s target, cyclonedx format without sbom scanner",
+			options: &Options{
+				ReportOptions: ReportOptions{
+					Format: types.FormatCycloneDX,
+				},
+				K8sOptions: K8sOptions{
+					Components: []string{
+						"workload",
+						"infra",
+					},
+				},
+				ScanOptions: ScanOptions{
+					Scanners: types.Scanners{
+						types.VulnerabilityScanner,
+					},
+				},
+			},
+			wantScanners: types.Scanners{
+				types.SbomScanner,
+			},
+			wantLogs: []string{
+				`"k8s with --format cyclonedx" disable security scanning.`,
+				`"cyclonedx" automatically enables '--scanners sbom'.`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			level := zap.DebugLevel
+			core, obs := observer.New(level)
+			log.Logger = zap.New(core).Sugar()
+
+			tt.options.Align()
+			assert.Equal(t, tt.wantScanners, tt.options.Scanners)
+
+			// Assert log messages
+			var gotMessages []string
+			for _, entry := range obs.AllUntimed() {
+				gotMessages = append(gotMessages, entry.Message)
+			}
+			assert.Equal(t, tt.wantLogs, gotMessages, tt.name)
 		})
 	}
 }

@@ -45,37 +45,13 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			want:   flag.ReportOptions{},
 		},
 		{
-			name: "happy path with an cyclonedx",
+			name: "list-all-pkgs warning",
 			fields: fields{
-				severities:  "CRITICAL",
-				format:      "cyclonedx",
 				listAllPkgs: true,
 			},
-			want: flag.ReportOptions{
-				Severities:  []dbTypes.Severity{dbTypes.SeverityCritical},
-				Format:      types.FormatCycloneDX,
-				ListAllPkgs: true,
-			},
-		},
-		{
-			name: "happy path with an cyclonedx option list-all-pkgs is false",
-			fields: fields{
-				severities:  "CRITICAL",
-				format:      "cyclonedx",
-				listAllPkgs: false,
-
-				debug: true,
-			},
+			want: flag.ReportOptions{},
 			wantLogs: []string{
-				`["cyclonedx" "spdx" "spdx-json" "github"] automatically enables '--list-all-pkgs'.`,
-				`Severities: ["CRITICAL"]`,
-			},
-			want: flag.ReportOptions{
-				Severities: []dbTypes.Severity{
-					dbTypes.SeverityCritical,
-				},
-				Format:      types.FormatCycloneDX,
-				ListAllPkgs: true,
+				`'--list-all-pkgs' option has been removed. Use '--scanners sbom' to show all packages found.`,
 			},
 		},
 		{
@@ -120,22 +96,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			want: flag.ReportOptions{
 				Format:     "template",
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-			},
-		},
-		{
-			name: "invalid option combination: --list-all-pkgs with --format table",
-			fields: fields{
-				format:      "table",
-				severities:  "LOW",
-				listAllPkgs: true,
-			},
-			wantLogs: []string{
-				`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`,
-			},
-			want: flag.ReportOptions{
-				Format:      "table",
-				Severities:  []dbTypes.Severity{dbTypes.SeverityLow},
-				ListAllPkgs: true,
 			},
 		},
 		{

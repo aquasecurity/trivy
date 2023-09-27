@@ -92,7 +92,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	excludeDevDeps(artifactDetail.Applications, options.IncludeDevDeps)
 
 	// Fill OS packages and language-specific packages
-	if options.ListAllPackages {
+	if options.Scanners.Enabled(types.SbomScanner) {
 		if res := s.osPkgScanner.Packages(target, artifactDetail, options); len(res.Packages) != 0 {
 			pkgResults = append(pkgResults, res)
 		}

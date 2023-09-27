@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -118,20 +119,61 @@ type Options struct {
 
 // Align takes consistency of options
 func (o *Options) Align() {
+	// "--scanners sbom" option is unavailable with "--format table".
+	// If user specifies "--scanners sbom" with "--format table", we should warn it.
+	if o.Format == types.FormatTable && o.Scanners.Enabled(types.SbomScanner) {
+		log.Logger.Warn(`"--scanners sbom" cannot be used with "--format table". Try "--format json" or other formats.`)
+		o.Scanners = lo.Filter(o.Scanners, func(scanner types.Scanner, _ int) bool {
+			return scanner != types.SbomScanner
+		})
+		return
+	}
+
+	if o.DependencyTree && !o.Scanners.Enabled(types.SbomScanner) {
+		log.Logger.Debugf("'--dependency-tree' enables '--scanners sbom'.")
+		o.Scanners = append(o.Scanners, types.SbomScanner)
+		return
+	}
+
+	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
+	if o.Format == types.FormatSarif && !o.Scanners.Enabled(types.SbomScanner) {
+		log.Logger.Debugf("Sarif format automatically enables '--scanners sbom' to get locations.")
+		o.Scanners = append(o.Scanners, types.SbomScanner)
+		return
+	}
+
 	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
-		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
-		o.Scanners = nil
+		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning.`)
+		if !o.Scanners.Enabled(types.SbomScanner) {
+			log.Logger.Debugf("%q automatically enables '--scanners sbom'.", types.SupportedSBOMFormats)
+		}
+		o.Scanners = types.Scanners{
+			types.SbomScanner,
+		}
+		return
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
-		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
-		o.Scanners = nil
+	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
+		if !viper.IsSet(ScannersFlag.ConfigName) {
+			log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+			o.Scanners = nil // disable default scanners
+		}
+		if !o.Scanners.Enabled(types.SbomScanner) {
+			log.Logger.Debugf("%q automatically enables '--scanners sbom'.", types.FormatCycloneDX)
+			o.Scanners = append(o.Scanners, types.SbomScanner)
+		}
+		return
 	}
 
 	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
-		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning`)
-		o.Scanners = nil
+		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning.`)
+		if !o.Scanners.Enabled(types.SbomScanner) {
+			log.Logger.Debugf("%q automatically enables '--scanners sbom'.", types.FormatCycloneDX)
+		}
+		o.Scanners = types.Scanners{
+			types.SbomScanner,
+		}
 	}
 }
 

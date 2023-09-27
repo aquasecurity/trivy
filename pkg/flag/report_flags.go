@@ -49,12 +49,6 @@ var (
 		Default:    false,
 		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
 	}
-	ListAllPkgsFlag = Flag{
-		Name:       "list-all-pkgs",
-		ConfigName: "list-all-pkgs",
-		Default:    false,
-		Usage:      "enabling the option will output all packages regardless of vulnerability",
-	}
 	IgnoreFileFlag = Flag{
 		Name:       "ignorefile",
 		ConfigName: "ignorefile",
@@ -100,6 +94,13 @@ var (
 		Default:    "",
 		Usage:      "compliance report to generate",
 	}
+	ListAllPkgsFlag = Flag{
+		Name:       "list-all-pkgs",
+		ConfigName: "list-all-pkgs",
+		Default:    false,
+		Usage:      "'--list-all-pkgs' option has been removed. Use '--scanners sbom' to show all packages found.",
+		Deprecated: true,
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -124,7 +125,6 @@ type ReportOptions struct {
 	ReportFormat   string
 	Template       string
 	DependencyTree bool
-	ListAllPkgs    bool
 	IgnoreFile     string
 	ExitCode       int
 	ExitOnEOL      int
@@ -176,7 +176,9 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 	format := getUnderlyingString[types.Format](f.Format)
 	template := getString(f.Template)
 	dependencyTree := getBool(f.DependencyTree)
-	listAllPkgs := getBool(f.ListAllPkgs)
+	if getBool(&ListAllPkgsFlag) {
+		log.Logger.Warn(ListAllPkgsFlag.Usage)
+	}
 
 	if template != "" {
 		if format == "" {
@@ -190,12 +192,6 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		}
 	}
 
-	// "--list-all-pkgs" option is unavailable with "--format table".
-	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
-	if listAllPkgs && format == types.FormatTable {
-		log.Logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
-	}
-
 	// "--dependency-tree" option is available only with "--format table".
 	if dependencyTree {
 		log.Logger.Infof(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
@@ -204,11 +200,6 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		if format != types.FormatTable {
 			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
-	}
-
-	// Enable '--list-all-pkgs' if needed
-	if f.forceListAllPkgs(format, listAllPkgs, dependencyTree) {
-		listAllPkgs = true
 	}
 
 	cs, err := loadComplianceTypes(getString(f.Compliance))
@@ -221,7 +212,6 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		ReportFormat:   getString(f.ReportFormat),
 		Template:       template,
 		DependencyTree: dependencyTree,
-		ListAllPkgs:    listAllPkgs,
 		IgnoreFile:     getString(f.IgnoreFile),
 		ExitCode:       getInt(f.ExitCode),
 		ExitOnEOL:      getInt(f.ExitOnEOL),
@@ -243,23 +233,6 @@ func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 	}
 
 	return cs, nil
-}
-
-func (f *ReportFlagGroup) forceListAllPkgs(format types.Format, listAllPkgs, dependencyTree bool) bool {
-	if slices.Contains(types.SupportedSBOMFormats, format) && !listAllPkgs {
-		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", types.SupportedSBOMFormats)
-		return true
-	}
-	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
-	if format == types.FormatSarif && !listAllPkgs {
-		log.Logger.Debugf("Sarif format automatically enables '--list-all-pkgs' to get locations")
-		return true
-	}
-	if dependencyTree && !listAllPkgs {
-		log.Logger.Debugf("'--dependency-tree' enables '--list-all-pkgs'.")
-		return true
-	}
-	return false
 }
 
 func toSeverity(severity []string) []dbTypes.Severity {
