@@ -347,7 +347,7 @@ func NewReportCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			options, err := imageFlags.ToOptions(args, globalFlags)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
