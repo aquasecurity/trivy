@@ -30,7 +30,7 @@ trivy config [flags] DIR
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
   -o, --output string                     output file name
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/defsec:0")
+      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
