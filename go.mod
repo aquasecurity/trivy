@@ -354,7 +354,11 @@ require (
 <<<<<<< HEAD
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
 	github.com/tklauser/numcpus v0.6.0 // indirect
+<<<<<<< HEAD
 	github.com/ulikunitz/xz v0.5.10 // indirect
+=======
+	github.com/ulikunitz/xz v0.5.11 // indirect
+>>>>>>> origin/dependabot/go_modules/github.com/sigstore/rekor-1.3.0
 =======
 	github.com/ulikunitz/xz v0.5.11 // indirect
 >>>>>>> origin/dependabot/go_modules/github.com/sigstore/rekor-1.3.0
