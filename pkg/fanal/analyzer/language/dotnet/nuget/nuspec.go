@@ -75,9 +75,8 @@ func (p nuspecParser) findLicense(name, version string) ([]string, error) {
 		return nil, xerrors.Errorf("unable to decode %q file: %w", path, err)
 	}
 
-	if license := pkg.Metadata.License; license.Type == "expression" && license.Text != "" {
-		return []string{license.Text}, nil
+	if license := pkg.Metadata.License; license.Type != "expression" || license.Text == "" {
+		return nil, nil
 	}
-
-	return nil, nil
+	return []string{pkg.Metadata.License.Text}, nil
 }

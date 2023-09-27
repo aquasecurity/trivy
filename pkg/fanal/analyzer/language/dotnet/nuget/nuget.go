@@ -22,7 +22,7 @@ import (
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(types.NuGet, newNugetLibraryAnalyzer)
+	analyzer.RegisterPostAnalyzer(analyzer.TypeGoMod, newNugetLibraryAnalyzer)
 }
 
 const (
@@ -75,10 +75,8 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 			license, ok := foundLicenses[lib.ID]
 			if !ok {
 				license, err = a.licenseParser.findLicense(lib.Name, lib.Version)
-				if err != nil {
-					if !errors.Is(err, fs.ErrNotExist) {
-						return xerrors.Errorf("license find error: %w", err)
-					}
+				if err != nil && !errors.Is(err, fs.ErrNotExist) {
+					return xerrors.Errorf("license find error: %w", err)
 				}
 				foundLicenses[lib.ID] = license
 			}
