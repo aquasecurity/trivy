@@ -36,7 +36,7 @@ var (
 			types.MisconfigScanner,
 			types.SecretScanner,
 			types.LicenseScanner,
-			types.SbomScanner,
+			types.SBOMScanner,
 		}),
 		Aliases: []Alias{
 			{

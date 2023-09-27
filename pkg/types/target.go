@@ -44,8 +44,8 @@ const (
 	// LicenseScanner is the scanner of licenses
 	LicenseScanner = Scanner("license")
 
-	// SbomScanner includes all found packages on report
-	SbomScanner = Scanner("sbom")
+	// SBOMScanner includes all found packages on report
+	SBOMScanner = Scanner("sbom")
 )
 
 var (
@@ -60,7 +60,7 @@ var (
 		RBACScanner,
 		SecretScanner,
 		LicenseScanner,
-		SbomScanner,
+		SBOMScanner,
 		NoneScanner,
 	}
 
@@ -70,7 +70,7 @@ var (
 	AllImageConfigScanners = Scanners{
 		MisconfigScanner,
 		SecretScanner,
-		SbomScanner,
+		SBOMScanner,
 		NoneScanner,
 	}
 )

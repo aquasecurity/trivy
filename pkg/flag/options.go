@@ -121,34 +121,34 @@ type Options struct {
 func (o *Options) Align() {
 	// "--scanners sbom" option is unavailable with "--format table".
 	// If user specifies "--scanners sbom" with "--format table", we should warn it.
-	if o.Format == types.FormatTable && o.Scanners.Enabled(types.SbomScanner) {
+	if o.Format == types.FormatTable && o.Scanners.Enabled(types.SBOMScanner) {
 		log.Logger.Warn(`"--scanners sbom" cannot be used with "--format table". Try "--format json" or other formats.`)
 		o.Scanners = lo.Filter(o.Scanners, func(scanner types.Scanner, _ int) bool {
-			return scanner != types.SbomScanner
+			return scanner != types.SBOMScanner
 		})
 		return
 	}
 
-	if o.DependencyTree && !o.Scanners.Enabled(types.SbomScanner) {
+	if o.DependencyTree && !o.Scanners.Enabled(types.SBOMScanner) {
 		log.Logger.Debugf("'--dependency-tree' enables '--scanners sbom'.")
-		o.Scanners = append(o.Scanners, types.SbomScanner)
+		o.Scanners = append(o.Scanners, types.SBOMScanner)
 		return
 	}
 
 	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
-	if o.Format == types.FormatSarif && !o.Scanners.Enabled(types.SbomScanner) {
+	if o.Format == types.FormatSarif && !o.Scanners.Enabled(types.SBOMScanner) {
 		log.Logger.Debugf("Sarif format automatically enables '--scanners sbom' to get locations.")
-		o.Scanners = append(o.Scanners, types.SbomScanner)
+		o.Scanners = append(o.Scanners, types.SBOMScanner)
 		return
 	}
 
 	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
 		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning.`)
-		if !o.Scanners.Enabled(types.SbomScanner) {
+		if !o.Scanners.Enabled(types.SBOMScanner) {
 			log.Logger.Debugf("%q automatically enables '--scanners sbom'.", types.SupportedSBOMFormats)
 		}
 		o.Scanners = types.Scanners{
-			types.SbomScanner,
+			types.SBOMScanner,
 		}
 		return
 	}
@@ -159,20 +159,20 @@ func (o *Options) Align() {
 			log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
 			o.Scanners = nil // disable default scanners
 		}
-		if !o.Scanners.Enabled(types.SbomScanner) {
+		if !o.Scanners.Enabled(types.SBOMScanner) {
 			log.Logger.Debugf("%q automatically enables '--scanners sbom'.", types.FormatCycloneDX)
-			o.Scanners = append(o.Scanners, types.SbomScanner)
+			o.Scanners = append(o.Scanners, types.SBOMScanner)
 		}
 		return
 	}
 
 	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
 		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning.`)
-		if !o.Scanners.Enabled(types.SbomScanner) {
+		if !o.Scanners.Enabled(types.SBOMScanner) {
 			log.Logger.Debugf("%q automatically enables '--scanners sbom'.", types.FormatCycloneDX)
 		}
 		o.Scanners = types.Scanners{
-			types.SbomScanner,
+			types.SBOMScanner,
 		}
 	}
 }
