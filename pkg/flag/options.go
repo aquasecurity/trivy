@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -129,52 +130,62 @@ func (o *Options) Align() {
 		return
 	}
 
+	// enable SBOM scanner for --dependency-tree
 	if o.DependencyTree && !o.Scanners.Enabled(types.SBOMScanner) {
-		log.Logger.Debugf("'--dependency-tree' enables '--scanners sbom'.")
+		log.Logger.Debugf(`"--dependency-tree" enables "--scanners sbom".`)
 		o.Scanners = append(o.Scanners, types.SBOMScanner)
 		return
 	}
 
 	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
 	if o.Format == types.FormatSarif && !o.Scanners.Enabled(types.SBOMScanner) {
-		log.Logger.Debugf("Sarif format automatically enables '--scanners sbom' to get locations.")
+		log.Logger.Debugf(`"--format sarif" automatically enables "--scanners sbom" to get locations.`)
 		o.Scanners = append(o.Scanners, types.SBOMScanner)
 		return
 	}
 
-	if o.Format == types.FormatSPDX || o.Format == types.FormatSPDXJSON {
-		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning.`)
+	if slices.Contains(types.SupportedSBOMFormats, o.Format) {
+		// enable SBOM scanner if needed
 		if !o.Scanners.Enabled(types.SBOMScanner) {
-			log.Logger.Debugf("%q automatically enables '--scanners sbom'.", types.SupportedSBOMFormats)
-		}
-		o.Scanners = types.Scanners{
-			types.SBOMScanner,
-		}
-		return
-	}
-
-	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
-		if !viper.IsSet(ScannersFlag.ConfigName) {
-			log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
-			o.Scanners = nil // disable default scanners
-		}
-		if !o.Scanners.Enabled(types.SBOMScanner) {
-			log.Logger.Debugf("%q automatically enables '--scanners sbom'.", types.FormatCycloneDX)
+			log.Logger.Debugf(`"--format %s" automatically enables "--scanners sbom".`, o.Format)
 			o.Scanners = append(o.Scanners, types.SBOMScanner)
 		}
-		return
+		// disable vulnerability scanner if needed
+		if o.Scanners.Enabled(types.VulnerabilityScanner) {
+			if o.vulnScannerShouldBeDisable() {
+				// disable vulnerability scanner
+				o.Scanners = lo.Filter(o.Scanners, func(scanner types.Scanner, _ int) bool {
+					return scanner != types.VulnerabilityScanner
+				})
+			}
+		}
+		if o.Scanners.AnyEnabled(types.LicenseScanner, types.MisconfigScanner, types.SecretScanner) {
+			log.Logger.Infof(`"--format %s" automatically disables "--scanners license,config,secret".`, o.Format)
+			o.Scanners = lo.Filter(o.Scanners, func(scanner types.Scanner, _ int) bool {
+				return scanner != types.LicenseScanner && scanner != types.MisconfigScanner && scanner != types.SecretScanner
+			})
+		}
+	}
+}
+
+func (o *Options) vulnScannerShouldBeDisable() bool {
+	if o.Format == types.FormatCycloneDX {
+		// image, repo, etc... targets
+		if len(o.K8sOptions.Components) == 0 {
+			if !viper.IsSet(ScannersFlag.ConfigName) {
+				log.Logger.Info(`"--format cyclonedx" automatically disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+				return true
+			}
+			// user has enabled vuln scanner
+			return false
+		}
+		// k8s target
+		log.Logger.Info(`"k8s with --format cyclonedx" automatically disables security scanning.`)
+		return true
 	}
 
-	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
-		log.Logger.Info(`"k8s with --format cyclonedx" disable security scanning.`)
-		if !o.Scanners.Enabled(types.SBOMScanner) {
-			log.Logger.Debugf("%q automatically enables '--scanners sbom'.", types.FormatCycloneDX)
-		}
-		o.Scanners = types.Scanners{
-			types.SBOMScanner,
-		}
-	}
+	log.Logger.Infof(`"--format %s" automatically disables security scanning.`, o.Format)
+	return true
 }
 
 // RegistryOpts returns options for OCI registries

@@ -129,7 +129,7 @@ func Test_Align(t *testing.T) {
 				types.SBOMScanner,
 			},
 			wantLogs: []string{
-				`'--dependency-tree' enables '--scanners sbom'.`,
+				`"--dependency-tree" enables "--scanners sbom".`,
 			},
 		},
 		{
@@ -149,7 +149,7 @@ func Test_Align(t *testing.T) {
 				types.SBOMScanner,
 			},
 			wantLogs: []string{
-				`Sarif format automatically enables '--scanners sbom' to get locations.`,
+				`"--format sarif" automatically enables "--scanners sbom" to get locations.`,
 			},
 		},
 		{
@@ -168,8 +168,44 @@ func Test_Align(t *testing.T) {
 				types.SBOMScanner,
 			},
 			wantLogs: []string{
-				`"--format spdx" and "--format spdx-json" disable security scanning.`,
-				`["cyclonedx" "spdx" "spdx-json" "github"] automatically enables '--scanners sbom'.`,
+				`"--format spdx" automatically enables "--scanners sbom".`,
+				`"--format spdx" automatically disables security scanning.`,
+			},
+		},
+		{
+			name: "spdx format with only sbom scanner",
+			options: &Options{
+				ReportOptions: ReportOptions{
+					Format: types.FormatSPDX,
+				},
+				ScanOptions: ScanOptions{
+					Scanners: types.Scanners{
+						types.SBOMScanner,
+					},
+				},
+			},
+			wantScanners: types.Scanners{
+				types.SBOMScanner,
+			},
+		},
+		{
+			name: "spdx format with secret scanner",
+			options: &Options{
+				ReportOptions: ReportOptions{
+					Format: types.FormatSPDX,
+				},
+				ScanOptions: ScanOptions{
+					Scanners: types.Scanners{
+						types.SecretScanner,
+					},
+				},
+			},
+			wantScanners: types.Scanners{
+				types.SBOMScanner,
+			},
+			wantLogs: []string{
+				`"--format spdx" automatically enables "--scanners sbom".`,
+				`"--format spdx" automatically disables "--scanners license,config,secret".`,
 			},
 		},
 		{
@@ -188,8 +224,8 @@ func Test_Align(t *testing.T) {
 				types.SBOMScanner,
 			},
 			wantLogs: []string{
-				`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`,
-				`"cyclonedx" automatically enables '--scanners sbom'.`,
+				`"--format cyclonedx" automatically enables "--scanners sbom".`,
+				`"--format cyclonedx" automatically disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`,
 			},
 		},
 		{
@@ -214,8 +250,8 @@ func Test_Align(t *testing.T) {
 				types.SBOMScanner,
 			},
 			wantLogs: []string{
-				`"k8s with --format cyclonedx" disable security scanning.`,
-				`"cyclonedx" automatically enables '--scanners sbom'.`,
+				`"--format cyclonedx" automatically enables "--scanners sbom".`,
+				`"k8s with --format cyclonedx" automatically disables security scanning.`,
 			},
 		},
 	}
