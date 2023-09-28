@@ -582,6 +582,11 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
 	}
 
+	// java-db only works on client side.
+	serverFlags.DBFlagGroup.DownloadJavaDBOnly = nil // disable '--download-java-db-only'
+	serverFlags.DBFlagGroup.SkipJavaDBUpdate = nil   // disable '--skip-java-db-update'
+	serverFlags.DBFlagGroup.JavaDBRepository = nil   // disable '--java-db-repository'
+
 	cmd := &cobra.Command{
 		Use:     "server [flags]",
 		Aliases: []string{"s"},
