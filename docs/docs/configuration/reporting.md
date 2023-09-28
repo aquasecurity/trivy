@@ -363,19 +363,19 @@ See [here](../supply-chain/sbom.md) for details.
 To generate multiple reports, you can generate the JSON report first and convert it to other formats with the `convert` subcommand.
 
 ```shell
-$ trivy image --format json -o result.json --list-all-pkgs debian:11
+$ trivy image --format json -o result.json --scanners vuln,secret,sbom debian:11
 $ trivy convert --format cyclonedx --output result.cdx result.json
 ```
 
 !!! note
     Please note that if you want to convert to a format that requires a list of packages, 
-    such as SBOM, you need to add the `--list-all-pkgs` flag when outputting in JSON.
+    such as SBOM, you need to enable the [sbom scanner][sbom-scanner] when outputting in JSON.
 
 [Filtering options](./filtering.md) such as `--severity` are also available with `convert`.
 
 ```shell
 # Output all severities in JSON
-$ trivy image --format json -o result.json --list-all-pkgs debian:11
+$ trivy image --format json -o result.json --scanners vuln,secret,sbom debian:11
 
 # Output only critical issues in table format
 $ trivy convert --format table --severity CRITICAL result.json
@@ -389,3 +389,4 @@ $ trivy convert --format table --severity CRITICAL result.json
 [asff]: ../../tutorials/integrations/aws-security-hub.md
 [sarif]: https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/managing-results-from-code-scanning
 [sprig]: http://masterminds.github.io/sprig/
+[sbom-scanner]: ../scanner/sbom.md

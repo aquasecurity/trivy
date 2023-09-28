@@ -49,10 +49,6 @@ template:
 # Default is false
 dependency-tree: false
 
-# Same as '--list-all-pkgs'
-# Default is false
-list-all-pkgs: false
-
 # Same as '--ignorefile'
 # Default is '.trivyignore'
 ignorefile: .trivyignore

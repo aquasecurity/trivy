@@ -1,7 +1,6 @@
 timeout: 10m
 format: json
 dependency-tree: true
-list-all-pkgs: true
 exit-code: 1
 output: result.json
 severity:
@@ -17,6 +16,7 @@ scan:
   scanners:
     - vuln
     - secret
+    - sbom
 vulnerability:
   type:
     - os
