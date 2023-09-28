@@ -18,6 +18,8 @@ import (
 const (
 	TypeOCI  = "oci"
 	TypeDart = "dart"
+
+	TypeUnknown = "unknown"
 )
 
 type PackageURL struct {
@@ -74,7 +76,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 
 	// Return packages without namespace.
 	// OS packages are not supposed to have namespace.
-	if p.Namespace == "" || p.IsOSPkg() {
+	if p.Namespace == "" || p.Class() == types.ClassOSPkg {
 		return pkg
 	}
 
@@ -129,12 +131,23 @@ func (p *PackageURL) LangType() ftypes.LangType {
 		return ftypes.Pub
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
+	default:
+		return TypeUnknown
 	}
-	return "unknown"
 }
 
-func (p *PackageURL) IsOSPkg() bool {
-	return p.Type == packageurl.TypeApk || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
+func (p *PackageURL) Class() types.ResultClass {
+	switch p.Type {
+	case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM:
+		// OS packages
+		return types.ClassOSPkg
+	default:
+		if p.LangType() == TypeUnknown {
+			return types.ClassUnknown
+		}
+		// Language-specific packages
+		return types.ClassLangPkg
+	}
 }
 
 func (p *PackageURL) BOMRef() string {

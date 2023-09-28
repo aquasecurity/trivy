@@ -65,9 +65,6 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		// https://www.swift.org/package-manager/#importing-dependencies
 		ecosystem = vulnerability.Swift
 		comparer = compare.GenericComparer{}
-	case ftypes.Bitnami:
-		ecosystem = vulnerability.Bitnami
-		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
 		// CocoaPods uses RubyGems version specifiers
 		// https://guides.cocoapods.org/making/making-a-cocoapod.html#cocoapods-versioning-specifics
@@ -76,6 +73,9 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.CondaPkg:
 		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, false
+	case ftypes.Bitnami:
+		ecosystem = vulnerability.Bitnami
+		comparer = compare.GenericComparer{}
 	default:
 		log.Logger.Warnf("The %q library type is not supported for vulnerability scanning", libType)
 		return Driver{}, false
