@@ -46,13 +46,14 @@ func TestK8sClusterInfoReport(t *testing.T) {
 					Kind:      "PodInfo",
 					Name:      "kube-apiserver-kind-control-plane",
 					RawResource: map[string]interface{}{
-						"Containers": []interface{}{map[string]interface{}{
-							"Digest":     "18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-							"ID":         "kube-apiserver:v1.21.1",
-							"Registry":   "k8s.gcr.io",
-							"Repository": "kube-apiserver",
-							"Version":    "v1.21.1",
-						},
+						"Containers": []interface{}{
+							map[string]interface{}{
+								"Digest":     "18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
+								"ID":         "kube-apiserver:v1.21.1",
+								"Registry":   "k8s.gcr.io",
+								"Repository": "kube-apiserver",
+								"Version":    "v1.21.1",
+							},
 						},
 						"Properties": map[string]string{
 							"ControlPlaneComponents": "kube-apiserver",
@@ -86,14 +87,22 @@ func TestK8sClusterInfoReport(t *testing.T) {
 				Name:    "kube-apiserver-kind-control-plane",
 				Version: "1.21.1",
 				Properties: []core.Property{
-					{Name: "Name", Value: "kube-cluster", Namespace: k8sCoreComponentNamespace},
+					{
+						Name:      "Name",
+						Value:     "kube-cluster",
+						Namespace: k8sCoreComponentNamespace,
+					},
 				},
 				Components: []*core.Component{
 					{
 						Type: cdx.ComponentTypeApplication,
 						Name: "kube-apiserver-kind-control-plane",
 						Properties: []core.Property{
-							{Name: "ControlPlaneComponents", Value: "kube-apiserver", Namespace: k8sCoreComponentNamespace},
+							{
+								Name:      "ControlPlaneComponents",
+								Value:     "kube-apiserver",
+								Namespace: k8sCoreComponentNamespace,
+							},
 						},
 						Components: []*core.Component{
 							{
@@ -110,15 +119,18 @@ func TestK8sClusterInfoReport(t *testing.T) {
 												Key:   "repository_url",
 												Value: "k8s.gcr.io/kube-apiserver",
 											},
-											{
-												Key: "arch",
-											},
 										},
 									},
 								},
 								Properties: []core.Property{
-									{Name: cyc.PropertyPkgID, Value: "k8s.gcr.io/kube-apiserver:1.21.1"},
-									{Name: cyc.PropertyPkgType, Value: "oci"},
+									{
+										Name:  cyc.PropertyPkgID,
+										Value: "k8s.gcr.io/kube-apiserver:1.21.1",
+									},
+									{
+										Name:  cyc.PropertyPkgType,
+										Value: "oci",
+									},
 								},
 							},
 						},
@@ -127,13 +139,36 @@ func TestK8sClusterInfoReport(t *testing.T) {
 						Type: cdx.ComponentTypePlatform,
 						Name: "kind-control-plane",
 						Properties: []core.Property{
-							{Name: "Architecture", Value: "arm64"},
-							{Name: "HostName", Value: "kind-control-plane"},
-							{Name: "KernelVersion", Value: "6.2.15-300.fc38.aarch64"},
-							{Name: "NodeRole", Value: "master"},
-							{Name: "OperatingSystem", Value: "linux"},
-							{Name: k8sComponentName, Value: "kind-control-plane", Namespace: k8sCoreComponentNamespace},
-							{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
+							{
+								Name:  "Architecture",
+								Value: "arm64",
+							},
+							{
+								Name:  "HostName",
+								Value: "kind-control-plane",
+							},
+							{
+								Name:  "KernelVersion",
+								Value: "6.2.15-300.fc38.aarch64",
+							},
+							{
+								Name:  "NodeRole",
+								Value: "master",
+							},
+							{
+								Name:  "OperatingSystem",
+								Value: "linux",
+							},
+							{
+								Name:      k8sComponentName,
+								Value:     "kind-control-plane",
+								Namespace: k8sCoreComponentNamespace,
+							},
+							{
+								Name:      k8sComponentType,
+								Value:     "node",
+								Namespace: k8sCoreComponentNamespace,
+							},
 						},
 						Components: []*core.Component{
 							{
@@ -141,16 +176,32 @@ func TestK8sClusterInfoReport(t *testing.T) {
 								Name:    "ubuntu",
 								Version: "21.04",
 								Properties: []core.Property{
-									{Name: "Class", Value: "os-pkgs", Namespace: ""},
-									{Name: "Type", Value: "ubuntu", Namespace: ""},
+									{
+										Name:      "Class",
+										Value:     "os-pkgs",
+										Namespace: "",
+									},
+									{
+										Name:      "Type",
+										Value:     "ubuntu",
+										Namespace: "",
+									},
 								},
 							},
 							{
 								Type: cdx.ComponentTypeApplication,
 								Name: "node-core-components",
 								Properties: []core.Property{
-									{Name: "Class", Value: "lang-pkgs", Namespace: ""},
-									{Name: "Type", Value: "golang", Namespace: ""},
+									{
+										Name:      "Class",
+										Value:     "lang-pkgs",
+										Namespace: "",
+									},
+									{
+										Name:      "Type",
+										Value:     "golang",
+										Namespace: "",
+									},
 								},
 								Components: []*core.Component{
 									{
@@ -158,8 +209,16 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										Name:    "k8s.io/kubelet",
 										Version: "1.21.1",
 										Properties: []core.Property{
-											{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
-											{Name: k8sComponentName, Value: "k8s.io/kubelet", Namespace: k8sCoreComponentNamespace},
+											{
+												Name:      k8sComponentType,
+												Value:     "node",
+												Namespace: k8sCoreComponentNamespace,
+											},
+											{
+												Name:      k8sComponentName,
+												Value:     "k8s.io/kubelet",
+												Namespace: k8sCoreComponentNamespace,
+											},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
@@ -175,8 +234,16 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										Name:    "github.com/containerd/containerd",
 										Version: "1.5.2",
 										Properties: []core.Property{
-											{Name: k8sComponentType, Value: "node", Namespace: k8sCoreComponentNamespace},
-											{Name: k8sComponentName, Value: "github.com/containerd/containerd", Namespace: k8sCoreComponentNamespace},
+											{
+												Name:      k8sComponentType,
+												Value:     "node",
+												Namespace: k8sCoreComponentNamespace,
+											},
+											{
+												Name:      k8sComponentName,
+												Value:     "github.com/containerd/containerd",
+												Namespace: k8sCoreComponentNamespace,
+											},
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{

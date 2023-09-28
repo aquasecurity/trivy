@@ -230,15 +230,19 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	if index != -1 {
 		name = name[index+1:]
 	}
-	qualifiers := packageurl.Qualifiers{
-		packageurl.Qualifier{
+
+	var qualifiers packageurl.Qualifiers
+	if repoURL := digest.Repository.Name(); repoURL != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "repository_url",
-			Value: digest.Repository.Name(),
-		},
-		packageurl.Qualifier{
+			Value: repoURL,
+		})
+	}
+	if arch := metadata.ImageConfig.Architecture; arch != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "arch",
 			Value: metadata.ImageConfig.Architecture,
-		},
+		})
 	}
 
 	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
