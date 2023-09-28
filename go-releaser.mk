@@ -93,6 +93,8 @@ publish-image: docker_auth
 	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_COMMIT)
 	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_BRANCH)
 
+publish: publish-image
+
 docker-shell:
 	docker run -it -v ${PWD}:${WORKING_DIR} -v /var/run/docker.sock:/var/run/docker.sock -w ${WORKING_DIR} docker:git
 
