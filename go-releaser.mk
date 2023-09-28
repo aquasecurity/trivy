@@ -14,7 +14,7 @@ export CHECKOUT_TMP_FOLDER := /tmp/jenkins-divvy-shared-libraries-tmp
 export DEVBOX_HOME := /home/devbox
 export BUILD_TOOLS_LIBRARY := git@github.com:rapid7/jenkins-divvy-shared-libraries
 export TAG_COMMIT := new-$(LAST_COMMIT)
-export TAG_BRANCH := new-$(TAG_BRANCH)
+export TAG_BRANCH := new-$(LOCAL_BRANCH)
 #Jenkins builds pass that
 ifneq ($(DOCKER_REPO_PATH_JEN),)
 	DOCKER_REPO_PATH = $(DOCKER_REPO_PATH_JEN)
