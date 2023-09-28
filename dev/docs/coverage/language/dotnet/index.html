@@ -1858,12 +1858,38 @@ You're not viewing the latest version.
     packages.config
   </a>
   
+    <nav class="md-nav" aria-label="packages.config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#license-detection" class="md-nav__link">
+    license detection
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
   <a href="#packageslockjson" class="md-nav__link">
     packages.lock.json
   </a>
+  
+    <nav class="md-nav" aria-label="packages.lock.json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#license-detection_1" class="md-nav__link">
+    license detection
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3556,12 +3582,38 @@ You're not viewing the latest version.
     packages.config
   </a>
   
+    <nav class="md-nav" aria-label="packages.config">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#license-detection" class="md-nav__link">
+    license detection
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
   <a href="#packageslockjson" class="md-nav__link">
     packages.lock.json
   </a>
+  
+    <nav class="md-nav" aria-label="packages.lock.json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#license-detection_1" class="md-nav__link">
+    license detection
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3606,7 +3658,7 @@ You're not viewing the latest version.
 <td>NuGet</td>
 <td align="center">✓</td>
 <td align="center">✓</td>
-<td align="center">-</td>
+<td align="center">✓</td>
 </tr>
 </tbody>
 </table>
@@ -3649,16 +3701,26 @@ You're not viewing the latest version.
 </tr>
 </tbody>
 </table>
-<h3 id="depsjson">*.deps.json</h3>
+<h2 id="depsjson">*.deps.json</h2>
 <p>Trivy parses <code>*.deps.json</code> files. Trivy currently excludes dev dependencies from the report.</p>
-<h3 id="packagesconfig">packages.config</h3>
+<h2 id="packagesconfig">packages.config</h2>
 <p>Trivy only finds dependency names and versions from <code>packages.config</code> files. To build dependency graph, it is better to use <code>packages.lock.json</code> files.</p>
-<h3 id="packageslockjson">packages.lock.json</h3>
+<h3 id="license-detection">license detection</h3>
+<p><code>packages.config</code> files don't have information about the licenses used.
+Trivy uses <a href="https://learn.microsoft.com/en-us/nuget/reference/nuspec">*.nuspec</a> files from <a href="https://learn.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders">global packages folder</a> to detect licenses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>licenseUrl</code> field is <a href="https://learn.microsoft.com/en-us/nuget/reference/nuspec#licenseurl">deprecated</a>. Trivy doesn't parse this field and only checks the <a href="https://learn.microsoft.com/en-us/nuget/reference/nuspec#license">license</a> field (license <code>expression</code> type only).</p>
+</div>
+<p>Currently only the default path and <code>NUGET_PACKAGES</code> environment variable are supported.</p>
+<h2 id="packageslockjson">packages.lock.json</h2>
 <p>Don't forgot to <a href="https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#enabling-the-lock-file">enable</a> lock files in your project.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Please make sure your lock file is up-to-date after modifying dependencies.</p>
 </div>
+<h3 id="license-detection_1">license detection</h3>
+<p>Same as <a href="#license-detection">packages.config</a></p>
 
               
             </article>
