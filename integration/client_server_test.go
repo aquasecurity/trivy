@@ -35,7 +35,6 @@ type csArgs struct {
 	ListAllPackages   bool
 	Target            string
 	secretConfig      string
-	Scanners          []string
 }
 
 func TestClientServer(t *testing.T) {
@@ -349,9 +348,6 @@ func TestClientServerWithFormat(t *testing.T) {
 			args: csArgs{
 				Format: "github",
 				Input:  "testdata/fixtures/images/alpine-310.tar.gz",
-				Scanners: []string{
-					"sbom",
-				},
 			},
 			golden: "testdata/alpine-310.gsbom.golden",
 		},
@@ -645,12 +641,6 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 	}
 
 	osArgs = append(osArgs, "--output", outputFile)
-
-	if len(c.Scanners) != 0 {
-		osArgs = append(osArgs,
-			"--scanners", strings.Join(c.Scanners, ","),
-		)
-	}
 
 	if c.Target != "" {
 		osArgs = append(osArgs, c.Target)
