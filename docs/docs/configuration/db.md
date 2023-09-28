@@ -64,6 +64,9 @@ Downloading the Java index DB from an external OCI registry can be done by using
 $ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db --download-java-db-only
 ```
 
+!!! Note
+    In [Client/Server](../references/modes/client-server.md) mode, `Java index DB` is currently only used on the `client` side.
+
 ## Remove DBs
 The `--reset` flag removes all caches and databases.
 
