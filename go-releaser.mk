@@ -5,7 +5,7 @@ export DOCKER_REPO_PATH := 889956758113.dkr.ecr.us-west-2.amazonaws.com
 export DOCKER_REPO_NAME := ics/trivy
 export DOCKER_REGION := us-west-2
 export DOCKER_TAG := local
-export LOCAL_BRANCH := $(shell git branch | grep \* | cut -d ' ' -f2)
+export LOCAL_BRANCH := $(shell git branch | grep \* | cut -d ' ' -f2 | sed 's/^[^a-zA-Z0-9_]*//' | sed -E 's/[^a-zA-Z0-9]+/-/g')
 export BUILD_NUM := local
 export DEVBOX_TAG := go1.17.5-java17-linux4.13.0-45-generic-docker20.10.12
 export DEVBOX_REPO := 889956758113.dkr.ecr.us-west-2.amazonaws.com/tools/devbox
@@ -13,7 +13,6 @@ export LAST_COMMIT := $(shell git rev-parse --short HEAD)
 export CHECKOUT_TMP_FOLDER := /tmp/jenkins-divvy-shared-libraries-tmp
 export DEVBOX_HOME := /home/devbox
 export BUILD_TOOLS_LIBRARY := git@github.com:rapid7/jenkins-divvy-shared-libraries
-
 #Jenkins builds pass that
 ifneq ($(DOCKER_REPO_PATH_JEN),)
 	DOCKER_REPO_PATH = $(DOCKER_REPO_PATH_JEN)
@@ -35,13 +34,19 @@ ifneq ($(LOCAL_BRANCH_JEN),)
 	LOCAL_BRANCH = $(LOCAL_BRANCH_JEN)
 endif
 
+ifneq ($(GIT_BRANCH),)
+	LOCAL_BRANCH = $(GIT_BRANCH)
+endif
+
 ifneq ($(GITHUB_APP),)
 	BUILD_TOOLS_LIBRARY =  https://$(GITHUB_APP):$(GITHUB_TOKEN)@github.com/rapid7/jenkins-divvy-shared-libraries.git
 endif
 
+export TAG_COMMIT := new-$(LAST_COMMIT)
+export TAG_BRANCH := new-$(LOCAL_BRANCH)
 
-.PHONY: goreleaser
 
+all: build image
 
 .PHONY: shell
 shell:
@@ -69,21 +74,31 @@ test:
 # for example:
 # 		java → JAR, go → executable binary and/or lib. 
 # If the output is just a dockerfile or something else, this target may point to the relevant build step (e.g. "image")
-build: configure-env
-	./goreleaser build --snapshot --rm-dist --config=.goreleaser.yml
-
+# build: configure-env
+# 	./goreleaser build --snapshot --rm-dist --config=goreleaser.yml
+build:
+	go build $(LDFLAGS) ./cmd/trivy
 # If a dockerfile is present, this command will build the docker image.
 # for goreleaser - it will build the binary and the image (without push the image).
-image: configure-env
-	./goreleaser release --snapshot --skip-validate --rm-dist --config=.goreleaser.yml
+# image: configure-env
+# 	./goreleaser release --snapshot --skip-validate --rm-dist --config=goreleaser.yml
+image: build
+	docker build \
+		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_COMMIT) \
+		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_BRANCH) \
+		.
 
+.PHONY: get-image
+get-image:
+	echo ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_COMMIT)
 # publish the built image to the registry used by the project
 # need be authenticate to the docker registry before, for example using this command:
 # aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 889956758113.dkr.ecr.us-west-2.amazonaws.com
-publish-image: docker_auth
-	docker tag ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:latest ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:${LOCAL_BRANCH}
-	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:latest
-	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(LOCAL_BRANCH)
+publish-image:
+	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_COMMIT)
+	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_BRANCH)
+
+publish: publish-image
 
 docker-shell:
 	docker run -it -v ${PWD}:${WORKING_DIR} -v /var/run/docker.sock:/var/run/docker.sock -w ${WORKING_DIR} docker:git
