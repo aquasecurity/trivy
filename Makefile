@@ -123,4 +123,7 @@ mkdocs-serve:
 easyjson: $(GOBIN)/easyjson
 	easyjson pkg/module/serialize/types.go
 
+.PHONY: get-image
+get-image:
+	echo dummy get-image
 include go-releaser.mk
