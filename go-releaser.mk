@@ -13,7 +13,8 @@ export LAST_COMMIT := $(shell git rev-parse --short HEAD)
 export CHECKOUT_TMP_FOLDER := /tmp/jenkins-divvy-shared-libraries-tmp
 export DEVBOX_HOME := /home/devbox
 export BUILD_TOOLS_LIBRARY := git@github.com:rapid7/jenkins-divvy-shared-libraries
-
+export TAG_COMMIT := new-$(LAST_COMMIT)
+export TAG_BRANCH := new-$(TAG_BRANCH)
 #Jenkins builds pass that
 ifneq ($(DOCKER_REPO_PATH_JEN),)
 	DOCKER_REPO_PATH = $(DOCKER_REPO_PATH_JEN)
@@ -40,8 +41,7 @@ ifneq ($(GITHUB_APP),)
 endif
 
 
-.PHONY: goreleaser
-
+all: build
 
 .PHONY: shell
 shell:
@@ -79,18 +79,19 @@ build:
 # 	./goreleaser release --snapshot --skip-validate --rm-dist --config=goreleaser.yml
 image: build
 	docker build \
-		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:latest \
-		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(LAST_COMMIT) \
-		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(LOCAL_BRANCH) \
+		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_COMMIT) \
+		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_BRANCH) \
 		.
 
+.PHONY: get-image
+get-image:
+	echo ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_COMMIT)
 # publish the built image to the registry used by the project
 # need be authenticate to the docker registry before, for example using this command:
 # aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 889956758113.dkr.ecr.us-west-2.amazonaws.com
 publish-image: docker_auth
-	docker tag ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:latest ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:${LOCAL_BRANCH}
-	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(LAST_COMMIT)
-	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(LOCAL_BRANCH)
+	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_COMMIT)
+	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_BRANCH)
 
 docker-shell:
 	docker run -it -v ${PWD}:${WORKING_DIR} -v /var/run/docker.sock:/var/run/docker.sock -w ${WORKING_DIR} docker:git
