@@ -13,8 +13,6 @@ export LAST_COMMIT := $(shell git rev-parse --short HEAD)
 export CHECKOUT_TMP_FOLDER := /tmp/jenkins-divvy-shared-libraries-tmp
 export DEVBOX_HOME := /home/devbox
 export BUILD_TOOLS_LIBRARY := git@github.com:rapid7/jenkins-divvy-shared-libraries
-export TAG_COMMIT := new-$(LAST_COMMIT)
-export TAG_BRANCH := new-$(LOCAL_BRANCH)
 #Jenkins builds pass that
 ifneq ($(DOCKER_REPO_PATH_JEN),)
 	DOCKER_REPO_PATH = $(DOCKER_REPO_PATH_JEN)
@@ -43,6 +41,9 @@ endif
 ifneq ($(GITHUB_APP),)
 	BUILD_TOOLS_LIBRARY =  https://$(GITHUB_APP):$(GITHUB_TOKEN)@github.com/rapid7/jenkins-divvy-shared-libraries.git
 endif
+
+export TAG_COMMIT := new-$(LAST_COMMIT)
+export TAG_BRANCH := new-$(LOCAL_BRANCH)
 
 
 all: build image
