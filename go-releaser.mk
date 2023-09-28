@@ -36,6 +36,10 @@ ifneq ($(LOCAL_BRANCH_JEN),)
 	LOCAL_BRANCH = $(LOCAL_BRANCH_JEN)
 endif
 
+ifneq ($(GIT_BRANCH),)
+	LOCAL_BRANCH = $(GIT_BRANCH)
+endif
+
 ifneq ($(GITHUB_APP),)
 	BUILD_TOOLS_LIBRARY =  https://$(GITHUB_APP):$(GITHUB_TOKEN)@github.com/rapid7/jenkins-divvy-shared-libraries.git
 endif
