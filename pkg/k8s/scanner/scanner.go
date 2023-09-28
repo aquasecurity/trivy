@@ -35,6 +35,8 @@ const (
 	k8sComponentType          = "Type"
 	k8sComponentName          = "Name"
 	k8sComponentNode          = "node"
+
+	k8sLocation = "k8s.io"
 )
 
 type Scanner struct {
@@ -254,6 +256,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 				Type:       cdx.ComponentTypeApplication,
 				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
 				Components: imageComponents,
+				PackageURL: generatePURL(comp.Name, comp.Version),
 			}
 			coreComponents = append(coreComponents, rootComponent)
 		case nodeInfo:
@@ -284,6 +287,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 		Type:       cdx.ComponentTypePlatform,
 		Properties: cInfo.Properties,
 		Components: coreComponents,
+		PackageURL: generatePURL(cInfo.Name, cInfo.Version),
 	}
 	return rootComponent, nil
 }
@@ -386,7 +390,7 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 							},
 						},
 						PackageURL: &purl.PackageURL{
-							PackageURL: *packageurl.NewPackageURL(golang, "", kubelet, kubeletVersion, packageurl.Qualifiers{}, ""),
+							PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, "k8s.io", "kubelet", kubeletVersion, packageurl.Qualifiers{}, ""),
 						},
 					},
 					{
@@ -427,4 +431,15 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 		return properties[i].Name < properties[j].Name
 	})
 	return properties
+}
+
+func generatePURL(name, version string) *purl.PackageURL {
+	if !strings.HasPrefix(name, k8sLocation+"/") {
+		return nil
+	}
+
+	name = strings.TrimPrefix(name, k8sLocation+"/")
+	return &purl.PackageURL{
+		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, k8sLocation, name, version, packageurl.Qualifiers{}, ""),
+	}
 }

@@ -19,6 +19,9 @@ const (
 	TypeOCI  = "oci"
 	TypeDart = "dart"
 
+	// TypeK8s is a custom type for Kubernetes PURL
+	TypeK8s = "k8s"
+
 	TypeUnknown = "unknown"
 )
 
@@ -131,6 +134,8 @@ func (p *PackageURL) LangType() ftypes.LangType {
 		return ftypes.Pub
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
+	case TypeK8s:
+		return ftypes.K8sComponent
 	default:
 		return TypeUnknown
 	}

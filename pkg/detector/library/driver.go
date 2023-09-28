@@ -76,6 +76,9 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.Bitnami:
 		ecosystem = vulnerability.Bitnami
 		comparer = compare.GenericComparer{}
+	case ftypes.K8sComponent:
+		ecosystem = vulnerability.Kubernetes
+		comparer = compare.GenericComparer{}
 	default:
 		log.Logger.Warnf("The %q library type is not supported for vulnerability scanning", libType)
 		return Driver{}, false
