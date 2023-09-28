@@ -3,6 +3,7 @@
 package integration
 
 import (
+	"github.com/samber/lo"
 	"os"
 	"path/filepath"
 	"strings"
@@ -21,11 +22,10 @@ import (
 // TestRepository tests `trivy repo` with the local code repositories
 func TestRepository(t *testing.T) {
 	type args struct {
-		scanner        types.Scanner
+		scanners       types.Scanners
 		ignoreIDs      []string
 		policyPaths    []string
 		namespaces     []string
-		listAllPkgs    bool
 		input          string
 		secretConfig   string
 		filePatterns   []string
@@ -46,15 +46,19 @@ func TestRepository(t *testing.T) {
 		{
 			name: "gomod",
 			args: args{
-				scanner: types.VulnerabilityScanner,
-				input:   "testdata/fixtures/repo/gomod",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+				},
+				input: "testdata/fixtures/repo/gomod",
 			},
 			golden: "testdata/gomod.json.golden",
 		},
 		{
 			name: "gomod with skip files",
 			args: args{
-				scanner:   types.VulnerabilityScanner,
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+				},
 				input:     "testdata/fixtures/repo/gomod",
 				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
 			},
@@ -63,7 +67,9 @@ func TestRepository(t *testing.T) {
 		{
 			name: "gomod with skip dirs",
 			args: args{
-				scanner:  types.VulnerabilityScanner,
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+				},
 				input:    "testdata/fixtures/repo/gomod",
 				skipDirs: []string{"testdata/fixtures/repo/gomod/submod2"},
 			},
@@ -72,18 +78,22 @@ func TestRepository(t *testing.T) {
 		{
 			name: "npm",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				input:       "testdata/fixtures/repo/npm",
-				listAllPkgs: true,
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/npm",
 			},
 			golden: "testdata/npm.json.golden",
 		},
 		{
 			name: "npm with dev deps",
 			args: args{
-				scanner:        types.VulnerabilityScanner,
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
 				input:          "testdata/fixtures/repo/npm",
-				listAllPkgs:    true,
 				includeDevDeps: true,
 			},
 			golden: "testdata/npm-with-dev.json.golden",
@@ -91,139 +101,171 @@ func TestRepository(t *testing.T) {
 		{
 			name: "yarn",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				input:       "testdata/fixtures/repo/yarn",
-				listAllPkgs: true,
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/yarn",
 			},
 			golden: "testdata/yarn.json.golden",
 		},
 		{
 			name: "pnpm",
 			args: args{
-				scanner: types.VulnerabilityScanner,
-				input:   "testdata/fixtures/repo/pnpm",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+				},
+				input: "testdata/fixtures/repo/pnpm",
 			},
 			golden: "testdata/pnpm.json.golden",
 		},
 		{
 			name: "pip",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/pip",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/pip",
 			},
 			golden: "testdata/pip.json.golden",
 		},
 		{
 			name: "pipenv",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/pipenv",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/pipenv",
 			},
 			golden: "testdata/pipenv.json.golden",
 		},
 		{
 			name: "poetry",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/poetry",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/poetry",
 			},
 			golden: "testdata/poetry.json.golden",
 		},
 		{
 			name: "pom",
 			args: args{
-				scanner: types.VulnerabilityScanner,
-				input:   "testdata/fixtures/repo/pom",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+				},
+				input: "testdata/fixtures/repo/pom",
 			},
 			golden: "testdata/pom.json.golden",
 		},
 		{
 			name: "gradle",
 			args: args{
-				scanner: types.VulnerabilityScanner,
-				input:   "testdata/fixtures/repo/gradle",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+				},
+				input: "testdata/fixtures/repo/gradle",
 			},
 			golden: "testdata/gradle.json.golden",
 		},
 		{
 			name: "conan",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/conan",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/conan",
 			},
 			golden: "testdata/conan.json.golden",
 		},
 		{
 			name: "nuget",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/nuget",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/nuget",
 			},
 			golden: "testdata/nuget.json.golden",
 		},
 		{
 			name: "dotnet",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/dotnet",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/dotnet",
 			},
 			golden: "testdata/dotnet.json.golden",
 		},
 		{
 			name: "swift",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/swift",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/swift",
 			},
 			golden: "testdata/swift.json.golden",
 		},
 		{
 			name: "cocoapods",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/cocoapods",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/cocoapods",
 			},
 			golden: "testdata/cocoapods.json.golden",
 		},
 		{
 			name: "pubspec.lock",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/pubspec",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/pubspec",
 			},
 			golden: "testdata/pubspec.lock.json.golden",
 		},
 		{
 			name: "mix.lock",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/mixlock",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/mixlock",
 			},
 			golden: "testdata/mix.lock.json.golden",
 		},
 		{
 			name: "composer.lock",
 			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/repo/composer",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+					types.SBOMScanner,
+				},
+				input: "testdata/fixtures/repo/composer",
 			},
 			golden: "testdata/composer.lock.json.golden",
 		},
 		{
 			name: "dockerfile",
 			args: args{
-				scanner:    types.MisconfigScanner,
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
 				input:      "testdata/fixtures/repo/dockerfile",
 				namespaces: []string{"testing"},
 			},
@@ -232,7 +274,9 @@ func TestRepository(t *testing.T) {
 		{
 			name: "dockerfile with custom file pattern",
 			args: args{
-				scanner:      types.MisconfigScanner,
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
 				input:        "testdata/fixtures/repo/dockerfile_file_pattern",
 				namespaces:   []string{"testing"},
 				filePatterns: []string{"dockerfile:Customfile"},
@@ -242,7 +286,9 @@ func TestRepository(t *testing.T) {
 		{
 			name: "dockerfile with rule exception",
 			args: args{
-				scanner:     types.MisconfigScanner,
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
 				policyPaths: []string{"testdata/fixtures/repo/rule-exception/policy"},
 				input:       "testdata/fixtures/repo/rule-exception",
 			},
@@ -251,7 +297,9 @@ func TestRepository(t *testing.T) {
 		{
 			name: "dockerfile with namespace exception",
 			args: args{
-				scanner:     types.MisconfigScanner,
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
 				policyPaths: []string{"testdata/fixtures/repo/namespace-exception/policy"},
 				input:       "testdata/fixtures/repo/namespace-exception",
 			},
@@ -260,7 +308,9 @@ func TestRepository(t *testing.T) {
 		{
 			name: "dockerfile with custom policies",
 			args: args{
-				scanner:     types.MisconfigScanner,
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
 				policyPaths: []string{"testdata/fixtures/repo/custom-policy/policy"},
 				namespaces:  []string{"user"},
 				input:       "testdata/fixtures/repo/custom-policy",
@@ -270,23 +320,29 @@ func TestRepository(t *testing.T) {
 		{
 			name: "tarball helm chart scanning with builtin policies",
 			args: args{
-				scanner: types.MisconfigScanner,
-				input:   "testdata/fixtures/repo/helm",
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
+				input: "testdata/fixtures/repo/helm",
 			},
 			golden: "testdata/helm.json.golden",
 		},
 		{
 			name: "helm chart directory scanning with builtin policies",
 			args: args{
-				scanner: types.MisconfigScanner,
-				input:   "testdata/fixtures/repo/helm_testchart",
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
+				input: "testdata/fixtures/repo/helm_testchart",
 			},
 			golden: "testdata/helm_testchart.json.golden",
 		},
 		{
 			name: "helm chart directory scanning with value overrides using set",
 			args: args{
-				scanner: types.MisconfigScanner,
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
 				input:   "testdata/fixtures/repo/helm_testchart",
 				helmSet: []string{"securityContext.runAsUser=0"},
 			},
@@ -295,7 +351,9 @@ func TestRepository(t *testing.T) {
 		{
 			name: "helm chart directory scanning with value overrides using value file",
 			args: args{
-				scanner:        types.MisconfigScanner,
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
 				input:          "testdata/fixtures/repo/helm_testchart",
 				helmValuesFile: []string{"testdata/fixtures/repo/helm_values/values.yaml"},
 			},
@@ -304,15 +362,19 @@ func TestRepository(t *testing.T) {
 		{
 			name: "helm chart directory scanning with builtin policies and non string Chart name",
 			args: args{
-				scanner: types.MisconfigScanner,
-				input:   "testdata/fixtures/repo/helm_badname",
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
+				input: "testdata/fixtures/repo/helm_badname",
 			},
 			golden: "testdata/helm_badname.json.golden",
 		},
 		{
 			name: "secrets",
 			args: args{
-				scanner:      "vuln,secret",
+				scanners: types.Scanners{
+					types.SecretScanner,
+				},
 				input:        "testdata/fixtures/repo/secrets",
 				secretConfig: "testdata/fixtures/repo/secrets/trivy-secret.yaml",
 			},
@@ -331,9 +393,11 @@ func TestRepository(t *testing.T) {
 			name: "pom.xml generating CycloneDX SBOM (with vulnerabilities)",
 			args: args{
 				command: "fs",
-				scanner: types.VulnerabilityScanner,
-				format:  "cyclonedx",
-				input:   "testdata/fixtures/repo/pom",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+				},
+				format: "cyclonedx",
+				input:  "testdata/fixtures/repo/pom",
 			},
 			golden: "testdata/pom-cyclonedx.json.golden",
 		},
@@ -349,8 +413,10 @@ func TestRepository(t *testing.T) {
 		{
 			name: "gomod with fs subcommand",
 			args: args{
-				command:   "fs",
-				scanner:   types.VulnerabilityScanner,
+				command: "fs",
+				scanners: types.Scanners{
+					types.VulnerabilityScanner,
+				},
 				input:     "testdata/fixtures/repo/gomod",
 				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
 			},
@@ -362,8 +428,10 @@ func TestRepository(t *testing.T) {
 		{
 			name: "dockerfile with fs subcommand",
 			args: args{
-				command:     "fs",
-				scanner:     types.MisconfigScanner,
+				command: "fs",
+				scanners: types.Scanners{
+					types.MisconfigScanner,
+				},
 				policyPaths: []string{"testdata/fixtures/repo/custom-policy/policy"},
 				namespaces:  []string{"user"},
 				input:       "testdata/fixtures/repo/custom-policy",
@@ -406,8 +474,13 @@ func TestRepository(t *testing.T) {
 				"--offline-scan",
 			}
 
-			if tt.args.scanner != "" {
-				osArgs = append(osArgs, "--scanners", string(tt.args.scanner))
+			if len(tt.args.scanners) > 0 {
+				scanners := lo.Map(tt.args.scanners, func(scanner types.Scanner, _ int) string {
+					return string(scanner)
+				})
+				osArgs = append(osArgs,
+					"--scanners", strings.Join(scanners, ","),
+				)
 			}
 
 			if len(tt.args.policyPaths) != 0 {
@@ -463,10 +536,6 @@ func TestRepository(t *testing.T) {
 			outputFile := filepath.Join(t.TempDir(), "output.json")
 			if *update && tt.override == nil {
 				outputFile = tt.golden
-			}
-
-			if tt.args.listAllPkgs {
-				osArgs = append(osArgs, "--list-all-pkgs")
 			}
 
 			if tt.args.includeDevDeps {
