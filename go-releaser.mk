@@ -41,7 +41,7 @@ ifneq ($(GITHUB_APP),)
 endif
 
 
-all: build
+all: build image
 
 .PHONY: shell
 shell:
