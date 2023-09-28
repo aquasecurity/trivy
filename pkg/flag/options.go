@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -124,9 +123,7 @@ func (o *Options) Align() {
 	// If user specifies "--scanners sbom" with "--format table", we should warn it.
 	if o.Format == types.FormatTable && o.Scanners.Enabled(types.SBOMScanner) {
 		log.Logger.Warn(`"--scanners sbom" cannot be used with "--format table". Try "--format json" or other formats.`)
-		o.Scanners = lo.Filter(o.Scanners, func(scanner types.Scanner, _ int) bool {
-			return scanner != types.SBOMScanner
-		})
+		o.Scanners = o.Scanners.Disable(types.SBOMScanner)
 		return
 	}
 
@@ -153,17 +150,12 @@ func (o *Options) Align() {
 		// disable vulnerability scanner if needed
 		if o.Scanners.Enabled(types.VulnerabilityScanner) {
 			if o.vulnScannerShouldBeDisable() {
-				// disable vulnerability scanner
-				o.Scanners = lo.Filter(o.Scanners, func(scanner types.Scanner, _ int) bool {
-					return scanner != types.VulnerabilityScanner
-				})
+				o.Scanners = o.Scanners.Disable(types.VulnerabilityScanner)
 			}
 		}
 		if o.Scanners.AnyEnabled(types.LicenseScanner, types.MisconfigScanner, types.SecretScanner) {
 			log.Logger.Infof(`"--format %s" automatically disables "--scanners license,config,secret".`, o.Format)
-			o.Scanners = lo.Filter(o.Scanners, func(scanner types.Scanner, _ int) bool {
-				return scanner != types.LicenseScanner && scanner != types.MisconfigScanner && scanner != types.SecretScanner
-			})
+			o.Scanners = o.Scanners.Disable(types.LicenseScanner, types.MisconfigScanner, types.SecretScanner)
 		}
 	}
 }
