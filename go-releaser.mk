@@ -89,7 +89,7 @@ get-image:
 # publish the built image to the registry used by the project
 # need be authenticate to the docker registry before, for example using this command:
 # aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 889956758113.dkr.ecr.us-west-2.amazonaws.com
-publish-image: docker_auth
+publish-image:
 	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_COMMIT)
 	docker push ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_BRANCH)
 
