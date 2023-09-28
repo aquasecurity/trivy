@@ -3703,6 +3703,10 @@ Skipping an update can be done by using the <code>--skip-java-db-update</code> o
 <p>Downloading the Java index DB from an external OCI registry can be done by using the <code>--java-db-repository</code> option.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db --download-java-db-only
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In <a href="../../references/modes/client-server/">Client/Server</a> mode, <code>Java index DB</code> is currently only used on the <code>client</code> side.</p>
+</div>
 <h2 id="remove-dbs">Remove DBs</h2>
 <p>The <code>--reset</code> flag removes all caches and databases.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --reset
