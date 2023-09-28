@@ -201,7 +201,7 @@ func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail
 
 func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Results {
 	var results types.Results
-	if len(pkgResults) == 0 { // '--list-all-pkgs' == false or packages not found
+	if len(pkgResults) == 0 { // '--scanners sbom' is disabled or packages not found
 		return vulnResults
 	}
 	for _, result := range pkgResults {
@@ -210,7 +210,7 @@ func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Re
 		}); found {
 			r.Packages = result.Packages
 			results = append(results, r)
-		} else { // when package result has no vulnerabilities we still need to add it to result(for 'list-all-pkgs')
+		} else { // when package result has no vulnerabilities we still need to add it to result(for '--scanners sbom')
 			results = append(results, result)
 		}
 	}

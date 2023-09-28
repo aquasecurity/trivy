@@ -110,7 +110,6 @@ type ReportFlagGroup struct {
 	ReportFormat   *Flag
 	Template       *Flag
 	DependencyTree *Flag
-	ListAllPkgs    *Flag
 	IgnoreFile     *Flag
 	IgnorePolicy   *Flag
 	ExitCode       *Flag
@@ -140,7 +139,6 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		ReportFormat:   &ReportFormatFlag,
 		Template:       &TemplateFlag,
 		DependencyTree: &DependencyTreeFlag,
-		ListAllPkgs:    &ListAllPkgsFlag,
 		IgnoreFile:     &IgnoreFileFlag,
 		IgnorePolicy:   &IgnorePolicyFlag,
 		ExitCode:       &ExitCodeFlag,
@@ -161,7 +159,6 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.ReportFormat,
 		f.Template,
 		f.DependencyTree,
-		f.ListAllPkgs,
 		f.IgnoreFile,
 		f.IgnorePolicy,
 		f.ExitCode,
@@ -176,6 +173,8 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 	format := getUnderlyingString[types.Format](f.Format)
 	template := getString(f.Template)
 	dependencyTree := getBool(f.DependencyTree)
+
+	// `--list-all-pkgs` flag has been removed. Warn about this
 	if getBool(&ListAllPkgsFlag) {
 		log.Logger.Warn(ListAllPkgsFlag.Usage)
 	}

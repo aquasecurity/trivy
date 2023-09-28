@@ -155,7 +155,6 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				Format:         &flag.FormatFlag,
 				Template:       &flag.TemplateFlag,
 				DependencyTree: &flag.DependencyTreeFlag,
-				ListAllPkgs:    &flag.ListAllPkgsFlag,
 				IgnoreFile:     &flag.IgnoreFileFlag,
 				IgnorePolicy:   &flag.IgnorePolicyFlag,
 				ExitCode:       &flag.ExitCodeFlag,
