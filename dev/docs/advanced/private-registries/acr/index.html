@@ -3520,15 +3520,15 @@ You're not viewing the latest version.
 </code></pre></div>
 <h1 id="usage">Usage</h1>
 <div class="highlight"><pre><span></span><code><span class="c1"># must set TRIVY_USERNAME empty char</span>
-<span class="nb">export</span> AZURE_CLIENT_ID<span class="k">$(</span><span class="nb">echo</span> <span class="nv">$SP_DATA</span> <span class="p">|</span> jq -r .appId<span class="k">)</span>
-<span class="nb">export</span> AZURE_CLIENT_SECRET<span class="k">$(</span><span class="nb">echo</span> <span class="nv">$SP_DATA</span> <span class="p">|</span> jq -r .password<span class="k">)</span>
-<span class="nb">export</span> AZURE_TENANT_ID<span class="k">$(</span><span class="nb">echo</span> <span class="nv">$SP_DATA</span> <span class="p">|</span> jq -r .tenant<span class="k">)</span>
+<span class="nb">export</span> <span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$SP_DATA</span> <span class="p">|</span> jq -r <span class="s1">&#39;.appId&#39;</span><span class="k">)</span>
+<span class="nb">export</span> <span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$SP_DATA</span> <span class="p">|</span> jq -r <span class="s1">&#39;.password&#39;</span><span class="k">)</span>
+<span class="nb">export</span> <span class="nv">AZURE_TENANT_ID</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$SP_DATA</span> <span class="p">|</span> jq -r <span class="s1">&#39;.tenant&#39;</span><span class="k">)</span>
 </code></pre></div>
 <h1 id="testing">Testing</h1>
 <p>You can test credentials in the following manner.</p>
-<div class="highlight"><pre><span></span><code>docker run -it --rm -v /tmp:/tmp<span class="se">\</span>
-  -e <span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="si">${</span><span class="nv">AZURE_CLIENT_ID</span><span class="si">}</span> -e <span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span><span class="si">${</span><span class="nv">AZURE_CLIENT_SECRET</span><span class="si">}</span> <span class="se">\</span>
-  -e <span class="nv">AZURE_TENANT_ID</span><span class="o">=</span><span class="si">${</span><span class="nv">AZURE_TENANT_ID</span><span class="si">}</span> aquasec/trivy image your_special_project.azurecr.io/your_special_image:your_special_tag
+<div class="highlight"><pre><span></span><code>docker run -it --rm -v /tmp:/tmp <span class="se">\</span>
+  -e AZURE_CLIENT_ID -e AZURE_CLIENT_SECRET -e AZURE_TENANT_ID <span class="se">\</span>
+  aquasec/trivy image your_special_project.azurecr.io/your_special_image:your_special_tag
 </code></pre></div>
 
               
