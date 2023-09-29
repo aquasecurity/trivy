@@ -77,15 +77,16 @@ test:
 # build: configure-env
 # 	./goreleaser build --snapshot --rm-dist --config=goreleaser.yml
 build:
-	GOOS=linux GOARCH=amd64 go build -o trivy_amd64 $(LDFLAGS) ./cmd/trivy
-	GOOS=linux GOARCH=arm64 go build -o trivy_arm64 $(LDFLAGS) ./cmd/trivy
-	GOOS=linux go build $(LDFLAGS) ./cmd/trivy
+	GOOS=linux GOARCH=amd64 go build -o trivy_linux_amd64 $(LDFLAGS) ./cmd/trivy
+	GOOS=linux GOARCH=arm64 go build -o trivy_linux_arm64 $(LDFLAGS) ./cmd/trivy
+	go build $(LDFLAGS) ./cmd/trivy
 # If a dockerfile is present, this command will build the docker image.
 # for goreleaser - it will build the binary and the image (without push the image).
 # image: configure-env
 # 	./goreleaser release --snapshot --skip-validate --rm-dist --config=goreleaser.yml
 image: build
 	docker build \
+		--platform linux/amd64 \
 		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_COMMIT) \
 		-t ${DOCKER_REPO_PATH}/${DOCKER_REPO_NAME}:$(TAG_BRANCH) \
 		.

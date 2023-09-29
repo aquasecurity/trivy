@@ -5,8 +5,8 @@
 *.so
 *.dylib
 /trivy
-/trivy_amd64
-/trivy_arm64
+/trivy_linux_amd64
+/trivy_linux_arm64
 goreleaser
 
 ## chart release
