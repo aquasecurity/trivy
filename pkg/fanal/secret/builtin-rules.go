@@ -789,8 +789,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAzure,
 		Title:           "Azure Data Factory Self-Hosted Integration Runtime registration key",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`IR@[0-9a-zA-Z-]{36}@(.*?)@`),
-		SecretGroupName: "secret",
-		Keywords:        []string{"azure_data_factory"},
+		Regex:           MustCompile(`IR@[0-9a-zA-Z-]{36}@(.*?)@[0-9a-zA-Z-=]{26}`),
+		Keywords:        []string{"IR@"},
 	},
 }

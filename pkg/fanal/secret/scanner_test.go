@@ -530,20 +530,30 @@ func TestSecretScanner(t *testing.T) {
 	wantFindingDataFactoryRegistrationKey := types.SecretFinding{
 		RuleID:    "azure-data-factory-registration-key",
 		Category:  secret.CategoryAzure,
-		Title:     "Azure DataFactory SHIR key",
+		Title:     "Azure Data Factory Self-Hosted Integration Runtime registration key",
 		Severity:  "HIGH",
-		StartLine: 1,
-		EndLine:   1,
-		Match:     "***********************************************************************************",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "*********************************************************************************** and other stuff",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
 					Number:      1,
-					Content:     "***********************************************************************************",
-					Highlighted: "***********************************************************************************",
+					Content:     "ignore this line",
+					Highlighted: "ignore this line",
+				},
+				{
+					Number:      2,
+					Content:     "*********************************************************************************** and other stuff",
+					Highlighted: "*********************************************************************************** and other stuff",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "ignore this line",
+					Highlighted: "ignore this line",
 				},				
 			},
 		},
@@ -790,16 +800,16 @@ func TestSecretScanner(t *testing.T) {
 		{
 			name:          "find Azure Data Factory SHIR key",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
-			inputFilePath: "testdata/azure-secrets.txt",
+			inputFilePath: "testdata/azure-data-factory-registration-key.txt",
 			want: types.Secret{
-				FilePath: "testdata/azure-secrets.txt",
+				FilePath: "testdata/azure-data-factory-registration-key.txt",
 				Findings: []types.SecretFinding{wantFindingDataFactoryRegistrationKey},
 			},
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {	
 			content, err := os.ReadFile(tt.inputFilePath)
 			require.NoError(t, err)
 
