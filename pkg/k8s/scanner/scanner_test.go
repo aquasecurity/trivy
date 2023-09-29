@@ -222,8 +222,9 @@ func TestK8sClusterInfoReport(t *testing.T) {
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
-												Type:       "golang",
-												Name:       "k8s.io/kubelet",
+												Type:       "k8s",
+												Namespace:  "k8s.io",
+												Name:       "kubelet",
 												Version:    "1.21.1",
 												Qualifiers: packageurl.Qualifiers{},
 											},
