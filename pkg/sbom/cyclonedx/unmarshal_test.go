@@ -131,6 +131,72 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path KBOM",
+			inputFile: "testdata/happy/kbom.json",
+			want: types.SBOM{
+				OS: ftypes.OS{
+					Family: "ubuntu",
+					Name:   "22.04.2",
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						FilePath: "",
+					},
+				},
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.GoBinary,
+						Libraries: ftypes.Packages{
+							{
+								Name:    "docker",
+								Version: "24.0.4",
+								Ref:     "pkg:golang/docker@24.0.4",
+							},
+						},
+					},
+					{
+						Type:     "golang",
+						FilePath: "node-core-components",
+					},
+					{
+						Type: ftypes.K8sComponent,
+						Libraries: ftypes.Packages{
+							{
+								Name:    "k8s.io/apiserver",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io/apiserver@1.27.4",
+							},
+							{
+								Name:    "k8s.io/controller-manager",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io/controller-manager@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kube-proxy",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io/kube-proxy@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kube-scheduler",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io/kube-scheduler@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kubelet",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io/kubelet@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kubernetes",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io/kubernetes@1.27.4",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path with infinity loop",
 			inputFile: "testdata/happy/infinite-loop-bom.json",
 			want: types.SBOM{
