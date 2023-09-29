@@ -37,8 +37,14 @@
           "FixedVersion": "1.24.14, 1.25.9, 1.26.4, 1.27.1",
           "Status": "fixed",
           "Layer": {},
+          "SeveritySource": "kubernetes",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-2431",
           "PkgRef": "pkg:k8s/k8s.io/kubelet@1.27.0",
+          "DataSource": {
+            "ID": "kubernetes",
+            "Name": "Official Kubernetes CVE Feed",
+            "URL": "https://kubernetes.io/docs/reference/issues-security/official-cve-feed/index.json"
+          },
           "Title": "Bypass of seccomp profile enforcement ",
           "Description": "A security issue was discovered in Kubelet that allows pods to bypass the seccomp profile enforcement...",
           "Severity": "LOW",
