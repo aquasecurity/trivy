@@ -170,3 +170,10 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 
 	return groupID, nil
 }
+
+func (d *DB) Close() error {
+	if d == nil {
+		return nil
+	}
+	return d.driver.Close()
+}
