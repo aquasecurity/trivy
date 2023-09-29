@@ -144,3 +144,8 @@
         ID:   "cbl-mariner"
         Name: "CBL-Mariner Vulnerability Data"
         URL:  "https://github.com/microsoft/CBL-MarinerVulnerabilityData"
+    - key: CBL-Mariner 1.0
+      value:
+        ID:   "kubernetes"
+        Name: "Official Kubernetes CVE Feed"
+        URL:  "https://kubernetes.io/docs/reference/issues-security/official-cve-feed/index.json"
