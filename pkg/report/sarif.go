@@ -337,7 +337,7 @@ func ToPathUri(input string, resultClass types.ResultClass) string {
 		input = ref.Context().RepositoryStr()
 	}
 
-	return strings.ReplaceAll(strings.ReplaceAll(string(input), "\\", "/"), "git::https:/", "")
+	return strings.ReplaceAll(strings.ReplaceAll(input, "\\", "/"), "git::https:/", "")
 }
 
 func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
