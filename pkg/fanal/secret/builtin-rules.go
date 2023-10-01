@@ -64,6 +64,7 @@ var (
 	CategorySendGrid             = types.SecretRuleCategory("SendGrid")
 	CategorySendinblue           = types.SecretRuleCategory("Sendinblue")
 	CategoryShippo               = types.SecretRuleCategory("Shippo")
+	CategorySymfony              = types.SecretRuleCategory("Symfony")
 	CategoryLinkedIn             = types.SecretRuleCategory("LinkedIn")
 	CategoryTwitch               = types.SecretRuleCategory("Twitch")
 	CategoryTypeform             = types.SecretRuleCategory("Typeform")
