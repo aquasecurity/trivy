@@ -166,6 +166,22 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path lock file without dependencies.",
+			dir:  "testdata/lock-without-deps",
+			env: map[string]string{
+				"HOME": "testdata/repository",
+			},
+			want: &analyzer.AnalysisResult{},
+		},
+		{
+			name: "sad path",
+			dir:  "testdata/sad",
+			env: map[string]string{
+				"HOME": "testdata/repository",
+			},
+			want: &analyzer.AnalysisResult{},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
