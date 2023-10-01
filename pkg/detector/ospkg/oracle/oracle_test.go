@@ -73,11 +73,11 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			osVersion: "8",
 			expected:  false,
 		},
-		"unknown": {
+		"latest": {
 			clock:     clocktesting.NewFakeClock(time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC)),
 			osFamily:  "oracle",
-			osVersion: "unknown",
-			expected:  false,
+			osVersion: "latest",
+			expected:  true,
 		},
 	}
 
