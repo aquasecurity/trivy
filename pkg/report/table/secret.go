@@ -55,7 +55,7 @@ func (r *secretRenderer) Render() string {
 }
 
 func (r *secretRenderer) countSeverities() map[string]int {
-	severityCount := map[string]int{}
+	severityCount := make(map[string]int)
 	for _, secret := range r.secrets {
 		severity := secret.Severity
 		severityCount[severity]++

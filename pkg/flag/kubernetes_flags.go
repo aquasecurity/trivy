@@ -194,7 +194,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 }
 
 func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, error) {
-	tolerations := make([]corev1.Toleration, 0)
+	var tolerations []corev1.Toleration
 	for _, toleration := range tolerationsOptions {
 		tolerationParts := strings.Split(toleration, ":")
 		if len(tolerationParts) < 2 {

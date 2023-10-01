@@ -203,7 +203,7 @@ const (
 )
 
 func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Component, error) {
-	coreComponents := make([]*core.Component, 0)
+	var coreComponents []*core.Component
 	var cInfo *core.Component
 	for _, artifact := range allArtifact {
 		switch artifact.Kind {
@@ -213,7 +213,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 			if err != nil {
 				return nil, err
 			}
-			imageComponents := make([]*core.Component, 0)
+			var imageComponents []*core.Component
 			for _, c := range comp.Containers {
 				name := fmt.Sprintf("%s/%s", c.Registry, c.Repository)
 				cDigest := c.Digest

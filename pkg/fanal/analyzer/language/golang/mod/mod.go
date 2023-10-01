@@ -132,7 +132,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 		return nil
 	}
 
-	licenses := map[string][]string{}
+	licenses := make(map[string][]string)
 	for i, app := range apps {
 		// Actually used dependencies
 		usedLibs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
@@ -239,7 +239,7 @@ func mergeGoSum(gomod, gosum *types.Application) {
 	if gomod == nil || gosum == nil {
 		return
 	}
-	uniq := map[string]types.Package{}
+	uniq := make(map[string]types.Package)
 	for _, lib := range gomod.Libraries {
 		// It will be used for merging go.sum.
 		uniq[lib.Name] = lib

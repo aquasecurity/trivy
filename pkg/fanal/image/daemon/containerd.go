@@ -94,7 +94,7 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 		return nil, cleanup, err
 	}
 
-	options := []containerd.ClientOpt{}
+	var options []containerd.ClientOpt
 	if opts.RegistryOptions.Platform.Platform != nil {
 		ociPlatform, err := platforms.Parse(opts.RegistryOptions.Platform.String())
 		if err != nil {

@@ -72,7 +72,7 @@ func (r *misconfigRenderer) Render() string {
 }
 
 func (r *misconfigRenderer) countSeverities() map[string]int {
-	severityCount := map[string]int{}
+	severityCount := make(map[string]int)
 	for _, misconf := range r.result.Misconfigurations {
 		if misconf.Status == types.StatusFailure {
 			severityCount[misconf.Severity]++

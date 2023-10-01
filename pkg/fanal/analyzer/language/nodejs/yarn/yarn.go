@@ -191,7 +191,7 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 	directDeps map[string]string, dev bool) (map[string]types.Package, error) {
 
 	// Identify direct dependencies
-	pkgs := map[string]types.Package{}
+	pkgs := make(map[string]types.Package)
 	for _, pkg := range libs {
 		if constraint, ok := directDeps[pkg.Name]; ok {
 			// npm has own comparer to compare versions
@@ -329,7 +329,7 @@ func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS) (map[string][]string, e
 	}
 
 	var errs error
-	licenses := map[string][]string{}
+	licenses := make(map[string][]string)
 
 	if ll, err := a.traverseUnpluggedDir(sub); err != nil {
 		errs = multierror.Append(errs, err)
@@ -358,7 +358,7 @@ func (a yarnAnalyzer) traverseUnpluggedDir(fsys fs.FS) (map[string][]string, err
 
 func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) {
 	// Traverse .yarn/cache dir
-	licenses := map[string][]string{}
+	licenses := make(map[string][]string)
 	err := fsutils.WalkDir(fsys, "cache", fsutils.RequiredExt(".zip"),
 		func(filePath string, d fs.DirEntry, r io.Reader) error {
 			fi, err := d.Info()

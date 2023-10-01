@@ -54,7 +54,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		version        string
 		dir            string
 		installedFiles []string
-		provides       = map[string]string{} // for dependency graph
+		provides       = make(map[string]string) // for dependency graph
 	)
 
 	for scanner.Scan() {
@@ -195,7 +195,7 @@ func (a alpinePkgAnalyzer) consolidateDependencies(pkgs []types.Package, provide
 }
 
 func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Package) {
-	uniq := map[string]struct{}{}
+	uniq := make(map[string]struct{})
 	for _, pkg := range pkgs {
 		if _, ok := uniq[pkg.Name]; ok {
 			continue

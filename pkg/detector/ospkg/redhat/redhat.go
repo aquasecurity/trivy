@@ -142,7 +142,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 	installed := utils.FormatVersion(pkg)
 	installedVersion := version.NewVersion(installed)
 
-	uniqVulns := map[string]types.DetectedVulnerability{}
+	uniqVulns := make(map[string]types.DetectedVulnerability)
 	for _, adv := range advisories {
 		// if Arches for advisory is empty or pkg.Arch is "noarch", then any Arches are affected
 		if len(adv.Arches) != 0 && pkg.Arch != "noarch" {

@@ -61,6 +61,10 @@ linters-settings:
       - performance
       - experimental
       - opinionated
+    settings:
+      ruleguard:
+        failOn: all
+        rules: '${configDir}/misc/lint/rules.go'
 
 linters:
   disable-all: true

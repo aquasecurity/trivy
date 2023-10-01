@@ -119,7 +119,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	})
 
 	// Identify direct dependencies
-	pkgs := map[string]types.Package{}
+	pkgs := make(map[string]types.Package)
 	for name, constraint := range directDeps {
 		for _, pkg := range app.Libraries {
 			if pkg.Name != name {
@@ -169,7 +169,7 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]strin
 	defer func() { _ = f.Close() }()
 
 	tomlFile := cargoToml{}
-	deps := map[string]string{}
+	deps := make(map[string]string)
 	_, err = toml.NewDecoder(f).Decode(&tomlFile)
 	if err != nil {
 		return nil, xerrors.Errorf("toml decode error: %w", err)

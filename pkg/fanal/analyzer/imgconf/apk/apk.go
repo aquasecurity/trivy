@@ -120,13 +120,13 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 }
 
 func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config *v1.ConfigFile) (packages []types.Package) {
-	envs := map[string]string{}
+	envs := make(map[string]string)
 	for _, env := range config.Config.Env {
 		index := strings.Index(env, "=")
 		envs["$"+env[:index]] = env[index+1:]
 	}
 
-	uniqPkgs := map[string]types.Package{}
+	uniqPkgs := make(map[string]types.Package)
 	for _, history := range config.History {
 		pkgs := a.parseCommand(history.CreatedBy, envs)
 		pkgs = a.resolveDependencies(apkIndexArchive, pkgs)
@@ -178,13 +178,13 @@ func (a alpineCmdAnalyzer) parseCommand(command string, envs map[string]string) 
 	return pkgs
 }
 func (a alpineCmdAnalyzer) resolveDependencies(apkIndexArchive *apkIndex, originalPkgs []string) (pkgs []string) {
-	uniqPkgs := map[string]struct{}{}
+	uniqPkgs := make(map[string]struct{})
 	for _, pkgName := range originalPkgs {
 		if _, ok := uniqPkgs[pkgName]; ok {
 			continue
 		}
 
-		seenPkgs := map[string]struct{}{}
+		seenPkgs := make(map[string]struct{})
 		for _, p := range a.resolveDependency(apkIndexArchive, pkgName, seenPkgs) {
 			uniqPkgs[p] = struct{}{}
 		}

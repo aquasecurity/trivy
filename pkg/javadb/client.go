@@ -151,7 +151,7 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 
 	// Some artifacts might have the same artifactId.
 	// e.g. "javax.servlet:jstl" and "jstl:jstl"
-	groupIDs := map[string]int{}
+	groupIDs := make(map[string]int)
 	for _, index := range indexes {
 		if i, ok := groupIDs[index.GroupID]; ok {
 			groupIDs[index.GroupID] = i + 1

@@ -362,7 +362,7 @@ func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {
 
 // ResultsToMisconf is exported for trivy-plugin-aqua purposes only
 func ResultsToMisconf(configType types.ConfigType, scannerName string, results scan.Results) []types.Misconfiguration {
-	misconfs := map[string]types.Misconfiguration{}
+	misconfs := make(map[string]types.Misconfiguration)
 
 	for _, result := range results {
 		flattened := result.Flatten()

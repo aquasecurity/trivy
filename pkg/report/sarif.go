@@ -129,7 +129,7 @@ func (sw *SarifWriter) Write(report types.Report) error {
 	sw.run = sarif.NewRunWithInformationURI("Trivy", "https://github.com/aquasecurity/trivy")
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
-	sw.locationCache = map[string][]location{}
+	sw.locationCache = make(map[string][]location)
 	if report.ArtifactType == ftypes.ArtifactContainerImage {
 		sw.run.Properties = sarif.Properties{
 			"imageName":   report.ArtifactName,
@@ -142,7 +142,7 @@ func (sw *SarifWriter) Write(report types.Report) error {
 		rootPath = fmt.Sprintf("file://%s/", absPath)
 	}
 
-	ruleIndexes := map[string]int{}
+	ruleIndexes := make(map[string]int)
 	for _, res := range report.Results {
 		target := ToPathUri(res.Target, res.Class)
 

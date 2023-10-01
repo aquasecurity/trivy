@@ -23,8 +23,8 @@ import (
 )
 
 var (
-	analyzers     = map[Type]analyzer{}
-	postAnalyzers = map[Type]postAnalyzerInitialize{}
+	analyzers     = make(map[Type]analyzer)
+	postAnalyzers = make(map[Type]postAnalyzerInitialize)
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("unknown OS")
@@ -318,7 +318,7 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 	}
 
 	group := AnalyzerGroup{
-		filePatterns: map[Type][]*regexp.Regexp{},
+		filePatterns: make(map[Type][]*regexp.Regexp),
 	}
 	for _, p := range opt.FilePatterns {
 		// e.g. "dockerfile:my_dockerfile_*"
@@ -374,11 +374,11 @@ type Versions struct {
 
 // AnalyzerVersions returns analyzer version identifier used for cache keys.
 func (ag AnalyzerGroup) AnalyzerVersions() Versions {
-	analyzerVersions := map[string]int{}
+	analyzerVersions := make(map[string]int)
 	for _, a := range ag.analyzers {
 		analyzerVersions[string(a.Type())] = a.Version()
 	}
-	postAnalyzerVersions := map[string]int{}
+	postAnalyzerVersions := make(map[string]int)
 	for _, a := range ag.postAnalyzers {
 		postAnalyzerVersions[string(a.Type())] = a.Version()
 	}

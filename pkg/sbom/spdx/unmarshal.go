@@ -70,7 +70,7 @@ func (s *SPDX) UnmarshalJSON(b []byte) error {
 
 func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 	var osPkgs []ftypes.Package
-	apps := map[common.ElementID]*ftypes.Application{}
+	apps := make(map[common.ElementID]*ftypes.Application)
 	packageSPDXIdentifierMap := createPackageSPDXIdentifierMap(spdxDocument.Packages)
 	packageFilePaths := getPackageFilePaths(spdxDocument)
 
@@ -167,7 +167,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 func (s *SPDX) parsePackages(pkgs map[common.ElementID]*spdx.Package) error {
 	var (
 		osPkgs []ftypes.Package
-		apps   = map[ftypes.LangType]ftypes.Application{}
+		apps   = make(map[ftypes.LangType]ftypes.Application)
 	)
 
 	for _, p := range pkgs {
@@ -325,7 +325,7 @@ func parseSourceInfo(pkgType, sourceInfo string) (epoch int, name, ver, rel stri
 
 // getPackageFilePaths parses Relationships and finds filepaths for packages
 func getPackageFilePaths(spdxDocument *spdx.Document) map[string]string {
-	packageFilePaths := map[string]string{}
+	packageFilePaths := make(map[string]string)
 	fileSPDXIdentifierMap := createFileSPDXIdentifierMap(spdxDocument.Files)
 	for _, rel := range spdxDocument.Relationships {
 		if rel.Relationship != common.TypeRelationshipContains && rel.Relationship != "CONTAIN" {

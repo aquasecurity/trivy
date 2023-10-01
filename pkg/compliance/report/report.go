@@ -67,7 +67,10 @@ type Writer interface {
 func Write(report *ComplianceReport, option Option) error {
 	switch option.Format {
 	case types.FormatJSON:
-		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
+		jwriter := JSONWriter{
+			Output: option.Output,
+			Report: option.Report,
+		}
 		return jwriter.Write(report)
 	case types.FormatTable:
 		if !report.empty() {
@@ -93,7 +96,7 @@ func (r ComplianceReport) empty() bool {
 
 // buildControlCheckResults create compliance results data
 func buildControlCheckResults(checksMap map[string]types.Results, controls []defsecTypes.Control) []*ControlCheckResult {
-	complianceResults := make([]*ControlCheckResult, 0)
+	var complianceResults []*ControlCheckResult
 	for _, control := range controls {
 		var results types.Results
 		for _, c := range control.Checks {

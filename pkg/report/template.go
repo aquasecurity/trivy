@@ -18,7 +18,7 @@ import (
 )
 
 // CustomTemplateFuncMap is used to overwrite existing functions for testing.
-var CustomTemplateFuncMap = map[string]interface{}{}
+var CustomTemplateFuncMap = make(map[string]interface{})
 
 // TemplateWriter write result in custom format defined by user's template
 type TemplateWriter struct {

@@ -105,7 +105,7 @@ func (c *Cache) AddServices(s *state.State, includedServices []string) error {
 	data := &CacheData{
 		SchemaVersion: SchemaVersion,
 		State:         s,
-		Services:      map[string]ServiceMetadata{},
+		Services:      make(map[string]ServiceMetadata),
 		Updated:       time.Now(),
 	}
 

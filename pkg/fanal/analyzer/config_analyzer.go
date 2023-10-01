@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
-var configAnalyzerConstructors = map[Type]configAnalyzerConstructor{}
+var configAnalyzerConstructors = make(map[Type]configAnalyzerConstructor)
 
 type configAnalyzerConstructor func(ConfigAnalyzerOptions) (ConfigAnalyzer, error)
 
@@ -92,7 +92,7 @@ func NewConfigAnalyzerGroup(opts ConfigAnalyzerOptions) (ConfigAnalyzerGroup, er
 
 // AnalyzerVersions returns analyzer version identifier used for cache keys.
 func (ag *ConfigAnalyzerGroup) AnalyzerVersions() Versions {
-	versions := map[string]int{}
+	versions := make(map[string]int)
 	for _, ca := range ag.configAnalyzers {
 		versions[string(ca.Type())] = ca.Version()
 	}
