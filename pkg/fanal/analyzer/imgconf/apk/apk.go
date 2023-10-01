@@ -161,11 +161,12 @@ func (a alpineCmdAnalyzer) parseCommand(command string, envs map[string]string) 
 
 		var add bool
 		for _, field := range strings.Fields(cmd) {
-			if strings.HasPrefix(field, "-") || strings.HasPrefix(field, ".") {
+			switch {
+			case strings.HasPrefix(field, "-") || strings.HasPrefix(field, "."):
 				continue
-			} else if field == "add" {
+			case field == "add":
 				add = true
-			} else if add {
+			case add:
 				if strings.HasPrefix(field, "$") {
 					pkgs = append(pkgs, strings.Fields(envs[field])...)
 					continue
@@ -208,9 +209,7 @@ func (a alpineCmdAnalyzer) resolveDependency(apkIndexArchive *apkIndex, pkgName 
 	pkgNames = append(pkgNames, pkgName)
 	for _, dependency := range pkg.Dependencies {
 		// sqlite-libs=3.26.0-r3 => sqlite-libs
-		if strings.Contains(dependency, "=") {
-			dependency = dependency[:strings.Index(dependency, "=")]
-		}
+		dependency, _, _ = strings.Cut(dependency, "=")
 
 		if strings.HasPrefix(dependency, "so:") {
 			soProvidePkg := apkIndexArchive.Provide.SO[dependency[3:]].Package

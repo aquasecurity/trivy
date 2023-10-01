@@ -6,7 +6,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -19,7 +19,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 	if err := validateReportArguments(opts); err != nil {
 		return err
 	}
-	var artifacts []*artifacts.Artifact
+	var artifacts []*k8sArtifacts.Artifact
 	var err error
 	switch opts.Format {
 	case types.FormatCycloneDX:

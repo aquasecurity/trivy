@@ -134,9 +134,10 @@ func (r *secretRenderer) renderCode(secret types.SecretFinding) {
 		r.printSingleDivider()
 
 		for i, line := range lines {
-			if line.Truncated {
+			switch {
+			case line.Truncated:
 				r.printf("<dim>%4s   ", strings.Repeat(".", len(fmt.Sprintf("%d", line.Number))))
-			} else if line.IsCause {
+			case line.IsCause:
 				r.printf("<red>%4d ", line.Number)
 				switch {
 				case (line.FirstCause && line.LastCause) || len(lines) == 1:
@@ -148,7 +149,7 @@ func (r *secretRenderer) renderCode(secret types.SecretFinding) {
 				default:
 					r.printf("<red>│ ")
 				}
-			} else {
+			default:
 				r.printf("<dim>%4d   ", line.Number)
 			}
 			if r.ansi {

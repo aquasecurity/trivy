@@ -207,7 +207,7 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 		}
 		keyValue := strings.Split(tolerationParts[0], "=")
 		operator := corev1.TolerationOpEqual
-		if len(keyValue[1]) == 0 {
+		if keyValue[1] == "" {
 			operator = corev1.TolerationOpExists
 		}
 		toleration := corev1.Toleration{

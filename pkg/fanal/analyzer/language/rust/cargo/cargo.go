@@ -210,7 +210,7 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]strin
 	return deps, nil
 }
 
-func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[string]types.Package, deps map[string]types.Package) {
+func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {
 	for _, pkgID := range pkg.DependsOn {
 		if _, ok := deps[pkgID]; ok {
 			continue

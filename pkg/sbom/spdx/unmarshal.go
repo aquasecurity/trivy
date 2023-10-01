@@ -281,15 +281,17 @@ func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes
 func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Package, *purl.PackageURL, error) {
 	for _, ref := range refs {
 		// Extract the package information from PURL
-		if ref.RefType == RefTypePurl && ref.Category == CategoryPackageManager {
-			packageURL, err := purl.FromString(ref.Locator)
-			if err != nil {
-				return nil, nil, xerrors.Errorf("failed to parse purl from string: %w", err)
-			}
-			pkg := packageURL.Package()
-			pkg.Ref = ref.Locator
-			return pkg, packageURL, nil
+		if ref.RefType != RefTypePurl || ref.Category != CategoryPackageManager {
+			continue
 		}
+
+		packageURL, err := purl.FromString(ref.Locator)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("failed to parse purl from string: %w", err)
+		}
+		pkg := packageURL.Package()
+		pkg.Ref = ref.Locator
+		return pkg, packageURL, nil
 	}
 	return nil, nil, errUnknownPackageFormat
 }
@@ -303,7 +305,7 @@ func lookupAttributionTexts(attributionTexts []string, key string) string {
 	return ""
 }
 
-func parseSourceInfo(pkgType string, sourceInfo string) (epoch int, name, ver, rel string, err error) {
+func parseSourceInfo(pkgType, sourceInfo string) (epoch int, name, ver, rel string, err error) {
 	srcNameVersion := strings.TrimPrefix(sourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
 	ss := strings.Split(srcNameVersion, " ")
 	if len(ss) != 2 {

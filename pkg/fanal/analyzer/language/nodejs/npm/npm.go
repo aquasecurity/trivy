@@ -107,8 +107,8 @@ func (a npmLibraryAnalyzer) Version() int {
 	return version
 }
 
-func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string) (*types.Application, error) {
-	f, err := fsys.Open(path)
+func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types.Application, error) {
+	f, err := fsys.Open(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
 	}
@@ -120,7 +120,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string) (*types.App
 	}
 
 	// parse package-lock.json file
-	return language.Parse(types.Npm, path, file, a.lockParser)
+	return language.Parse(types.Npm, filePath, file, a.lockParser)
 }
 
 func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string]string, error) {

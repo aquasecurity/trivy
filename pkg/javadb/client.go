@@ -79,7 +79,7 @@ func (u *Updater) Update() error {
 	return nil
 }
 
-func Init(cacheDir string, javaDBRepository string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
+func Init(cacheDir, javaDBRepository string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
 	updater = &Updater{
 		repo:           fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
 		dbDir:          filepath.Join(cacheDir, "java-db"),

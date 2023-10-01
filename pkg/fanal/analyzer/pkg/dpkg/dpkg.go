@@ -308,9 +308,7 @@ func (a dpkgAnalyzer) trimVersionRequirement(s string) string {
 	// e.g.
 	//	libapt-pkg6.0 (>= 2.2.4) => libapt-pkg6.0
 	//	adduser => adduser
-	if strings.Contains(s, "(") {
-		s = s[:strings.Index(s, "(")]
-	}
+	s, _, _ = strings.Cut(s, "(")
 	return s
 }
 

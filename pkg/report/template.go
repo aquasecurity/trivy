@@ -50,9 +50,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		}
 		return input
 	}
-	templateFuncMap["escapeString"] = func(input string) string {
-		return html.EscapeString(input)
-	}
+	templateFuncMap["escapeString"] = html.EscapeString
 	templateFuncMap["sourceID"] = func(input string) dbTypes.SourceID {
 		return dbTypes.SourceID(input)
 	}
@@ -66,7 +64,10 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 	if err != nil {
 		return nil, xerrors.Errorf("error parsing template: %w", err)
 	}
-	return &TemplateWriter{Output: output, Template: tmpl}, nil
+	return &TemplateWriter{
+		Output:   output,
+		Template: tmpl,
+	}, nil
 }
 
 // Write writes result

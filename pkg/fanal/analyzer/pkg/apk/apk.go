@@ -144,11 +144,12 @@ func (a alpinePkgAnalyzer) parseLicense(line string) []string {
 	// e.g. MPL 2.0 GPL2+ => {"MPL2.0", "GPL2+"}
 	for i, s := range strings.Fields(line) {
 		s = strings.Trim(s, "()")
-		if s == "AND" || s == "OR" {
+		switch {
+		case s == "AND" || s == "OR":
 			continue
-		} else if i > 0 && (s == "1.0" || s == "2.0" || s == "3.0") {
+		case i > 0 && (s == "1.0" || s == "2.0" || s == "3.0"):
 			licenses[i-1] = licensing.Normalize(licenses[i-1] + s)
-		} else {
+		default:
 			licenses = append(licenses, licensing.Normalize(s))
 		}
 	}

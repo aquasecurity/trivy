@@ -112,14 +112,14 @@ func buildControlCheckResults(checksMap map[string]types.Results, controls []def
 }
 
 // buildComplianceReportResults create compliance results data
-func buildComplianceReportResults(checksMap map[string]types.Results, spec defsecTypes.Spec) *ComplianceReport {
-	controlCheckResult := buildControlCheckResults(checksMap, spec.Controls)
+func buildComplianceReportResults(checksMap map[string]types.Results, s defsecTypes.Spec) *ComplianceReport {
+	controlCheckResult := buildControlCheckResults(checksMap, s.Controls)
 	return &ComplianceReport{
-		ID:               spec.ID,
-		Title:            spec.Title,
-		Description:      spec.Description,
-		Version:          spec.Version,
-		RelatedResources: spec.RelatedResources,
+		ID:               s.ID,
+		Title:            s.Title,
+		Description:      s.Description,
+		Version:          s.Version,
+		RelatedResources: s.RelatedResources,
 		Results:          controlCheckResult,
 	}
 }

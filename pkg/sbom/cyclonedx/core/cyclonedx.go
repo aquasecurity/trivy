@@ -231,11 +231,11 @@ func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.V
 	return &vulns
 }
 
-func (c *CycloneDX) PackageURL(purl *purl.PackageURL) string {
-	if purl == nil {
+func (c *CycloneDX) PackageURL(p *purl.PackageURL) string {
+	if p == nil {
 		return ""
 	}
-	return purl.String()
+	return p.String()
 }
 
 func (c *CycloneDX) Supplier(supplier string) *cdx.OrganizationalEntity {
@@ -375,11 +375,11 @@ func cwes(cweIDs []string) *[]int {
 	return &ret
 }
 
-func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
+func cdxRatings(vuln types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
 	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
-	for sourceID, severity := range vulnerability.VendorSeverity {
+	for sourceID, severity := range vuln.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
-		if cvss, ok := vulnerability.CVSS[sourceID]; ok {
+		if cvss, ok := vuln.CVSS[sourceID]; ok {
 			if cvss.V2Score != 0 || cvss.V2Vector != "" {
 				rates = append(rates, cdxRatingV2(sourceID, severity, cvss))
 			}

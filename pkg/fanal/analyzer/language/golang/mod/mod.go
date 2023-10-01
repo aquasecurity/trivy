@@ -180,7 +180,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	return nil
 }
 
-func (a *gomodAnalyzer) collectDeps(modDir string, pkgID string) (godeptypes.Dependency, error) {
+func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (godeptypes.Dependency, error) {
 	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/go.mod
 	modPath := filepath.Join(modDir, "go.mod")
 	f, err := os.Open(modPath)
@@ -289,12 +289,14 @@ func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error
 		}
 		return nil
 	})
+
+	switch {
 	// The module path may not exist
-	if errors.Is(err, os.ErrNotExist) {
+	case errors.Is(err, os.ErrNotExist):
 		return nil, nil
-	} else if err != nil && !errors.Is(err, io.EOF) {
+	case err != nil && !errors.Is(err, io.EOF):
 		return nil, fmt.Errorf("finding a known open source license: %w", err)
-	} else if license == nil || len(license.Findings) == 0 {
+	case license == nil || len(license.Findings) == 0:
 		return nil, nil
 	}
 
