@@ -30,6 +30,9 @@ integration/testdata/fixtures/vm-images
 # SBOMs generated during CI
 /bom.json
 
+# Folder created during `mage lint:run`
+/bin
+
 # goreleaser output
 dist
 
