@@ -72,9 +72,9 @@ spec:
 {{ toYaml .Values.securityContext | indent 12 }}
           {{- end }}
           {{- if .Values.trivy.command }}
-          command: {{ .Values.trivy.command }}
+          command: {{ .Values.trivy.command | toJson }}
           {{- end }}
-          args: {{ .Values.trivy.args }}
+          args: {{ .Values.trivy.args | toJson }}
           {{- if .Values.trivy.registryCredentialsExistingSecret }}
           env:
             - name: TRIVY_USERNAME
