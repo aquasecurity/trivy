@@ -1,3 +1,5 @@
+include go-releaser.mk
+
 VERSION := $(patsubst v%,%,$(shell git describe --tags --always)) #Strips the v prefix from the tag
 LDFLAGS := -ldflags "-s -w -X=main.version=$(VERSION)"
 
@@ -126,4 +128,3 @@ easyjson: $(GOBIN)/easyjson
 .PHONY: get-image
 get-image:
 	echo dummy get-image
-include go-releaser.mk

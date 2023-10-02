@@ -1,0 +1,55 @@
+#before:
+#  hooks:
+#     - go mod vendor
+#    - go mod tidy
+#    - go generate ./...
+#project_name: "{{ .Env.BINARY_NAME }}"
+builds:
+  - main: "./cmd/{{ .Env.BINARY_NAME }}"
+    # Binary name.
+    # Can be a path (e.g. `bin/app`) to wrap the binary in a directory.
+    # Default is the name of the project directory.
+    binary: "{{ .Env.BINARY_NAME }}"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    #      - windows
+    #      - darwin
+    goarch:
+      - amd64
+#      - arm64
+#    ldflags:
+#      - -s
+#      - -w
+#      - -X cva_db_schema/pkg/version.Version={{ .Version }}
+#      - -X cva_db_schema/pkg/version.Build={{ .ShortCommit }}
+#    skip: false
+#archives:
+#  - format: binary
+#    files:
+#      - none*
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+release:
+  # You can disable this pipe in order to not upload any artifacts to
+  # GitHub.
+  # Defaults to false.
+  disable: false
+  # If set to true, will not auto-publish the release.
+  # Default is false.
+  draft: false
+dockers:
+  - image_templates:
+      - "{{ .Env.DOCKER_REPO_PATH }}/{{ .Env.DOCKER_REPO_NAME }}:latest"
+      - "{{ .Env.DOCKER_REPO_PATH }}/{{ .Env.DOCKER_REPO_NAME }}:{{ .Env.DOCKER_TAG }}"
+    goos: linux
+    goarch: amd64
+    # Path to the Dockerfile (from the project root).
+    dockerfile: build/Dockerfile.amd64
+    #use: buildx
+    # Template of the docker build flags.
+    #    build_flag_templates:
+    #      - --platform=linux/amd64
+    #skip_push: false

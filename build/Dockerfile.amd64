@@ -1,0 +1,16 @@
+FROM alpine:3.18.2
+
+# Add user and group
+ARG user=appuser
+ARG group=appgroup
+ARG uid=1000
+ARG gid=1000
+
+RUN addgroup -g ${gid} ${group}
+RUN adduser -u ${uid} -G ${group} -h /home/${user} -D ${user}
+
+# Switch to user
+USER ${uid}:${gid}
+WORKDIR /home/${user}
+
+COPY trivy /
