@@ -163,7 +163,7 @@ func (c *BOM) parseSBOM(bom *cdx.BOM) error {
 }
 
 func (c *BOM) parseOSPkgs(component cdx.Component, seen map[string]struct{}) (ftypes.PackageInfo, error) {
-	components := c.walkDependencies(component.BOMRef, map[string]struct{}{})
+	components := c.walkDependencies(component.BOMRef, make(map[string]struct{}))
 	pkgs, err := parsePkgs(components, seen)
 	if err != nil {
 		return ftypes.PackageInfo{}, xerrors.Errorf("failed to parse os package: %w", err)
@@ -175,7 +175,7 @@ func (c *BOM) parseOSPkgs(component cdx.Component, seen map[string]struct{}) (ft
 }
 
 func (c *BOM) parseLangPkgs(component cdx.Component, seen map[string]struct{}) (*ftypes.Application, error) {
-	components := c.walkDependencies(component.BOMRef, map[string]struct{}{})
+	components := c.walkDependencies(component.BOMRef, make(map[string]struct{}))
 	components = lo.UniqBy(components, func(c cdx.Component) string {
 		return c.BOMRef
 	})
@@ -276,8 +276,8 @@ func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 }
 
 func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Application, error) {
-	osPkgMap := map[ftypes.OSType]ftypes.Packages{}
-	langPkgMap := map[ftypes.LangType]ftypes.Packages{}
+	osPkgMap := make(map[ftypes.OSType]ftypes.Packages)
+	langPkgMap := make(map[ftypes.LangType]ftypes.Packages)
 	for _, lib := range libs {
 		isOSPkg, pkgType, pkg, err := toPackage(lib)
 		if err != nil {

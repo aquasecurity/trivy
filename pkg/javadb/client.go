@@ -79,7 +79,7 @@ func (u *Updater) Update() error {
 	return nil
 }
 
-func Init(cacheDir string, javaDBRepository string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
+func Init(cacheDir, javaDBRepository string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
 	updater = &Updater{
 		repo:           fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
 		dbDir:          filepath.Join(cacheDir, "java-db"),
@@ -151,7 +151,7 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 
 	// Some artifacts might have the same artifactId.
 	// e.g. "javax.servlet:jstl" and "jstl:jstl"
-	groupIDs := map[string]int{}
+	groupIDs := make(map[string]int)
 	for _, index := range indexes {
 		if i, ok := groupIDs[index.GroupID]; ok {
 			groupIDs[index.GroupID] = i + 1

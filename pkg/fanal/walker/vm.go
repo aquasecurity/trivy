@@ -123,20 +123,21 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 		return xerrors.Errorf("dir entry info error: %w", err)
 	}
 	pathName := strings.TrimPrefix(filepath.Clean(path), "/")
-	if fi.IsDir() {
+	switch {
+	case fi.IsDir():
 		if w.shouldSkipDir(pathName) {
 			return filepath.SkipDir
 		}
 		return nil
-	} else if !fi.Mode().IsRegular() {
+	case !fi.Mode().IsRegular():
 		return nil
-	} else if w.shouldSkipFile(pathName) {
+	case w.shouldSkipFile(pathName):
 		return nil
-	} else if fi.Mode()&0x1000 == 0x1000 ||
+	case fi.Mode()&0x1000 == 0x1000 ||
 		fi.Mode()&0x2000 == 0x2000 ||
 		fi.Mode()&0x6000 == 0x6000 ||
 		fi.Mode()&0xA000 == 0xA000 ||
-		fi.Mode()&0xc000 == 0xc000 {
+		fi.Mode()&0xc000 == 0xc000:
 		// 	0x1000:	S_IFIFO (FIFO)
 		// 	0x2000:	S_IFCHR (Character device)
 		// 	0x6000:	S_IFBLK (Block device)
@@ -163,7 +164,11 @@ type cachedVMFile struct {
 }
 
 func newCachedVMFile(fsys fs.FS, filePath string, threshold int64) *cachedVMFile {
-	return &cachedVMFile{fs: fsys, filePath: filePath, threshold: threshold}
+	return &cachedVMFile{
+		fs:        fsys,
+		filePath:  filePath,
+		threshold: threshold,
+	}
 }
 
 func (cvf *cachedVMFile) Open() (dio.ReadSeekCloserAt, error) {

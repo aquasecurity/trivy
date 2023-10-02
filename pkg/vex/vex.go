@@ -74,7 +74,7 @@ type CycloneDX struct {
 	logger     *zap.SugaredLogger
 }
 
-func newCycloneDX(sbom *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
+func newCycloneDX(cdxSBOM *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
 	var stmts []Statement
 	for _, vuln := range lo.FromPtr(vex.Vulnerabilities) {
 		affects := lo.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects, index int) string {
@@ -91,7 +91,7 @@ func newCycloneDX(sbom *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
 		})
 	}
 	return &CycloneDX{
-		sbom:       sbom,
+		sbom:       cdxSBOM,
 		statements: stmts,
 		logger:     log.Logger.With(zap.String("VEX format", "CycloneDX")),
 	}

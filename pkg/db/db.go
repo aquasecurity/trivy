@@ -52,9 +52,9 @@ func WithDBRepository(dbRepository string) Option {
 }
 
 // WithClock takes a clock
-func WithClock(clock clock.Clock) Option {
+func WithClock(c clock.Clock) Option {
 	return func(opts *options) {
-		opts.clock = clock
+		opts.clock = c
 	}
 }
 

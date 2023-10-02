@@ -213,7 +213,7 @@ func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS, pkgD
 	}
 }
 
-func (m *Marshaler) parseFile(filePath string, digest digest.Digest) (spdx.File, error) {
+func (m *Marshaler) parseFile(filePath string, d digest.Digest) (spdx.File, error) {
 	pkgID, err := calcPkgID(m.hasher, filePath)
 	if err != nil {
 		return spdx.File{}, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
@@ -221,7 +221,7 @@ func (m *Marshaler) parseFile(filePath string, digest digest.Digest) (spdx.File,
 	file := spdx.File{
 		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
 		FileName:           filePath,
-		Checksums:          digestToSpdxFileChecksum(digest),
+		Checksums:          digestToSpdxFileChecksum(d),
 	}
 	return file, nil
 }

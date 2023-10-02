@@ -51,14 +51,15 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 		}
 		relPath = filepath.ToSlash(relPath)
 
-		if fi.IsDir() {
+		switch {
+		case fi.IsDir():
 			if w.shouldSkipDir(relPath) {
 				return filepath.SkipDir
 			}
 			return nil
-		} else if !fi.Mode().IsRegular() {
+		case !fi.Mode().IsRegular():
 			return nil
-		} else if w.shouldSkipFile(relPath) {
+		case w.shouldSkipFile(relPath):
 			return nil
 		}
 

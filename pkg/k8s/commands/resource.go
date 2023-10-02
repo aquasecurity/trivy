@@ -32,7 +32,7 @@ func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster 
 		trivyk = trivyk.Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
 	}
 
-	if len(name) == 0 { // pods or configmaps etc
+	if name == "" { // pods or configmaps etc
 		if err = validateReportArguments(opts); err != nil {
 			return err
 		}
