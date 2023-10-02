@@ -42,7 +42,7 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ include "trivy.fullname" . }}
-      automountServiceAccountToken: {{ .Values.automountServiceAccountToken | default false }}
+      automountServiceAccountToken: {{ default false .Values.automountServiceAccountToken }}
       {{- if .Values.podSecurityContext }}
       securityContext:
 {{ toYaml .Values.podSecurityContext | indent 8 }}
