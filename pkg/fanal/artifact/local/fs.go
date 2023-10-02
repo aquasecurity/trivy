@@ -134,10 +134,6 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return types.ArtifactReference{}, xerrors.Errorf("failed to prepare filesystem for post analysis: %w", err)
 	}
 
-	if err := artifact.AddConfigFilesToFS(composite, a.artifactOption); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed write config files to fs: %w", err)
-	}
-
 	err = a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		dir := a.rootPath
 
