@@ -128,6 +128,9 @@ trivy:
   existingSecret: ""
   # extraEnvVars to be set on the container
   extraEnvVars: {}
+  # args trivy container args
+  args:
+    - server
 
 service:
   # If specified, the name used for the Trivy service.
