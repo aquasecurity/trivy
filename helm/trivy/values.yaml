@@ -165,4 +165,4 @@ httpsProxy:
 # noProxy the URLs that the proxy settings do not apply to
 noProxy:
 # automountServiceAccountToken the Kubelet to automatically mount a ServiceAccount's API credentials
-automountServiceAccountToken: false
+automountServiceAccountToken:

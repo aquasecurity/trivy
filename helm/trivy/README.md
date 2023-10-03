@@ -91,7 +91,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `affinity`                                | Affinity settings for pod assignment                                                                                                            |                                 |
 | `tolerations`                             | Tolerations for pod assignment                                                                                                                  |                                 |
 | `podAnnotations`                          | Annotations for pods created by statefulset                                                                                                     | `{}`                            |
-| `automountServiceAccountToken`            | Opt out of the Statefulset Kubelet to automatically mount a ServiceAccount's API credentials                                                    | `false`                         |
+| `automountServiceAccountToken`            | Opt out of the Statefulset Kubelet to automatically mount a ServiceAccount's API credentials                                                    |                                 |
 
 The above parameters map to the env variables defined in [trivy](https://github.com/aquasecurity/trivy#configuration).
 
