@@ -122,7 +122,10 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 
 	onResult := func(result scanResult) error {
 		resources = append(resources, result.vulns...)
-		resources = append(resources, result.misconfig)
+		// don't add empty misconfig results to resources slice to avoid an empty resource
+		if result.misconfig.Results != nil {
+			resources = append(resources, result.misconfig)
+		}
 		return nil
 	}
 

@@ -15,6 +15,14 @@ var (
 		Namespace: "default",
 		Kind:      "Deploy",
 		Name:      "orion",
+		Metadata: types.Metadata{
+			RepoTags: []string{
+				"alpine:3.14",
+			},
+			RepoDigests: []string{
+				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+			},
+		},
 		Results: types.Results{
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
@@ -62,6 +70,14 @@ var (
 		Namespace: "default",
 		Kind:      "Deploy",
 		Name:      "orion",
+		Metadata: types.Metadata{
+			RepoTags: []string{
+				"alpine:3.14",
+			},
+			RepoDigests: []string{
+				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+			},
+		},
 		Results: types.Results{
 			{
 				Vulnerabilities: []types.DetectedVulnerability{
@@ -102,6 +118,14 @@ var (
 		Namespace: "default",
 		Kind:      "Deploy",
 		Name:      "orion",
+		Metadata: types.Metadata{
+			RepoTags: []string{
+				"alpine:3.14",
+			},
+			RepoDigests: []string{
+				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+			},
+		},
 		Results: types.Results{
 			{
 				Misconfigurations: []types.DetectedMisconfiguration{
@@ -181,6 +205,14 @@ var (
 		Namespace: "default",
 		Kind:      "Cronjob",
 		Name:      "hello",
+		Metadata: types.Metadata{
+			RepoTags: []string{
+				"alpine:3.14",
+			},
+			RepoDigests: []string{
+				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+			},
+		},
 		Results: types.Results{
 			{Vulnerabilities: []types.DetectedVulnerability{{VulnerabilityID: "CVE-2020-9999"}}},
 		},
@@ -190,6 +222,14 @@ var (
 		Namespace: "default",
 		Kind:      "Pod",
 		Name:      "prometheus",
+		Metadata: types.Metadata{
+			RepoTags: []string{
+				"alpine:3.14",
+			},
+			RepoDigests: []string{
+				"alpine:3.14@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+			},
+		},
 		Results: types.Results{
 			{Misconfigurations: []types.DetectedMisconfiguration{{ID: "ID100"}}},
 		},
