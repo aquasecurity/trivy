@@ -7,6 +7,8 @@ import (
 const (
 	cacheDirName = "fanal"
 
+	cacheDirVersion = 2
+
 	// artifactBucket stores artifact information with artifact ID such as image ID
 	artifactBucket = "artifact"
 	// blobBucket stores os, package and library information per blob ID such as layer ID
@@ -44,6 +46,6 @@ type LocalArtifactCache interface {
 	// Close closes the local database
 	Close() (err error)
 
-	// Clear deletes the local database
+	// Clear closes and deletes the local database
 	Clear() (err error)
 }
