@@ -74,7 +74,7 @@ type Writer struct {
 func (w Writer) Write(report types.Report) error {
 	snapshot := &DependencySnapshot{}
 
-	//use now() method that can be overwritten while integration tests run
+	// use now() method that can be overwritten while integration tests run
 	snapshot.Scanned = clock.Now().Format(time.RFC3339)
 	snapshot.Detector = Detector{
 		Name:    "trivy",

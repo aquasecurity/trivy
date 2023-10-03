@@ -16,7 +16,6 @@ import (
 )
 
 const (
-	TypeAPK  = "apk" // not defined in github.com/package-url/packageurl-go
 	TypeOCI  = "oci"
 	TypeDart = "dart"
 )
@@ -61,10 +60,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 	if p.Type == packageurl.TypeCocoapods && p.Subpath != "" {
 		// CocoaPods uses <moduleName>/<submoduleName> format for package name
 		// e.g. `pkg:cocoapods/GoogleUtilities@7.5.2#NSData+zlib` => `GoogleUtilities/NSData+zlib`
-		pkg.Name = strings.Join([]string{
-			p.Name,
-			p.Subpath,
-		}, "/")
+		pkg.Name = p.Name + "/" + p.Subpath
 	}
 
 	if p.Type == packageurl.TypeRPM {
@@ -83,15 +79,9 @@ func (p *PackageURL) Package() *ftypes.Package {
 	if p.Type == packageurl.TypeMaven || p.Type == string(ftypes.Gradle) {
 		// Maven and Gradle packages separate ":"
 		// e.g. org.springframework:spring-core
-		pkg.Name = strings.Join([]string{
-			p.Namespace,
-			p.Name,
-		}, ":")
+		pkg.Name = p.Namespace + ":" + p.Name
 	} else {
-		pkg.Name = strings.Join([]string{
-			p.Namespace,
-			p.Name,
-		}, "/")
+		pkg.Name = p.Namespace + "/" + p.Name
 	}
 
 	return pkg
@@ -135,7 +125,7 @@ func (p *PackageURL) LangType() ftypes.LangType {
 }
 
 func (p *PackageURL) IsOSPkg() bool {
-	return p.Type == TypeAPK || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
+	return p.Type == packageurl.TypeApk || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
 }
 
 func (p *PackageURL) BOMRef() string {
@@ -180,11 +170,10 @@ func NewPackageURL(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Pack
 		if metadata.OS != nil {
 			namespace = string(metadata.OS.Family)
 		}
-	case TypeAPK: // TODO: replace with packageurl.TypeApk once they add it.
-		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
-		if metadata.OS != nil {
-			namespace = string(metadata.OS.Family)
-		}
+	case packageurl.TypeApk:
+		var qs packageurl.Qualifiers
+		name, namespace, qs = parseApk(name, metadata.OS)
+		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
@@ -246,17 +235,25 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 }
 
-func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
+// ref. https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#apk
+func parseApk(pkgName string, fos *ftypes.OS) (string, string, packageurl.Qualifiers) {
+	// the name must be lowercase
+	pkgName = strings.ToLower(pkgName)
+
 	if fos == nil {
-		return packageurl.Qualifiers{}
+		return pkgName, "", nil
 	}
 
-	return packageurl.Qualifiers{
+	// the namespace must be lowercase
+	ns := strings.ToLower(string(fos.Family))
+	qs := packageurl.Qualifiers{
 		{
 			Key:   "distro",
 			Value: fos.Name,
 		},
 	}
+
+	return pkgName, ns, qs
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#deb
@@ -340,11 +337,7 @@ func parseSwift(pkgName string) (string, string) {
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#cocoapods
 func parseCocoapods(pkgName string) (string, string) {
 	var subpath string
-	index := strings.Index(pkgName, "/")
-	if index != -1 {
-		subpath = pkgName[index+1:]
-		pkgName = pkgName[:index]
-	}
+	pkgName, subpath, _ = strings.Cut(pkgName, "/")
 	return pkgName, subpath
 }
 
@@ -384,7 +377,7 @@ func purlType(t ftypes.TargetType) string {
 	case ftypes.RustBinary, ftypes.Cargo:
 		return packageurl.TypeCargo
 	case ftypes.Alpine:
-		return TypeAPK
+		return packageurl.TypeApk
 	case ftypes.Debian, ftypes.Ubuntu:
 		return packageurl.TypeDebian
 	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,

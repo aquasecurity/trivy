@@ -43,7 +43,7 @@ func Classify(filePath string, r io.Reader, confidenceLevel float64) (*types.Lic
 
 	var findings types.LicenseFindings
 	var matchType types.LicenseType
-	seen := map[string]struct{}{}
+	seen := make(map[string]struct{})
 
 	// cf.Match is not thread safe
 	m.Lock()

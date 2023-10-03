@@ -34,7 +34,7 @@ func (g *Registry) CheckOptions(domain string, option types.RegistryOptions) err
 	return nil
 }
 
-func (g *Registry) GetCredential(ctx context.Context) (username, password string, err error) {
+func (g *Registry) GetCredential(_ context.Context) (username, password string, err error) {
 	var credStore store.GCRCredStore
 	if g.Store == nil {
 		credStore, err = store.DefaultGCRCredStore()

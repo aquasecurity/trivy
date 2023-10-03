@@ -44,7 +44,7 @@ func (a marinerOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 		if len(fields) != 2 {
 			continue
 		}
-		if strings.ToLower(fields[0]) == "cbl-mariner" {
+		if strings.EqualFold(fields[0], "cbl-mariner") {
 			return types.OS{
 				Family: types.CBLMariner,
 				Name:   fields[1],

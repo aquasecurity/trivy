@@ -194,7 +194,7 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	// TODO: our current logic may not detect empty layers correctly in rare cases.
 	validCreatedBy := len(diffIDs) == len(createdBy)
 
-	layerKeyMap := map[string]LayerInfo{}
+	layerKeyMap := make(map[string]LayerInfo)
 	for i, diffID := range diffIDs {
 
 		c := ""
