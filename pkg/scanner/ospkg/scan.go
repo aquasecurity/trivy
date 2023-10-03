@@ -77,7 +77,7 @@ func (s *scanner) Scan(target string, detail ftypes.ArtifactDetail, options type
 
 func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
 	// pkg has priority over pkgsFromCommands
-	uniqPkgs := map[string]struct{}{}
+	uniqPkgs := make(map[string]struct{})
 	for _, pkg := range pkgs {
 		uniqPkgs[pkg.Name] = struct{}{}
 	}

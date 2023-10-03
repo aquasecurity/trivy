@@ -34,7 +34,7 @@ type nuspecParser struct {
 }
 
 func newNuspecParser() nuspecParser {
-	// https: //learn.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders
+	// cf. https: //learn.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders
 	packagesDir := os.Getenv("NUGET_PACKAGES")
 	if packagesDir == "" {
 		packagesDir = filepath.Join(os.Getenv("HOME"), ".nuget", "packages")

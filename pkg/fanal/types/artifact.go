@@ -23,8 +23,8 @@ func (o *OS) Detected() bool {
 }
 
 // Merge merges OS version and enhanced security maintenance programs
-func (o *OS) Merge(new OS) {
-	if lo.IsEmpty(new) {
+func (o *OS) Merge(newOS OS) {
+	if lo.IsEmpty(newOS) {
 		return
 	}
 
@@ -33,18 +33,18 @@ func (o *OS) Merge(new OS) {
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
 	case o.Family == RedHat, o.Family == Debian:
-		*o = new
+		*o = newOS
 	default:
 		if o.Family == "" {
-			o.Family = new.Family
+			o.Family = newOS.Family
 		}
 		if o.Name == "" {
-			o.Name = new.Name
+			o.Name = newOS.Name
 		}
 		// Ubuntu has ESM program: https://ubuntu.com/security/esm
 		// OS version and esm status are stored in different files.
 		// We have to merge OS version after parsing these files.
-		if o.Extended || new.Extended {
+		if o.Extended || newOS.Extended {
 			o.Extended = true
 		}
 	}

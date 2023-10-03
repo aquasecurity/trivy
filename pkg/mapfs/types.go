@@ -15,12 +15,12 @@ type fileStat struct {
 	sys     any
 }
 
-func (fs *fileStat) Name() string       { return fs.name }
-func (fs *fileStat) Size() int64        { return fs.size }
-func (fs *fileStat) Mode() fs.FileMode  { return fs.mode }
-func (fs *fileStat) IsDir() bool        { return fs.mode.IsDir() }
-func (fs *fileStat) ModTime() time.Time { return fs.modTime }
-func (fs *fileStat) Sys() any           { return &fs.sys }
+func (fstat *fileStat) Name() string       { return fstat.name }
+func (fstat *fileStat) Size() int64        { return fstat.size }
+func (fstat *fileStat) Mode() fs.FileMode  { return fstat.mode }
+func (fstat *fileStat) IsDir() bool        { return fstat.mode.IsDir() }
+func (fstat *fileStat) ModTime() time.Time { return fstat.modTime }
+func (fstat *fileStat) Sys() any           { return &fstat.sys }
 
-func (fs *fileStat) Info() (fs.FileInfo, error) { return fs, nil }
-func (fs *fileStat) Type() fs.FileMode          { return fs.mode }
+func (fstat *fileStat) Info() (fs.FileInfo, error) { return fstat, nil }
+func (fstat *fileStat) Type() fs.FileMode          { return fstat.mode }

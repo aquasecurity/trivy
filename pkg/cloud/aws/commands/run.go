@@ -95,10 +95,11 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 }
 
 func filterServices(opt *flag.Options) error {
-	if len(opt.Services) == 0 && len(opt.SkipServices) == 0 {
+	switch {
+	case len(opt.Services) == 0 && len(opt.SkipServices) == 0:
 		log.Logger.Debug("No service(s) specified, scanning all services...")
 		opt.Services = allSupportedServicesFunc()
-	} else if len(opt.SkipServices) > 0 {
+	case len(opt.SkipServices) > 0:
 		log.Logger.Debug("excluding services: ", opt.SkipServices)
 		for _, s := range allSupportedServicesFunc() {
 			if slices.Contains(opt.SkipServices, s) {
@@ -108,7 +109,7 @@ func filterServices(opt *flag.Options) error {
 				opt.Services = append(opt.Services, s)
 			}
 		}
-	} else if len(opt.Services) > 0 {
+	case len(opt.Services) > 0:
 		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(opt.Services, ", "))
 		for _, service := range opt.Services {
 			var found bool

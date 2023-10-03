@@ -218,8 +218,10 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	if err != nil {
 		return nil, err
 	}
-	opts = append(opts, options.ScannerWithDataDirs(dataPaths...))
-	opts = append(opts, options.ScannerWithDataFilesystem(dataFS))
+	opts = append(opts,
+		options.ScannerWithDataDirs(dataPaths...),
+		options.ScannerWithDataFilesystem(dataFS),
+	)
 
 	if opt.Trace {
 		opts = append(opts, options.ScannerWithPerResultTracing(true))
@@ -265,8 +267,10 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 		opts = append(opts, tfscanner.ScannerWithTFVarsPaths(scannerOption.TerraformTFVars...))
 	}
 
-	opts = append(opts, tfscanner.ScannerWithAllDirectories(true))
-	opts = append(opts, tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded))
+	opts = append(opts,
+		tfscanner.ScannerWithAllDirectories(true),
+		tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded),
+	)
 
 	return opts
 }
@@ -329,16 +333,16 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	return mfs, policyPaths, nil
 }
 
-func CreateDataFS(dataPaths []string, options ...string) (fs.FS, []string, error) {
+func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {
 	fsys := mapfs.New()
 
 	// Check if k8sVersion is provided
-	if len(options) > 0 {
-		k8sVersion := options[0]
+	if len(opts) > 0 {
+		k8sVersion := opts[0]
 		if err := fsys.MkdirAll("system", 0700); err != nil {
 			return nil, nil, err
 		}
-		data := []byte(fmt.Sprintf(`{"k8s": {"version": "%s"}}`, k8sVersion))
+		data := []byte(fmt.Sprintf(`{"k8s": {"version": %q}}`, k8sVersion))
 		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0600); err != nil {
 			return nil, nil, err
 		}
@@ -358,7 +362,7 @@ func CreateDataFS(dataPaths []string, options ...string) (fs.FS, []string, error
 
 // ResultsToMisconf is exported for trivy-plugin-aqua purposes only
 func ResultsToMisconf(configType types.ConfigType, scannerName string, results scan.Results) []types.Misconfiguration {
-	misconfs := map[string]types.Misconfiguration{}
+	misconfs := make(map[string]types.Misconfiguration)
 
 	for _, result := range results {
 		flattened := result.Flatten()

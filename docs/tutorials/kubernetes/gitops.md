@@ -41,7 +41,7 @@ spec:
       selfHeal: true
 ```
 
-The apply the Kubernetes manifest. If you have the manifest locally, you can use the following command through kubectl:
+To apply the Kubernetes manifest, if you have the manifest locally, you can use the following command through kubectl:
 ```
 > kubectl apply -f trivy-operator.yaml
 

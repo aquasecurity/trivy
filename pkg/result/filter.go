@@ -110,15 +110,16 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 			vuln.Severity = dbTypes.SeverityUnknown.String()
 		}
 
-		if !slices.Contains(severities, vuln.Severity) {
-			// Filter by severity
+		switch {
+		// Filter by severity
+		case !slices.Contains(severities, vuln.Severity):
 			continue
-		} else if slices.Contains(ignoreStatuses, vuln.Status) {
-			// Filter by status
+		// Filter by status
+		case slices.Contains(ignoreStatuses, vuln.Status):
 			continue
-		} else if ignoreFindings.Match(result.Target, vuln.VulnerabilityID) ||
-			ignoreFindings.Match(vuln.PkgPath, vuln.VulnerabilityID) {
-			// Filter by ignore file
+		// Filter by ignore file
+		case ignoreFindings.Match(result.Target, vuln.VulnerabilityID) ||
+			ignoreFindings.Match(vuln.PkgPath, vuln.VulnerabilityID):
 			continue
 		}
 
@@ -272,7 +273,7 @@ func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface
 	return ignore, nil
 }
 
-func shouldOverwrite(old, new types.DetectedVulnerability) bool {
+func shouldOverwrite(oldVuln, newVuln types.DetectedVulnerability) bool {
 	// The same vulnerability must be picked always.
-	return old.FixedVersion < new.FixedVersion
+	return oldVuln.FixedVersion < newVuln.FixedVersion
 }

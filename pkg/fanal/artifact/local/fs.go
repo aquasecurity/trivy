@@ -203,7 +203,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	// get hostname
 	var hostName string
 	b, err := os.ReadFile(filepath.Join(a.rootPath, "etc", "hostname"))
-	if err == nil && string(b) != "" {
+	if err == nil && len(b) != 0 {
 		hostName = strings.TrimSpace(string(b))
 	} else {
 		// To slash for Windows

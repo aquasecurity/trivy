@@ -26,10 +26,17 @@ require (
 	github.com/aquasecurity/trivy-db v0.0.0-20230831170347-f732860d4917
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.5.7
+<<<<<<< HEAD
 	github.com/aws/aws-sdk-go v1.45.17
 	github.com/aws/aws-sdk-go-v2 v1.21.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.42
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.121.0
+=======
+	github.com/aws/aws-sdk-go v1.45.19
+	github.com/aws/aws-sdk-go-v2 v1.21.0
+	github.com/aws/aws-sdk-go-v2/config v1.18.38
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.98.0
+>>>>>>> aquasecurity-main
 	github.com/aws/aws-sdk-go-v2/service/sts v1.22.0
 	github.com/bmatcuk/doublestar/v4 v4.6.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
@@ -75,6 +82,7 @@ require (
 	github.com/openvex/go-vex v0.2.5
 	github.com/owenrumney/go-sarif/v2 v2.2.0
 	github.com/package-url/packageurl-go v0.1.2-0.20230812223828-f8bb31c1f10b
+	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/samber/lo v1.38.1
 	github.com/saracen/walker v0.1.3
 	github.com/secure-systems-lab/go-securesystemslib v0.7.0
@@ -346,8 +354,11 @@ require (
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/tchap/go-patricia/v2 v2.3.1 // indirect
+<<<<<<< HEAD
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
 	github.com/tklauser/numcpus v0.6.0 // indirect
+=======
+>>>>>>> aquasecurity-main
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/vbatts/tar-split v0.11.3 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
@@ -364,12 +375,12 @@ require (
 	go.opentelemetry.io/otel/trace v1.14.0 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.12.0 // indirect
-	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/crypto v0.13.0 // indirect
+	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/oauth2 v0.11.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.10.0 // indirect
+	golang.org/x/tools v0.13.0 // indirect
 	google.golang.org/api v0.138.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230803162519-f966b187b2e5 // indirect
