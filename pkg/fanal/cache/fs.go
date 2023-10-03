@@ -21,6 +21,15 @@ type FSCache struct {
 
 func NewFSCache(cacheDir string) (FSCache, error) {
 	dir := filepath.Join(cacheDir, cacheDirName)
+
+	metadataClient := NewMetadata(dir)
+
+	metadata, err := metadataClient.Get()
+	if err != nil || metadata.Version != cacheDirVersion {
+		// clear cache since metadata.json file does not exist
+		os.RemoveAll(dir)
+	}
+
 	if err := os.MkdirAll(dir, 0700); err != nil {
 		return FSCache{}, xerrors.Errorf("failed to create cache dir: %w", err)
 	}
@@ -40,6 +49,10 @@ func NewFSCache(cacheDir string) (FSCache, error) {
 	})
 	if err != nil {
 		return FSCache{}, xerrors.Errorf("DB error: %w", err)
+	}
+
+	if metadata.Version != cacheDirVersion {
+		metadataClient.Update(Metadata{Version: cacheDirVersion})
 	}
 
 	return FSCache{
@@ -197,7 +210,7 @@ func (fs FSCache) Close() error {
 	return nil
 }
 
-// Clear removes the database
+// Clear closes and removes the database
 func (fs FSCache) Clear() error {
 	if err := fs.Close(); err != nil {
 		return err
