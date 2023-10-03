@@ -9,6 +9,13 @@ GitHub Action for integrating Trivy into your GitHub pipeline
 
 👉 Get it at: <https://github.com/aquasecurity/trivy-action>
 
+## Azure DevOps (Official)
+[Azure Devops](https://azure.microsoft.com/en-us/products/devops/#overview) is Microsoft Azure cloud native CI/CD service.
+
+Trivy has a "Azure Devops Pipelines Task" for Trivy, that lets you easily introduce security scanning into your workflow, with an integrated Azure Devops UI.
+
+👉 Get it at: <https://github.com/aquasecurity/trivy-azure-pipelines-task>
+
 ### trivy-action (Community)
 
 GitHub Action to scan vulnerability using Trivy. If vulnerabilities are found by Trivy, it creates a GitHub Issue.
@@ -21,12 +28,11 @@ In this action, Trivy scans the dependency files such as package-lock.json and g
 
 👉 Get it at: <https://github.com/marketplace/actions/trivy-github-issues>
 
-## Azure DevOps (Official)
-[Azure Devops](https://azure.microsoft.com/en-us/products/devops/#overview) is Microsoft Azure cloud native CI/CD service.
+### Buildkite Plugin (Community)
 
-Trivy has a "Azure Devops Pipelines Task" for Trivy, that lets you easily introduce security scanning into your workflow, with an integrated Azure Devops UI.
+The trivy buildkite plugin provides a convenient mechanism for running the open-source trivy static analysis tool on your project. 
 
-👉 Get it at: <https://github.com/aquasecurity/trivy-azure-pipelines-task>
+👉 Get it at: https://github.com/equinixmetal-buildkite/trivy-buildkite-plugin
 
 ## Semaphore (Community)
 [Semaphore](https://semaphoreci.com/) is a CI/CD service.
