@@ -49,7 +49,7 @@ func (r *Registry) GetCredential(ctx context.Context) (string, string, error) {
 	return "00000000-0000-0000-0000-000000000000", *rt.RefreshToken, err
 }
 
-func refreshToken(ctx context.Context, accessToken string, domain string) (containerregistry.RefreshToken, error) {
+func refreshToken(ctx context.Context, accessToken, domain string) (containerregistry.RefreshToken, error) {
 	tenantID := os.Getenv("AZURE_TENANT_ID")
 	if tenantID == "" {
 		return containerregistry.RefreshToken{}, errors.New("missing environment variable AZURE_TENANT_ID")

@@ -65,10 +65,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 	if p.Type == packageurl.TypeCocoapods && p.Subpath != "" {
 		// CocoaPods uses <moduleName>/<submoduleName> format for package name
 		// e.g. `pkg:cocoapods/GoogleUtilities@7.5.2#NSData+zlib` => `GoogleUtilities/NSData+zlib`
-		pkg.Name = strings.Join([]string{
-			p.Name,
-			p.Subpath,
-		}, "/")
+		pkg.Name = p.Name + "/" + p.Subpath
 	}
 
 	if p.Type == packageurl.TypeRPM {
@@ -87,15 +84,9 @@ func (p *PackageURL) Package() *ftypes.Package {
 	if p.Type == packageurl.TypeMaven || p.Type == string(ftypes.Gradle) {
 		// Maven and Gradle packages separate ":"
 		// e.g. org.springframework:spring-core
-		pkg.Name = strings.Join([]string{
-			p.Namespace,
-			p.Name,
-		}, ":")
+		pkg.Name = p.Namespace + ":" + p.Name
 	} else {
-		pkg.Name = strings.Join([]string{
-			p.Namespace,
-			p.Name,
-		}, "/")
+		pkg.Name = p.Namespace + "/" + p.Name
 	}
 
 	return pkg
@@ -368,11 +359,7 @@ func parseSwift(pkgName string) (string, string) {
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#cocoapods
 func parseCocoapods(pkgName string) (string, string) {
 	var subpath string
-	index := strings.Index(pkgName, "/")
-	if index != -1 {
-		subpath = pkgName[index+1:]
-		pkgName = pkgName[:index]
-	}
+	pkgName, subpath, _ = strings.Cut(pkgName, "/")
 	return pkgName, subpath
 }
 

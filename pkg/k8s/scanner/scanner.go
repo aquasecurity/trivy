@@ -175,7 +175,7 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifa
 	s.opts.Target = configFile
 
 	configReport, err := s.runner.ScanFilesystem(ctx, s.opts)
-	//remove config file after scanning
+	// remove config file after scanning
 	removeFile(configFile)
 	if err != nil {
 		log.Logger.Debugf("failed to scan config %s/%s: %s", artifact.Kind, artifact.Name, err)
@@ -204,7 +204,7 @@ const (
 )
 
 func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Component, error) {
-	coreComponents := make([]*core.Component, 0)
+	var coreComponents []*core.Component
 	var cInfo *core.Component
 
 	// Find the fist node name to identify AKS cluster
@@ -225,14 +225,14 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 			if err != nil {
 				return nil, err
 			}
-			imageComponents := make([]*core.Component, 0)
+			var imageComponents []*core.Component
 			for _, c := range comp.Containers {
 				name := fmt.Sprintf("%s/%s", c.Registry, c.Repository)
 				cDigest := c.Digest
-				if strings.Index(c.Digest, string(digest.SHA256)) == -1 {
+				if !strings.Contains(c.Digest, string(digest.SHA256)) {
 					cDigest = fmt.Sprintf("%s:%s", string(digest.SHA256), cDigest)
 				}
-				version := sanitizedVersion(c.Version)
+				ver := sanitizedVersion(c.Version)
 
 				imagePURL, err := purl.NewPackageURL(purl.TypeOCI, types.Metadata{
 					RepoDigests: []string{
@@ -251,7 +251,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 					Properties: []core.Property{
 						{
 							Name:  cyc.PropertyPkgID,
-							Value: fmt.Sprintf("%s:%s", name, version),
+							Value: fmt.Sprintf("%s:%s", name, ver),
 						},
 						{
 							Name:  cyc.PropertyPkgType,
@@ -302,8 +302,8 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 	return rootComponent, nil
 }
 
-func sanitizedVersion(version string) string {
-	return strings.TrimPrefix(version, "v")
+func sanitizedVersion(ver string) string {
+	return strings.TrimPrefix(ver, "v")
 }
 
 func osNameVersion(name string) (string, string) {

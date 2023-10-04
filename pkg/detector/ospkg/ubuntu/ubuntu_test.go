@@ -247,13 +247,13 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "unknown",
+			name: "latest",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "ubuntu",
-				osVer:    "unknown",
+				osVer:    "99.04",
 			},
-			want: false,
+			want: true,
 		},
 	}
 	for _, tt := range tests {

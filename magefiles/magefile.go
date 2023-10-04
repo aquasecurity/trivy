@@ -393,11 +393,12 @@ func (Docs) Generate() error {
 func findProtoFiles() ([]string, error) {
 	var files []string
 	err := filepath.WalkDir("rpc", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
+		switch {
+		case err != nil:
 			return err
-		} else if d.IsDir() {
+		case d.IsDir():
 			return nil
-		} else if filepath.Ext(path) == ".proto" {
+		case filepath.Ext(path) == ".proto":
 			files = append(files, path)
 		}
 		return nil

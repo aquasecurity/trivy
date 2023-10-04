@@ -75,7 +75,7 @@ func (r pkgLicenseRenderer) setRows() {
 }
 
 func (r pkgLicenseRenderer) countSeverities() map[string]int {
-	severityCount := map[string]int{}
+	severityCount := make(map[string]int)
 	for _, l := range r.result.Licenses {
 		severityCount[l.Severity]++
 	}
@@ -160,7 +160,7 @@ func (r fileLicenseRenderer) setRows() {
 }
 
 func (r fileLicenseRenderer) countSeverities() map[string]int {
-	severityCount := map[string]int{}
+	severityCount := make(map[string]int)
 	for _, l := range r.result.Licenses {
 		severityCount[l.Severity]++
 	}
