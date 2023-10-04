@@ -487,7 +487,7 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		GroupID: groupUtility,
 		Short:   "Convert Trivy JSON report into a different format",
 		Example: `  # report conversion
-  $ trivy image --format json --output result.json --scanners vuln,secret,sbom debian:11
+  $ trivy image --format json --output result.json --scanners vuln,secret,pkg debian:11
   $ trivy convert --format cyclonedx --output result.cdx result.json
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {

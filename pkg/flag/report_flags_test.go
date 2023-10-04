@@ -51,7 +51,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 			want: flag.ReportOptions{},
 			wantLogs: []string{
-				`'--list-all-pkgs' option has been removed. Use '--scanners sbom' to show all packages found.`,
+				`'--list-all-pkgs' option has been removed. Use '--scanners pkg' to show all packages found.`,
 			},
 		},
 		{

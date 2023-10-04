@@ -160,7 +160,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 					Scanners: types.Scanners{
 						types.VulnerabilityScanner,
-						types.SBOMScanner,
+						types.PkgScanner,
 					},
 				},
 			},
@@ -315,7 +315,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 					Scanners: types.Scanners{
 						types.VulnerabilityScanner,
-						types.SBOMScanner,
+						types.PkgScanner,
 					},
 				},
 			},
@@ -509,7 +509,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 					Scanners: types.Scanners{
 						types.VulnerabilityScanner,
-						types.SBOMScanner,
+						types.PkgScanner,
 					},
 				},
 			},

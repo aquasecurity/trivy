@@ -16,7 +16,7 @@ scan:
   scanners:
     - vuln
     - secret
-    - sbom
+    - pkg
 vulnerability:
   type:
     - os

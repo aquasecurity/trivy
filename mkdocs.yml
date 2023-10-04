@@ -66,7 +66,7 @@ nav:
                   - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
           - Secret: docs/scanner/secret.md
           - License: docs/scanner/license.md
-          - SBOM: docs/scanner/sbom.md
+          - Pkg: docs/scanner/pkg.md
       - Coverage:
           - Overview: docs/coverage/index.md
           - OS:

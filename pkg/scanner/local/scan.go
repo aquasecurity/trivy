@@ -92,7 +92,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	excludeDevDeps(artifactDetail.Applications, options.IncludeDevDeps)
 
 	// Fill OS packages and language-specific packages
-	if options.Scanners.Enabled(types.SBOMScanner) {
+	if options.Scanners.Enabled(types.PkgScanner) {
 		if res := s.osPkgScanner.Packages(target, artifactDetail, options); len(res.Packages) != 0 {
 			pkgResults = append(pkgResults, res)
 		}
@@ -201,7 +201,7 @@ func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail
 
 func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Results {
 	var results types.Results
-	if len(pkgResults) == 0 { // '--scanners sbom' is disabled or packages not found
+	if len(pkgResults) == 0 { // '--scanners pkg' is disabled or packages not found
 		return vulnResults
 	}
 	for _, result := range pkgResults {
@@ -210,7 +210,7 @@ func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Re
 		}); found {
 			r.Packages = result.Packages
 			results = append(results, r)
-		} else { // when package result has no vulnerabilities we still need to add it to result(for '--scanners sbom')
+		} else { // when package result has no vulnerabilities we still need to add it to result(for '--scanners pkg')
 			results = append(results, result)
 		}
 	}

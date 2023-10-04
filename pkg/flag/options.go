@@ -119,33 +119,33 @@ type Options struct {
 
 // Align takes consistency of options
 func (o *Options) Align() {
-	// "--scanners sbom" option is unavailable with "--format table".
-	// If user specifies "--scanners sbom" with "--format table", we should warn it.
-	if o.Format == types.FormatTable && o.Scanners.Enabled(types.SBOMScanner) {
-		log.Logger.Warn(`"--scanners sbom" cannot be used with "--format table". Try "--format json" or other formats.`)
-		o.Scanners = o.Scanners.Disable(types.SBOMScanner)
+	// "--scanners pkg" option is unavailable with "--format table".
+	// If user specifies "--scanners pkg" with "--format table", we should warn it.
+	if o.Format == types.FormatTable && o.Scanners.Enabled(types.PkgScanner) {
+		log.Logger.Warn(`"--scanners pkg" cannot be used with "--format table". Try "--format json" or other formats.`)
+		o.Scanners = o.Scanners.Disable(types.PkgScanner)
 		return
 	}
 
-	// enable SBOM scanner for --dependency-tree
-	if o.DependencyTree && !o.Scanners.Enabled(types.SBOMScanner) {
-		log.Logger.Debugf(`"--dependency-tree" enables "--scanners sbom".`)
-		o.Scanners = append(o.Scanners, types.SBOMScanner)
+	// enable pkg scanner for --dependency-tree
+	if o.DependencyTree && !o.Scanners.Enabled(types.PkgScanner) {
+		log.Logger.Debugf(`"--dependency-tree" enables "--scanners pkg".`)
+		o.Scanners = append(o.Scanners, types.PkgScanner)
 		return
 	}
 
 	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
-	if o.Format == types.FormatSarif && !o.Scanners.Enabled(types.SBOMScanner) {
-		log.Logger.Debugf(`"--format sarif" automatically enables "--scanners sbom" to get locations.`)
-		o.Scanners = append(o.Scanners, types.SBOMScanner)
+	if o.Format == types.FormatSarif && !o.Scanners.Enabled(types.PkgScanner) {
+		log.Logger.Debugf(`"--format sarif" automatically enables "--scanners pkg" to get locations.`)
+		o.Scanners = append(o.Scanners, types.PkgScanner)
 		return
 	}
 
 	if slices.Contains(types.SupportedSBOMFormats, o.Format) {
-		// enable SBOM scanner if needed
-		if !o.Scanners.Enabled(types.SBOMScanner) {
-			log.Logger.Debugf(`"--format %s" automatically enables "--scanners sbom".`, o.Format)
-			o.Scanners = append(o.Scanners, types.SBOMScanner)
+		// enable pkg scanner if needed
+		if !o.Scanners.Enabled(types.PkgScanner) {
+			log.Logger.Debugf(`"--format %s" automatically enables "--scanners pkg".`, o.Format)
+			o.Scanners = append(o.Scanners, types.PkgScanner)
 		}
 		// disable vulnerability scanner if needed
 		if o.Scanners.Enabled(types.VulnerabilityScanner) {

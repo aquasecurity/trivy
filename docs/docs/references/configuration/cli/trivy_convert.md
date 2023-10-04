@@ -10,7 +10,7 @@ trivy convert [flags] RESULT_JSON
 
 ```
   # report conversion
-  $ trivy image --format json --output result.json --scanners vuln,secret,sbom debian:11
+  $ trivy image --format json --output result.json --scanners vuln,secret,pkg debian:11
   $ trivy convert --format cyclonedx --output result.cdx result.json
 
 ```

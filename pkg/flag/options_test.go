@@ -92,7 +92,7 @@ func Test_Align(t *testing.T) {
 		wantLogs     []string
 	}{
 		{
-			name: "table format with sbom scanner",
+			name: "table format with pkg scanner",
 			options: &Options{
 				ReportOptions: ReportOptions{
 					Format: types.FormatTable,
@@ -100,7 +100,7 @@ func Test_Align(t *testing.T) {
 				ScanOptions: ScanOptions{
 					Scanners: types.Scanners{
 						types.VulnerabilityScanner,
-						types.SBOMScanner,
+						types.PkgScanner,
 					},
 				},
 			},
@@ -108,11 +108,11 @@ func Test_Align(t *testing.T) {
 				types.VulnerabilityScanner,
 			},
 			wantLogs: []string{
-				`"--scanners sbom" cannot be used with "--format table". Try "--format json" or other formats.`,
+				`"--scanners pkg" cannot be used with "--format table". Try "--format json" or other formats.`,
 			},
 		},
 		{
-			name: "--dependency-tree flag without sbom scanner",
+			name: "--dependency-tree flag without pkg scanner",
 			options: &Options{
 				ReportOptions: ReportOptions{
 					Format:         types.FormatJSON,
@@ -126,14 +126,14 @@ func Test_Align(t *testing.T) {
 			},
 			wantScanners: types.Scanners{
 				types.VulnerabilityScanner,
-				types.SBOMScanner,
+				types.PkgScanner,
 			},
 			wantLogs: []string{
-				`"--dependency-tree" enables "--scanners sbom".`,
+				`"--dependency-tree" enables "--scanners pkg".`,
 			},
 		},
 		{
-			name: "sarif format without sbom scanner",
+			name: "sarif format without pkg scanner",
 			options: &Options{
 				ReportOptions: ReportOptions{
 					Format: types.FormatSarif,
@@ -146,14 +146,14 @@ func Test_Align(t *testing.T) {
 			},
 			wantScanners: types.Scanners{
 				types.VulnerabilityScanner,
-				types.SBOMScanner,
+				types.PkgScanner,
 			},
 			wantLogs: []string{
-				`"--format sarif" automatically enables "--scanners sbom" to get locations.`,
+				`"--format sarif" automatically enables "--scanners pkg" to get locations.`,
 			},
 		},
 		{
-			name: "spdx format without sbom scanner",
+			name: "spdx format without pkg scanner",
 			options: &Options{
 				ReportOptions: ReportOptions{
 					Format: types.FormatSPDX,
@@ -165,27 +165,27 @@ func Test_Align(t *testing.T) {
 				},
 			},
 			wantScanners: types.Scanners{
-				types.SBOMScanner,
+				types.PkgScanner,
 			},
 			wantLogs: []string{
-				`"--format spdx" automatically enables "--scanners sbom".`,
+				`"--format spdx" automatically enables "--scanners pkg".`,
 				`"--format spdx" automatically disables security scanning.`,
 			},
 		},
 		{
-			name: "spdx format with only sbom scanner",
+			name: "spdx format with only pkg scanner",
 			options: &Options{
 				ReportOptions: ReportOptions{
 					Format: types.FormatSPDX,
 				},
 				ScanOptions: ScanOptions{
 					Scanners: types.Scanners{
-						types.SBOMScanner,
+						types.PkgScanner,
 					},
 				},
 			},
 			wantScanners: types.Scanners{
-				types.SBOMScanner,
+				types.PkgScanner,
 			},
 		},
 		{
@@ -201,15 +201,15 @@ func Test_Align(t *testing.T) {
 				},
 			},
 			wantScanners: types.Scanners{
-				types.SBOMScanner,
+				types.PkgScanner,
 			},
 			wantLogs: []string{
-				`"--format spdx" automatically enables "--scanners sbom".`,
+				`"--format spdx" automatically enables "--scanners pkg".`,
 				`"--format spdx" automatically disables "--scanners license,config,secret".`,
 			},
 		},
 		{
-			name: "cyclonedx format without sbom scanner",
+			name: "cyclonedx format without pkg scanner",
 			options: &Options{
 				ReportOptions: ReportOptions{
 					Format: types.FormatCycloneDX,
@@ -221,15 +221,15 @@ func Test_Align(t *testing.T) {
 				},
 			},
 			wantScanners: types.Scanners{
-				types.SBOMScanner,
+				types.PkgScanner,
 			},
 			wantLogs: []string{
-				`"--format cyclonedx" automatically enables "--scanners sbom".`,
+				`"--format cyclonedx" automatically enables "--scanners pkg".`,
 				`"--format cyclonedx" automatically disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`,
 			},
 		},
 		{
-			name: "k8s target, cyclonedx format without sbom scanner",
+			name: "k8s target, cyclonedx format without pkg scanner",
 			options: &Options{
 				ReportOptions: ReportOptions{
 					Format: types.FormatCycloneDX,
@@ -247,10 +247,10 @@ func Test_Align(t *testing.T) {
 				},
 			},
 			wantScanners: types.Scanners{
-				types.SBOMScanner,
+				types.PkgScanner,
 			},
 			wantLogs: []string{
-				`"--format cyclonedx" automatically enables "--scanners sbom".`,
+				`"--format cyclonedx" automatically enables "--scanners pkg".`,
 				`"k8s with --format cyclonedx" automatically disables security scanning.`,
 			},
 		},

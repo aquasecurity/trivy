@@ -181,7 +181,7 @@ $ trivy vm --scanners license [YOUR_VM_IMAGE]
 
 ### SBOM
 It is disabled by default.
-See [here](../scanner/sbom.md) for the detail.
+See [here](../scanner/pkg.md) for the detail.
 
 ```shell
 $ trivy image --scanners sbom --format json [YOUR_IMAGE_NAME]

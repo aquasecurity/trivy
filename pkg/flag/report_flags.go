@@ -98,7 +98,7 @@ var (
 		Name:       "list-all-pkgs",
 		ConfigName: "list-all-pkgs",
 		Default:    false,
-		Usage:      "'--list-all-pkgs' option has been removed. Use '--scanners sbom' to show all packages found.",
+		Usage:      "'--list-all-pkgs' option has been removed. Use '--scanners pkg' to show all packages found.",
 		Deprecated: true,
 	}
 )

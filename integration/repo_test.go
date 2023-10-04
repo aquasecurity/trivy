@@ -80,7 +80,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/npm",
 			},
@@ -91,7 +91,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input:          "testdata/fixtures/repo/npm",
 				includeDevDeps: true,
@@ -103,7 +103,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/yarn",
 			},
@@ -124,7 +124,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/pip",
 			},
@@ -135,7 +135,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/pipenv",
 			},
@@ -146,7 +146,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/poetry",
 			},
@@ -177,7 +177,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/conan",
 			},
@@ -188,7 +188,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/nuget",
 			},
@@ -199,7 +199,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/dotnet",
 			},
@@ -210,7 +210,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/swift",
 			},
@@ -221,7 +221,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/cocoapods",
 			},
@@ -232,7 +232,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/pubspec",
 			},
@@ -243,7 +243,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/mixlock",
 			},
@@ -254,7 +254,7 @@ func TestRepository(t *testing.T) {
 			args: args{
 				scanners: types.Scanners{
 					types.VulnerabilityScanner,
-					types.SBOMScanner,
+					types.PkgScanner,
 				},
 				input: "testdata/fixtures/repo/composer",
 			},
