@@ -8,11 +8,6 @@ import (
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	ms "github.com/mitchellh/mapstructure"
-	"github.com/package-url/packageurl-go"
-	"github.com/samber/lo"
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/bom"
@@ -28,6 +23,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
+	ms "github.com/mitchellh/mapstructure"
+	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -207,6 +206,17 @@ const (
 func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Component, error) {
 	coreComponents := make([]*core.Component, 0)
 	var cInfo *core.Component
+
+	// Find the fist node name to identify AKS cluster
+	var nodeName string
+	for _, artifact := range allArtifact {
+		if artifact.Kind != nodeInfo {
+			continue
+		}
+		nodeName = artifact.Name
+		break
+	}
+
 	for _, artifact := range allArtifact {
 		switch artifact.Kind {
 		case pod:
@@ -256,7 +266,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 				Type:       cdx.ComponentTypeApplication,
 				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
 				Components: imageComponents,
-				PackageURL: generatePURL(comp.Name, comp.Version),
+				PackageURL: generatePURL(comp.Name, comp.Version, nodeName),
 			}
 			coreComponents = append(coreComponents, rootComponent)
 		case nodeInfo:
@@ -287,7 +297,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 		Type:       cdx.ComponentTypePlatform,
 		Properties: cInfo.Properties,
 		Components: coreComponents,
-		PackageURL: generatePURL(cInfo.Name, cInfo.Version),
+		PackageURL: generatePURL(cInfo.Name, cInfo.Version, nodeName),
 	}
 	return rootComponent, nil
 }
@@ -389,9 +399,7 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 								Namespace: k8sCoreComponentNamespace,
 							},
 						},
-						PackageURL: &purl.PackageURL{
-							PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, "k8s.io", "kubelet", kubeletVersion, packageurl.Qualifiers{}, ""),
-						},
+						PackageURL: generatePURL(kubelet, kubeletVersion, nf.NodeName),
 					},
 					{
 						Type:    cdx.ComponentTypeApplication,
@@ -433,13 +441,22 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 	return properties
 }
 
-func generatePURL(name, version string) *purl.PackageURL {
-	if !strings.HasPrefix(name, k8sLocation+"/") {
-		return nil
+func generatePURL(name, version, nodeName string) *purl.PackageURL {
+	namespace := "upstream"
+	switch {
+	case strings.Contains(version, "eks"):
+		namespace = "eks"
+	case strings.Contains(version, "gke"):
+		namespace = "gke"
+	case strings.Contains(version, "rke2"):
+		namespace = "rke"
+	case strings.Contains(version, "hotfix"):
+		namespace = "unknown"
+		if strings.Contains(nodeName, "aks") {
+			namespace = "aks"
+		}
 	}
-
-	name = strings.TrimPrefix(name, k8sLocation+"/")
 	return &purl.PackageURL{
-		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, k8sLocation, name, version, packageurl.Qualifiers{}, ""),
+		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, version, packageurl.Qualifiers{}, ""),
 	}
 }
