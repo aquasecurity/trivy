@@ -104,7 +104,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 
 	var pkgs []types.Package
 	var installedFiles []string
-	provides := map[string]string{}
+	provides := make(map[string]string)
 	for _, pkg := range pkgList {
 		arch := pkg.Arch
 		if arch == "" {

@@ -43,6 +43,28 @@ linters-settings:
             recommendations:
               - github.com/aquasecurity/go-version
             reason: "`aquasecurity/go-version` is designed for our use-cases"
+  gocritic:
+    disabled-checks:
+      - appendAssign
+      - unnamedResult
+      - whyNoLint
+      - indexAlloc
+      - octalLiteral
+      - hugeParam
+      - rangeValCopy
+      - regexpSimplify
+      - sloppyReassign
+      - commentedOutCode
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+      - experimental
+      - opinionated
+    settings:
+      ruleguard:
+        failOn: all
+        rules: '${configDir}/misc/lint/rules.go'
 
 linters:
   disable-all: true
@@ -62,6 +84,7 @@ linters:
     - gci
     - gomodguard
     - tenv
+    - gocritic
 
 run:
   go: '1.20'

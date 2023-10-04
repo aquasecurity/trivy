@@ -41,7 +41,7 @@ func ColumnHeading(scanners types.Scanners, components, availableColumns []strin
 		ResourceColumn,
 	}
 	securityOptions := make(map[string]interface{}, 0)
-	//maintain column order (vuln,config,secret)
+	// maintain column order (vuln,config,secret)
 	for _, check := range scanners {
 		switch check {
 		case types.VulnerabilityScanner:
@@ -173,13 +173,13 @@ func accumulateSeverityCounts(finding Resource) (map[string]int, map[string]int,
 	sCount := make(map[string]int)
 	for _, r := range finding.Results {
 		for _, rv := range r.Vulnerabilities {
-			vCount[rv.Severity] = vCount[rv.Severity] + 1
+			vCount[rv.Severity]++
 		}
 		for _, rv := range r.Misconfigurations {
-			mCount[rv.Severity] = mCount[rv.Severity] + 1
+			mCount[rv.Severity]++
 		}
 		for _, rv := range r.Secrets {
-			sCount[rv.Severity] = sCount[rv.Severity] + 1
+			sCount[rv.Severity]++
 		}
 	}
 	return vCount, mCount, sCount

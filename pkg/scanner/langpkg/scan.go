@@ -62,7 +62,7 @@ func (s *scanner) Scan(detail ftypes.ArtifactDetail, _ types.ScanOptions) (types
 	}
 
 	var results types.Results
-	printedTypes := map[ftypes.LangType]struct{}{}
+	printedTypes := make(map[ftypes.LangType]struct{})
 	for _, app := range apps {
 		if len(app.Libraries) == 0 {
 			continue

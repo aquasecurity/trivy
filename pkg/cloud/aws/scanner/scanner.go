@@ -87,15 +87,19 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		return nil, false, xerrors.Errorf("unable to create policyfs: %w", err)
 	}
 
-	scannerOpts = append(scannerOpts, options.ScannerWithPolicyFilesystem(policyFS))
-	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
+	scannerOpts = append(scannerOpts,
+		options.ScannerWithPolicyFilesystem(policyFS),
+		options.ScannerWithPolicyDirs(policyPaths...),
+	)
 
 	dataFS, dataPaths, err := misconf.CreateDataFS(option.RegoOptions.DataPaths)
 	if err != nil {
 		log.Logger.Errorf("Could not load config data: %s", err)
 	}
-	scannerOpts = append(scannerOpts, options.ScannerWithDataDirs(dataPaths...))
-	scannerOpts = append(scannerOpts, options.ScannerWithDataFilesystem(dataFS))
+	scannerOpts = append(scannerOpts,
+		options.ScannerWithDataDirs(dataPaths...),
+		options.ScannerWithDataFilesystem(dataFS),
+	)
 
 	scannerOpts = addPolicyNamespaces(option.RegoOptions.PolicyNamespaces, scannerOpts)
 

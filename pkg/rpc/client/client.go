@@ -69,7 +69,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Convert to the rpc struct
-	licenseCategories := map[string]*rpc.Licenses{}
+	licenseCategories := make(map[string]*rpc.Licenses)
 	for category, names := range opts.LicenseCategories {
 		licenseCategories[string(category)] = &rpc.Licenses{Names: names}
 	}

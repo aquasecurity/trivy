@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"golang.org/x/xerrors"
 
@@ -35,7 +34,6 @@ var requiredExtensions = []string{
 
 // javaLibraryAnalyzer analyzes jar/war/ear/par files
 type javaLibraryAnalyzer struct {
-	once   sync.Once
 	client *javadb.DB
 	slow   bool
 }
@@ -49,18 +47,13 @@ func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) (analyzer.PostAnal
 func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	// TODO: think about the sonatype API and "--offline"
 	var err error
-	a.once.Do(func() {
-		log.Logger.Info("JAR files found")
-		a.client, err = javadb.NewClient()
-		if err != nil {
-			log.Logger.Errorf("Unable to initialize the Java DB: %s", err)
-			return
-		}
-		log.Logger.Info("Analyzing JAR files takes a while...")
-	})
+	log.Logger.Info("JAR files found")
+	a.client, err = javadb.NewClient()
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("Unable to initialize the Java DB: %s", err)
 	}
+	defer func() { _ = a.client.Close() }()
+	log.Logger.Info("Analyzing JAR files takes a while...")
 
 	// Skip analyzing JAR files as the nil client means the Java DB was not downloaded successfully.
 	if a.client == nil {

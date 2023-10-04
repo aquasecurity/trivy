@@ -265,10 +265,7 @@ func (f *file) glob(pattern string) ([]string, error) {
 					return false
 				}
 				for _, sub := range subEntries {
-					entries = append(entries, strings.Join([]string{
-						name,
-						sub,
-					}, separator))
+					entries = append(entries, name+separator+sub)
 				}
 			}
 		}

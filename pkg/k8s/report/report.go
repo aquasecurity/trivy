@@ -86,7 +86,7 @@ func (r Report) consolidate() ConsolidatedReport {
 	}
 
 	index := make(map[string]Resource)
-	vulnerabilities := make([]Resource, 0)
+	var vulnerabilities []Resource
 	for _, m := range r.Resources {
 		if vulnerabilitiesOrSecretResource(m) {
 			vulnerabilities = append(vulnerabilities, m)
@@ -134,11 +134,7 @@ type reports struct {
 // - infra checks report
 func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, components []string) []reports {
 
-	workloadMisconfig := make([]Resource, 0)
-	infraMisconfig := make([]Resource, 0)
-	rbacAssessment := make([]Resource, 0)
-	workloadVulnerabilities := make([]Resource, 0)
-	workloadResource := make([]Resource, 0)
+	var workloadMisconfig, infraMisconfig, rbacAssessment, workloadVulnerabilities, workloadResource []Resource
 	for _, resource := range k8sReport.Resources {
 		if vulnerabilitiesOrSecretResource(resource) {
 			workloadVulnerabilities = append(workloadVulnerabilities, resource)
@@ -166,7 +162,7 @@ func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 		}
 	}
 
-	r := make([]reports, 0)
+	var r []reports
 	workloadResource = append(workloadResource, workloadVulnerabilities...)
 	workloadResource = append(workloadResource, workloadMisconfig...)
 	if shouldAddWorkloadReport(scanners) {
@@ -269,8 +265,7 @@ func splitInfraAndWorkloadResources(misconfig Resource) (Resource, Resource) {
 	infraResults := make(types.Results, 0)
 
 	for _, result := range misconfig.Results {
-		workloadMisconfigs := make([]types.DetectedMisconfiguration, 0)
-		infraMisconfigs := make([]types.DetectedMisconfiguration, 0)
+		var workloadMisconfigs, infraMisconfigs []types.DetectedMisconfiguration
 
 		for _, m := range result.Misconfigurations {
 			if strings.HasPrefix(m.ID, "KCV") {

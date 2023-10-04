@@ -65,9 +65,9 @@ func (c *CycloneDX) Marshal(root *Component) *cdx.BOM {
 	bom.SerialNumber = uuid.New().URN()
 	bom.Metadata = c.Metadata()
 
-	components := map[string]*cdx.Component{}
-	dependencies := map[string]*[]string{}
-	vulnerabilities := map[string]*cdx.Vulnerability{}
+	components := make(map[string]*cdx.Component)
+	dependencies := make(map[string]*[]string)
+	vulnerabilities := make(map[string]*cdx.Vulnerability)
 	bom.Metadata.Component = c.MarshalComponent(root, components, dependencies, vulnerabilities)
 
 	// Remove metadata component
@@ -136,7 +136,7 @@ func (c *CycloneDX) MarshalComponent(component *Component, components map[string
 		}
 	}
 
-	dependencies := make([]string, 0) // Components that do not have their own dependencies must be declared as empty elements
+	dependencies := make([]string, 0) // nolint:gocritic // Components that do not have their own dependencies must be declared as empty elements
 	for _, child := range component.Components {
 		childComponent := c.MarshalComponent(child, components, deps, vulns)
 		dependencies = append(dependencies, childComponent.BOMRef)
@@ -231,11 +231,11 @@ func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.V
 	return &vulns
 }
 
-func (c *CycloneDX) PackageURL(purl *purl.PackageURL) string {
-	if purl == nil {
+func (c *CycloneDX) PackageURL(p *purl.PackageURL) string {
+	if p == nil {
 		return ""
 	}
-	return purl.String()
+	return p.String()
 }
 
 func (c *CycloneDX) Supplier(supplier string) *cdx.OrganizationalEntity {
@@ -330,7 +330,7 @@ func LookupProperty(properties *[]cdx.Property, key string) string {
 }
 
 func UnmarshalProperties(properties *[]cdx.Property) map[string]string {
-	props := map[string]string{}
+	props := make(map[string]string)
 	for _, prop := range lo.FromPtr(properties) {
 		if !strings.HasPrefix(prop.Name, Namespace) {
 			continue
@@ -375,11 +375,11 @@ func cwes(cweIDs []string) *[]int {
 	return &ret
 }
 
-func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
-	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
-	for sourceID, severity := range vulnerability.VendorSeverity {
+func cdxRatings(vuln types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
+	rates := make([]cdx.VulnerabilityRating, 0) // nolint:gocritic // To export an empty array in JSON
+	for sourceID, severity := range vuln.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
-		if cvss, ok := vulnerability.CVSS[sourceID]; ok {
+		if cvss, ok := vuln.CVSS[sourceID]; ok {
 			if cvss.V2Score != 0 || cvss.V2Vector != "" {
 				rates = append(rates, cdxRatingV2(sourceID, severity, cvss))
 			}
