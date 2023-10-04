@@ -52,7 +52,7 @@
       }
       a.toggle-more-links { cursor: pointer; }
     </style>
-    <title>{{- escapeXML ( index . 0 ).Target }} - Trivy Report - {{ now }} </title>
+    <title>{{- escapeXML ( index . 0 ).Target }} - RC-CN IT Cloud Trivy Report - {{ now }} </title>
     <script>
       window.onload = function() {
         document.querySelectorAll('td.links').forEach(function(linkCell) {
