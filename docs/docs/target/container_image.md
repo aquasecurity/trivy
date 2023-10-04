@@ -15,7 +15,7 @@ Trivy scans the files inside container images for
 - Misconfigurations
 - Secrets
 - Licenses
-- SBOM
+- Packages
 
 By default, vulnerability and secret scanning are enabled, and you can configure that with `--scanners`.
 
@@ -88,12 +88,12 @@ See [here](../scanner/license.md) for the detail.
 $ trivy image --scanners license [YOUR_IMAGE_NAME]
 ```
 
-### SBOM
+### Packages
 It is disabled by default.
 See [here](../scanner/pkg.md) for the detail.
 
 ```shell
-$ trivy image --scanners sbom --format json [YOUR_IMAGE_NAME]
+$ trivy image --scanners pkg --format json [YOUR_IMAGE_NAME]
 ```
 
 ## Container image metadata

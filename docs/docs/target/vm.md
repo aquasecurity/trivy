@@ -139,7 +139,7 @@ Trivy supports VM image scanning for
 - Misconfigurations
 - Secrets
 - Licenses
-- SBOM
+- Packages
 
 ### Vulnerabilities
 It is enabled by default.
@@ -179,12 +179,12 @@ See [here](../scanner/license.md) for the detail.
 $ trivy vm --scanners license [YOUR_VM_IMAGE]
 ```
 
-### SBOM
+### Packages
 It is disabled by default.
 See [here](../scanner/pkg.md) for the detail.
 
 ```shell
-$ trivy image --scanners sbom --format json [YOUR_IMAGE_NAME]
+$ trivy vm --scanners pkg --format json [YOUR_IMAGE_NAME]
 ```
 
 ## SBOM generation

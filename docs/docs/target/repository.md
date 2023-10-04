@@ -6,7 +6,7 @@ Scan your local or remote code repositories for
 - Misconfigurations
 - Secrets
 - Licenses
-- SBOM
+- Packages
 
 By default, vulnerability and secret scanning are enabled, and you can configure that with `--scanners`.
 
@@ -106,12 +106,12 @@ See [here](../scanner/license.md) for the detail.
 $ trivy repo --scanners license (REPO_PATH | REPO_URL)
 ```
 
-### SBOM
+### Packages
 It is disabled by default.
 See [here](../scanner/pkg.md) for the detail.
 
 ```shell
-$ trivy image --scanners sbom --format json [YOUR_IMAGE_NAME]
+$ trivy repo --scanners pkg --format json [YOUR_IMAGE_NAME]
 ```
 
 ## SBOM generation

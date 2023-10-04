@@ -6,7 +6,7 @@ Scan your local projects for
 - Misconfigurations
 - Secrets
 - Licenses
-- SBOM
+- Packages
  
 By default, vulnerability and secret scanning are enabled, and you can configure that with `--scanners`.
 
@@ -89,12 +89,12 @@ See [here](../scanner/license.md) for the detail.
 $ trivy fs --scanners license /path/to/project
 ```
 
-### SBOM
+### Packages
 It is disabled by default.
 See [here](../scanner/pkg.md) for the detail.
 
 ```shell
-$ trivy image --scanners sbom --format json [YOUR_IMAGE_NAME]
+$ trivy fs --scanners pkg --format json [YOUR_IMAGE_NAME]
 ```
 
 ## SBOM generation

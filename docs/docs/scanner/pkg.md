@@ -1,4 +1,4 @@
-# SBOM scanning
+# Package scanning
 Trivy scans any container image, filesystem and git repository to find installed packages.
 
 The following packages are supported.
@@ -9,17 +9,17 @@ The following packages are supported.
 ## Quick start
 This section shows how to find all installed packages in container image and filesystem. Other subcommands should be the same.
 
-Specify an image name with `--scanners sbom` and format.
+Specify an image name with `--scanners pkg` and format.
 
 !!! Note
-    `--scanners sbom` does not work in `table` format. Use other [formats][supported-formats] to get all installed packages.
+    `--scanners pkg` does not work in `table` format. Use other [formats][supported-formats] to get all installed packages.
 
 !!! Warning
     Trivy separates language specific packages to `pre-build` and `post-build`.
     To select the correct `target` - see [this page][supported-languages].
 
 ```bash
-$ trivy image --scanners sbom -f json alpine:3.18.3
+$ trivy image --scanners pkg -f json alpine:3.18.3
 {
   ...(snip)...
   "Results": [
