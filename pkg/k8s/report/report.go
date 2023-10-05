@@ -56,10 +56,9 @@ type Resource struct {
 	Namespace string `json:",omitempty"`
 	Kind      string
 	Name      string
-	// TODO(josedonizetti): should add metadata? per report? per Result?
-	// Metadata  Metadata `json:",omitempty"`
-	Results types.Results `json:",omitempty"`
-	Error   string        `json:",omitempty"`
+	Metadata  types.Metadata `json:",omitempty"`
+	Results   types.Results  `json:",omitempty"`
+	Error     string         `json:",omitempty"`
 
 	// original report
 	Report types.Report `json:"-"`
@@ -103,6 +102,7 @@ func (r Report) consolidate() ConsolidatedReport {
 				Namespace: res.Namespace,
 				Kind:      res.Kind,
 				Name:      res.Name,
+				Metadata:  res.Metadata,
 				Results:   append(res.Results, v.Results...),
 				Error:     res.Error,
 			}
@@ -237,6 +237,7 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 		Namespace: artifact.Namespace,
 		Kind:      artifact.Kind,
 		Name:      artifact.Name,
+		Metadata:  report.Metadata,
 		Results:   results,
 		Report:    report,
 	}
@@ -299,6 +300,7 @@ func copyResource(r Resource) Resource {
 		Namespace: r.Namespace,
 		Kind:      r.Kind,
 		Name:      r.Name,
+		Metadata:  r.Metadata,
 		Error:     r.Error,
 		Report:    r.Report,
 	}
