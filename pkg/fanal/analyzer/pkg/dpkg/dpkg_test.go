@@ -1486,6 +1486,11 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "*.md5sums file in status dir",
+			filePath: "var/lib/dpkg/status.d/base-files.md5sums",
+			want:     false,
+		},
+		{
 			name:     "list file",
 			filePath: "var/lib/dpkg/info/bash.list",
 			want:     true,
