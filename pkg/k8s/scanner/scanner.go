@@ -34,8 +34,6 @@ const (
 	k8sComponentType          = "Type"
 	k8sComponentName          = "Name"
 	k8sComponentNode          = "node"
-
-	k8sLocation = "k8s.io"
 )
 
 type Scanner struct {
