@@ -164,32 +164,32 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "k8s.io/apiserver",
 								Version: "1.27.4",
-								Ref:     "pkg:k8s/k8s.io/apiserver@1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
 							},
 							{
 								Name:    "k8s.io/controller-manager",
 								Version: "1.27.4",
-								Ref:     "pkg:k8s/k8s.io/controller-manager@1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
 							},
 							{
 								Name:    "k8s.io/kube-proxy",
 								Version: "1.27.4",
-								Ref:     "pkg:k8s/k8s.io/kube-proxy@1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
 							},
 							{
 								Name:    "k8s.io/kube-scheduler",
 								Version: "1.27.4",
-								Ref:     "pkg:k8s/k8s.io/kube-scheduler@1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
 							},
 							{
 								Name:    "k8s.io/kubelet",
 								Version: "1.27.4",
-								Ref:     "pkg:k8s/k8s.io/kubelet@1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
 							},
 							{
 								Name:    "k8s.io/kubernetes",
 								Version: "1.27.4",
-								Ref:     "pkg:k8s/k8s.io/kubernetes@1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
 							},
 						},
 					},

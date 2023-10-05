@@ -14,11 +14,11 @@
       }
     ],
     "component": {
-      "bom-ref": "pkg:k8s/k8s.io/kubernetes@1.27.4",
+      "bom-ref": "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
       "type": "platform",
       "name": "k8s.io/kubernetes",
       "version": "1.27.4",
-      "purl": "pkg:k8s/k8s.io/kubernetes@1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
       "properties": [
         {
           "name": "aquasecurity:trivy:resource:Name",
@@ -143,11 +143,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:k8s/k8s.io/apiserver@1.27.4",
+      "bom-ref": "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
       "type": "application",
       "name": "k8s.io/apiserver",
       "version": "1.27.4",
-      "purl": "pkg:k8s/k8s.io/apiserver@1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
       "properties": [
         {
           "name": "aquasecurity:trivy:resource:Name",
@@ -160,11 +160,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:k8s/k8s.io/controller-manager@1.27.4",
+      "bom-ref": "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
       "type": "application",
       "name": "k8s.io/controller-manager",
       "version": "1.27.4",
-      "purl": "pkg:k8s/k8s.io/controller-manager@1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
       "properties": [
         {
           "name": "aquasecurity:trivy:resource:Name",
@@ -177,11 +177,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:k8s/k8s.io/kube-proxy@1.27.4",
+      "bom-ref": "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
       "type": "application",
       "name": "k8s.io/kube-proxy",
       "version": "1.27.4",
-      "purl": "pkg:k8s/k8s.io/kube-proxy@1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
       "properties": [
         {
           "name": "aquasecurity:trivy:resource:Name",
@@ -194,11 +194,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:k8s/k8s.io/kube-scheduler@1.27.4",
+      "bom-ref": "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
       "type": "application",
       "name": "k8s.io/kube-scheduler",
       "version": "1.27.4",
-      "purl": "pkg:k8s/k8s.io/kube-scheduler@1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
       "properties": [
         {
           "name": "aquasecurity:trivy:resource:Name",
@@ -211,11 +211,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:k8s/k8s.io/kubelet@1.27.4",
+      "bom-ref": "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
       "type": "application",
       "name": "k8s.io/kubelet",
       "version": "1.27.4",
-      "purl": "pkg:k8s/k8s.io/kubelet@1.27.4",
+      "purl": "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
       "properties": [
         {
           "name": "aquasecurity:trivy:resource:Name",
@@ -339,7 +339,7 @@
       "ref": "a62abb1f-cb38-4fde-90f3-2bda3b87ddb2",
       "dependsOn": [
         "pkg:golang/docker@24.0.4",
-        "pkg:k8s/k8s.io/kubelet@1.27.4"
+        "pkg:k8s/k8s.io%2Fkubelet@1.27.4"
       ]
     },
     {
@@ -366,43 +366,43 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:k8s/k8s.io/apiserver@1.27.4",
+      "ref": "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
       "dependsOn": [
         "pkg:oci/kube-apiserver@sha256%3A697cd88d94f7f2ef42144cb3072b016dcb2e9251f0e7d41a7fede557e555452d?repository_url=registry.k8s.io%2Fkube-apiserver"
       ]
     },
     {
-      "ref": "pkg:k8s/k8s.io/controller-manager@1.27.4",
+      "ref": "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
       "dependsOn": [
         "pkg:oci/kube-controller-manager@sha256%3A6286e500782ad6d0b37a1b8be57fc73f597dc931dfc73ff18ce534059803b265?repository_url=registry.k8s.io%2Fkube-controller-manager"
       ]
     },
     {
-      "ref": "pkg:k8s/k8s.io/kube-proxy@1.27.4",
+      "ref": "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
       "dependsOn": [
         "pkg:oci/kube-proxy@sha256%3A4bcb707da9898d2625f5d4edc6d0c96519a24f16db914fc673aa8f97e41dbabf?repository_url=registry.k8s.io%2Fkube-proxy"
       ]
     },
     {
-      "ref": "pkg:k8s/k8s.io/kube-scheduler@1.27.4",
+      "ref": "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
       "dependsOn": [
         "pkg:oci/kube-scheduler@sha256%3A5897d7a97d23dce25cbf36fcd6e919180a8ef904bf5156583ffdb6a733ab04af?repository_url=registry.k8s.io%2Fkube-scheduler"
       ]
     },
     {
-      "ref": "pkg:k8s/k8s.io/kubelet@1.27.4",
+      "ref": "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
       "dependsOn": []
     },
     {
-      "ref": "pkg:k8s/k8s.io/kubernetes@1.27.4",
+      "ref": "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
       "dependsOn": [
         "a6350ac3-52f6-4c5f-a3e3-184b9a634bef",
         "b19a88a3-017d-4e70-a73a-75f48696ec0f",
         "b1c502c9-3c6e-43af-822b-1cb55c6c6ff3",
-        "pkg:k8s/k8s.io/apiserver@1.27.4",
-        "pkg:k8s/k8s.io/controller-manager@1.27.4",
-        "pkg:k8s/k8s.io/kube-proxy@1.27.4",
-        "pkg:k8s/k8s.io/kube-scheduler@1.27.4"
+        "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
+        "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
+        "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
+        "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4"
       ]
     },
     {

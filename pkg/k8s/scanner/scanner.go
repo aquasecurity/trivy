@@ -8,6 +8,11 @@ import (
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	ms "github.com/mitchellh/mapstructure"
+	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/bom"
@@ -23,10 +28,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
-	ms "github.com/mitchellh/mapstructure"
-	"github.com/package-url/packageurl-go"
-	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -442,17 +443,17 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 	return properties
 }
 
-func generatePURL(name, version, nodeName string) *purl.PackageURL {
+func generatePURL(name, ver, nodeName string) *purl.PackageURL {
 	// Identify k8s distribution. An empty namespace means upstream.
 	var namespace string
 	switch {
-	case strings.Contains(version, "eks"):
+	case strings.Contains(ver, "eks"):
 		namespace = purl.NamespaceEKS
-	case strings.Contains(version, "gke"):
+	case strings.Contains(ver, "gke"):
 		namespace = purl.NamespaceGKE
-	case strings.Contains(version, "rke2"):
+	case strings.Contains(ver, "rke2"):
 		namespace = purl.NamespaceRKE
-	case strings.Contains(version, "hotfix"):
+	case strings.Contains(ver, "hotfix"):
 		if !strings.Contains(nodeName, "aks") {
 			// Unknown k8s distribution
 			return nil
@@ -462,6 +463,6 @@ func generatePURL(name, version, nodeName string) *purl.PackageURL {
 		namespace = purl.NamespaceOCP
 	}
 	return &purl.PackageURL{
-		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, version, nil, ""),
+		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, ver, nil, ""),
 	}
 }
