@@ -451,11 +451,13 @@ func generatePURL(name, version, nodeName string) *purl.PackageURL {
 		namespace = "gke"
 	case strings.Contains(version, "rke2"):
 		namespace = "rke"
-	case strings.Contains(version, "hotfix"):
+	case strings.Contains(nodeName, "hotfix"):
 		namespace = "unknown"
 		if strings.Contains(nodeName, "aks") {
 			namespace = "aks"
 		}
+	case strings.Contains(nodeName, "ocp"):
+		namespace = "ocp"
 	}
 	return &purl.PackageURL{
 		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, version, packageurl.Qualifiers{}, ""),

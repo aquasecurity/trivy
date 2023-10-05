@@ -376,6 +376,13 @@ func TestGeneratePURL(t *testing.T) {
             nodeName:    "ip-10-0-5-23",
             wantPurl:    "pkg:k8s/rke/k8s.io%2Fkubelet@1.24.11%2Brke2r1",
         },
+		{
+            name:        "generae purl for ocp component",
+            compName:    "k8s.io/kubelet",
+            compVersion: "1.26.7+c7ee51f",
+            nodeName:    "ocp413vpool14000-p8vnm-master-2",
+            wantPurl:    "pkg:k8s/ocp/k8s.io%2Fkubelet@1.26.7+c7ee51f",
+        },
     }
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
