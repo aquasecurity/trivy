@@ -19,7 +19,20 @@ const (
 	TypeOCI  = "oci"
 	TypeDart = "dart"
 
-	// TypeK8s is a custom type for Kubernetes PURL
+	// TypeK8s is a custom type for Kubernetes components in PURL.
+	//  - namespace: The service provider such as EKS or GKE. It is not case sensitive and must be lowercased.
+	//     Known namespaces:
+	//       - upstream (or kubernetes?)
+	//       - eks (AWS)
+	//       - aks (GCP)
+	//       - gke (Azure)
+	//       - rke (Rancher)
+	//  - name: The k8s component name and is case sensitive.
+	//  - version: The combined version and release of a component.
+	//
+	//  Examples:
+	//    - pkg:k8s/upstream/k8s.io%2Fapiserver@1.24.1
+	//    - pkg:k8s/eks/k8s.io%2Fkube-proxy@1.26.2-eksbuild.1
 	TypeK8s = "k8s"
 
 	TypeUnknown = "unknown"
