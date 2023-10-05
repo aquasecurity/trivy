@@ -239,8 +239,6 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/CycloneDX/cyclonedx-go v0.7.2 h1:kKQ0t1dPOlugSIYVOMiMtFqeXI2wp/f5DBIdfux8gnQ=
 github.com/CycloneDX/cyclonedx-go v0.7.2/go.mod h1:K2bA+324+Og0X84fA8HhN2X066K7Bxz4rpMQ4ZhjtSk=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
-github.com/DmitriyLewen/go-dep-parser v0.0.0-20231005040959-f9b1be48cf54 h1:jPsnC4r2yYK5LQZFFaav2snRdba+saYJTb2YM7TX5cY=
-github.com/DmitriyLewen/go-dep-parser v0.0.0-20231005040959-f9b1be48cf54/go.mod h1:jqzwhfRT0cboisqgN57znt0lDVVEp479OtMFVaReMAI=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
 github.com/MakeNowJust/heredoc v1.0.0 h1:cXCdzVdstXyiTqTvfqk9SDHpKNjxuom+DOlyEeQ4pzQ=
@@ -325,6 +323,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.93.0 h1:7I3A6xOa32ugsOcTDvc0FymAEbwR0HO1Jt5wYc8NmFc=
 github.com/aquasecurity/defsec v0.93.0/go.mod h1:BiRuveI3ATEzIwyg6SUeU7MHuPFczAmYmFmdYQLdSSU=
+github.com/aquasecurity/go-dep-parser v0.0.0-20231005073811-1237b47625e1 h1:OAmmfBXi/YdwezeN4qrWvZ2o7OXCMgFRCUJ5NMG/Oug=
+github.com/aquasecurity/go-dep-parser v0.0.0-20231005073811-1237b47625e1/go.mod h1:jqzwhfRT0cboisqgN57znt0lDVVEp479OtMFVaReMAI=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-mock-aws v0.0.0-20230810212901-d6feebd39060 h1:V7nC90NpRDEubNpNEgRDtTfLH3RKQlZeY9/HSqxEze8=
