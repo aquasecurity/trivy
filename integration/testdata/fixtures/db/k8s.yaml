@@ -1,4 +1,4 @@
-- bucket: "kubernetes::Official Kubernetes CVE Feed"
+- bucket: "k8s::Official Kubernetes CVE Feed"
   pairs:
     - bucket: k8s.io/kubelet
       pairs:

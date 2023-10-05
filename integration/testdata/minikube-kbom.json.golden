@@ -6,7 +6,7 @@
     "OS": {
       "Family": "ubuntu",
       "Name": "22.04.2",
-      "EOSL": true
+      "EOSL": false
     },
     "ImageConfig": {
       "architecture": "",
@@ -37,11 +37,11 @@
           "FixedVersion": "1.24.14, 1.25.9, 1.26.4, 1.27.1",
           "Status": "fixed",
           "Layer": {},
-          "SeveritySource": "kubernetes",
+          "SeveritySource": "k8s",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-2431",
-          "PkgRef": "pkg:k8s/k8s.io/kubelet@1.27.0",
+          "PkgRef": "pkg:k8s/k8s.io%2Fkubelet@1.27.0",
           "DataSource": {
-            "ID": "kubernetes",
+            "ID": "k8s",
             "Name": "Official Kubernetes CVE Feed",
             "URL": "https://kubernetes.io/docs/reference/issues-security/official-cve-feed/index.json"
           },
@@ -49,7 +49,7 @@
           "Description": "A security issue was discovered in Kubelet that allows pods to bypass the seccomp profile enforcement...",
           "Severity": "LOW",
           "CVSS": {
-            "kubernetes": {
+            "k8s": {
               "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:N",
               "V3Score": 3.4
             }
