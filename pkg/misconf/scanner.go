@@ -71,6 +71,7 @@ type Scanner struct {
 	fileType       detection.FileType
 	scanner        scanners.FSScanner
 	hasFilePattern bool
+	configFiles    []string
 }
 
 func NewAzureARMScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
@@ -108,6 +109,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 	}
 
 	var scanner scanners.FSScanner
+	var configFiles []string
 	switch t {
 	case detection.FileTypeAzureARM:
 		scanner = arm.New(opts...)
@@ -117,10 +119,12 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = dfscanner.NewScanner(opts...)
 	case detection.FileTypeHelm:
 		scanner = helm.New(opts...)
+		configFiles = append(opt.HelmFileValues, opt.HelmValueFiles...)
 	case detection.FileTypeKubernetes:
 		scanner = k8sscanner.NewScanner(opts...)
 	case detection.FileTypeTerraform:
 		scanner = tfscanner.New(opts...)
+		configFiles = opt.TerraformTFVars
 	case detection.FileTypeTerraformPlan:
 		scanner = tfpscanner.New(opts...)
 	}
@@ -129,6 +133,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		fileType:       t,
 		scanner:        scanner,
 		hasFilePattern: hasFilePattern(t, filePatterns),
+		configFiles:    configFiles,
 	}, nil
 }
 
@@ -141,10 +146,15 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, nil
 	}
 
+	if err := addConfigFilesToFS(newfs, s.configFiles); err != nil {
+		return nil, xerrors.Errorf("failed to add config files to fs: %w", err)
+	}
+
 	log.Logger.Debugf("Scanning %s files for misconfigurations...", s.scanner.Name())
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
-		if _, ok := err.(*cfparser.InvalidContentError); ok {
+		var invalidContentError *cfparser.InvalidContentError
+		if errors.As(err, &invalidContentError) {
 			log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", s.scanner.Name(), err)
 			return nil, nil
 		}
@@ -162,6 +172,30 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 	}
 
 	return misconfs, nil
+}
+
+func addConfigFilesToFS(fsys fs.FS, configFiles []string) error {
+	if len(configFiles) == 0 {
+		return nil
+	}
+
+	mfs, ok := fsys.(*mapfs.FS)
+	if !ok {
+		return xerrors.Errorf("type assertion error: %T is not a *mapfs.FS", fsys)
+	}
+	for _, configFile := range configFiles {
+		if _, err := os.Stat(configFile); err != nil {
+			return xerrors.Errorf("config file %q not found: %w", configFile, err)
+		}
+		if err := mfs.MkdirAll(filepath.Dir(configFile), os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
+			return xerrors.Errorf("mkdir error: %w", err)
+		}
+		if err := mfs.WriteFile(configFile, configFile); err != nil {
+			return xerrors.Errorf("write file error: %w", err)
+		}
+	}
+
+	return nil
 }
 
 func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
