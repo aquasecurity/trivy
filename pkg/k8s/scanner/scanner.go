@@ -325,20 +325,20 @@ func osNameVersion(name string) (string, string) {
 }
 
 func runtimeNameVersion(name string) (string, string) {
-	parts := strings.Split(name, "://")
-	if len(parts) == 2 {
-		name := parts[0]
-		switch parts[0] {
-		case "cri-o":
-			name = "github.com/cri-o/cri-o"
-		case "containerd":
-			name = "github.com/containerd/containerd"
-		case "cri-dockerd":
-			name = "github.com/Mirantis/cri-dockerd"
-		}
-		return name, parts[1]
+	runtime, ver, ok := strings.Cut(name, "://")
+	if !ok {
+		return "", ""
 	}
-	return "", ""
+
+	switch runtime {
+	case "cri-o":
+		name = "github.com/cri-o/cri-o"
+	case "containerd":
+		name = "github.com/containerd/containerd"
+	case "cri-dockerd":
+		name = "github.com/Mirantis/cri-dockerd"
+	}
+	return name, ver
 }
 
 func nodeComponent(nf bom.NodeInfo) *core.Component {
