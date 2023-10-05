@@ -36,6 +36,17 @@ func TestParse(t *testing.T) {
 			want: []types.Library{{Name: "setuptools", Version: "51.3.3", License: "UNKNOWN"}},
 		},
 		{
+			name:  "egg PKG-INFO with description containing non-RFC 7230 bytes",
+			input: "testdata/unidecode-egg-info.PKG-INFO",
+			want: []types.Library{
+				{
+					Name:    "Unidecode",
+					Version: "0.4.1",
+					License: "UNKNOWN",
+				},
+			},
+		},
+		{
 			name:  "egg-info",
 			input: "testdata/distlib-0.3.1-py3.9.egg-info",
 
