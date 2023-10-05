@@ -451,7 +451,7 @@ func generatePURL(name, version, nodeName string) *purl.PackageURL {
 		namespace = "gke"
 	case strings.Contains(version, "rke2"):
 		namespace = "rke"
-	case strings.Contains(nodeName, "hotfix"):
+	case strings.Contains(version, "hotfix"):
 		namespace = "unknown"
 		if strings.Contains(nodeName, "aks") {
 			namespace = "aks"
