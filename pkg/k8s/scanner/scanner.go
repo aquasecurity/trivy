@@ -443,23 +443,25 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 }
 
 func generatePURL(name, version, nodeName string) *purl.PackageURL {
-	namespace := "upstream"
+	// Identify k8s distribution. An empty namespace means upstream.
+	var namespace string
 	switch {
 	case strings.Contains(version, "eks"):
-		namespace = "eks"
+		namespace = purl.NamespaceEKS
 	case strings.Contains(version, "gke"):
-		namespace = "gke"
+		namespace = purl.NamespaceGKE
 	case strings.Contains(version, "rke2"):
-		namespace = "rke"
+		namespace = purl.NamespaceRKE
 	case strings.Contains(version, "hotfix"):
-		namespace = "unknown"
-		if strings.Contains(nodeName, "aks") {
-			namespace = "aks"
+		if !strings.Contains(nodeName, "aks") {
+			// Unknown k8s distribution
+			return nil
 		}
+		namespace = purl.NamespaceAKS
 	case strings.Contains(nodeName, "ocp"):
-		namespace = "ocp"
+		namespace = purl.NamespaceOCP
 	}
 	return &purl.PackageURL{
-		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, version, packageurl.Qualifiers{}, ""),
+		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, version, nil, ""),
 	}
 }

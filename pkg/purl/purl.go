@@ -22,7 +22,7 @@ const (
 	// TypeK8s is a custom type for Kubernetes components in PURL.
 	//  - namespace: The service provider such as EKS or GKE. It is not case sensitive and must be lowercased.
 	//     Known namespaces:
-	//       - upstream (or kubernetes?)
+	//       - empty (upstream)
 	//       - eks (AWS)
 	//       - aks (GCP)
 	//       - gke (Azure)
@@ -34,6 +34,12 @@ const (
 	//    - pkg:k8s/upstream/k8s.io%2Fapiserver@1.24.1
 	//    - pkg:k8s/eks/k8s.io%2Fkube-proxy@1.26.2-eksbuild.1
 	TypeK8s = "k8s"
+
+	NamespaceEKS = "eks"
+	NamespaceAKS = "aks"
+	NamespaceGKE = "gke"
+	NamespaceRKE = "rke"
+	NamespaceOCP = "ocp"
 
 	TypeUnknown = "unknown"
 )
@@ -139,7 +145,11 @@ func (p *PackageURL) LangType() ftypes.LangType {
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
 	case TypeK8s:
-		return ftypes.K8sComponent
+		if p.Namespace == "" {
+			return ftypes.K8sComponent
+		}
+		// Cloud k8s distributions, such as EKS, are not supported yet.
+		return TypeUnknown
 	default:
 		return TypeUnknown
 	}

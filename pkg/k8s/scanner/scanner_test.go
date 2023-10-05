@@ -2,7 +2,6 @@ package scanner
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"testing"
 
@@ -35,17 +34,19 @@ func TestScanner_Scan(t *testing.T) {
 					Kind:      "ClusterInfo",
 					Name:      "k8s.io/kubernetes",
 					RawResource: map[string]interface{}{
+						"name":    "k8s.io/kubernetes",
+						"version": "1.21.1",
+						"type":    "ClusterInfo",
 						"Properties": map[string]string{
-							"Name": "kube-cluster",
+							"Name": "kind-kind",
+							"Type": "cluster",
 						},
-						"Name":    "kube-apiserver-kind-control-plane",
-						"Version": "1.21.1",
 					},
 				},
 				{
 					Namespace: "kube-system",
 					Kind:      "PodInfo",
-					Name:      "kube-apiserver-kind-control-plane",
+					Name:      "k8s.io/apiserver",
 					RawResource: map[string]interface{}{
 						"Containers": []interface{}{
 							map[string]interface{}{
@@ -56,11 +57,8 @@ func TestScanner_Scan(t *testing.T) {
 								"Version":    "v1.21.1",
 							},
 						},
-						"Properties": map[string]string{
-							"ControlPlaneComponents": "kube-apiserver",
-						},
-						"Name":      "kube-apiserver-kind-control-plane",
-						"Namespace": "kube-system",
+						"Name":    "k8s.io/apiserver",
+						"Version": "1.21.1",
 					},
 				},
 				{
@@ -85,26 +83,40 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			want: &core.Component{
 				Type:    cdx.ComponentTypePlatform,
-				Name:    "kube-apiserver-kind-control-plane",
+				Name:    "k8s.io/kubernetes",
 				Version: "1.21.1",
 				Properties: []core.Property{
 					{
 						Name:      "Name",
-						Value:     "kube-cluster",
+						Value:     "kind-kind",
 						Namespace: k8sCoreComponentNamespace,
+					},
+					{
+						Name:      "Type",
+						Value:     "cluster",
+						Namespace: k8sCoreComponentNamespace,
+					},
+				},
+				PackageURL: &purl.PackageURL{
+					PackageURL: packageurl.PackageURL{
+						Type:    purl.TypeK8s,
+						Name:    "k8s.io/kubernetes",
+						Version: "1.21.1",
 					},
 				},
 				Components: []*core.Component{
 					{
-						Type: cdx.ComponentTypeApplication,
-						Name: "kube-apiserver-kind-control-plane",
-						Properties: []core.Property{
-							{
-								Name:      "ControlPlaneComponents",
-								Value:     "kube-apiserver",
-								Namespace: k8sCoreComponentNamespace,
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "k8s.io/apiserver",
+						Version: "1.21.1",
+						PackageURL: &purl.PackageURL{
+							PackageURL: packageurl.PackageURL{
+								Type:    purl.TypeK8s,
+								Name:    "k8s.io/apiserver",
+								Version: "1.21.1",
 							},
 						},
+						Properties: []core.Property{},
 						Components: []*core.Component{
 							{
 								Type:    cdx.ComponentTypeContainer,
@@ -223,11 +235,9 @@ func TestScanner_Scan(t *testing.T) {
 										},
 										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
-												Type:       "k8s",
-												Namespace:  "k8s.io",
-												Name:       "kubelet",
-												Version:    "1.21.1",
-												Qualifiers: packageurl.Qualifiers{},
+												Type:    "k8s",
+												Name:    "k8s.io/kubelet",
+												Version: "1.21.1",
 											},
 										},
 									},
@@ -338,57 +348,56 @@ func TestGeneratePURL(t *testing.T) {
 		compName    string
 		compVersion string
 		nodeName    string
-		wantPurl    string
+		want        string
 	}{
 		{
-			name:        "generae purl for native k8s component",
+			name:        "native k8s component",
 			compName:    "k8s.io/kubelet",
 			compVersion: "1.24.10",
 			nodeName:    "kind-kind",
-			wantPurl:    "pkg:k8s/upstream/k8s.io%2Fkubelet@1.24.10",
+			want:        "pkg:k8s/k8s.io%2Fkubelet@1.24.10",
 		},
 
 		{
-			name:        "generae purl for gke component",
+			name:        "GKE",
 			compName:    "k8s.io/kubelet",
 			compVersion: "1.24.10-gke.2300",
 			nodeName:    "gke-gke1796-default-pool-768cb718-sk1d",
-			wantPurl:    "pkg:k8s/gke/k8s.io%2Fkubelet@1.24.10-gke.2300",
+			want:        "pkg:k8s/gke/k8s.io%2Fkubelet@1.24.10-gke.2300",
 		},
 		{
-			name:        "generae purl for aks component",
+			name:        "AKS",
 			compName:    "k8s.io/kubelet",
 			compVersion: "1.24.10-hotfix.20221110",
 			nodeName:    "aks-default-23814474-vmss000000",
-			wantPurl:    "pkg:k8s/aks/k8s.io%2Fkubelet@1.24.10-hotfix.20221110",
+			want:        "pkg:k8s/aks/k8s.io%2Fkubelet@1.24.10-hotfix.20221110",
 		},
 		{
-			name:        "generae purl for eks component",
+			name:        "EKS",
 			compName:    "k8s.io/kubelet",
 			compVersion: "1.23.17-eks-8ccc7ba",
 			nodeName:    "eks-vmss000000",
-			wantPurl:    "pkg:k8s/eks/k8s.io%2Fkubelet@1.23.17-eks-8ccc7ba",
+			want:        "pkg:k8s/eks/k8s.io%2Fkubelet@1.23.17-eks-8ccc7ba",
 		},
 		{
-			name:        "generae purl for rancher component",
+			name:        "Rancher",
 			compName:    "k8s.io/kubelet",
 			compVersion: "1.24.11+rke2r1",
 			nodeName:    "ip-10-0-5-23",
-			wantPurl:    "pkg:k8s/rke/k8s.io%2Fkubelet@1.24.11%2Brke2r1",
+			want:        "pkg:k8s/rke/k8s.io%2Fkubelet@1.24.11%2Brke2r1",
 		},
 		{
-			name:        "generae purl for ocp component",
+			name:        "OCP",
 			compName:    "k8s.io/kubelet",
 			compVersion: "1.26.7+c7ee51f",
 			nodeName:    "ocp413vpool14000-p8vnm-master-2",
-			wantPurl:    "pkg:k8s/ocp/k8s.io%2Fkubelet@1.26.7+c7ee51f",
+			want:        "pkg:k8s/ocp/k8s.io%2Fkubelet@1.26.7%2Bc7ee51f",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotPurl := generatePURL(tt.compName, tt.compVersion, tt.nodeName)
-			fmt.Print(gotPurl.String())
-			assert.Equal(t, gotPurl.String(), tt.wantPurl)
+			got := generatePURL(tt.compName, tt.compVersion, tt.nodeName)
+			assert.Equal(t, tt.want, got.String())
 		})
 	}
 }
