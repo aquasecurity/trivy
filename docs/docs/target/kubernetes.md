@@ -352,8 +352,8 @@ Trivy has a native [Kubernetes Operator][operator] which continuously scans your
 #### Language-specific packages
 [Language-specific packages](../scanner/vulnerability.md#language-specific-packages) scanning is enabled by default.
 
-#### Kubernetes components
-Currently only discovery from `KBOM` files is supported for [Kubernetes components](../scanner/vulnerability.md#kubernetes-components).
+#### Kubernetes components (control plane, node and addons)
+Currently only discovery from `KBOM` files is supported for [Kubernetes components](../scanner/vulnerability.md#kubernetes-components-control-plane-node-and-addons).
 
 This means you need to get a report of your cluster in [KBOM format](#kbom).
 After that, scan this file:
