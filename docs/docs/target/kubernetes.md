@@ -6,9 +6,9 @@
 ## CLI
 The Trivy K8s CLI allows you to scan your Kubernetes cluster for 
 
-- Vulnerabilities
-- Misconfigurations
-- Secrets
+- [Vulnerabilities](#vulnerability)
+- [Misconfigurations](#misconfigurations)
+- [Secrets](#secrets)
  
 You can either run the CLI locally or integrate it into your CI/CD pipeline.
 The difference to the Trivy CLI is that the Trivy K8s CLI allows you to scan running workloads directly within your cluster.
@@ -343,6 +343,55 @@ Trivy has a native [Kubernetes Operator][operator] which continuously scans your
 [operator]: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/
 [crd]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
 [trivy-operator]: https://aquasecurity.github.io/trivy-operator/latest
+
+## Scanners
+### Vulnerability
+#### OS packages
+[OS packages](../scanner/vulnerability.md#os-packages) scanning is enabled by default.
+
+#### Language-specific packages
+[Language-specific packages](../scanner/vulnerability.md#language-specific-packages) scanning is enabled by default.
+
+#### Kubernetes components
+Currently only discovery from `KBOM` files is supported for [Kubernetes components](../scanner/vulnerability.md#kubernetes-components).
+
+This means you need to get a report of your cluster in [KBOM format](#kbom).
+After that, scan this file:
+```shell
+$ trivy k8s --format cyclonedx cluster -o kbom.json
+$ trivy sbom kbom.json
+2023-09-28T22:52:25.707+0300    INFO    Vulnerability scanning is enabled
+2023-09-28T22:52:25.707+0300    INFO    Detected SBOM format: cyclonedx-json
+2023-09-28T22:52:25.717+0300    WARN    No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.
+2023-09-28T22:52:25.717+0300    WARN    e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"
+2023-09-28T22:52:25.717+0300    INFO    Detected OS: debian gnu/linux
+2023-09-28T22:52:25.717+0300    WARN    unsupported os : debian gnu/linux
+2023-09-28T22:52:25.717+0300    INFO    Number of language-specific files: 3
+2023-09-28T22:52:25.717+0300    INFO    Detecting kubernetes vulnerabilities...
+2023-09-28T22:52:25.718+0300    INFO    Detecting gobinary vulnerabilities...
+
+Kubernetes (kubernetes)
+
+Total: 2 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
+┌────────────────┬────────────────┬──────────┬────────┬───────────────────┬─────────────────────────────────┬──────────────────────────────────────────────────┐
+│    Library     │ Vulnerability  │ Severity │ Status │ Installed Version │          Fixed Version          │                      Title                       │
+├────────────────┼────────────────┼──────────┼────────┼───────────────────┼─────────────────────────────────┼──────────────────────────────────────────────────┤
+│ k8s.io/kubelet │ CVE-2021-25749 │ HIGH     │ fixed  │ 1.24.0            │ 1.22.14, 1.23.11, 1.24.5        │ runAsNonRoot logic bypass for Windows containers │
+│                │                │          │        │                   │                                 │ https://avd.aquasec.com/nvd/cve-2021-25749       │
+│                ├────────────────┼──────────┤        │                   ├─────────────────────────────────┼──────────────────────────────────────────────────┤
+│                │ CVE-2023-2431  │ LOW      │        │                   │ 1.24.14, 1.25.9, 1.26.4, 1.27.1 │ Bypass of seccomp profile enforcement            │
+│                │                │          │        │                   │                                 │ https://avd.aquasec.com/nvd/cve-2023-2431        │
+└────────────────┴────────────────┴──────────┴────────┴───────────────────┴─────────────────────────────────┴──────────────────────────────────────────────────┘
+```
+
+### Misconfigurations
+It is enabled by default.
+See [here](../scanner/misconfiguration/index.md) for the detail.
+
+### Secrets
+It is enabled by default.
+See [here](../scanner/secret.md) for the detail.
 
 ## SBOM
 
