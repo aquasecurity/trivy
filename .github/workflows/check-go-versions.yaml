@@ -18,6 +18,10 @@ jobs:
         with:
           go-version: stable
 
+      # This workflow is a workaround before the "old stable" version becomes Go 1.21.
+      # To avoid updating dependencies that require Go 1.21, we use this workflow
+      # Example of wrong update:
+      # https://github.com/aquasecurity/trivy/discussions/5323#discussioncomment-7186321
       - name: Check that dependencies doesn't require Go 1.21
         run: |
           go mod tidy
