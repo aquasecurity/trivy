@@ -76,6 +76,7 @@ type MisconfFlagGroup struct {
 	PolicyBundleRepository *Flag
 
 	// Values Files
+	IgnorePolicy               *Flag
 	HelmValues                 *Flag
 	HelmValueFiles             *Flag
 	HelmFileValues             *Flag
@@ -90,6 +91,7 @@ type MisconfOptions struct {
 	PolicyBundleRepository string
 
 	// Values Files
+	IgnorePolicy        string
 	HelmValues          []string
 	HelmValueFiles      []string
 	HelmFileValues      []string
@@ -122,6 +124,7 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 		f.IncludeNonFailures,
 		f.ResetPolicyBundle,
 		f.PolicyBundleRepository,
+		f.IgnorePolicy,
 		f.HelmValues,
 		f.HelmValueFiles,
 		f.HelmFileValues,
@@ -136,6 +139,7 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		IncludeNonFailures:     getBool(f.IncludeNonFailures),
 		ResetPolicyBundle:      getBool(f.ResetPolicyBundle),
 		PolicyBundleRepository: getString(f.PolicyBundleRepository),
+		IgnorePolicy:           getString(f.IgnorePolicy),
 		HelmValues:             getStringSlice(f.HelmValues),
 		HelmValueFiles:         getStringSlice(f.HelmValueFiles),
 		HelmFileValues:         getStringSlice(f.HelmFileValues),

@@ -75,10 +75,34 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	sort.Sort(types.BySeverity(filteredVulns))
 
 	result.Vulnerabilities = filteredVulns
+	result.MisconfSummary = calcMisconfSummary(result, misconfSummary, filteredMisconfs)
 	result.Misconfigurations = filteredMisconfs
-	result.MisconfSummary = misconfSummary
 
 	return nil
+}
+
+func calcMisconfSummary(result *types.Result, misconfSummary *types.MisconfSummary, filteredMisconfs []types.DetectedMisconfiguration) *types.MisconfSummary {
+	if misconfSummary == nil {
+		return nil
+	}
+
+	var failed, passed int
+	for _, rm := range result.Misconfigurations {
+		switch rm.Status {
+		case types.StatusPassed:
+			passed++
+		case types.StatusFailure:
+			failed++
+		}
+	}
+
+	if len(result.Misconfigurations)-len(filteredMisconfs) > 0 {
+		misconfSummary.Exceptions = len(result.Misconfigurations) - len(filteredMisconfs) - passed
+	} else {
+		misconfSummary.Exceptions = 0
+	}
+
+	return misconfSummary
 }
 
 // filterByVEX determines whether a detected vulnerability should be filtered out based on the provided VEX document.

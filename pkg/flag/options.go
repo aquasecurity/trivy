@@ -153,7 +153,7 @@ func (o *Options) FilterOpts() result.FilterOption {
 		IgnoreStatuses:     o.IgnoreStatuses,
 		IncludeNonFailures: o.IncludeNonFailures,
 		IgnoreFile:         o.IgnoreFile,
-		PolicyFile:         o.IgnorePolicy,
+		PolicyFile:         o.ReportOptions.IgnorePolicy,
 		IgnoreLicenses:     o.IgnoredLicenses,
 		VEXPath:            o.VEXPath,
 	}
