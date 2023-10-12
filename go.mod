@@ -28,8 +28,8 @@ require (
 	github.com/aquasecurity/trivy-iac v0.1.0
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.5.7
-	github.com/aws/aws-sdk-go v1.45.19
 	github.com/aquasecurity/trivy-policies v0.1.0
+	github.com/aws/aws-sdk-go v1.45.19
 	github.com/aws/aws-sdk-go-v2 v1.21.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.39
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.116.0
