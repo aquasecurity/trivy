@@ -784,6 +784,8 @@ var builtinRules = []Rule{
 		SecretGroupName: "secret",
 		Keywords:        []string{"typeform"},
 	},
+        // secrets built according to the following instruction:
+        // https://learn.microsoft.com/en-us/azure/data-factory/create-self-hosted-integration-runtime?tabs=data-factory#install-and-register-a-self-hosted-ir-from-microsoft-download-center
 	{
 		ID:              "azure-data-factory-registration-key",
 		Category:        CategoryAzure,
