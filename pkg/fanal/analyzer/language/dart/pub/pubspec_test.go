@@ -148,24 +148,37 @@ func Test_pubSpecLockAnalyzer_cacheDir(t *testing.T) {
 			wantDir: "/root/.pub_cache",
 		},
 		{
-			name:            "default cache dir Windows",
-			localAppDataEnv: `C:\Users\User\AppData\Local`,
-			windowsTest:     true,
-			wantDir:         `C:\Users\User\AppData\Local\Pub\Cache`,
+			name:        "default cache dir Windows",
+			windowsTest: true,
+			wantDir:     "C:\\Users\\User\\AppData\\Local\\Pub\\Cache",
 		},
 		{
 			name:        "PUB_CACHE is used",
 			pubCacheEnv: "/root/cache",
 			wantDir:     "/root/cache",
 		},
+		{
+			name:        "PUB_CACHE is used in Windows",
+			pubCacheEnv: "C:\\Cache",
+			windowsTest: true,
+			wantDir:     "C:\\Cache",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if runtime.GOOS != "windows" && tt.windowsTest {
-				t.Skipf("This test is not used for %s", runtime.GOOS)
+			if runtime.GOOS == "windows" {
+				if !tt.windowsTest {
+					t.Skipf("This test is not used for %s", runtime.GOOS)
+				}
+				t.Setenv("LOCALAPPDATA", "C:\\Users\\User\\AppData\\Local")
+			} else {
+				if tt.windowsTest {
+					t.Skipf("This test is not used for %s", runtime.GOOS)
+				}
+				t.Setenv("HOME", "/root")
 			}
-			t.Setenv("HOME", "/root")
+
 			t.Setenv("PUB_CACHE", tt.pubCacheEnv)
 
 			dir := cacheDir()

@@ -5,7 +5,6 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -111,7 +110,7 @@ func findDependsOn() (map[string][]string, error) {
 			return nil
 		}
 		// parse only `pubspec.yaml` files
-		if path.Base(p) != pubSpecYamlFileName {
+		if filepath.Base(p) != pubSpecYamlFileName {
 			return nil
 		}
 
