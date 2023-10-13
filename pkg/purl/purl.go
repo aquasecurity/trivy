@@ -158,7 +158,7 @@ func (p *PackageURL) LangType() ftypes.LangType {
 		case NamespaceOCP:
 			return ftypes.OCP
 		case "":
-			return ftypes.Kubernetes
+			return ftypes.K8sUpstream
 		}
 		return TypeUnknown
 	default:
