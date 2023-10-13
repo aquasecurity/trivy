@@ -266,7 +266,8 @@ func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		return true
 	}
 
-	if dir == statusDir {
+	// skip `*.md5sums` files from `status.d` directory
+	if dir == statusDir && filepath.Ext(fileName) != ".md5sums" {
 		return true
 	}
 	return false
