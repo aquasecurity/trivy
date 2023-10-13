@@ -13,12 +13,12 @@ import (
 
 var (
 	PkgTargets = map[ftypes.LangType]string{
-		ftypes.PythonPkg:    "Python",
-		ftypes.CondaPkg:     "Conda",
-		ftypes.GemSpec:      "Ruby",
-		ftypes.NodePkg:      "Node.js",
-		ftypes.Jar:          "Java",
-		ftypes.K8sComponent: "Kubernetes",
+		ftypes.PythonPkg:   "Python",
+		ftypes.CondaPkg:    "Conda",
+		ftypes.GemSpec:     "Ruby",
+		ftypes.NodePkg:     "Node.js",
+		ftypes.Jar:         "Java",
+		ftypes.K8sUpstream: "Kubernetes",
 	}
 )
 

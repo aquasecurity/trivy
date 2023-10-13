@@ -717,3 +717,47 @@ func TestPackage(t *testing.T) {
 		})
 	}
 }
+
+func TestPackageURL_LangType(t *testing.T) {
+	tests := []struct {
+		name string
+		purl packageurl.PackageURL
+		want ftypes.LangType
+	}{
+		{
+			name: "maven",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.0.4.RELEASE",
+			},
+			want: ftypes.Jar,
+		},
+		{
+			name: "k8s",
+			purl: packageurl.PackageURL{
+				Type:    purl.TypeK8s,
+				Name:    "kubelet",
+				Version: "1.21.1",
+			},
+			want: ftypes.K8sUpstream,
+		},
+		{
+			name: "eks",
+			purl: packageurl.PackageURL{
+				Type:      purl.TypeK8s,
+				Namespace: purl.NamespaceEKS,
+				Name:      "kubelet",
+				Version:   "1.21.1",
+			},
+			want: ftypes.EKS,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &purl.PackageURL{PackageURL: tt.purl}
+			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
+		})
+	}
+}

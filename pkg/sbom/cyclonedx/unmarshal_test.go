@@ -159,7 +159,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "node-core-components",
 					},
 					{
-						Type: ftypes.K8sComponent,
+						Type: ftypes.K8sUpstream,
 						Libraries: ftypes.Packages{
 							{
 								Name:    "k8s.io/apiserver",

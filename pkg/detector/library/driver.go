@@ -76,7 +76,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.Bitnami:
 		ecosystem = vulnerability.Bitnami
 		comparer = compare.GenericComparer{}
-	case ftypes.K8sComponent:
+	case ftypes.K8sUpstream:
 		ecosystem = vulnerability.Kubernetes
 		comparer = compare.GenericComparer{}
 	default:

@@ -145,10 +145,20 @@ func (p *PackageURL) LangType() ftypes.LangType {
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
 	case TypeK8s:
-		if p.Namespace == "" {
-			return ftypes.K8sComponent
+		switch p.Namespace {
+		case NamespaceEKS:
+			return ftypes.EKS
+		case NamespaceGKE:
+			return ftypes.GKE
+		case NamespaceAKS:
+			return ftypes.AKS
+		case NamespaceRKE:
+			return ftypes.RKE
+		case NamespaceOCP:
+			return ftypes.OCP
+		case "":
+			return ftypes.Kubernetes
 		}
-		// Cloud k8s distributions, such as EKS, are not supported yet.
 		return TypeUnknown
 	default:
 		return TypeUnknown
