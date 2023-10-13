@@ -209,7 +209,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 	var coreComponents []*core.Component
 	var cInfo *core.Component
 
-	// Find the fist node name to identify AKS cluster
+	// Find the first node name to identify AKS cluster
 	var nodeName string
 	for _, artifact := range allArtifact {
 		if artifact.Kind != nodeInfo {
