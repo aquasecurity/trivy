@@ -112,6 +112,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 }
 
 // LangType returns an application type in Trivy
+// nolint: gocyclo
 func (p *PackageURL) LangType() ftypes.LangType {
 	switch p.Type {
 	case packageurl.TypeComposer:
