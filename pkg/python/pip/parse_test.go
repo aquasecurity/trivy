@@ -48,6 +48,10 @@ func TestParse(t *testing.T) {
 			file: "testdata/requirement_exstras.txt",
 			want: requirementsExtras,
 		},
+		{
+			file: "testdata/requirements_utf16le.txt",
+			want: requirementsUtf16le,
+		},
 	}
 
 	for _, v := range vectors {

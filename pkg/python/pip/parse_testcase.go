@@ -49,4 +49,8 @@ var (
 		{Name: "pyjwt", Version: "2.1.0"},
 		{Name: "celery", Version: "4.4.7"},
 	}
+
+	requirementsUtf16le = []types.Library{
+		{Name: "attrs", Version: "20.3.0"},
+	}
 )
