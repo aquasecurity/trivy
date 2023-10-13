@@ -786,12 +786,13 @@ var builtinRules = []Rule{
 	},
         // secrets built according to the following instruction:
         // https://learn.microsoft.com/en-us/azure/data-factory/create-self-hosted-integration-runtime?tabs=data-factory#install-and-register-a-self-hosted-ir-from-microsoft-download-center
+		// format: IR@{GUID}@{string_azure _resource_name}@{string_azure_location}@{string_base64}
 	{
 		ID:              "azure-data-factory-registration-key",
 		Category:        CategoryAzure,
 		Title:           "Azure Data Factory Self-Hosted Integration Runtime registration key",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`IR@[0-9a-zA-Z-]{36}@(.*?)@[0-9a-zA-Z]*@\S+`),
+		Regex:           MustCompile(`IR@[0-9a-zA-Z-]{36}@(.*?)@[0-9a-zA-Z\-=]*@[A-Za-z0-9+\/=]{44}`),
 		Keywords:        []string{"IR@"},
 	},
 }

@@ -532,29 +532,19 @@ func TestSecretScanner(t *testing.T) {
 		Category:  secret.CategoryAzure,
 		Title:     "Azure Data Factory Self-Hosted Integration Runtime registration key",
 		Severity:  "HIGH",
-		StartLine: 2,
-		EndLine:   2,
-		Match:     "*********************************************************************************** and other stuff",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "***************************************************************************************************** and other stuff",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
 					Number:      1,
-					Content:     "ignore this line",
-					Highlighted: "ignore this line",
-				},
-				{
-					Number:      2,
-					Content:     "*********************************************************************************** and other stuff",
-					Highlighted: "*********************************************************************************** and other stuff",
+					Content:     "***************************************************************************************************** and other stuff",
+					Highlighted: "***************************************************************************************************** and other stuff",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
-				},
-				{
-					Number:      3,
-					Content:     "ignore this line",
-					Highlighted: "ignore this line",
-				},				
+				}
 			},
 		},
 	}
