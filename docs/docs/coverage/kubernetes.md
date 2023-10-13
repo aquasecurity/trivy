@@ -6,7 +6,8 @@ When scanning a Kubernetes cluster, Trivy differentiates between the following:
 1. Cluster configuration (e.g Roles, ClusterRoles). 
 1. Application workloads (e.g nginx, postgresql).
 
-When scanning any of the above, Trivy differentiates between the Kubernetes Resource definition (i.e the YAML that defines it), and the container image if relevant.
+Whenever Trivy scans either of these Kubernetes resources, the container image is scanned separately to the Kubernetes Resource Definition (the YAML manifest) that defines the resource.
+When scanning any of the above, the container image is scanned separately to the Kubernetes Resource Definition (the YAML manifest) that defines the resource.
 
 Container image is scanned for:
 - Vulnerabilities
