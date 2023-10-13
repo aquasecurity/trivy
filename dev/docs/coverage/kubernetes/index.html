@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/scanner/vulnerability/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/coverage/kubernetes/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Vulnerability - Trivy</title>
+        <title>Kubernetes - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vulnerability-scanning" class="md-skip">
+        <a href="#kubernetes" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@ You're not viewing the latest version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Vulnerability
+              Kubernetes
             
           </span>
         </div>
@@ -1110,16 +1110,14 @@ You're not viewing the latest version.
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
       
       
       
@@ -1140,199 +1138,11 @@ You're not viewing the latest version.
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Vulnerability
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../scanner/vulnerability/" class="md-nav__link">
         Vulnerability
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#os-packages" class="md-nav__link">
-    OS Packages
-  </a>
-  
-    <nav class="md-nav" aria-label="OS Packages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#supported-os" class="md-nav__link">
-    Supported OS
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#data-sources" class="md-nav__link">
-    Data Sources
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Sources">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#data-source-selection" class="md-nav__link">
-    Data Source Selection
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#severity-selection" class="md-nav__link">
-    Severity Selection
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#unfixed-vulnerabilities" class="md-nav__link">
-    Unfixed Vulnerabilities
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#language-specific-packages" class="md-nav__link">
-    Language-specific Packages
-  </a>
-  
-    <nav class="md-nav" aria-label="Language-specific Packages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#supported-languages" class="md-nav__link">
-    Supported Languages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#data-sources_1" class="md-nav__link">
-    Data Sources
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#kubernetes" class="md-nav__link">
-    Kubernetes
-  </a>
-  
-    <nav class="md-nav" aria-label="Kubernetes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#data-sources_2" class="md-nav__link">
-    Data Sources
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#database" class="md-nav__link">
-    Database
-  </a>
-  
-    <nav class="md-nav" aria-label="Database">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#vulnerability-database" class="md-nav__link">
-    Vulnerability Database
-  </a>
-  
-    <nav class="md-nav" aria-label="Vulnerability Database">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#private-hosting" class="md-nav__link">
-    Private Hosting
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#java-index-database" class="md-nav__link">
-    Java Index Database
-  </a>
-  
-    <nav class="md-nav" aria-label="Java Index Database">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#private-hosting_1" class="md-nav__link">
-    Private Hosting
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1370,7 +1180,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1410,7 +1220,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/policy/builtin/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/policy/builtin/" class="md-nav__link">
         Built-in Policies
       </a>
     </li>
@@ -1424,7 +1234,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/policy/exceptions/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/policy/exceptions/" class="md-nav__link">
         Exceptions
       </a>
     </li>
@@ -1471,7 +1281,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/custom/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/custom/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1485,7 +1295,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/custom/data/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/custom/data/" class="md-nav__link">
         Data
       </a>
     </li>
@@ -1499,7 +1309,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/custom/combine/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/custom/combine/" class="md-nav__link">
         Combine
       </a>
     </li>
@@ -1513,7 +1323,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/custom/selectors/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/custom/selectors/" class="md-nav__link">
         Selectors
       </a>
     </li>
@@ -1527,7 +1337,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/custom/schema/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/custom/schema/" class="md-nav__link">
         Schemas
       </a>
     </li>
@@ -1541,7 +1351,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/custom/testing/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/custom/testing/" class="md-nav__link">
         Testing
       </a>
     </li>
@@ -1555,7 +1365,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../misconfiguration/custom/debug/" class="md-nav__link">
+      <a href="../../scanner/misconfiguration/custom/debug/" class="md-nav__link">
         Debugging Policies
       </a>
     </li>
@@ -1583,7 +1393,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../secret/" class="md-nav__link">
+      <a href="../../scanner/secret/" class="md-nav__link">
         Secret
       </a>
     </li>
@@ -1597,7 +1407,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../license/" class="md-nav__link">
+      <a href="../../scanner/license/" class="md-nav__link">
         License
       </a>
     </li>
@@ -1616,14 +1426,16 @@ You're not viewing the latest version.
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" checked>
       
       
       
@@ -1646,7 +1458,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1686,7 +1498,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/" class="md-nav__link">
+      <a href="../os/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1700,7 +1512,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/alma/" class="md-nav__link">
+      <a href="../os/alma/" class="md-nav__link">
         AlmaLinux
       </a>
     </li>
@@ -1714,7 +1526,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/alpine/" class="md-nav__link">
+      <a href="../os/alpine/" class="md-nav__link">
         Alpine Linux
       </a>
     </li>
@@ -1728,7 +1540,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/amazon/" class="md-nav__link">
+      <a href="../os/amazon/" class="md-nav__link">
         Amazon Linux
       </a>
     </li>
@@ -1742,7 +1554,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/cbl-mariner/" class="md-nav__link">
+      <a href="../os/cbl-mariner/" class="md-nav__link">
         CBL-Mariner
       </a>
     </li>
@@ -1756,7 +1568,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/centos/" class="md-nav__link">
+      <a href="../os/centos/" class="md-nav__link">
         CentOS
       </a>
     </li>
@@ -1770,7 +1582,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/chainguard/" class="md-nav__link">
+      <a href="../os/chainguard/" class="md-nav__link">
         Chainguard
       </a>
     </li>
@@ -1784,7 +1596,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/debian/" class="md-nav__link">
+      <a href="../os/debian/" class="md-nav__link">
         Debian
       </a>
     </li>
@@ -1798,7 +1610,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/oracle/" class="md-nav__link">
+      <a href="../os/oracle/" class="md-nav__link">
         Oracle Linux
       </a>
     </li>
@@ -1812,7 +1624,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/photon/" class="md-nav__link">
+      <a href="../os/photon/" class="md-nav__link">
         Photon OS
       </a>
     </li>
@@ -1826,7 +1638,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/rhel/" class="md-nav__link">
+      <a href="../os/rhel/" class="md-nav__link">
         Red Hat
       </a>
     </li>
@@ -1840,7 +1652,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/rocky/" class="md-nav__link">
+      <a href="../os/rocky/" class="md-nav__link">
         Rocky Linux
       </a>
     </li>
@@ -1854,7 +1666,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/suse/" class="md-nav__link">
+      <a href="../os/suse/" class="md-nav__link">
         SUSE
       </a>
     </li>
@@ -1868,7 +1680,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/ubuntu/" class="md-nav__link">
+      <a href="../os/ubuntu/" class="md-nav__link">
         Ubuntu
       </a>
     </li>
@@ -1882,7 +1694,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/wolfi/" class="md-nav__link">
+      <a href="../os/wolfi/" class="md-nav__link">
         Wolfi
       </a>
     </li>
@@ -1896,7 +1708,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/google-distroless/" class="md-nav__link">
+      <a href="../os/google-distroless/" class="md-nav__link">
         Google Distroless (Images)
       </a>
     </li>
@@ -1910,7 +1722,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/os/bitnami/" class="md-nav__link">
+      <a href="../os/bitnami/" class="md-nav__link">
         Bitnami (Images)
       </a>
     </li>
@@ -1957,7 +1769,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/" class="md-nav__link">
+      <a href="../language/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1971,7 +1783,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/c/" class="md-nav__link">
+      <a href="../language/c/" class="md-nav__link">
         C/C++
       </a>
     </li>
@@ -1985,7 +1797,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/dart/" class="md-nav__link">
+      <a href="../language/dart/" class="md-nav__link">
         Dart
       </a>
     </li>
@@ -1999,7 +1811,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/dotnet/" class="md-nav__link">
+      <a href="../language/dotnet/" class="md-nav__link">
         .NET
       </a>
     </li>
@@ -2013,7 +1825,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/elixir/" class="md-nav__link">
+      <a href="../language/elixir/" class="md-nav__link">
         Elixir
       </a>
     </li>
@@ -2027,7 +1839,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/golang/" class="md-nav__link">
+      <a href="../language/golang/" class="md-nav__link">
         Go
       </a>
     </li>
@@ -2041,7 +1853,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/java/" class="md-nav__link">
+      <a href="../language/java/" class="md-nav__link">
         Java
       </a>
     </li>
@@ -2055,7 +1867,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/nodejs/" class="md-nav__link">
+      <a href="../language/nodejs/" class="md-nav__link">
         Node.js
       </a>
     </li>
@@ -2069,7 +1881,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/php/" class="md-nav__link">
+      <a href="../language/php/" class="md-nav__link">
         PHP
       </a>
     </li>
@@ -2083,7 +1895,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/python/" class="md-nav__link">
+      <a href="../language/python/" class="md-nav__link">
         Python
       </a>
     </li>
@@ -2097,7 +1909,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/ruby/" class="md-nav__link">
+      <a href="../language/ruby/" class="md-nav__link">
         Ruby
       </a>
     </li>
@@ -2111,7 +1923,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/rust/" class="md-nav__link">
+      <a href="../language/rust/" class="md-nav__link">
         Rust
       </a>
     </li>
@@ -2125,7 +1937,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/language/swift/" class="md-nav__link">
+      <a href="../language/swift/" class="md-nav__link">
         Swift
       </a>
     </li>
@@ -2172,7 +1984,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/iac/" class="md-nav__link">
+      <a href="../iac/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2186,7 +1998,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/iac/azure-arm/" class="md-nav__link">
+      <a href="../iac/azure-arm/" class="md-nav__link">
         Azure ARM Template
       </a>
     </li>
@@ -2200,7 +2012,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/iac/cloudformation/" class="md-nav__link">
+      <a href="../iac/cloudformation/" class="md-nav__link">
         CloudFormation
       </a>
     </li>
@@ -2214,7 +2026,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/iac/docker/" class="md-nav__link">
+      <a href="../iac/docker/" class="md-nav__link">
         Docker
       </a>
     </li>
@@ -2228,7 +2040,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/iac/helm/" class="md-nav__link">
+      <a href="../iac/helm/" class="md-nav__link">
         Helm
       </a>
     </li>
@@ -2242,7 +2054,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/iac/kubernetes/" class="md-nav__link">
+      <a href="../iac/kubernetes/" class="md-nav__link">
         Kubernetes
       </a>
     </li>
@@ -2256,7 +2068,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../coverage/iac/terraform/" class="md-nav__link">
+      <a href="../iac/terraform/" class="md-nav__link">
         Terraform
       </a>
     </li>
@@ -2275,11 +2087,21 @@ You're not viewing the latest version.
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../coverage/kubernetes/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Kubernetes
       </a>
+      
     </li>
   
 
@@ -3683,168 +3505,6 @@ You're not viewing the latest version.
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#os-packages" class="md-nav__link">
-    OS Packages
-  </a>
-  
-    <nav class="md-nav" aria-label="OS Packages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#supported-os" class="md-nav__link">
-    Supported OS
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#data-sources" class="md-nav__link">
-    Data Sources
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Sources">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#data-source-selection" class="md-nav__link">
-    Data Source Selection
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#severity-selection" class="md-nav__link">
-    Severity Selection
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#unfixed-vulnerabilities" class="md-nav__link">
-    Unfixed Vulnerabilities
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#language-specific-packages" class="md-nav__link">
-    Language-specific Packages
-  </a>
-  
-    <nav class="md-nav" aria-label="Language-specific Packages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#supported-languages" class="md-nav__link">
-    Supported Languages
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#data-sources_1" class="md-nav__link">
-    Data Sources
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#kubernetes" class="md-nav__link">
-    Kubernetes
-  </a>
-  
-    <nav class="md-nav" aria-label="Kubernetes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#data-sources_2" class="md-nav__link">
-    Data Sources
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#database" class="md-nav__link">
-    Database
-  </a>
-  
-    <nav class="md-nav" aria-label="Database">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#vulnerability-database" class="md-nav__link">
-    Vulnerability Database
-  </a>
-  
-    <nav class="md-nav" aria-label="Vulnerability Database">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#private-hosting" class="md-nav__link">
-    Private Hosting
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#java-index-database" class="md-nav__link">
-    Java Index Database
-  </a>
-  
-    <nav class="md-nav" aria-label="Java Index Database">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#private-hosting_1" class="md-nav__link">
-    Private Hosting
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -3855,313 +3515,30 @@ You're not viewing the latest version.
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/scanner/vulnerability.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/coverage/kubernetes.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
 
-<h1 id="vulnerability-scanning">Vulnerability Scanning</h1>
-<p>Trivy detects known vulnerabilities according to the versions of installed packages.</p>
-<p>The following packages are supported.</p>
-<ul>
-<li><a href="#os-packages">OS packages</a></li>
-<li><a href="#language-specific-packages">Language-specific packages</a></li>
-</ul>
-<p>Trivy also detects known vulnerabilities in Kubernetes components using KBOM (Kubernetes bill of Material) scanning. To learn more, see the <a href="../../target/kubernetes/#KBOM">documentation for Kubernetes scanning</a>.</p>
-<h2 id="os-packages">OS Packages</h2>
-<p>Trivy is capable of automatically detecting installed OS packages when scanning container images, VM images and running hosts.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Trivy doesn't support third-party/self-compiled packages/binaries, but official packages provided by vendors such as Red Hat and Debian.</p>
-</div>
-<h3 id="supported-os">Supported OS</h3>
-<p>See <a href="../../coverage/os/#supported-os">here</a> for the supported OSes.</p>
-<h3 id="data-sources">Data Sources</h3>
-<table>
-<thead>
-<tr>
-<th>OS</th>
-<th>Source</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Arch Linux</td>
-<td><a href="https://security.archlinux.org/">Vulnerable Issues</a></td>
-</tr>
-<tr>
-<td>Alpine Linux</td>
-<td><a href="https://secdb.alpinelinux.org/">secdb</a></td>
-</tr>
-<tr>
-<td>Wolfi Linux</td>
-<td><a href="https://packages.wolfi.dev/os/security.json">secdb</a></td>
-</tr>
-<tr>
-<td>Chainguard</td>
-<td><a href="https://packages.cgr.dev/chainguard/security.json">secdb</a></td>
-</tr>
-<tr>
-<td>Amazon Linux</td>
-<td><a href="https://alas.aws.amazon.com/">Amazon Linux Security Center</a></td>
-</tr>
-<tr>
-<td>Debian</td>
-<td><a href="https://security-tracker.debian.org/tracker/">Security Bug Tracker</a> / <a href="https://www.debian.org/security/oval/">OVAL</a></td>
-</tr>
-<tr>
-<td>Ubuntu</td>
-<td><a href="https://ubuntu.com/security/cve">Ubuntu CVE Tracker</a></td>
-</tr>
-<tr>
-<td>RHEL/CentOS</td>
-<td><a href="https://www.redhat.com/security/data/oval/v2/">OVAL</a> / <a href="https://www.redhat.com/security/data/metrics/">Security Data</a></td>
-</tr>
-<tr>
-<td>AlmaLinux</td>
-<td><a href="https://errata.almalinux.org/">AlmaLinux Product Errata</a></td>
-</tr>
-<tr>
-<td>Rocky Linux</td>
-<td><a href="https://download.rockylinux.org/pub/rocky/">Rocky Linux UpdateInfo</a></td>
-</tr>
-<tr>
-<td>Oracle Linux</td>
-<td><a href="https://linux.oracle.com/security/oval/">OVAL</a></td>
-</tr>
-<tr>
-<td>CBL-Mariner</td>
-<td><a href="https://github.com/microsoft/CBL-MarinerVulnerabilityData/">OVAL</a></td>
-</tr>
-<tr>
-<td>OpenSUSE/SLES</td>
-<td><a href="http://ftp.suse.com/pub/projects/security/cvrf/">CVRF</a></td>
-</tr>
-<tr>
-<td>Photon OS</td>
-<td><a href="https://packages.vmware.com/photon/photon_cve_metadata/">Photon Security Advisory</a></td>
-</tr>
-</tbody>
-</table>
-<h4 id="data-source-selection">Data Source Selection</h4>
-<p>Trivy <strong>only</strong> consumes security advisories from the sources listed in the above table.</p>
-<p>As for packages installed from OS package managers (<code>dpkg</code>, <code>yum</code>, <code>apk</code>, etc.), Trivy uses the advisory database from the appropriate <strong>OS vendor</strong>.</p>
-<p>For example: for a python package installed from <code>yum</code> (Amazon linux), Trivy will only get advisories from <a href="https://alas.aws.amazon.com/">ALAS</a>.
-But for a python package installed from another source (e.g. <code>pip</code>), Trivy will get advisories from the <code>GitLab</code> and <code>GitHub</code> databases.</p>
-<p>This advisory selection is essential to avoid getting false positives because OS vendors usually backport upstream fixes, and the fixed version can be different from the upstream fixed version.</p>
-<h4 id="severity-selection">Severity Selection</h4>
-<p>The severity is taken from the selected data source since the severity from vendors is more accurate.
-Using CVE-2023-0464 as an example, while it is <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-0464">rated as "HIGH" in NVD</a>, Red Hat has marked its 'Impact' as <a href="https://access.redhat.com/security/cve/cve-2023-0464">"Low"</a>.
-As a result, Trivy will display it as "Low".</p>
-<p>The severity depends on the compile option, the default configuration, etc.
-NVD doesn't know how the vendor distributes the software.
-Red Hat evaluates the severity more accurately.
-That's why Trivy prefers vendor scores over NVD.</p>
-<p>If the data source does not provide a severity, the severity is determined based on the CVSS score as follows:</p>
-<table>
-<thead>
-<tr>
-<th>Base Score Range</th>
-<th>Severity</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0.1-3.9</td>
-<td>Low</td>
-</tr>
-<tr>
-<td>4.0-6.9</td>
-<td>Medium</td>
-</tr>
-<tr>
-<td>7.0-8.9</td>
-<td>High</td>
-</tr>
-<tr>
-<td>9.0-10.0</td>
-<td>Critical</td>
-</tr>
-</tbody>
-</table>
-<p>If the CVSS score is also not provided, it falls back to <a href="https://nvd.nist.gov/vuln">NVD</a>, and if NVD does not have severity, it will be UNKNOWN.</p>
-<h3 id="unfixed-vulnerabilities">Unfixed Vulnerabilities</h3>
-<p>The unfixed/unfixable vulnerabilities mean that the patch has not yet been provided on their distribution.
-To hide unfixed/unfixable vulnerabilities, you can use the <code>--ignore-unfixed</code> flag.</p>
-<h2 id="language-specific-packages">Language-specific Packages</h2>
-<h3 id="supported-languages">Supported Languages</h3>
-<p>See <a href="../../coverage/language/#supported-languages">here</a> for the supported languages.</p>
-<h3 id="data-sources_1">Data Sources</h3>
-<table>
-<thead>
-<tr>
-<th>Language</th>
-<th>Source</th>
-<th align="center">Commercial Use</th>
-<th align="center">Delay<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>PHP</td>
-<td><a href="https://github.com/FriendsOfPHP/security-advisories">PHP Security Advisories Database</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td></td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Acomposer">GitHub Advisory Database (Composer)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>Python</td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Apip">GitHub Advisory Database (pip)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td></td>
-<td><a href="https://osv.dev/list?q=&amp;ecosystem=PyPI">Open Source Vulnerabilities (PyPI)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>Ruby</td>
-<td><a href="https://github.com/rubysec/ruby-advisory-db">Ruby Advisory Database</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td></td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Arubygems">GitHub Advisory Database (RubyGems)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>Node.js</td>
-<td><a href="https://github.com/nodejs/security-wg">Ecosystem Security Working Group</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td></td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Anpm">GitHub Advisory Database (npm)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>Java</td>
-<td><a href="https://gitlab.com/gitlab-org/advisories-community">GitLab Advisories Community</a></td>
-<td align="center">✅</td>
-<td align="center">1 month</td>
-</tr>
-<tr>
-<td></td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Amaven">GitHub Advisory Database (Maven)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>Go</td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Ago">GitHub Advisory Database (Go)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>Rust</td>
-<td><a href="https://osv.dev/list?q=&amp;ecosystem=crates.io">Open Source Vulnerabilities (crates.io)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>.NET</td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Anuget">GitHub Advisory Database (NuGet)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>C/C++</td>
-<td><a href="https://gitlab.com/gitlab-org/advisories-community">GitLab Advisories Community</a></td>
-<td align="center">✅</td>
-<td align="center">1 month</td>
-</tr>
-<tr>
-<td>Dart</td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Apub">GitHub Advisory Database (Pub)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>Elixir</td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Aerlang">GitHub Advisory Database (Erlang)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-<tr>
-<td>Swift</td>
-<td><a href="https://github.com/advisories?query=ecosystem%3Aswift">GitHub Advisory Database (Swift)</a></td>
-<td align="center">✅</td>
-<td align="center">-</td>
-</tr>
-</tbody>
-</table>
-<h2 id="kubernetes">Kubernetes</h2>
-<p>Trivy can detect vulnerabilities in Kubernetes clusters and components.</p>
-<h3 id="data-sources_2">Data Sources</h3>
-<table>
-<thead>
-<tr>
-<th>Vendor</th>
-<th>Source</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Kubernetes</td>
-<td><a href="https://kubernetes.io/docs/reference/issues-security/official-cve-feed/">Kubernetes Official CVE feed</a><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
-</tr>
-</tbody>
-</table>
-<h2 id="database">Database</h2>
-<p>Trivy downloads <a href="https://github.com/aquasecurity/trivy-db">the vulnerability database</a> every 6 hours.
-Trivy uses two types of databases for vulnerability detection:</p>
-<ul>
-<li>Vulnerability Database</li>
-<li>Java Index Database</li>
-</ul>
-<p>This page provides detailed information about these databases.</p>
-<h3 id="vulnerability-database">Vulnerability Database</h3>
-<p>Trivy utilizes a database containing vulnerability information.
-This database is built every six hours on <a href="https://github.com/aquasecurity/trivy-db">GitHub</a> and is distributed via <a href="https://ghcr.io/aquasecurity/trivy-db">GitHub Container registry (GHCR)</a>.
-The database is cached and updated as needed.
-As Trivy updates the database automatically during execution, users don't need to be concerned about it.</p>
-<p>For CLI flags related to the database, please refer to <a href="../../configuration/db/">this page</a>.</p>
-<h4 id="private-hosting">Private Hosting</h4>
-<p>If you host the database on your own OCI registry, you can specify a different repository with the <code>--db-repository</code> flag.
-The default is <code>ghcr.io/aquasecurity/trivy-db</code>.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --db-repository YOUR_REPO YOUR_IMAGE
-</code></pre></div>
-<p>If authentication is required, it can be configured in the same way as for private images.
-Please refer to <a href="../../advanced/private-registries/">the documentation</a> for more details.</p>
-<h3 id="java-index-database">Java Index Database</h3>
-<p>This database is only downloaded when scanning JAR files so that Trivy can identify the groupId, artifactId, and version of JAR files.
-It is built once a day on <a href="https://github.com/aquasecurity/trivy-java-db">GitHub</a> and distributed via <a href="https://ghcr.io/aquasecurity/trivy-java-db">GitHub Container registry (GHCR)</a>.
-Like the vulnerability database, it is automatically downloaded and updated when needed, so users don't need to worry about it.</p>
-<h4 id="private-hosting_1">Private Hosting</h4>
-<p>If you host the database on your own OCI registry, you can specify a different repository with the <code>--java-db-repository</code> flag.
-The default is <code>ghcr.io/aquasecurity/trivy-java-db</code>.</p>
-<p>If authentication is required, you need to run <code>docker login YOUR_REGISTRY</code>.
-Currently, specifying a username and password is not supported.</p>
-<div class="footnote">
-<hr />
+<h1 id="kubernetes">Kubernetes</h1>
+<p>When scanning a Kubernetes cluster, Trivy differentiates between the following:</p>
 <ol>
-<li id="fn:1">
-<p>https://github.com/GoogleContainerTools/distroless&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
+<li>Cluster infrastructure (e.g api-server, kubelet, addons)</li>
+<li>Cluster configuration (e.g Roles, ClusterRoles). </li>
+<li>Application workloads (e.g nginx, postgresql).</li>
 </ol>
-</div>
+<p>Whenever Trivy scans either of these Kubernetes resources, the container image is scanned separately to the Kubernetes resource definition (the YAML manifest) that defines the resource.
+When scanning any of the above, the container image is scanned separately to the Kubernetes resource definition (the YAML manifest) that defines the resource.</p>
+<p>Container image is scanned for:
+- Vulnerabilities
+- Misconfigurations
+- Exposed secrets</p>
+<p>Kubernetes resource definition is scanned for:
+- Vulnerabilities - partially supported through <a href="#KBOM">KBOM scanning</a>
+- Misconfigurations
+- Exposed secrets</p>
+<p>To learn more, please see the <a href="../../target/kubernetes/">documentation for Kubernetes scanning</a></p>
 
               
             </article>
@@ -4179,7 +3556,7 @@ Currently, specifying a username and password is not supported.</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../../target/sbom/" class="md-footer__link md-footer__link--prev" aria-label="Previous: SBOM" rel="prev">
+        <a href="../iac/terraform/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Terraform" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -4188,14 +3565,14 @@ Currently, specifying a username and password is not supported.</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              SBOM
+              Terraform
             </div>
           </div>
         </a>
       
       
         
-        <a href="../misconfiguration/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
+        <a href="../../configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
