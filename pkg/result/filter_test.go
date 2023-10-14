@@ -700,7 +700,7 @@ func TestFilter(t *testing.T) {
 									Severity:    dbTypes.SeverityHigh.String(),
 									Status:      types.StatusFailure,
 								},
-								{ // this misconf is ignored
+								{
 									ID:          "AVD-TEST-0002",
 									AVDID:       "AVD-TEST-0002",
 									Title:       "test-0002",

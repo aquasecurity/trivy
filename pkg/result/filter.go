@@ -86,13 +86,10 @@ func calcMisconfSummary(result *types.Result, misconfSummary *types.MisconfSumma
 		return nil
 	}
 
-	var failed, passed int
+	var passed int
 	for _, rm := range result.Misconfigurations {
-		switch rm.Status {
-		case types.StatusPassed:
+		if rm.Status == types.StatusPassed {
 			passed++
-		case types.StatusFailure:
-			failed++
 		}
 	}
 
