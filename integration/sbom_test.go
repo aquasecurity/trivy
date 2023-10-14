@@ -59,6 +59,15 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/fluentd-multiple-lockfiles.json.golden",
 		},
 		{
+			name: "minikube KBOM",
+			args: args{
+				input:        "testdata/fixtures/sbom/minikube-kbom.json",
+				format:       "json",
+				artifactType: "cyclonedx",
+			},
+			golden: "testdata/minikube-kbom.json.golden",
+		},
+		{
 			name: "centos7 in in-toto attestation",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl",

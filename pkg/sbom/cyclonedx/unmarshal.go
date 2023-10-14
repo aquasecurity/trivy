@@ -128,7 +128,7 @@ func (c *BOM) parseSBOM(bom *cdx.BOM) error {
 		if _, ok := seen[ref]; ok {
 			continue
 		}
-		if component.Type == cdx.ComponentTypeLibrary {
+		if component.Type == cdx.ComponentTypeLibrary || component.PackageURL != "" {
 			libComponents = append(libComponents, component)
 		}
 
@@ -194,12 +194,16 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 	var pkgs []ftypes.Package
 	for _, com := range components {
 		seen[com.BOMRef] = struct{}{}
-		_, _, pkg, err := toPackage(com)
-		if err != nil {
-			if errors.Is(err, ErrPURLEmpty) {
-				continue
-			}
+		pkgURL, pkg, err := toPackage(com)
+		if errors.Is(err, ErrPURLEmpty) {
+			continue
+		} else if err != nil {
 			return nil, xerrors.Errorf("failed to parse language package: %w", err)
+		}
+
+		// Skip unsupported package types
+		if pkgURL.Class() == types.ClassUnknown {
+			continue
 		}
 		pkgs = append(pkgs, *pkg)
 	}
@@ -276,21 +280,22 @@ func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 }
 
 func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Application, error) {
-	osPkgMap := make(map[ftypes.OSType]ftypes.Packages)
+	osPkgMap := make(map[string]ftypes.Packages)
 	langPkgMap := make(map[ftypes.LangType]ftypes.Packages)
 	for _, lib := range libs {
-		isOSPkg, pkgType, pkg, err := toPackage(lib)
-		if err != nil {
-			if errors.Is(err, ErrPURLEmpty) {
-				continue
-			}
+		pkgURL, pkg, err := toPackage(lib)
+		if errors.Is(err, ErrPURLEmpty) {
+			continue
+		} else if err != nil {
 			return nil, nil, xerrors.Errorf("failed to parse the component: %w", err)
 		}
 
-		if isOSPkg {
-			osPkgMap[pkgType] = append(osPkgMap[pkgType], *pkg)
-		} else {
-			langPkgMap[pkgType] = append(langPkgMap[pkgType], *pkg)
+		switch pkgURL.Class() {
+		case types.ClassOSPkg:
+			osPkgMap[pkgURL.Type] = append(osPkgMap[pkgURL.Type], *pkg)
+		case types.ClassLangPkg:
+			langType := pkgURL.LangType()
+			langPkgMap[langType] = append(langPkgMap[langType], *pkg)
 		}
 	}
 
@@ -332,14 +337,14 @@ func toApplication(component cdx.Component) *ftypes.Application {
 	}
 }
 
-func toPackage(component cdx.Component) (bool, ftypes.TargetType, *ftypes.Package, error) {
+func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, error) {
 	if component.PackageURL == "" {
 		log.Logger.Warnf("Skip the component (BOM-Ref: %s) as the PURL is empty", component.BOMRef)
-		return false, "", nil, ErrPURLEmpty
+		return nil, nil, ErrPURLEmpty
 	}
 	p, err := purl.FromString(component.PackageURL)
 	if err != nil {
-		return false, "", nil, xerrors.Errorf("failed to parse purl: %w", err)
+		return nil, nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
 
 	pkg := p.Package()
@@ -365,7 +370,7 @@ func toPackage(component cdx.Component) (bool, ftypes.TargetType, *ftypes.Packag
 		case PropertySrcEpoch:
 			pkg.SrcEpoch, err = strconv.Atoi(value)
 			if err != nil {
-				return false, "", nil, xerrors.Errorf("failed to parse source epoch: %w", err)
+				return nil, nil, xerrors.Errorf("failed to parse source epoch: %w", err)
 			}
 		case PropertyModularitylabel:
 			pkg.Modularitylabel = value
@@ -376,8 +381,7 @@ func toPackage(component cdx.Component) (bool, ftypes.TargetType, *ftypes.Packag
 		}
 	}
 
-	isOSPkg := p.IsOSPkg()
-	if isOSPkg {
+	if p.Class() == types.ClassOSPkg {
 		// Fill source package information for components in third-party SBOMs .
 		if pkg.SrcName == "" {
 			pkg.SrcName = pkg.Name
@@ -393,7 +397,7 @@ func toPackage(component cdx.Component) (bool, ftypes.TargetType, *ftypes.Packag
 		}
 	}
 
-	return isOSPkg, p.LangType(), pkg, nil
+	return p, pkg, nil
 }
 
 func toTrivyCdxComponent(component cdx.Component) ftypes.Component {

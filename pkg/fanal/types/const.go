@@ -71,6 +71,13 @@ const (
 	Pub        LangType = "pub"
 	Hex        LangType = "hex"
 	Bitnami    LangType = "bitnami"
+
+	K8sUpstream LangType = "kubernetes"
+	EKS         LangType = "eks" // Amazon Elastic Kubernetes Service
+	GKE         LangType = "gke" // Google Kubernetes Engine
+	AKS         LangType = "aks" // Azure Kubernetes Service
+	RKE         LangType = "rke" // Rancher Kubernetes Engine
+	OCP         LangType = "ocp" // Red Hat OpenShift Container Platform
 )
 
 // Config files
