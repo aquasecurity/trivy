@@ -170,7 +170,6 @@ See [here](../scanner/secret.md) for the detail.
 ```shell
 $ trivy image --image-config-scanners secret [YOUR_IMAGE_NAME]
 ```
-```
 
 <details>
 <summary>Result</summary>
