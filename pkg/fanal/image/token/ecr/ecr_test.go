@@ -4,15 +4,12 @@ import (
 	"context"
 	"testing"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ecr"
+	awstypes "github.com/aws/aws-sdk-go-v2/service/ecr/types"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"github.com/aws/aws-sdk-go/aws/request"
-
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/ecr"
-	"github.com/aws/aws-sdk-go/service/ecr/ecriface"
 )
 
 func TestCheckOptions(t *testing.T) {
@@ -45,11 +42,10 @@ func TestCheckOptions(t *testing.T) {
 }
 
 type mockedECR struct {
-	ecriface.ECRAPI
 	Resp ecr.GetAuthorizationTokenOutput
 }
 
-func (m mockedECR) GetAuthorizationTokenWithContext(ctx context.Context, input *ecr.GetAuthorizationTokenInput, options ...request.Option) (*ecr.GetAuthorizationTokenOutput, error) {
+func (m mockedECR) GetAuthorizationToken(ctx context.Context, params *ecr.GetAuthorizationTokenInput, optFns ...func(*ecr.Options)) (*ecr.GetAuthorizationTokenOutput, error) {
 	return &m.Resp, nil
 }
 
@@ -61,7 +57,7 @@ func TestECRGetCredential(t *testing.T) {
 	}{
 		{
 			Resp: ecr.GetAuthorizationTokenOutput{
-				AuthorizationData: []*ecr.AuthorizationData{
+				AuthorizationData: []awstypes.AuthorizationData{
 					{AuthorizationToken: aws.String("YXdzOnBhc3N3b3Jk")},
 				},
 			},
@@ -70,7 +66,7 @@ func TestECRGetCredential(t *testing.T) {
 		},
 		{
 			Resp: ecr.GetAuthorizationTokenOutput{
-				AuthorizationData: []*ecr.AuthorizationData{
+				AuthorizationData: []awstypes.AuthorizationData{
 					{AuthorizationToken: aws.String("YXdzOnBhc3N3b3JkOmJhZA==")},
 				},
 			},
@@ -79,7 +75,7 @@ func TestECRGetCredential(t *testing.T) {
 		},
 		{
 			Resp: ecr.GetAuthorizationTokenOutput{
-				AuthorizationData: []*ecr.AuthorizationData{
+				AuthorizationData: []awstypes.AuthorizationData{
 					{AuthorizationToken: aws.String("YXdzcGFzc3dvcmQ=")},
 				},
 			},
