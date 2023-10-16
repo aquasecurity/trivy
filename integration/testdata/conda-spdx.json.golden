@@ -3,14 +3,14 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/repo/conda",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-08df146c-0996-4718-8648-b2a45769ab79",
+  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000001",
   "creationInfo": {
     "licenseListVersion": "",
     "creators": [
       "Organization: aquasecurity",
       "Tool: trivy-dev"
     ],
-    "created": "2023-06-27T05:37:40Z"
+    "created": "2020-09-10T14:20:30Z"
   },
   "packages": [
     {
@@ -23,7 +23,7 @@
     },
     {
       "name": "openssl",
-      "SPDXID": "SPDXRef-Package-950f99cb9edd281",
+      "SPDXID": "SPDXRef-Package-c75d9dc75200186f",
       "versionInfo": "1.1.1q",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -41,7 +41,7 @@
     },
     {
       "name": "pip",
-      "SPDXID": "SPDXRef-Package-39020c06af94ca53",
+      "SPDXID": "SPDXRef-Package-195557cddf18e4a9",
       "versionInfo": "22.2.2",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -105,21 +105,21 @@
     },
     {
       "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "relatedSpdxElement": "SPDXRef-Package-950f99cb9edd281",
+      "relatedSpdxElement": "SPDXRef-Package-c75d9dc75200186f",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-950f99cb9edd281",
+      "spdxElementId": "SPDXRef-Package-c75d9dc75200186f",
       "relatedSpdxElement": "SPDXRef-File-600e5e0110a84891",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "relatedSpdxElement": "SPDXRef-Package-39020c06af94ca53",
+      "relatedSpdxElement": "SPDXRef-Package-195557cddf18e4a9",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-39020c06af94ca53",
+      "spdxElementId": "SPDXRef-Package-195557cddf18e4a9",
       "relatedSpdxElement": "SPDXRef-File-7eb62e2a3edddc0a",
       "relationshipType": "CONTAINS"
     }
