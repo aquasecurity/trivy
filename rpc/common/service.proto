@@ -212,15 +212,37 @@ message DetectedLicense {
   string          name       = 5;
   float           confidence = 6;
   string          link       = 7;
+}
 
-  enum LicenseCategory {
-    UNSPECIFIED  = 0;
-    FORBIDDEN    = 1;
-    RESTRICTED   = 2;
-    RECIPROCAL   = 3;
-    NOTICE       = 4;
-    PERMISSIVE   = 5;
-    UNENCUMBERED = 6;
-    UNKNOWN      = 7;
-  }
+enum LicenseCategory {
+  LICENSE_CATEGORY_UNSPECIFIED  = 0;
+  LICENSE_CATEGORY_FORBIDDEN    = 1;
+  LICENSE_CATEGORY_RESTRICTED   = 2;
+  LICENSE_CATEGORY_RECIPROCAL   = 3;
+  LICENSE_CATEGORY_NOTICE       = 4;
+  LICENSE_CATEGORY_PERMISSIVE   = 5;
+  LICENSE_CATEGORY_UNENCUMBERED = 6;
+  LICENSE_CATEGORY_UNKNOWN      = 7;
+}
+
+message LicenseFile {
+  LicenseType             license_type = 1;
+  string                  file_path    = 2;
+  string                  pkg_name     = 3;
+  repeated LicenseFinding fingings     = 4;
+  Layer                   layer        = 5;
+}
+
+enum LicenseType {
+  LICENSE_TYPE_UNSPECIFIED  = 0;
+  LICENSE_TYPE_DPKG         = 1;
+  LICENSE_TYPE_HEADER       = 2;
+  LICENSE_TYPE_LICENSE_FILE = 3;
+}
+
+message LicenseFinding {
+  LicenseCategory category   = 1;
+  string          name       = 2;
+  float           confidence = 3;
+  string          link       = 4;
 }

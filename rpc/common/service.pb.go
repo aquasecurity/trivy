@@ -77,68 +77,120 @@ func (Severity) EnumDescriptor() ([]byte, []int) {
 	return file_rpc_common_service_proto_rawDescGZIP(), []int{0}
 }
 
-type DetectedLicense_LicenseCategory int32
+type LicenseCategory int32
 
 const (
-	DetectedLicense_UNSPECIFIED  DetectedLicense_LicenseCategory = 0
-	DetectedLicense_FORBIDDEN    DetectedLicense_LicenseCategory = 1
-	DetectedLicense_RESTRICTED   DetectedLicense_LicenseCategory = 2
-	DetectedLicense_RECIPROCAL   DetectedLicense_LicenseCategory = 3
-	DetectedLicense_NOTICE       DetectedLicense_LicenseCategory = 4
-	DetectedLicense_PERMISSIVE   DetectedLicense_LicenseCategory = 5
-	DetectedLicense_UNENCUMBERED DetectedLicense_LicenseCategory = 6
-	DetectedLicense_UNKNOWN      DetectedLicense_LicenseCategory = 7
+	LicenseCategory_LICENSE_CATEGORY_UNSPECIFIED  LicenseCategory = 0
+	LicenseCategory_LICENSE_CATEGORY_FORBIDDEN    LicenseCategory = 1
+	LicenseCategory_LICENSE_CATEGORY_RESTRICTED   LicenseCategory = 2
+	LicenseCategory_LICENSE_CATEGORY_RECIPROCAL   LicenseCategory = 3
+	LicenseCategory_LICENSE_CATEGORY_NOTICE       LicenseCategory = 4
+	LicenseCategory_LICENSE_CATEGORY_PERMISSIVE   LicenseCategory = 5
+	LicenseCategory_LICENSE_CATEGORY_UNENCUMBERED LicenseCategory = 6
+	LicenseCategory_LICENSE_CATEGORY_UNKNOWN      LicenseCategory = 7
 )
 
-// Enum value maps for DetectedLicense_LicenseCategory.
+// Enum value maps for LicenseCategory.
 var (
-	DetectedLicense_LicenseCategory_name = map[int32]string{
-		0: "UNSPECIFIED",
-		1: "FORBIDDEN",
-		2: "RESTRICTED",
-		3: "RECIPROCAL",
-		4: "NOTICE",
-		5: "PERMISSIVE",
-		6: "UNENCUMBERED",
-		7: "UNKNOWN",
+	LicenseCategory_name = map[int32]string{
+		0: "LICENSE_CATEGORY_UNSPECIFIED",
+		1: "LICENSE_CATEGORY_FORBIDDEN",
+		2: "LICENSE_CATEGORY_RESTRICTED",
+		3: "LICENSE_CATEGORY_RECIPROCAL",
+		4: "LICENSE_CATEGORY_NOTICE",
+		5: "LICENSE_CATEGORY_PERMISSIVE",
+		6: "LICENSE_CATEGORY_UNENCUMBERED",
+		7: "LICENSE_CATEGORY_UNKNOWN",
 	}
-	DetectedLicense_LicenseCategory_value = map[string]int32{
-		"UNSPECIFIED":  0,
-		"FORBIDDEN":    1,
-		"RESTRICTED":   2,
-		"RECIPROCAL":   3,
-		"NOTICE":       4,
-		"PERMISSIVE":   5,
-		"UNENCUMBERED": 6,
-		"UNKNOWN":      7,
+	LicenseCategory_value = map[string]int32{
+		"LICENSE_CATEGORY_UNSPECIFIED":  0,
+		"LICENSE_CATEGORY_FORBIDDEN":    1,
+		"LICENSE_CATEGORY_RESTRICTED":   2,
+		"LICENSE_CATEGORY_RECIPROCAL":   3,
+		"LICENSE_CATEGORY_NOTICE":       4,
+		"LICENSE_CATEGORY_PERMISSIVE":   5,
+		"LICENSE_CATEGORY_UNENCUMBERED": 6,
+		"LICENSE_CATEGORY_UNKNOWN":      7,
 	}
 )
 
-func (x DetectedLicense_LicenseCategory) Enum() *DetectedLicense_LicenseCategory {
-	p := new(DetectedLicense_LicenseCategory)
+func (x LicenseCategory) Enum() *LicenseCategory {
+	p := new(LicenseCategory)
 	*p = x
 	return p
 }
 
-func (x DetectedLicense_LicenseCategory) String() string {
+func (x LicenseCategory) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (DetectedLicense_LicenseCategory) Descriptor() protoreflect.EnumDescriptor {
+func (LicenseCategory) Descriptor() protoreflect.EnumDescriptor {
 	return file_rpc_common_service_proto_enumTypes[1].Descriptor()
 }
 
-func (DetectedLicense_LicenseCategory) Type() protoreflect.EnumType {
+func (LicenseCategory) Type() protoreflect.EnumType {
 	return &file_rpc_common_service_proto_enumTypes[1]
 }
 
-func (x DetectedLicense_LicenseCategory) Number() protoreflect.EnumNumber {
+func (x LicenseCategory) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use DetectedLicense_LicenseCategory.Descriptor instead.
-func (DetectedLicense_LicenseCategory) EnumDescriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{19, 0}
+// Deprecated: Use LicenseCategory.Descriptor instead.
+func (LicenseCategory) EnumDescriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{1}
+}
+
+type LicenseType int32
+
+const (
+	LicenseType_LICENSE_TYPE_UNSPECIFIED  LicenseType = 0
+	LicenseType_LICENSE_TYPE_DPKG         LicenseType = 1
+	LicenseType_LICENSE_TYPE_HEADER       LicenseType = 2
+	LicenseType_LICENSE_TYPE_LICENSE_FILE LicenseType = 3
+)
+
+// Enum value maps for LicenseType.
+var (
+	LicenseType_name = map[int32]string{
+		0: "LICENSE_TYPE_UNSPECIFIED",
+		1: "LICENSE_TYPE_DPKG",
+		2: "LICENSE_TYPE_HEADER",
+		3: "LICENSE_TYPE_LICENSE_FILE",
+	}
+	LicenseType_value = map[string]int32{
+		"LICENSE_TYPE_UNSPECIFIED":  0,
+		"LICENSE_TYPE_DPKG":         1,
+		"LICENSE_TYPE_HEADER":       2,
+		"LICENSE_TYPE_LICENSE_FILE": 3,
+	}
+)
+
+func (x LicenseType) Enum() *LicenseType {
+	p := new(LicenseType)
+	*p = x
+	return p
+}
+
+func (x LicenseType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LicenseType) Descriptor() protoreflect.EnumDescriptor {
+	return file_rpc_common_service_proto_enumTypes[2].Descriptor()
+}
+
+func (LicenseType) Type() protoreflect.EnumType {
+	return &file_rpc_common_service_proto_enumTypes[2]
+}
+
+func (x LicenseType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use LicenseType.Descriptor instead.
+func (LicenseType) EnumDescriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{2}
 }
 
 type OS struct {
@@ -1883,13 +1935,13 @@ type DetectedLicense struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Severity   Severity                        `protobuf:"varint,1,opt,name=severity,proto3,enum=trivy.common.Severity" json:"severity,omitempty"`
-	Category   DetectedLicense_LicenseCategory `protobuf:"varint,2,opt,name=category,proto3,enum=trivy.common.DetectedLicense_LicenseCategory" json:"category,omitempty"`
-	PkgName    string                          `protobuf:"bytes,3,opt,name=pkg_name,json=pkgName,proto3" json:"pkg_name,omitempty"`
-	FilePath   string                          `protobuf:"bytes,4,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
-	Name       string                          `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
-	Confidence float32                         `protobuf:"fixed32,6,opt,name=confidence,proto3" json:"confidence,omitempty"`
-	Link       string                          `protobuf:"bytes,7,opt,name=link,proto3" json:"link,omitempty"`
+	Severity   Severity        `protobuf:"varint,1,opt,name=severity,proto3,enum=trivy.common.Severity" json:"severity,omitempty"`
+	Category   LicenseCategory `protobuf:"varint,2,opt,name=category,proto3,enum=trivy.common.LicenseCategory" json:"category,omitempty"`
+	PkgName    string          `protobuf:"bytes,3,opt,name=pkg_name,json=pkgName,proto3" json:"pkg_name,omitempty"`
+	FilePath   string          `protobuf:"bytes,4,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
+	Name       string          `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	Confidence float32         `protobuf:"fixed32,6,opt,name=confidence,proto3" json:"confidence,omitempty"`
+	Link       string          `protobuf:"bytes,7,opt,name=link,proto3" json:"link,omitempty"`
 }
 
 func (x *DetectedLicense) Reset() {
@@ -1931,11 +1983,11 @@ func (x *DetectedLicense) GetSeverity() Severity {
 	return Severity_UNKNOWN
 }
 
-func (x *DetectedLicense) GetCategory() DetectedLicense_LicenseCategory {
+func (x *DetectedLicense) GetCategory() LicenseCategory {
 	if x != nil {
 		return x.Category
 	}
-	return DetectedLicense_UNSPECIFIED
+	return LicenseCategory_LICENSE_CATEGORY_UNSPECIFIED
 }
 
 func (x *DetectedLicense) GetPkgName() string {
@@ -1967,6 +2019,156 @@ func (x *DetectedLicense) GetConfidence() float32 {
 }
 
 func (x *DetectedLicense) GetLink() string {
+	if x != nil {
+		return x.Link
+	}
+	return ""
+}
+
+type LicenseFile struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	LicenseType LicenseType       `protobuf:"varint,1,opt,name=license_type,json=licenseType,proto3,enum=trivy.common.LicenseType" json:"license_type,omitempty"`
+	FilePath    string            `protobuf:"bytes,2,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
+	PkgName     string            `protobuf:"bytes,3,opt,name=pkg_name,json=pkgName,proto3" json:"pkg_name,omitempty"`
+	Fingings    []*LicenseFinding `protobuf:"bytes,4,rep,name=fingings,proto3" json:"fingings,omitempty"`
+	Layer       *Layer            `protobuf:"bytes,5,opt,name=layer,proto3" json:"layer,omitempty"`
+}
+
+func (x *LicenseFile) Reset() {
+	*x = LicenseFile{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rpc_common_service_proto_msgTypes[20]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *LicenseFile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LicenseFile) ProtoMessage() {}
+
+func (x *LicenseFile) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_common_service_proto_msgTypes[20]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LicenseFile.ProtoReflect.Descriptor instead.
+func (*LicenseFile) Descriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *LicenseFile) GetLicenseType() LicenseType {
+	if x != nil {
+		return x.LicenseType
+	}
+	return LicenseType_LICENSE_TYPE_UNSPECIFIED
+}
+
+func (x *LicenseFile) GetFilePath() string {
+	if x != nil {
+		return x.FilePath
+	}
+	return ""
+}
+
+func (x *LicenseFile) GetPkgName() string {
+	if x != nil {
+		return x.PkgName
+	}
+	return ""
+}
+
+func (x *LicenseFile) GetFingings() []*LicenseFinding {
+	if x != nil {
+		return x.Fingings
+	}
+	return nil
+}
+
+func (x *LicenseFile) GetLayer() *Layer {
+	if x != nil {
+		return x.Layer
+	}
+	return nil
+}
+
+type LicenseFinding struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Category   LicenseCategory `protobuf:"varint,1,opt,name=category,proto3,enum=trivy.common.LicenseCategory" json:"category,omitempty"`
+	Name       string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Confidence float32         `protobuf:"fixed32,3,opt,name=confidence,proto3" json:"confidence,omitempty"`
+	Link       string          `protobuf:"bytes,4,opt,name=link,proto3" json:"link,omitempty"`
+}
+
+func (x *LicenseFinding) Reset() {
+	*x = LicenseFinding{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rpc_common_service_proto_msgTypes[21]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *LicenseFinding) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LicenseFinding) ProtoMessage() {}
+
+func (x *LicenseFinding) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_common_service_proto_msgTypes[21]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LicenseFinding.ProtoReflect.Descriptor instead.
+func (*LicenseFinding) Descriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *LicenseFinding) GetCategory() LicenseCategory {
+	if x != nil {
+		return x.Category
+	}
+	return LicenseCategory_LICENSE_CATEGORY_UNSPECIFIED
+}
+
+func (x *LicenseFinding) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *LicenseFinding) GetConfidence() float32 {
+	if x != nil {
+		return x.Confidence
+	}
+	return 0
+}
+
+func (x *LicenseFinding) GetLink() string {
 	if x != nil {
 		return x.Link
 	}
@@ -2274,14 +2476,13 @@ var file_rpc_common_service_proto_rawDesc = []byte{
 	0x0a, 0x08, 0x66, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b,
 	0x32, 0x1b, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e,
 	0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x66,
-	0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x73, 0x22, 0x9f, 0x03, 0x0a, 0x0f, 0x44, 0x65, 0x74, 0x65,
+	0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x73, 0x22, 0x80, 0x02, 0x0a, 0x0f, 0x44, 0x65, 0x74, 0x65,
 	0x63, 0x74, 0x65, 0x64, 0x4c, 0x69, 0x63, 0x65, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x08, 0x73,
 	0x65, 0x76, 0x65, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e,
 	0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x53, 0x65, 0x76,
 	0x65, 0x72, 0x69, 0x74, 0x79, 0x52, 0x08, 0x73, 0x65, 0x76, 0x65, 0x72, 0x69, 0x74, 0x79, 0x12,
-	0x49, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0e, 0x32, 0x2d, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
-	0x2e, 0x44, 0x65, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x4c, 0x69, 0x63, 0x65, 0x6e, 0x73, 0x65,
+	0x39, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x1d, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
 	0x2e, 0x4c, 0x69, 0x63, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79,
 	0x52, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x12, 0x19, 0x0a, 0x08, 0x70, 0x6b,
 	0x67, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x70, 0x6b,
@@ -2291,24 +2492,64 @@ var file_rpc_common_service_proto_rawDesc = []byte{
 	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x64,
 	0x65, 0x6e, 0x63, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0a, 0x63, 0x6f, 0x6e, 0x66,
 	0x69, 0x64, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6c, 0x69, 0x6e, 0x6b, 0x18, 0x07,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6c, 0x69, 0x6e, 0x6b, 0x22, 0x8c, 0x01, 0x0a, 0x0f, 0x4c,
-	0x69, 0x63, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x12, 0x0f,
-	0x0a, 0x0b, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12,
-	0x0d, 0x0a, 0x09, 0x46, 0x4f, 0x52, 0x42, 0x49, 0x44, 0x44, 0x45, 0x4e, 0x10, 0x01, 0x12, 0x0e,
-	0x0a, 0x0a, 0x52, 0x45, 0x53, 0x54, 0x52, 0x49, 0x43, 0x54, 0x45, 0x44, 0x10, 0x02, 0x12, 0x0e,
-	0x0a, 0x0a, 0x52, 0x45, 0x43, 0x49, 0x50, 0x52, 0x4f, 0x43, 0x41, 0x4c, 0x10, 0x03, 0x12, 0x0a,
-	0x0a, 0x06, 0x4e, 0x4f, 0x54, 0x49, 0x43, 0x45, 0x10, 0x04, 0x12, 0x0e, 0x0a, 0x0a, 0x50, 0x45,
-	0x52, 0x4d, 0x49, 0x53, 0x53, 0x49, 0x56, 0x45, 0x10, 0x05, 0x12, 0x10, 0x0a, 0x0c, 0x55, 0x4e,
-	0x45, 0x4e, 0x43, 0x55, 0x4d, 0x42, 0x45, 0x52, 0x45, 0x44, 0x10, 0x06, 0x12, 0x0b, 0x0a, 0x07,
-	0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x07, 0x2a, 0x44, 0x0a, 0x08, 0x53, 0x65, 0x76,
-	0x65, 0x72, 0x69, 0x74, 0x79, 0x12, 0x0b, 0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e,
-	0x10, 0x00, 0x12, 0x07, 0x0a, 0x03, 0x4c, 0x4f, 0x57, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x4d,
-	0x45, 0x44, 0x49, 0x55, 0x4d, 0x10, 0x02, 0x12, 0x08, 0x0a, 0x04, 0x48, 0x49, 0x47, 0x48, 0x10,
-	0x03, 0x12, 0x0c, 0x0a, 0x08, 0x43, 0x52, 0x49, 0x54, 0x49, 0x43, 0x41, 0x4c, 0x10, 0x04, 0x42,
-	0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x71,
-	0x75, 0x61, 0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x2f, 0x74, 0x72, 0x69, 0x76, 0x79,
-	0x2f, 0x72, 0x70, 0x63, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x3b, 0x63, 0x6f, 0x6d, 0x6d,
-	0x6f, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6c, 0x69, 0x6e, 0x6b, 0x22, 0xe8, 0x01, 0x0a, 0x0b, 0x4c,
+	0x69, 0x63, 0x65, 0x6e, 0x73, 0x65, 0x46, 0x69, 0x6c, 0x65, 0x12, 0x3c, 0x0a, 0x0c, 0x6c, 0x69,
+	0x63, 0x65, 0x6e, 0x73, 0x65, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x19, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e,
+	0x4c, 0x69, 0x63, 0x65, 0x6e, 0x73, 0x65, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0b, 0x6c, 0x69, 0x63,
+	0x65, 0x6e, 0x73, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x66, 0x69, 0x6c, 0x65,
+	0x5f, 0x70, 0x61, 0x74, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x69, 0x6c,
+	0x65, 0x50, 0x61, 0x74, 0x68, 0x12, 0x19, 0x0a, 0x08, 0x70, 0x6b, 0x67, 0x5f, 0x6e, 0x61, 0x6d,
+	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x70, 0x6b, 0x67, 0x4e, 0x61, 0x6d, 0x65,
+	0x12, 0x38, 0x0a, 0x08, 0x66, 0x69, 0x6e, 0x67, 0x69, 0x6e, 0x67, 0x73, 0x18, 0x04, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x2e, 0x4c, 0x69, 0x63, 0x65, 0x6e, 0x73, 0x65, 0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67,
+	0x52, 0x08, 0x66, 0x69, 0x6e, 0x67, 0x69, 0x6e, 0x67, 0x73, 0x12, 0x29, 0x0a, 0x05, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x74, 0x72, 0x69, 0x76,
+	0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x4c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x05,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x93, 0x01, 0x0a, 0x0e, 0x4c, 0x69, 0x63, 0x65, 0x6e, 0x73,
+	0x65, 0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x39, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65,
+	0x67, 0x6f, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1d, 0x2e, 0x74, 0x72, 0x69,
+	0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x4c, 0x69, 0x63, 0x65, 0x6e, 0x73,
+	0x65, 0x43, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x52, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67,
+	0x6f, 0x72, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x63, 0x6f, 0x6e, 0x66, 0x69,
+	0x64, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0a, 0x63, 0x6f, 0x6e,
+	0x66, 0x69, 0x64, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6c, 0x69, 0x6e, 0x6b, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6c, 0x69, 0x6e, 0x6b, 0x2a, 0x44, 0x0a, 0x08, 0x53,
+	0x65, 0x76, 0x65, 0x72, 0x69, 0x74, 0x79, 0x12, 0x0b, 0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f,
+	0x57, 0x4e, 0x10, 0x00, 0x12, 0x07, 0x0a, 0x03, 0x4c, 0x4f, 0x57, 0x10, 0x01, 0x12, 0x0a, 0x0a,
+	0x06, 0x4d, 0x45, 0x44, 0x49, 0x55, 0x4d, 0x10, 0x02, 0x12, 0x08, 0x0a, 0x04, 0x48, 0x49, 0x47,
+	0x48, 0x10, 0x03, 0x12, 0x0c, 0x0a, 0x08, 0x43, 0x52, 0x49, 0x54, 0x49, 0x43, 0x41, 0x4c, 0x10,
+	0x04, 0x2a, 0x94, 0x02, 0x0a, 0x0f, 0x4c, 0x69, 0x63, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x74,
+	0x65, 0x67, 0x6f, 0x72, 0x79, 0x12, 0x20, 0x0a, 0x1c, 0x4c, 0x49, 0x43, 0x45, 0x4e, 0x53, 0x45,
+	0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43,
+	0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1e, 0x0a, 0x1a, 0x4c, 0x49, 0x43, 0x45, 0x4e,
+	0x53, 0x45, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x46, 0x4f, 0x52, 0x42,
+	0x49, 0x44, 0x44, 0x45, 0x4e, 0x10, 0x01, 0x12, 0x1f, 0x0a, 0x1b, 0x4c, 0x49, 0x43, 0x45, 0x4e,
+	0x53, 0x45, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x52, 0x45, 0x53, 0x54,
+	0x52, 0x49, 0x43, 0x54, 0x45, 0x44, 0x10, 0x02, 0x12, 0x1f, 0x0a, 0x1b, 0x4c, 0x49, 0x43, 0x45,
+	0x4e, 0x53, 0x45, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x52, 0x45, 0x43,
+	0x49, 0x50, 0x52, 0x4f, 0x43, 0x41, 0x4c, 0x10, 0x03, 0x12, 0x1b, 0x0a, 0x17, 0x4c, 0x49, 0x43,
+	0x45, 0x4e, 0x53, 0x45, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x4e, 0x4f,
+	0x54, 0x49, 0x43, 0x45, 0x10, 0x04, 0x12, 0x1f, 0x0a, 0x1b, 0x4c, 0x49, 0x43, 0x45, 0x4e, 0x53,
+	0x45, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x50, 0x45, 0x52, 0x4d, 0x49,
+	0x53, 0x53, 0x49, 0x56, 0x45, 0x10, 0x05, 0x12, 0x21, 0x0a, 0x1d, 0x4c, 0x49, 0x43, 0x45, 0x4e,
+	0x53, 0x45, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x55, 0x4e, 0x45, 0x4e,
+	0x43, 0x55, 0x4d, 0x42, 0x45, 0x52, 0x45, 0x44, 0x10, 0x06, 0x12, 0x1c, 0x0a, 0x18, 0x4c, 0x49,
+	0x43, 0x45, 0x4e, 0x53, 0x45, 0x5f, 0x43, 0x41, 0x54, 0x45, 0x47, 0x4f, 0x52, 0x59, 0x5f, 0x55,
+	0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x07, 0x2a, 0x7a, 0x0a, 0x0b, 0x4c, 0x69, 0x63, 0x65,
+	0x6e, 0x73, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1c, 0x0a, 0x18, 0x4c, 0x49, 0x43, 0x45, 0x4e,
+	0x53, 0x45, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46,
+	0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x15, 0x0a, 0x11, 0x4c, 0x49, 0x43, 0x45, 0x4e, 0x53, 0x45,
+	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x44, 0x50, 0x4b, 0x47, 0x10, 0x01, 0x12, 0x17, 0x0a, 0x13,
+	0x4c, 0x49, 0x43, 0x45, 0x4e, 0x53, 0x45, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x48, 0x45, 0x41,
+	0x44, 0x45, 0x52, 0x10, 0x02, 0x12, 0x1d, 0x0a, 0x19, 0x4c, 0x49, 0x43, 0x45, 0x4e, 0x53, 0x45,
+	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4c, 0x49, 0x43, 0x45, 0x4e, 0x53, 0x45, 0x5f, 0x46, 0x49,
+	0x4c, 0x45, 0x10, 0x03, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x61, 0x71, 0x75, 0x61, 0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x2f,
+	0x74, 0x72, 0x69, 0x76, 0x79, 0x2f, 0x72, 0x70, 0x63, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
+	0x3b, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2323,74 +2564,81 @@ func file_rpc_common_service_proto_rawDescGZIP() []byte {
 	return file_rpc_common_service_proto_rawDescData
 }
 
-var file_rpc_common_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_rpc_common_service_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_rpc_common_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_rpc_common_service_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_rpc_common_service_proto_goTypes = []interface{}{
-	(Severity)(0),                        // 0: trivy.common.Severity
-	(DetectedLicense_LicenseCategory)(0), // 1: trivy.common.DetectedLicense.LicenseCategory
-	(*OS)(nil),                           // 2: trivy.common.OS
-	(*Repository)(nil),                   // 3: trivy.common.Repository
-	(*PackageInfo)(nil),                  // 4: trivy.common.PackageInfo
-	(*Application)(nil),                  // 5: trivy.common.Application
-	(*Package)(nil),                      // 6: trivy.common.Package
-	(*Misconfiguration)(nil),             // 7: trivy.common.Misconfiguration
-	(*MisconfResult)(nil),                // 8: trivy.common.MisconfResult
-	(*PolicyMetadata)(nil),               // 9: trivy.common.PolicyMetadata
-	(*DetectedMisconfiguration)(nil),     // 10: trivy.common.DetectedMisconfiguration
-	(*Vulnerability)(nil),                // 11: trivy.common.Vulnerability
-	(*DataSource)(nil),                   // 12: trivy.common.DataSource
-	(*Layer)(nil),                        // 13: trivy.common.Layer
-	(*CauseMetadata)(nil),                // 14: trivy.common.CauseMetadata
-	(*CVSS)(nil),                         // 15: trivy.common.CVSS
-	(*CustomResource)(nil),               // 16: trivy.common.CustomResource
-	(*Line)(nil),                         // 17: trivy.common.Line
-	(*Code)(nil),                         // 18: trivy.common.Code
-	(*SecretFinding)(nil),                // 19: trivy.common.SecretFinding
-	(*Secret)(nil),                       // 20: trivy.common.Secret
-	(*DetectedLicense)(nil),              // 21: trivy.common.DetectedLicense
-	nil,                                  // 22: trivy.common.Vulnerability.CvssEntry
-	nil,                                  // 23: trivy.common.Vulnerability.VendorSeverityEntry
-	(*timestamppb.Timestamp)(nil),        // 24: google.protobuf.Timestamp
-	(*structpb.Value)(nil),               // 25: google.protobuf.Value
+	(Severity)(0),                    // 0: trivy.common.Severity
+	(LicenseCategory)(0),             // 1: trivy.common.LicenseCategory
+	(LicenseType)(0),                 // 2: trivy.common.LicenseType
+	(*OS)(nil),                       // 3: trivy.common.OS
+	(*Repository)(nil),               // 4: trivy.common.Repository
+	(*PackageInfo)(nil),              // 5: trivy.common.PackageInfo
+	(*Application)(nil),              // 6: trivy.common.Application
+	(*Package)(nil),                  // 7: trivy.common.Package
+	(*Misconfiguration)(nil),         // 8: trivy.common.Misconfiguration
+	(*MisconfResult)(nil),            // 9: trivy.common.MisconfResult
+	(*PolicyMetadata)(nil),           // 10: trivy.common.PolicyMetadata
+	(*DetectedMisconfiguration)(nil), // 11: trivy.common.DetectedMisconfiguration
+	(*Vulnerability)(nil),            // 12: trivy.common.Vulnerability
+	(*DataSource)(nil),               // 13: trivy.common.DataSource
+	(*Layer)(nil),                    // 14: trivy.common.Layer
+	(*CauseMetadata)(nil),            // 15: trivy.common.CauseMetadata
+	(*CVSS)(nil),                     // 16: trivy.common.CVSS
+	(*CustomResource)(nil),           // 17: trivy.common.CustomResource
+	(*Line)(nil),                     // 18: trivy.common.Line
+	(*Code)(nil),                     // 19: trivy.common.Code
+	(*SecretFinding)(nil),            // 20: trivy.common.SecretFinding
+	(*Secret)(nil),                   // 21: trivy.common.Secret
+	(*DetectedLicense)(nil),          // 22: trivy.common.DetectedLicense
+	(*LicenseFile)(nil),              // 23: trivy.common.LicenseFile
+	(*LicenseFinding)(nil),           // 24: trivy.common.LicenseFinding
+	nil,                              // 25: trivy.common.Vulnerability.CvssEntry
+	nil,                              // 26: trivy.common.Vulnerability.VendorSeverityEntry
+	(*timestamppb.Timestamp)(nil),    // 27: google.protobuf.Timestamp
+	(*structpb.Value)(nil),           // 28: google.protobuf.Value
 }
 var file_rpc_common_service_proto_depIdxs = []int32{
-	6,  // 0: trivy.common.PackageInfo.packages:type_name -> trivy.common.Package
-	6,  // 1: trivy.common.Application.libraries:type_name -> trivy.common.Package
-	13, // 2: trivy.common.Package.layer:type_name -> trivy.common.Layer
-	8,  // 3: trivy.common.Misconfiguration.successes:type_name -> trivy.common.MisconfResult
-	8,  // 4: trivy.common.Misconfiguration.warnings:type_name -> trivy.common.MisconfResult
-	8,  // 5: trivy.common.Misconfiguration.failures:type_name -> trivy.common.MisconfResult
-	8,  // 6: trivy.common.Misconfiguration.exceptions:type_name -> trivy.common.MisconfResult
-	9,  // 7: trivy.common.MisconfResult.policy_metadata:type_name -> trivy.common.PolicyMetadata
-	14, // 8: trivy.common.MisconfResult.cause_metadata:type_name -> trivy.common.CauseMetadata
+	7,  // 0: trivy.common.PackageInfo.packages:type_name -> trivy.common.Package
+	7,  // 1: trivy.common.Application.libraries:type_name -> trivy.common.Package
+	14, // 2: trivy.common.Package.layer:type_name -> trivy.common.Layer
+	9,  // 3: trivy.common.Misconfiguration.successes:type_name -> trivy.common.MisconfResult
+	9,  // 4: trivy.common.Misconfiguration.warnings:type_name -> trivy.common.MisconfResult
+	9,  // 5: trivy.common.Misconfiguration.failures:type_name -> trivy.common.MisconfResult
+	9,  // 6: trivy.common.Misconfiguration.exceptions:type_name -> trivy.common.MisconfResult
+	10, // 7: trivy.common.MisconfResult.policy_metadata:type_name -> trivy.common.PolicyMetadata
+	15, // 8: trivy.common.MisconfResult.cause_metadata:type_name -> trivy.common.CauseMetadata
 	0,  // 9: trivy.common.DetectedMisconfiguration.severity:type_name -> trivy.common.Severity
-	13, // 10: trivy.common.DetectedMisconfiguration.layer:type_name -> trivy.common.Layer
-	14, // 11: trivy.common.DetectedMisconfiguration.cause_metadata:type_name -> trivy.common.CauseMetadata
+	14, // 10: trivy.common.DetectedMisconfiguration.layer:type_name -> trivy.common.Layer
+	15, // 11: trivy.common.DetectedMisconfiguration.cause_metadata:type_name -> trivy.common.CauseMetadata
 	0,  // 12: trivy.common.Vulnerability.severity:type_name -> trivy.common.Severity
-	13, // 13: trivy.common.Vulnerability.layer:type_name -> trivy.common.Layer
-	22, // 14: trivy.common.Vulnerability.cvss:type_name -> trivy.common.Vulnerability.CvssEntry
-	24, // 15: trivy.common.Vulnerability.published_date:type_name -> google.protobuf.Timestamp
-	24, // 16: trivy.common.Vulnerability.last_modified_date:type_name -> google.protobuf.Timestamp
-	25, // 17: trivy.common.Vulnerability.custom_advisory_data:type_name -> google.protobuf.Value
-	25, // 18: trivy.common.Vulnerability.custom_vuln_data:type_name -> google.protobuf.Value
-	12, // 19: trivy.common.Vulnerability.data_source:type_name -> trivy.common.DataSource
-	23, // 20: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
-	18, // 21: trivy.common.CauseMetadata.code:type_name -> trivy.common.Code
-	13, // 22: trivy.common.CustomResource.layer:type_name -> trivy.common.Layer
-	25, // 23: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
-	17, // 24: trivy.common.Code.lines:type_name -> trivy.common.Line
-	18, // 25: trivy.common.SecretFinding.code:type_name -> trivy.common.Code
-	13, // 26: trivy.common.SecretFinding.layer:type_name -> trivy.common.Layer
-	19, // 27: trivy.common.Secret.findings:type_name -> trivy.common.SecretFinding
+	14, // 13: trivy.common.Vulnerability.layer:type_name -> trivy.common.Layer
+	25, // 14: trivy.common.Vulnerability.cvss:type_name -> trivy.common.Vulnerability.CvssEntry
+	27, // 15: trivy.common.Vulnerability.published_date:type_name -> google.protobuf.Timestamp
+	27, // 16: trivy.common.Vulnerability.last_modified_date:type_name -> google.protobuf.Timestamp
+	28, // 17: trivy.common.Vulnerability.custom_advisory_data:type_name -> google.protobuf.Value
+	28, // 18: trivy.common.Vulnerability.custom_vuln_data:type_name -> google.protobuf.Value
+	13, // 19: trivy.common.Vulnerability.data_source:type_name -> trivy.common.DataSource
+	26, // 20: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
+	19, // 21: trivy.common.CauseMetadata.code:type_name -> trivy.common.Code
+	14, // 22: trivy.common.CustomResource.layer:type_name -> trivy.common.Layer
+	28, // 23: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
+	18, // 24: trivy.common.Code.lines:type_name -> trivy.common.Line
+	19, // 25: trivy.common.SecretFinding.code:type_name -> trivy.common.Code
+	14, // 26: trivy.common.SecretFinding.layer:type_name -> trivy.common.Layer
+	20, // 27: trivy.common.Secret.findings:type_name -> trivy.common.SecretFinding
 	0,  // 28: trivy.common.DetectedLicense.severity:type_name -> trivy.common.Severity
-	1,  // 29: trivy.common.DetectedLicense.category:type_name -> trivy.common.DetectedLicense.LicenseCategory
-	15, // 30: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
-	0,  // 31: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
-	32, // [32:32] is the sub-list for method output_type
-	32, // [32:32] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	1,  // 29: trivy.common.DetectedLicense.category:type_name -> trivy.common.LicenseCategory
+	2,  // 30: trivy.common.LicenseFile.license_type:type_name -> trivy.common.LicenseType
+	24, // 31: trivy.common.LicenseFile.fingings:type_name -> trivy.common.LicenseFinding
+	14, // 32: trivy.common.LicenseFile.layer:type_name -> trivy.common.Layer
+	1,  // 33: trivy.common.LicenseFinding.category:type_name -> trivy.common.LicenseCategory
+	16, // 34: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
+	0,  // 35: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
+	36, // [36:36] is the sub-list for method output_type
+	36, // [36:36] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_rpc_common_service_proto_init() }
@@ -2639,14 +2887,38 @@ func file_rpc_common_service_proto_init() {
 				return nil
 			}
 		}
+		file_rpc_common_service_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LicenseFile); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rpc_common_service_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LicenseFinding); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_rpc_common_service_proto_rawDesc,
-			NumEnums:      2,
-			NumMessages:   22,
+			NumEnums:      3,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
