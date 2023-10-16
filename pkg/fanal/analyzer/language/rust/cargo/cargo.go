@@ -106,7 +106,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	cargoTOMLPath := filepath.Join(dir, types.CargoToml)
 	directDeps, err := a.parseCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Cargo: %s not found", cargoTOMLPath)
+		// Already logged this error in tomlDependencies
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
@@ -168,7 +168,10 @@ type Dependencies map[string]interface{}
 func tomlDependencies(fsys fs.FS, path string) (Dependencies, []string, error) {
 	// Parse Cargo.toml
 	f, err := fsys.Open(path)
-	if err != nil {
+	if errors.Is(err, fs.ErrNotExist) {
+		log.Logger.Debugf("Cargo: %s not found", path)
+		return nil, nil, err
+	} else if err != nil {
 		return nil, nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
@@ -203,6 +206,8 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]strin
 	if err != nil {
 		return nil, err
 	}
+	// According to Cargo workspace RFC, workspaces can't be nested:
+	// https://github.com/nox/rust-rfcs/blob/master/text/1525-cargo-workspace.md#validating-a-workspace
 	for _, value := range members {
 		newToml := filepath.Join(filepath.Join(filepath.Dir(path), value), types.CargoToml)
 		tomlDeps, _, err := tomlDependencies(fsys, newToml)
