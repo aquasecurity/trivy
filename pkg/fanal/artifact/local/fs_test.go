@@ -47,7 +47,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+					BlobID: "sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -67,6 +67,10 @@ func TestArtifact_Inspect(t *testing.T) {
 										Licenses:   []string{"MIT"},
 										Arch:       "x86_64",
 										Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+										InstalledFiles: []string{
+											"lib/libc.musl-x86_64.so.1",
+											"lib/ld-musl-x86_64.so.1",
+										},
 									},
 								},
 							},
@@ -78,9 +82,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+				ID:   "sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
 				BlobIDs: []string{
-					"sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+					"sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
 				},
 			},
 		},
@@ -121,7 +125,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+					BlobID: "sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -141,6 +145,10 @@ func TestArtifact_Inspect(t *testing.T) {
 										Licenses:   []string{"MIT"},
 										Arch:       "x86_64",
 										Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+										InstalledFiles: []string{
+											"lib/libc.musl-x86_64.so.1",
+											"lib/ld-musl-x86_64.so.1",
+										},
 									},
 								},
 							},

@@ -41,6 +41,7 @@ type Compliance = string
 type Format string
 
 const (
+	ClassUnknown     ResultClass = "unknown"
 	ClassOSPkg       ResultClass = "os-pkgs"      // For detected packages and vulnerabilities in OS packages
 	ClassLangPkg     ResultClass = "lang-pkgs"    // For detected packages and vulnerabilities in language-specific packages
 	ClassConfig      ResultClass = "config"       // For detected misconfigurations

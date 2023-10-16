@@ -108,6 +108,7 @@ nav:
               - Helm: docs/coverage/iac/helm.md
               - Kubernetes: docs/coverage/iac/kubernetes.md
               - Terraform: docs/coverage/iac/terraform.md
+          - Kubernetes: docs/coverage/kubernetes.md
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md
