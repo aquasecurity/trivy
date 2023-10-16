@@ -2,6 +2,8 @@ module github.com/aquasecurity/trivy
 
 go 1.20
 
+toolchain go1.21.3
+
 require (
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.1
@@ -79,7 +81,7 @@ require (
 	github.com/samber/lo v1.38.1
 	github.com/saracen/walker v0.1.3
 	github.com/secure-systems-lab/go-securesystemslib v0.7.0
-	github.com/sigstore/rekor v1.3.0
+	github.com/sigstore/rekor v1.2.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/sosedoff/gitkit v0.4.0
 	github.com/spdx/tools-golang v0.5.0
