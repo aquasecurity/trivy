@@ -4115,10 +4115,6 @@ It is especially useful for environment variables that are likely to have creden
 See <a href="../../scanner/secret/">here</a> for the detail.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --image-config-scanners secret <span class="o">[</span>YOUR_IMAGE_NAME<span class="o">]</span>
 </code></pre></div>
-<p>If you just want to scan the image config, you can disable scanners with <code>--scanners none</code>.
-For example:</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --scanners none --image-config-scanners secret vuln-image
-</code></pre></div>
 <details>
 <summary>Result</summary>
 
