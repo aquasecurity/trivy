@@ -47,7 +47,7 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 	var apps []types.Application
 
 	// get all DependsOn from cache dir
-	// `lib_ID` -> `lib_names`
+	// lib ID -> DependsOn names
 	allDependsOn, err := findDependsOn()
 	if err != nil {
 		log.Logger.Warnf("Unable to parse cache dir: %s", err)
@@ -67,19 +67,21 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 			return nil
 		}
 
-		// Required to search for library versions from DependsOn.
-		libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, string) {
-			return lib.Name, lib.ID
-		})
+		if allDependsOn != nil {
+			// Required to search for library versions for DependsOn.
+			libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, string) {
+				return lib.Name, lib.ID
+			})
 
-		for i, lib := range app.Libraries {
-			var dependsOn []string
-			for _, depName := range allDependsOn[lib.ID] {
-				if depID, ok := libs[depName]; ok {
-					dependsOn = append(dependsOn, depID)
+			for i, lib := range app.Libraries {
+				var dependsOn []string
+				for _, depName := range allDependsOn[lib.ID] {
+					if depID, ok := libs[depName]; ok {
+						dependsOn = append(dependsOn, depID)
+					}
 				}
+				app.Libraries[i].DependsOn = dependsOn
 			}
-			app.Libraries[i].DependsOn = dependsOn
 		}
 
 		sort.Sort(app.Libraries)
@@ -116,7 +118,8 @@ func findDependsOn() (map[string][]string, error) {
 
 		id, dependsOn, err := parsePubSpecYaml(p)
 		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %s", p, err)
+			log.Logger.Debugf("unable to parse %q: %s", p, err)
+			return nil
 		}
 		if id != "" {
 			deps[id] = dependsOn
@@ -145,9 +148,9 @@ func cacheDir() string {
 }
 
 type pubSpecYaml struct {
-	Name         string            `yaml:"name"`
-	Version      string            `yaml:"version"`
-	Dependencies map[string]string `yaml:"dependencies,omitempty"`
+	Name         string                 `yaml:"name"`
+	Version      string                 `yaml:"version"`
+	Dependencies map[string]interface{} `yaml:"dependencies,omitempty"`
 }
 
 func parsePubSpecYaml(filePath string) (string, []string, error) {
@@ -164,7 +167,7 @@ func parsePubSpecYaml(filePath string) (string, []string, error) {
 	if len(spec.Dependencies) > 0 {
 		// pubspec.yaml uses version ranges
 		// save only dependencies names
-		dependsOn := lo.MapToSlice(spec.Dependencies, func(key string, _ string) string {
+		dependsOn := lo.MapToSlice(spec.Dependencies, func(key string, _ interface{}) string {
 			return key
 		})
 		return utils.PackageID(spec.Name, spec.Version), dependsOn, nil
