@@ -4063,10 +4063,6 @@ See <a href="../../scanner/misconfiguration/">here</a> for the detail of Dockerf
 You can enable it with <code>--image-config-scanners config</code>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --image-config-scanners config [YOUR_IMAGE_NAME]
 </code></pre></div>
-<p>If you just want to scan the image config, you can disable scanners with <code>--scanners none</code>.
-For example:</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --scanners none --image-config-scanners config alpine:3.17.0
-</code></pre></div>
 <details>
 <summary>Result</summary>
 
