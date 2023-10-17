@@ -383,6 +383,11 @@ func TestFilter(t *testing.T) {
 					{
 						Target: "Dockerfile",
 						Class:  types.ClassConfig,
+						MisconfSummary: &types.MisconfSummary{
+							Successes:  0,
+							Failures:   0,
+							Exceptions: 1,
+						},
 					},
 					{
 						Secrets: []ftypes.SecretFinding{
