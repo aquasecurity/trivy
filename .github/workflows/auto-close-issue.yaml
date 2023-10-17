@@ -2,7 +2,9 @@ name: Auto-close issues
 
 on:
   issues:
-    types: [opened]
+    types:
+    - opened
+    - transferred
 
 jobs:
   close_issue:
