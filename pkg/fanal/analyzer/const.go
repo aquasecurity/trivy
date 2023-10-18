@@ -160,6 +160,7 @@ var (
 		TypeGemSpec,
 		TypeCargo,
 		TypeComposer,
+		TypeComposerInstalled,
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
