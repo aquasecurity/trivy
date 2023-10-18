@@ -91,8 +91,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
 									Severity:    dtypes.SeverityMedium.String(),
 									VendorSeverity: dtypes.VendorSeverity{
-										vulnerability.NVD:        dtypes.SeverityMedium,
-										vulnerability.RedHatOVAL: dtypes.SeverityMedium,
+										vulnerability.NVD: dtypes.SeverityMedium,
 									},
 									CweIDs: []string{"CWE-416"},
 									CVSS: dtypes.VendorCVSS{
@@ -101,10 +100,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
 											V2Score:  4.3,
 											V3Score:  5.5,
-										},
-										vulnerability.RedHatOVAL: dtypes.CVSS{
-											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-											V3Score:  5.3,
 										},
 									},
 									PublishedDate:    lo.ToPtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
@@ -510,10 +505,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 									Name: string(vulnerability.RedHatOVAL),
 									URL:  "",
 								},
-								Score:    lo.ToPtr(5.3),
 								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv3,
-								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
 							},
 						},
 						CWEs: &[]int{
@@ -522,6 +514,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
 						Published:   "2018-12-31T19:29:00+00:00",
 						Updated:     "2019-10-31T01:15:00+00:00",
+						Advisories: &[]cdx.Advisory{
+							{
+								URL: "https://avd.aquasec.com/nvd/cve-2018-20623",
+							},
+						},
 						Affects: &[]cdx.Affects{
 							{
 								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
@@ -992,6 +989,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
 						Advisories: &[]cdx.Advisory{
 							{
+								URL: "https://avd.aquasec.com/nvd/cve-2022-23633",
+							},
+							{
 								URL: "http://www.openwall.com/lists/oss-security/2022/02/11/5",
 							},
 							{
@@ -1384,6 +1384,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						CWEs:        lo.ToPtr([]int{94}),
 						Description: "The DBCPConnectionPool and HikariCPConnectionPool Controller Services in Apache NiFi 0.0.2 through 1.21.0...",
 						Advisories: &[]cdx.Advisory{
+							{
+								URL: "https://avd.aquasec.com/nvd/cve-2023-34468",
+							},
 							{
 								URL: "http://www.openwall.com/lists/oss-security/2023/06/12/3",
 							},
