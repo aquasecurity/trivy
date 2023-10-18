@@ -36,13 +36,16 @@ func TestAwsCommandRun(t *testing.T) {
 		},
 		{
 			name: "fail without creds",
+			envs: map[string]string{
+				"AWS_PROFILE": "non-existent-profile",
+			},
 			options: flag.Options{
 				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region: "us-east-1",
 				},
 			},
-			wantErr: "failed to retrieve credentials",
+			wantErr: "non-existent-profile",
 		},
 	}
 
@@ -57,7 +60,6 @@ func TestAwsCommandRun(t *testing.T) {
 			tt.options.AWSOptions.Endpoint = addr
 			tt.options.GlobalOptions.Timeout = time.Minute
 
-			t.Setenv("AWS_PROFILE", "non-existent-profile")
 			for k, v := range tt.envs {
 				t.Setenv(k, v)
 			}
