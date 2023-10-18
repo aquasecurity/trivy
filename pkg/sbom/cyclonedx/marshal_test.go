@@ -91,7 +91,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
 									Severity:    dtypes.SeverityMedium.String(),
 									VendorSeverity: dtypes.VendorSeverity{
-										vulnerability.NVD: dtypes.SeverityMedium,
+										vulnerability.NVD:        dtypes.SeverityMedium,
+										vulnerability.RedHatOVAL: dtypes.SeverityMedium,
 									},
 									CweIDs: []string{"CWE-416"},
 									CVSS: dtypes.VendorCVSS{
@@ -100,6 +101,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
 											V2Score:  4.3,
 											V3Score:  5.5,
+										},
+										vulnerability.RedHatOVAL: dtypes.CVSS{
+											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+											V3Score:  5.3,
 										},
 									},
 									PublishedDate:    lo.ToPtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
@@ -505,7 +510,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 									Name: string(vulnerability.RedHatOVAL),
 									URL:  "",
 								},
+								Score:    lo.ToPtr(5.3),
 								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv3,
+								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
 							},
 						},
 						CWEs: &[]int{

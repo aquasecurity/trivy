@@ -384,20 +384,6 @@ func cwes(cweIDs []string) *[]int {
 
 func cdxRatings(vuln types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
 	rates := make([]cdx.VulnerabilityRating, 0) // nolint:gocritic // To export an empty array in JSON
-	if vuln.VulnerabilityID == "CVE-2022-0563" {
-		fmt.Println()
-	}
-	//
-	if _, ok := vuln.VendorSeverity[vuln.SeveritySource]; !ok {
-		severity, _ := dtypes.NewSeverity(vuln.Severity)
-		rate := cdx.VulnerabilityRating{
-			Source: &cdx.Source{
-				Name: string(vuln.SeveritySource),
-			},
-			Severity: toCDXSeverity(severity),
-		}
-		rates = append(rates, rate)
-	}
 	for sourceID, severity := range vuln.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
 		if cvss, ok := vuln.CVSS[sourceID]; ok {
