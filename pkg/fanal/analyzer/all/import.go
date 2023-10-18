@@ -23,6 +23,7 @@ import (
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/nodejs/pnpm"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/nodejs/yarn"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/php/composer"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/php/installed"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/python/packaging"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/python/pip"
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/python/pipenv"
