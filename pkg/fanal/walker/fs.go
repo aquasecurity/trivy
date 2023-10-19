@@ -1,6 +1,7 @@
 package walker
 
 import (
+	"errors"
 	"golang.org/x/xerrors"
 	"io/fs"
 	"os"
@@ -19,8 +20,12 @@ type FS struct {
 func NewFS(skipFiles, skipDirs []string, opt Option) FS {
 	if opt.ErrCallback == nil {
 		opt.ErrCallback = func(pathname string, err error) error {
+			switch {
+			// Unwrap fs.SkipDir error
+			case errors.Is(err, fs.SkipDir):
+				return fs.SkipDir
 			// ignore permission errors
-			if os.IsPermission(err) {
+			case os.IsPermission(err):
 				return nil
 			}
 			// halt traversal on any other error
@@ -37,7 +42,21 @@ func NewFS(skipFiles, skipDirs []string, opt Option) FS {
 // Walk walks the file tree rooted at root, calling WalkDirFunc for each file or
 // directory in the tree, including root, but a directory to be ignored will be skipped.
 func (w FS) Walk(root string, fn WalkFunc) error {
+	walkDir := w.walkDirFunc(root, fn)
 	err := filepath.WalkDir(root, func(filePath string, d fs.DirEntry, err error) error {
+		if walkErr := walkDir(filePath, d, err); walkErr != nil {
+			return w.opt.ErrCallback(filePath, walkErr)
+		}
+		return nil
+	})
+	if err != nil {
+		return xerrors.Errorf("walk dir error: %w", err)
+	}
+	return nil
+}
+
+func (w FS) walkDirFunc(root string, fn WalkFunc) fs.WalkDirFunc {
+	return func(filePath string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return w.opt.ErrCallback(filePath, err)
 		}
@@ -71,8 +90,7 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 			return xerrors.Errorf("failed to analyze file: %w", err)
 		}
 		return nil
-	})
-	return err
+	}
 }
 
 // fileOpener returns a function opening a file.
