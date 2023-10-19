@@ -164,15 +164,15 @@ func parsePubSpecYaml(filePath string) (string, []string, error) {
 	if err = yaml.NewDecoder(f).Decode(&spec); err != nil {
 		return "", nil, xerrors.Errorf("unable to decode %q: %w", filePath, err)
 	}
-	if len(spec.Dependencies) > 0 {
-		// pubspec.yaml uses version ranges
-		// save only dependencies names
-		dependsOn := lo.MapToSlice(spec.Dependencies, func(key string, _ interface{}) string {
-			return key
-		})
-		return utils.PackageID(spec.Name, spec.Version), dependsOn, nil
+	if len(spec.Dependencies) == 0 {
+		return "", nil, nil
 	}
-	return "", nil, nil
+	// pubspec.yaml uses version ranges
+	// save only dependencies names
+	dependsOn := lo.MapToSlice(spec.Dependencies, func(key string, _ interface{}) string {
+		return key
+	})
+	return utils.PackageID(spec.Name, spec.Version), dependsOn, nil
 }
 
 func (a pubSpecLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
