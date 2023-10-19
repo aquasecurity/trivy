@@ -47,7 +47,8 @@ const (
 	TypeCargo      Type = "cargo"
 
 	// PHP
-	TypeComposer Type = "composer"
+	TypeComposer          Type = "composer"
+	TypeComposerInstalled Type = "composer-installed"
 
 	// Java
 	TypeJar        Type = "jar"
@@ -159,6 +160,7 @@ var (
 		TypeGemSpec,
 		TypeCargo,
 		TypeComposer,
+		TypeComposerInstalled,
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
@@ -198,6 +200,7 @@ var (
 		TypeCocoaPods,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeComposer,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
@@ -209,6 +212,7 @@ var (
 		TypeGoBinary,
 		TypeJar,
 		TypeRustBinary,
+		TypeComposerInstalled,
 	}
 
 	// TypeConfigFiles has all config file analyzers
