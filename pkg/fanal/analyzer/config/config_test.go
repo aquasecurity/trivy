@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/defsec/pkg/detection"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
@@ -46,7 +45,7 @@ func TestAnalyzer_PostAnalyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Misconfigurations: []types.Misconfiguration{
 					{
-						FileType: string(detection.FileTypeDockerfile),
+						FileType: types.Dockerfile,
 						FilePath: "Dockerfile",
 						Successes: types.MisconfResults{
 							types.MisconfResult{

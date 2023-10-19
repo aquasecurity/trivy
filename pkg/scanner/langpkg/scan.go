@@ -12,12 +12,13 @@ import (
 )
 
 var (
-	PkgTargets = map[string]string{
-		ftypes.PythonPkg: "Python",
-		ftypes.CondaPkg:  "Conda",
-		ftypes.GemSpec:   "Ruby",
-		ftypes.NodePkg:   "Node.js",
-		ftypes.Jar:       "Java",
+	PkgTargets = map[ftypes.LangType]string{
+		ftypes.PythonPkg:   "Python",
+		ftypes.CondaPkg:    "Conda",
+		ftypes.GemSpec:     "Ruby",
+		ftypes.NodePkg:     "Node.js",
+		ftypes.Jar:         "Java",
+		ftypes.K8sUpstream: "Kubernetes",
 	}
 )
 
@@ -62,7 +63,7 @@ func (s *scanner) Scan(detail ftypes.ArtifactDetail, _ types.ScanOptions) (types
 	}
 
 	var results types.Results
-	printedTypes := map[string]struct{}{}
+	printedTypes := make(map[ftypes.LangType]struct{})
 	for _, app := range apps {
 		if len(app.Libraries) == 0 {
 			continue

@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -65,7 +65,7 @@ func newRunner(flagOpts flag.Options, cluster string) *runner {
 	}
 }
 
-func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error {
+func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) error {
 	runner, err := cmd.NewRunner(ctx, r.flagOpts)
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {

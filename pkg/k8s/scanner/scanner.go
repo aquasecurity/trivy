@@ -122,7 +122,10 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 
 	onResult := func(result scanResult) error {
 		resources = append(resources, result.vulns...)
-		resources = append(resources, result.misconfig)
+		// don't add empty misconfig results to resources slice to avoid an empty resource
+		if result.misconfig.Results != nil {
+			resources = append(resources, result.misconfig)
+		}
 		return nil
 	}
 
@@ -174,7 +177,7 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifa
 	s.opts.Target = configFile
 
 	configReport, err := s.runner.ScanFilesystem(ctx, s.opts)
-	//remove config file after scanning
+	// remove config file after scanning
 	removeFile(configFile)
 	if err != nil {
 		log.Logger.Debugf("failed to scan config %s/%s: %s", artifact.Kind, artifact.Name, err)
@@ -203,8 +206,19 @@ const (
 )
 
 func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Component, error) {
-	coreComponents := make([]*core.Component, 0)
+	var coreComponents []*core.Component
 	var cInfo *core.Component
+
+	// Find the first node name to identify AKS cluster
+	var nodeName string
+	for _, artifact := range allArtifact {
+		if artifact.Kind != nodeInfo {
+			continue
+		}
+		nodeName = artifact.Name
+		break
+	}
+
 	for _, artifact := range allArtifact {
 		switch artifact.Kind {
 		case pod:
@@ -213,14 +227,14 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 			if err != nil {
 				return nil, err
 			}
-			imageComponents := make([]*core.Component, 0)
+			var imageComponents []*core.Component
 			for _, c := range comp.Containers {
 				name := fmt.Sprintf("%s/%s", c.Registry, c.Repository)
 				cDigest := c.Digest
-				if strings.Index(c.Digest, string(digest.SHA256)) == -1 {
+				if !strings.Contains(c.Digest, string(digest.SHA256)) {
 					cDigest = fmt.Sprintf("%s:%s", string(digest.SHA256), cDigest)
 				}
-				version := sanitizedVersion(c.Version)
+				ver := sanitizedVersion(c.Version)
 
 				imagePURL, err := purl.NewPackageURL(purl.TypeOCI, types.Metadata{
 					RepoDigests: []string{
@@ -237,8 +251,14 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 					Name:       name,
 					Version:    cDigest,
 					Properties: []core.Property{
-						{Name: cyc.PropertyPkgID, Value: fmt.Sprintf("%s:%s", name, version)},
-						{Name: cyc.PropertyPkgType, Value: oci},
+						{
+							Name:  cyc.PropertyPkgID,
+							Value: fmt.Sprintf("%s:%s", name, ver),
+						},
+						{
+							Name:  cyc.PropertyPkgType,
+							Value: oci,
+						},
 					},
 				})
 			}
@@ -248,6 +268,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 				Type:       cdx.ComponentTypeApplication,
 				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
 				Components: imageComponents,
+				PackageURL: generatePURL(comp.Name, comp.Version, nodeName),
 			}
 			coreComponents = append(coreComponents, rootComponent)
 		case nodeInfo:
@@ -263,7 +284,11 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 			if err != nil {
 				return nil, err
 			}
-			cInfo = &core.Component{Name: cf.Name, Version: cf.Version, Properties: toProperties(cf.Properties, k8sCoreComponentNamespace)}
+			cInfo = &core.Component{
+				Name:       cf.Name,
+				Version:    cf.Version,
+				Properties: toProperties(cf.Properties, k8sCoreComponentNamespace),
+			}
 		default:
 			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
 		}
@@ -274,12 +299,13 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 		Type:       cdx.ComponentTypePlatform,
 		Properties: cInfo.Properties,
 		Components: coreComponents,
+		PackageURL: generatePURL(cInfo.Name, cInfo.Version, nodeName),
 	}
 	return rootComponent, nil
 }
 
-func sanitizedVersion(version string) string {
-	return strings.TrimPrefix(version, "v")
+func sanitizedVersion(ver string) string {
+	return strings.TrimPrefix(ver, "v")
 }
 
 func osNameVersion(name string) (string, string) {
@@ -300,20 +326,20 @@ func osNameVersion(name string) (string, string) {
 }
 
 func runtimeNameVersion(name string) (string, string) {
-	parts := strings.Split(name, "://")
-	if len(parts) == 2 {
-		name := parts[0]
-		switch parts[0] {
-		case "cri-o":
-			name = "github.com/cri-o/cri-o"
-		case "containerd":
-			name = "github.com/containerd/containerd"
-		case "cri-dockerd":
-			name = "github.com/Mirantis/cri-dockerd"
-		}
-		return name, parts[1]
+	runtime, ver, ok := strings.Cut(name, "://")
+	if !ok {
+		return "", ""
 	}
-	return "", ""
+
+	switch runtime {
+	case "cri-o":
+		name = "github.com/cri-o/cri-o"
+	case "containerd":
+		name = "github.com/containerd/containerd"
+	case "cri-dockerd":
+		name = "github.com/Mirantis/cri-dockerd"
+	}
+	return name, ver
 }
 
 func nodeComponent(nf bom.NodeInfo) *core.Component {
@@ -335,16 +361,28 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 				Name:    osName,
 				Version: osVersion,
 				Properties: []core.Property{
-					{Name: "Class", Value: types.ClassOSPkg},
-					{Name: "Type", Value: osName},
+					{
+						Name:  "Class",
+						Value: string(types.ClassOSPkg),
+					},
+					{
+						Name:  "Type",
+						Value: osName,
+					},
 				},
 			},
 			{
 				Type: cdx.ComponentTypeApplication,
 				Name: nodeCoreComponents,
 				Properties: []core.Property{
-					{Name: "Class", Value: types.ClassLangPkg},
-					{Name: "Type", Value: golang},
+					{
+						Name:  "Class",
+						Value: string(types.ClassLangPkg),
+					},
+					{
+						Name:  "Type",
+						Value: golang,
+					},
 				},
 				Components: []*core.Component{
 					{
@@ -352,20 +390,34 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 						Name:    kubelet,
 						Version: kubeletVersion,
 						Properties: []core.Property{
-							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
-							{Name: k8sComponentName, Value: kubelet, Namespace: k8sCoreComponentNamespace},
+							{
+								Name:      k8sComponentType,
+								Value:     k8sComponentNode,
+								Namespace: k8sCoreComponentNamespace,
+							},
+							{
+								Name:      k8sComponentName,
+								Value:     kubelet,
+								Namespace: k8sCoreComponentNamespace,
+							},
 						},
-						PackageURL: &purl.PackageURL{
-							PackageURL: *packageurl.NewPackageURL(golang, "", kubelet, kubeletVersion, packageurl.Qualifiers{}, ""),
-						},
+						PackageURL: generatePURL(kubelet, kubeletVersion, nf.NodeName),
 					},
 					{
 						Type:    cdx.ComponentTypeApplication,
 						Name:    runtimeName,
 						Version: runtimeVersion,
 						Properties: []core.Property{
-							{Name: k8sComponentType, Value: k8sComponentNode, Namespace: k8sCoreComponentNamespace},
-							{Name: k8sComponentName, Value: runtimeName, Namespace: k8sCoreComponentNamespace},
+							{
+								Name:      k8sComponentType,
+								Value:     k8sComponentNode,
+								Namespace: k8sCoreComponentNamespace,
+							},
+							{
+								Name:      k8sComponentName,
+								Value:     runtimeName,
+								Namespace: k8sCoreComponentNamespace,
+							},
 						},
 						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
@@ -389,4 +441,28 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 		return properties[i].Name < properties[j].Name
 	})
 	return properties
+}
+
+func generatePURL(name, ver, nodeName string) *purl.PackageURL {
+	// Identify k8s distribution. An empty namespace means upstream.
+	var namespace string
+	switch {
+	case strings.Contains(ver, "eks"):
+		namespace = purl.NamespaceEKS
+	case strings.Contains(ver, "gke"):
+		namespace = purl.NamespaceGKE
+	case strings.Contains(ver, "rke2"):
+		namespace = purl.NamespaceRKE
+	case strings.Contains(ver, "hotfix"):
+		if !strings.Contains(nodeName, "aks") {
+			// Unknown k8s distribution
+			return nil
+		}
+		namespace = purl.NamespaceAKS
+	case strings.Contains(nodeName, "ocp"):
+		namespace = purl.NamespaceOCP
+	}
+	return &purl.PackageURL{
+		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, ver, nil, ""),
+	}
 }

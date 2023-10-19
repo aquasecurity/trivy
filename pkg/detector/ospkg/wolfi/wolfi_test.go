@@ -4,17 +4,16 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestScanner_Detect(t *testing.T) {
@@ -30,8 +29,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/wolfi.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -69,8 +71,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "contain rc",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain rc",
+			fixtures: []string{
+				"testdata/fixtures/wolfi.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -96,8 +101,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "contain pre",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain pre",
+			fixtures: []string{
+				"testdata/fixtures/wolfi.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -129,8 +137,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -144,11 +155,14 @@ func TestScanner_Detect(t *testing.T) {
 			wantErr: "failed to get Wolfi advisories",
 		},
 		{
-			name:     "No src name",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "No src name",
+			fixtures: []string{
+				"testdata/fixtures/wolfi.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				repo: &ftypes.Repository{
-					Family:  os.Wolfi,
+					Family:  ftypes.Wolfi,
 					Release: "3.10",
 				},
 				pkgs: []ftypes.Package{

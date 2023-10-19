@@ -23,7 +23,7 @@ func TestDriver_Detect(t *testing.T) {
 	tests := []struct {
 		name     string
 		fixtures []string
-		libType  string
+		libType  ftypes.LangType
 		args     args
 		want     []types.DetectedVulnerability
 		wantErr  string

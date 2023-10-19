@@ -47,7 +47,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Applications: []ftypes.Application{
 					{
-						Type:     "composer",
+						Type:     ftypes.Composer,
 						FilePath: "app/composer/composer.lock",
 						Libraries: ftypes.Packages{
 							{
@@ -70,7 +70,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type:     "gobinary",
+						Type:     ftypes.GoBinary,
 						FilePath: "app/gobinary/gobinary",
 						Libraries: ftypes.Packages{
 							{
@@ -84,21 +84,21 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type: "gradle",
+						Type:     ftypes.Gradle,
+						FilePath: "app/gradle/target/gradle.lockfile",
 						Libraries: ftypes.Packages{
 							{
 								Name:    "com.example:example",
-								Ref:     "pkg:gradle/com.example/example@0.0.1",
+								Ref:     "pkg:maven/com.example/example@0.0.1",
 								Version: "0.0.1",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
-								FilePath: "app/gradle/target/gradle.lockfile",
 							},
 						},
 					},
 					{
-						Type: "jar",
+						Type: ftypes.Jar,
 						Libraries: ftypes.Packages{
 							{
 								Name:    "org.codehaus.mojo:child-project",
@@ -112,7 +112,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type:     "node-pkg",
+						Type:     ftypes.NodePkg,
 						FilePath: "",
 						Libraries: ftypes.Packages{
 							{
@@ -124,6 +124,72 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
 								FilePath: "app/app/package.json",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path KBOM",
+			inputFile: "testdata/happy/kbom.json",
+			want: types.SBOM{
+				OS: ftypes.OS{
+					Family: "ubuntu",
+					Name:   "22.04.2",
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						FilePath: "",
+					},
+				},
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.GoBinary,
+						Libraries: ftypes.Packages{
+							{
+								Name:    "docker",
+								Version: "24.0.4",
+								Ref:     "pkg:golang/docker@24.0.4",
+							},
+						},
+					},
+					{
+						Type:     "golang",
+						FilePath: "node-core-components",
+					},
+					{
+						Type: ftypes.K8sUpstream,
+						Libraries: ftypes.Packages{
+							{
+								Name:    "k8s.io/apiserver",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
+							},
+							{
+								Name:    "k8s.io/controller-manager",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kube-proxy",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kube-scheduler",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kubelet",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kubernetes",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
 							},
 						},
 					},

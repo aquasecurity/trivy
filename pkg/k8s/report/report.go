@@ -56,10 +56,9 @@ type Resource struct {
 	Namespace string `json:",omitempty"`
 	Kind      string
 	Name      string
-	// TODO(josedonizetti): should add metadata? per report? per Result?
-	// Metadata  Metadata `json:",omitempty"`
-	Results types.Results `json:",omitempty"`
-	Error   string        `json:",omitempty"`
+	Metadata  types.Metadata `json:",omitempty"`
+	Results   types.Results  `json:",omitempty"`
+	Error     string         `json:",omitempty"`
 
 	// original report
 	Report types.Report `json:"-"`
@@ -86,7 +85,7 @@ func (r Report) consolidate() ConsolidatedReport {
 	}
 
 	index := make(map[string]Resource)
-	vulnerabilities := make([]Resource, 0)
+	var vulnerabilities []Resource
 	for _, m := range r.Resources {
 		if vulnerabilitiesOrSecretResource(m) {
 			vulnerabilities = append(vulnerabilities, m)
@@ -103,6 +102,7 @@ func (r Report) consolidate() ConsolidatedReport {
 				Namespace: res.Namespace,
 				Kind:      res.Kind,
 				Name:      res.Name,
+				Metadata:  res.Metadata,
 				Results:   append(res.Results, v.Results...),
 				Error:     res.Error,
 			}
@@ -134,11 +134,7 @@ type reports struct {
 // - infra checks report
 func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, components []string) []reports {
 
-	workloadMisconfig := make([]Resource, 0)
-	infraMisconfig := make([]Resource, 0)
-	rbacAssessment := make([]Resource, 0)
-	workloadVulnerabilities := make([]Resource, 0)
-	workloadResource := make([]Resource, 0)
+	var workloadMisconfig, infraMisconfig, rbacAssessment, workloadVulnerabilities, workloadResource []Resource
 	for _, resource := range k8sReport.Resources {
 		if vulnerabilitiesOrSecretResource(resource) {
 			workloadVulnerabilities = append(workloadVulnerabilities, resource)
@@ -166,7 +162,7 @@ func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 		}
 	}
 
-	r := make([]reports, 0)
+	var r []reports
 	workloadResource = append(workloadResource, workloadVulnerabilities...)
 	workloadResource = append(workloadResource, workloadMisconfig...)
 	if shouldAddWorkloadReport(scanners) {
@@ -241,6 +237,7 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 		Namespace: artifact.Namespace,
 		Kind:      artifact.Kind,
 		Name:      artifact.Name,
+		Metadata:  report.Metadata,
 		Results:   results,
 		Report:    report,
 	}
@@ -269,8 +266,7 @@ func splitInfraAndWorkloadResources(misconfig Resource) (Resource, Resource) {
 	infraResults := make(types.Results, 0)
 
 	for _, result := range misconfig.Results {
-		workloadMisconfigs := make([]types.DetectedMisconfiguration, 0)
-		infraMisconfigs := make([]types.DetectedMisconfiguration, 0)
+		var workloadMisconfigs, infraMisconfigs []types.DetectedMisconfiguration
 
 		for _, m := range result.Misconfigurations {
 			if strings.HasPrefix(m.ID, "KCV") {
@@ -304,6 +300,7 @@ func copyResource(r Resource) Resource {
 		Namespace: r.Namespace,
 		Kind:      r.Kind,
 		Name:      r.Name,
+		Metadata:  r.Metadata,
 		Error:     r.Error,
 		Report:    r.Report,
 	}

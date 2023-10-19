@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	ebsfile "github.com/masahiro331/go-ebs-file"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -17,7 +18,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/misconf"
-	ebsfile "github.com/masahiro331/go-ebs-file"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/amazonlinux"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm"

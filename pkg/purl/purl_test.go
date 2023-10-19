@@ -9,17 +9,15 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestNewPackageURL(t *testing.T) {
-
 	testCases := []struct {
 		name     string
-		typ      string
+		typ      ftypes.TargetType
 		pkg      ftypes.Package
 		metadata types.Metadata
 		want     purl.PackageURL
@@ -182,13 +180,34 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "golang package with a local path",
+			typ:  ftypes.GoModule,
+			pkg: ftypes.Package{
+				Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
+				Version: "(devel)",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      "",
+					Namespace: "",
+					Name:      "",
+					Version:   "",
+				},
+			},
+		},
+		{
 			name: "hex package",
 			typ:  ftypes.Hex,
 			pkg: ftypes.Package{
-				ID:        "bunt@0.2.0",
-				Name:      "bunt",
-				Version:   "0.2.0",
-				Locations: []ftypes.Location{{StartLine: 2, EndLine: 2}},
+				ID:      "bunt@0.2.0",
+				Name:    "bunt",
+				Version: "0.2.0",
+				Locations: []ftypes.Location{
+					{
+						StartLine: 2,
+						EndLine:   2,
+					},
+				},
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
@@ -248,8 +267,24 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "rust binary",
+			typ:  ftypes.RustBinary,
+			pkg: ftypes.Package{
+				ID:      "abomination@0.7.3",
+				Name:    "abomination",
+				Version: "0.7.3",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeCargo,
+					Name:    "abomination",
+					Version: "0.7.3",
+				},
+			},
+		},
+		{
 			name: "os package",
-			typ:  os.RedHat,
+			typ:  ftypes.RedHat,
 			pkg: ftypes.Package{
 				Name:            "acl",
 				Version:         "2.2.53",
@@ -265,7 +300,7 @@ func TestNewPackageURL(t *testing.T) {
 
 			metadata: types.Metadata{
 				OS: &ftypes.OS{
-					Family: os.RedHat,
+					Family: ftypes.RedHat,
 					Name:   "8",
 				},
 			},
@@ -679,6 +714,50 @@ func TestPackage(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.pkgURL.Package()
 			assert.Equal(t, tt.wantPkg, got)
+		})
+	}
+}
+
+func TestPackageURL_LangType(t *testing.T) {
+	tests := []struct {
+		name string
+		purl packageurl.PackageURL
+		want ftypes.LangType
+	}{
+		{
+			name: "maven",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.0.4.RELEASE",
+			},
+			want: ftypes.Jar,
+		},
+		{
+			name: "k8s",
+			purl: packageurl.PackageURL{
+				Type:    purl.TypeK8s,
+				Name:    "kubelet",
+				Version: "1.21.1",
+			},
+			want: ftypes.K8sUpstream,
+		},
+		{
+			name: "eks",
+			purl: packageurl.PackageURL{
+				Type:      purl.TypeK8s,
+				Namespace: purl.NamespaceEKS,
+				Name:      "kubelet",
+				Version:   "1.21.1",
+			},
+			want: ftypes.EKS,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &purl.PackageURL{PackageURL: tt.purl}
+			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
 		})
 	}
 }

@@ -43,7 +43,7 @@ var (
 	}
 
 	acceptedFileNames = []string{
-		"license", "licence", "copyright", // nolint: misspell
+		"license", "licence", "copyright",
 	}
 )
 

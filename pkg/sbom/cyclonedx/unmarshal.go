@@ -8,8 +8,6 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
-
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
@@ -19,6 +17,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -129,7 +128,7 @@ func (c *BOM) parseSBOM(bom *cdx.BOM) error {
 		if _, ok := seen[ref]; ok {
 			continue
 		}
-		if component.Type == cdx.ComponentTypeLibrary {
+		if component.Type == cdx.ComponentTypeLibrary || component.PackageURL != "" {
 			libComponents = append(libComponents, component)
 		}
 
@@ -164,7 +163,7 @@ func (c *BOM) parseSBOM(bom *cdx.BOM) error {
 }
 
 func (c *BOM) parseOSPkgs(component cdx.Component, seen map[string]struct{}) (ftypes.PackageInfo, error) {
-	components := c.walkDependencies(component.BOMRef, map[string]struct{}{})
+	components := c.walkDependencies(component.BOMRef, make(map[string]struct{}))
 	pkgs, err := parsePkgs(components, seen)
 	if err != nil {
 		return ftypes.PackageInfo{}, xerrors.Errorf("failed to parse os package: %w", err)
@@ -176,7 +175,7 @@ func (c *BOM) parseOSPkgs(component cdx.Component, seen map[string]struct{}) (ft
 }
 
 func (c *BOM) parseLangPkgs(component cdx.Component, seen map[string]struct{}) (*ftypes.Application, error) {
-	components := c.walkDependencies(component.BOMRef, map[string]struct{}{})
+	components := c.walkDependencies(component.BOMRef, make(map[string]struct{}))
 	components = lo.UniqBy(components, func(c cdx.Component) string {
 		return c.BOMRef
 	})
@@ -195,12 +194,16 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 	var pkgs []ftypes.Package
 	for _, com := range components {
 		seen[com.BOMRef] = struct{}{}
-		_, _, pkg, err := toPackage(com)
-		if err != nil {
-			if errors.Is(err, ErrPURLEmpty) {
-				continue
-			}
+		pkgURL, pkg, err := toPackage(com)
+		if errors.Is(err, ErrPURLEmpty) {
+			continue
+		} else if err != nil {
 			return nil, xerrors.Errorf("failed to parse language package: %w", err)
+		}
+
+		// Skip unsupported package types
+		if pkgURL.Class() == types.ClassUnknown {
+			continue
 		}
 		pkgs = append(pkgs, *pkg)
 	}
@@ -277,21 +280,22 @@ func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 }
 
 func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Application, error) {
-	osPkgMap := map[string]ftypes.Packages{}
-	langPkgMap := map[string]ftypes.Packages{}
+	osPkgMap := make(map[string]ftypes.Packages)
+	langPkgMap := make(map[ftypes.LangType]ftypes.Packages)
 	for _, lib := range libs {
-		isOSPkg, pkgType, pkg, err := toPackage(lib)
-		if err != nil {
-			if errors.Is(err, ErrPURLEmpty) {
-				continue
-			}
+		pkgURL, pkg, err := toPackage(lib)
+		if errors.Is(err, ErrPURLEmpty) {
+			continue
+		} else if err != nil {
 			return nil, nil, xerrors.Errorf("failed to parse the component: %w", err)
 		}
 
-		if isOSPkg {
-			osPkgMap[pkgType] = append(osPkgMap[pkgType], *pkg)
-		} else {
-			langPkgMap[pkgType] = append(langPkgMap[pkgType], *pkg)
+		switch pkgURL.Class() {
+		case types.ClassOSPkg:
+			osPkgMap[pkgURL.Type] = append(osPkgMap[pkgURL.Type], *pkg)
+		case types.ClassLangPkg:
+			langType := pkgURL.LangType()
+			langPkgMap[langType] = append(langPkgMap[langType], *pkg)
 		}
 	}
 
@@ -321,32 +325,32 @@ func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Applica
 
 func toOS(component cdx.Component) ftypes.OS {
 	return ftypes.OS{
-		Family: component.Name,
+		Family: ftypes.OSType(component.Name),
 		Name:   component.Version,
 	}
 }
 
 func toApplication(component cdx.Component) *ftypes.Application {
 	return &ftypes.Application{
-		Type:     core.LookupProperty(component.Properties, PropertyType),
+		Type:     ftypes.LangType(core.LookupProperty(component.Properties, PropertyType)),
 		FilePath: component.Name,
 	}
 }
 
-func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
+func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, error) {
 	if component.PackageURL == "" {
 		log.Logger.Warnf("Skip the component (BOM-Ref: %s) as the PURL is empty", component.BOMRef)
-		return false, "", nil, ErrPURLEmpty
+		return nil, nil, ErrPURLEmpty
 	}
 	p, err := purl.FromString(component.PackageURL)
 	if err != nil {
-		return false, "", nil, xerrors.Errorf("failed to parse purl: %w", err)
+		return nil, nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
 
 	pkg := p.Package()
 	// Trivy's marshall loses case-sensitivity in PURL used in SBOM for packages (Go, Npm, PyPI),
 	// so we have to use an original package name
-	pkg.Name = getPackageName(p.Type, component)
+	pkg.Name = getPackageName(p.Type, pkg.Name, component)
 	pkg.Ref = component.BOMRef
 
 	for _, license := range lo.FromPtr(component.Licenses) {
@@ -366,7 +370,7 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 		case PropertySrcEpoch:
 			pkg.SrcEpoch, err = strconv.Atoi(value)
 			if err != nil {
-				return false, "", nil, xerrors.Errorf("failed to parse source epoch: %w", err)
+				return nil, nil, xerrors.Errorf("failed to parse source epoch: %w", err)
 			}
 		case PropertyModularitylabel:
 			pkg.Modularitylabel = value
@@ -377,8 +381,7 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 		}
 	}
 
-	isOSPkg := p.IsOSPkg()
-	if isOSPkg {
+	if p.Class() == types.ClassOSPkg {
 		// Fill source package information for components in third-party SBOMs .
 		if pkg.SrcName == "" {
 			pkg.SrcName = pkg.Name
@@ -394,7 +397,7 @@ func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 		}
 	}
 
-	return isOSPkg, p.PackageType(), pkg, nil
+	return p, pkg, nil
 }
 
 func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
@@ -408,10 +411,15 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 	}
 }
 
-func getPackageName(typ string, component cdx.Component) string {
-	// Jar uses `Group` field for `GroupID`
-	if typ == packageurl.TypeMaven && component.Group != "" {
-		return fmt.Sprintf("%s:%s", component.Group, component.Name)
+func getPackageName(typ, pkgNameFromPurl string, component cdx.Component) string {
+	if typ == packageurl.TypeMaven {
+		// Jar uses `Group` field for `GroupID`
+		if component.Group != "" {
+			return fmt.Sprintf("%s:%s", component.Group, component.Name)
+		} else {
+			// use name derived from purl if `Group` doesn't exist
+			return pkgNameFromPurl
+		}
 	}
 	return component.Name
 }

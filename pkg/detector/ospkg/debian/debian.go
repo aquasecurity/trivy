@@ -1,7 +1,6 @@
 package debian
 
 import (
-	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-deb-version"
@@ -11,6 +10,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -47,9 +47,9 @@ type options struct {
 
 type option func(*options)
 
-func WithClock(clock clock.Clock) option {
+func WithClock(c clock.Clock) option {
 	return func(opts *options) {
-		opts.clock = clock
+		opts.clock = c
 	}
 }
 
@@ -78,9 +78,7 @@ func NewScanner(opts ...option) *Scanner {
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Debian vulnerabilities...")
 
-	if strings.Count(osVer, ".") > 0 {
-		osVer = osVer[:strings.Index(osVer, ".")]
-	}
+	osVer = osver.Major(osVer)
 	log.Logger.Debugf("debian: os version: %s", osVer)
 	log.Logger.Debugf("debian: the number of packages: %d", len(pkgs))
 
@@ -141,16 +139,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	return vulns, nil
 }
 
-// IsSupportedVersion checks is OSFamily can be scanned using Debian
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	if strings.Count(osVer, ".") > 0 {
-		osVer = osVer[:strings.Index(osVer, ".")]
-	}
-
-	eol, ok := eolDates[osVer]
-	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
-	}
-	return s.clock.Now().Before(eol)
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(s.clock, eolDates, osFamily, osver.Major(osVer))
 }

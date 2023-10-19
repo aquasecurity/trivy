@@ -27,13 +27,18 @@ $ ./trivy -h
 You must pass the linter checks:
 
 ```shell
-$ mage lint
+$ mage lint:run
 ```
 
 Additionally, you need to have run `go mod tidy`, so execute the following command as well:
 
 ```shell
 $ mage tidy
+```
+
+To autofix linters use the following command:
+```shell
+$ mage lint:fix
 ```
 
 ### Unit tests

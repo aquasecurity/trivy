@@ -14,9 +14,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -25,6 +23,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 )
 
 // SuperSet binds dependencies for Local scan
@@ -45,10 +46,10 @@ type Scanner struct {
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(applier applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
+func NewScanner(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
 	vulnClient vulnerability.Client) Scanner {
 	return Scanner{
-		applier:        applier,
+		applier:        a,
 		osPkgScanner:   osPkgScanner,
 		langPkgScanner: langPkgScanner,
 		vulnClient:     vulnClient,
@@ -372,7 +373,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		res.References = append(res.References, primaryURL)
 	}
 
-	if len(primaryURL) == 0 && len(res.References) > 0 {
+	if primaryURL == "" && len(res.References) > 0 {
 		primaryURL = res.References[0]
 	}
 

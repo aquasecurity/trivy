@@ -4,13 +4,12 @@ import (
 	"context"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -33,7 +32,7 @@ func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster 
 		trivyk = trivyk.Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
 	}
 
-	if len(name) == 0 { // pods or configmaps etc
+	if name == "" { // pods or configmaps etc
 		if err = validateReportArguments(opts); err != nil {
 			return err
 		}

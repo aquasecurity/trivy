@@ -2,15 +2,16 @@ package dpkg
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"os"
 	"path/filepath"
 	"sort"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 func Test_dpkgAnalyzer_Analyze(t *testing.T) {
@@ -1483,6 +1484,11 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 			name:     "status dir",
 			filePath: "var/lib/dpkg/status.d/gcc",
 			want:     true,
+		},
+		{
+			name:     "*.md5sums file in status dir",
+			filePath: "var/lib/dpkg/status.d/base-files.md5sums",
+			want:     false,
 		},
 		{
 			name:     "list file",

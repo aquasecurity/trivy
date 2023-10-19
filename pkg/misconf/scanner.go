@@ -2,7 +2,6 @@ package misconf
 
 import (
 	"context"
-	_ "embed"
 	"errors"
 	"fmt"
 	"io"
@@ -30,9 +29,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+
+	_ "embed"
 )
 
-var enabledDefsecTypes = map[detection.FileType]string{
+var enabledDefsecTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeAzureARM:       types.AzureARM,
 	detection.FileTypeCloudFormation: types.CloudFormation,
 	detection.FileTypeTerraform:      types.Terraform,
@@ -70,6 +71,7 @@ type Scanner struct {
 	fileType       detection.FileType
 	scanner        scanners.FSScanner
 	hasFilePattern bool
+	configFiles    []string
 }
 
 func NewAzureARMScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
@@ -107,6 +109,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 	}
 
 	var scanner scanners.FSScanner
+	var configFiles []string
 	switch t {
 	case detection.FileTypeAzureARM:
 		scanner = arm.New(opts...)
@@ -116,10 +119,12 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = dfscanner.NewScanner(opts...)
 	case detection.FileTypeHelm:
 		scanner = helm.New(opts...)
+		configFiles = append(opt.HelmFileValues, opt.HelmValueFiles...)
 	case detection.FileTypeKubernetes:
 		scanner = k8sscanner.NewScanner(opts...)
 	case detection.FileTypeTerraform:
 		scanner = tfscanner.New(opts...)
+		configFiles = opt.TerraformTFVars
 	case detection.FileTypeTerraformPlan:
 		scanner = tfpscanner.New(opts...)
 	}
@@ -128,6 +133,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		fileType:       t,
 		scanner:        scanner,
 		hasFilePattern: hasFilePattern(t, filePatterns),
+		configFiles:    configFiles,
 	}, nil
 }
 
@@ -140,10 +146,15 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, nil
 	}
 
+	if err := addConfigFilesToFS(newfs, s.configFiles); err != nil {
+		return nil, xerrors.Errorf("failed to add config files to fs: %w", err)
+	}
+
 	log.Logger.Debugf("Scanning %s files for misconfigurations...", s.scanner.Name())
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
-		if _, ok := err.(*cfparser.InvalidContentError); ok {
+		var invalidContentError *cfparser.InvalidContentError
+		if errors.As(err, &invalidContentError) {
 			log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", s.scanner.Name(), err)
 			return nil, nil
 		}
@@ -161,6 +172,30 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 	}
 
 	return misconfs, nil
+}
+
+func addConfigFilesToFS(fsys fs.FS, configFiles []string) error {
+	if len(configFiles) == 0 {
+		return nil
+	}
+
+	mfs, ok := fsys.(*mapfs.FS)
+	if !ok {
+		return xerrors.Errorf("type assertion error: %T is not a *mapfs.FS", fsys)
+	}
+	for _, configFile := range configFiles {
+		if _, err := os.Stat(configFile); err != nil {
+			return xerrors.Errorf("config file %q not found: %w", configFile, err)
+		}
+		if err := mfs.MkdirAll(filepath.Dir(configFile), os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
+			return xerrors.Errorf("mkdir error: %w", err)
+		}
+		if err := mfs.WriteFile(configFile, configFile); err != nil {
+			return xerrors.Errorf("write file error: %w", err)
+		}
+	}
+
+	return nil
 }
 
 func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
@@ -217,8 +252,10 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	if err != nil {
 		return nil, err
 	}
-	opts = append(opts, options.ScannerWithDataDirs(dataPaths...))
-	opts = append(opts, options.ScannerWithDataFilesystem(dataFS))
+	opts = append(opts,
+		options.ScannerWithDataDirs(dataPaths...),
+		options.ScannerWithDataFilesystem(dataFS),
+	)
 
 	if opt.Trace {
 		opts = append(opts, options.ScannerWithPerResultTracing(true))
@@ -264,8 +301,10 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 		opts = append(opts, tfscanner.ScannerWithTFVarsPaths(scannerOption.TerraformTFVars...))
 	}
 
-	opts = append(opts, tfscanner.ScannerWithAllDirectories(true))
-	opts = append(opts, tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded))
+	opts = append(opts,
+		tfscanner.ScannerWithAllDirectories(true),
+		tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded),
+	)
 
 	return opts
 }
@@ -328,16 +367,16 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	return mfs, policyPaths, nil
 }
 
-func CreateDataFS(dataPaths []string, options ...string) (fs.FS, []string, error) {
+func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {
 	fsys := mapfs.New()
 
 	// Check if k8sVersion is provided
-	if len(options) > 0 {
-		k8sVersion := options[0]
+	if len(opts) > 0 {
+		k8sVersion := opts[0]
 		if err := fsys.MkdirAll("system", 0700); err != nil {
 			return nil, nil, err
 		}
-		data := []byte(fmt.Sprintf(`{"k8s": {"version": "%s"}}`, k8sVersion))
+		data := []byte(fmt.Sprintf(`{"k8s": {"version": %q}}`, k8sVersion))
 		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0600); err != nil {
 			return nil, nil, err
 		}
@@ -356,8 +395,8 @@ func CreateDataFS(dataPaths []string, options ...string) (fs.FS, []string, error
 }
 
 // ResultsToMisconf is exported for trivy-plugin-aqua purposes only
-func ResultsToMisconf(configType string, scannerName string, results scan.Results) []types.Misconfiguration {
-	misconfs := map[string]types.Misconfiguration{}
+func ResultsToMisconf(configType types.ConfigType, scannerName string, results scan.Results) []types.Misconfiguration {
+	misconfs := make(map[string]types.Misconfiguration)
 
 	for _, result := range results {
 		flattened := result.Flatten()

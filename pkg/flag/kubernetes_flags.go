@@ -1,14 +1,12 @@
 package flag
 
 import (
-	"strconv"
-
 	"fmt"
+	"strconv"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -196,7 +194,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 }
 
 func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, error) {
-	tolerations := make([]corev1.Toleration, 0)
+	var tolerations []corev1.Toleration
 	for _, toleration := range tolerationsOptions {
 		tolerationParts := strings.Split(toleration, ":")
 		if len(tolerationParts) < 2 {
@@ -209,7 +207,7 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 		}
 		keyValue := strings.Split(tolerationParts[0], "=")
 		operator := corev1.TolerationOpEqual
-		if len(keyValue[1]) == 0 {
+		if keyValue[1] == "" {
 			operator = corev1.TolerationOpExists
 		}
 		toleration := corev1.Toleration{

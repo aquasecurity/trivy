@@ -54,7 +54,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		version        string
 		dir            string
 		installedFiles []string
-		provides       = map[string]string{} // for dependency graph
+		provides       = make(map[string]string) // for dependency graph
 	)
 
 	for scanner.Scan() {
@@ -89,7 +89,9 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		case "F:":
 			dir = line[2:]
 		case "R:":
-			installedFiles = append(installedFiles, path.Join(dir, line[2:]))
+			absPath := path.Join(dir, line[2:])
+			pkg.InstalledFiles = append(pkg.InstalledFiles, absPath)
+			installedFiles = append(installedFiles, absPath)
 		case "p:": // provides (corresponds to provides in PKGINFO, concatenated by spaces into a single line)
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
@@ -144,11 +146,12 @@ func (a alpinePkgAnalyzer) parseLicense(line string) []string {
 	// e.g. MPL 2.0 GPL2+ => {"MPL2.0", "GPL2+"}
 	for i, s := range strings.Fields(line) {
 		s = strings.Trim(s, "()")
-		if s == "AND" || s == "OR" {
+		switch {
+		case s == "AND" || s == "OR":
 			continue
-		} else if i > 0 && (s == "1.0" || s == "2.0" || s == "3.0") {
+		case i > 0 && (s == "1.0" || s == "2.0" || s == "3.0"):
 			licenses[i-1] = licensing.Normalize(licenses[i-1] + s)
-		} else {
+		default:
 			licenses = append(licenses, licensing.Normalize(s))
 		}
 	}
@@ -194,7 +197,7 @@ func (a alpinePkgAnalyzer) consolidateDependencies(pkgs []types.Package, provide
 }
 
 func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Package) {
-	uniq := map[string]struct{}{}
+	uniq := make(map[string]struct{})
 	for _, pkg := range pkgs {
 		if _, ok := uniq[pkg.Name]; ok {
 			continue

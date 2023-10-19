@@ -7,11 +7,10 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 )
 
 type OS struct {
-	Family string
+	Family OSType
 	Name   string
 	Eosl   bool `json:"EOSL,omitempty"`
 
@@ -24,8 +23,8 @@ func (o *OS) Detected() bool {
 }
 
 // Merge merges OS version and enhanced security maintenance programs
-func (o *OS) Merge(new OS) {
-	if lo.IsEmpty(new) {
+func (o *OS) Merge(newOS OS) {
+	if lo.IsEmpty(newOS) {
 		return
 	}
 
@@ -33,26 +32,26 @@ func (o *OS) Merge(new OS) {
 	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
-	case o.Family == aos.RedHat, o.Family == aos.Debian:
-		*o = new
+	case o.Family == RedHat, o.Family == Debian:
+		*o = newOS
 	default:
 		if o.Family == "" {
-			o.Family = new.Family
+			o.Family = newOS.Family
 		}
 		if o.Name == "" {
-			o.Name = new.Name
+			o.Name = newOS.Name
 		}
 		// Ubuntu has ESM program: https://ubuntu.com/security/esm
 		// OS version and esm status are stored in different files.
 		// We have to merge OS version after parsing these files.
-		if o.Extended || new.Extended {
+		if o.Extended || newOS.Extended {
 			o.Extended = true
 		}
 	}
 }
 
 type Repository struct {
-	Family  string `json:",omitempty"`
+	Family  OSType `json:",omitempty"`
 	Release string `json:",omitempty"`
 }
 
@@ -97,6 +96,9 @@ type Package struct {
 
 	// lines from the lock file where the dependency is written
 	Locations []Location `json:",omitempty"`
+
+	// Files installed by the package
+	InstalledFiles []string `json:",omitempty"`
 }
 
 type Location struct {
@@ -166,7 +168,7 @@ type PackageInfo struct {
 
 type Application struct {
 	// e.g. bundler and pipenv
-	Type string
+	Type LangType
 
 	// Lock files have the file path here, while each package metadata do not have
 	FilePath string `json:",omitempty"`

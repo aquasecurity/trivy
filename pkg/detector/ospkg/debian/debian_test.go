@@ -31,8 +31,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/debian.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/debian.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "9.1",
 				pkgs: []ftypes.Package{
@@ -84,8 +87,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "invalid bucket",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "invalid bucket",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "9.1",
 				pkgs: []ftypes.Package{
@@ -127,7 +133,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {
@@ -155,13 +161,13 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "unknown",
+			name: "latest",
 			now:  time.Date(2020, 7, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "debian",
-				osVer:    "unknown",
+				osVer:    "999",
 			},
-			want: false,
+			want: true,
 		},
 	}
 	for _, tt := range tests {

@@ -7,11 +7,10 @@ import (
 	"os"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/Azure/azure-sdk-for-go/profiles/preview/preview/containerregistry/runtime/containerregistry"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -50,7 +49,7 @@ func (r *Registry) GetCredential(ctx context.Context) (string, string, error) {
 	return "00000000-0000-0000-0000-000000000000", *rt.RefreshToken, err
 }
 
-func refreshToken(ctx context.Context, accessToken string, domain string) (containerregistry.RefreshToken, error) {
+func refreshToken(ctx context.Context, accessToken, domain string) (containerregistry.RefreshToken, error) {
 	tenantID := os.Getenv("AZURE_TENANT_ID")
 	if tenantID == "" {
 		return containerregistry.RefreshToken{}, errors.New("missing environment variable AZURE_TENANT_ID")

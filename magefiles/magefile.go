@@ -60,7 +60,7 @@ func (Tool) Wire() error {
 
 // GolangciLint installs golangci-lint
 func (Tool) GolangciLint() error {
-	const version = "v1.52.2"
+	const version = "v1.54.2"
 	if exists(filepath.Join(GOBIN, "golangci-lint")) {
 		return nil
 	}
@@ -277,10 +277,18 @@ func (Test) UpdateVMGolden() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
 }
 
-// Lint runs linters
-func Lint() error {
+type Lint mg.Namespace
+
+// Run runs linters
+func (Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint)
 	return sh.RunV("golangci-lint", "run", "--timeout", "5m")
+}
+
+// Fix auto fixes linters
+func (Lint) Fix() error {
+	mg.Deps(Tool{}.GolangciLint)
+	return sh.RunV("golangci-lint", "run", "--timeout", "5m", "--fix")
 }
 
 // Fmt formats Go code and proto files
@@ -357,6 +365,12 @@ func Clean() error {
 	return nil
 }
 
+// Label updates labels
+func Label() error {
+	mg.Deps(Tool{}.Labeler)
+	return sh.RunV("labeler", "apply", "misc/triage/labels.yaml", "-l", "5")
+}
+
 type Docs mg.Namespace
 
 // Serve launches MkDocs development server to preview the documentation page
@@ -379,11 +393,12 @@ func (Docs) Generate() error {
 func findProtoFiles() ([]string, error) {
 	var files []string
 	err := filepath.WalkDir("rpc", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
+		switch {
+		case err != nil:
 			return err
-		} else if d.IsDir() {
+		case d.IsDir():
 			return nil
-		} else if filepath.Ext(path) == ".proto" {
+		case filepath.Ext(path) == ".proto":
 			files = append(files, path)
 		}
 		return nil

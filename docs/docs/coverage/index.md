@@ -6,3 +6,4 @@ For more detailed information about the specific platforms and languages, check 
 - [OS Packages](os/index.md)
 - [Language-specific Packages](language/index.md)
 - [IaC files](iac/index.md)
+- [Kubernetes clusters](./kubernetes.md)

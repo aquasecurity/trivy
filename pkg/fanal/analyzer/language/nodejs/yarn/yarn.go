@@ -31,7 +31,7 @@ import (
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(types.Yarn, newYarnAnalyzer)
+	analyzer.RegisterPostAnalyzer(analyzer.TypeYarn, newYarnAnalyzer)
 }
 
 const version = 2
@@ -141,8 +141,8 @@ func (a yarnAnalyzer) Version() int {
 	return version
 }
 
-func (a yarnAnalyzer) parseYarnLock(path string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Yarn, path, r, a.lockParser)
+func (a yarnAnalyzer) parseYarnLock(filePath string, r io.Reader) (*types.Application, error) {
+	return language.Parse(types.Yarn, filePath, r, a.lockParser)
 }
 
 // analyzeDependencies analyzes the package.json file next to yarn.lock,
@@ -191,7 +191,7 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 	directDeps map[string]string, dev bool) (map[string]types.Package, error) {
 
 	// Identify direct dependencies
-	pkgs := map[string]types.Package{}
+	pkgs := make(map[string]types.Package)
 	for _, pkg := range libs {
 		if constraint, ok := directDeps[pkg.Name]; ok {
 			// npm has own comparer to compare versions
@@ -214,7 +214,7 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 	return pkgs, nil
 }
 
-func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[string]types.Package, deps map[string]types.Package) {
+func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {
 	for _, pkgID := range pkg.DependsOn {
 		if _, ok := deps[pkgID]; ok {
 			continue
@@ -232,9 +232,9 @@ func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[str
 	}
 }
 
-func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map[string]string, map[string]string, error) {
+func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) (map[string]string, map[string]string, error) {
 	// Parse package.json
-	f, err := fsys.Open(path)
+	f, err := fsys.Open(filePath)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("file open error: %w", err)
 	}
@@ -329,7 +329,7 @@ func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS) (map[string][]string, e
 	}
 
 	var errs error
-	licenses := map[string][]string{}
+	licenses := make(map[string][]string)
 
 	if ll, err := a.traverseUnpluggedDir(sub); err != nil {
 		errs = multierror.Append(errs, err)
@@ -358,7 +358,7 @@ func (a yarnAnalyzer) traverseUnpluggedDir(fsys fs.FS) (map[string][]string, err
 
 func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) {
 	// Traverse .yarn/cache dir
-	licenses := map[string][]string{}
+	licenses := make(map[string][]string)
 	err := fsutils.WalkDir(fsys, "cache", fsutils.RequiredExt(".zip"),
 		func(filePath string, d fs.DirEntry, r io.Reader) error {
 			fi, err := d.Info()
