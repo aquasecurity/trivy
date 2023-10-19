@@ -3,6 +3,7 @@ package walker_test
 import (
 	"errors"
 	"io"
+	"io/fs"
 	"os"
 	"strings"
 	"testing"
@@ -77,15 +78,29 @@ func TestDir_Walk(t *testing.T) {
 					return nil
 				},
 			},
-			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-				// Ignore errors
+			analyzeFn: func(string, os.FileInfo, analyzer.Opener) error {
 				return nil
+			},
+		},
+		{
+			name:    "ignore analysis errors",
+			rootDir: "testdata/fs",
+			fields: fields{
+				errCallback: func(pathname string, err error) error {
+					if errors.Is(err, fs.ErrClosed) {
+						return nil
+					}
+					return err
+				},
+			},
+			analyzeFn: func(string, os.FileInfo, analyzer.Opener) error {
+				return fs.ErrClosed
 			},
 		},
 		{
 			name:    "sad path",
 			rootDir: "testdata/fs",
-			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+			analyzeFn: func(string, os.FileInfo, analyzer.Opener) error {
 				return errors.New("error")
 			},
 			wantErr: "failed to analyze file",
