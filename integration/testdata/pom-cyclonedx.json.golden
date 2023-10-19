@@ -150,6 +150,9 @@
       "recommendation": "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.9.10.4",
       "advisories": [
         {
+          "url": "https://avd.aquasec.com/nvd/cve-2020-9548"
+        },
+        {
           "url": "https://access.redhat.com/security/cve/CVE-2020-9548"
         },
         {
@@ -268,6 +271,9 @@
       "description": "A flaw was found in jackson-databind before 2.9.10.7. FasterXML mishandles the interaction between serialization gadgets and typing. The highest threat from this vulnerability is to data confidentiality and integrity as well as system availability.",
       "recommendation": "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.9.10.7",
       "advisories": [
+        {
+          "url": "https://avd.aquasec.com/nvd/cve-2021-20190"
+        },
         {
           "url": "https://access.redhat.com/security/cve/CVE-2021-20190"
         },

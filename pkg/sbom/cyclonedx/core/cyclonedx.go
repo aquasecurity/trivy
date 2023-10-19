@@ -155,7 +155,7 @@ func (c *CycloneDX) marshalVulnerability(bomRef string, vuln types.DetectedVulne
 		Ratings:     cdxRatings(vuln),
 		CWEs:        cwes(vuln.CweIDs),
 		Description: vuln.Description,
-		Advisories:  cdxAdvisories(vuln.References),
+		Advisories:  cdxAdvisories(append([]string{vuln.PrimaryURL}, vuln.References...)),
 	}
 	if vuln.FixedVersion != "" {
 		v.Recommendation = fmt.Sprintf("Upgrade %s to version %s", vuln.PkgName, vuln.FixedVersion)
@@ -341,19 +341,18 @@ func UnmarshalProperties(properties *[]cdx.Property) map[string]string {
 }
 
 func cdxAdvisories(refs []string) *[]cdx.Advisory {
+	refs = lo.Uniq(refs)
+	advs := lo.FilterMap(refs, func(ref string, _ int) (cdx.Advisory, bool) {
+		return cdx.Advisory{URL: ref}, ref != ""
+	})
+
 	// cyclonedx converts link to empty `[]cdx.Advisory` to `null`
 	// `bom-1.5.schema.json` doesn't support this - `Invalid type. Expected: array, given: null`
 	// we need to explicitly set `nil` for empty `refs` slice
-	if len(refs) == 0 {
+	if len(advs) == 0 {
 		return nil
 	}
 
-	var advs []cdx.Advisory
-	for _, ref := range refs {
-		advs = append(advs, cdx.Advisory{
-			URL: ref,
-		})
-	}
 	return &advs
 }
 
