@@ -3887,50 +3887,81 @@ Third-party dependencies also depend on others so a list of dependencies can be 
 In some cases, vulnerable dependencies are not linked directly, and it requires analyses of the tree.
 To make this task simpler Trivy can show a dependency origin tree with the <code>--dependency-tree</code> flag.
 This flag is only available with the <code>--format table</code> flag.</p>
-<p>The following packages/languages are currently supported:</p>
-<ul>
-<li>OS packages <ul>
-<li>apk</li>
-<li>dpkg</li>
-<li>rpm</li>
-</ul>
-</li>
-<li>Node.js <ul>
-<li>npm: package-lock.json</li>
-<li>pnpm: pnpm-lock.yaml</li>
-<li>yarn: yarn.lock</li>
-</ul>
-</li>
-<li>.NET<ul>
-<li>NuGet: packages.lock.json</li>
-</ul>
-</li>
-<li>Python <ul>
-<li>Poetry: poetry.lock</li>
-</ul>
-</li>
-<li>Ruby<ul>
-<li>Bundler: Gemfile.lock</li>
-</ul>
-</li>
-<li>Rust<ul>
-<li>Binaries built with <a href="https://github.com/rust-secure-code/cargo-auditable/">cargo-auditable</a></li>
-</ul>
-</li>
-<li>Go<ul>
-<li>Modules: go.mod</li>
-</ul>
-</li>
-<li>PHP<ul>
-<li>Composer</li>
-</ul>
-</li>
-<li>Java<ul>
-<li>Maven: pom.xml</li>
-</ul>
-</li>
-</ul>
-<p>This tree is the reverse of the npm list command.
+<p>The following OS package managers are currently supported:</p>
+<table>
+<thead>
+<tr>
+<th>OS Package Managers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>apk</td>
+</tr>
+<tr>
+<td>dpkg</td>
+</tr>
+<tr>
+<td>rpm</td>
+</tr>
+</tbody>
+</table>
+<p>The following languages are currently supported:</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node.js</td>
+<td><a href="../../coverage/language/nodejs/#npm">package-lock.json</a></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="../../coverage/language/nodejs/#pnpm">pnpm-lock.yaml</a></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="../../coverage/language/nodejs/#yarn">yarn.lock</a></td>
+</tr>
+<tr>
+<td>.NET</td>
+<td><a href="../../coverage/language/dotnet/#packageslockjson">packages.lock.json</a></td>
+</tr>
+<tr>
+<td>Python</td>
+<td><a href="../../coverage/language/python/#poetry">poetry.lock</a></td>
+</tr>
+<tr>
+<td>Ruby</td>
+<td><a href="../../coverage/language/ruby/#bundler">Gemfile.lock</a></td>
+</tr>
+<tr>
+<td>Rust</td>
+<td><a href="../../coverage/language/rust/#binaries">cargo-auditable binaries</a></td>
+</tr>
+<tr>
+<td>Go</td>
+<td><a href="../../coverage/language/golang/#go-modules">go.mod</a></td>
+</tr>
+<tr>
+<td>PHP</td>
+<td><a href="../../coverage/language/php/#composer">composer.lock</a></td>
+</tr>
+<tr>
+<td>Java</td>
+<td><a href="../../coverage/language/java/#pomxml">pom.xml</a></td>
+</tr>
+<tr>
+<td>Dart</td>
+<td><a href="../../coverage/language/dart/#dart">pubspec.lock</a></td>
+</tr>
+</tbody>
+</table>
+<p>This tree is the reverse of the dependency graph.
 However, if you want to resolve a vulnerability in a particular indirect dependency, the reversed tree is useful to know where that dependency comes from and identify which package you actually need to update.</p>
 <p>In table output, it looks like:</p>
 <div class="highlight"><pre><span></span><code>$ trivy fs --severity HIGH,CRITICAL --dependency-tree /path/to/your_node_project
