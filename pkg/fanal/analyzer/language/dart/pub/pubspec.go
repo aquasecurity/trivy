@@ -113,7 +113,7 @@ func findDependsOn() (map[string][]string, error) {
 	if err := fsutils.WalkDir(os.DirFS(dir), ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		id, dependsOn, err := parsePubSpecYaml(r)
 		if err != nil {
-			log.Logger.Debugf("unable to parse %q: %s", path, err)
+			log.Logger.Debugf("Unable to parse %q: %s", path, err)
 			return nil
 		}
 		if id != "" {
