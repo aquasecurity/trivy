@@ -41,13 +41,13 @@ In some cases, vulnerable dependencies are not linked directly, and it requires 
 To make this task simpler Trivy can show a dependency origin tree with the `--dependency-tree` flag.
 This flag is only available with the `--format table` flag.
 
-The following package managers are currently supported:
+The following OS package managers are currently supported:
 
-| Package Managers |
-|------------------|
-| apk              |
-| dpkg             |
-| rpm              |
+| OS Package Managers |
+|---------------------|
+| apk                 |
+| dpkg                |
+| rpm                 |
 
 The following languages are currently supported:
 
@@ -65,7 +65,7 @@ The following languages are currently supported:
 | Java     | [pom.xml][pom-xml]                         |
 | Dart     | [pubspec.lock][pubspec-lock]               |
 
-This tree is the reverse of the npm list command.
+This tree is the reverse of the dependency graph.
 However, if you want to resolve a vulnerability in a particular indirect dependency, the reversed tree is useful to know where that dependency comes from and identify which package you actually need to update.
 
 In table output, it looks like:
