@@ -104,21 +104,15 @@ func findDependsOn() (map[string][]string, error) {
 		return nil, nil
 	}
 
-	deps := make(map[string][]string)
-	if err := filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		} else if !d.Type().IsRegular() {
-			return nil
-		}
-		// parse only `pubspec.yaml` files
-		if filepath.Base(p) != pubSpecYamlFileName {
-			return nil
-		}
+	required := func(path string, d fs.DirEntry) bool {
+		return filepath.Base(path) == pubSpecYamlFileName
+	}
 
-		id, dependsOn, err := parsePubSpecYaml(p)
+	deps := make(map[string][]string)
+	if err := fsutils.WalkDir(os.DirFS(dir), ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
+		id, dependsOn, err := parsePubSpecYaml(r)
 		if err != nil {
-			log.Logger.Debugf("unable to parse %q: %s", p, err)
+			log.Logger.Debugf("unable to parse %q: %s", path, err)
 			return nil
 		}
 		if id != "" {
@@ -149,21 +143,24 @@ func cacheDir() string {
 
 type pubSpecYaml struct {
 	Name         string                 `yaml:"name"`
-	Version      string                 `yaml:"version"`
+	Version      string                 `yaml:"version,omitempty"`
 	Dependencies map[string]interface{} `yaml:"dependencies,omitempty"`
 }
 
-func parsePubSpecYaml(filePath string) (string, []string, error) {
-	f, err := os.Open(filePath)
-	if err != nil {
-		return "", nil, xerrors.Errorf("unable to open %q to get list of direct deps: %w", filePath, err)
-	}
-	defer func() { _ = f.Close() }()
-
+func parsePubSpecYaml(r io.Reader) (string, []string, error) {
 	var spec pubSpecYaml
-	if err = yaml.NewDecoder(f).Decode(&spec); err != nil {
-		return "", nil, xerrors.Errorf("unable to decode %q: %w", filePath, err)
+	if err := yaml.NewDecoder(r).Decode(&spec); err != nil {
+		return "", nil, xerrors.Errorf("unable to decode: %w", err)
 	}
+
+	// Version is a required field only for packages from pub.dev:
+	// https://dart.dev/tools/pub/pubspec#version
+	// We can skip packages without version,
+	// because we compare packages by ID (name+version)
+	if spec.Version == "" {
+		return "", nil, nil
+	}
+
 	if len(spec.Dependencies) == 0 {
 		return "", nil, nil
 	}
