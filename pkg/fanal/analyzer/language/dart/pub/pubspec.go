@@ -158,13 +158,10 @@ func parsePubSpecYaml(r io.Reader) (string, []string, error) {
 	// https://dart.dev/tools/pub/pubspec#version
 	// We can skip packages without version,
 	// because we compare packages by ID (name+version)
-	if spec.Version == "" {
+	if spec.Version == "" || len(spec.Dependencies) == 0 {
 		return "", nil, nil
 	}
 
-	if len(spec.Dependencies) == 0 {
-		return "", nil, nil
-	}
 	// pubspec.yaml uses version ranges
 	// save only dependencies names
 	dependsOn := maps.Keys(spec.Dependencies)
