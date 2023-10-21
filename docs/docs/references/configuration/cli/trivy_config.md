@@ -44,7 +44,7 @@ trivy config [flags] DIR
       --skip-files strings                specify the files or glob patterns to skip
       --skip-policy-update                skip fetching rego policy updates
   -t, --template string                   output template
-      --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder
+      --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
