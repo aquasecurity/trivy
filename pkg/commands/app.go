@@ -622,7 +622,6 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
-	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
 	reportFormat := flag.ReportFormatFlag
