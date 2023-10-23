@@ -177,7 +177,7 @@ func tomlDependencies(fsys fs.FS, path string) (Dependencies, []string, error) {
 	defer func() { _ = f.Close() }()
 
 	tomlFile := cargoToml{}
-	deps := make(map[string]string)
+	dependencies := Dependencies{}
 	_, err = toml.NewDecoder(f).Decode(&tomlFile)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("toml decode error: %w", err)
