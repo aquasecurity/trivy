@@ -38,7 +38,8 @@ func lookupOriginLayerForPkg(pkg types.Package, layers []types.BlobInfo) (string
 	for i, layer := range layers {
 		for _, info := range layer.PackageInfos {
 			if containsPackage(pkg, info.Packages) {
-				return layer.Digest, layer.DiffID, lookupBuildInfo(i, layers)
+				digest, diffID := lookupPackageLayer(pkg, layer)
+				return digest, diffID, lookupBuildInfo(i, layers)
 			}
 		}
 	}
@@ -77,11 +78,22 @@ func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.
 				continue
 			}
 			if containsPackage(lib, layerApp.Libraries) {
-				return layer.Digest, layer.DiffID
+				return lookupPackageLayer(lib, layer)
 			}
 		}
 	}
 	return "", ""
+}
+
+func lookupPackageLayer(pkg types.Package, layer types.BlobInfo) (string, string) {
+	// SBOM files don't contain image layers.
+	// Package digests are stored in lib.Layer.
+	// Check only lib.Layer.DiffID, because Digest is empty for compressed layers:
+	// https://github.com/aquasecurity/trivy/blob/1a15a3adb1e42a6e3e3ab8706f3262a4a80892d0/pkg/fanal/artifact/image/image.go#L368-L375
+	if pkg.Layer.DiffID != "" {
+		return pkg.Layer.Digest, pkg.Layer.DiffID
+	}
+	return layer.Digest, layer.DiffID
 }
 
 // ApplyLayers returns the merged layer
