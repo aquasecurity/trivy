@@ -71,6 +71,11 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 			return xerrors.Errorf("NuGet parse error: %w", err)
 		}
 
+		// nuget file doesn't contain dependencies
+		if app == nil {
+			return nil
+		}
+
 		for i, lib := range app.Libraries {
 			license, ok := foundLicenses[lib.ID]
 			if !ok {

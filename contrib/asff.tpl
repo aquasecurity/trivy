@@ -91,7 +91,7 @@
             "Severity": {
                 "Label": "{{ $severity }}"
             },
-            "Title": "Trivy found a misconfiguration in {{ $target }}: {{ .Title }}",
+            "Title": "Trivy found a misconfiguration in {{ $target }}: {{ escapeString .Title }}",
             "Description": {{ escapeString $description | printf "%q" }},
             "Remediation": {
                 "Recommendation": {

@@ -65,18 +65,24 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	result.Secrets = filterSecrets(result, severities, ignoreConf.Secrets)
 	result.Licenses = filterLicenses(result.Licenses, severities, opt.IgnoreLicenses, ignoreConf.Licenses)
 
+	var ignoredMisconfs int
 	if opt.PolicyFile != "" {
 		var err error
-		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, opt.PolicyFile)
+		var ignored int
+		filteredVulns, filteredMisconfs, ignored, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, opt.PolicyFile)
 		if err != nil {
 			return xerrors.Errorf("failed to apply the policy: %w", err)
 		}
+		ignoredMisconfs += ignored
 	}
 	sort.Sort(types.BySeverity(filteredVulns))
 
 	result.Vulnerabilities = filteredVulns
-	result.Misconfigurations = filteredMisconfs
 	result.MisconfSummary = misconfSummary
+	if result.MisconfSummary != nil {
+		result.MisconfSummary.Exceptions += ignoredMisconfs
+	}
+	result.Misconfigurations = filteredMisconfs
 
 	return nil
 }
@@ -110,15 +116,16 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 			vuln.Severity = dbTypes.SeverityUnknown.String()
 		}
 
-		if !slices.Contains(severities, vuln.Severity) {
-			// Filter by severity
+		switch {
+		// Filter by severity
+		case !slices.Contains(severities, vuln.Severity):
 			continue
-		} else if slices.Contains(ignoreStatuses, vuln.Status) {
-			// Filter by status
+		// Filter by status
+		case slices.Contains(ignoreStatuses, vuln.Status):
 			continue
-		} else if ignoreFindings.Match(result.Target, vuln.VulnerabilityID) ||
-			ignoreFindings.Match(vuln.PkgPath, vuln.VulnerabilityID) {
-			// Filter by ignore file
+		// Filter by ignore file
+		case ignoreFindings.Match(result.Target, vuln.VulnerabilityID) ||
+			ignoreFindings.Match(vuln.PkgPath, vuln.VulnerabilityID):
 			continue
 		}
 
@@ -146,6 +153,7 @@ func filterMisconfigurations(result *types.Result, severities []string, includeN
 			continue
 		} else if ignoreMisconfs.Match(result.Target, misconf.ID) || ignoreMisconfs.Match(result.Target, misconf.AVDID) {
 			// Filter misconfigurations by ignore file
+			summary.Exceptions++
 			continue
 		}
 
@@ -214,10 +222,10 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 }
 
 func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-	policyFile string) ([]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
+	policyFile string) ([]types.DetectedVulnerability, []types.DetectedMisconfiguration, int, error) {
 	policy, err := os.ReadFile(policyFile)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to read the policy file: %w", err)
+		return nil, nil, 0, xerrors.Errorf("unable to read the policy file: %w", err)
 	}
 
 	query, err := rego.New(
@@ -226,7 +234,7 @@ func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misco
 		rego.Module("trivy.rego", string(policy)),
 	).PrepareForEval(ctx)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to prepare for eval: %w", err)
+		return nil, nil, 0, xerrors.Errorf("unable to prepare for eval: %w", err)
 	}
 
 	// Vulnerabilities
@@ -234,7 +242,7 @@ func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misco
 	for _, vuln := range vulns {
 		ignored, err := evaluate(ctx, query, vuln)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, 0, err
 		}
 		if ignored {
 			continue
@@ -243,18 +251,20 @@ func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misco
 	}
 
 	// Misconfigurations
+	var ignoredMisconfs int
 	var filteredMisconfs []types.DetectedMisconfiguration
 	for _, misconf := range misconfs {
 		ignored, err := evaluate(ctx, query, misconf)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, 0, err
 		}
 		if ignored {
+			ignoredMisconfs++
 			continue
 		}
 		filteredMisconfs = append(filteredMisconfs, misconf)
 	}
-	return filteredVulns, filteredMisconfs, nil
+	return filteredVulns, filteredMisconfs, ignoredMisconfs, nil
 }
 func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
 	results, err := query.Eval(ctx, rego.EvalInput(input))
@@ -272,7 +282,7 @@ func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface
 	return ignore, nil
 }
 
-func shouldOverwrite(old, new types.DetectedVulnerability) bool {
+func shouldOverwrite(oldVuln, newVuln types.DetectedVulnerability) bool {
 	// The same vulnerability must be picked always.
-	return old.FixedVersion < new.FixedVersion
+	return oldVuln.FixedVersion < newVuln.FixedVersion
 }

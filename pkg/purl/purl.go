@@ -18,6 +18,30 @@ import (
 const (
 	TypeOCI  = "oci"
 	TypeDart = "dart"
+
+	// TypeK8s is a custom type for Kubernetes components in PURL.
+	//  - namespace: The service provider such as EKS or GKE. It is not case sensitive and must be lowercased.
+	//     Known namespaces:
+	//       - empty (upstream)
+	//       - eks (AWS)
+	//       - aks (GCP)
+	//       - gke (Azure)
+	//       - rke (Rancher)
+	//  - name: The k8s component name and is case sensitive.
+	//  - version: The combined version and release of a component.
+	//
+	//  Examples:
+	//    - pkg:k8s/upstream/k8s.io%2Fapiserver@1.24.1
+	//    - pkg:k8s/eks/k8s.io%2Fkube-proxy@1.26.2-eksbuild.1
+	TypeK8s = "k8s"
+
+	NamespaceEKS = "eks"
+	NamespaceAKS = "aks"
+	NamespaceGKE = "gke"
+	NamespaceRKE = "rke"
+	NamespaceOCP = "ocp"
+
+	TypeUnknown = "unknown"
 )
 
 type PackageURL struct {
@@ -60,10 +84,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 	if p.Type == packageurl.TypeCocoapods && p.Subpath != "" {
 		// CocoaPods uses <moduleName>/<submoduleName> format for package name
 		// e.g. `pkg:cocoapods/GoogleUtilities@7.5.2#NSData+zlib` => `GoogleUtilities/NSData+zlib`
-		pkg.Name = strings.Join([]string{
-			p.Name,
-			p.Subpath,
-		}, "/")
+		pkg.Name = p.Name + "/" + p.Subpath
 	}
 
 	if p.Type == packageurl.TypeRPM {
@@ -74,7 +95,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 
 	// Return packages without namespace.
 	// OS packages are not supposed to have namespace.
-	if p.Namespace == "" || p.IsOSPkg() {
+	if p.Namespace == "" || p.Class() == types.ClassOSPkg {
 		return pkg
 	}
 
@@ -82,21 +103,16 @@ func (p *PackageURL) Package() *ftypes.Package {
 	if p.Type == packageurl.TypeMaven || p.Type == string(ftypes.Gradle) {
 		// Maven and Gradle packages separate ":"
 		// e.g. org.springframework:spring-core
-		pkg.Name = strings.Join([]string{
-			p.Namespace,
-			p.Name,
-		}, ":")
+		pkg.Name = p.Namespace + ":" + p.Name
 	} else {
-		pkg.Name = strings.Join([]string{
-			p.Namespace,
-			p.Name,
-		}, "/")
+		pkg.Name = p.Namespace + "/" + p.Name
 	}
 
 	return pkg
 }
 
 // LangType returns an application type in Trivy
+// nolint: gocyclo
 func (p *PackageURL) LangType() ftypes.LangType {
 	switch p.Type {
 	case packageurl.TypeComposer:
@@ -129,12 +145,39 @@ func (p *PackageURL) LangType() ftypes.LangType {
 		return ftypes.Pub
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
+	case TypeK8s:
+		switch p.Namespace {
+		case NamespaceEKS:
+			return ftypes.EKS
+		case NamespaceGKE:
+			return ftypes.GKE
+		case NamespaceAKS:
+			return ftypes.AKS
+		case NamespaceRKE:
+			return ftypes.RKE
+		case NamespaceOCP:
+			return ftypes.OCP
+		case "":
+			return ftypes.K8sUpstream
+		}
+		return TypeUnknown
+	default:
+		return TypeUnknown
 	}
-	return "unknown"
 }
 
-func (p *PackageURL) IsOSPkg() bool {
-	return p.Type == packageurl.TypeApk || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
+func (p *PackageURL) Class() types.ResultClass {
+	switch p.Type {
+	case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM:
+		// OS packages
+		return types.ClassOSPkg
+	default:
+		if p.LangType() == TypeUnknown {
+			return types.ClassUnknown
+		}
+		// Language-specific packages
+		return types.ClassLangPkg
+	}
 }
 
 func (p *PackageURL) BOMRef() string {
@@ -230,15 +273,19 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	if index != -1 {
 		name = name[index+1:]
 	}
-	qualifiers := packageurl.Qualifiers{
-		packageurl.Qualifier{
+
+	var qualifiers packageurl.Qualifiers
+	if repoURL := digest.Repository.Name(); repoURL != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "repository_url",
-			Value: digest.Repository.Name(),
-		},
-		packageurl.Qualifier{
+			Value: repoURL,
+		})
+	}
+	if arch := metadata.ImageConfig.Architecture; arch != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "arch",
 			Value: metadata.ImageConfig.Architecture,
-		},
+		})
 	}
 
 	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
@@ -346,11 +393,7 @@ func parseSwift(pkgName string) (string, string) {
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#cocoapods
 func parseCocoapods(pkgName string) (string, string) {
 	var subpath string
-	index := strings.Index(pkgName, "/")
-	if index != -1 {
-		subpath = pkgName[index+1:]
-		pkgName = pkgName[:index]
-	}
+	pkgName, subpath, _ = strings.Cut(pkgName, "/")
 	return pkgName, subpath
 }
 

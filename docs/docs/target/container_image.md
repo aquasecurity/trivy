@@ -113,13 +113,6 @@ You can enable it with `--image-config-scanners config`.
 $ trivy image --image-config-scanners config [YOUR_IMAGE_NAME]
 ```
 
-If you just want to scan the image config, you can disable scanners with `--scanners none`.
-For example:
-
-```
-$ trivy image --scanners none --image-config-scanners config alpine:3.17.0
-```
-
 <details>
 <summary>Result</summary>
 
@@ -169,13 +162,6 @@ See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy image --image-config-scanners secret [YOUR_IMAGE_NAME]
-```
-
-If you just want to scan the image config, you can disable scanners with `--scanners none`.
-For example:
-
-```shell
-$ trivy image --scanners none --image-config-scanners secret vuln-image
 ```
 
 <details>

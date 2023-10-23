@@ -30,7 +30,7 @@ type misconfigRenderer struct {
 	ansi               bool
 }
 
-func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, trace, includeNonFailures bool, ansi bool) *misconfigRenderer {
+func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool) *misconfigRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -72,7 +72,7 @@ func (r *misconfigRenderer) Render() string {
 }
 
 func (r *misconfigRenderer) countSeverities() map[string]int {
-	severityCount := map[string]int{}
+	severityCount := make(map[string]int)
 	for _, misconf := range r.result.Misconfigurations {
 		if misconf.Status == types.StatusFailure {
 			severityCount[misconf.Severity]++
@@ -177,9 +177,10 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 
 		r.printSingleDivider()
 		for i, line := range lines {
-			if line.Truncated {
+			switch {
+			case line.Truncated:
 				r.printf("<dim>%4s   ", strings.Repeat(".", len(fmt.Sprintf("%d", line.Number))))
-			} else if line.IsCause {
+			case line.IsCause:
 				r.printf("<red>%4d ", line.Number)
 				switch {
 				case (line.FirstCause && line.LastCause) || len(lines) == 1:
@@ -191,9 +192,10 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 				default:
 					r.printf("<red>│ ")
 				}
-			} else {
+			default:
 				r.printf("<dim>%4d   ", line.Number)
 			}
+
 			if r.ansi {
 				r.printf("%s\r\n", line.Highlighted)
 			} else {

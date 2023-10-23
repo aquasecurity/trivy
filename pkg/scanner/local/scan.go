@@ -46,10 +46,10 @@ type Scanner struct {
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(applier applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
+func NewScanner(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner langpkg.Scanner,
 	vulnClient vulnerability.Client) Scanner {
 	return Scanner{
-		applier:        applier,
+		applier:        a,
 		osPkgScanner:   osPkgScanner,
 		langPkgScanner: langPkgScanner,
 		vulnClient:     vulnClient,
@@ -57,24 +57,25 @@ func NewScanner(applier applier.Applier, osPkgScanner ospkg.Scanner, langPkgScan
 }
 
 // Scan scans the artifact and return results.
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, ftypes.OS, error) {
-	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
+func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
+	types.Results, ftypes.OS, error) {
+	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
 		log.Logger.Debug("OS is not detected.")
 
 		// Packages may contain OS-independent binary information even though OS is not detected.
-		if len(artifactDetail.Packages) != 0 {
-			artifactDetail.OS = ftypes.OS{Family: "none"}
+		if len(detail.Packages) != 0 {
+			detail.OS = ftypes.OS{Family: "none"}
 		}
 
 		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
-		if artifactDetail.Repository != nil {
-			log.Logger.Debugf("Package repository: %s %s", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
-			log.Logger.Debugf("Assuming OS is %s %s.", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
-			artifactDetail.OS = ftypes.OS{
-				Family: artifactDetail.Repository.Family,
-				Name:   artifactDetail.Repository.Release,
+		if detail.Repository != nil {
+			log.Logger.Debugf("Package repository: %s %s", detail.Repository.Family, detail.Repository.Release)
+			log.Logger.Debugf("Assuming OS is %s %s.", detail.Repository.Family, detail.Repository.Release)
+			detail.OS = ftypes.OS{
+				Family: detail.Repository.Family,
+				Name:   detail.Repository.Release,
 			}
 		}
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
@@ -84,29 +85,46 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
+	target := types.ScanTarget{
+		Name:              targetName,
+		OS:                detail.OS,
+		Repository:        detail.Repository,
+		Packages:          mergePkgs(detail.Packages, detail.ImageConfig.Packages, options),
+		Applications:      detail.Applications,
+		Misconfigurations: mergeMisconfigurations(targetName, detail),
+		Secrets:           mergeSecrets(targetName, detail),
+		Licenses:          detail.Licenses,
+		CustomResources:   detail.CustomResources,
+	}
+
+	return s.ScanTarget(ctx, target, options)
+}
+
+func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	var eosl bool
 	var results, pkgResults types.Results
+	var err error
 
 	// By default, we need to remove dev dependencies from the result
 	// IncludeDevDeps option allows you not to remove them
-	excludeDevDeps(artifactDetail.Applications, options.IncludeDevDeps)
+	excludeDevDeps(target.Applications, options.IncludeDevDeps)
 
 	// Fill OS packages and language-specific packages
 	if options.ListAllPackages {
-		if res := s.osPkgScanner.Packages(target, artifactDetail, options); len(res.Packages) != 0 {
+		if res := s.osPkgScanner.Packages(target, options); len(res.Packages) != 0 {
 			pkgResults = append(pkgResults, res)
 		}
-		pkgResults = append(pkgResults, s.langPkgScanner.Packages(artifactDetail, options)...)
+		pkgResults = append(pkgResults, s.langPkgScanner.Packages(target, options)...)
 	}
 
 	// Scan packages for vulnerabilities
 	if options.Scanners.Enabled(types.VulnerabilityScanner) {
 		var vulnResults types.Results
-		vulnResults, eosl, err = s.scanVulnerabilities(target, artifactDetail, options)
+		vulnResults, eosl, err = s.scanVulnerabilities(target, options)
 		if err != nil {
 			return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
-		artifactDetail.OS.Eosl = eosl
+		target.OS.Eosl = eosl
 
 		// Merge package results into vulnerability results
 		mergedResults := s.fillPkgsInVulns(pkgResults, vulnResults)
@@ -117,45 +135,20 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		results = append(results, pkgResults...)
 	}
 
-	// Scan IaC config files
-	if ShouldScanMisconfigOrRbac(options.Scanners) {
-		configResults := s.MisconfsToResults(artifactDetail.Misconfigurations)
-		results = append(results, configResults...)
-	}
+	// Store misconfigurations
+	results = append(results, s.misconfsToResults(target.Misconfigurations, options)...)
 
-	// Scan secrets
-	if options.Scanners.Enabled(types.SecretScanner) {
-		secretResults := s.secretsToResults(artifactDetail.Secrets)
-		results = append(results, secretResults...)
-	}
+	// Store secrets
+	results = append(results, s.secretsToResults(target.Secrets, options)...)
 
 	// Scan licenses
-	if options.Scanners.Enabled(types.LicenseScanner) {
-		licenseResults := s.scanLicenses(artifactDetail, options.LicenseCategories)
-		results = append(results, licenseResults...)
-	}
-
-	// Scan misconfigurations on container image config
-	if options.ImageConfigScanners.Enabled(types.MisconfigScanner) {
-		if im := artifactDetail.ImageConfig.Misconfiguration; im != nil {
-			im.FilePath = target // Set the target name to the file path as container image config is not a real file.
-			results = append(results, s.MisconfsToResults([]ftypes.Misconfiguration{*im})...)
-		}
-	}
-
-	// Scan secrets on container image config
-	if options.ImageConfigScanners.Enabled(types.SecretScanner) {
-		if is := artifactDetail.ImageConfig.Secret; is != nil {
-			is.FilePath = target // Set the target name to the file path as container image config is not a real file.
-			results = append(results, s.secretsToResults([]ftypes.Secret{*is})...)
-		}
-	}
+	results = append(results, s.scanLicenses(target, options)...)
 
 	// For WASM plugins and custom analyzers
-	if len(artifactDetail.CustomResources) != 0 {
+	if len(target.CustomResources) != 0 {
 		results = append(results, types.Result{
 			Class:           types.ClassCustom,
-			CustomResources: artifactDetail.CustomResources,
+			CustomResources: target.CustomResources,
 		})
 	}
 
@@ -170,16 +163,16 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		return nil, ftypes.OS{}, xerrors.Errorf("post scan error: %w", err)
 	}
 
-	return results, artifactDetail.OS, nil
+	return results, target.OS, nil
 }
 
-func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
+func (s Scanner) scanVulnerabilities(target types.ScanTarget, options types.ScanOptions) (
 	types.Results, bool, error) {
 	var eosl bool
 	var results types.Results
 
 	if slices.Contains(options.VulnType, types.VulnTypeOS) {
-		vuln, detectedEOSL, err := s.osPkgScanner.Scan(target, detail, options)
+		vuln, detectedEOSL, err := s.osPkgScanner.Scan(target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
 		} else if vuln.Target != "" {
@@ -189,7 +182,7 @@ func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail
 	}
 
 	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
-		vulns, err := s.langPkgScanner.Scan(detail, options)
+		vulns, err := s.langPkgScanner.Scan(target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
 		}
@@ -215,6 +208,14 @@ func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Re
 		}
 	}
 	return results
+}
+
+func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
+	if !ShouldScanMisconfigOrRbac(options.Scanners) {
+		return nil
+	}
+
+	return s.MisconfsToResults(misconfs)
 }
 
 // MisconfsToResults is exported for trivy-plugin-aqua purposes only
@@ -254,7 +255,11 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 	return results
 }
 
-func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
+func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOptions) types.Results {
+	if !options.Scanners.Enabled(types.SecretScanner) {
+		return nil
+	}
+
 	var results types.Results
 	for _, secret := range secrets {
 		log.Logger.Debugf("Secret file: %s", secret.FilePath)
@@ -268,15 +273,17 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
 	return results
 }
 
-func (s Scanner) scanLicenses(detail ftypes.ArtifactDetail,
-	categories map[ftypes.LicenseCategory][]string) types.Results {
-	scanner := licensing.NewScanner(categories)
+func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions) types.Results {
+	if !options.Scanners.Enabled(types.LicenseScanner) {
+		return nil
+	}
 
 	var results types.Results
+	scanner := licensing.NewScanner(options.LicenseCategories)
 
 	// License - OS packages
 	var osPkgLicenses []types.DetectedLicense
-	for _, pkg := range detail.Packages {
+	for _, pkg := range target.Packages {
 		for _, license := range pkg.Licenses {
 			category, severity := scanner.Scan(license)
 			osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
@@ -296,7 +303,7 @@ func (s Scanner) scanLicenses(detail ftypes.ArtifactDetail,
 	})
 
 	// License - language-specific packages
-	for _, app := range detail.Applications {
+	for _, app := range target.Applications {
 		var langLicenses []types.DetectedLicense
 		for _, lib := range app.Libraries {
 			for _, license := range lib.Licenses {
@@ -311,13 +318,13 @@ func (s Scanner) scanLicenses(detail ftypes.ArtifactDetail,
 			}
 		}
 
-		target := app.FilePath
-		if t, ok := langpkg.PkgTargets[app.Type]; ok && target == "" {
+		targetName := app.FilePath
+		if t, ok := langpkg.PkgTargets[app.Type]; ok && targetName == "" {
 			// When the file path is empty, we will overwrite it with the pre-defined value.
-			target = t
+			targetName = t
 		}
 		results = append(results, types.Result{
-			Target:   target,
+			Target:   targetName,
 			Class:    types.ClassLicense,
 			Licenses: langLicenses,
 		})
@@ -325,7 +332,7 @@ func (s Scanner) scanLicenses(detail ftypes.ArtifactDetail,
 
 	// License - file header or license file
 	var fileLicenses []types.DetectedLicense
-	for _, license := range detail.Licenses {
+	for _, license := range target.Licenses {
 		for _, finding := range license.Findings {
 			category, severity := scanner.Scan(finding.Name)
 			fileLicenses = append(fileLicenses, types.DetectedLicense{
@@ -373,7 +380,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		res.References = append(res.References, primaryURL)
 	}
 
-	if len(primaryURL) == 0 && len(res.References) > 0 {
+	if primaryURL == "" && len(res.References) > 0 {
 		primaryURL = res.References[0]
 	}
 
@@ -419,4 +426,47 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 			return !lib.Dev
 		})
 	}
+}
+
+func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package, options types.ScanOptions) []ftypes.Package {
+	if !options.ScanRemovedPackages || len(pkgsFromCommands) == 0 {
+		return pkgs
+	}
+
+	// pkg has priority over pkgsFromCommands
+	uniqPkgs := make(map[string]struct{})
+	for _, pkg := range pkgs {
+		uniqPkgs[pkg.Name] = struct{}{}
+	}
+	for _, pkg := range pkgsFromCommands {
+		if _, ok := uniqPkgs[pkg.Name]; ok {
+			continue
+		}
+		pkgs = append(pkgs, pkg)
+	}
+	return pkgs
+}
+
+// mergeMisconfigurations merges misconfigurations on container image config
+func mergeMisconfigurations(targetName string, detail ftypes.ArtifactDetail) []ftypes.Misconfiguration {
+	if detail.ImageConfig.Misconfiguration == nil {
+		return detail.Misconfigurations
+	}
+
+	// Append misconfigurations on container image config
+	misconf := detail.ImageConfig.Misconfiguration
+	misconf.FilePath = targetName // Set the target name to the file path as container image config is not a real file.
+	return append(detail.Misconfigurations, *misconf)
+}
+
+// mergeSecrets merges secrets on container image config.
+func mergeSecrets(targetName string, detail ftypes.ArtifactDetail) []ftypes.Secret {
+	if detail.ImageConfig.Secret == nil {
+		return detail.Secrets
+	}
+
+	// Append secrets on container image config
+	secret := detail.ImageConfig.Secret
+	secret.FilePath = targetName // Set the target name to the file path as container image config is not a real file.
+	return append(detail.Secrets, *secret)
 }

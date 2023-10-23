@@ -166,7 +166,7 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 		}
 
 		// Recursive packages from direct dependencies
-		if component, err := e.marshalPackage(pkg, pkgs, map[string]*core.Component{}); err != nil {
+		if component, err := e.marshalPackage(pkg, pkgs, make(map[string]*core.Component)); err != nil {
 			return nil, nil
 		} else if component != nil {
 			directComponents = append(directComponents, component)
