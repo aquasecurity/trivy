@@ -3878,10 +3878,36 @@ go install ./cmd/trivy
 <p>Example:</p>
 <div class="highlight"><pre><span></span><code>docker run -v /var/run/docker.sock:/var/run/docker.sock -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.46.0 image python:3.4-alpine
 </code></pre></div>
-<p>Registry | Repository | Link | Supportability
-Docker Hub | <code>docker.io/aquasec/trivy</code> | https://hub.docker.com/r/aquasec/trivy | Official
-GitHub Container Registry (GHCR) | <code>ghcr.io/aquasecurity/trivy</code> | https://github.com/orgs/aquasecurity/packages/container/package/trivy | Official
-AWS Elastic Container Registry (ECR) | <code>public.ecr.aws/aquasecurity/trivy</code> | https://gallery.ecr.aws/aquasecurity/trivy | Official</p>
+<table>
+<thead>
+<tr>
+<th>Registry</th>
+<th>Repository</th>
+<th>Link</th>
+<th>Supportability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Docker Hub</td>
+<td><code>docker.io/aquasec/trivy</code></td>
+<td>https://hub.docker.com/r/aquasec/trivy</td>
+<td>Official</td>
+</tr>
+<tr>
+<td>GitHub Container Registry (GHCR)</td>
+<td><code>ghcr.io/aquasecurity/trivy</code></td>
+<td>https://github.com/orgs/aquasecurity/packages/container/package/trivy</td>
+<td>Official</td>
+</tr>
+<tr>
+<td>AWS Elastic Container Registry (ECR)</td>
+<td><code>public.ecr.aws/aquasecurity/trivy</code></td>
+<td>https://gallery.ecr.aws/aquasecurity/trivy</td>
+<td>Official</td>
+</tr>
+</tbody>
+</table>
 <h2 id="other-tools-to-use-and-deploy-trivy">Other Tools to use and deploy Trivy</h2>
 <p>For additional tools and ways to install and use Trivy in different environments such as in IDE, Kubernetes or CI/CD, see <a href="../../ecosystem/">Ecosystem section</a>.</p>
 
