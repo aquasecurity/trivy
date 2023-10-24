@@ -7,6 +7,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/wolfi"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/common"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -81,7 +82,7 @@ func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) 
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    common.BuildPkgIdentifier(pkg, ftypes.Wolfi, ""),
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
 			})

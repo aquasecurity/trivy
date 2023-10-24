@@ -16,6 +16,7 @@ import (
 	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
 	redhat "github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat-oval"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/common"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -157,7 +158,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			PkgID:            pkg.ID,
 			PkgName:          pkg.Name,
 			InstalledVersion: utils.FormatVersion(pkg),
-			PkgRef:           pkg.Ref,
+			PkgIdentifier:    common.BuildPkgIdentifier(pkg, ftypes.RedHat, osVer),
 			Status:           adv.Status,
 			Layer:            pkg.Layer,
 			SeveritySource:   vulnerability.RedHat,

@@ -8,6 +8,7 @@ import (
 	"k8s.io/utils/clock"
 
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/common"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -133,7 +134,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    common.BuildPkgIdentifier(pkg, ftypes.OpenSUSE, osVer),
 				Layer:            pkg.Layer,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,

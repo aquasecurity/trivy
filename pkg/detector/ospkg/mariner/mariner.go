@@ -5,6 +5,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/mariner"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/common"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -49,7 +50,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: utils.FormatVersion(pkg),
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    common.BuildPkgIdentifier(pkg, ftypes.CBLMariner, osVer),
 				Layer:            pkg.Layer,
 				DataSource:       adv.DataSource,
 			}

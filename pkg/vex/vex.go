@@ -50,7 +50,11 @@ func newOpenVEX(vex openvex.VEX) VEX {
 
 func (v *OpenVEX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulnerability {
 	return lo.Filter(vulns, func(vuln types.DetectedVulnerability, _ int) bool {
-		stmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgRef, nil)
+		if vuln.PkgIdentifier == nil {
+			return true
+		}
+
+		stmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgIdentifier.Value, nil)
 		if len(stmts) == 0 {
 			return true
 		}
@@ -122,7 +126,7 @@ func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) b
 				zap.Int("version", link.Version()))
 			continue
 		}
-		if vuln.PkgRef == link.Reference() &&
+		if vuln.PkgIdentifier.Value == link.Reference() &&
 			(stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
 			v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
 				zap.String("status", string(stmt.Status)), zap.String("justification", stmt.Justification))
