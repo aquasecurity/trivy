@@ -58,6 +58,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-9243",
 					InstalledVersion: "2.9",
 					FixedVersion:     "",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:deb/ubuntu/wpa@2.9?distro=ubuntu-20.04",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -72,6 +76,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2021-27803",
 					InstalledVersion: "2.9",
 					FixedVersion:     "2:2.9-1ubuntu4.3",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:deb/ubuntu/wpa@2.9?distro=ubuntu-20.04",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -110,6 +118,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-9243",
 					InstalledVersion: "2.9",
 					FixedVersion:     "",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:deb/ubuntu/wpa@2.9?distro=ubuntu-20.04",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -124,6 +136,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2021-27803",
 					InstalledVersion: "2.9",
 					FixedVersion:     "2:2.9-1ubuntu4.3",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:deb/ubuntu/wpa@2.9?distro=ubuntu-20.04",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},

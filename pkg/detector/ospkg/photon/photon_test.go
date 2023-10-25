@@ -57,6 +57,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-1747",
 					InstalledVersion: "3.12-4.ph1",
 					FixedVersion:     "3.12-5.ph1",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:rpm/photon/PyYAML@3.12-4.ph1?distro=photon-1.0",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},

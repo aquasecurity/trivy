@@ -57,6 +57,10 @@ func TestScanner_Detect(t *testing.T) {
 					VendorIDs:        []string{"DSA-4884-1"},
 					InstalledVersion: "2.4.24",
 					FixedVersion:     "2.4.25-1",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:deb/debian/htpasswd@2.4.24?distro=debian-9",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -72,6 +76,10 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "2.4.24",
 					Status:           dbTypes.StatusWillNotFix,
 					SeveritySource:   vulnerability.Debian,
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:deb/debian/htpasswd@2.4.24?distro=debian-9",
+					},
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
 					},

@@ -63,6 +63,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-10217",
 					InstalledVersion: "2.6.4",
 					FixedVersion:     "2.8.4-r0",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:apk/alpine/ansible@2.6.4?distro=3.10",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -77,6 +81,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2021-20191",
 					InstalledVersion: "2.6.4",
 					FixedVersion:     "",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:apk/alpine/ansible@2.6.4?distro=3.10",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -111,6 +119,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-1234",
 					InstalledVersion: "1.6-r0",
 					FixedVersion:     "1.6-r1",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:apk/alpine/jq@1.6-r0?distro=3.10",
+					},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Alpine,
 						Name: "Alpine Secdb",
@@ -145,6 +157,10 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "test",
 					InstalledVersion: "0.1.0_alpha",
 					FixedVersion:     "0.1.0_alpha2",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:apk/alpine/test@0.1.0_alpha?distro=3.10",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -183,6 +199,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-1234",
 					InstalledVersion: "1.6-r0",
 					FixedVersion:     "1.6-r1",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:apk/alpine/jq@1.6-r0?distro=3.9",
+					},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Alpine,
 						Name: "Alpine Secdb",
@@ -236,6 +256,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-1234",
 					InstalledVersion: "1.6-r0",
 					FixedVersion:     "1.6-r1",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:apk/alpine/jq@1.6-r0?distro=3.9",
+					},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Alpine,
 						Name: "Alpine Secdb",

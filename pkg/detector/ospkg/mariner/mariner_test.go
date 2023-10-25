@@ -57,7 +57,11 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-6470",
 					InstalledVersion: "9.16.14-1.cm1",
 					FixedVersion:     "9.16.15-1.cm1",
-					Layer:            ftypes.Layer{},
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:cbl-mariner/bind-utils@9.16.14-1.cm1?arch=aarch64",
+					},
+					Layer: ftypes.Layer{},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.CBLMariner,
 						Name: "CBL-Mariner Vulnerability Data",
@@ -95,7 +99,11 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "vim",
 					VulnerabilityID:  "CVE-2022-0261",
 					InstalledVersion: "8.2.4081-1.cm1",
-					Layer:            ftypes.Layer{},
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:cbl-mariner/vim@8.2.4081-1.cm1?arch=aarch64",
+					},
+					Layer: ftypes.Layer{},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.CBLMariner,
 						Name: "CBL-Mariner Vulnerability Data",

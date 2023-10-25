@@ -59,6 +59,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "SUSE-SU-2021:0175-1",
 					InstalledVersion: "13-4.6.6",
 					FixedVersion:     "13-4.6.7",
+					PkgIdentifier: &types.PkgIdentifier{
+						Format: types.PkgIdFormatPURL,
+						Value:  "pkg:rpm/opensuse/postgresql@13-4.6.6?distro=opensuse-15.3",
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
