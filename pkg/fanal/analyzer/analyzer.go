@@ -483,6 +483,11 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 // The obtained results are merged into the "result".
 // This function may be called concurrently and must be thread-safe.
 func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, *mapfs.FS], result *AnalysisResult, opts AnalysisOptions) error {
+	// https://df-eng.atlassian.net/browse/DEEP-8987 Include system installed (apk,dpkg,rpm) packages in sbom
+	if result != nil {
+		result.SystemInstalledFiles = []string{}
+	}
+
 	for _, a := range ag.postAnalyzers {
 		fsys, ok := files.Load(a.Type())
 		if !ok {
