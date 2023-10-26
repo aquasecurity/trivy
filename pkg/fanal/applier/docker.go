@@ -38,8 +38,7 @@ func lookupOriginLayerForPkg(pkg types.Package, layers []types.BlobInfo) (string
 	for i, layer := range layers {
 		for _, info := range layer.PackageInfos {
 			if containsPackage(pkg, info.Packages) {
-				digest, diffID := lookupPackageLayer(pkg, layer)
-				return digest, diffID, lookupBuildInfo(i, layers)
+				return layer.Digest, layer.DiffID, lookupBuildInfo(i, layers)
 			}
 		}
 	}
@@ -78,22 +77,11 @@ func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.
 				continue
 			}
 			if containsPackage(lib, layerApp.Libraries) {
-				return lookupPackageLayer(lib, layer)
+				return layer.Digest, layer.DiffID
 			}
 		}
 	}
 	return "", ""
-}
-
-func lookupPackageLayer(pkg types.Package, layer types.BlobInfo) (string, string) {
-	// SBOM files don't contain image layers.
-	// Package digests are stored in lib.Layer.
-	// Check only lib.Layer.DiffID, because Digest is empty for compressed layers:
-	// https://github.com/aquasecurity/trivy/blob/1a15a3adb1e42a6e3e3ab8706f3262a4a80892d0/pkg/fanal/artifact/image/image.go#L368-L375
-	if pkg.Layer.DiffID != "" {
-		return pkg.Layer.Digest, pkg.Layer.DiffID
-	}
-	return layer.Digest, layer.DiffID
 }
 
 // ApplyLayers returns the merged layer
@@ -215,6 +203,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	}
 
 	for i, pkg := range mergedLayer.Packages {
+		// Skip lookup for SBOM
+		if !lo.IsEmpty(pkg.Layer) {
+			continue
+		}
 		originLayerDigest, originLayerDiffID, buildInfo := lookupOriginLayerForPkg(pkg, layers)
 		mergedLayer.Packages[i].Layer = types.Layer{
 			Digest: originLayerDigest,
@@ -230,6 +222,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 	for _, app := range mergedLayer.Applications {
 		for i, lib := range app.Libraries {
+			// Skip lookup for SBOM
+			if !lo.IsEmpty(lib.Layer) {
+				continue
+			}
 			originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, lib, layers)
 			app.Libraries[i].Layer = types.Layer{
 				Digest: originLayerDigest,
