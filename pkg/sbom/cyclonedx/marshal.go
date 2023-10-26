@@ -320,7 +320,7 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 	}
 
 	// pu.Type is empty for empty purl
-	// e.g. Go binaries with replace to local directory
+	// e.g. Golang dependencies with replace to local directory
 	if pu.Type == "" {
 		return nil, nil
 	}
