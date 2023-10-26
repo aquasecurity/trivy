@@ -168,6 +168,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.0-20210421170649-83a5a9bb288b",
 							},
+							// dependency has been replaced with local directory
+							{
+								Name:    "./api",
+								Version: "(devel)",
+							},
 						},
 					},
 				},

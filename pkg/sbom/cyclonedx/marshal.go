@@ -193,6 +193,11 @@ func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, compone
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse pkg: %w", err)
 	}
+
+	// Skip component that can't be converted from `Package`
+	if component == nil {
+		return nil, nil
+	}
 	components[pkg.ID] = component
 
 	// Iterate dependencies
@@ -312,6 +317,12 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 	pu, err := purl.NewPackageURL(pkg.Type, pkg.Metadata, pkg.Package)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to new package purl: %w", err)
+	}
+
+	// pu.Type is empty for empty purl
+	// e.g. Go binaries with replace to local directory
+	if pu.Type == "" {
+		return nil, nil
 	}
 
 	name := pkg.Name
