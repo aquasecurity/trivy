@@ -203,6 +203,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	}
 
 	for i, pkg := range mergedLayer.Packages {
+		// Skip lookup for SBOM
+		if !lo.IsEmpty(pkg.Layer) {
+			continue
+		}
 		originLayerDigest, originLayerDiffID, buildInfo := lookupOriginLayerForPkg(pkg, layers)
 		mergedLayer.Packages[i].Layer = types.Layer{
 			Digest: originLayerDigest,
@@ -218,6 +222,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 	for _, app := range mergedLayer.Applications {
 		for i, lib := range app.Libraries {
+			// Skip lookup for SBOM
+			if !lo.IsEmpty(lib.Layer) {
+				continue
+			}
 			originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, lib, layers)
 			app.Libraries[i].Layer = types.Layer{
 				Digest: originLayerDigest,
