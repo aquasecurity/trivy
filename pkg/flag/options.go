@@ -150,6 +150,7 @@ func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 func (o *Options) FilterOpts() result.FilterOption {
 	return result.FilterOption{
 		Severities:         o.Severities,
+		ShowIgnored:        o.ShowIgnored,
 		IgnoreStatuses:     o.IgnoreStatuses,
 		IncludeNonFailures: o.IncludeNonFailures,
 		IgnoreFile:         o.IgnoreFile,

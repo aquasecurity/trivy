@@ -100,16 +100,17 @@ var (
 
 // Result holds a target and detected vulnerabilities
 type Result struct {
-	Target            string                     `json:"Target"`
-	Class             ResultClass                `json:"Class,omitempty"`
-	Type              ftypes.TargetType          `json:"Type,omitempty"`
-	Packages          []ftypes.Package           `json:"Packages,omitempty"`
-	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
-	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
-	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
-	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
-	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
-	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
+	Target                 string                     `json:"Target"`
+	Class                  ResultClass                `json:"Class,omitempty"`
+	Type                   ftypes.TargetType          `json:"Type,omitempty"`
+	Packages               []ftypes.Package           `json:"Packages,omitempty"`
+	Vulnerabilities        []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
+	IgnoredVulnerabilities []DetectedVulnerability    `json:"IgnoredVulnerabilities,omitempty"`
+	MisconfSummary         *MisconfSummary            `json:"MisconfSummary,omitempty"`
+	Misconfigurations      []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
+	Secrets                []ftypes.SecretFinding     `json:"Secrets,omitempty"`
+	Licenses               []DetectedLicense          `json:"Licenses,omitempty"`
+	CustomResources        []ftypes.CustomResource    `json:"CustomResources,omitempty"`
 }
 
 func (r *Result) MarshalJSON() ([]byte, error) {
@@ -118,7 +119,9 @@ func (r *Result) MarshalJSON() ([]byte, error) {
 	for i := range r.Vulnerabilities {
 		r.Vulnerabilities[i].VendorSeverity = nil
 	}
-
+	for i := range r.IgnoredVulnerabilities {
+		r.IgnoredVulnerabilities[i].VendorSeverity = nil
+	}
 	// remove the Highlighted attribute from the json results
 	for i := range r.Misconfigurations {
 		for li := range r.Misconfigurations[i].CauseMetadata.Code.Lines {
