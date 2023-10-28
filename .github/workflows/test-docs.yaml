@@ -19,6 +19,7 @@ jobs:
         python-version: 3.x
     - name: Install dependencies
       run: |
+        python -m pip install --upgrade pip setuptools wheel
         pip install -r docs/build/requirements.txt
     - name: Configure the git user
       run: |
