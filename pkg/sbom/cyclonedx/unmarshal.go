@@ -376,6 +376,8 @@ func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, erro
 			pkg.Modularitylabel = value
 		case PropertyLayerDiffID:
 			pkg.Layer.DiffID = value
+		case PropertyLayerDigest:
+			pkg.Layer.Digest = value
 		case PropertyFilePath:
 			pkg.FilePath = value
 		}
