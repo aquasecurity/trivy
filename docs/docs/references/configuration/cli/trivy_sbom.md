@@ -51,6 +51,7 @@ trivy sbom [flags] SBOM_PATH
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --server string               server address in client mode
   -s, --severity strings            severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
+      --show-ignored                show ignored vulnerabilities in a separate list
       --skip-db-update              skip updating vulnerability database
       --skip-dirs strings           specify the directories or glob patterns to skip
       --skip-files strings          specify the files or glob patterns to skip
