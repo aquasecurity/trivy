@@ -21,7 +21,7 @@ func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster 
 		return err
 	}
 
-	trivyk8s := trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
+	trivyk8s := trivyk8s.New(cluster, log.Logger.ZapLogger()).Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
 	runner := newRunner(opts, cluster.GetCurrentContext())
 
 	if len(name) == 0 { // pods or configmaps etc

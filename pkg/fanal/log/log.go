@@ -1,17 +1,19 @@
 package log
 
 import (
+	"github.com/aquasecurity/go-dep-parser/pkg/log"
+
 	"go.uber.org/zap"
 )
 
-var Logger *zap.SugaredLogger
-
-func init() {
-	if logger, err := zap.NewProduction(); err == nil {
-		Logger = logger.Sugar()
+var Logger = log.NewLazyLogger(func() (*zap.SugaredLogger, error) {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		return nil, err
 	}
-}
+	return logger.Sugar(), nil
+})
 
 func SetLogger(l *zap.SugaredLogger) {
-	Logger = l
+	Logger = log.NewLazyLogger(func() (*zap.SugaredLogger, error) { return l, nil })
 }

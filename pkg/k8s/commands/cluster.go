@@ -17,7 +17,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 		return err
 	}
 
-	artifacts, err := trivyk8s.New(cluster, log.Logger).ListArtifacts(ctx)
+	artifacts, err := trivyk8s.New(cluster, log.Logger.ZapLogger()).ListArtifacts(ctx)
 	if err != nil {
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
