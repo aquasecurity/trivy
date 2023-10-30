@@ -984,6 +984,19 @@ func TestPom_Parse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:      "compare ArtifactIDs for base and parent pom's",
+			inputFile: filepath.Join("testdata", "no-parent-infinity-loop", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				{
+					ID:      "com.example:child:1.0.0",
+					Name:    "com.example:child",
+					Version: "1.0.0",
+					License: "The Apache Software License, Version 2.0",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
