@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
@@ -75,9 +76,14 @@ func Write(report types.Report, option flag.Options) error {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	case types.FormatSarif:
+		target := ""
+		if report.ArtifactType == ftypes.ArtifactFilesystem {
+			target = option.Target
+		}
 		writer = &SarifWriter{
 			Output:  output,
 			Version: option.AppVersion,
+			Target:  target,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)

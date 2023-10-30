@@ -17,7 +17,34 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:574d490311b68db01c0a3e44f5491be0cdc79250"
+    "Digest": "sha1:574d490311b68db01c0a3e44f5491be0cdc79250",
+    "InstalledFiles": [
+      "etc/hosts",
+      "etc/sysctl.conf",
+      "etc/group",
+      "etc/protocols",
+      "etc/fstab",
+      "etc/mtab",
+      "etc/profile",
+      "etc/shells",
+      "etc/motd",
+      "etc/inittab",
+      "etc/hostname",
+      "etc/modules",
+      "etc/services",
+      "etc/shadow",
+      "etc/passwd",
+      "etc/profile.d/color_prompt",
+      "etc/sysctl.d/00-alpine.conf",
+      "etc/modprobe.d/i386.conf",
+      "etc/modprobe.d/blacklist.conf",
+      "etc/modprobe.d/aliases.conf",
+      "etc/modprobe.d/kms.conf",
+      "etc/crontabs/root",
+      "sbin/mkmntdirs",
+      "var/run",
+      "var/spool/cron/crontabs"
+    ]
   },
   {
     "ID": "alpine-keys@2.1-r2",
@@ -33,7 +60,27 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:6dd672e2dabc14aa324cf9cd4553e98b69a769c1"
+    "Digest": "sha1:6dd672e2dabc14aa324cf9cd4553e98b69a769c1",
+    "InstalledFiles": [
+      "etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+      "etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+      "etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+      "usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+      "usr/share/apk/keys/aarch64/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+      "usr/share/apk/keys/ppc64le/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+      "usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+      "usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+      "usr/share/apk/keys/s390x/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+      "usr/share/apk/keys/armhf/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+      "usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+      "usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub"
+    ]
   },
   {
     "ID": "apk-tools@2.10.4-r2",
@@ -55,7 +102,10 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:e6393c9419776955346cddd70ad4ec66082a2705"
+    "Digest": "sha1:e6393c9419776955346cddd70ad4ec66082a2705",
+    "InstalledFiles": [
+      "sbin/apk"
+    ]
   },
   {
     "ID": "busybox@1.30.1-r2",
@@ -74,7 +124,15 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:9c244d7f4909bffcef4c67380b6aed145c41a232"
+    "Digest": "sha1:9c244d7f4909bffcef4c67380b6aed145c41a232",
+    "InstalledFiles": [
+      "bin/busybox",
+      "bin/sh",
+      "etc/securetty",
+      "etc/udhcpd.conf",
+      "etc/logrotate.d/acpid",
+      "etc/network/if-up.d/dad"
+    ]
   },
   {
     "ID": "ca-certificates-cacert@20190108-r0",
@@ -91,7 +149,10 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:0d69933c7cd071e82acb24c6e4268e4752f7a3f7"
+    "Digest": "sha1:0d69933c7cd071e82acb24c6e4268e4752f7a3f7",
+    "InstalledFiles": [
+      "etc/ssl/cert.pem"
+    ]
   },
   {
     "ID": "libc-utils@0.7.1-r0",
@@ -129,7 +190,21 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:547053af84ac3667548b11b990d7b80ef23b9a3f"
+    "Digest": "sha1:547053af84ac3667548b11b990d7b80ef23b9a3f",
+    "InstalledFiles": [
+      "etc/ssl/openssl.cnf.dist",
+      "etc/ssl/ct_log_list.cnf",
+      "etc/ssl/ct_log_list.cnf.dist",
+      "etc/ssl/openssl.cnf",
+      "etc/ssl/misc/CA.pl",
+      "etc/ssl/misc/tsget.pl",
+      "etc/ssl/misc/tsget",
+      "lib/libcrypto.so.1.1",
+      "usr/lib/libcrypto.so.1.1",
+      "usr/lib/engines-1.1/capi.so",
+      "usr/lib/engines-1.1/padlock.so",
+      "usr/lib/engines-1.1/afalg.so"
+    ]
   },
   {
     "ID": "libssl1.1@1.1.1c-r0",
@@ -149,7 +224,11 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:6f37a428d6f8de036a523d42e6b0c99288153c38"
+    "Digest": "sha1:6f37a428d6f8de036a523d42e6b0c99288153c38",
+    "InstalledFiles": [
+      "lib/libssl.so.1.1",
+      "usr/lib/libssl.so.1.1"
+    ]
   },
   {
     "ID": "libtls-standalone@2.9.1-r0",
@@ -171,7 +250,11 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:f149b608e1e33cfad61fbcf9e3fdb6494f7d691a"
+    "Digest": "sha1:f149b608e1e33cfad61fbcf9e3fdb6494f7d691a",
+    "InstalledFiles": [
+      "usr/lib/libtls-standalone.so.1.0.0",
+      "usr/lib/libtls-standalone.so.1"
+    ]
   },
   {
     "ID": "musl@1.1.22-r3",
@@ -187,7 +270,11 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:d489e0f3fbb5548758f5ccd2c5a0cef70260ef62"
+    "Digest": "sha1:d489e0f3fbb5548758f5ccd2c5a0cef70260ef62",
+    "InstalledFiles": [
+      "lib/libc.musl-x86_64.so.1",
+      "lib/ld-musl-x86_64.so.1"
+    ]
   },
   {
     "ID": "musl-utils@1.1.22-r3",
@@ -209,7 +296,14 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:8bb14c727be819d07a1e9d8b998dc94bde989205"
+    "Digest": "sha1:8bb14c727be819d07a1e9d8b998dc94bde989205",
+    "InstalledFiles": [
+      "sbin/ldconfig",
+      "usr/bin/iconv",
+      "usr/bin/ldd",
+      "usr/bin/getconf",
+      "usr/bin/getent"
+    ]
   },
   {
     "ID": "scanelf@1.2.3-r0",
@@ -228,7 +322,10 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:cb3059ce358cea0f5f78a0220a2980e6c4916a94"
+    "Digest": "sha1:cb3059ce358cea0f5f78a0220a2980e6c4916a94",
+    "InstalledFiles": [
+      "usr/bin/scanelf"
+    ]
   },
   {
     "ID": "ssl_client@1.30.1-r2",
@@ -248,7 +345,10 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:1f7afca8301f00cef8a9797124721d9f8c16f586"
+    "Digest": "sha1:1f7afca8301f00cef8a9797124721d9f8c16f586",
+    "InstalledFiles": [
+      "usr/bin/ssl_client"
+    ]
   },
   {
     "ID": "zlib@1.2.11-r1",
@@ -267,6 +367,10 @@
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     },
-    "Digest": "sha1:bacb380dfa6f2f5e8dc366144f09b3181001cf76"
+    "Digest": "sha1:bacb380dfa6f2f5e8dc366144f09b3181001cf76",
+    "InstalledFiles": [
+      "lib/libz.so.1.2.11",
+      "lib/libz.so.1"
+    ]
   }
 ]

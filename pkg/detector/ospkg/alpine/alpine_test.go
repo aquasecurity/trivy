@@ -5,8 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
@@ -34,8 +32,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
@@ -88,8 +89,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "contain rc",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain rc",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -116,8 +120,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "contain pre",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain pre",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -150,12 +157,15 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "repository is newer than OS version",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "repository is newer than OS version",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.9.3",
 				repo: &ftypes.Repository{
-					Family:  os.Alpine,
+					Family:  ftypes.Alpine,
 					Release: "3.10",
 				},
 				pkgs: []ftypes.Package{
@@ -182,8 +192,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
@@ -198,12 +211,15 @@ func TestScanner_Detect(t *testing.T) {
 			wantErr: "failed to get alpine advisories",
 		},
 		{
-			name:     "No src name",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "No src name",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.9.3",
 				repo: &ftypes.Repository{
-					Family:  os.Alpine,
+					Family:  ftypes.Alpine,
 					Release: "3.10",
 				},
 				pkgs: []ftypes.Package{
@@ -253,7 +269,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {

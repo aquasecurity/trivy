@@ -14,7 +14,6 @@ import (
 	"golang.org/x/xerrors"
 
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
-
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
@@ -308,7 +307,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFormat := flag.ReportFormatFlag
-	reportFormat.Usage = "specify a compliance report format for the output" //@TODO: support --report summary for non compliance reports
+	reportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = &reportFormat
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
@@ -583,6 +582,11 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
 	}
 
+	// java-db only works on client side.
+	serverFlags.DBFlagGroup.DownloadJavaDBOnly = nil // disable '--download-java-db-only'
+	serverFlags.DBFlagGroup.SkipJavaDBUpdate = nil   // disable '--skip-java-db-update'
+	serverFlags.DBFlagGroup.JavaDBRepository = nil   // disable '--java-db-repository'
+
 	cmd := &cobra.Command{
 		Use:     "server [flags]",
 		Aliases: []string{"s"},
@@ -618,11 +622,10 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
-	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
 	reportFormat := flag.ReportFormatFlag
-	reportFormat.Usage = "specify a compliance report format for the output" //@TODO: support --report summary for non compliance reports
+	reportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = &reportFormat
 
 	scanFlags := &flag.ScanFlagGroup{
@@ -1209,6 +1212,6 @@ func flagErrorFunc(command *cobra.Command, err error) error {
 	if err := command.Help(); err != nil {
 		return err
 	}
-	command.Println() //add empty line after list of flags
+	command.Println() // add empty line after list of flags
 	return err
 }

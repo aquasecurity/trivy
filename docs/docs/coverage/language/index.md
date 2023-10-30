@@ -46,6 +46,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Elixir](elixir.md)  | mix.lock[^10]                                                                              |     -     |     -      |       ✅        |       ✅        |
 | [Dart](dart.md)      | pubspec.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Swift](swift.md)    | Podfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
+|                      | Package.resolved                                                                           |     -     |     -      |       ✅        |       ✅        |
 
 The path of these files does not matter.
 

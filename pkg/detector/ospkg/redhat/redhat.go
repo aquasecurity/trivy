@@ -16,7 +16,7 @@ import (
 	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
 	redhat "github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat-oval"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -70,9 +70,9 @@ type options struct {
 
 type option func(*options)
 
-func WithClock(clock clock.Clock) option {
+func WithClock(c clock.Clock) option {
 	return func(opts *options) {
-		opts.clock = clock
+		opts.clock = c
 	}
 }
 
@@ -100,9 +100,8 @@ func NewScanner(opts ...option) *Scanner {
 // Detect scans and returns redhat vulnerabilities
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting RHEL/CentOS vulnerabilities...")
-	if strings.Count(osVer, ".") > 0 {
-		osVer = osVer[:strings.Index(osVer, ".")]
-	}
+
+	osVer = osver.Major(osVer)
 	log.Logger.Debugf("Red Hat: os version: %s", osVer)
 	log.Logger.Debugf("Red Hat: the number of packages: %d", len(pkgs))
 
@@ -143,7 +142,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 	installed := utils.FormatVersion(pkg)
 	installedVersion := version.NewVersion(installed)
 
-	uniqVulns := map[string]types.DetectedVulnerability{}
+	uniqVulns := make(map[string]types.DetectedVulnerability)
 	for _, adv := range advisories {
 		// if Arches for advisory is empty or pkg.Arch is "noarch", then any Arches are affected
 		if len(adv.Arches) != 0 && pkg.Arch != "noarch" {
@@ -209,24 +208,13 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 }
 
 // IsSupportedVersion checks is OSFamily can be scanned with Redhat scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	if strings.Count(osVer, ".") > 0 {
-		osVer = osVer[:strings.Index(osVer, ".")]
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
+	osVer = osver.Major(osVer)
+	if osFamily == ftypes.CentOS {
+		return osver.Supported(s.clock, centosEOLDates, osFamily, osVer)
 	}
 
-	var eolDate time.Time
-	var ok bool
-	if osFamily == os.RedHat {
-		eolDate, ok = redhatEOLDates[osVer]
-	} else if osFamily == os.CentOS {
-		eolDate, ok = centosEOLDates[osVer]
-	}
-	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
-	}
-
-	return s.clock.Now().Before(eolDate)
+	return osver.Supported(s.clock, redhatEOLDates, osFamily, osVer)
 }
 
 func isFromSupportedVendor(pkg ftypes.Package) bool {

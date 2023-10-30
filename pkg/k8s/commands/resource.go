@@ -4,13 +4,12 @@ import (
 	"context"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -22,14 +21,18 @@ func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster 
 	}
 
 	runner := newRunner(opts, cluster.GetCurrentContext())
+
 	var trivyk trivyk8s.TrivyK8S
+
+	trivyk = trivyk8s.New(cluster, log.Logger, trivyk8s.WithExcludeOwned(opts.ExcludeOwned))
+
 	if opts.AllNamespaces {
-		trivyk = trivyk8s.New(cluster, log.Logger).AllNamespaces()
+		trivyk = trivyk.AllNamespaces()
 	} else {
-		trivyk = trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
+		trivyk = trivyk.Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
 	}
 
-	if len(name) == 0 { // pods or configmaps etc
+	if name == "" { // pods or configmaps etc
 		if err = validateReportArguments(opts); err != nil {
 			return err
 		}

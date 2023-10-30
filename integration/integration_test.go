@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -19,6 +20,7 @@ import (
 	"github.com/samber/lo"
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
+	"github.com/spdx/tools-golang/spdxlib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/xeipuuv/gojsonschema"
@@ -33,6 +35,8 @@ import (
 )
 
 var update = flag.Bool("update", false, "update golden files")
+
+const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/development/v%s/schemas/spdx-schema.json"
 
 func initDB(t *testing.T) string {
 	fixtureDir := filepath.Join("testdata", "fixtures", "db")
@@ -151,6 +155,9 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 				return (*(*bom.Components)[i].Properties)[ii].Name < (*(*bom.Components)[i].Properties)[jj].Name
 			})
 		}
+		sort.Slice(*bom.Vulnerabilities, func(i, j int) bool {
+			return (*bom.Vulnerabilities)[i].ID < (*bom.Vulnerabilities)[j].ID
+		})
 	}
 
 	return bom
@@ -207,9 +214,26 @@ func compareCycloneDX(t *testing.T, wantFile, gotFile string) {
 	assert.Equal(t, want, got)
 
 	// Validate CycloneDX output against the JSON schema
-	schemaLoader := gojsonschema.NewReferenceLoader(got.JSONSchema)
-	documentLoader := gojsonschema.NewGoLoader(got)
+	validateReport(t, got.JSONSchema, got)
+}
 
+func compareSPDXJson(t *testing.T, wantFile, gotFile string) {
+	want := readSpdxJson(t, wantFile)
+	got := readSpdxJson(t, gotFile)
+	assert.Equal(t, want, got)
+
+	SPDXVersion, ok := strings.CutPrefix(want.SPDXVersion, "SPDX-")
+	assert.True(t, ok)
+
+	assert.NoError(t, spdxlib.ValidateDocument(got))
+
+	// Validate SPDX output against the JSON schema
+	validateReport(t, fmt.Sprintf(SPDXSchema, SPDXVersion), got)
+}
+
+func validateReport(t *testing.T, schema string, report any) {
+	schemaLoader := gojsonschema.NewReferenceLoader(schema)
+	documentLoader := gojsonschema.NewGoLoader(report)
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	require.NoError(t, err)
 
@@ -219,10 +243,4 @@ func compareCycloneDX(t *testing.T, wantFile, gotFile string) {
 		})
 		assert.True(t, valid, strings.Join(errs, "\n"))
 	}
-}
-
-func compareSpdxJson(t *testing.T, wantFile, gotFile string) {
-	want := readSpdxJson(t, wantFile)
-	got := readSpdxJson(t, gotFile)
-	assert.Equal(t, want, got)
 }

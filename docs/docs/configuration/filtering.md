@@ -68,7 +68,7 @@ Total: 527 (UNKNOWN: 0, LOW: 276, MEDIUM: 83, HIGH: 158, CRITICAL: 10)
 
 !!! tip
     To skip all unfixed vulnerabilities, you can use the `--ignore-unfixed` flag .
-    It is a shorthand of `-ignore-status affected,will_not_fix,fix_deferred,end_of_life`.
+    It is a shorthand of `--ignore-status affected,will_not_fix,fix_deferred,end_of_life`.
     It displays "fixed" vulnerabilities only.
 
 ```bash
@@ -204,6 +204,10 @@ See https://avd.aquasec.com/misconfig/avd-aws-0081
 
 ## By Finding IDs
 
+Trivy supports the [.trivyignore](#trivyignore) and [.trivyignore.yaml](#trivyignoreyaml) ignore files.
+
+### .trivyignore
+
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -211,7 +215,6 @@ See https://avd.aquasec.com/misconfig/avd-aws-0081
 |      Secret      |     ✓     |
 |     License      |           |
 
-Use `.trivyignore`.
 
 ```bash
 $ cat .trivyignore
@@ -250,6 +253,92 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 ```
 
 </details>
+
+### .trivyignore.yaml
+
+|     Scanner      | Supported |
+|:----------------:|:---------:|
+|  Vulnerability   |     ✓     |
+| Misconfiguration |     ✓     |
+|      Secret      |     ✓     |
+|     License      |     ✓     |
+
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+When the extension of the specified ignore file is either `.yml` or `.yaml`, Trivy will load the file as YAML.
+For the `.trivyignore.yaml` file, you can set ignored IDs separately for `vulnerabilities`, `misconfigurations`, `secrets`, or `licenses`[^1].
+
+Available fields:
+
+| Field      | Required | Type                | Description                                                                                                |
+|------------|:--------:|---------------------|------------------------------------------------------------------------------------------------------------|
+| id         |    ✓     | string              | The identifier of the vulnerability, misconfiguration, secret, or license[^1].                             |
+| paths      |          | string array        | The list of file paths to be ignored. If `paths` is not set, the ignore finding is applied to all files.   |
+| expired_at |          | date (`yyyy-mm-dd`) | The expiration date of the ignore finding. If `expired_at` is not set, the ignore finding is always valid. |
+| statement  |          | string              | The reason for ignoring the finding. (This field is not used for filtering.)                               |
+
+```bash
+$ cat .trivyignore.yaml
+vulnerabilities:
+  - id: CVE-2022-40897
+    paths:
+      - "usr/local/lib/python3.9/site-packages/setuptools-58.1.0.dist-info/METADATA"
+    statement: Accept the risk
+  - id: CVE-2023-2650
+  - id: CVE-2023-3446
+  - id: CVE-2023-3817
+  - id: CVE-2023-29491
+    expired_at: 2023-09-01
+
+misconfigurations:
+  - id: AVD-DS-0001
+  - id: AVD-DS-0002
+    paths:
+      - "docs/Dockerfile"
+    statement: The image needs root privileges
+
+secrets:
+  - id: aws-access-key-id
+  - id: aws-secret-access-key
+    paths:
+      - "foo/bar/aws.secret"
+
+licenses:
+  - id: GPL-3.0 # License name is used as ID
+    paths:
+      - "usr/share/gcc/python/libstdcxx/v6/__init__.py"
+```
+
+Since this feature is experimental, you must explicitly specify the YAML file path using the `--ignorefile` flag.
+Once this functionality is stable, the YAML file will be loaded automatically.
+
+```bash
+$ trivy image --ignorefile ./.trivyignore.yaml python:3.9.16-alpine3.16
+```
+
+<details>
+<summary>Result</summary>
+
+```bash
+2023-08-31T11:10:27.155+0600	INFO	Vulnerability scanning is enabled
+2023-08-31T11:10:27.155+0600	INFO	Secret scanning is enabled
+2023-08-31T11:10:27.155+0600	INFO	If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2023-08-31T11:10:27.155+0600	INFO	Please see also https://aquasecurity.github.io/trivy/dev/docs/scanner/secret/#recommendation for faster secret detection
+2023-08-31T11:10:29.164+0600	INFO	Detected OS: alpine
+2023-08-31T11:10:29.164+0600	INFO	Detecting Alpine vulnerabilities...
+2023-08-31T11:10:29.169+0600	INFO	Number of language-specific files: 1
+2023-08-31T11:10:29.170+0600	INFO	Detecting python-pkg vulnerabilities...
+
+python:3.9.16-alpine3.16 (alpine 3.16.5)
+========================================
+Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+
+```
+
+</details>
+
 
 ## By Vulnerability Target
 |     Scanner      | Supported |
@@ -425,3 +514,5 @@ resource "google_container_cluster" "one_off_test" {
   location = var.region
 }
 ```
+
+[^1]: license name is used as id for `.trivyignore.yaml` files

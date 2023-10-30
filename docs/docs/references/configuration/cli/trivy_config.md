@@ -24,6 +24,7 @@ trivy config [flags] DIR
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-values strings               specify paths to override the Helm values.yaml files
   -h, --help                              help for config
+      --ignore-policy string              specify the Rego file path to evaluate each vulnerability
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-non-failures              include successes and exceptions, available with '--scanners config'
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
@@ -44,7 +45,7 @@ trivy config [flags] DIR
       --skip-files strings                specify the files or glob patterns to skip
       --skip-policy-update                skip fetching rego policy updates
   -t, --template string                   output template
-      --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder
+      --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.

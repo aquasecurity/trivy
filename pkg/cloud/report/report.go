@@ -77,7 +77,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	for _, resultsAtTime := range rep.Results {
 		for _, res := range resultsAtTime.Results {
 			resCopy := res
-			if err := result.FilterResult(ctx, &resCopy, result.FilterOption{
+			if err := result.FilterResult(ctx, &resCopy, result.IgnoreConfig{}, result.FilterOption{
 				Severities:         opt.Severities,
 				IncludeNonFailures: opt.IncludeNonFailures,
 			}); err != nil {

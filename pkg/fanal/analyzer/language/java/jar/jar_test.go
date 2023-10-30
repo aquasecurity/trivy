@@ -6,11 +6,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
-	"github.com/stretchr/testify/assert"
 
 	_ "modernc.org/sqlite"
 )
@@ -129,7 +130,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// init java-trivy-db with skip update
-			javadb.Init("testdata", defaultJavaDBRepository, true, false, false)
+			javadb.Init("testdata", defaultJavaDBRepository, true, false, types.RegistryOptions{Insecure: false})
 
 			a := javaLibraryAnalyzer{slow: true}
 			ctx := context.Background()

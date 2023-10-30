@@ -40,7 +40,7 @@ type customStringSliceValue struct {
 	changed bool
 }
 
-func newCustomStringSliceValue(val []string, allowed []string) *customStringSliceValue {
+func newCustomStringSliceValue(val, allowed []string) *customStringSliceValue {
 	return &customStringSliceValue{
 		value:   &val,
 		allowed: allowed,

@@ -117,11 +117,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/base-files@10.3+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/base-files@10.3%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "base-files",
       "version": "10.3+deb10u2",
-      "purl": "pkg:deb/debian/base-files@10.3+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/base-files@10.3%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -220,11 +220,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "bsdutils",
       "version": "2.33.1-0.1",
-      "purl": "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -463,11 +463,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/diffutils@3.7-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/diffutils@3.7-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "diffutils",
       "version": "3.7-3",
-      "purl": "pkg:deb/debian/diffutils@3.7-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/diffutils@3.7-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -537,11 +537,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/e2fsprogs@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/e2fsprogs@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "e2fsprogs",
       "version": "1.44.5-1+deb10u2",
-      "purl": "pkg:deb/debian/e2fsprogs@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/e2fsprogs@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -611,11 +611,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/findutils@4.6.0+git+20190209-2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/findutils@4.6.0%2Bgit%2B20190209-2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "findutils",
       "version": "4.6.0+git+20190209-2",
-      "purl": "pkg:deb/debian/findutils@4.6.0+git+20190209-2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/findutils@4.6.0%2Bgit%2B20190209-2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -685,11 +685,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/gpgv@2.2.12-1+deb10u1?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/gpgv@2.2.12-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "gpgv",
       "version": "2.2.12-1+deb10u1",
-      "purl": "pkg:deb/debian/gpgv@2.2.12-1+deb10u1?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/gpgv@2.2.12-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -829,11 +829,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/init-system-helpers@1.56+nmu1?arch=all\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/init-system-helpers@1.56%2Bnmu1?arch=all\u0026distro=debian-10.2",
       "type": "library",
       "name": "init-system-helpers",
       "version": "1.56+nmu1",
-      "purl": "pkg:deb/debian/init-system-helpers@1.56+nmu1?arch=all\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/init-system-helpers@1.56%2Bnmu1?arch=all\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -932,11 +932,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "libattr1",
       "version": "2.4.48-4",
-      "purl": "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -973,11 +973,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "libaudit-common",
       "version": "2.8.4-3",
-      "purl": "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -1014,11 +1014,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "libaudit1",
       "version": "2.8.4-3",
-      "purl": "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -1240,11 +1240,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libcom-err2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libcom-err2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libcom-err2",
       "version": "1.44.5-1+deb10u2",
-      "purl": "pkg:deb/debian/libcom-err2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libcom-err2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -1277,11 +1277,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.5?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.5?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libdb5.3",
       "version": "5.3.28+dfsg1-0.5",
-      "purl": "pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.5?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.5?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -1347,11 +1347,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libext2fs2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libext2fs2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libext2fs2",
       "version": "1.44.5-1+deb10u2",
-      "purl": "pkg:deb/debian/libext2fs2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libext2fs2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -1458,11 +1458,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "libgcc1",
       "version": "8.3.0-6",
-      "purl": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -1606,11 +1606,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libgmp10@6.1.2+dfsg-4?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
       "type": "library",
       "name": "libgmp10",
       "version": "6.1.2+dfsg-4",
-      "purl": "pkg:deb/debian/libgmp10@6.1.2+dfsg-4?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -1943,11 +1943,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libncurses6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libncurses6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libncurses6",
       "version": "6.1+20181013-2+deb10u2",
-      "purl": "pkg:deb/debian/libncurses6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libncurses6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -1980,11 +1980,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libncursesw6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libncursesw6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libncursesw6",
       "version": "6.1+20181013-2+deb10u2",
-      "purl": "pkg:deb/debian/libncursesw6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libncursesw6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -2239,11 +2239,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
       "type": "library",
       "name": "libpcre3",
       "version": "8.39-12",
-      "purl": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -2317,11 +2317,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libruby2.5",
       "version": "2.5.5-3+deb10u1",
-      "purl": "pkg:deb/debian/libruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -2391,11 +2391,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libselinux1@2.8-1+b1?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libselinux1",
       "version": "2.8-1+b1",
-      "purl": "pkg:deb/debian/libselinux1@2.8-1+b1?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -2576,11 +2576,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libss2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libss2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libss2",
       "version": "1.44.5-1+deb10u2",
-      "purl": "pkg:deb/debian/libss2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libss2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -2613,11 +2613,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libssl1.1@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libssl1.1@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libssl1.1",
       "version": "1.1.1d-0+deb10u2",
-      "purl": "pkg:deb/debian/libssl1.1@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libssl1.1@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -2761,11 +2761,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libtinfo6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libtinfo6",
       "version": "6.1+20181013-2+deb10u2",
-      "purl": "pkg:deb/debian/libtinfo6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -2946,11 +2946,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/libzstd1@1.3.8+dfsg-3?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/libzstd1@1.3.8%2Bdfsg-3?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "libzstd1",
       "version": "1.3.8+dfsg-3",
-      "purl": "pkg:deb/debian/libzstd1@1.3.8+dfsg-3?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/libzstd1@1.3.8%2Bdfsg-3?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -2983,11 +2983,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "login",
       "version": "4.5-1.1",
-      "purl": "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3024,11 +3024,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/mawk@1.3.3-17+b3?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/mawk@1.3.3-17%2Bb3?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "mawk",
       "version": "1.3.3-17+b3",
-      "purl": "pkg:deb/debian/mawk@1.3.3-17+b3?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/mawk@1.3.3-17%2Bb3?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3098,11 +3098,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/ncurses-base@6.1+20181013-2+deb10u2?arch=all\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/ncurses-base@6.1%2B20181013-2%2Bdeb10u2?arch=all\u0026distro=debian-10.2",
       "type": "library",
       "name": "ncurses-base",
       "version": "6.1+20181013-2+deb10u2",
-      "purl": "pkg:deb/debian/ncurses-base@6.1+20181013-2+deb10u2?arch=all\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/ncurses-base@6.1%2B20181013-2%2Bdeb10u2?arch=all\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3135,11 +3135,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/ncurses-bin@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/ncurses-bin@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "ncurses-bin",
       "version": "6.1+20181013-2+deb10u2",
-      "purl": "pkg:deb/debian/ncurses-bin@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/ncurses-bin@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3172,11 +3172,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/openssl@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/openssl@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "openssl",
       "version": "1.1.1d-0+deb10u2",
-      "purl": "pkg:deb/debian/openssl@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/openssl@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3209,11 +3209,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "passwd",
       "version": "4.5-1.1",
-      "purl": "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3583,11 +3583,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/ruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/ruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "ruby2.5",
       "version": "2.5.5-3+deb10u1",
-      "purl": "pkg:deb/debian/ruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/ruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3620,11 +3620,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "ruby",
       "version": "2.5.1",
-      "purl": "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3764,11 +3764,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/tar@1.30+dfsg-6?arch=amd64\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/tar@1.30%2Bdfsg-6?arch=amd64\u0026distro=debian-10.2",
       "type": "library",
       "name": "tar",
       "version": "1.30+dfsg-6",
-      "purl": "pkg:deb/debian/tar@1.30+dfsg-6?arch=amd64\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/tar@1.30%2Bdfsg-6?arch=amd64\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3801,11 +3801,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/tzdata@2019c-0+deb10u1?arch=all\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/tzdata@2019c-0%2Bdeb10u1?arch=all\u0026distro=debian-10.2",
       "type": "library",
       "name": "tzdata",
       "version": "2019c-0+deb10u1",
-      "purl": "pkg:deb/debian/tzdata@2019c-0+deb10u1?arch=all\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/tzdata@2019c-0%2Bdeb10u1?arch=all\u0026distro=debian-10.2",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -3875,11 +3875,11 @@
       ]
     },
     {
-      "bom-ref": "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "bom-ref": "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "type": "library",
       "name": "zlib1g",
       "version": "1.2.11.dfsg-1",
-      "purl": "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "purl": "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "properties": [
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -5739,48 +5739,48 @@
       "dependsOn": [
         "pkg:deb/debian/adduser@3.118?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/apt@1.8.2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/base-files@10.3+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/base-files@10.3%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/base-passwd@3.5.46?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/bash@5.0-4?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/ca-certificates@20190110?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/coreutils@8.30-3?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/dash@0.5.10.2-5?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/debconf@1.5.71?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/debian-archive-keyring@2019.1?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/debianutils@4.8.6.1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/diffutils@3.7-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/diffutils@3.7-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/dpkg@1.19.7?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/e2fsprogs@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/e2fsprogs@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/fdisk@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/findutils@4.6.0+git+20190209-2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/findutils@4.6.0%2Bgit%2B20190209-2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/gcc-8-base@8.3.0-6?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/gpgv@2.2.12-1+deb10u1?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/gpgv@2.2.12-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/grep@3.3-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/gzip@1.9-3?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/hostname@3.21?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/init-system-helpers@1.56+nmu1?arch=all\u0026distro=debian-10.2",
+        "pkg:deb/debian/init-system-helpers@1.56%2Bnmu1?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/libacl1@2.2.53-4?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libapt-pkg5.0@1.8.2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
-        "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026epoch=1\u0026distro=debian-10.2",
-        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
+        "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026distro=debian-10.2\u0026epoch=1",
+        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libblkid1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libbz2-1.0@1.0.6-9.2~deb10u1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libc-bin@2.28-10?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libcap-ng0@0.7.9-2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libcom-err2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.5?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libcom-err2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.5?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libdebconfclient0@0.249?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libext2fs2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libext2fs2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libfdisk1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libffi6@3.2.1-9?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libgcrypt20@1.8.4-5?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libgdbm-compat4@1.18.1-4?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libgdbm6@1.18.1-4?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgmp10@6.1.2+dfsg-4?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+        "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
         "pkg:deb/debian/libgnutls30@3.6.7-4?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libgpg-error0@1.35-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libhogweed4@3.4.1-1?arch=amd64\u0026distro=debian-10.2",
@@ -5789,41 +5789,41 @@
         "pkg:deb/debian/liblz4-1@1.8.3-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/liblzma5@5.2.4-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libmount1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libncurses6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libncursesw6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libncurses6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libncursesw6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libnettle6@3.4.1-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libp11-kit0@0.23.15-2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libpam-modules-bin@1.3.1-5?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libpam-modules@1.3.1-5?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libpam-runtime@1.3.1-5?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/libpam0g@1.3.1-5?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+        "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
         "pkg:deb/debian/libreadline7@7.0-5?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libseccomp2@2.3.3-4?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libselinux1@2.8-1+b1?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libsemanage-common@2.8-2?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/libsemanage1@2.8-2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libsepol1@2.8-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libsmartcols1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libss2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libssl1.1@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libss2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libssl1.1@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libstdc%2B%2B6@8.3.0-6?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libsystemd0@241-7~deb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libtasn1-6@4.13-3?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libtinfo6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libudev1@241-7~deb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libunistring2@0.9.10-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libuuid1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libyaml-0-2@0.2.1-1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libzstd1@1.3.8+dfsg-3?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
-        "pkg:deb/debian/mawk@1.3.3-17+b3?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libzstd1@1.3.8%2Bdfsg-3?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
+        "pkg:deb/debian/mawk@1.3.3-17%2Bb3?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/mount@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/ncurses-base@6.1+20181013-2+deb10u2?arch=all\u0026distro=debian-10.2",
-        "pkg:deb/debian/ncurses-bin@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/openssl@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/ncurses-base@6.1%2B20181013-2%2Bdeb10u2?arch=all\u0026distro=debian-10.2",
+        "pkg:deb/debian/ncurses-bin@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/openssl@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/perl-base@5.28.1-6?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/rake@12.3.1-3?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/readline-common@7.0-5?arch=all\u0026distro=debian-10.2",
@@ -5833,22 +5833,22 @@
         "pkg:deb/debian/ruby-power-assert@1.1.1-1?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/ruby-test-unit@3.2.8-1?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/ruby-xmlrpc@0.3.0-2?arch=all\u0026distro=debian-10.2",
-        "pkg:deb/debian/ruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/ruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/rubygems-integration@1.11?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/sed@4.7-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/sysvinit-utils@2.93-8?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/tar@1.30+dfsg-6?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/tzdata@2019c-0+deb10u1?arch=all\u0026distro=debian-10.2",
+        "pkg:deb/debian/tar@1.30%2Bdfsg-6?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/tzdata@2019c-0%2Bdeb10u1?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/util-linux@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2"
+        "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1"
       ]
     },
     {
       "ref": "pkg:deb/debian/adduser@3.118?arch=all\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/debconf@1.5.71?arch=all\u0026distro=debian-10.2",
-        "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2"
+        "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1"
       ]
     },
     {
@@ -5856,17 +5856,17 @@
       "dependsOn": [
         "pkg:deb/debian/adduser@3.118?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/debian-archive-keyring@2019.1?arch=all\u0026distro=debian-10.2",
-        "pkg:deb/debian/gpgv@2.2.12-1+deb10u1?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/gpgv@2.2.12-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libapt-pkg5.0@1.8.2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libgnutls30@3.6.7-4?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libseccomp2@2.3.3-4?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libstdc%2B%2B6@8.3.0-6?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/base-files@10.3+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/base-files@10.3%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": []
     },
     {
@@ -5879,19 +5879,19 @@
     {
       "ref": "pkg:deb/debian/bash@5.0-4?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
-        "pkg:deb/debian/base-files@10.3+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/base-files@10.3%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/debianutils@4.8.6.1?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": []
     },
     {
       "ref": "pkg:deb/debian/ca-certificates@20190110?arch=all\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/debconf@1.5.71?arch=all\u0026distro=debian-10.2",
-        "pkg:deb/debian/openssl@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/openssl@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
@@ -5919,17 +5919,17 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:deb/debian/diffutils@3.7-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/diffutils@3.7-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": []
     },
     {
       "ref": "pkg:deb/debian/dpkg@1.19.7?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
-        "pkg:deb/debian/tar@1.30+dfsg-6?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/tar@1.30%2Bdfsg-6?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/e2fsprogs@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/e2fsprogs@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": []
     },
     {
@@ -5938,13 +5938,13 @@
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libfdisk1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libmount1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libncursesw6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libncursesw6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libsmartcols1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libtinfo6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/findutils@4.6.0+git+20190209-2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/findutils@4.6.0%2Bgit%2B20190209-2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": []
     },
     {
@@ -5952,13 +5952,13 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:deb/debian/gpgv@2.2.12-1+deb10u1?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/gpgv@2.2.12-1%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libbz2-1.0@1.0.6-9.2~deb10u1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libgcrypt20@1.8.4-5?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libgpg-error0@1.35-1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2"
+        "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1"
       ]
     },
     {
@@ -5978,7 +5978,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:deb/debian/init-system-helpers@1.56+nmu1?arch=all\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/init-system-helpers@1.56%2Bnmu1?arch=all\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/perl-base@5.28.1-6?arch=amd64\u0026distro=debian-10.2"
       ]
@@ -5986,7 +5986,7 @@
     {
       "ref": "pkg:deb/debian/libacl1@2.2.53-4?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
-        "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
     },
@@ -5995,30 +5995,30 @@
       "dependsOn": [
         "pkg:deb/debian/libbz2-1.0@1.0.6-9.2~deb10u1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/liblz4-1@1.8.3-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/liblzma5@5.2.4-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libstdc%2B%2B6@8.3.0-6?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libsystemd0@241-7~deb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libudev1@241-7~deb10u2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libzstd1@1.3.8+dfsg-3?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2"
+        "pkg:deb/debian/libzstd1@1.3.8%2Bdfsg-3?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1"
       ]
     },
     {
-      "ref": "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": [
-        "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libcap-ng0@0.7.9-2?arch=amd64\u0026distro=debian-10.2"
       ]
@@ -6045,7 +6045,7 @@
     {
       "ref": "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
-        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026epoch=1\u0026distro=debian-10.2"
+        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.2\u0026epoch=1"
       ]
     },
     {
@@ -6055,13 +6055,13 @@
       ]
     },
     {
-      "ref": "pkg:deb/debian/libcom-err2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libcom-err2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.5?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.5?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
@@ -6073,7 +6073,7 @@
       ]
     },
     {
-      "ref": "pkg:deb/debian/libext2fs2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libext2fs2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
@@ -6093,7 +6093,7 @@
       ]
     },
     {
-      "ref": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": [
         "pkg:deb/debian/gcc-8-base@8.3.0-6?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
@@ -6120,7 +6120,7 @@
       ]
     },
     {
-      "ref": "pkg:deb/debian/libgmp10@6.1.2+dfsg-4?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
@@ -6129,7 +6129,7 @@
       "ref": "pkg:deb/debian/libgnutls30@3.6.7-4?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgmp10@6.1.2+dfsg-4?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+        "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
         "pkg:deb/debian/libhogweed4@3.4.1-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libidn2-0@2.0.5-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libnettle6@3.4.1-1?arch=amd64\u0026distro=debian-10.2",
@@ -6148,7 +6148,7 @@
       "ref": "pkg:deb/debian/libhogweed4@3.4.1-1?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgmp10@6.1.2+dfsg-4?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+        "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
         "pkg:deb/debian/libnettle6@3.4.1-1?arch=amd64\u0026distro=debian-10.2"
       ]
     },
@@ -6163,7 +6163,7 @@
       "ref": "pkg:deb/debian/libjemalloc2@5.1.0-3?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libstdc%2B%2B6@8.3.0-6?arch=amd64\u0026distro=debian-10.2"
       ]
     },
@@ -6184,21 +6184,21 @@
       "dependsOn": [
         "pkg:deb/debian/libblkid1@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libselinux1@2.8-1+b1?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/libncurses6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libncurses6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libtinfo6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/libncursesw6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libncursesw6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libtinfo6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
@@ -6217,10 +6217,10 @@
     {
       "ref": "pkg:deb/debian/libpam-modules-bin@1.3.1-5?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
-        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libpam0g@1.3.1-5?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libselinux1@2.8-1+b1?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
@@ -6238,12 +6238,12 @@
       "ref": "pkg:deb/debian/libpam0g@1.3.1-5?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/debconf@1.5.71?arch=all\u0026distro=debian-10.2",
-        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
@@ -6252,22 +6252,22 @@
       "ref": "pkg:deb/debian/libreadline7@7.0-5?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libtinfo6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/readline-common@7.0-5?arch=all\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/libruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libffi6@3.2.1-9?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libgdbm-compat4@1.18.1-4?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libgdbm6@1.18.1-4?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgmp10@6.1.2+dfsg-4?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
-        "pkg:deb/debian/libncurses6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
+        "pkg:deb/debian/libncurses6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libreadline7@7.0-5?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libssl1.1@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libtinfo6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libssl1.1@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libyaml-0-2@0.2.1-1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/rake@12.3.1-3?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/ruby-did-you-mean@1.2.1-1?arch=all\u0026distro=debian-10.2",
@@ -6275,7 +6275,7 @@
         "pkg:deb/debian/ruby-net-telnet@0.1.1-2?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/ruby-test-unit@3.2.8-1?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/ruby-xmlrpc@0.3.0-2?arch=all\u0026distro=debian-10.2",
-        "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2"
+        "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1"
       ]
     },
     {
@@ -6285,10 +6285,10 @@
       ]
     },
     {
-      "ref": "pkg:deb/debian/libselinux1@2.8-1+b1?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026epoch=2\u0026distro=debian-10.2"
+        "pkg:deb/debian/libpcre3@8.39-12?arch=amd64\u0026distro=debian-10.2\u0026epoch=2"
       ]
     },
     {
@@ -6298,10 +6298,10 @@
     {
       "ref": "pkg:deb/debian/libsemanage1@2.8-2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
-        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libbz2-1.0@1.0.6-9.2~deb10u1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libselinux1@2.8-1+b1?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libsemanage-common@2.8-2?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/libsepol1@2.8-1?arch=amd64\u0026distro=debian-10.2"
       ]
@@ -6319,14 +6319,14 @@
       ]
     },
     {
-      "ref": "pkg:deb/debian/libss2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libss2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libcom-err2@1.44.5-1+deb10u2?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/libcom-err2@1.44.5-1%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/libssl1.1@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libssl1.1@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/debconf@1.5.71?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
@@ -6337,7 +6337,7 @@
       "dependsOn": [
         "pkg:deb/debian/gcc-8-base@8.3.0-6?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026epoch=1\u0026distro=debian-10.2"
+        "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64\u0026distro=debian-10.2\u0026epoch=1"
       ]
     },
     {
@@ -6351,7 +6351,7 @@
       ]
     },
     {
-      "ref": "pkg:deb/debian/libtinfo6@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libtinfo6@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
@@ -6381,17 +6381,17 @@
       ]
     },
     {
-      "ref": "pkg:deb/debian/libzstd1@1.3.8+dfsg-3?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/libzstd1@1.3.8%2Bdfsg-3?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:deb/debian/mawk@1.3.3-17+b3?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/mawk@1.3.3-17%2Bb3?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": []
     },
     {
@@ -6401,28 +6401,28 @@
       ]
     },
     {
-      "ref": "pkg:deb/debian/ncurses-base@6.1+20181013-2+deb10u2?arch=all\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/ncurses-base@6.1%2B20181013-2%2Bdeb10u2?arch=all\u0026distro=debian-10.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:deb/debian/ncurses-bin@6.1+20181013-2+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/ncurses-bin@6.1%2B20181013-2%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:deb/debian/openssl@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/openssl@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libssl1.1@1.1.1d-0+deb10u2?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/libssl1.1@1.1.1d-0%2Bdeb10u2?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/passwd@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": [
-        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+        "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libpam-modules@1.3.1-5?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libpam0g@1.3.1-5?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libselinux1@2.8-1+b1?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libselinux1@2.8-1%2Bb1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/libsemanage1@2.8-2?arch=amd64\u0026distro=debian-10.2"
       ]
     },
@@ -6433,7 +6433,7 @@
     {
       "ref": "pkg:deb/debian/rake@12.3.1-3?arch=all\u0026distro=debian-10.2",
       "dependsOn": [
-        "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2"
+        "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1"
       ]
     },
     {
@@ -6469,18 +6469,18 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:deb/debian/ruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/ruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/libgmp10@6.1.2+dfsg-4?arch=amd64\u0026epoch=2\u0026distro=debian-10.2",
-        "pkg:deb/debian/libruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2",
+        "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64\u0026distro=debian-10.2\u0026epoch=2",
+        "pkg:deb/debian/libruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/rubygems-integration@1.11?arch=all\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/ruby@2.5.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": [
-        "pkg:deb/debian/ruby2.5@2.5.5-3+deb10u1?arch=amd64\u0026distro=debian-10.2"
+        "pkg:deb/debian/ruby2.5@2.5.5-3%2Bdeb10u1?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
@@ -6496,17 +6496,17 @@
     {
       "ref": "pkg:deb/debian/sysvinit-utils@2.93-8?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
-        "pkg:deb/debian/init-system-helpers@1.56+nmu1?arch=all\u0026distro=debian-10.2",
+        "pkg:deb/debian/init-system-helpers@1.56%2Bnmu1?arch=all\u0026distro=debian-10.2",
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2",
         "pkg:deb/debian/util-linux@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2"
       ]
     },
     {
-      "ref": "pkg:deb/debian/tar@1.30+dfsg-6?arch=amd64\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/tar@1.30%2Bdfsg-6?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:deb/debian/tzdata@2019c-0+deb10u1?arch=all\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/tzdata@2019c-0%2Bdeb10u1?arch=all\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/debconf@1.5.71?arch=all\u0026distro=debian-10.2"
       ]
@@ -6515,11 +6515,11 @@
       "ref": "pkg:deb/debian/util-linux@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
       "dependsOn": [
         "pkg:deb/debian/fdisk@2.33.1-0.1?arch=amd64\u0026distro=debian-10.2",
-        "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2"
+        "pkg:deb/debian/login@4.5-1.1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1"
       ]
     },
     {
-      "ref": "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026epoch=1\u0026distro=debian-10.2",
+      "ref": "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64\u0026distro=debian-10.2\u0026epoch=1",
       "dependsOn": [
         "pkg:deb/debian/libc6@2.28-10?arch=amd64\u0026distro=debian-10.2"
       ]

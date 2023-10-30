@@ -16,15 +16,15 @@ import (
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
 var (
-	analyzers     = map[Type]analyzer{}
-	postAnalyzers = map[Type]postAnalyzerInitialize{}
+	analyzers     = make(map[Type]analyzer)
+	postAnalyzers = make(map[Type]postAnalyzerInitialize)
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("unknown OS")
@@ -194,7 +194,10 @@ func (r *AnalysisResult) Sort() {
 
 	// Language-specific packages
 	sort.Slice(r.Applications, func(i, j int) bool {
-		return r.Applications[i].FilePath < r.Applications[j].FilePath
+		if r.Applications[i].FilePath != r.Applications[j].FilePath {
+			return r.Applications[i].FilePath < r.Applications[j].FilePath
+		}
+		return r.Applications[i].Type < r.Applications[j].Type
 	})
 
 	for _, app := range r.Applications {
@@ -238,8 +241,8 @@ func (r *AnalysisResult) Sort() {
 	})
 }
 
-func (r *AnalysisResult) Merge(new *AnalysisResult) {
-	if new == nil || new.isEmpty() {
+func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
+	if newResult == nil || newResult.isEmpty() {
 		return
 	}
 
@@ -247,47 +250,47 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	r.m.Lock()
 	defer r.m.Unlock()
 
-	r.OS.Merge(new.OS)
+	r.OS.Merge(newResult.OS)
 
-	if new.Repository != nil {
-		r.Repository = new.Repository
+	if newResult.Repository != nil {
+		r.Repository = newResult.Repository
 	}
 
-	if len(new.PackageInfos) > 0 {
-		r.PackageInfos = append(r.PackageInfos, new.PackageInfos...)
+	if len(newResult.PackageInfos) > 0 {
+		r.PackageInfos = append(r.PackageInfos, newResult.PackageInfos...)
 	}
 
-	if len(new.Applications) > 0 {
-		r.Applications = append(r.Applications, new.Applications...)
+	if len(newResult.Applications) > 0 {
+		r.Applications = append(r.Applications, newResult.Applications...)
 	}
 
 	// Merge SHA-256 digests of unpackaged files
-	if new.Digests != nil {
-		r.Digests = lo.Assign(r.Digests, new.Digests)
+	if newResult.Digests != nil {
+		r.Digests = lo.Assign(r.Digests, newResult.Digests)
 	}
 
-	r.Misconfigurations = append(r.Misconfigurations, new.Misconfigurations...)
-	r.Secrets = append(r.Secrets, new.Secrets...)
-	r.Licenses = append(r.Licenses, new.Licenses...)
-	r.SystemInstalledFiles = append(r.SystemInstalledFiles, new.SystemInstalledFiles...)
+	r.Misconfigurations = append(r.Misconfigurations, newResult.Misconfigurations...)
+	r.Secrets = append(r.Secrets, newResult.Secrets...)
+	r.Licenses = append(r.Licenses, newResult.Licenses...)
+	r.SystemInstalledFiles = append(r.SystemInstalledFiles, newResult.SystemInstalledFiles...)
 
-	if new.BuildInfo != nil {
+	if newResult.BuildInfo != nil {
 		if r.BuildInfo == nil {
-			r.BuildInfo = new.BuildInfo
+			r.BuildInfo = newResult.BuildInfo
 		} else {
 			// We don't need to merge build info here
 			// because there is theoretically only one file about build info in each layer.
-			if new.BuildInfo.Nvr != "" || new.BuildInfo.Arch != "" {
-				r.BuildInfo.Nvr = new.BuildInfo.Nvr
-				r.BuildInfo.Arch = new.BuildInfo.Arch
+			if newResult.BuildInfo.Nvr != "" || newResult.BuildInfo.Arch != "" {
+				r.BuildInfo.Nvr = newResult.BuildInfo.Nvr
+				r.BuildInfo.Arch = newResult.BuildInfo.Arch
 			}
-			if len(new.BuildInfo.ContentSets) > 0 {
-				r.BuildInfo.ContentSets = new.BuildInfo.ContentSets
+			if len(newResult.BuildInfo.ContentSets) > 0 {
+				r.BuildInfo.ContentSets = newResult.BuildInfo.ContentSets
 			}
 		}
 	}
 
-	r.CustomResources = append(r.CustomResources, new.CustomResources...)
+	r.CustomResources = append(r.CustomResources, newResult.CustomResources...)
 }
 
 func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type, analyzer any) bool {
@@ -315,7 +318,7 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 	}
 
 	group := AnalyzerGroup{
-		filePatterns: map[Type][]*regexp.Regexp{},
+		filePatterns: make(map[Type][]*regexp.Regexp),
 	}
 	for _, p := range opt.FilePatterns {
 		// e.g. "dockerfile:my_dockerfile_*"
@@ -371,11 +374,11 @@ type Versions struct {
 
 // AnalyzerVersions returns analyzer version identifier used for cache keys.
 func (ag AnalyzerGroup) AnalyzerVersions() Versions {
-	analyzerVersions := map[string]int{}
+	analyzerVersions := make(map[string]int)
 	for _, a := range ag.analyzers {
 		analyzerVersions[string(a.Type())] = a.Version()
 	}
-	postAnalyzerVersions := map[string]int{}
+	postAnalyzerVersions := make(map[string]int)
 	for _, a := range ag.postAnalyzers {
 		postAnalyzerVersions[string(a.Type())] = a.Version()
 	}
@@ -431,7 +434,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 				Content:  rc,
 				Options:  opts,
 			})
-			if err != nil && !errors.Is(err, aos.AnalyzeOSError) {
+			if err != nil && !errors.Is(err, fos.AnalyzeOSError) {
 				log.Logger.Debugf("Analysis error: %s", err)
 				return
 			}

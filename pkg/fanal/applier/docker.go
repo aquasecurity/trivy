@@ -89,7 +89,7 @@ func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.
 func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
-	secretsMap := map[string]types.Secret{}
+	secretsMap := make(map[string]types.Secret)
 	var mergedLayer types.ArtifactDetail
 
 	for _, layer := range layers {
@@ -184,7 +184,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	// Extract dpkg licenses
 	// The license information is not stored in the dpkg database and in a separate file,
 	// so we have to merge the license information into the package.
-	dpkgLicenses := map[string][]string{}
+	dpkgLicenses := make(map[string][]string)
 	mergedLayer.Licenses = lo.Reject(mergedLayer.Licenses, func(license types.LicenseFile, _ int) bool {
 		if license.Type != types.LicenseTypeDpkg {
 			return false
@@ -203,6 +203,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	}
 
 	for i, pkg := range mergedLayer.Packages {
+		// Skip lookup for SBOM
+		if !lo.IsEmpty(pkg.Layer) {
+			continue
+		}
 		originLayerDigest, originLayerDiffID, buildInfo := lookupOriginLayerForPkg(pkg, layers)
 		mergedLayer.Packages[i].Layer = types.Layer{
 			Digest: originLayerDigest,
@@ -218,6 +222,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 	for _, app := range mergedLayer.Applications {
 		for i, lib := range app.Libraries {
+			// Skip lookup for SBOM
+			if !lo.IsEmpty(lib.Layer) {
+				continue
+			}
 			originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, lib, layers)
 			app.Libraries[i].Layer = types.Layer{
 				Digest: originLayerDigest,
@@ -236,7 +244,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 func aggregate(detail *types.ArtifactDetail) {
 	var apps []types.Application
 
-	aggregatedApps := map[string]*types.Application{
+	aggregatedApps := map[types.LangType]*types.Application{
 		types.PythonPkg: {Type: types.PythonPkg},
 		types.CondaPkg:  {Type: types.CondaPkg},
 		types.GemSpec:   {Type: types.GemSpec},

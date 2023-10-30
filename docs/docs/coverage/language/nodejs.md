@@ -7,7 +7,7 @@ The following scanners are supported.
 | Artifact | SBOM  | Vulnerability | License |
 | -------- | :---: | :-----------: | :-----: |
 | npm      |   ✓   |       ✓       |    ✓    |
-| Yarn     |   ✓   |       ✓       |    -    |
+| Yarn     |   ✓   |       ✓       |    ✓    |
 | pnpm     |   ✓   |       ✓       |    -    |
 
 The following table provides an outline of the features Trivy offers.

@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"golang.org/x/xerrors"
 
@@ -16,7 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/parallel"
 )
 
@@ -35,9 +33,7 @@ var requiredExtensions = []string{
 
 // javaLibraryAnalyzer analyzes jar/war/ear/par files
 type javaLibraryAnalyzer struct {
-	once   sync.Once
-	client *javadb.DB
-	slow   bool
+	slow bool
 }
 
 func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -48,28 +44,20 @@ func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) (analyzer.PostAnal
 
 func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	// TODO: think about the sonatype API and "--offline"
-	var err error
-	a.once.Do(func() {
-		log.Logger.Info("JAR files found")
-		a.client, err = javadb.NewClient()
-		if err != nil {
-			log.Logger.Errorf("Unable to initialize the Java DB: %s", err)
-			return
-		}
-		log.Logger.Info("Analyzing JAR files takes a while...")
-	})
+	client, err := javadb.NewClient()
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("Unable to initialize the Java DB: %s", err)
 	}
+	defer func() { _ = client.Close() }()
 
 	// Skip analyzing JAR files as the nil client means the Java DB was not downloaded successfully.
-	if a.client == nil {
+	if client == nil {
 		return nil, nil
 	}
 
 	// It will be called on each JAR file
 	onFile := func(path string, info fs.FileInfo, r dio.ReadSeekerAt) (*types.Application, error) {
-		p := jar.NewParser(a.client, jar.WithSize(info.Size()), jar.WithFilePath(path))
+		p := jar.NewParser(client, jar.WithSize(info.Size()), jar.WithFilePath(path))
 		return language.ParsePackage(types.Jar, path, r, p, input.Options.FileChecksum)
 	}
 

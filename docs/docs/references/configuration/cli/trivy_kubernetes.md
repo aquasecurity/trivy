@@ -41,6 +41,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
       --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
+      --exclude-owned                     exclude resources that have an owner reference
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
   -f, --format string                     format (table,json,cyclonedx) (default "table")
@@ -88,7 +89,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --skip-policy-update                skip fetching rego policy updates
       --slow                              scan over time with lower CPU and memory utilization
   -t, --template string                   output template
-      --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder
+      --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace                             enable more verbose trace output for custom queries

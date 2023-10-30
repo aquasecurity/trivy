@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 golang:1.19
+FROM --platform=linux/amd64 golang:1.20
 
 # Set environment variable for protoc
 ENV PROTOC_ZIP=protoc-3.19.4-linux-x86_64.zip
@@ -13,9 +13,8 @@ RUN curl --retry 5 -OL https://github.com/protocolbuffers/protobuf/releases/down
     && rm -f $PROTOC_ZIP
 
 # Install Go tools
-RUN go install \
-    github.com/twitchtv/twirp/protoc-gen-twirp@v8.1.0 \
-    google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1 \
-    github.com/magefile/mage@v1.14.0
+RUN go install github.com/twitchtv/twirp/protoc-gen-twirp@v8.1.0
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1
+RUN go install github.com/magefile/mage@v1.14.0
 
 ENV TRIVY_PROTOC_CONTAINER=true

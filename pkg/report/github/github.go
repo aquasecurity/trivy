@@ -74,7 +74,7 @@ type Writer struct {
 func (w Writer) Write(report types.Report) error {
 	snapshot := &DependencySnapshot{}
 
-	//use now() method that can be overwritten while integration tests run
+	// use now() method that can be overwritten while integration tests run
 	snapshot.Scanned = clock.Now().Format(time.RFC3339)
 	snapshot.Detector = Detector{
 		Name:    "trivy",
@@ -101,7 +101,7 @@ func (w Writer) Write(report types.Report) error {
 		}
 
 		manifest := Manifest{}
-		manifest.Name = result.Type
+		manifest.Name = string(result.Type)
 		// show path for language-specific packages only
 		if result.Class == types.ClassLangPkg {
 			manifest.File = &File{
@@ -160,7 +160,7 @@ func getPkgRelationshipType(pkg ftypes.Package) string {
 	return DirectRelationship
 }
 
-func buildPurl(t string, pkg ftypes.Package) (string, error) {
+func buildPurl(t ftypes.TargetType, pkg ftypes.Package) (string, error) {
 	packageUrl, err := purl.NewPackageURL(t, types.Metadata{}, pkg)
 	if err != nil {
 		return "", xerrors.Errorf("purl error: %w", err)
