@@ -428,6 +428,8 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeHex
 	case ftypes.Conan:
 		return packageurl.TypeConan
+	case ftypes.Composer, ftypes.ComposerInstalled:
+		return packageurl.TypeComposer
 	case ftypes.Pub:
 		return TypeDart // TODO: replace with packageurl.TypeDart once they add it.
 	case ftypes.RustBinary, ftypes.Cargo:
