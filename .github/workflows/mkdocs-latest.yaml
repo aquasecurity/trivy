@@ -23,6 +23,7 @@ jobs:
           python-version: 3.x
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip setuptools wheel
           pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
           pip install -r docs/build/requirements.txt
         env:

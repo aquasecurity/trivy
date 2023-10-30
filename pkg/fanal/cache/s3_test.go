@@ -1,36 +1,36 @@
 package cache
 
 import (
+	"context"
 	"errors"
 	"reflect"
 	"testing"
 	"time"
 
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type mockS3Client struct {
-	s3iface.S3API
+	s3API
 }
 
 const (
 	correctHash = "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7"
 )
 
-func (m *mockS3Client) PutObject(*s3.PutObjectInput) (*s3.PutObjectOutput, error) {
+func (m *mockS3Client) PutObject(ctx context.Context, in *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
 	return &s3.PutObjectOutput{}, nil
 }
 
-func (m *mockS3Client) HeadObject(*s3.HeadObjectInput) (*s3.HeadObjectOutput, error) {
+func (m *mockS3Client) HeadObject(ctx context.Context, params *s3.HeadObjectInput, optFns ...func(*s3.Options)) (*s3.HeadObjectOutput, error) {
 	return &s3.HeadObjectOutput{}, nil
 }
 
-func (m *mockS3Client) DeleteBucket(in *s3.DeleteBucketInput) (*s3.DeleteBucketOutput, error) {
+func (m *mockS3Client) DeleteBucket(ctx context.Context, in *s3.DeleteBucketInput, optFns ...func(*s3.Options)) (*s3.DeleteBucketOutput, error) {
 	if in != nil && *in.Bucket == blobBucket+"/prefix/"+correctHash {
 		return &s3.DeleteBucketOutput{}, nil
 	}
@@ -41,8 +41,8 @@ func TestS3Cache_PutBlob(t *testing.T) {
 	mockSvc := &mockS3Client{}
 
 	type fields struct {
-		S3         s3iface.S3API
-		Downloader *s3manager.Downloader
+		S3         s3API
+		Downloader *manager.Downloader
 		BucketName string
 		Prefix     string
 	}
@@ -88,8 +88,8 @@ func TestS3Cache_PutArtifact(t *testing.T) {
 	mockSvc := &mockS3Client{}
 
 	type fields struct {
-		S3         s3iface.S3API
-		Downloader *s3manager.Downloader
+		S3         s3API
+		Downloader *manager.Downloader
 		BucketName string
 		Prefix     string
 	}
@@ -141,8 +141,8 @@ func TestS3Cache_getIndex(t *testing.T) {
 	mockSvc := &mockS3Client{}
 
 	type fields struct {
-		S3         s3iface.S3API
-		Downloader *s3manager.Downloader
+		S3         s3API
+		Downloader *manager.Downloader
 		BucketName string
 		Prefix     string
 	}
@@ -181,14 +181,14 @@ func TestS3Cache_getIndex(t *testing.T) {
 }
 
 type mockS3ClientMissingBlobs struct {
-	s3iface.S3API
+	s3API
 }
 
-func (m *mockS3ClientMissingBlobs) PutObject(*s3.PutObjectInput) (*s3.PutObjectOutput, error) {
+func (m *mockS3ClientMissingBlobs) PutObject(ctx context.Context, in *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
 	return &s3.PutObjectOutput{}, nil
 }
 
-func (m *mockS3ClientMissingBlobs) HeadObject(*s3.HeadObjectInput) (*s3.HeadObjectOutput, error) {
+func (m *mockS3ClientMissingBlobs) HeadObject(ctx context.Context, params *s3.HeadObjectInput, optFns ...func(*s3.Options)) (*s3.HeadObjectOutput, error) {
 	return &s3.HeadObjectOutput{}, xerrors.Errorf("the object doesn't exist in S3")
 }
 
@@ -196,8 +196,8 @@ func TestS3Cache_MissingBlobs(t *testing.T) {
 	mockSvc := &mockS3ClientMissingBlobs{}
 
 	type fields struct {
-		S3         s3iface.S3API
-		Downloader *s3manager.Downloader
+		S3         s3API
+		Downloader *manager.Downloader
 		BucketName string
 		Prefix     string
 	}
@@ -252,8 +252,8 @@ func TestS3Cache_DeleteBlobs(t *testing.T) {
 	mockSvc := &mockS3Client{}
 
 	type fields struct {
-		S3         s3iface.S3API
-		Downloader *s3manager.Downloader
+		S3         s3API
+		Downloader *manager.Downloader
 		BucketName string
 		Prefix     string
 	}

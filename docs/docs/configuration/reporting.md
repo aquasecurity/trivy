@@ -41,32 +41,31 @@ In some cases, vulnerable dependencies are not linked directly, and it requires 
 To make this task simpler Trivy can show a dependency origin tree with the `--dependency-tree` flag.
 This flag is only available with the `--format table` flag.
 
-The following packages/languages are currently supported:
+The following OS package managers are currently supported:
 
-- OS packages 
-    - apk
-    - dpkg
-    - rpm
-- Node.js 
-    - npm: package-lock.json
-    - pnpm: pnpm-lock.yaml
-    - yarn: yarn.lock
-- .NET
-    - NuGet: packages.lock.json
-- Python 
-    - Poetry: poetry.lock
-- Ruby
-    - Bundler: Gemfile.lock
-- Rust
-    - Binaries built with [cargo-auditable][cargo-auditable]
-- Go
-    - Modules: go.mod
-- PHP
-    - Composer
-- Java
-    - Maven: pom.xml
+| OS Package Managers |
+|---------------------|
+| apk                 |
+| dpkg                |
+| rpm                 |
 
-This tree is the reverse of the npm list command.
+The following languages are currently supported:
+
+| Language | File                                       |
+|----------|--------------------------------------------|
+| Node.js  | [package-lock.json][nodejs-package-lock]   |
+|          | [pnpm-lock.yaml][pnpm-lock]                |
+|          | [yarn.lock][yarn-lock]                     |
+| .NET     | [packages.lock.json][dotnet-packages-lock] |
+| Python   | [poetry.lock][poetry-lock]                 |
+| Ruby     | [Gemfile.lock][gemfile-lock]               |
+| Rust     | [cargo-auditable binaries][cargo-binaries] |
+| Go       | [go.mod][go-mod]                           |
+| PHP      | [composer.lock][composer-lock]             |
+| Java     | [pom.xml][pom-xml]                         |
+| Dart     | [pubspec.lock][pubspec-lock]               |
+
+This tree is the reverse of the dependency graph.
 However, if you want to resolve a vulnerability in a particular indirect dependency, the reversed tree is useful to know where that dependency comes from and identify which package you actually need to update.
 
 In table output, it looks like:
@@ -409,3 +408,15 @@ $ trivy convert --format table --severity CRITICAL result.json
 
 [os_packages]: ../scanner/vulnerability.md#os-packages
 [language_packages]: ../scanner/vulnerability.md#language-specific-packages
+
+[nodejs-package-lock]: ../coverage/language/nodejs.md#npm
+[pnpm-lock]: ../coverage/language/nodejs.md#pnpm
+[yarn-lock]: ../coverage/language/nodejs.md#yarn
+[dotnet-packages-lock]: ../coverage/language/dotnet.md#packageslockjson
+[poetry-lock]: ../coverage/language/python.md#poetry
+[gemfile-lock]: ../coverage/language/ruby.md#bundler
+[go-mod]: ../coverage/language/golang.md#go-modules
+[composer-lock]: ../coverage/language/php.md#composer
+[pom-xml]: ../coverage/language/java.md#pomxml
+[pubspec-lock]: ../coverage/language/dart.md#dart
+[cargo-binaries]: ../coverage/language/rust.md#binaries

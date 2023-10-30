@@ -89,7 +89,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --skip-policy-update                skip fetching rego policy updates
       --slow                              scan over time with lower CPU and memory utilization
   -t, --template string                   output template
-      --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder
+      --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace                             enable more verbose trace output for custom queries

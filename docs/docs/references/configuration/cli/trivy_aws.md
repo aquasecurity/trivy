@@ -95,7 +95,7 @@ trivy aws [flags]
       --skip-policy-update                skip fetching rego policy updates
       --skip-service strings              Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.
   -t, --template string                   output template
-      --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder
+      --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --trace                             enable more verbose trace output for custom queries
       --update-cache                      Update the cache for the applicable cloud provider instead of using cached results.
