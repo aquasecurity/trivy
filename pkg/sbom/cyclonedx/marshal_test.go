@@ -308,6 +308,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						// Use UUID for local Go packages
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000007",
+						Type:    cdx.ComponentTypeLibrary,
+						Name:    "./api",
+						Version: "(devel)",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "gobinary",
+							},
+						},
+					},
+					{
 						BOMRef:     "pkg:gem/actioncontroller@7.0.0",
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actioncontroller",
@@ -446,8 +459,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
 						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000007",
 							"pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
 						},
+					},
+					{
+						Ref:          "3ff14136-e09f-4df9-80ea-000000000007",
+						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
 						Ref: "pkg:gem/actioncontroller@7.0.0",
