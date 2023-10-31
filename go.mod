@@ -397,3 +397,5 @@ replace oras.land/oras-go => oras.land/oras-go v1.1.1
 replace github.com/spdx/tools-golang => github.com/spdx/tools-golang v0.3.0
 
 replace github.com/aquasecurity/go-dep-parser => github.com/lebauce/go-dep-parser v0.0.0-20231030190658-51bbb436f1b8
+
+replace github.com/aquasecurity/trivy-db => github.com/lebauce/trivy-db v0.0.0-20231031000443-2d41e0fab0ae
