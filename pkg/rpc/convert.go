@@ -17,22 +17,22 @@ import (
 	"github.com/aquasecurity/trivy/rpc/scanner"
 )
 
-var LicenseCategoryMap = map[common.LicenseCategory]ftypes.LicenseCategory{
-	common.LicenseCategory_LICENSE_CATEGORY_UNSPECIFIED:  "",
-	common.LicenseCategory_LICENSE_CATEGORY_FORBIDDEN:    ftypes.CategoryForbidden,
-	common.LicenseCategory_LICENSE_CATEGORY_RESTRICTED:   ftypes.CategoryRestricted,
-	common.LicenseCategory_LICENSE_CATEGORY_RECIPROCAL:   ftypes.CategoryReciprocal,
-	common.LicenseCategory_LICENSE_CATEGORY_NOTICE:       ftypes.CategoryNotice,
-	common.LicenseCategory_LICENSE_CATEGORY_PERMISSIVE:   ftypes.CategoryPermissive,
-	common.LicenseCategory_LICENSE_CATEGORY_UNENCUMBERED: ftypes.CategoryUnencumbered,
-	common.LicenseCategory_LICENSE_CATEGORY_UNKNOWN:      ftypes.CategoryUnknown,
+var LicenseCategoryMap = map[common.LicenseCategory_Enum]ftypes.LicenseCategory{
+	common.LicenseCategory_UNSPECIFIED:  "",
+	common.LicenseCategory_FORBIDDEN:    ftypes.CategoryForbidden,
+	common.LicenseCategory_RESTRICTED:   ftypes.CategoryRestricted,
+	common.LicenseCategory_RECIPROCAL:   ftypes.CategoryReciprocal,
+	common.LicenseCategory_NOTICE:       ftypes.CategoryNotice,
+	common.LicenseCategory_PERMISSIVE:   ftypes.CategoryPermissive,
+	common.LicenseCategory_UNENCUMBERED: ftypes.CategoryUnencumbered,
+	common.LicenseCategory_UNKNOWN:      ftypes.CategoryUnknown,
 }
 
-var LicenseTypeMap = map[common.LicenseType]ftypes.LicenseType{
-	common.LicenseType_LICENSE_TYPE_UNSPECIFIED:  "",
-	common.LicenseType_LICENSE_TYPE_DPKG:         ftypes.LicenseTypeDpkg,
-	common.LicenseType_LICENSE_TYPE_HEADER:       ftypes.LicenseTypeHeader,
-	common.LicenseType_LICENSE_TYPE_LICENSE_FILE: ftypes.LicenseTypeFile,
+var LicenseTypeMap = map[common.LicenseType_Enum]ftypes.LicenseType{
+	common.LicenseType_UNSPECIFIED:  "",
+	common.LicenseType_DPKG:         ftypes.LicenseTypeDpkg,
+	common.LicenseType_HEADER:       ftypes.LicenseTypeHeader,
+	common.LicenseType_LICENSE_FILE: ftypes.LicenseTypeFile,
 }
 
 // ByValueOr returns the key from the map of the first matched value,
@@ -378,11 +378,11 @@ func ConvertFromRPCDetectedLicenses(rpcLicenses []*common.DetectedLicense) []typ
 	return licenses
 }
 
-func ConvertFromRPCLicenseCategory(rpcCategory common.LicenseCategory) ftypes.LicenseCategory {
+func ConvertFromRPCLicenseCategory(rpcCategory common.LicenseCategory_Enum) ftypes.LicenseCategory {
 	return lo.ValueOr(LicenseCategoryMap, rpcCategory, "")
 }
 
-func ConvertFromRPCLicenseType(rpcLicenseType common.LicenseType) ftypes.LicenseType {
+func ConvertFromRPCLicenseType(rpcLicenseType common.LicenseType_Enum) ftypes.LicenseType {
 	return lo.ValueOr(LicenseTypeMap, rpcLicenseType, "")
 }
 
@@ -913,12 +913,12 @@ func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLi
 	return rpcLicenses
 }
 
-func ConvertToRPCLicenseCategory(category ftypes.LicenseCategory) common.LicenseCategory {
-	return ByValueOr(LicenseCategoryMap, category, common.LicenseCategory_LICENSE_CATEGORY_UNSPECIFIED)
+func ConvertToRPCLicenseCategory(category ftypes.LicenseCategory) common.LicenseCategory_Enum {
+	return ByValueOr(LicenseCategoryMap, category, common.LicenseCategory_UNSPECIFIED)
 }
 
-func ConvertToRPCLicenseType(ty ftypes.LicenseType) common.LicenseType {
-	return ByValueOr(LicenseTypeMap, ty, common.LicenseType_LICENSE_TYPE_UNSPECIFIED)
+func ConvertToRPCLicenseType(ty ftypes.LicenseType) common.LicenseType_Enum {
+	return ByValueOr(LicenseTypeMap, ty, common.LicenseType_UNSPECIFIED)
 }
 
 func ConvertToDeleteBlobsRequest(blobIDs []string) *cache.DeleteBlobsRequest {

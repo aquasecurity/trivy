@@ -704,7 +704,7 @@ func TestConvertFromRPCLicenses(t *testing.T) {
 			rpcLicenses: []*common.DetectedLicense{
 				{
 					Severity:   common.Severity_HIGH,
-					Category:   common.LicenseCategory_LICENSE_CATEGORY_RESTRICTED,
+					Category:   common.LicenseCategory_RESTRICTED,
 					PkgName:    "alpine-baselayout",
 					FilePath:   "some-path",
 					Name:       "GPL-2.0",
@@ -761,7 +761,7 @@ func TestConvertToRPCLicenses(t *testing.T) {
 			want: []*common.DetectedLicense{
 				{
 					Severity:   common.Severity_HIGH,
-					Category:   common.LicenseCategory_LICENSE_CATEGORY_RESTRICTED,
+					Category:   common.LicenseCategory_RESTRICTED,
 					PkgName:    "alpine-baselayout",
 					FilePath:   "some-path",
 					Name:       "GPL-2.0",
@@ -789,17 +789,17 @@ func TestConvertToRPCLicenseCategory(t *testing.T) {
 	tests := []struct {
 		name     string
 		category ftypes.LicenseCategory
-		want     common.LicenseCategory
+		want     common.LicenseCategory_Enum
 	}{
 		{
 			name:     "happy",
 			category: ftypes.CategoryNotice,
-			want:     common.LicenseCategory_LICENSE_CATEGORY_NOTICE,
+			want:     common.LicenseCategory_NOTICE,
 		},
 		{
 			name:     "unspecified",
 			category: "",
-			want:     common.LicenseCategory_LICENSE_CATEGORY_UNSPECIFIED,
+			want:     common.LicenseCategory_UNSPECIFIED,
 		},
 	}
 
@@ -814,17 +814,17 @@ func TestConvertToRPCLicenseCategory(t *testing.T) {
 func TestConvertFromRPCLicenseCategory(t *testing.T) {
 	tests := []struct {
 		name        string
-		rpcCategory common.LicenseCategory
+		rpcCategory common.LicenseCategory_Enum
 		want        ftypes.LicenseCategory
 	}{
 		{
 			name:        "happy",
-			rpcCategory: common.LicenseCategory_LICENSE_CATEGORY_RESTRICTED,
+			rpcCategory: common.LicenseCategory_RESTRICTED,
 			want:        ftypes.CategoryRestricted,
 		},
 		{
 			name:        "unspecified",
-			rpcCategory: common.LicenseCategory_LICENSE_CATEGORY_UNSPECIFIED,
+			rpcCategory: common.LicenseCategory_UNSPECIFIED,
 			want:        "",
 		},
 	}
@@ -841,17 +841,17 @@ func TestConvertToRPCLicenseType(t *testing.T) {
 	tests := []struct {
 		name string
 		ty   ftypes.LicenseType
-		want common.LicenseType
+		want common.LicenseType_Enum
 	}{
 		{
 			name: "happy",
 			ty:   ftypes.LicenseTypeFile,
-			want: common.LicenseType_LICENSE_TYPE_LICENSE_FILE,
+			want: common.LicenseType_LICENSE_FILE,
 		},
 		{
 			name: "unspecified",
 			ty:   "",
-			want: common.LicenseType_LICENSE_TYPE_UNSPECIFIED,
+			want: common.LicenseType_UNSPECIFIED,
 		},
 	}
 
@@ -866,17 +866,17 @@ func TestConvertToRPCLicenseType(t *testing.T) {
 func TestConvertFromRPCLicenseType(t *testing.T) {
 	tests := []struct {
 		name    string
-		rpcType common.LicenseType
+		rpcType common.LicenseType_Enum
 		want    ftypes.LicenseType
 	}{
 		{
 			name:    "happy",
-			rpcType: common.LicenseType_LICENSE_TYPE_LICENSE_FILE,
+			rpcType: common.LicenseType_LICENSE_FILE,
 			want:    ftypes.LicenseTypeFile,
 		},
 		{
 			name:    "unspecified",
-			rpcType: common.LicenseType_LICENSE_TYPE_UNSPECIFIED,
+			rpcType: common.LicenseType_UNSPECIFIED,
 			want:    "",
 		},
 	}
@@ -918,12 +918,12 @@ func TestConvertToRPCLicenseFiles(t *testing.T) {
 			},
 			want: []*common.LicenseFile{
 				{
-					LicenseType: common.LicenseType_LICENSE_TYPE_LICENSE_FILE,
+					LicenseType: common.LicenseType_LICENSE_FILE,
 					PkgName:     "alpine-baselayout",
 					FilePath:    "some-path",
 					Fingings: []*common.LicenseFinding{
 						{
-							Category:   common.LicenseCategory_LICENSE_CATEGORY_RESTRICTED,
+							Category:   common.LicenseCategory_RESTRICTED,
 							Name:       "GPL-2.0",
 							Confidence: 1,
 							Link:       "https://some-link",
@@ -955,12 +955,12 @@ func TestConvertFromRPCLicenseFiles(t *testing.T) {
 			name: "happy",
 			licenseFiles: []*common.LicenseFile{
 				{
-					LicenseType: common.LicenseType_LICENSE_TYPE_LICENSE_FILE,
+					LicenseType: common.LicenseType_LICENSE_FILE,
 					PkgName:     "alpine-baselayout",
 					FilePath:    "some-path",
 					Fingings: []*common.LicenseFinding{
 						{
-							Category:   common.LicenseCategory_LICENSE_CATEGORY_RESTRICTED,
+							Category:   common.LicenseCategory_RESTRICTED,
 							Name:       "GPL-2.0",
 							Confidence: 1,
 							Link:       "https://some-link",
