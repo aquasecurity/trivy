@@ -25,7 +25,7 @@ require (
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-aws v0.4.0
 	github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d
-	github.com/aquasecurity/trivy-iac v0.5.0
+	github.com/aquasecurity/trivy-iac v0.5.1
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.5.8-0.20230928134646-b414e546fe6d
 	github.com/aquasecurity/trivy-policies v0.4.0
@@ -419,7 +419,3 @@ require (
 // oras 1.2.2 is incompatible with github.com/docker/docker v24.0.2
 // cf. https://github.com/oras-project/oras-go/pull/527
 replace oras.land/oras-go => oras.land/oras-go v1.2.4-0.20230801060855-932dd06d38af
-
-//replace github.com/aquasecurity/trivy-aws => /Users/simarpreetsingh/repos/trivy-aws
-//replace github.com/aquasecurity/trivy-policies => /Users/simarpreetsingh/repos/trivy-policies
-//replace github.com/aquasecurity/trivy-iac => /Users/simarpreetsingh/repos/trivy-iac
