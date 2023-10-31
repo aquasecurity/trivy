@@ -49,6 +49,7 @@ var (
 	CategoryHubSpot              = types.SecretRuleCategory("HubSpot")
 	CategoryIntercom             = types.SecretRuleCategory("Intercom")
 	CategoryIonic                = types.SecretRuleCategory("Ionic")
+	CategoryJWT                  = types.SecretRuleCategory("JWT")
 	CategoryLinear               = types.SecretRuleCategory("Linear")
 	CategoryLob                  = types.SecretRuleCategory("Lob")
 	CategoryMailchimp            = types.SecretRuleCategory("Mailchimp")
@@ -561,6 +562,13 @@ var builtinRules = []Rule{
 		Title:    "Ionic API token",
 		Regex:    MustCompile(`(?i)(ionic[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"](ion_[a-z0-9]{42})['\"]`),
 		Keywords: []string{"ionic"},
+	},
+	{
+		ID:       "jwt-token",
+		Category: CategoryJWT,
+		Title:    "JWT token",
+		Regex:    MustCompile(`^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)`),
+		Keywords: []string{"jwt"},
 	},
 	{
 		ID:       "linear-api-token",
