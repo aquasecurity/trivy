@@ -7,57 +7,53 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ecr"
-	"github.com/aws/aws-sdk-go/service/ecr/ecriface"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/ecr"
 	"golang.org/x/xerrors"
 )
 
 const ecrURL = "amazonaws.com"
 
-type ECR struct {
-	Client ecriface.ECRAPI
+type ecrAPI interface {
+	GetAuthorizationToken(ctx context.Context, params *ecr.GetAuthorizationTokenInput, optFns ...func(*ecr.Options)) (*ecr.GetAuthorizationTokenOutput, error)
 }
 
-func getSession(option types.DockerOption) (*session.Session, error) {
+type ECR struct {
+	Client ecrAPI
+}
+
+func getSession(option types.DockerOption) (aws.Config, error) {
 	// create custom credential information if option is valid
 	if option.AwsSecretKey != "" && option.AwsAccessKey != "" && option.AwsRegion != "" {
-		return session.NewSessionWithOptions(
-			session.Options{
-				Config: aws.Config{
-					Region: aws.String(option.AwsRegion),
-					Credentials: credentials.NewStaticCredentialsFromCreds(
-						credentials.Value{
-							AccessKeyID:     option.AwsAccessKey,
-							SecretAccessKey: option.AwsSecretKey,
-							SessionToken:    option.AwsSessionToken,
-						},
-					),
-				},
-			})
+		return config.LoadDefaultConfig(
+			context.TODO(),
+			config.WithRegion(option.AwsRegion),
+			config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(option.AwsAccessKey, option.AwsSecretKey, option.AwsSessionToken)),
+		)
 	}
-	// use shared configuration normally
-	return session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	})
+	return config.LoadDefaultConfig(context.TODO())
 }
 
 func (e *ECR) CheckOptions(domain string, option types.DockerOption) error {
 	if !strings.HasSuffix(domain, ecrURL) {
 		return xerrors.Errorf("ECR : %w", types.InvalidURLPattern)
 	}
-	sess := session.Must(getSession(option))
-	svc := ecr.New(sess)
+
+	cfg, err := getSession(option)
+	if err != nil {
+		return err
+	}
+
+	svc := ecr.NewFromConfig(cfg)
 	e.Client = svc
 	return nil
 }
 
 func (e *ECR) GetCredential(ctx context.Context) (username, password string, err error) {
 	input := &ecr.GetAuthorizationTokenInput{}
-	result, err := e.Client.GetAuthorizationTokenWithContext(ctx, input)
+	result, err := e.Client.GetAuthorizationToken(ctx, input)
 	if err != nil {
 		return "", "", xerrors.Errorf("failed to get authorization token: %w", err)
 	}
