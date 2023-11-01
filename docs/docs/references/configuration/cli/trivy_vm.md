@@ -23,6 +23,7 @@ trivy vm [flags] VM_IMAGE
       --aws-region string                 AWS region to scan
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
+      --cf-params strings                 specify paths to override the Cloudformation parameters files
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate
       --custom-headers strings            custom headers in client mode

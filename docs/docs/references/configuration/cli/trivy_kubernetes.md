@@ -30,6 +30,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
   -A, --all-namespaces                    fetch resources from all cluster namespaces
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
+      --cf-params strings                 specify paths to override the Cloudformation parameters files
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate (k8s-nsa,k8s-cis,k8s-pss-baseline,k8s-pss-restricted)
       --components strings                specify which components to scan (workload,infra) (default [workload,infra])
