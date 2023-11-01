@@ -346,8 +346,8 @@ github.com/aquasecurity/trivy-aws v0.4.0 h1:vrpL9Gx3+33D8TvRCDFJxEIHR3AA+TcnTr0r
 github.com/aquasecurity/trivy-aws v0.4.0/go.mod h1:dPx0xRElmFrVXBxeYqEAl5NejJ2kHb51ybFPzBMxWow=
 github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d h1:fjI9mkoTUAkbGqpzt9nJsO24RAdfG+ZSiLFj0G2jO8c=
 github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d/go.mod h1:cj9/QmD9N3OZnKQMp+/DvdV+ym3HyIkd4e+F0ZM3ZGs=
-github.com/aquasecurity/trivy-iac v0.5.2-0.20231101023330-b08cb855f919 h1:66uVB0LsEnvBx3xCKVDUZIpsm5RF2Z4vrNUs9vPPFag=
-github.com/aquasecurity/trivy-iac v0.5.2-0.20231101023330-b08cb855f919/go.mod h1:dHoaIzm4niotuaEiSM40HelhcL8m/2MHzT3uHcQYUh8=
+github.com/aquasecurity/trivy-iac v0.5.2 h1:cqeSDEfQtM3l4ceiQ+IUD2K/ZBhyz443xe+S2TkBdE0=
+github.com/aquasecurity/trivy-iac v0.5.2/go.mod h1:dHoaIzm4niotuaEiSM40HelhcL8m/2MHzT3uHcQYUh8=
 github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728 h1:0eS+V7SXHgqoT99tV1mtMW6HL4HdoB9qGLMCb1fZp8A=
 github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.5.8-0.20230928134646-b414e546fe6d h1:5urHj0NMGflp/M9Ll5QlKfo0Kf6nJ01RED1HRgl0CeE=
@@ -717,8 +717,8 @@ github.com/docker/distribution v2.8.2+incompatible h1:T3de5rq0dB1j30rp0sA2rER+m3
 github.com/docker/distribution v2.8.2+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/docker v20.10.7+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/docker/docker v23.0.0-rc.1+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
-github.com/docker/docker v24.0.6+incompatible h1:hceabKCtUgDqPu+qm0NgsaXf28Ljf4/pWFL7xjWWDgE=
-github.com/docker/docker v24.0.6+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
+github.com/docker/docker v24.0.7+incompatible h1:Wo6l37AuwP3JaMnZa226lzVXGA3F9Ig1seQen0cKYlM=
+github.com/docker/docker v24.0.7+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/docker/docker-credential-helpers v0.6.3/go.mod h1:WRaJzqw3CTB9bk10avuGsjVBZsD05qeibJ1/TYlvc0Y=
 github.com/docker/docker-credential-helpers v0.7.0 h1:xtCHsjxogADNZcdv1pKUHXryefjlVRqWqIhk/uXJp0A=
 github.com/docker/docker-credential-helpers v0.7.0/go.mod h1:rETQfLdHNT3foU5kuNkFR1R1V12OJRRO5lzt2D1b5X0=

@@ -25,7 +25,7 @@ require (
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-aws v0.4.0
 	github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d
-	github.com/aquasecurity/trivy-iac v0.5.2-0.20231101023330-b08cb855f919
+	github.com/aquasecurity/trivy-iac v0.5.2
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.5.8-0.20230928134646-b414e546fe6d
 	github.com/aquasecurity/trivy-policies v0.4.0
@@ -41,7 +41,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/containerd/containerd v1.7.6
-	github.com/docker/docker v24.0.6+incompatible
+	github.com/docker/docker v24.0.7+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.15.0
 	github.com/go-git/go-git/v5 v5.8.1
