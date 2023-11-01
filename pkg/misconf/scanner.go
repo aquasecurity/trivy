@@ -52,13 +52,14 @@ type ScannerOption struct {
 	DisableEmbeddedPolicies  bool
 	DisableEmbeddedLibraries bool
 
-	HelmValues          []string
-	HelmValueFiles      []string
-	HelmFileValues      []string
-	HelmStringValues    []string
-	TerraformTFVars     []string
-	TfExcludeDownloaded bool
-	K8sVersion          string
+	HelmValues              []string
+	HelmValueFiles          []string
+	HelmFileValues          []string
+	HelmStringValues        []string
+	TerraformTFVars         []string
+	CloudformationParamVars []string
+	TfExcludeDownloaded     bool
+	K8sVersion              string
 }
 
 func (o *ScannerOption) Sort() {
@@ -115,6 +116,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = arm.New(opts...)
 	case detection.FileTypeCloudFormation:
 		scanner = cfscanner.New(opts...)
+		configFiles = opt.CloudformationParamVars
 	case detection.FileTypeDockerfile:
 		scanner = dfscanner.NewScanner(opts...)
 	case detection.FileTypeHelm:
@@ -282,6 +284,8 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		return addHelmOpts(opts, opt), nil
 	case detection.FileTypeTerraform:
 		return addTFOpts(opts, opt), nil
+	case detection.FileTypeCloudFormation:
+		return addCFOpts(opts, opt), nil
 	default:
 		return opts, nil
 	}
@@ -306,6 +310,13 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 		tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded),
 	)
 
+	return opts
+}
+
+func addCFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []options.ScannerOption {
+	if len(scannerOption.CloudformationParamVars) > 0 {
+		opts = append(opts, cfscanner.WithParameterFiles(scannerOption.CloudformationParamVars...))
+	}
 	return opts
 }
 
