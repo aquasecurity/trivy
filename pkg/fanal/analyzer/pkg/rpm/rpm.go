@@ -154,6 +154,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
 			Digest:          d,
+			InstalledFiles:  files,
 		}
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)
