@@ -21,6 +21,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --branch string                     pass the branch name to be scanned
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
+      --cf-params strings                 specify paths to override the Cloudformation parameters files
       --clear-cache                       clear image caches without scanning
       --commit string                     pass the commit hash to be scanned
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
