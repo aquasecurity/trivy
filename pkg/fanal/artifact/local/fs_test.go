@@ -1015,6 +1015,64 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			},
 		},
 		{
+			name: "no failure with cloudformation params",
+			fields: fields{
+				dir: "./testdata/misconfig/cloudformation/params/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					RegoOnly:                 true,
+					Namespaces:               []string{"user"},
+					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/params/rego"},
+					CloudformationParamVars:  []string{"./testdata/misconfig/cloudformation/params/cfparams.json"},
+					DisableEmbeddedPolicies:  true,
+					DisableEmbeddedLibraries: true,
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobIDAnything: true,
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: 2,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: "cloudformation",
+								FilePath: "main.yaml",
+								Successes: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											AVDID:              "AVD-TEST-0001",
+											ID:                 "TEST001",
+											Type:               "CloudFormation Security Check",
+											Title:              "Bad stuff is bad",
+											Description:        "Its not good!",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove bad stuff",
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "sqs",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/misconfig/cloudformation/params/src",
+				Type: types.ArtifactFilesystem,
+				ID:   "sha256:0c66c19a4df3ecc11db9f90fbc921f1050325c05c480847369e07ee309e8a897",
+				BlobIDs: []string{
+					"sha256:0c66c19a4df3ecc11db9f90fbc921f1050325c05c480847369e07ee309e8a897",
+				},
+			},
+		},
+		{
 			name: "passed",
 			fields: fields{
 				dir: "./testdata/misconfig/cloudformation/passed/src",
