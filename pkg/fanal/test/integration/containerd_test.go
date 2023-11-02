@@ -67,7 +67,7 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcon
 			testcontainers.BindMount(hostPath, "/run"),
 		),
 		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
-			hostConfig.AutoRemove = false
+			hostConfig.AutoRemove = true
 		},
 		WaitingFor: wait.ForLog("containerd successfully booted"),
 	}
