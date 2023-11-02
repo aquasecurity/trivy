@@ -27,8 +27,8 @@ require (
 	github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d
 	github.com/aquasecurity/trivy-iac v0.5.2
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
-	github.com/aquasecurity/trivy-policies v0.4.0
 	github.com/aquasecurity/trivy-kubernetes v0.5.9-0.20231019164303-dcdfdc50763f
+	github.com/aquasecurity/trivy-policies v0.4.0
 	github.com/aws/aws-sdk-go-v2 v1.22.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.45
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.43
@@ -199,7 +199,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.15.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.17.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/workspaces v1.31.1 // indirect
-	github.com/aws/smithy-go v1.15.0 // indirect
+	github.com/aws/smithy-go v1.16.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/briandowns/spinner v1.23.0 // indirect
@@ -240,7 +240,6 @@ require (
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-openapi/analysis v0.21.4 // indirect
 	github.com/go-openapi/errors v0.20.4 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
@@ -292,7 +291,6 @@ require (
 	github.com/liamg/memoryfs v1.6.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de // indirect
-	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/lunixbochs/struc v0.0.0-20200707160740-784aaebc1d40 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -331,7 +329,6 @@ require (
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/prometheus/client_golang v1.16.0 // indirect
 	github.com/prometheus/client_model v0.4.0 // indirect
 	github.com/prometheus/common v0.44.0 // indirect
@@ -343,8 +340,6 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.23.8 // indirect
-	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/skeema/knownhosts v1.2.0 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
@@ -352,8 +347,6 @@ require (
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/tchap/go-patricia/v2 v2.3.1 // indirect
-	github.com/tklauser/go-sysconf v0.3.12 // indirect
-	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/vbatts/tar-split v0.11.3 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
@@ -361,7 +354,6 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/yashtewari/glob-intersection v0.2.0 // indirect
 	github.com/yuin/gopher-lua v1.1.0 // indirect
-	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	github.com/zclconf/go-cty v1.13.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.0.3 // indirect
 	go.mongodb.org/mongo-driver v1.11.3 // indirect
@@ -389,10 +381,10 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	helm.sh/helm/v3 v3.12.3 // indirect
-	k8s.io/apiextensions-apiserver v0.27.3 // indirect
+	helm.sh/helm/v3 v3.13.0 // indirect
+	k8s.io/apiextensions-apiserver v0.28.2 // indirect
 	k8s.io/apimachinery v0.28.2 // indirect
-	k8s.io/apiserver v0.27.3 // indirect
+	k8s.io/apiserver v0.28.2 // indirect
 	k8s.io/cli-runtime v0.28.2 // indirect
 	k8s.io/client-go v0.28.2 // indirect
 	k8s.io/component-base v0.28.2 // indirect
@@ -419,3 +411,7 @@ require (
 // oras 1.2.2 is incompatible with github.com/docker/docker v24.0.2
 // cf. https://github.com/oras-project/oras-go/pull/527
 replace oras.land/oras-go => oras.land/oras-go v1.2.4-0.20230801060855-932dd06d38af
+
+// testcontainers-go has an outstanding bug with v0.25.0 and v0.26.0
+// github.com/testcontainers/testcontainers-go
+replace github.com/testcontainers/testcontainers-go => github.com/testcontainers/testcontainers-go v0.23.0
