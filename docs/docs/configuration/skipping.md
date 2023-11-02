@@ -115,4 +115,5 @@ A file pattern contains the analyzer it is used for, and the pattern itself, joi
 
 The prefixes are listed [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go)
 
-[^1]: Only for licenses not obtained from packages (additional licenses obtained using the [license-full](../scanner/license.md) flag)
+
+[^1]: Only work with the [license-full](../scanner/license.md) flag)
