@@ -143,7 +143,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 			dir, filePath = path.Split(a.rootPath)
 		}
 
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
+		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, dir, filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 
