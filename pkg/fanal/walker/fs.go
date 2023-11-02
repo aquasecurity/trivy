@@ -5,11 +5,14 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"time"
 
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
+
+const walkDelay = 10 * time.Millisecond
 
 type ErrorCallback func(pathname string, err error) error
 
@@ -18,7 +21,7 @@ type FS struct {
 	errCallback ErrorCallback
 }
 
-func NewFS(skipFiles, skipDirs []string, errCallback ErrorCallback) FS {
+func NewFS(skipFiles, skipDirs []string, slow bool, errCallback ErrorCallback) FS {
 	if errCallback == nil {
 		errCallback = func(pathname string, err error) error {
 			switch {
@@ -35,7 +38,7 @@ func NewFS(skipFiles, skipDirs []string, errCallback ErrorCallback) FS {
 	}
 
 	return FS{
-		walker:      newWalker(skipFiles, skipDirs, false),
+		walker:      newWalker(skipFiles, skipDirs, slow),
 		errCallback: errCallback,
 	}
 }
@@ -60,6 +63,10 @@ func (w FS) walkDirFunc(root string, fn WalkFunc) fs.WalkDirFunc {
 	return func(filePath string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return w.errCallback(filePath, err)
+		}
+
+		if w.walker.slow {
+			time.Sleep(walkDelay)
 		}
 
 		filePath = filepath.Clean(filePath)
