@@ -53,6 +53,7 @@ func configureTestDataPaths(t *testing.T, namespace string) (string, string) {
 
 func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcontainers.Container {
 	t.Helper()
+	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	req := testcontainers.ContainerRequest{
 		Name:  "containerd",
 		Image: "ghcr.io/aquasecurity/trivy-test-images/containerd:latest",
@@ -64,8 +65,9 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcon
 		Mounts: testcontainers.Mounts(
 			testcontainers.BindMount(hostPath, "/run"),
 		),
-		SkipReaper: true,
-		AutoRemove: false,
+		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+			hostConfig.AutoRemove = false
+		},
 		WaitingFor: wait.ForLog("containerd successfully booted"),
 	}
 	containerdC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
