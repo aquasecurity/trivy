@@ -80,15 +80,16 @@ type ScanFlagGroup struct {
 }
 
 type ScanOptions struct {
-	Target       string
-	SkipDirs     []string
-	SkipFiles    []string
-	OfflineScan  bool
-	Scanners     types.Scanners
-	FilePatterns []string
-	Slow         bool
-	SBOMSources  []string
-	RekorURL     string
+	Target         string
+	SkipDirs       []string
+	SkipFiles      []string
+	OfflineScan    bool
+	Scanners       types.Scanners
+	FilePatterns   []string
+	Slow           bool
+	SBOMSources    []string
+	RekorURL       string
+	IncludeDevDeps bool
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {

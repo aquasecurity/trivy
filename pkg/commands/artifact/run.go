@@ -556,6 +556,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
 		OnlyInspectArtifact: opts.OnlyInspectArtifact,
+		IncludeDevDeps:      opts.IncludeDevDeps,
 	}
 
 	if len(opts.ImageConfigScanners) != 0 {

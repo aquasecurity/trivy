@@ -69,6 +69,7 @@ type Package struct {
 	Release    string   `json:",omitempty"`
 	Epoch      int      `json:",omitempty"`
 	Arch       string   `json:",omitempty"`
+	Dev        bool     `json:",omitempty"`
 	SrcName    string   `json:",omitempty"`
 	SrcVersion string   `json:",omitempty"`
 	SrcRelease string   `json:",omitempty"`

@@ -39,6 +39,7 @@ func detect(driver Driver, libs []ftypes.Package) ([]types.DetectedVulnerability
 			vulns[i].Layer = lib.Layer
 			vulns[i].PkgPath = lib.FilePath
 			vulns[i].PkgRef = lib.Ref
+			vulns[i].PkgDev = lib.Dev
 		}
 		vulnerabilities = append(vulnerabilities, vulns...)
 	}

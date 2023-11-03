@@ -693,6 +693,8 @@ github.com/deepfactor-io/go-dep-parser v0.0.0-20230830122156-66593f9bf465 h1:vLO
 github.com/deepfactor-io/go-dep-parser v0.0.0-20230830122156-66593f9bf465/go.mod h1:jcQWJiFiiK3ZHRVCgh8tn82C+34cvSXxuHRvzfGwABU=
 github.com/deepfactor-io/go-dep-parser v0.0.0-20230929042249-eef31de5b51f h1:5Ih+N9TbXhUG8Cq1RYY6IahjQDzh9lFtRU/yD5TFaPQ=
 github.com/deepfactor-io/go-dep-parser v0.0.0-20230929042249-eef31de5b51f/go.mod h1:jcQWJiFiiK3ZHRVCgh8tn82C+34cvSXxuHRvzfGwABU=
+github.com/deepfactor-io/go-dep-parser v0.0.0-20231103040257-3a79720c961c h1:8nFMbt5azgGAn6nluvYzoY4q9mHvBPB90W+YwmpD82c=
+github.com/deepfactor-io/go-dep-parser v0.0.0-20231103040257-3a79720c961c/go.mod h1:jcQWJiFiiK3ZHRVCgh8tn82C+34cvSXxuHRvzfGwABU=
 github.com/deepfactor-io/javadb v0.0.0-20230926113813-74b4ab241dce h1:KsQH6mJul9zM0TnnIdrp8XyW7nkncikl2j9rKDs4wjQ=
 github.com/deepfactor-io/javadb v0.0.0-20230926113813-74b4ab241dce/go.mod h1:zXNZz1juHXVG9R5uBX5JCHovznTqSXb+iT9ALsjv8Qk=
 github.com/denisenkom/go-mssqldb v0.9.0/go.mod h1:xbL0rPBG9cCiLr28tMa8zpbdarY27NDyej4t/EjAShU=

@@ -115,6 +115,7 @@ func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 			ID:        lib.ID,
 			Name:      lib.Name,
 			Version:   lib.Version,
+			Dev:       lib.Dev,
 			FilePath:  libPath,
 			Indirect:  lib.Indirect,
 			Licenses:  licenses,
