@@ -1472,8 +1472,8 @@ github.com/opentracing/opentracing-go v1.2.0/go.mod h1:GxEUsuufX4nBwe+T+Wl9TAgYr
 github.com/openvex/go-vex v0.2.5 h1:41utdp2rHgAGCsG+UbjmfMG5CWQxs15nGqir1eRgSrQ=
 github.com/openvex/go-vex v0.2.5/go.mod h1:j+oadBxSUELkrKh4NfNb+BPo77U3q7gdKME88IO/0Wo=
 github.com/owenrumney/go-sarif v1.1.1/go.mod h1:dNDiPlF04ESR/6fHlPyq7gHKmrM0sHUvAGjsoh8ZH0U=
-github.com/owenrumney/go-sarif/v2 v2.2.2 h1:x2acaiiAW9hu+78wbEYBRGLk5nRtHmkv7HeUsKvblwc=
-github.com/owenrumney/go-sarif/v2 v2.2.2/go.mod h1:MSqMMx9WqlBSY7pXoOZWgEsVB4FDNfhcaXDA1j6Sr+w=
+github.com/owenrumney/go-sarif/v2 v2.3.0 h1:wP5yEpI53zr0v5cBmagXzLbHZp9Oylyo3AJDpfLBITs=
+github.com/owenrumney/go-sarif/v2 v2.3.0/go.mod h1:MSqMMx9WqlBSY7pXoOZWgEsVB4FDNfhcaXDA1j6Sr+w=
 github.com/owenrumney/squealer v1.1.1 h1:e+fg29IxdNARSc4s7CbYnqVSepm9eOqErLNNNR5XbAs=
 github.com/owenrumney/squealer v1.1.1/go.mod h1:Q5ekVoyFSG2FlnCVIBGsyk/FSMA/ATv8PtwKIVX7t/o=
 github.com/package-url/packageurl-go v0.1.2 h1:0H2DQt6DHd/NeRlVwW4EZ4oEI6Bn40XlNPRqegcxuo4=
