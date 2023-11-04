@@ -1024,7 +1024,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 					RegoOnly:                 true,
 					Namespaces:               []string{"user"},
 					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/params/rego"},
-					CloudformationParamVars:  []string{"./testdata/misconfig/cloudformation/params/cfparams.json"},
+					CloudFormationParamVars:  []string{"./testdata/misconfig/cloudformation/params/cfparams.json"},
 					DisableEmbeddedPolicies:  true,
 					DisableEmbeddedLibraries: true,
 				},

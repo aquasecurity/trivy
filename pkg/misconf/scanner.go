@@ -57,7 +57,7 @@ type ScannerOption struct {
 	HelmFileValues          []string
 	HelmStringValues        []string
 	TerraformTFVars         []string
-	CloudformationParamVars []string
+	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
 	K8sVersion              string
 }
@@ -116,7 +116,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = arm.New(opts...)
 	case detection.FileTypeCloudFormation:
 		scanner = cfscanner.New(opts...)
-		configFiles = opt.CloudformationParamVars
+		configFiles = opt.CloudFormationParamVars
 	case detection.FileTypeDockerfile:
 		scanner = dfscanner.NewScanner(opts...)
 	case detection.FileTypeHelm:
@@ -314,8 +314,8 @@ func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []opti
 }
 
 func addCFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []options.ScannerOption {
-	if len(scannerOption.CloudformationParamVars) > 0 {
-		opts = append(opts, cfscanner.WithParameterFiles(scannerOption.CloudformationParamVars...))
+	if len(scannerOption.CloudFormationParamVars) > 0 {
+		opts = append(opts, cfscanner.WithParameterFiles(scannerOption.CloudFormationParamVars...))
 	}
 	return opts
 }

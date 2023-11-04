@@ -102,7 +102,7 @@ type MisconfOptions struct {
 	HelmFileValues          []string
 	HelmStringValues        []string
 	TerraformTFVars         []string
-	CloudformationParamVars []string
+	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
 }
 
@@ -151,7 +151,7 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		HelmFileValues:          getStringSlice(f.HelmFileValues),
 		HelmStringValues:        getStringSlice(f.HelmStringValues),
 		TerraformTFVars:         getStringSlice(f.TerraformTFVars),
-		CloudformationParamVars: getStringSlice(f.CloudformationParamVars),
+		CloudFormationParamVars: getStringSlice(f.CloudformationParamVars),
 		TfExcludeDownloaded:     getBool(f.TerraformExcludeDownloaded),
 	}, nil
 }
