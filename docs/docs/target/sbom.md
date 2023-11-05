@@ -12,7 +12,9 @@ To scan SBOM, you can use the `sbom` subcommand and pass the path to the SBOM.
 The input format is automatically detected.
 
 ```bash
-trivy sbom /path/to/sbom_file
+
+$ trivy sbom /path/to/sbom_file
+
 ```
 
 !!! note
@@ -27,7 +29,7 @@ Trivy supports CycloneDX as an input.
     CycloneDX XML is not supported at the moment.
 
 ```bash
-trivy sbom /path/to/cyclonedx.json
+$ trivy sbom /path/to/cyclonedx.json
 ```
 
 ## SPDX
@@ -40,8 +42,8 @@ The following SPDX formats are supported:
 - JSON (`--format spdx-json`)
 
 ```bash
-trivy image --format spdx-json --output spdx.json alpine:3.16.0
-trivy sbom spdx.json
+$ trivy image --format spdx-json --output spdx.json alpine:3.16.0
+$ trivy sbom spdx.json
 ```
 
 <details>

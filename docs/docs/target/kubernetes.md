@@ -317,25 +317,33 @@ Examples:
 Scan the cluster for Kubernetes Pod Security Standards Baseline compliance:
 
 ```
-trivy k8s cluster --compliance=k8s-pss-baseline --report summary
+
+$ trivy k8s cluster --compliance=k8s-pss-baseline --report summary
+
 ```
 
 Get the detailed report for checks:
 
 ```
-trivy k8s cluster --compliance=k8s-cis --report all
+
+$ trivy k8s cluster --compliance=k8s-cis --report all
+
 ```
 
 Get summary report in JSON format:
 
 ```
-trivy k8s cluster --compliance=k8s-cis --report summary --format json
+
+$ trivy k8s cluster --compliance=k8s-cis --report summary --format json
+
 ```
 
 Get detailed report in JSON format:
 
 ```
-trivy k8s cluster --compliance=k8s-cis --report all --format json
+
+$ trivy k8s cluster --compliance=k8s-cis --report all --format json
+
 ```
 
 ## KBOM
@@ -346,13 +354,17 @@ For more background on KBOM, see [here](https://blog.aquasec.com/introducing-kbo
 Trivy can generate KBOM in CycloneDX format:
 
 ```sh
-trivy k8s cluster --format cyclonedx --output mykbom.cdx.json
+
+$ trivy k8s cluster --format cyclonedx --output mykbom.cdx.json
+
 ```
 
 Trivy can also scan that generated KBOM (or any SBOM) for vulnerabilities:
 
 ```sh
-trivy sbom mykbom.cdx.json
+
+$ trivy sbom mykbom.cdx.json
+
 ```
 
 <details>
