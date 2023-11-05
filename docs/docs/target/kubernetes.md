@@ -15,12 +15,14 @@ When scanning a Kubernetes cluster, Trivy differentiates between the following:
 When scanning any of the above, the container image is scanned separately to the Kubernetes resource definition (the YAML manifest) that defines the resource.
 
 Container image is scanned for:
+
 - Vulnerabilities
 - Misconfigurations
 - Exposed secrets
 
 Kubernetes resource definition is scanned for:
-- Vulnerabilities - partially supported through [KBOM scanning](#KBOM)
+
+- Vulnerabilities (Open Source Libraries, Control Plane and Node Components)
 - Misconfigurations
 - Exposed secrets
 
@@ -72,6 +74,33 @@ You can exclude specific nodes from the scan using the `--exclude-nodes` flag, w
 ```
 trivy k8s cluster --report summary --exclude-nodes kubernetes.io/arch:arm6
 ```
+
+## Control Plane and Node Components Vulnerability Scanning
+
+Trivy is capable of discovering Kubernetes control plane (apiserver, controller-manager and etc) and node components(kubelet, kube-proxy and etc), matching them against the [official Kubernetes vulnerability database feed](https://github.com/aquasecurity/vuln-list-k8s), and reporting any vulnerabilities it finds
+
+
+```
+trivy k8s cluster --scanners vuln  --report all
+
+NodeComponents/kind-control-plane (kubernetes)
+
+Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 2, CRITICAL: 0)
+
+┌────────────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────────┬───────────────────────────────────────────────────┐
+│    Library     │ Vulnerability  │ Severity │ Status │ Installed Version │          Fixed Version           │                       Title                       │
+├────────────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────────┼───────────────────────────────────────────────────┤
+│ k8s.io/kubelet │ CVE-2023-2431  │ LOW      │ fixed  │ 1.21.1            │ 1.24.14, 1.25.10, 1.26.5, 1.27.2 │ Bypass of seccomp profile enforcement             │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2023-2431         │
+│                ├────────────────┼──────────┤        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
+│                │ CVE-2021-25741 │ HIGH     │        │                   │ 1.19.16, 1.20.11, 1.21.5, 1.22.1 │ Symlink exchange can allow host filesystem access │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25741        │
+│                ├────────────────┤          │        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
+│                │ CVE-2021-25749 │          │        │                   │ 1.22.14, 1.23.11, 1.24.5         │ runAsNonRoot logic bypass for Windows containers  │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25749        │
+└────────────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┘
+```
+
 
 ### Components types
 
@@ -329,7 +358,8 @@ trivy sbom mykbom.cdx.json
 <details>
 <summary>Result</summary>
 
-```
+```sh
+
 2023-09-28T22:52:25.707+0300    INFO    Vulnerability scanning is enabled
  2023-09-28T22:52:25.707+0300    INFO    Detected SBOM format: cyclonedx-json
  2023-09-28T22:52:25.717+0300    WARN    No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.
