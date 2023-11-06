@@ -4,7 +4,7 @@
     This feature might change without preserving backwards compatibility.
 
 Trivy can connect to your Kubernetes cluster and scan it for security issues using the `trivy k8s` command. This page covers the technical capabilities of Trivy Kubernetes scanning.
-Trivy can also be installed *inside* your cluster as a Kubernetes Operator, and continuously scan it. For more about this, please see the [Trivy Operator][https://aquasecurity.github.io/trivy-operator/] project.
+Trivy can also be installed *inside* your cluster as a Kubernetes Operator, and continuously scan it. For more about this, please see the [Trivy Operator](https://aquasecurity.github.io/trivy-operator/) project.
 
 When scanning a Kubernetes cluster, Trivy differentiates between the following:
 
