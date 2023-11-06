@@ -199,7 +199,7 @@ func (p *PackageURL) BOMRef() string {
 }
 
 // nolint: gocyclo
-func NewPackageURL(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (PackageURL, error) {
+func NewPackageURL(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*PackageURL, error) {
 	var qualifiers packageurl.Qualifiers
 	if metadata.OS != nil {
 		qualifiers = parseQualifier(pkg)
@@ -235,7 +235,7 @@ func NewPackageURL(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Pack
 	case packageurl.TypeGolang:
 		namespace, name = parseGolang(name)
 		if name == "" {
-			return PackageURL{PackageURL: *packageurl.NewPackageURL("", "", "", "", nil, "")}, nil
+			return nil, nil
 		}
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
@@ -246,12 +246,15 @@ func NewPackageURL(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Pack
 	case packageurl.TypeOCI:
 		purl, err := parseOCI(metadata)
 		if err != nil {
-			return PackageURL{}, err
+			return nil, err
 		}
-		return PackageURL{PackageURL: purl}, nil
+		if purl.Type == "" {
+			return nil, nil
+		}
+		return &PackageURL{PackageURL: purl}, nil
 	}
 
-	return PackageURL{
+	return &PackageURL{
 		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, subpath),
 		FilePath:   pkg.FilePath,
 	}, nil
