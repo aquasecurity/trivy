@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -496,6 +497,8 @@ func TestClientServerWithToken(t *testing.T) {
 func TestClientServerWithRedis(t *testing.T) {
 	// Set up a Redis container
 	ctx := context.Background()
+	// This test includes 2 checks
+	// redisC container will terminate after first check
 	redisC, addr := setupRedis(t, ctx)
 
 	// Set up Trivy server
@@ -650,6 +653,7 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 }
 
 func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, string) {
+	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	t.Helper()
 	imageName := "redis:5.0"
 	port := "6379/tcp"
@@ -657,8 +661,9 @@ func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, st
 		Name:         "redis",
 		Image:        imageName,
 		ExposedPorts: []string{port},
-		SkipReaper:   true,
-		AutoRemove:   true,
+		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+			hostConfig.AutoRemove = true
+		},
 	}
 
 	redis, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
