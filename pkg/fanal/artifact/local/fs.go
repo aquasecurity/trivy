@@ -56,7 +56,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 		rootPath: filepath.ToSlash(filepath.Clean(rootPath)),
 		cache:    c,
 		walker: walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs),
-			opt.WalkOption.ErrorCallback),
+			opt.Slow, opt.WalkOption),
 		analyzer:       a,
 		handlerManager: handlerManager,
 

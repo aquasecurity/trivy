@@ -12,18 +12,23 @@ import (
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
-const walkDelay = 10 * time.Millisecond
-
 type ErrorCallback func(pathname string, err error) error
+
+// Option is a struct that allows users to define a custom walking behavior.
+// This option is only available when using Trivy as an imported library and not through CLI flags.
+type Option struct {
+	ErrorCallback ErrorCallback
+	Delay         time.Duration
+}
 
 type FS struct {
 	walker
-	errCallback ErrorCallback
+	option Option
 }
 
-func NewFS(skipFiles, skipDirs []string, slow bool, errCallback ErrorCallback) FS {
-	if errCallback == nil {
-		errCallback = func(pathname string, err error) error {
+func NewFS(skipFiles, skipDirs []string, slow bool, opt Option) FS {
+	if opt.ErrorCallback == nil {
+		opt.ErrorCallback = func(pathname string, err error) error {
 			switch {
 			// Unwrap fs.SkipDir error
 			case errors.Is(err, fs.SkipDir):
@@ -38,8 +43,8 @@ func NewFS(skipFiles, skipDirs []string, slow bool, errCallback ErrorCallback) F
 	}
 
 	return FS{
-		walker:      newWalker(skipFiles, skipDirs, slow),
-		errCallback: errCallback,
+		walker: newWalker(skipFiles, skipDirs, slow),
+		option: opt,
 	}
 }
 
@@ -49,7 +54,7 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 	walkDir := w.walkDirFunc(root, fn)
 	err := filepath.WalkDir(root, func(filePath string, d fs.DirEntry, err error) error {
 		if walkErr := walkDir(filePath, d, err); walkErr != nil {
-			return w.errCallback(filePath, walkErr)
+			return w.option.ErrorCallback(filePath, walkErr)
 		}
 		return nil
 	})
@@ -62,11 +67,11 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 func (w FS) walkDirFunc(root string, fn WalkFunc) fs.WalkDirFunc {
 	return func(filePath string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return w.errCallback(filePath, err)
+			return err
 		}
 
 		if w.walker.slow {
-			time.Sleep(walkDelay)
+			time.Sleep(w.option.Delay)
 		}
 
 		filePath = filepath.Clean(filePath)
