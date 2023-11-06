@@ -3746,7 +3746,7 @@ You can skip directories that you don't maintain using the <code>--skip-dirs</co
 </tr>
 <tr>
 <td align="center">License</td>
-<td align="center"></td>
+<td align="center">✓<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
 </tr>
 </tbody>
 </table>
@@ -3758,7 +3758,15 @@ For example, it may be useful when your file name of Dockerfile doesn't match th
 <p>A file pattern contains the analyzer it is used for, and the pattern itself, joined by a semicolon. For example:
 <div class="highlight"><pre><span></span><code>--file-patterns &quot;dockerfile:.*.docker&quot; --file-patterns &quot;kubernetes:*.tpl&quot; --file-patterns &quot;pip:requirements-.*\.txt&quot;
 </code></pre></div></p>
-<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/156d4cc6051d27d396ad3f05e4a8f399c92a405c/pkg/fanal/analyzer/const.go">here</a></p>
+<p>The prefixes are listed <a href="https://github.com/aquasecurity/trivy/tree/d6df5fbcda878e43e5e02484304726ebe7c6c418/pkg/fanal/analyzer/const.go">here</a></p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Only work with the <a href="../../scanner/license/">license-full</a> flag)&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
               
             </article>
