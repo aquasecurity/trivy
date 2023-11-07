@@ -29,6 +29,7 @@ type Artifact struct {
 }
 
 func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
+	opt.Init()
 	return Artifact{
 		filePath:       filepath.Clean(filePath),
 		cache:          c,

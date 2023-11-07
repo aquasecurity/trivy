@@ -1,6 +1,8 @@
 package flag
 
 import (
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
@@ -57,6 +59,7 @@ var (
 		ConfigName: "scan.slow",
 		Default:    false,
 		Usage:      "scan over time with lower CPU and memory utilization",
+		Deprecated: true,
 	}
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
@@ -77,6 +80,12 @@ var (
 		Default:    false,
 		Usage:      "include development dependencies in the report (supported: npm, yarn)",
 	}
+	ParallelFlag = Flag{
+		Name:       "parallel",
+		ConfigName: "scan.parallel",
+		Default:    5,
+		Usage:      "number (1-20) of goroutines enabled for parallel scanning",
+	}
 )
 
 type ScanFlagGroup struct {
@@ -86,6 +95,7 @@ type ScanFlagGroup struct {
 	Scanners       *Flag
 	FilePatterns   *Flag
 	Slow           *Flag
+	Parallel       *Flag
 	SBOMSources    *Flag
 	RekorURL       *Flag
 	IncludeDevDeps *Flag
@@ -98,7 +108,7 @@ type ScanOptions struct {
 	OfflineScan    bool
 	Scanners       types.Scanners
 	FilePatterns   []string
-	Slow           bool
+	Parallel       int
 	SBOMSources    []string
 	RekorURL       string
 	IncludeDevDeps bool
@@ -112,6 +122,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		Scanners:       &ScannersFlag,
 		FilePatterns:   &FilePatternsFlag,
 		Slow:           &SlowFlag,
+		Parallel:       &ParallelFlag,
 		SBOMSources:    &SBOMSourcesFlag,
 		RekorURL:       &RekorURLFlag,
 		IncludeDevDeps: &IncludeDevDepsFlag,
@@ -130,6 +141,7 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 		f.Scanners,
 		f.FilePatterns,
 		f.Slow,
+		f.Parallel,
 		f.SBOMSources,
 		f.RekorURL,
 		f.IncludeDevDeps,
@@ -142,6 +154,12 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		target = args[0]
 	}
 
+	parallel := getInt(f.Parallel)
+	// check parallel flag is a valid number between 1-20
+	if parallel < 1 || parallel > 20 {
+		return ScanOptions{}, xerrors.Errorf("'--parallel' must be a number between 1-20: %d", parallel)
+	}
+
 	return ScanOptions{
 		Target:         target,
 		SkipDirs:       getStringSlice(f.SkipDirs),
@@ -149,7 +167,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    getBool(f.OfflineScan),
 		Scanners:       getUnderlyingStringSlice[types.Scanner](f.Scanners),
 		FilePatterns:   getStringSlice(f.FilePatterns),
-		Slow:           getBool(f.Slow),
+		Parallel:       parallel,
 		SBOMSources:    getStringSlice(f.SBOMSources),
 		RekorURL:       getString(f.RekorURL),
 		IncludeDevDeps: getBool(f.IncludeDevDeps),

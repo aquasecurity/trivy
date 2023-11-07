@@ -10,23 +10,15 @@ import (
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/custom"
 )
-
-type ErrorCallback func(pathname string, err error) error
-
-// Option is a struct that allows users to define a custom walking behavior.
-// This option is only available when using Trivy as an imported library and not through CLI flags.
-type Option struct {
-	ErrorCallback ErrorCallback
-	Delay         time.Duration
-}
 
 type FS struct {
 	walker
-	option Option
+	option custom.Option
 }
 
-func NewFS(skipFiles, skipDirs []string, slow bool, opt Option) FS {
+func NewFS(skipFiles, skipDirs []string, opt custom.Option) FS {
 	if opt.ErrorCallback == nil {
 		opt.ErrorCallback = func(pathname string, err error) error {
 			switch {
@@ -43,7 +35,7 @@ func NewFS(skipFiles, skipDirs []string, slow bool, opt Option) FS {
 	}
 
 	return FS{
-		walker: newWalker(skipFiles, skipDirs, slow),
+		walker: newWalker(skipFiles, skipDirs),
 		option: opt,
 	}
 }
@@ -70,9 +62,7 @@ func (w FS) walkDirFunc(root string, fn WalkFunc) fs.WalkDirFunc {
 			return err
 		}
 
-		if w.walker.slow {
-			time.Sleep(w.option.Delay)
-		}
+		time.Sleep(w.option.Delay)
 
 		filePath = filepath.Clean(filePath)
 

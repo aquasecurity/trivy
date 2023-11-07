@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 
+	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -15,7 +16,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Type string
@@ -41,7 +41,7 @@ type Storage struct {
 
 func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobInfo, error) {
 	var wg sync.WaitGroup
-	limit := semaphore.New(a.artifactOption.Slow)
+	limit := semaphore.NewWeighted(int64(a.artifactOption.Parallel))
 	result := analyzer.NewAnalysisResult()
 
 	opts := analyzer.AnalysisOptions{
@@ -115,18 +115,13 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 }
 
 func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
+	opt.Init()
+
 	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
 		return nil, xerrors.Errorf("handler init error: %w", err)
 	}
-	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-		Group:                opt.AnalyzerGroup,
-		FilePatterns:         opt.FilePatterns,
-		DisabledAnalyzers:    opt.DisabledAnalyzers,
-		MisconfScannerOption: opt.MisconfScannerOption,
-		SecretScannerOption:  opt.SecretScannerOption,
-		LicenseScannerOption: opt.LicenseScannerOption,
-	})
+	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerOptions())
 	if err != nil {
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
@@ -135,7 +130,7 @@ func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (art
 		cache:          c,
 		analyzer:       a,
 		handlerManager: handlerManager,
-		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
+		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs),
 		artifactOption: opt,
 	}
 

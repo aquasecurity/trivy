@@ -4,9 +4,9 @@ import (
 	"context"
 	"sort"
 
+	"github.com/aquasecurity/trivy/pkg/custom"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
@@ -17,13 +17,13 @@ type Option struct {
 	SkipFiles         []string
 	SkipDirs          []string
 	FilePatterns      []string
+	Parallel          int
 	NoProgress        bool
 	Insecure          bool
 	Offline           bool
 	AppDirs           []string
 	SBOMSources       []string
 	RekorURL          string
-	Slow              bool // Lower CPU and memory
 	AWSRegion         string
 	AWSEndpoint       string
 	FileChecksum      bool // For SPDX
@@ -40,8 +40,34 @@ type Option struct {
 	SecretScannerOption  analyzer.SecretScannerOption
 	LicenseScannerOption analyzer.LicenseScannerOption
 
-	// File walk
-	WalkOption walker.Option
+	CustomOption custom.Option
+}
+
+func (o *Option) Init() {
+	if o.Parallel == 0 {
+		o.Parallel = 5 // Set the default value
+	}
+}
+
+func (o *Option) AnalyzerOptions() analyzer.AnalyzerOptions {
+	return analyzer.AnalyzerOptions{
+		Group:                o.AnalyzerGroup,
+		FilePatterns:         o.FilePatterns,
+		Parallel:             o.Parallel,
+		DisabledAnalyzers:    o.DisabledAnalyzers,
+		MisconfScannerOption: o.MisconfScannerOption,
+		SecretScannerOption:  o.SecretScannerOption,
+		LicenseScannerOption: o.LicenseScannerOption,
+	}
+}
+
+func (o *Option) ConfigAnalyzerOptions() analyzer.ConfigAnalyzerOptions {
+	return analyzer.ConfigAnalyzerOptions{
+		FilePatterns:         o.FilePatterns,
+		DisabledAnalyzers:    o.DisabledAnalyzers,
+		MisconfScannerOption: o.MisconfScannerOption,
+		SecretScannerOption:  o.SecretScannerOption,
+	}
 }
 
 func (o *Option) Sort() {

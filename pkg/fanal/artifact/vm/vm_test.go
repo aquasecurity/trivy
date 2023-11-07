@@ -61,7 +61,7 @@ func TestNewArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := vm.NewArtifact(tt.target, nil, artifact.Option{})
+			_, err := vm.NewArtifact(tt.target, nil, artifact.Option{Parallel: 3})
 			tt.wantErr(t, err, fmt.Sprintf("NewArtifact(%v, nil, nil)", tt.target))
 		})
 	}
