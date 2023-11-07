@@ -10,6 +10,7 @@ import (
 
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	testcontainers "github.com/testcontainers/testcontainers-go"
@@ -79,11 +80,14 @@ func TestAwsCommandRun(t *testing.T) {
 
 func setupLocalStack(t *testing.T, ctx context.Context) (*localstack.LocalStackContainer, string) {
 	t.Helper()
-
+	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	container, err := localstack.RunContainer(ctx, testcontainers.CustomizeRequest(
 		testcontainers.GenericContainerRequest{
 			ContainerRequest: testcontainers.ContainerRequest{
 				Image: "localstack/localstack:2.2.0",
+				HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+					hostConfig.AutoRemove = true
+				},
 			},
 		},
 	))

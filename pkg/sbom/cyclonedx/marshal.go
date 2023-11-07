@@ -193,6 +193,11 @@ func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, compone
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse pkg: %w", err)
 	}
+
+	// Skip component that can't be converted from `Package`
+	if component == nil {
+		return nil, nil
+	}
 	components[pkg.ID] = component
 
 	// Iterate dependencies
@@ -234,8 +239,9 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 		p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
-		} else if p.Type != "" {
-			root.PackageURL = &p
+		}
+		if p != nil {
+			root.PackageURL = p
 		}
 
 	case ftypes.ArtifactVM:
@@ -315,11 +321,17 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 	}
 
 	name := pkg.Name
+	version := pkg.Version
 	var group string
-	// use `group` field for GroupID and `name` for ArtifactID for jar files
-	if pkg.Type == ftypes.Jar {
-		name = pu.Name
-		group = pu.Namespace
+	// there are cases when we can't build purl
+	// e.g. local Go packages
+	if pu != nil {
+		version = pu.Version
+		// use `group` field for GroupID and `name` for ArtifactID for jar files
+		if pkg.Type == ftypes.Jar {
+			name = pu.Name
+			group = pu.Namespace
+		}
 	}
 
 	properties := []core.Property{
@@ -369,8 +381,8 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		Type:            cdx.ComponentTypeLibrary,
 		Name:            name,
 		Group:           group,
-		Version:         pu.Version,
-		PackageURL:      &pu,
+		Version:         version,
+		PackageURL:      pu,
 		Supplier:        pkg.Maintainer,
 		Licenses:        pkg.Licenses,
 		Hashes:          lo.Ternary(pkg.Digest == "", nil, []digest.Digest{pkg.Digest}),

@@ -99,7 +99,7 @@ trivy image [flags] IMAGE_NAME
       --skip-policy-update                skip fetching rego policy updates
       --slow                              scan over time with lower CPU and memory utilization
   -t, --template string                   output template
-      --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder
+      --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")

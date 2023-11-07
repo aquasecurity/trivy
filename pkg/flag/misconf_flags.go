@@ -59,7 +59,7 @@ var (
 		Name:       "tf-exclude-downloaded-modules",
 		ConfigName: "misconfiguration.terraform.exclude-downloaded-modules",
 		Default:    false,
-		Usage:      "remove results for downloaded modules in .terraform folder",
+		Usage:      "exclude misconfigurations for downloaded terraform modules",
 	}
 	PolicyBundleRepositoryFlag = Flag{
 		Name:       "policy-bundle-repository",

@@ -233,7 +233,7 @@ func (m *Marshaler) rootPackage(r types.Report, pkgDownloadLocation string) (*sp
 	// When the target is a container image, add PURL to the external references of the root package.
 	if p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{}); err != nil {
 		return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
-	} else if p.Type != "" {
+	} else if p != nil {
 		externalReferences = append(externalReferences, purlExternalReference(p.ToString()))
 	}
 
@@ -327,7 +327,7 @@ func (m *Marshaler) pkgToSpdxPackage(t ftypes.TargetType, pkgDownloadLocation st
 	}
 
 	var pkgExtRefs []*spdx.PackageExternalReference
-	if packageURL.Type != "" {
+	if packageURL != nil {
 		pkgExtRefs = []*spdx.PackageExternalReference{purlExternalReference(packageURL.String())}
 	}
 

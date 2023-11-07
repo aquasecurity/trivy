@@ -704,7 +704,7 @@ func TestConvertFromRPCLicenses(t *testing.T) {
 			rpcLicenses: []*common.DetectedLicense{
 				{
 					Severity:   common.Severity_HIGH,
-					Category:   common.DetectedLicense_RESTRICTED,
+					Category:   common.LicenseCategory_RESTRICTED,
 					PkgName:    "alpine-baselayout",
 					FilePath:   "some-path",
 					Name:       "GPL-2.0",
@@ -733,7 +733,7 @@ func TestConvertFromRPCLicenses(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRPCLicenses(tt.rpcLicenses)
+			got := ConvertFromRPCDetectedLicenses(tt.rpcLicenses)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -761,7 +761,7 @@ func TestConvertToRPCLicenses(t *testing.T) {
 			want: []*common.DetectedLicense{
 				{
 					Severity:   common.Severity_HIGH,
-					Category:   common.DetectedLicense_RESTRICTED,
+					Category:   common.LicenseCategory_RESTRICTED,
 					PkgName:    "alpine-baselayout",
 					FilePath:   "some-path",
 					Name:       "GPL-2.0",
@@ -789,17 +789,17 @@ func TestConvertToRPCLicenseCategory(t *testing.T) {
 	tests := []struct {
 		name     string
 		category ftypes.LicenseCategory
-		want     common.DetectedLicense_LicenseCategory
+		want     common.LicenseCategory_Enum
 	}{
 		{
 			name:     "happy",
 			category: ftypes.CategoryNotice,
-			want:     common.DetectedLicense_NOTICE,
+			want:     common.LicenseCategory_NOTICE,
 		},
 		{
 			name:     "unspecified",
 			category: "",
-			want:     common.DetectedLicense_UNSPECIFIED,
+			want:     common.LicenseCategory_UNSPECIFIED,
 		},
 	}
 
@@ -814,17 +814,17 @@ func TestConvertToRPCLicenseCategory(t *testing.T) {
 func TestConvertFromRPCLicenseCategory(t *testing.T) {
 	tests := []struct {
 		name        string
-		rpcCategory common.DetectedLicense_LicenseCategory
+		rpcCategory common.LicenseCategory_Enum
 		want        ftypes.LicenseCategory
 	}{
 		{
 			name:        "happy",
-			rpcCategory: common.DetectedLicense_RESTRICTED,
+			rpcCategory: common.LicenseCategory_RESTRICTED,
 			want:        ftypes.CategoryRestricted,
 		},
 		{
 			name:        "unspecified",
-			rpcCategory: common.DetectedLicense_UNSPECIFIED,
+			rpcCategory: common.LicenseCategory_UNSPECIFIED,
 			want:        "",
 		},
 	}
@@ -833,6 +833,170 @@ func TestConvertFromRPCLicenseCategory(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ConvertFromRPCLicenseCategory(tt.rpcCategory)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertToRPCLicenseType(t *testing.T) {
+	tests := []struct {
+		name string
+		ty   ftypes.LicenseType
+		want common.LicenseType_Enum
+	}{
+		{
+			name: "happy",
+			ty:   ftypes.LicenseTypeFile,
+			want: common.LicenseType_LICENSE_FILE,
+		},
+		{
+			name: "unspecified",
+			ty:   "",
+			want: common.LicenseType_UNSPECIFIED,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCLicenseType(tt.ty)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertFromRPCLicenseType(t *testing.T) {
+	tests := []struct {
+		name    string
+		rpcType common.LicenseType_Enum
+		want    ftypes.LicenseType
+	}{
+		{
+			name:    "happy",
+			rpcType: common.LicenseType_LICENSE_FILE,
+			want:    ftypes.LicenseTypeFile,
+		},
+		{
+			name:    "unspecified",
+			rpcType: common.LicenseType_UNSPECIFIED,
+			want:    "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCLicenseType(tt.rpcType)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertToRPCLicenseFiles(t *testing.T) {
+	tests := []struct {
+		name         string
+		licenseFiles []ftypes.LicenseFile
+		want         []*common.LicenseFile
+	}{
+		{
+			name: "happy",
+			licenseFiles: []ftypes.LicenseFile{
+				{
+					Type:     ftypes.LicenseTypeFile,
+					PkgName:  "alpine-baselayout",
+					FilePath: "some-path",
+					Findings: ftypes.LicenseFindings{
+						{
+							Category:   ftypes.CategoryRestricted,
+							Name:       "GPL-2.0",
+							Confidence: 1,
+							Link:       "https://some-link",
+						},
+					},
+					Layer: ftypes.Layer{
+						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+				},
+			},
+			want: []*common.LicenseFile{
+				{
+					LicenseType: common.LicenseType_LICENSE_FILE,
+					PkgName:     "alpine-baselayout",
+					FilePath:    "some-path",
+					Fingings: []*common.LicenseFinding{
+						{
+							Category:   common.LicenseCategory_RESTRICTED,
+							Name:       "GPL-2.0",
+							Confidence: 1,
+							Link:       "https://some-link",
+						},
+					},
+					Layer: &common.Layer{
+						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, ConvertToRPCLicenseFiles(tt.licenseFiles))
+		})
+	}
+}
+
+func TestConvertFromRPCLicenseFiles(t *testing.T) {
+	tests := []struct {
+		name         string
+		licenseFiles []*common.LicenseFile
+		want         []ftypes.LicenseFile
+	}{
+		{
+			name: "happy",
+			licenseFiles: []*common.LicenseFile{
+				{
+					LicenseType: common.LicenseType_LICENSE_FILE,
+					PkgName:     "alpine-baselayout",
+					FilePath:    "some-path",
+					Fingings: []*common.LicenseFinding{
+						{
+							Category:   common.LicenseCategory_RESTRICTED,
+							Name:       "GPL-2.0",
+							Confidence: 1,
+							Link:       "https://some-link",
+						},
+					},
+					Layer: &common.Layer{
+						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+				},
+			},
+			want: []ftypes.LicenseFile{
+				{
+					Type:     ftypes.LicenseTypeFile,
+					PkgName:  "alpine-baselayout",
+					FilePath: "some-path",
+					Findings: ftypes.LicenseFindings{
+						{
+							Category:   ftypes.CategoryRestricted,
+							Name:       "GPL-2.0",
+							Confidence: 1,
+							Link:       "https://some-link",
+						},
+					},
+					Layer: ftypes.Layer{
+						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, ConvertFromRPCLicenseFiles(tt.licenseFiles))
 		})
 	}
 }
