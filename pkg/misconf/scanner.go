@@ -115,8 +115,8 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 	case detection.FileTypeAzureARM:
 		scanner = arm.New(opts...)
 	case detection.FileTypeCloudFormation:
+		opts = append(opts, cfscanner.WithParameterFiles(opt.CloudFormationParamVars...))
 		scanner = cfscanner.New(opts...)
-		configFiles = opt.CloudFormationParamVars
 	case detection.FileTypeDockerfile:
 		scanner = dfscanner.NewScanner(opts...)
 	case detection.FileTypeHelm:

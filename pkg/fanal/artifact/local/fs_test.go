@@ -1033,32 +1033,8 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2,
-						Misconfigurations: []types.Misconfiguration{
-							{
-								FileType: "cloudformation",
-								FilePath: "main.yaml",
-								Successes: types.MisconfResults{
-									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											AVDID:              "AVD-TEST-0001",
-											ID:                 "TEST001",
-											Type:               "CloudFormation Security Check",
-											Title:              "Bad stuff is bad",
-											Description:        "Its not good!",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove bad stuff",
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "sqs",
-										},
-									},
-								},
-							},
-						},
+						SchemaVersion:     2,
+						Misconfigurations: nil,
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -1066,9 +1042,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/params/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:0c66c19a4df3ecc11db9f90fbc921f1050325c05c480847369e07ee309e8a897",
+				ID:   "sha256:1ca4649a554124bfde3664ec2df61e693c155bd2974d72e6610180ef3839bdfd",
 				BlobIDs: []string{
-					"sha256:0c66c19a4df3ecc11db9f90fbc921f1050325c05c480847369e07ee309e8a897",
+					"sha256:1ca4649a554124bfde3664ec2df61e693c155bd2974d72e6610180ef3839bdfd",
 				},
 			},
 		},
