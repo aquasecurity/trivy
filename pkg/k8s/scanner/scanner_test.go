@@ -31,7 +31,7 @@ func TestScanner_Scan(t *testing.T) {
 			artifacts: []*artifacts.Artifact{
 				{
 					Namespace: "kube-system",
-					Kind:      "ClusterInfo",
+					Kind:      "Cluster",
 					Name:      "k8s.io/kubernetes",
 					RawResource: map[string]interface{}{
 						"name":    "k8s.io/kubernetes",
@@ -45,7 +45,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				{
 					Namespace: "kube-system",
-					Kind:      "PodInfo",
+					Kind:      "ControlPlaneComponents",
 					Name:      "k8s.io/apiserver",
 					RawResource: map[string]interface{}{
 						"Containers": []interface{}{
@@ -62,7 +62,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 				{
-					Kind: "NodeInfo",
+					Kind: "NodeComponents",
 					Name: "kind-control-plane",
 					RawResource: map[string]interface{}{
 						"ContainerRuntimeVersion": "containerd://1.5.2",
@@ -398,6 +398,156 @@ func TestGeneratePURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := generatePURL(tt.compName, tt.compVersion, tt.nodeName)
 			assert.Equal(t, tt.want, got.String())
+		})
+	}
+}
+
+func TestK8sNamespace(t *testing.T) {
+	tests := []struct {
+		name        string
+		compVersion string
+		nodeName    string
+		want        string
+	}{
+		{
+			name:        "native k8s component",
+			compVersion: "1.24.10",
+			nodeName:    "kind-kind",
+			want:        "kubernetes",
+		},
+
+		{
+			name:        "GKE",
+			compVersion: "1.24.10-gke.2300",
+			nodeName:    "gke-gke1796-default-pool-768cb718-sk1d",
+			want:        "gke",
+		},
+		{
+			name:        "AKS",
+			compVersion: "1.24.10-hotfix.20221110",
+			nodeName:    "aks-default-23814474-vmss000000",
+			want:        "aks",
+		},
+		{
+			name:        "EKS",
+			compVersion: "1.23.17-eks-8ccc7ba",
+			nodeName:    "eks-vmss000000",
+			want:        "eks",
+		},
+		{
+			name:        "Rancher",
+			compVersion: "1.24.11+rke2r1",
+			nodeName:    "ip-10-0-5-23",
+			want:        "rke",
+		},
+		{
+			name:        "OCP",
+			compVersion: "1.26.7+c7ee51f",
+			nodeName:    "ocp413vpool14000-p8vnm-master-2",
+			want:        "ocp",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := k8sNamespace(tt.compVersion, tt.nodeName)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestRuntimeVersion(t *testing.T) {
+	tests := []struct {
+		name           string
+		runtimeVersion string
+		wantName       string
+		wantVersion    string
+	}{
+		{
+			name:           "containerd",
+			runtimeVersion: "containerd://1.5.2",
+			wantName:       "github.com/containerd/containerd",
+			wantVersion:    "1.5.2",
+		},
+		{
+			name:           "cri-o",
+			runtimeVersion: "cri-o://1.5.2",
+			wantName:       "github.com/cri-o/cri-o",
+			wantVersion:    "1.5.2",
+		},
+		{
+			name:           "cri-dockerd",
+			runtimeVersion: "cri-dockerd://1.5.2",
+			wantName:       "github.com/Mirantis/cri-dockerd",
+			wantVersion:    "1.5.2",
+		},
+		{
+			name:           "na runtime",
+			runtimeVersion: "cri:1.5.2",
+			wantName:       "",
+			wantVersion:    "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotName, gotVersion := runtimeNameVersion(tt.runtimeVersion)
+			assert.Equal(t, tt.wantName, gotName)
+			assert.Equal(t, tt.wantVersion, gotVersion)
+		})
+	}
+}
+
+func TestFindNodeName(t *testing.T) {
+	tests := []struct {
+		name      string
+		artifacts []*artifacts.Artifact
+		want      string
+	}{
+		{
+			name: "find node name",
+			artifacts: []*artifacts.Artifact{
+				{
+					Namespace:   "kube-system",
+					Kind:        "Cluster",
+					Name:        "k8s.io/kubernetes",
+					RawResource: map[string]interface{}{},
+				},
+				{
+					Namespace:   "kube-system",
+					Kind:        "ControlPlaneComponents",
+					Name:        "k8s.io/apiserver",
+					RawResource: map[string]interface{}{},
+				},
+				{
+					Kind:        "NodeComponents",
+					Name:        "kind-control-plane",
+					RawResource: map[string]interface{}{},
+				},
+			},
+			want: "kind-control-plane",
+		},
+		{
+			name: "didn't find node name",
+			artifacts: []*artifacts.Artifact{
+				{
+					Namespace:   "kube-system",
+					Kind:        "Cluster",
+					Name:        "k8s.io/kubernetes",
+					RawResource: map[string]interface{}{},
+				},
+				{
+					Namespace:   "kube-system",
+					Kind:        "ControlPlaneComponents",
+					Name:        "k8s.io/apiserver",
+					RawResource: map[string]interface{}{},
+				},
+			},
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := findNodeName(tt.artifacts)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

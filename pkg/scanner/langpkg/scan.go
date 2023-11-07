@@ -23,8 +23,8 @@ var (
 )
 
 type Scanner interface {
-	Packages(detail ftypes.ArtifactDetail, options types.ScanOptions) types.Results
-	Scan(detail ftypes.ArtifactDetail, options types.ScanOptions) (types.Results, error)
+	Packages(target types.ScanTarget, options types.ScanOptions) types.Results
+	Scan(target types.ScanTarget, options types.ScanOptions) (types.Results, error)
 }
 
 type scanner struct{}
@@ -33,20 +33,15 @@ func NewScanner() Scanner {
 	return &scanner{}
 }
 
-func (s *scanner) Packages(detail ftypes.ArtifactDetail, _ types.ScanOptions) types.Results {
+func (s *scanner) Packages(target types.ScanTarget, _ types.ScanOptions) types.Results {
 	var results types.Results
-	for _, app := range detail.Applications {
+	for _, app := range target.Applications {
 		if len(app.Libraries) == 0 {
 			continue
 		}
-		target := app.FilePath
-		if t, ok := PkgTargets[app.Type]; ok && target == "" {
-			// When the file path is empty, we will overwrite it with the pre-defined value.
-			target = t
-		}
 
 		results = append(results, types.Result{
-			Target:   target,
+			Target:   targetName(app.Type, app.FilePath),
 			Class:    types.ClassLangPkg,
 			Type:     app.Type,
 			Packages: app.Libraries,
@@ -55,8 +50,8 @@ func (s *scanner) Packages(detail ftypes.ArtifactDetail, _ types.ScanOptions) ty
 	return results
 }
 
-func (s *scanner) Scan(detail ftypes.ArtifactDetail, _ types.ScanOptions) (types.Results, error) {
-	apps := detail.Applications
+func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Results, error) {
+	apps := target.Applications
 	log.Logger.Infof("Number of language-specific files: %d", len(apps))
 	if len(apps) == 0 {
 		return nil, nil
@@ -83,14 +78,8 @@ func (s *scanner) Scan(detail ftypes.ArtifactDetail, _ types.ScanOptions) (types
 			continue
 		}
 
-		target := app.FilePath
-		if t, ok := PkgTargets[app.Type]; ok && target == "" {
-			// When the file path is empty, we will overwrite it with the pre-defined value.
-			target = t
-		}
-
 		results = append(results, types.Result{
-			Target:          target,
+			Target:          targetName(app.Type, app.FilePath),
 			Vulnerabilities: vulns,
 			Class:           types.ClassLangPkg,
 			Type:            app.Type,
@@ -100,4 +89,12 @@ func (s *scanner) Scan(detail ftypes.ArtifactDetail, _ types.ScanOptions) (types
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
+}
+
+func targetName(appType ftypes.LangType, filePath string) string {
+	if t, ok := PkgTargets[appType]; ok && filePath == "" {
+		// When the file path is empty, we will overwrite it with the pre-defined value.
+		return t
+	}
+	return filePath
 }
