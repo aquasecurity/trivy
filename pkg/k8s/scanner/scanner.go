@@ -383,7 +383,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 					return nil, xerrors.Errorf("failed to create PURL: %w", err)
 				}
 				imageComponents = append(imageComponents, &core.Component{
-					PackageURL: &imagePURL,
+					PackageURL: imagePURL,
 					Type:       cdx.ComponentTypeContainer,
 					Name:       name,
 					Version:    cDigest,

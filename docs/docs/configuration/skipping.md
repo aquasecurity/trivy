@@ -98,7 +98,7 @@ This will skip the file `foo` that happens to be nested under any parent(s).
 |  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
 |      Secret      |           |
-|     License      |           |
+|     License      |   ✓[^1]   |
 
 When a directory is given as an input, Trivy will recursively look for and test all files based on file patterns.
 The default file patterns are [here](../scanner/misconfiguration/custom/index.md).
@@ -114,3 +114,6 @@ A file pattern contains the analyzer it is used for, and the pattern itself, joi
 ```
 
 The prefixes are listed [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go)
+
+
+[^1]: Only work with the [license-full](../scanner/license.md) flag)

@@ -20,7 +20,7 @@ func TestNewPackageURL(t *testing.T) {
 		typ      ftypes.TargetType
 		pkg      ftypes.Package
 		metadata types.Metadata
-		want     purl.PackageURL
+		want     *purl.PackageURL
 		wantErr  string
 	}{
 		{
@@ -30,7 +30,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "org.springframework:spring-core",
 				Version: "5.3.14",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeMaven,
 					Namespace: "org.springframework",
@@ -46,7 +46,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "org.springframework:spring-core",
 				Version: "5.3.14",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeMaven,
 					Namespace: "org.springframework",
@@ -62,7 +62,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "@xtuc/ieee754",
 				Version: "1.2.0",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeNPM,
 					Namespace: "@xtuc",
@@ -78,7 +78,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "lodash",
 				Version: "4.17.21",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    packageurl.TypeNPM,
 					Name:    "lodash",
@@ -93,7 +93,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "@xtuc/ieee754",
 				Version: "1.2.0",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeNPM,
 					Namespace: "@xtuc",
@@ -109,7 +109,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "lodash",
 				Version: "4.17.21",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    packageurl.TypeNPM,
 					Name:    "lodash",
@@ -124,7 +124,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "Django_test",
 				Version: "1.2.0",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    packageurl.TypePyPi,
 					Name:    "django-test",
@@ -139,7 +139,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "absl-py",
 				Version: "0.4.1",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    packageurl.TypeConda,
 					Name:    "absl-py",
@@ -154,7 +154,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "symfony/contracts",
 				Version: "v1.0.2",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeComposer,
 					Namespace: "symfony",
@@ -170,7 +170,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "github.com/go-sql-driver/Mysql",
 				Version: "v1.5.0",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/go-sql-driver",
@@ -186,14 +186,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
 				Version: "(devel)",
 			},
-			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      "",
-					Namespace: "",
-					Name:      "",
-					Version:   "",
-				},
-			},
+			want: nil,
 		},
 		{
 			name: "hex package",
@@ -209,7 +202,7 @@ func TestNewPackageURL(t *testing.T) {
 					},
 				},
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    packageurl.TypeHex,
 					Name:    "bunt",
@@ -224,7 +217,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "http",
 				Version: "0.13.2",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    purl.TypeDart,
 					Name:    "http",
@@ -240,7 +233,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "github.com/apple/swift-atomics",
 				Version: "1.1.0",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeSwift,
 					Namespace: "github.com/apple",
@@ -257,7 +250,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "GoogleUtilities/NSData+zlib",
 				Version: "7.5.2",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    packageurl.TypeCocoapods,
 					Name:    "GoogleUtilities",
@@ -274,7 +267,7 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "abomination",
 				Version: "0.7.3",
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:    packageurl.TypeCargo,
 					Name:    "abomination",
@@ -304,7 +297,7 @@ func TestNewPackageURL(t *testing.T) {
 					Name:   "8",
 				},
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeRPM,
 					Namespace: "redhat",
@@ -342,7 +335,7 @@ func TestNewPackageURL(t *testing.T) {
 					Architecture: "amd64",
 				},
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeOCI,
 					Namespace: "",
@@ -372,14 +365,7 @@ func TestNewPackageURL(t *testing.T) {
 				},
 				ImageID: "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
 			},
-			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      "",
-					Namespace: "",
-					Name:      "",
-					Version:   "",
-				},
-			},
+			want: nil,
 		},
 		{
 			name: "container with implicit registry",
@@ -397,7 +383,7 @@ func TestNewPackageURL(t *testing.T) {
 					Architecture: "amd64",
 				},
 			},
-			want: purl.PackageURL{
+			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      packageurl.TypeOCI,
 					Namespace: "",

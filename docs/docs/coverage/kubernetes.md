@@ -10,13 +10,15 @@ Whenever Trivy scans either of these Kubernetes resources, the container image i
 When scanning any of the above, the container image is scanned separately to the Kubernetes resource definition (the YAML manifest) that defines the resource.
 
 Container image is scanned for:
+
 - Vulnerabilities
 - Misconfigurations
 - Exposed secrets
 
 Kubernetes resource definition is scanned for:
+
 - Vulnerabilities - partially supported through [KBOM scanning](#KBOM)
 - Misconfigurations
 - Exposed secrets
 
-To learn more, please see the [documentation for Kubernetes scanning](../target/kubernetes.md)
+To learn more, please see the [documentation for Kubernetes scanning](../target/kubernetes.md).
