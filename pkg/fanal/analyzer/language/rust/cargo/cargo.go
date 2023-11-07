@@ -105,10 +105,7 @@ func (a cargoAnalyzer) parseCargoLock(path string, r io.Reader) (*types.Applicat
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
 	cargoTOMLPath := filepath.Join(dir, types.CargoToml)
 	directDeps, err := a.parseCargoTOML(fsys, cargoTOMLPath)
-	if errors.Is(err, fs.ErrNotExist) {
-		// Already logged this error in tomlDependencies
-		return nil
-	} else if err != nil {
+	if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
 	}
 
@@ -170,13 +167,16 @@ func tomlDependencies(fsys fs.FS, path string) (Dependencies, []string, error) {
 	f, err := fsys.Open(path)
 	if errors.Is(err, fs.ErrNotExist) {
 		log.Logger.Debugf("Cargo: %s not found", path)
-		return nil, nil, err
+		return nil, nil, nil
 	} else if err != nil {
 		return nil, nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
 	tomlFile := cargoToml{}
+	// There are cases when toml file doesn't include `Dependencies` field (then map will be nil).
+	// e.g. when only `workspace.Dependencies` are used
+	// declare `dependencies` to avoid panic
 	dependencies := Dependencies{}
 	_, err = toml.NewDecoder(f).Decode(&tomlFile)
 	if err != nil {
@@ -197,10 +197,7 @@ func tomlDependencies(fsys fs.FS, path string) (Dependencies, []string, error) {
 }
 
 func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]string, error) {
-	// There are cases when toml file doesn't include `Dependencies` field (then map will be nil).
-	// e.g. when only `workspace.Dependencies` are used
-	// declare `dependencies` to avoid panic
-	deps := map[string]string{}
+	deps := make(map[string]string)
 
 	dependencies, members, err := tomlDependencies(fsys, path)
 	if err != nil {
