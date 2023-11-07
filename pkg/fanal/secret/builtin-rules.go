@@ -567,6 +567,7 @@ var builtinRules = []Rule{
 		ID:       "jwt-token",
 		Category: CategoryJWT,
 		Title:    "JWT token",
+		Severity: "CRITICAL",
 		Regex:    MustCompile(`ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?`),
 		Keywords: []string{"jwt"},
 	},
