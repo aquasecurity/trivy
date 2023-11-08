@@ -200,6 +200,88 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with digests in libs/packages (as for SBOM)",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					OS: types.OS{
+						Family: "debian",
+						Name:   "11.8",
+					},
+					PackageInfos: []types.PackageInfo{
+						{
+							Packages: types.Packages{
+								{
+									ID:         "adduser@3.118+deb11u1",
+									Name:       "adduser",
+									Version:    "3.118+deb11u1",
+									Arch:       "all",
+									SrcName:    "adduser",
+									SrcVersion: "3.118+deb11u1",
+									Ref:        "pkg:deb/debian/adduser@3.118%2Bdeb11u1?arch=all&distro=debian-11.8",
+									Layer: types.Layer{
+										Digest: "sha256:e67fdae3559346105027c63e7fb032bba57e62b1fe9f2da23e6fdfb56384e00b",
+										DiffID: "sha256:633f5bf471f7595b236a21e62dc60beef321db45916363a02ad5af02d794d497",
+									},
+								},
+							},
+						},
+					},
+					Applications: []types.Application{
+						{
+							Type: types.PythonPkg,
+							Libraries: types.Packages{
+								{
+									Name:    "pip",
+									Version: "23.0.1",
+									Layer: types.Layer{
+										DiffID: "sha256:1def056a3160854c9395aa76282dd62172ec08c18a5fa03bb7d50a777c15ba99",
+									},
+									FilePath: "usr/local/lib/python3.9/site-packages/pip-23.0.1.dist-info/METADATA",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				OS: types.OS{
+					Family: "debian",
+					Name:   "11.8",
+				},
+				Packages: types.Packages{
+					{
+						ID:         "adduser@3.118+deb11u1",
+						Name:       "adduser",
+						Version:    "3.118+deb11u1",
+						Arch:       "all",
+						SrcName:    "adduser",
+						SrcVersion: "3.118+deb11u1",
+						Ref:        "pkg:deb/debian/adduser@3.118%2Bdeb11u1?arch=all&distro=debian-11.8",
+						Layer: types.Layer{
+							Digest: "sha256:e67fdae3559346105027c63e7fb032bba57e62b1fe9f2da23e6fdfb56384e00b",
+							DiffID: "sha256:633f5bf471f7595b236a21e62dc60beef321db45916363a02ad5af02d794d497",
+						},
+					},
+				},
+				Applications: []types.Application{
+					{
+						Type: types.PythonPkg,
+						Libraries: types.Packages{
+							{
+								Name:     "pip",
+								Version:  "23.0.1",
+								FilePath: "usr/local/lib/python3.9/site-packages/pip-23.0.1.dist-info/METADATA",
+								Layer: types.Layer{
+									DiffID: "sha256:1def056a3160854c9395aa76282dd62172ec08c18a5fa03bb7d50a777c15ba99",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with merging ubuntu version and ESM",
 			inputLayers: []types.BlobInfo{
 				{

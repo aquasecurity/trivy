@@ -221,6 +221,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 								Ref: "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
 								Layer: ftypes.Layer{
+									Digest: "sha256:74ac377868f863e123f24c409f79709f7563fa464557c36a09cf6f85c8b92b7f",
 									DiffID: "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466",
 								},
 							},
@@ -235,6 +236,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcEpoch:   1,
 								Ref:        "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1&distro=ubuntu-22.04",
 								Layer: ftypes.Layer{
+									Digest: "sha256:74ac377868f863e123f24c409f79709f7563fa464557c36a09cf6f85c8b92b7f",
 									DiffID: "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466",
 								},
 							},

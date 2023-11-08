@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"sync"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -31,6 +32,7 @@ type Updater struct {
 	skip           bool
 	quiet          bool
 	registryOption ftypes.RegistryOptions
+	once           sync.Once // we need to update java-db once per run
 }
 
 func (u *Updater) Update() error {
@@ -93,10 +95,12 @@ func Update() error {
 	if updater == nil {
 		return xerrors.New("Java DB client not initialized")
 	}
-	if err := updater.Update(); err != nil {
-		return xerrors.Errorf("Java DB update error: %w", err)
-	}
-	return nil
+
+	var err error
+	updater.once.Do(func() {
+		err = updater.Update()
+	})
+	return err
 }
 
 type DB struct {
