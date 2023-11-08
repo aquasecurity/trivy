@@ -5,7 +5,6 @@
   "name": "testdata/fixtures/repo/conda",
   "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000001",
   "creationInfo": {
-    "licenseListVersion": "",
     "creators": [
       "Organization: aquasecurity",
       "Tool: trivy-dev"
@@ -17,8 +16,8 @@
       "name": "conda-pkg",
       "SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
       "downloadLocation": "NONE",
+      "filesAnalyzed": false,
       "sourceInfo": "Conda",
-      "copyrightText": "",
       "primaryPackagePurpose": "APPLICATION"
     },
     {
@@ -27,9 +26,12 @@
       "versionInfo": "1.1.1q",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "2a05c7ad4baa728c79bc1ee1adea9b837d0bf6c0"
+      },
       "licenseConcluded": "OpenSSL",
       "licenseDeclared": "OpenSSL",
-      "copyrightText": "",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -45,9 +47,12 @@
       "versionInfo": "22.2.2",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "8619446a1cd1118e82f1f984ce59116422a59151"
+      },
       "licenseConcluded": "MIT",
       "licenseDeclared": "MIT",
-      "copyrightText": "",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -61,7 +66,7 @@
       "name": "testdata/fixtures/repo/conda",
       "SPDXID": "SPDXRef-Filesystem-2e2426fd0f2580ef",
       "downloadLocation": "NONE",
-      "copyrightText": "",
+      "filesAnalyzed": false,
       "attributionTexts": [
         "SchemaVersion: 2"
       ],
