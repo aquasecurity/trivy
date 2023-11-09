@@ -226,7 +226,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 	var resources []report.Resource
 	var nodeName string
 	if nodeName = findNodeName(artifactsData); nodeName == "" {
-		return nil, fmt.Errorf("failed to find node name")
+		return resources, nil
 	}
 
 	k8sScanner := k8s.NewKubenetesScanner()

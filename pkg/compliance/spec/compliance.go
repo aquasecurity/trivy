@@ -9,8 +9,8 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	sp "github.com/aquasecurity/defsec/pkg/spec"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	sp "github.com/aquasecurity/trivy-policies/pkg/spec"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

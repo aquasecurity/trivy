@@ -87,12 +87,12 @@ If you want to apply rule-based exceptions to built-in policies, you have to def
     }
     ```
 
-This exception is applied to [KSV012][ksv012] in defsec.
-You can get the package names in the [defsec repository][defsec] or the JSON output from Trivy.
+This exception is applied to [KSV012][ksv012] in trivy-policies.
+You can get the package names in the [trivy-policies repository][trivy-policies] or the JSON output from Trivy.
 
 For more details, see [an example][rule-example].
 
 [ns-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/namespace-exception
 [rule-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/rule-exception
-[ksv012]: https://github.com/aquasecurity/defsec/blob/master/internal/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego
-[defsec]: https://github.com/aquasecurity/defsec/
+[ksv012]: https://github.com/aquasecurity/trivy-policies/blob/main/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego 
+[trivy-policies]: https://github.com/aquasecurity/trivy-policies/
