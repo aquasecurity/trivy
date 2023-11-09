@@ -148,25 +148,24 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 			files, err := m.pkgFiles(pkg)
 			if err != nil {
 				return nil, xerrors.Errorf("package file error: %w", err)
+			} else if files == nil {
+				continue
 			}
-			if files != nil {
-				spdxFiles = append(spdxFiles, files...)
-				for _, file := range files {
-					relationShips = append(relationShips,
-						relationShip(spdxPackage.PackageSPDXIdentifier, file.FileSPDXIdentifier, RelationShipContains),
-					)
-				}
 
-				verificationCode, err := spdxutils.GetVerificationCode(files, "")
-				if err != nil {
-					return nil, xerrors.Errorf("package verification error: %w", err)
-				}
-				// GetVerificationCode creates empty ExcludedFiles array
-				verificationCode.ExcludedFiles = nil
-
-				spdxPackage.FilesAnalyzed = true
-				spdxPackage.PackageVerificationCode = &verificationCode
+			spdxFiles = append(spdxFiles, files...)
+			for _, file := range files {
+				relationShips = append(relationShips,
+					relationShip(spdxPackage.PackageSPDXIdentifier, file.FileSPDXIdentifier, RelationShipContains),
+				)
 			}
+
+			verificationCode, err := spdxutils.GetVerificationCode(files, "")
+			if err != nil {
+				return nil, xerrors.Errorf("package verification error: %w", err)
+			}
+
+			spdxPackage.FilesAnalyzed = true
+			spdxPackage.PackageVerificationCode = &verificationCode
 		}
 	}
 
