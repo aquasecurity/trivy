@@ -129,6 +129,10 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
 			}
+
+			for i, file := range files {
+				files[i] = filepath.ToSlash(file)
+			}
 		}
 
 		// RPM DB uses MD5 digest
