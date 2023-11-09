@@ -1,8 +1,6 @@
 package flag
 
 import (
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
@@ -84,7 +82,7 @@ var (
 		Name:       "parallel",
 		ConfigName: "scan.parallel",
 		Default:    5,
-		Usage:      "number (1-20) of goroutines enabled for parallel scanning",
+		Usage:      "number of goroutines enabled for parallel scanning",
 	}
 )
 
@@ -154,12 +152,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		target = args[0]
 	}
 
-	parallel := getInt(f.Parallel)
-	// check parallel flag is a valid number between 1-20
-	if parallel < 1 || parallel > 20 {
-		return ScanOptions{}, xerrors.Errorf("'--parallel' must be a number between 1-20: %d", parallel)
-	}
-
 	return ScanOptions{
 		Target:         target,
 		SkipDirs:       getStringSlice(f.SkipDirs),
@@ -167,7 +159,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    getBool(f.OfflineScan),
 		Scanners:       getUnderlyingStringSlice[types.Scanner](f.Scanners),
 		FilePatterns:   getStringSlice(f.FilePatterns),
-		Parallel:       parallel,
+		Parallel:       getInt(f.Parallel),
 		SBOMSources:    getStringSlice(f.SBOMSources),
 		RekorURL:       getString(f.RekorURL),
 		IncludeDevDeps: getBool(f.IncludeDevDeps),

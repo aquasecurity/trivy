@@ -3,19 +3,16 @@ package local
 import (
 	"context"
 	"errors"
-	"path/filepath"
-	"runtime"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/pip"
@@ -244,7 +241,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
-			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())
@@ -255,107 +252,6 @@ func TestArtifact_Inspect(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 			}
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestBuildPathsToSkip(t *testing.T) {
-	tests := []struct {
-		name  string
-		oses  []string
-		paths []string
-		base  string
-		want  []string
-	}{
-		// Linux/macOS
-		{
-			name: "path - abs, base - abs, not joining paths",
-			oses: []string{
-				"linux",
-				"darwin",
-			},
-			base:  "/foo",
-			paths: []string{"/foo/bar"},
-			want:  []string{"bar"},
-		},
-		{
-			name: "path - abs, base - rel",
-			oses: []string{
-				"linux",
-				"darwin",
-			},
-			base: "foo",
-			paths: func() []string {
-				abs, err := filepath.Abs("foo/bar")
-				require.NoError(t, err)
-				return []string{abs}
-			}(),
-			want: []string{"bar"},
-		},
-		{
-			name: "path - rel, base - rel, joining paths",
-			oses: []string{
-				"linux",
-				"darwin",
-			},
-			base:  "foo",
-			paths: []string{"bar"},
-			want:  []string{"bar"},
-		},
-		{
-			name: "path - rel, base - rel, not joining paths",
-			oses: []string{
-				"linux",
-				"darwin",
-			},
-			base:  "foo",
-			paths: []string{"foo/bar/bar"},
-			want:  []string{"bar/bar"},
-		},
-		{
-			name: "path - rel with dot, base - rel, removing the leading dot and not joining paths",
-			oses: []string{
-				"linux",
-				"darwin",
-			},
-			base:  "foo",
-			paths: []string{"./foo/bar"},
-			want:  []string{"bar"},
-		},
-		{
-			name: "path - rel, base - dot",
-			oses: []string{
-				"linux",
-				"darwin",
-			},
-			base:  ".",
-			paths: []string{"foo/bar"},
-			want:  []string{"foo/bar"},
-		},
-		// Windows
-		{
-			name:  "path - rel, base - rel. Skip common prefix",
-			oses:  []string{"windows"},
-			base:  "foo",
-			paths: []string{"foo\\bar\\bar"},
-			want:  []string{"bar/bar"},
-		},
-		{
-			name:  "path - rel, base - dot, windows",
-			oses:  []string{"windows"},
-			base:  ".",
-			paths: []string{"foo\\bar"},
-			want:  []string{"foo/bar"},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if !slices.Contains(tt.oses, runtime.GOOS) {
-				t.Skipf("Skip path tests for %q", tt.oses)
-			}
-			got := buildPathsToSkip(tt.base, tt.paths)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -815,7 +711,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				types.SystemFileFilteringPostHandler,
 			}
 			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
-			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())
@@ -1081,7 +977,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				types.SystemFileFilteringPostHandler,
 			}
 			tt.artifactOpt.MisconfScannerOption.DisableEmbeddedPolicies = true
-			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())
@@ -1316,7 +1212,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
-			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())
@@ -1584,7 +1480,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
-			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())
@@ -1841,7 +1737,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
-			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())
@@ -1957,7 +1853,7 @@ func TestMixedConfigurationScan(t *testing.T) {
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
 			}
-			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			a, err := NewArtifact(tt.fields.dir, c, walker.NewFS(), tt.artifactOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/google/wire"
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -20,20 +21,25 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-	"github.com/aquasecurity/trivy/pkg/log"
+)
+
+var ArtifactSet = wire.NewSet(
+	walker.NewFS,
+	wire.Bind(new(walker.FSWalker), new(*walker.FS)),
+	NewArtifact,
 )
 
 type Artifact struct {
 	rootPath       string
 	cache          cache.ArtifactCache
-	walker         walker.FS
+	walker         walker.FSWalker
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 
 	artifactOption artifact.Option
 }
 
-func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
+func NewArtifact(rootPath string, c cache.ArtifactCache, w walker.FSWalker, opt artifact.Option) (artifact.Artifact, error) {
 	opt.Init()
 
 	handlerManager, err := handler.NewManager(opt)
@@ -47,69 +53,13 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}
 
 	return Artifact{
-		rootPath: filepath.ToSlash(filepath.Clean(rootPath)),
-		cache:    c,
-		walker: walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs),
-			opt.CustomOption),
+		rootPath:       filepath.ToSlash(filepath.Clean(rootPath)),
+		cache:          c,
+		walker:         w,
 		analyzer:       a,
 		handlerManager: handlerManager,
 		artifactOption: opt,
 	}, nil
-}
-
-// buildPathsToSkip builds correct patch for skipDirs and skipFiles
-func buildPathsToSkip(base string, paths []string) []string {
-	var relativePaths []string
-	absBase, err := filepath.Abs(base)
-	if err != nil {
-		log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
-		return nil
-	}
-	for _, path := range paths {
-		// Supports three types of flag specification.
-		// All of them are converted into the relative path from the root directory.
-		// 1. Relative skip dirs/files from the root directory
-		//     The specified dirs and files will be used as is.
-		//       e.g. $ trivy fs --skip-dirs bar ./foo
-		//     The skip dir from the root directory will be `bar/`.
-		// 2. Relative skip dirs/files from the working directory
-		//     The specified dirs and files wll be converted to the relative path from the root directory.
-		//       e.g. $ trivy fs --skip-dirs ./foo/bar ./foo
-		//     The skip dir will be converted to `bar/`.
-		// 3. Absolute skip dirs/files
-		//     The specified dirs and files wll be converted to the relative path from the root directory.
-		//       e.g. $ trivy fs --skip-dirs /bar/foo/baz ./foo
-		//     When the working directory is
-		//       3.1 /bar: the skip dir will be converted to `baz/`.
-		//       3.2 /hoge : the skip dir will be converted to `../../bar/foo/baz/`.
-
-		absSkipPath, err := filepath.Abs(path)
-		if err != nil {
-			log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
-			continue
-		}
-		rel, err := filepath.Rel(absBase, absSkipPath)
-		if err != nil {
-			log.Logger.Warnf("Failed to get a relative path from %s to %s: %s", base, path, err)
-			continue
-		}
-
-		var relPath string
-		switch {
-		case !filepath.IsAbs(path) && strings.HasPrefix(rel, ".."):
-			// #1: Use the path as is
-			relPath = path
-		case !filepath.IsAbs(path) && !strings.HasPrefix(rel, ".."):
-			// #2: Use the relative path from the root directory
-			relPath = rel
-		case filepath.IsAbs(path):
-			// #3: Use the relative path from the root directory
-			relPath = rel
-		}
-		relPath = filepath.ToSlash(relPath)
-		relativePaths = append(relativePaths, relPath)
-	}
-	return relativePaths
 }
 
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
@@ -127,7 +77,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return types.ArtifactReference{}, xerrors.Errorf("failed to prepare filesystem for post analysis: %w", err)
 	}
 
-	err = a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(a.rootPath, a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		dir := a.rootPath
 
 		// When the directory is the same as the filePath, a file was given

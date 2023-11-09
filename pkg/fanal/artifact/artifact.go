@@ -4,9 +4,9 @@ import (
 	"context"
 	"sort"
 
-	"github.com/aquasecurity/trivy/pkg/custom"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
@@ -14,8 +14,6 @@ type Option struct {
 	AnalyzerGroup     analyzer.Group // It is empty in OSS
 	DisabledAnalyzers []analyzer.Type
 	DisabledHandlers  []types.HandlerType
-	SkipFiles         []string
-	SkipDirs          []string
 	FilePatterns      []string
 	Parallel          int
 	NoProgress        bool
@@ -40,7 +38,7 @@ type Option struct {
 	SecretScannerOption  analyzer.SecretScannerOption
 	LicenseScannerOption analyzer.LicenseScannerOption
 
-	CustomOption custom.Option
+	WalkerOption walker.Option
 }
 
 func (o *Option) Init() {
@@ -74,8 +72,8 @@ func (o *Option) Sort() {
 	sort.Slice(o.DisabledAnalyzers, func(i, j int) bool {
 		return o.DisabledAnalyzers[i] < o.DisabledAnalyzers[j]
 	})
-	sort.Strings(o.SkipFiles)
-	sort.Strings(o.SkipDirs)
+	sort.Strings(o.WalkerOption.SkipFiles)
+	sort.Strings(o.WalkerOption.SkipDirs)
 	sort.Strings(o.FilePatterns)
 }
 

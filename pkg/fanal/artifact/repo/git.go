@@ -8,6 +8,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	"github.com/google/wire"
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
@@ -15,6 +16,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+)
+
+var ArtifactSet = wire.NewSet(
+	walker.NewFS,
+	wire.Bind(new(walker.FSWalker), new(*walker.FS)),
+	NewArtifact,
 )
 
 type Artifact struct {
@@ -22,21 +30,21 @@ type Artifact struct {
 	local artifact.Artifact
 }
 
-func NewArtifact(target string, c cache.ArtifactCache, artifactOpt artifact.Option) (
+func NewArtifact(target string, c cache.ArtifactCache, w walker.FSWalker, artifactOpt artifact.Option) (
 	artifact.Artifact, func(), error) {
 
 	var cleanup func()
 	var errs error
 
 	// Try the local repository
-	art, err := tryLocalRepo(target, c, artifactOpt)
+	art, err := tryLocalRepo(target, c, w, artifactOpt)
 	if err == nil {
 		return art, func() {}, nil
 	}
 	errs = multierror.Append(errs, err)
 
 	// Try the remote git repository
-	art, cleanup, err = tryRemoteRepo(target, c, artifactOpt)
+	art, cleanup, err = tryRemoteRepo(target, c, w, artifactOpt)
 	if err == nil {
 		return art, cleanup, nil
 	}
@@ -64,12 +72,12 @@ func (Artifact) Clean(_ types.ArtifactReference) error {
 	return nil
 }
 
-func tryLocalRepo(target string, c cache.ArtifactCache, artifactOpt artifact.Option) (artifact.Artifact, error) {
+func tryLocalRepo(target string, c cache.ArtifactCache, w walker.FSWalker, artifactOpt artifact.Option) (artifact.Artifact, error) {
 	if _, err := os.Stat(target); err != nil {
 		return nil, xerrors.Errorf("no such path: %w", err)
 	}
 
-	art, err := local.NewArtifact(target, c, artifactOpt)
+	art, err := local.NewArtifact(target, c, w, artifactOpt)
 	if err != nil {
 		return nil, xerrors.Errorf("local repo artifact error: %w", err)
 	}
@@ -78,7 +86,7 @@ func tryLocalRepo(target string, c cache.ArtifactCache, artifactOpt artifact.Opt
 	}, nil
 }
 
-func tryRemoteRepo(target string, c cache.ArtifactCache, artifactOpt artifact.Option) (artifact.Artifact, func(), error) {
+func tryRemoteRepo(target string, c cache.ArtifactCache, w walker.FSWalker, artifactOpt artifact.Option) (artifact.Artifact, func(), error) {
 	cleanup := func() {}
 	u, err := newURL(target)
 	if err != nil {
@@ -92,7 +100,7 @@ func tryRemoteRepo(target string, c cache.ArtifactCache, artifactOpt artifact.Op
 
 	cleanup = func() { _ = os.RemoveAll(tmpDir) }
 
-	art, err := local.NewArtifact(tmpDir, c, artifactOpt)
+	art, err := local.NewArtifact(tmpDir, c, w, artifactOpt)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
 	}

@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -72,6 +73,9 @@ type ScannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
+
+	// Walk options
+	WalkerOption walker.Option
 }
 
 type Runner interface {
@@ -625,8 +629,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		},
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
-			SkipFiles:         opts.SkipFiles,
-			SkipDirs:          opts.SkipDirs,
 			FilePatterns:      opts.FilePatterns,
 			Offline:           opts.OfflineScan,
 			Parallel:          opts.Parallel,
@@ -664,6 +666,10 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 				Full:                      opts.LicenseFull,
 				ClassifierConfidenceLevel: opts.LicenseConfidenceLevel,
 			},
+		},
+		WalkerOption: walker.Option{
+			SkipFiles: opts.SkipFiles,
+			SkipDirs:  opts.SkipDirs,
 		},
 	}, scanOptions, nil
 }
