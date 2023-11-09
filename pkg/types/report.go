@@ -119,13 +119,6 @@ func (r *Result) MarshalJSON() ([]byte, error) {
 		r.Vulnerabilities[i].VendorSeverity = nil
 	}
 
-	// remove the Highlighted attribute from the json results
-	for i := range r.Misconfigurations {
-		for li := range r.Misconfigurations[i].CauseMetadata.Code.Lines {
-			r.Misconfigurations[i].CauseMetadata.Code.Lines[li].Highlighted = ""
-		}
-	}
-
 	// Notice the Alias struct prevents MarshalJSON being called infinitely
 	type ResultAlias Result
 	return json.Marshal(&struct {
