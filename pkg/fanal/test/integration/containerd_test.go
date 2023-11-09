@@ -7,6 +7,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -56,7 +58,6 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcon
 	t.Helper()
 	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	req := testcontainers.ContainerRequest{
-		Name:  "containerd",
 		Image: "ghcr.io/aquasecurity/trivy-test-images/containerd:latest",
 		Entrypoint: []string{
 			"/bin/sh",
@@ -195,7 +196,19 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 	defer containerdC.Terminate(ctx)
 
 	client, err := containerd.New(socketPath)
-	require.NoError(t, err)
+	if err != nil {
+		i, r, err := containerdC.Exec(ctx, []string{
+			"ls",
+			"-hl",
+			"/run/containerd",
+		})
+
+		b, err := io.ReadAll(r)
+		require.NoError(t, err)
+		fmt.Println(i)
+		fmt.Println(string(b))
+		require.NoError(t, err)
+	}
 	defer client.Close()
 
 	for _, tt := range tests {
@@ -658,7 +671,19 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 	defer containerdC.Terminate(ctx)
 
 	client, err := containerd.New(socketPath)
-	require.NoError(t, err)
+	if err != nil {
+		i, r, err := containerdC.Exec(ctx, []string{
+			"ls",
+			"-hl",
+			"/run/containerd",
+		})
+
+		b, err := io.ReadAll(r)
+		require.NoError(t, err)
+		fmt.Println(i)
+		fmt.Println(string(b))
+		require.NoError(t, err)
+	}
 	defer client.Close()
 
 	for _, tt := range tests {
@@ -801,7 +826,19 @@ func TestContainerd_PullImage(t *testing.T) {
 	defer containerdC.Terminate(ctx)
 
 	cli, err := containerd.New(socketPath)
-	require.NoError(t, err)
+	if err != nil {
+		i, r, err := containerdC.Exec(ctx, []string{
+			"ls",
+			"-hl",
+			"/run/containerd",
+		})
+
+		b, err := io.ReadAll(r)
+		require.NoError(t, err)
+		fmt.Println(i)
+		fmt.Println(string(b))
+		require.NoError(t, err)
+	}
 	defer cli.Close()
 
 	for _, tt := range tests {
