@@ -51,6 +51,7 @@ trivy vm [flags] VM_IMAGE
       --no-progress                       suppress progress bar
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
+      --parallel int                      number of goroutines enabled for parallel scanning (default 5)
       --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/defsec:0")
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
@@ -68,7 +69,6 @@ trivy vm [flags] VM_IMAGE
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
-      --slow                              scan over time with lower CPU and memory utilization
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files

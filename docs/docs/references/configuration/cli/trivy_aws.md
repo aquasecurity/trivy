@@ -34,11 +34,11 @@ The following services are supported:
 - neptune
 - rds
 - redshift
-- s3
 - sns
 - sqs
 - ssm
 - workspaces
+- s3
 
 
 ```
