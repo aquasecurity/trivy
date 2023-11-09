@@ -3589,7 +3589,7 @@ You're not viewing the latest version.
 <h2 id="overview">Overview</h2>
 <p>Policies can be defined with custom schemas that allow inputs to be verified against them. Adding a policy schema
 enables Trivy to show more detailed error messages when an invalid input is encountered.</p>
-<p>In Trivy we have been able to define a schema for a <a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json">Dockerfile</a>.
+<p>In Trivy we have been able to define a schema for a <a href="https://github.com/aquasecurity/trivy-iac/blob/main/pkg/rego/schemas/dockerfile.json">Dockerfile</a>
 Without input schemas, a policy would be as follows:</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
@@ -3628,9 +3628,9 @@ can be found <a href="https://github.com/aquasecurity/defsec/blob/master/pkg/reg
 </code></pre></div>
 <p>Currently, out of the box the following schemas are supported natively:</p>
 <ol>
-<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json">Docker</a></li>
-<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/kubernetes.json">Kubernetes</a></li>
-<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/cloud.json">Cloud</a></li>
+<li><a href="https://github.com/aquasecurity/trivy-iac/blob/main/pkg/rego/schemas/dockerfile.json">Docker</a></li>
+<li><a href="https://github.com/aquasecurity/trivy-iac/blob/main/pkg/rego/schemas/kubernetes.json">Kubernetes</a></li>
+<li><a href="https://github.com/aquasecurity/trivy-iac/blob/main/pkg/rego/schemas/cloud.json">Cloud</a></li>
 </ol>
 <h2 id="custom-policies-with-custom-schemas">Custom Policies with Custom Schemas</h2>
 <p>You can also bring a custom policy that defines one or more custom schema. </p>
