@@ -43,9 +43,8 @@ func TestVEX_Filter(t *testing.T) {
 						VulnerabilityID:  "CVE-2021-44228",
 						PkgName:          "spring-boot",
 						InstalledVersion: "2.6.0",
-						PkgIdentifier: &types.PkgIdentifier{
-							Format: types.PkgIdFormatPURL,
-							Value:  "pkg:maven/org.springframework.boot/spring-boot@2.6.0?type=pom",
+						PkgIdentifier: &ftypes.PkgIdentifier{
+							PURL: "pkg:maven/org.springframework.boot/spring-boot@2.6.0",
 						},
 					},
 				},
@@ -63,18 +62,16 @@ func TestVEX_Filter(t *testing.T) {
 						VulnerabilityID:  "CVE-2021-44228",
 						PkgName:          "spring-boot",
 						InstalledVersion: "2.6.0",
-						PkgIdentifier: &types.PkgIdentifier{
-							Format: types.PkgIdFormatPURL,
-							Value:  "pkg:maven/org.springframework.boot/spring-boot@2.6.0?type=pom",
+						PkgIdentifier: &ftypes.PkgIdentifier{
+							PURL: "pkg:maven/org.springframework.boot/spring-boot@2.6.0",
 						},
 					},
 					{
 						VulnerabilityID:  "CVE-2021-0001",
 						PkgName:          "spring-boot",
 						InstalledVersion: "2.6.0",
-						PkgIdentifier: &types.PkgIdentifier{
-							Format: types.PkgIdFormatPURL,
-							Value:  "pkg:maven/org.springframework.boot/spring-boot@2.6.0?type=pom",
+						PkgIdentifier: &ftypes.PkgIdentifier{
+							PURL: "pkg:maven/org.springframework.boot/spring-boot@2.6.0",
 						},
 					},
 				},
@@ -84,9 +81,8 @@ func TestVEX_Filter(t *testing.T) {
 					VulnerabilityID:  "CVE-2021-0001",
 					PkgName:          "spring-boot",
 					InstalledVersion: "2.6.0",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:maven/org.springframework.boot/spring-boot@2.6.0?type=pom",
+					PkgIdentifier: &ftypes.PkgIdentifier{
+						PURL: "pkg:maven/org.springframework.boot/spring-boot@2.6.0",
 					},
 				},
 			},
@@ -108,18 +104,16 @@ func TestVEX_Filter(t *testing.T) {
 						VulnerabilityID:  "CVE-2018-7489",
 						PkgName:          "jackson-databind",
 						InstalledVersion: "2.8.0",
-						PkgIdentifier: &types.PkgIdentifier{
-							Format: types.PkgIdFormatUnknown,
-							Value:  "jackson-databind-2.8.0",
+						PkgIdentifier: &ftypes.PkgIdentifier{
+							PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
 						},
 					},
 					{
 						VulnerabilityID:  "CVE-2018-7490",
 						PkgName:          "jackson-databind",
 						InstalledVersion: "2.8.0",
-						PkgIdentifier: &types.PkgIdentifier{
-							Format: types.PkgIdFormatUnknown,
-							Value:  "jackson-databind-2.8.0",
+						PkgIdentifier: &ftypes.PkgIdentifier{
+							PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
 						},
 					},
 				},
@@ -129,9 +123,8 @@ func TestVEX_Filter(t *testing.T) {
 					VulnerabilityID:  "CVE-2018-7490",
 					PkgName:          "jackson-databind",
 					InstalledVersion: "2.8.0",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatUnknown,
-						Value:  "jackson-databind-2.8.0",
+					PkgIdentifier: &ftypes.PkgIdentifier{
+						PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
 					},
 				},
 			},
@@ -153,9 +146,8 @@ func TestVEX_Filter(t *testing.T) {
 						VulnerabilityID:  "CVE-2018-7489",
 						PkgName:          "jackson-databind",
 						InstalledVersion: "2.8.0",
-						PkgIdentifier: &types.PkgIdentifier{
-							Format: types.PkgIdFormatUnknown,
-							Value:  "jackson-databind-2.8.0",
+						PkgIdentifier: &ftypes.PkgIdentifier{
+							PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
 						},
 					},
 				},
@@ -165,9 +157,8 @@ func TestVEX_Filter(t *testing.T) {
 					VulnerabilityID:  "CVE-2018-7489",
 					PkgName:          "jackson-databind",
 					InstalledVersion: "2.8.0",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatUnknown,
-						Value:  "jackson-databind-2.8.0",
+					PkgIdentifier: &ftypes.PkgIdentifier{
+						PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
 					},
 				},
 			},

@@ -291,6 +291,11 @@ func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Pac
 		}
 		pkg := packageURL.Package()
 		pkg.Ref = ref.Locator
+		pkgIdentifier, err := ftypes.NewPkgIdentifier(pkg.Ref)
+		if err == nil {
+			pkg.Identifier = pkgIdentifier
+		}
+
 		return pkg, packageURL, nil
 	}
 	return nil, nil, errUnknownPackageFormat

@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 func init() {
@@ -77,6 +78,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 			SrcVersion: srcVer,
 			SrcRelease: srcRel,
 		}
+		pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeRpmqa), pkg)
 		pkgs = append(pkgs, pkg)
 	}
 	return pkgs, nil

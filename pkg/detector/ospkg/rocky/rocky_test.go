@@ -61,10 +61,6 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "4.18.0-348.el8.0.3",
 					FixedVersion:     "5.18.0-348.2.1.el8_5",
 					Layer:            ftypes.Layer{},
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:rpm/rocky/bpftool@4.18.0-348.el8.0.3?arch=aarch64&distro=rocky-8",
-					},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Rocky,
 						Name: "Rocky Linux updateinfo",

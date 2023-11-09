@@ -4,7 +4,6 @@ import (
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -34,26 +33,10 @@ func detect(driver Driver, libs []ftypes.Package) ([]types.DetectedVulnerability
 		for i := range vulns {
 			vulns[i].Layer = lib.Layer
 			vulns[i].PkgPath = lib.FilePath
-			vulns[i].PkgIdentifier = buildPkgIdentifier(lib, ftypes.TargetType(driver.Type()))
+			vulns[i].PkgIdentifier = lib.Identifier
 		}
 		vulnerabilities = append(vulnerabilities, vulns...)
 	}
 
 	return vulnerabilities, nil
-}
-
-// buildPkgIdentifier builds a PkgIdentifier for the given package
-// If there's no package reference, try to build a pURL from the package
-func buildPkgIdentifier(pkg ftypes.Package, t ftypes.TargetType) *types.PkgIdentifier {
-	switch pkg.Ref {
-	case "":
-		pkgURL, err := purl.NewPackageURL(t, types.Metadata{}, pkg)
-		if err != nil || pkgURL.Type == "" {
-			return nil
-		}
-
-		return types.NewPkgIdentifier(pkgURL.String())
-	default:
-		return types.NewPkgIdentifier(pkg.Ref)
-	}
 }

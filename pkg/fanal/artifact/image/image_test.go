@@ -35,9 +35,12 @@ import (
 func TestArtifact_Inspect(t *testing.T) {
 	alpinePkgs := types.Packages{
 		{
-			ID:         "alpine-baselayout@3.2.0-r3",
-			Name:       "alpine-baselayout",
-			Version:    "3.2.0-r3",
+			ID:      "alpine-baselayout@3.2.0-r3",
+			Name:    "alpine-baselayout",
+			Version: "3.2.0-r3",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/alpine-baselayout@3.2.0-r3",
+			},
 			SrcName:    "alpine-baselayout",
 			SrcVersion: "3.2.0-r3",
 			Licenses:   []string{"GPL-2.0"},
@@ -78,9 +81,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "alpine-keys@2.1-r2",
-			Name:       "alpine-keys",
-			Version:    "2.1-r2",
+			ID:      "alpine-keys@2.1-r2",
+			Name:    "alpine-keys",
+			Version: "2.1-r2",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/alpine-keys@2.1-r2",
+			},
 			SrcName:    "alpine-keys",
 			SrcVersion: "2.1-r2",
 			Licenses:   []string{"MIT"},
@@ -108,9 +114,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "apk-tools@2.10.4-r3",
-			Name:       "apk-tools",
-			Version:    "2.10.4-r3",
+			ID:      "apk-tools@2.10.4-r3",
+			Name:    "apk-tools",
+			Version: "2.10.4-r3",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/apk-tools@2.10.4-r3",
+			},
 			SrcName:    "apk-tools",
 			SrcVersion: "2.10.4-r3",
 			Licenses:   []string{"GPL-2.0"},
@@ -127,9 +136,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "busybox@1.31.1-r9",
-			Name:       "busybox",
-			Version:    "1.31.1-r9",
+			ID:      "busybox@1.31.1-r9",
+			Name:    "busybox",
+			Version: "1.31.1-r9",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/busybox@1.31.1-r9",
+			},
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
 			Licenses:   []string{"GPL-2.0"},
@@ -149,9 +161,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "ca-certificates-cacert@20191127-r1",
-			Name:       "ca-certificates-cacert",
-			Version:    "20191127-r1",
+			ID:      "ca-certificates-cacert@20191127-r1",
+			Name:    "ca-certificates-cacert",
+			Version: "20191127-r1",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/ca-certificates-cacert@20191127-r1",
+			},
 			SrcName:    "ca-certificates",
 			SrcVersion: "20191127-r1",
 			Licenses: []string{
@@ -165,9 +180,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "libc-utils@0.7.2-r0",
-			Name:       "libc-utils",
-			Version:    "0.7.2-r0",
+			ID:      "libc-utils@0.7.2-r0",
+			Name:    "libc-utils",
+			Version: "0.7.2-r0",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/libc-utils@0.7.2-r0",
+			},
 			SrcName:    "libc-dev",
 			SrcVersion: "0.7.2-r0",
 			Licenses:   []string{"BSD-3-Clause"},
@@ -178,9 +196,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Arch: "x86_64",
 		},
 		{
-			ID:         "libcrypto1.1@1.1.1d-r3",
-			Name:       "libcrypto1.1",
-			Version:    "1.1.1d-r3",
+			ID:      "libcrypto1.1@1.1.1d-r3",
+			Name:    "libcrypto1.1",
+			Version: "1.1.1d-r3",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/libcrypto1.1@1.1.1d-r3",
+			},
 			SrcName:    "openssl",
 			SrcVersion: "1.1.1d-r3",
 			Licenses:   []string{"OpenSSL"},
@@ -205,9 +226,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "libssl1.1@1.1.1d-r3",
-			Name:       "libssl1.1",
-			Version:    "1.1.1d-r3",
+			ID:      "libssl1.1@1.1.1d-r3",
+			Name:    "libssl1.1",
+			Version: "1.1.1d-r3",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/libssl1.1@1.1.1d-r3",
+			},
 			SrcName:    "openssl",
 			SrcVersion: "1.1.1d-r3",
 			Licenses:   []string{"OpenSSL"},
@@ -223,9 +247,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "libtls-standalone@2.9.1-r0",
-			Name:       "libtls-standalone",
-			Version:    "2.9.1-r0",
+			ID:      "libtls-standalone@2.9.1-r0",
+			Name:    "libtls-standalone",
+			Version: "2.9.1-r0",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/libtls-standalone@2.9.1-r0",
+			},
 			SrcName:    "libtls-standalone",
 			SrcVersion: "2.9.1-r0",
 			Licenses:   []string{"ISC"},
@@ -243,9 +270,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "musl@1.1.24-r2",
-			Name:       "musl",
-			Version:    "1.1.24-r2",
+			ID:      "musl@1.1.24-r2",
+			Name:    "musl",
+			Version: "1.1.24-r2",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/musl@1.1.24-r2",
+			},
 			SrcName:    "musl",
 			SrcVersion: "1.1.24-r2",
 			Licenses:   []string{"MIT"},
@@ -257,9 +287,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "musl-utils@1.1.24-r2",
-			Name:       "musl-utils",
-			Version:    "1.1.24-r2",
+			ID:      "musl-utils@1.1.24-r2",
+			Name:    "musl-utils",
+			Version: "1.1.24-r2",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/musl-utils@1.1.24-r2",
+			},
 			SrcName:    "musl",
 			SrcVersion: "1.1.24-r2",
 			Licenses: []string{
@@ -282,9 +315,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "scanelf@1.2.4-r0",
-			Name:       "scanelf",
-			Version:    "1.2.4-r0",
+			ID:      "scanelf@1.2.4-r0",
+			Name:    "scanelf",
+			Version: "1.2.4-r0",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/scanelf@1.2.4-r0",
+			},
 			SrcName:    "pax-utils",
 			SrcVersion: "1.2.4-r0",
 			Licenses:   []string{"GPL-2.0"},
@@ -298,9 +334,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "ssl_client@1.31.1-r9",
-			Name:       "ssl_client",
-			Version:    "1.31.1-r9",
+			ID:      "ssl_client@1.31.1-r9",
+			Name:    "ssl_client",
+			Version: "1.31.1-r9",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/ssl_client@1.31.1-r9",
+			},
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
 			Licenses:   []string{"GPL-2.0"},
@@ -315,9 +354,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:         "zlib@1.2.11-r3",
-			Name:       "zlib",
-			Version:    "1.2.11-r3",
+			ID:      "zlib@1.2.11-r3",
+			Name:    "zlib",
+			Version: "1.2.11-r3",
+			Identifier: &types.PkgIdentifier{
+				PURL: "pkg:apk/zlib@1.2.11-r3",
+			},
 			SrcName:    "zlib",
 			SrcVersion: "1.2.11-r3",
 			Licenses:   []string{"Zlib"},
@@ -521,9 +563,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/base",
 									Packages: types.Packages{
 										{
-											ID:         "base-files@9.9+deb9u9",
-											Name:       "base-files",
-											Version:    "9.9+deb9u9",
+											ID:      "base-files@9.9+deb9u9",
+											Name:    "base-files",
+											Version: "9.9+deb9u9",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:dpkg/base-files@9.9%2Bdeb9u9",
+											},
 											SrcName:    "base-files",
 											SrcVersion: "9.9+deb9u9",
 											Maintainer: "Santiago Vila <sanvila@debian.org>",
@@ -535,9 +580,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/netbase",
 									Packages: types.Packages{
 										{
-											ID:         "netbase@5.4",
-											Name:       "netbase",
-											Version:    "5.4",
+											ID:      "netbase@5.4",
+											Name:    "netbase",
+											Version: "5.4",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:dpkg/netbase@5.4",
+											},
 											SrcName:    "netbase",
 											SrcVersion: "5.4",
 											Maintainer: "Marco d'Itri <md@linux.it>",
@@ -549,9 +597,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/tzdata",
 									Packages: types.Packages{
 										{
-											ID:         "tzdata@2019a-0+deb9u1",
-											Name:       "tzdata",
-											Version:    "2019a",
+											ID:      "tzdata@2019a-0+deb9u1",
+											Name:    "tzdata",
+											Version: "2019a",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:dpkg/tzdata@2019a-0%2Bdeb9u1",
+											},
 											SrcName:    "tzdata",
 											Release:    "0+deb9u1",
 											SrcVersion: "2019a",
@@ -605,9 +656,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/libc6",
 									Packages: types.Packages{
 										{
-											ID:         "libc6@2.24-11+deb9u4",
-											Name:       "libc6",
-											Version:    "2.24",
+											ID:      "libc6@2.24-11+deb9u4",
+											Name:    "libc6",
+											Version: "2.24",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:dpkg/libc6@2.24-11%2Bdeb9u4",
+											},
 											Release:    "11+deb9u4",
 											SrcName:    "glibc",
 											SrcVersion: "2.24",
@@ -621,9 +675,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/libssl1",
 									Packages: types.Packages{
 										{
-											ID:         "libssl1.1@1.1.0k-1~deb9u1",
-											Name:       "libssl1.1",
-											Version:    "1.1.0k",
+											ID:      "libssl1.1@1.1.0k-1~deb9u1",
+											Name:    "libssl1.1",
+											Version: "1.1.0k",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:dpkg/libssl1.1@1.1.0k-1~deb9u1",
+											},
 											SrcName:    "openssl",
 											Release:    "1~deb9u1",
 											SrcVersion: "1.1.0k",
@@ -637,9 +694,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/openssl",
 									Packages: types.Packages{
 										{
-											ID:         "openssl@1.1.0k-1~deb9u1",
-											Name:       "openssl",
-											Version:    "1.1.0k",
+											ID:      "openssl@1.1.0k-1~deb9u1",
+											Name:    "openssl",
+											Version: "1.1.0k",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:dpkg/openssl@1.1.0k-1~deb9u1",
+											},
 											SrcName:    "openssl",
 											Release:    "1~deb9u1",
 											SrcVersion: "1.1.0k",
@@ -702,9 +762,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "php-app/composer.lock",
 									Libraries: types.Packages{
 										{
-											ID:       "guzzlehttp/guzzle@6.2.0",
-											Name:     "guzzlehttp/guzzle",
-											Version:  "6.2.0",
+											ID:      "guzzlehttp/guzzle@6.2.0",
+											Name:    "guzzlehttp/guzzle",
+											Version: "6.2.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/guzzlehttp/guzzle@6.2.0",
+											},
 											Licenses: []string{"MIT"},
 											DependsOn: []string{
 												"guzzlehttp/promises@v1.3.1",
@@ -718,9 +781,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "guzzlehttp/promises@v1.3.1",
-											Name:     "guzzlehttp/promises",
-											Version:  "v1.3.1",
+											ID:      "guzzlehttp/promises@v1.3.1",
+											Name:    "guzzlehttp/promises",
+											Version: "v1.3.1",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/guzzlehttp/promises@v1.3.1",
+											},
 											Licenses: []string{"MIT"},
 											Locations: []types.Location{
 												{
@@ -730,9 +796,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "guzzlehttp/psr7@1.5.2",
-											Name:     "guzzlehttp/psr7",
-											Version:  "1.5.2",
+											ID:      "guzzlehttp/psr7@1.5.2",
+											Name:    "guzzlehttp/psr7",
+											Version: "1.5.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/guzzlehttp/psr7@1.5.2",
+											},
 											Licenses: []string{"MIT"},
 											DependsOn: []string{
 												"psr/http-message@1.0.1",
@@ -746,9 +815,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "laravel/installer@v2.0.1",
-											Name:     "laravel/installer",
-											Version:  "v2.0.1",
+											ID:      "laravel/installer@v2.0.1",
+											Name:    "laravel/installer",
+											Version: "v2.0.1",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/laravel/installer@v2.0.1",
+											},
 											Licenses: []string{"MIT"},
 											DependsOn: []string{
 												"guzzlehttp/guzzle@6.2.0",
@@ -764,9 +836,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "pear/log@1.13.1",
-											Name:      "pear/log",
-											Version:   "1.13.1",
+											ID:      "pear/log@1.13.1",
+											Name:    "pear/log",
+											Version: "1.13.1",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/pear/log@1.13.1",
+											},
 											Licenses:  []string{"MIT"},
 											DependsOn: []string{"pear/pear_exception@v1.0.0"},
 											Locations: []types.Location{
@@ -777,9 +852,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "pear/pear_exception@v1.0.0",
-											Name:     "pear/pear_exception",
-											Version:  "v1.0.0",
+											ID:      "pear/pear_exception@v1.0.0",
+											Name:    "pear/pear_exception",
+											Version: "v1.0.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/pear/pear_exception@v1.0.0",
+											},
 											Licenses: []string{"BSD-2-Clause"},
 											Locations: []types.Location{
 												{
@@ -789,9 +867,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "psr/http-message@1.0.1",
-											Name:     "psr/http-message",
-											Version:  "1.0.1",
+											ID:      "psr/http-message@1.0.1",
+											Name:    "psr/http-message",
+											Version: "1.0.1",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/psr/http-message@1.0.1",
+											},
 											Licenses: []string{"MIT"},
 											Locations: []types.Location{
 												{
@@ -801,9 +882,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "ralouphie/getallheaders@2.0.5",
-											Name:     "ralouphie/getallheaders",
-											Version:  "2.0.5",
+											ID:      "ralouphie/getallheaders@2.0.5",
+											Name:    "ralouphie/getallheaders",
+											Version: "2.0.5",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/ralouphie/getallheaders@2.0.5",
+											},
 											Licenses: []string{"MIT"},
 											Locations: []types.Location{
 												{
@@ -813,9 +897,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "symfony/console@v4.2.7",
-											Name:     "symfony/console",
-											Version:  "v4.2.7",
+											ID:      "symfony/console@v4.2.7",
+											Name:    "symfony/console",
+											Version: "v4.2.7",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/symfony/console@v4.2.7",
+											},
 											Licenses: []string{"MIT"},
 											DependsOn: []string{
 												"symfony/contracts@v1.0.2",
@@ -829,9 +916,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "symfony/contracts@v1.0.2",
-											Name:     "symfony/contracts",
-											Version:  "v1.0.2",
+											ID:      "symfony/contracts@v1.0.2",
+											Name:    "symfony/contracts",
+											Version: "v1.0.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/symfony/contracts@v1.0.2",
+											},
 											Licenses: []string{"MIT"},
 											Locations: []types.Location{
 												{
@@ -841,9 +931,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "symfony/filesystem@v4.2.7",
-											Name:      "symfony/filesystem",
-											Version:   "v4.2.7",
+											ID:      "symfony/filesystem@v4.2.7",
+											Name:    "symfony/filesystem",
+											Version: "v4.2.7",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/symfony/filesystem@v4.2.7",
+											},
 											Licenses:  []string{"MIT"},
 											DependsOn: []string{"symfony/polyfill-ctype@v1.11.0"},
 											Locations: []types.Location{
@@ -854,9 +947,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "symfony/polyfill-ctype@v1.11.0",
-											Name:     "symfony/polyfill-ctype",
-											Version:  "v1.11.0",
+											ID:      "symfony/polyfill-ctype@v1.11.0",
+											Name:    "symfony/polyfill-ctype",
+											Version: "v1.11.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/symfony/polyfill-ctype@v1.11.0",
+											},
 											Licenses: []string{"MIT"},
 											Locations: []types.Location{
 												{
@@ -866,9 +962,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "symfony/polyfill-mbstring@v1.11.0",
-											Name:     "symfony/polyfill-mbstring",
-											Version:  "v1.11.0",
+											ID:      "symfony/polyfill-mbstring@v1.11.0",
+											Name:    "symfony/polyfill-mbstring",
+											Version: "v1.11.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/symfony/polyfill-mbstring@v1.11.0",
+											},
 											Licenses: []string{"MIT"},
 											Locations: []types.Location{
 												{
@@ -878,9 +977,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "symfony/process@v4.2.7",
-											Name:     "symfony/process",
-											Version:  "v4.2.7",
+											ID:      "symfony/process@v4.2.7",
+											Name:    "symfony/process",
+											Version: "v4.2.7",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:composer/symfony/process@v4.2.7",
+											},
 											Licenses: []string{"MIT"},
 											Locations: []types.Location{
 												{
@@ -910,9 +1012,12 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "ruby-app/Gemfile.lock",
 									Libraries: types.Packages{
 										{
-											ID:       "actioncable@5.2.3",
-											Name:     "actioncable",
-											Version:  "5.2.3",
+											ID:      "actioncable@5.2.3",
+											Name:    "actioncable",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/actioncable@5.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"actionpack@5.2.3",
@@ -927,9 +1032,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "actionmailer@5.2.3",
-											Name:     "actionmailer",
-											Version:  "5.2.3",
+											ID:      "actionmailer@5.2.3",
+											Name:    "actionmailer",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/actionmailer@5.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"actionpack@5.2.3",
@@ -946,9 +1054,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "actionpack@5.2.3",
-											Name:     "actionpack",
-											Version:  "5.2.3",
+											ID:      "actionpack@5.2.3",
+											Name:    "actionpack",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/actionpack@5.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"actionview@5.2.3",
@@ -966,9 +1077,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "actionview@5.2.3",
-											Name:     "actionview",
-											Version:  "5.2.3",
+											ID:      "actionview@5.2.3",
+											Name:    "actionview",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/actionview@5.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"activesupport@5.2.3",
@@ -985,9 +1099,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "activejob@5.2.3",
-											Name:     "activejob",
-											Version:  "5.2.3",
+											ID:      "activejob@5.2.3",
+											Name:    "activejob",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/activejob@5.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"activesupport@5.2.3",
@@ -1001,9 +1118,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "activemodel@5.2.3",
-											Name:      "activemodel",
-											Version:   "5.2.3",
+											ID:      "activemodel@5.2.3",
+											Name:    "activemodel",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/activemodel@5.2.3",
+											},
 											Indirect:  true,
 											DependsOn: []string{"activesupport@5.2.3"},
 											Locations: []types.Location{
@@ -1014,9 +1134,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "activerecord@5.2.3",
-											Name:     "activerecord",
-											Version:  "5.2.3",
+											ID:      "activerecord@5.2.3",
+											Name:    "activerecord",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/activerecord@5.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"activemodel@5.2.3",
@@ -1031,9 +1154,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "activestorage@5.2.3",
-											Name:     "activestorage",
-											Version:  "5.2.3",
+											ID:      "activestorage@5.2.3",
+											Name:    "activestorage",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/activestorage@5.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"actionpack@5.2.3",
@@ -1048,9 +1174,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "activesupport@5.2.3",
-											Name:     "activesupport",
-											Version:  "5.2.3",
+											ID:      "activesupport@5.2.3",
+											Name:    "activesupport",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/activesupport@5.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"concurrent-ruby@1.1.5",
@@ -1066,9 +1195,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "arel@9.0.0",
-											Name:      "arel",
-											Version:   "9.0.0",
+											ID:      "arel@9.0.0",
+											Name:    "arel",
+											Version: "9.0.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/arel@9.0.0",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1079,9 +1211,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "ast@2.4.0",
-											Name:      "ast",
-											Version:   "2.4.0",
+											ID:      "ast@2.4.0",
+											Name:    "ast",
+											Version: "2.4.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/ast@2.4.0",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1092,9 +1227,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "builder@3.2.3",
-											Name:      "builder",
-											Version:   "3.2.3",
+											ID:      "builder@3.2.3",
+											Name:    "builder",
+											Version: "3.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/builder@3.2.3",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1105,9 +1243,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "coderay@1.1.2",
-											Name:      "coderay",
-											Version:   "1.1.2",
+											ID:      "coderay@1.1.2",
+											Name:    "coderay",
+											Version: "1.1.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/coderay@1.1.2",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1118,9 +1259,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "concurrent-ruby@1.1.5",
-											Name:      "concurrent-ruby",
-											Version:   "1.1.5",
+											ID:      "concurrent-ruby@1.1.5",
+											Name:    "concurrent-ruby",
+											Version: "1.1.5",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/concurrent-ruby@1.1.5",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1131,9 +1275,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "crass@1.0.4",
-											Name:      "crass",
-											Version:   "1.0.4",
+											ID:      "crass@1.0.4",
+											Name:    "crass",
+											Version: "1.0.4",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/crass@1.0.4",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1144,9 +1291,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "dotenv@2.7.2",
-											Name:      "dotenv",
-											Version:   "2.7.2",
+											ID:      "dotenv@2.7.2",
+											Name:    "dotenv",
+											Version: "2.7.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/dotenv@2.7.2",
+											},
 											Indirect:  false,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1157,9 +1307,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "erubi@1.8.0",
-											Name:      "erubi",
-											Version:   "1.8.0",
+											ID:      "erubi@1.8.0",
+											Name:    "erubi",
+											Version: "1.8.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/erubi@1.8.0",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1170,9 +1323,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "faker@1.9.3",
-											Name:      "faker",
-											Version:   "1.9.3",
+											ID:      "faker@1.9.3",
+											Name:    "faker",
+											Version: "1.9.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/faker@1.9.3",
+											},
 											Indirect:  false,
 											DependsOn: []string{"i18n@1.6.0"},
 											Locations: []types.Location{
@@ -1183,9 +1339,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "globalid@0.4.2",
-											Name:      "globalid",
-											Version:   "0.4.2",
+											ID:      "globalid@0.4.2",
+											Name:    "globalid",
+											Version: "0.4.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/globalid@0.4.2",
+											},
 											Indirect:  true,
 											DependsOn: []string{"activesupport@5.2.3"},
 											Locations: []types.Location{
@@ -1196,9 +1355,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "i18n@1.6.0",
-											Name:      "i18n",
-											Version:   "1.6.0",
+											ID:      "i18n@1.6.0",
+											Name:    "i18n",
+											Version: "1.6.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/i18n@1.6.0",
+											},
 											Indirect:  true,
 											DependsOn: []string{"concurrent-ruby@1.1.5"},
 											Locations: []types.Location{
@@ -1209,9 +1371,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "jaro_winkler@1.5.2",
-											Name:      "jaro_winkler",
-											Version:   "1.5.2",
+											ID:      "jaro_winkler@1.5.2",
+											Name:    "jaro_winkler",
+											Version: "1.5.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/jaro_winkler@1.5.2",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1222,9 +1387,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "json@2.2.0",
-											Name:      "json",
-											Version:   "2.2.0",
+											ID:      "json@2.2.0",
+											Name:    "json",
+											Version: "2.2.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/json@2.2.0",
+											},
 											Indirect:  false,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1235,9 +1403,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "loofah@2.2.3",
-											Name:     "loofah",
-											Version:  "2.2.3",
+											ID:      "loofah@2.2.3",
+											Name:    "loofah",
+											Version: "2.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/loofah@2.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"crass@1.0.4",
@@ -1251,9 +1422,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "mail@2.7.1",
-											Name:      "mail",
-											Version:   "2.7.1",
+											ID:      "mail@2.7.1",
+											Name:    "mail",
+											Version: "2.7.1",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/mail@2.7.1",
+											},
 											Indirect:  true,
 											DependsOn: []string{"mini_mime@1.0.1"},
 											Locations: []types.Location{
@@ -1264,9 +1438,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "marcel@0.3.3",
-											Name:      "marcel",
-											Version:   "0.3.3",
+											ID:      "marcel@0.3.3",
+											Name:    "marcel",
+											Version: "0.3.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/marcel@0.3.3",
+											},
 											Indirect:  true,
 											DependsOn: []string{"mimemagic@0.3.3"},
 											Locations: []types.Location{
@@ -1277,9 +1454,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "method_source@0.9.2",
-											Name:      "method_source",
-											Version:   "0.9.2",
+											ID:      "method_source@0.9.2",
+											Name:    "method_source",
+											Version: "0.9.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/method_source@0.9.2",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1290,9 +1470,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "mimemagic@0.3.3",
-											Name:      "mimemagic",
-											Version:   "0.3.3",
+											ID:      "mimemagic@0.3.3",
+											Name:    "mimemagic",
+											Version: "0.3.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/mimemagic@0.3.3",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1303,9 +1486,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "mini_mime@1.0.1",
-											Name:      "mini_mime",
-											Version:   "1.0.1",
+											ID:      "mini_mime@1.0.1",
+											Name:    "mini_mime",
+											Version: "1.0.1",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/mini_mime@1.0.1",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1316,9 +1502,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "mini_portile2@2.4.0",
-											Name:      "mini_portile2",
-											Version:   "2.4.0",
+											ID:      "mini_portile2@2.4.0",
+											Name:    "mini_portile2",
+											Version: "2.4.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/mini_portile2@2.4.0",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1329,9 +1518,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "minitest@5.11.3",
-											Name:      "minitest",
-											Version:   "5.11.3",
+											ID:      "minitest@5.11.3",
+											Name:    "minitest",
+											Version: "5.11.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/minitest@5.11.3",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1342,9 +1534,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "nio4r@2.3.1",
-											Name:      "nio4r",
-											Version:   "2.3.1",
+											ID:      "nio4r@2.3.1",
+											Name:    "nio4r",
+											Version: "2.3.1",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/nio4r@2.3.1",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1355,9 +1550,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "nokogiri@1.10.3",
-											Name:      "nokogiri",
-											Version:   "1.10.3",
+											ID:      "nokogiri@1.10.3",
+											Name:    "nokogiri",
+											Version: "1.10.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/nokogiri@1.10.3",
+											},
 											Indirect:  true,
 											DependsOn: []string{"mini_portile2@2.4.0"},
 											Locations: []types.Location{
@@ -1368,9 +1566,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "parallel@1.17.0",
-											Name:      "parallel",
-											Version:   "1.17.0",
+											ID:      "parallel@1.17.0",
+											Name:    "parallel",
+											Version: "1.17.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/parallel@1.17.0",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1381,9 +1582,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "parser@2.6.3.0",
-											Name:      "parser",
-											Version:   "2.6.3.0",
+											ID:      "parser@2.6.3.0",
+											Name:    "parser",
+											Version: "2.6.3.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/parser@2.6.3.0",
+											},
 											Indirect:  true,
 											DependsOn: []string{"ast@2.4.0"},
 											Locations: []types.Location{
@@ -1394,9 +1598,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "pry@0.12.2",
-											Name:     "pry",
-											Version:  "0.12.2",
+											ID:      "pry@0.12.2",
+											Name:    "pry",
+											Version: "0.12.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/pry@0.12.2",
+											},
 											Indirect: false,
 											DependsOn: []string{
 												"coderay@1.1.2",
@@ -1410,9 +1617,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "psych@3.1.0",
-											Name:      "psych",
-											Version:   "3.1.0",
+											ID:      "psych@3.1.0",
+											Name:    "psych",
+											Version: "3.1.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/psych@3.1.0",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1423,9 +1633,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rack@2.0.7",
-											Name:      "rack",
-											Version:   "2.0.7",
+											ID:      "rack@2.0.7",
+											Name:    "rack",
+											Version: "2.0.7",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/rack@2.0.7",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1436,9 +1649,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rack-test@1.1.0",
-											Name:      "rack-test",
-											Version:   "1.1.0",
+											ID:      "rack-test@1.1.0",
+											Name:    "rack-test",
+											Version: "1.1.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/rack-test@1.1.0",
+											},
 											Indirect:  true,
 											DependsOn: []string{"rack@2.0.7"},
 											Locations: []types.Location{
@@ -1449,9 +1665,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "rails@5.2.0",
-											Name:     "rails",
-											Version:  "5.2.0",
+											ID:      "rails@5.2.0",
+											Name:    "rails",
+											Version: "5.2.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/rails@5.2.0",
+											},
 											Indirect: false,
 											DependsOn: []string{
 												"actioncable@5.2.3",
@@ -1474,9 +1693,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "rails-dom-testing@2.0.3",
-											Name:     "rails-dom-testing",
-											Version:  "2.0.3",
+											ID:      "rails-dom-testing@2.0.3",
+											Name:    "rails-dom-testing",
+											Version: "2.0.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/rails-dom-testing@2.0.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"activesupport@5.2.3",
@@ -1490,9 +1712,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rails-html-sanitizer@1.0.3",
-											Name:      "rails-html-sanitizer",
-											Version:   "1.0.3",
+											ID:      "rails-html-sanitizer@1.0.3",
+											Name:    "rails-html-sanitizer",
+											Version: "1.0.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/rails-html-sanitizer@1.0.3",
+											},
 											Indirect:  true,
 											DependsOn: []string{"loofah@2.2.3"},
 											Locations: []types.Location{
@@ -1503,9 +1728,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "railties@5.2.3",
-											Name:     "railties",
-											Version:  "5.2.3",
+											ID:      "railties@5.2.3",
+											Name:    "railties",
+											Version: "5.2.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/railties@5.2.3",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"actionpack@5.2.3",
@@ -1522,9 +1750,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rainbow@3.0.0",
-											Name:      "rainbow",
-											Version:   "3.0.0",
+											ID:      "rainbow@3.0.0",
+											Name:    "rainbow",
+											Version: "3.0.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/rainbow@3.0.0",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1535,9 +1766,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rake@12.3.2",
-											Name:      "rake",
-											Version:   "12.3.2",
+											ID:      "rake@12.3.2",
+											Name:    "rake",
+											Version: "12.3.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/rake@12.3.2",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1548,9 +1782,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "rubocop@0.67.2",
-											Name:     "rubocop",
-											Version:  "0.67.2",
+											ID:      "rubocop@0.67.2",
+											Name:    "rubocop",
+											Version: "0.67.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/rubocop@0.67.2",
+											},
 											Indirect: false,
 											DependsOn: []string{
 												"jaro_winkler@1.5.2",
@@ -1569,9 +1806,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "ruby-progressbar@1.10.0",
-											Name:      "ruby-progressbar",
-											Version:   "1.10.0",
+											ID:      "ruby-progressbar@1.10.0",
+											Name:    "ruby-progressbar",
+											Version: "1.10.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/ruby-progressbar@1.10.0",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1582,9 +1822,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "sprockets@3.7.2",
-											Name:     "sprockets",
-											Version:  "3.7.2",
+											ID:      "sprockets@3.7.2",
+											Name:    "sprockets",
+											Version: "3.7.2",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/sprockets@3.7.2",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"concurrent-ruby@1.1.5",
@@ -1598,9 +1841,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "sprockets-rails@3.2.1",
-											Name:     "sprockets-rails",
-											Version:  "3.2.1",
+											ID:      "sprockets-rails@3.2.1",
+											Name:    "sprockets-rails",
+											Version: "3.2.1",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/sprockets-rails@3.2.1",
+											},
 											Indirect: true,
 											DependsOn: []string{
 												"actionpack@5.2.3",
@@ -1615,9 +1861,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "thor@0.20.3",
-											Name:      "thor",
-											Version:   "0.20.3",
+											ID:      "thor@0.20.3",
+											Name:    "thor",
+											Version: "0.20.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/thor@0.20.3",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1628,9 +1877,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "thread_safe@0.3.6",
-											Name:      "thread_safe",
-											Version:   "0.3.6",
+											ID:      "thread_safe@0.3.6",
+											Name:    "thread_safe",
+											Version: "0.3.6",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/thread_safe@0.3.6",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1641,9 +1893,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "tzinfo@1.2.5",
-											Name:      "tzinfo",
-											Version:   "1.2.5",
+											ID:      "tzinfo@1.2.5",
+											Name:    "tzinfo",
+											Version: "1.2.5",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/tzinfo@1.2.5",
+											},
 											Indirect:  true,
 											DependsOn: []string{"thread_safe@0.3.6"},
 											Locations: []types.Location{
@@ -1654,9 +1909,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "unicode-display_width@1.5.0",
-											Name:      "unicode-display_width",
-											Version:   "1.5.0",
+											ID:      "unicode-display_width@1.5.0",
+											Name:    "unicode-display_width",
+											Version: "1.5.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/unicode-display_width@1.5.0",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{
@@ -1667,9 +1925,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "websocket-driver@0.7.0",
-											Name:      "websocket-driver",
-											Version:   "0.7.0",
+											ID:      "websocket-driver@0.7.0",
+											Name:    "websocket-driver",
+											Version: "0.7.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/websocket-driver@0.7.0",
+											},
 											Indirect:  true,
 											DependsOn: []string{"websocket-extensions@0.1.3"},
 											Locations: []types.Location{
@@ -1680,9 +1941,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "websocket-extensions@0.1.3",
-											Name:      "websocket-extensions",
-											Version:   "0.1.3",
+											ID:      "websocket-extensions@0.1.3",
+											Name:    "websocket-extensions",
+											Version: "0.1.3",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:gem/websocket-extensions@0.1.3",
+											},
 											Indirect:  true,
 											DependsOn: []string(nil),
 											Locations: []types.Location{

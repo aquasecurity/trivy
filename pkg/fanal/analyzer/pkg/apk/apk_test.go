@@ -13,8 +13,11 @@ import (
 
 var pkgs = []types.Package{
 	{
-		ID:         "musl@1.1.14-r10",
-		Name:       "musl",
+		ID:   "musl@1.1.14-r10",
+		Name: "musl",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/musl@1.1.14-r10",
+		},
 		Version:    "1.1.14-r10",
 		SrcName:    "musl",
 		SrcVersion: "1.1.14-r10",
@@ -27,8 +30,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "busybox@1.24.2-r9",
-		Name:       "busybox",
+		ID:   "busybox@1.24.2-r9",
+		Name: "busybox",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/busybox@1.24.2-r9",
+		},
 		Version:    "1.24.2-r9",
 		SrcName:    "busybox",
 		SrcVersion: "1.24.2-r9",
@@ -45,8 +51,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "alpine-baselayout@3.0.3-r0",
-		Name:       "alpine-baselayout",
+		ID:   "alpine-baselayout@3.0.3-r0",
+		Name: "alpine-baselayout",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/alpine-baselayout@3.0.3-r0",
+		},
 		Version:    "3.0.3-r0",
 		SrcName:    "alpine-baselayout",
 		SrcVersion: "3.0.3-r0",
@@ -83,8 +92,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "alpine-keys@1.1-r0",
-		Name:       "alpine-keys",
+		ID:   "alpine-keys@1.1-r0",
+		Name: "alpine-keys",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/alpine-keys@1.1-r0",
+		},
 		Version:    "1.1-r0",
 		SrcName:    "alpine-keys",
 		SrcVersion: "1.1-r0",
@@ -100,8 +112,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "zlib@1.2.8-r2",
-		Name:       "zlib",
+		ID:   "zlib@1.2.8-r2",
+		Name: "zlib",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/zlib@1.2.8-r2",
+		},
 		Version:    "1.2.8-r2",
 		SrcName:    "zlib",
 		SrcVersion: "1.2.8-r2",
@@ -115,8 +130,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "libcrypto1.0@1.0.2h-r1",
-		Name:       "libcrypto1.0",
+		ID:   "libcrypto1.0@1.0.2h-r1",
+		Name: "libcrypto1.0",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/libcrypto1.0@1.0.2h-r1",
+		},
 		Version:    "1.0.2h-r1",
 		SrcName:    "openssl",
 		SrcVersion: "1.0.2h-r1",
@@ -143,8 +161,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "libssl1.0@1.0.2h-r1",
-		Name:       "libssl1.0",
+		ID:   "libssl1.0@1.0.2h-r1",
+		Name: "libssl1.0",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/libssl1.0@1.0.2h-r1",
+		},
 		Version:    "1.0.2h-r1",
 		SrcName:    "openssl",
 		SrcVersion: "1.0.2h-r1",
@@ -161,8 +182,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "apk-tools@2.6.7-r0",
-		Name:       "apk-tools",
+		ID:   "apk-tools@2.6.7-r0",
+		Name: "apk-tools",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/apk-tools@2.6.7-r0",
+		},
 		Version:    "2.6.7-r0",
 		SrcName:    "apk-tools",
 		SrcVersion: "2.6.7-r0",
@@ -180,8 +204,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "scanelf@1.1.6-r0",
-		Name:       "scanelf",
+		ID:   "scanelf@1.1.6-r0",
+		Name: "scanelf",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/scanelf@1.1.6-r0",
+		},
 		Version:    "1.1.6-r0",
 		SrcName:    "pax-utils",
 		SrcVersion: "1.1.6-r0",
@@ -194,8 +221,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "musl-utils@1.1.14-r10",
-		Name:       "musl-utils",
+		ID:   "musl-utils@1.1.14-r10",
+		Name: "musl-utils",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/musl-utils@1.1.14-r10",
+		},
 		Version:    "1.1.14-r10",
 		SrcName:    "musl",
 		SrcVersion: "1.1.14-r10",
@@ -215,8 +245,11 @@ var pkgs = []types.Package{
 		},
 	},
 	{
-		ID:         "libc-utils@0.7-r0",
-		Name:       "libc-utils",
+		ID:   "libc-utils@0.7-r0",
+		Name: "libc-utils",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/libc-utils@0.7-r0",
+		},
 		Version:    "0.7-r0",
 		SrcName:    "libc-dev",
 		SrcVersion: "0.7-r0",
@@ -227,8 +260,11 @@ var pkgs = []types.Package{
 		//InstalledFiles: []string{},
 	},
 	{
-		ID:         "pkgconf@1.6.0-r0",
-		Name:       "pkgconf",
+		ID:   "pkgconf@1.6.0-r0",
+		Name: "pkgconf",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/pkgconf@1.6.0-r0",
+		},
 		Version:    "1.6.0-r0",
 		SrcName:    "pkgconf",
 		SrcVersion: "1.6.0-r0",
@@ -246,8 +282,11 @@ var pkgs = []types.Package{
 	},
 
 	{
-		ID:         "sqlite-libs@3.26.0-r3",
-		Name:       "sqlite-libs",
+		ID:   "sqlite-libs@3.26.0-r3",
+		Name: "sqlite-libs",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/sqlite-libs@3.26.0-r3",
+		},
 		Version:    "3.26.0-r3",
 		SrcName:    "sqlite",
 		SrcVersion: "3.26.0-r3",
@@ -262,8 +301,11 @@ var pkgs = []types.Package{
 	},
 
 	{
-		ID:         "test@2.9.11_pre20061021-r2",
-		Name:       "test",
+		ID:   "test@2.9.11_pre20061021-r2",
+		Name: "test",
+		Identifier: &types.PkgIdentifier{
+			PURL: "pkg:apk/test@2.9.11_pre20061021-r2",
+		},
 		Version:    "2.9.11_pre20061021-r2",
 		SrcName:    "test-parent",
 		SrcVersion: "2.9.11_pre20061021-r2",

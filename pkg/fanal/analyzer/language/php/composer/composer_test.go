@@ -28,9 +28,12 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 						FilePath: "composer.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "pear/log@1.13.3",
-								Name:     "pear/log",
-								Version:  "1.13.3",
+								ID:      "pear/log@1.13.3",
+								Name:    "pear/log",
+								Version: "1.13.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:composer/pear/log@1.13.3",
+								},
 								Indirect: false,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
@@ -42,9 +45,12 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								DependsOn: []string{"pear/pear_exception@v1.0.2"},
 							},
 							{
-								ID:       "pear/pear_exception@v1.0.2",
-								Name:     "pear/pear_exception",
-								Version:  "v1.0.2",
+								ID:      "pear/pear_exception@v1.0.2",
+								Name:    "pear/pear_exception",
+								Version: "v1.0.2",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:composer/pear/pear_exception@v1.0.2",
+								},
 								Indirect: true,
 								Licenses: []string{"BSD-2-Clause"},
 								Locations: []types.Location{
@@ -69,9 +75,12 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 						FilePath: "composer.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "pear/log@1.13.3",
-								Name:     "pear/log",
-								Version:  "1.13.3",
+								ID:      "pear/log@1.13.3",
+								Name:    "pear/log",
+								Version: "1.13.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:composer/pear/log@1.13.3",
+								},
 								Indirect: false,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
@@ -83,9 +92,12 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								DependsOn: []string{"pear/pear_exception@v1.0.2"},
 							},
 							{
-								ID:       "pear/pear_exception@v1.0.2",
-								Name:     "pear/pear_exception",
-								Version:  "v1.0.2",
+								ID:      "pear/pear_exception@v1.0.2",
+								Name:    "pear/pear_exception",
+								Version: "v1.0.2",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:composer/pear/pear_exception@v1.0.2",
+								},
 								Indirect: false,
 								Licenses: []string{"BSD-2-Clause"},
 								Locations: []types.Location{
@@ -110,9 +122,12 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 						FilePath: "composer.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "pear/log@1.13.3",
-								Name:     "pear/log",
-								Version:  "1.13.3",
+								ID:      "pear/log@1.13.3",
+								Name:    "pear/log",
+								Version: "1.13.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:composer/pear/log@1.13.3",
+								},
 								Indirect: false,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
@@ -124,9 +139,12 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								DependsOn: []string{"pear/pear_exception@v1.0.2"},
 							},
 							{
-								ID:       "pear/pear_exception@v1.0.2",
-								Name:     "pear/pear_exception",
-								Version:  "v1.0.2",
+								ID:      "pear/pear_exception@v1.0.2",
+								Name:    "pear/pear_exception",
+								Version: "v1.0.2",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:composer/pear/pear_exception@v1.0.2",
+								},
 								Indirect: false,
 								Licenses: []string{"BSD-2-Clause"},
 								Locations: []types.Location{

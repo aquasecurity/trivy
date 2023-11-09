@@ -30,8 +30,11 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
 						Libraries: types.Packages{
 							{
-								Name:     "kitchen",
-								Version:  "1.2.6",
+								Name:    "kitchen",
+								Version: "1.2.6",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:pypi/kitchen@1.2.6",
+								},
 								Licenses: []string{"LGPLv2+"},
 								FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
 							},
@@ -51,8 +54,11 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy.egg-info/PKG-INFO",
 						Libraries: types.Packages{
 							{
-								Name:     "distlib",
-								Version:  "0.3.1",
+								Name:    "distlib",
+								Version: "0.3.1",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:pypi/distlib@0.3.1",
+								},
 								Licenses: []string{"Python license"},
 								FilePath: "testdata/happy.egg-info/PKG-INFO",
 								Digest:   "sha1:d9d89d8ed3b2b683767c96814c9c5d3e57ef2e1b",
@@ -72,8 +78,11 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/classifier-license.egg-info/PKG-INFO",
 						Libraries: types.Packages{
 							{
-								Name:     "setuptools",
-								Version:  "51.3.3",
+								Name:    "setuptools",
+								Version: "51.3.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:pypi/setuptools@51.3.3",
+								},
 								Licenses: []string{"MIT License"},
 								FilePath: "testdata/classifier-license.egg-info/PKG-INFO",
 							},
@@ -92,8 +101,11 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/classifier-license.dist-info/METADATA",
 						Libraries: types.Packages{
 							{
-								Name:     "setuptools",
-								Version:  "51.3.3",
+								Name:    "setuptools",
+								Version: "51.3.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:pypi/setuptools@51.3.3",
+								},
 								Licenses: []string{"MIT License"},
 								FilePath: "testdata/classifier-license.dist-info/METADATA",
 							},
@@ -112,8 +124,11 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy.dist-info/METADATA",
 						Libraries: types.Packages{
 							{
-								Name:     "distlib",
-								Version:  "0.3.1",
+								Name:    "distlib",
+								Version: "0.3.1",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:pypi/distlib@0.3.1",
+								},
 								Licenses: []string{"Python license"},
 								FilePath: "testdata/happy.dist-info/METADATA",
 							},

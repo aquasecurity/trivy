@@ -54,7 +54,19 @@ func (v *OpenVEX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVu
 			return true
 		}
 
-		stmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgIdentifier.Value, nil)
+		var stmts []openvex.Statement
+		if vuln.PkgIdentifier.CPE != "" {
+			matchedStmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgIdentifier.CPE, nil)
+			if len(matchedStmts) > 0 {
+				stmts = append(stmts, matchedStmts...)
+			}
+		}
+		if vuln.PkgIdentifier.PURL != "" {
+			matchedStmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgIdentifier.PURL, nil)
+			if len(matchedStmts) > 0 {
+				stmts = append(stmts, matchedStmts...)
+			}
+		}
 		if len(stmts) == 0 {
 			return true
 		}
@@ -126,7 +138,8 @@ func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) b
 				zap.Int("version", link.Version()))
 			continue
 		}
-		if vuln.PkgIdentifier.Value == link.Reference() &&
+		if vuln.PkgIdentifier != nil &&
+			(vuln.PkgIdentifier.CPE == link.Reference() || vuln.PkgIdentifier.PURL == link.Reference()) &&
 			(stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
 			v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
 				zap.String("status", string(stmt.Status)), zap.String("justification", stmt.Justification))

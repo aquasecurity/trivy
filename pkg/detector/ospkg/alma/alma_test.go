@@ -60,11 +60,7 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-26116",
 					InstalledVersion: "3.6.8-36.el8.alma",
 					FixedVersion:     "3.6.8-37.el8.alma",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:rpm/alma/python3-libs@3.6.8-36.el8.alma?arch=x86_64&distro=alma-8",
-					},
-					Layer: ftypes.Layer{},
+					Layer:            ftypes.Layer{},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Alma,
 						Name: "AlmaLinux Product Errata",
@@ -131,11 +127,7 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-35452",
 					InstalledVersion: "2.4.37-46.module_el8.6.0+2872+fe0ff7aa.1.alma",
 					FixedVersion:     "2.4.37-47.module_el8.6.0+2872+fe0ff7aa.1.alma",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:rpm/alma/httpd@2.4.37-46.module_el8.6.0%2B2872%2Bfe0ff7aa.1.alma?arch=x86_64&distro=alma-8&modularitylabel=httpd%3A2.4%3A8060020220510105858%3A9edba152",
-					},
-					Layer: ftypes.Layer{},
+					Layer:            ftypes.Layer{},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Alma,
 						Name: "AlmaLinux Product Errata",

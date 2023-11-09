@@ -335,9 +335,12 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/lib/apk/db/installed",
 						Packages: types.Packages{
 							{
-								ID:             "musl@1.1.24-r2",
-								Name:           "musl",
-								Version:        "1.1.24-r2",
+								ID:      "musl@1.1.24-r2",
+								Name:    "musl",
+								Version: "1.1.24-r2",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:apk/musl@1.1.24-r2",
+								},
 								SrcName:        "musl",
 								SrcVersion:     "1.1.24-r2",
 								Licenses:       []string{"MIT"},
@@ -376,9 +379,12 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/app/Gemfile.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "actioncable@5.2.3",
-								Name:     "actioncable",
-								Version:  "5.2.3",
+								ID:      "actioncable@5.2.3",
+								Name:    "actioncable",
+								Version: "5.2.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:gem/actioncable@5.2.3",
+								},
 								Indirect: false,
 								DependsOn: []string{
 									"actionpack@5.2.3",
@@ -391,9 +397,12 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								},
 							},
 							{
-								ID:       "actionpack@5.2.3",
-								Name:     "actionpack",
-								Version:  "5.2.3",
+								ID:      "actionpack@5.2.3",
+								Name:    "actionpack",
+								Version: "5.2.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@5.2.3",
+								},
 								Indirect: true,
 								Locations: []types.Location{
 									{
@@ -437,9 +446,12 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/app/Gemfile-dev.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "actioncable@5.2.3",
-								Name:     "actioncable",
-								Version:  "5.2.3",
+								ID:      "actioncable@5.2.3",
+								Name:    "actioncable",
+								Version: "5.2.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:gem/actioncable@5.2.3",
+								},
 								Indirect: false,
 								DependsOn: []string{
 									"actionpack@5.2.3",
@@ -452,9 +464,12 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								},
 							},
 							{
-								ID:       "actionpack@5.2.3",
-								Name:     "actionpack",
-								Version:  "5.2.3",
+								ID:      "actionpack@5.2.3",
+								Name:    "actionpack",
+								Version: "5.2.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@5.2.3",
+								},
 								Indirect: true,
 								Locations: []types.Location{
 									{
@@ -570,8 +585,11 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 						FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
 						Libraries: types.Packages{
 							{
-								Name:     "com.fasterxml.jackson.core:jackson-annotations",
-								Version:  "2.15.0-rc2",
+								Name:    "com.fasterxml.jackson.core:jackson-annotations",
+								Version: "2.15.0-rc2",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.15.0-rc2",
+								},
 								FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
 							},
 						},
@@ -593,6 +611,9 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 								ID:      "certifi@2022.12.7",
 								Name:    "certifi",
 								Version: "2022.12.7",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:pypi/certifi@2022.12.7",
+								},
 							},
 						},
 					},

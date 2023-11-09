@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 func init() {
@@ -155,6 +156,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			Maintainer:      pkg.Vendor,
 			Digest:          d,
 		}
+		p.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeRpm), p)
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)
 

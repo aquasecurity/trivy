@@ -55,10 +55,6 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-8625",
 					InstalledVersion: "32:9.8.2-0.68.rc1.85.amzn1",
 					FixedVersion:     "32:9.8.2-0.68.rc1.86.amzn1",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:rpm/amazon/bind@9.8.2-0.68.rc1.85.amzn1?distro=amazon-1&epoch=32",
-					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -94,10 +90,6 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-9924",
 					InstalledVersion: "4.2.45",
 					FixedVersion:     "4.2.46-34.amzn2",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:rpm/amazon/bash@4.2.45?distro=amazon-2",
-					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -133,10 +125,6 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2022-1941",
 					InstalledVersion: "3.14.0-7.amzn2023.0.3",
 					FixedVersion:     "3.19.6-1.amzn2023.0.1",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:rpm/amazon/protobuf@3.14.0-7.amzn2023.0.3?distro=amazon-2023",
-					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},

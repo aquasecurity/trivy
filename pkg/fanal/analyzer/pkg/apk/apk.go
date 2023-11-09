@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 func init() {
@@ -112,6 +113,8 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			// e.g. D:scanelf so:libc.musl-x86_64.so.1
 			provides[pkg.Name] = pkg.ID
 		}
+
+		pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeApk), pkg)
 	}
 	// in case of last paragraph
 	if !pkg.Empty() {

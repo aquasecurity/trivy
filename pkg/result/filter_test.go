@@ -152,9 +152,8 @@ func TestFilter(t *testing.T) {
 								{
 									VulnerabilityID: "CVE-2019-0001",
 									PkgName:         "foo",
-									PkgIdentifier: &types.PkgIdentifier{
-										Format: types.PkgIdFormatPURL,
-										Value:  "pkg:golang/github.com/aquasecurity/foo@1.2.3",
+									PkgIdentifier: &ftypes.PkgIdentifier{
+										PURL: "pkg:golang/github.com/aquasecurity/foo@1.2.3",
 									},
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
@@ -165,9 +164,8 @@ func TestFilter(t *testing.T) {
 								{
 									VulnerabilityID: "CVE-2019-0001",
 									PkgName:         "bar",
-									PkgIdentifier: &types.PkgIdentifier{
-										Format: types.PkgIdFormatPURL,
-										Value:  "pkg:golang/github.com/aquasecurity/bar@1.2.3",
+									PkgIdentifier: &ftypes.PkgIdentifier{
+										PURL: "pkg:golang/github.com/aquasecurity/bar@1.2.3",
 									},
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
@@ -195,9 +193,8 @@ func TestFilter(t *testing.T) {
 							{
 								VulnerabilityID: "CVE-2019-0001",
 								PkgName:         "bar",
-								PkgIdentifier: &types.PkgIdentifier{
-									Format: types.PkgIdFormatPURL,
-									Value:  "pkg:golang/github.com/aquasecurity/bar@1.2.3",
+								PkgIdentifier: &ftypes.PkgIdentifier{
+									PURL: "pkg:golang/github.com/aquasecurity/bar@1.2.3",
 								},
 								InstalledVersion: "1.2.3",
 								FixedVersion:     "1.2.4",

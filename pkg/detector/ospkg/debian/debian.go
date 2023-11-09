@@ -10,7 +10,6 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/common"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -104,7 +103,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				PkgName:          pkg.Name,
 				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     adv.FixedVersion,
-				PkgIdentifier:    common.BuildPkgIdentifier(pkg, ftypes.Debian, osVer),
+				PkgIdentifier:    pkg.Identifier,
 				Status:           adv.Status,
 				Layer:            pkg.Layer,
 				Custom:           adv.Custom,

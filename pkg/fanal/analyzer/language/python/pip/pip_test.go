@@ -31,14 +31,23 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "click",
 								Version: "8.0.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:pypi/click@8.0.0",
+								},
 							},
 							{
 								Name:    "Flask",
 								Version: "2.0.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:pypi/flask@2.0.0",
+								},
 							},
 							{
 								Name:    "itsdangerous",
 								Version: "2.0.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:pypi/itsdangerous@2.0.0",
+								},
 							},
 						},
 					},

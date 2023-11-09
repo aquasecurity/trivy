@@ -59,10 +59,6 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-10217",
 					InstalledVersion: "2.6.4",
 					FixedVersion:     "2.8.4-r0",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:wolfi/ansible@2.6.4",
-					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -96,10 +92,6 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-1234",
 					InstalledVersion: "1.6-r0",
 					FixedVersion:     "1.6-r1",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:wolfi/jq@1.6-r0",
-					},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",
@@ -133,10 +125,6 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "test",
 					InstalledVersion: "0.1.0_alpha",
 					FixedVersion:     "0.1.0_alpha2",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:wolfi/test@0.1.0_alpha",
-					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -191,10 +179,6 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-1234",
 					InstalledVersion: "1.6-r0",
 					FixedVersion:     "1.6-r1",
-					PkgIdentifier: &types.PkgIdentifier{
-						Format: types.PkgIdFormatPURL,
-						Value:  "pkg:wolfi/jq@1.6-r0",
-					},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",

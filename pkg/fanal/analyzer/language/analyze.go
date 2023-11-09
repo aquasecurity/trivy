@@ -4,15 +4,16 @@ import (
 	"io"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -116,7 +117,8 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.
 		if lib.FilePath != "" {
 			libPath = lib.FilePath
 		}
-		pkgs = append(pkgs, types.Package{
+
+		newPkg := types.Package{
 			ID:        lib.ID,
 			Name:      lib.Name,
 			Version:   lib.Version,
@@ -127,7 +129,9 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.
 			DependsOn: deps[lib.ID],
 			Locations: locs,
 			Digest:    d,
-		})
+		}
+		newPkg.Identifier = purl.NewPackageIdentifier(fileType, newPkg)
+		pkgs = append(pkgs, newPkg)
 	}
 
 	return &types.Application{

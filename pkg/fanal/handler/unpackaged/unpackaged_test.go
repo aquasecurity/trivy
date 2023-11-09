@@ -45,6 +45,9 @@ func Test_unpackagedHook_Handle(t *testing.T) {
 								Name:    "github.com/spf13/cobra",
 								Version: "1.5.0",
 								Ref:     "pkg:golang/github.com/spf13/cobra@1.5.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:golang/github.com/spf13/cobra@1.5.0",
+								},
 							},
 						},
 					},

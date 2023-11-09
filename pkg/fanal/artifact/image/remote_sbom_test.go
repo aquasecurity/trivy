@@ -80,8 +80,11 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 								{
 									Packages: types.Packages{
 										{
-											Name:       "musl",
-											Version:    "1.2.3-r0",
+											Name:    "musl",
+											Version: "1.2.3-r0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
+											},
 											SrcName:    "musl",
 											SrcVersion: "1.2.3-r0",
 											Licenses:   []string{"MIT"},

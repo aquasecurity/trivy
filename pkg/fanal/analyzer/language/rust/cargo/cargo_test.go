@@ -29,9 +29,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "aho-corasick@0.7.20",
-								Name:     "aho-corasick",
-								Version:  "0.7.20",
+								ID:      "aho-corasick@0.7.20",
+								Name:    "aho-corasick",
+								Version: "0.7.20",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/aho-corasick@0.7.20",
+								},
 								Indirect: true,
 								Locations: []types.Location{
 									{
@@ -42,9 +45,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"memchr@2.5.0"},
 							},
 							{
-								ID:       "libc@0.2.140",
-								Name:     "libc",
-								Version:  "0.2.140",
+								ID:      "libc@0.2.140",
+								Name:    "libc",
+								Version: "0.2.140",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/libc@0.2.140",
+								},
 								Indirect: true,
 								Locations: []types.Location{
 									{
@@ -54,9 +60,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "memchr@1.0.2",
-								Name:     "memchr",
-								Version:  "1.0.2",
+								ID:      "memchr@1.0.2",
+								Name:    "memchr",
+								Version: "1.0.2",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/memchr@1.0.2",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -67,9 +76,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc@0.2.140"},
 							},
 							{
-								ID:       "memchr@2.5.0",
-								Name:     "memchr",
-								Version:  "2.5.0",
+								ID:      "memchr@2.5.0",
+								Name:    "memchr",
+								Version: "2.5.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/memchr@2.5.0",
+								},
 								Indirect: true,
 								Locations: []types.Location{
 									{
@@ -79,9 +91,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "regex@1.7.3",
-								Name:     "regex",
-								Version:  "1.7.3",
+								ID:      "regex@1.7.3",
+								Name:    "regex",
+								Version: "1.7.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/regex@1.7.3",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -96,9 +111,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "regex-syntax@0.5.6",
-								Name:     "regex-syntax",
-								Version:  "0.5.6",
+								ID:      "regex-syntax@0.5.6",
+								Name:    "regex-syntax",
+								Version: "0.5.6",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/regex-syntax@0.5.6",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -109,9 +127,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"ucd-util@0.1.10"},
 							},
 							{
-								ID:       "regex-syntax@0.6.29",
-								Name:     "regex-syntax",
-								Version:  "0.6.29",
+								ID:      "regex-syntax@0.6.29",
+								Name:    "regex-syntax",
+								Version: "0.6.29",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/regex-syntax@0.6.29",
+								},
 								Indirect: true,
 								Locations: []types.Location{
 									{
@@ -121,9 +142,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "ucd-util@0.1.10",
-								Name:     "ucd-util",
-								Version:  "0.1.10",
+								ID:      "ucd-util@0.1.10",
+								Name:    "ucd-util",
+								Version: "0.1.10",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/ucd-util@0.1.10",
+								},
 								Indirect: true,
 								Locations: []types.Location{
 									{
@@ -147,9 +171,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "memchr@2.5.0",
-								Name:     "memchr",
-								Version:  "2.5.0",
+								ID:      "memchr@2.5.0",
+								Name:    "memchr",
+								Version: "2.5.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/memchr@2.5.0",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -173,9 +200,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "aho-corasick@0.7.20",
-								Name:     "aho-corasick",
-								Version:  "0.7.20",
+								ID:      "aho-corasick@0.7.20",
+								Name:    "aho-corasick",
+								Version: "0.7.20",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/aho-corasick@0.7.20",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -186,9 +216,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"memchr@2.5.0"},
 							},
 							{
-								ID:       "app@0.1.0",
-								Name:     "app",
-								Version:  "0.1.0",
+								ID:      "app@0.1.0",
+								Name:    "app",
+								Version: "0.1.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/app@0.1.0",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -203,9 +236,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "libc@0.2.140",
-								Name:     "libc",
-								Version:  "0.2.140",
+								ID:      "libc@0.2.140",
+								Name:    "libc",
+								Version: "0.2.140",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/libc@0.2.140",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -215,9 +251,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "memchr@1.0.2",
-								Name:     "memchr",
-								Version:  "1.0.2",
+								ID:      "memchr@1.0.2",
+								Name:    "memchr",
+								Version: "1.0.2",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/memchr@1.0.2",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -228,9 +267,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc@0.2.140"},
 							},
 							{
-								ID:       "memchr@2.5.0",
-								Name:     "memchr",
-								Version:  "2.5.0",
+								ID:      "memchr@2.5.0",
+								Name:    "memchr",
+								Version: "2.5.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/memchr@2.5.0",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -240,9 +282,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "regex@1.7.3",
-								Name:     "regex",
-								Version:  "1.7.3",
+								ID:      "regex@1.7.3",
+								Name:    "regex",
+								Version: "1.7.3",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/regex@1.7.3",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -257,9 +302,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "regex-syntax@0.5.6",
-								Name:     "regex-syntax",
-								Version:  "0.5.6",
+								ID:      "regex-syntax@0.5.6",
+								Name:    "regex-syntax",
+								Version: "0.5.6",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/regex-syntax@0.5.6",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -270,9 +318,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"ucd-util@0.1.10"},
 							},
 							{
-								ID:       "regex-syntax@0.6.29",
-								Name:     "regex-syntax",
-								Version:  "0.6.29",
+								ID:      "regex-syntax@0.6.29",
+								Name:    "regex-syntax",
+								Version: "0.6.29",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/regex-syntax@0.6.29",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -282,9 +333,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "ucd-util@0.1.10",
-								Name:     "ucd-util",
-								Version:  "0.1.10",
+								ID:      "ucd-util@0.1.10",
+								Name:    "ucd-util",
+								Version: "0.1.10",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/ucd-util@0.1.10",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -294,9 +348,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "winapi@0.3.9",
-								Name:     "winapi",
-								Version:  "0.3.9",
+								ID:      "winapi@0.3.9",
+								Name:    "winapi",
+								Version: "0.3.9",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/winapi@0.3.9",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -310,9 +367,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "winapi-i686-pc-windows-gnu@0.4.0",
-								Name:     "winapi-i686-pc-windows-gnu",
-								Version:  "0.4.0",
+								ID:      "winapi-i686-pc-windows-gnu@0.4.0",
+								Name:    "winapi-i686-pc-windows-gnu",
+								Version: "0.4.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/winapi-i686-pc-windows-gnu@0.4.0",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -322,9 +382,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "winapi-x86_64-pc-windows-gnu@0.4.0",
-								Name:     "winapi-x86_64-pc-windows-gnu",
-								Version:  "0.4.0",
+								ID:      "winapi-x86_64-pc-windows-gnu@0.4.0",
+								Name:    "winapi-x86_64-pc-windows-gnu",
+								Version: "0.4.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/winapi-x86_64-pc-windows-gnu@0.4.0",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -348,9 +411,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "app@0.1.0",
-								Name:     "app",
-								Version:  "0.1.0",
+								ID:      "app@0.1.0",
+								Name:    "app",
+								Version: "0.1.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/app@0.1.0",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{
@@ -361,9 +427,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"memchr@2.5.0"},
 							},
 							{
-								ID:       "memchr@2.5.0",
-								Name:     "memchr",
-								Version:  "2.5.0",
+								ID:      "memchr@2.5.0",
+								Name:    "memchr",
+								Version: "2.5.0",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:cargo/memchr@2.5.0",
+								},
 								Indirect: false,
 								Locations: []types.Location{
 									{

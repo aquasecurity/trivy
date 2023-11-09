@@ -9,7 +9,6 @@ import (
 	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alma"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/common"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -91,7 +90,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
 					FixedVersion:     fixedVersion.String(),
-					PkgIdentifier:    common.BuildPkgIdentifier(pkg, ftypes.Alma, osVer),
+					PkgIdentifier:    pkg.Identifier,
 					Layer:            pkg.Layer,
 					DataSource:       adv.DataSource,
 					Custom:           adv.Custom,

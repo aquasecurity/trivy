@@ -1622,9 +1622,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 				out.PkgIdentifier = nil
 			} else {
 				if out.PkgIdentifier == nil {
-					out.PkgIdentifier = new(types.PkgIdentifier)
+					out.PkgIdentifier = new(types1.PkgIdentifier)
 				}
-				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes4(in, out.PkgIdentifier)
+				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, out.PkgIdentifier)
 			}
 		case "InstalledVersion":
 			out.InstalledVersion = string(in.String())
@@ -1851,7 +1851,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 		} else {
 			out.RawString(prefix)
 		}
-		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes4(out, *in.PkgIdentifier)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, *in.PkgIdentifier)
 	}
 	if in.InstalledVersion != "" {
 		const prefix string = ",\"InstalledVersion\":"
@@ -2223,7 +2223,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyDbPkgTypes(out *jwriter.Wri
 	}
 	out.RawByte('}')
 }
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes4(in *jlexer.Lexer, out *types.PkgIdentifier) {
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in *jlexer.Lexer, out *types1.PkgIdentifier) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2242,10 +2242,10 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes4(in *jlexer.Lexer,
 			continue
 		}
 		switch key {
-		case "Format":
-			out.Format = string(in.String())
-		case "Value":
-			out.Value = string(in.String())
+		case "PURL":
+			out.PURL = string(in.String())
+		case "CPE":
+			out.CPE = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -2256,19 +2256,25 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes4(in *jlexer.Lexer,
 		in.Consumed()
 	}
 }
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes4(out *jwriter.Writer, in types.PkgIdentifier) {
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out *jwriter.Writer, in types1.PkgIdentifier) {
 	out.RawByte('{')
 	first := true
 	_ = first
-	{
-		const prefix string = ",\"Format\":"
+	if in.PURL != "" {
+		const prefix string = ",\"PURL\":"
+		first = false
 		out.RawString(prefix[1:])
-		out.String(string(in.Format))
+		out.String(string(in.PURL))
 	}
-	{
-		const prefix string = ",\"Value\":"
-		out.RawString(prefix)
-		out.String(string(in.Value))
+	if in.CPE != "" {
+		const prefix string = ",\"CPE\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.CPE))
 	}
 	out.RawByte('}')
 }
@@ -2295,6 +2301,16 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 			out.ID = string(in.String())
 		case "Name":
 			out.Name = string(in.String())
+		case "Identifier":
+			if in.IsNull() {
+				in.Skip()
+				out.Identifier = nil
+			} else {
+				if out.Identifier == nil {
+					out.Identifier = new(types1.PkgIdentifier)
+				}
+				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, out.Identifier)
+			}
 		case "Version":
 			out.Version = string(in.String())
 		case "Release":
@@ -2348,7 +2364,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 				if out.BuildInfo == nil {
 					out.BuildInfo = new(types1.BuildInfo)
 				}
-				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, out.BuildInfo)
+				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes10(in, out.BuildInfo)
 			}
 		case "Ref":
 			out.Ref = string(in.String())
@@ -2458,6 +2474,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 			out.RawString(prefix)
 		}
 		out.String(string(in.Name))
+	}
+	if in.Identifier != nil {
+		const prefix string = ",\"Identifier\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, *in.Identifier)
 	}
 	if in.Version != "" {
 		const prefix string = ",\"Version\":"
@@ -2596,7 +2622,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		} else {
 			out.RawString(prefix)
 		}
-		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, *in.BuildInfo)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes10(out, *in.BuildInfo)
 	}
 	if in.Ref != "" {
 		const prefix string = ",\"Ref\":"
@@ -2707,7 +2733,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 	}
 	out.RawByte('}')
 }
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in *jlexer.Lexer, out *types1.BuildInfo) {
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes10(in *jlexer.Lexer, out *types1.BuildInfo) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2763,7 +2789,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in *jlexer.L
 		in.Consumed()
 	}
 }
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out *jwriter.Writer, in types1.BuildInfo) {
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes10(out *jwriter.Writer, in types1.BuildInfo) {
 	out.RawByte('{')
 	first := true
 	_ = first

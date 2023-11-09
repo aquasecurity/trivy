@@ -352,6 +352,10 @@ func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, erro
 	// so we have to use an original package name
 	pkg.Name = getPackageName(p.Type, pkg.Name, component)
 	pkg.Ref = component.BOMRef
+	pkgIdentifier, err := ftypes.NewPkgIdentifier(pkg.Ref)
+	if err == nil {
+		pkg.Identifier = pkgIdentifier
+	}
 
 	for _, license := range lo.FromPtr(component.Licenses) {
 		pkg.Licenses = append(pkg.Licenses, license.Expression)

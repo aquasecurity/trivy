@@ -1,9 +1,12 @@
 package types
 
 import (
+	"errors"
+	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	purl "github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
@@ -62,19 +65,20 @@ type Layer struct {
 }
 
 type Package struct {
-	ID         string   `json:",omitempty"`
-	Name       string   `json:",omitempty"`
-	Version    string   `json:",omitempty"`
-	Release    string   `json:",omitempty"`
-	Epoch      int      `json:",omitempty"`
-	Arch       string   `json:",omitempty"`
-	Dev        bool     `json:",omitempty"`
-	SrcName    string   `json:",omitempty"`
-	SrcVersion string   `json:",omitempty"`
-	SrcRelease string   `json:",omitempty"`
-	SrcEpoch   int      `json:",omitempty"`
-	Licenses   []string `json:",omitempty"`
-	Maintainer string   `json:",omitempty"`
+	ID         string         `json:",omitempty"`
+	Name       string         `json:",omitempty"`
+	Identifier *PkgIdentifier `json:",omitempty"`
+	Version    string         `json:",omitempty"`
+	Release    string         `json:",omitempty"`
+	Epoch      int            `json:",omitempty"`
+	Arch       string         `json:",omitempty"`
+	Dev        bool           `json:",omitempty"`
+	SrcName    string         `json:",omitempty"`
+	SrcVersion string         `json:",omitempty"`
+	SrcRelease string         `json:",omitempty"`
+	SrcEpoch   int            `json:",omitempty"`
+	Licenses   []string       `json:",omitempty"`
+	Maintainer string         `json:",omitempty"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
@@ -99,6 +103,46 @@ type Package struct {
 
 	// Files installed by the package
 	InstalledFiles []string `json:",omitempty"`
+}
+
+const (
+	PkgIdFormatCPE     = "cpe"
+	PkgIdFormatPURL    = "purl"
+	PkgIdFormatUnknown = "unknown"
+)
+
+// PkgIdentifier represents a software identifiers in one of more of the supported formats.
+type PkgIdentifier struct {
+	// Software identifier in PURL format
+	PURL string `json:",omitempty"`
+	// Software identifier in CPE format
+	CPE string `json:",omitempty"`
+}
+
+// NewPkgIdentifier returns a new PkgIdentifier instance
+func NewPkgIdentifier(value string) (*PkgIdentifier, error) {
+	var id PkgIdentifier
+	switch {
+	case isCPE(value):
+		id.CPE = value
+	case isPURL(value):
+		id.PURL = value
+	default:
+		return nil, errors.New("package identifier does not match any supported format")
+	}
+
+	return &id, nil
+}
+
+func isCPE(value string) bool {
+	// TODO: properly validate CPE with a regex
+	// ref: https://csrc.nist.gov/schema/cpe/2.3/cpe-naming_2.3.xsd
+	return strings.HasPrefix(value, "cpe:2.3")
+}
+
+func isPURL(value string) bool {
+	_, err := purl.FromString(value)
+	return err == nil
 }
 
 type Location struct {

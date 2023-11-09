@@ -24,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -256,6 +257,8 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 		pkg.SrcEpoch = v.Epoch()
 		pkg.SrcRelease = v.Revision()
 	}
+
+	pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeDpkg), *pkg)
 
 	return pkg
 }

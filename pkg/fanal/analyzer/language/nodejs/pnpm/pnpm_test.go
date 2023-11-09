@@ -32,6 +32,9 @@ func Test_pnpmPkgLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "lodash@4.17.21",
 								Name:    "lodash",
 								Version: "4.17.21",
+								Identifier: &types.PkgIdentifier{
+									PURL: "pkg:npm/lodash@4.17.21",
+								},
 							},
 						},
 					},
