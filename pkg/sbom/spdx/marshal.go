@@ -11,6 +11,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
+	spdxutils "github.com/spdx/tools-golang/utils"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
@@ -147,13 +148,24 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 			files, err := m.pkgFiles(pkg)
 			if err != nil {
 				return nil, xerrors.Errorf("package file error: %w", err)
+			} else if files == nil {
+				continue
 			}
+
 			spdxFiles = append(spdxFiles, files...)
 			for _, file := range files {
 				relationShips = append(relationShips,
 					relationShip(spdxPackage.PackageSPDXIdentifier, file.FileSPDXIdentifier, RelationShipContains),
 				)
 			}
+
+			verificationCode, err := spdxutils.GetVerificationCode(files, "")
+			if err != nil {
+				return nil, xerrors.Errorf("package verification error: %w", err)
+			}
+
+			spdxPackage.FilesAnalyzed = true
+			spdxPackage.PackageVerificationCode = &verificationCode
 		}
 	}
 

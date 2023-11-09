@@ -52,7 +52,7 @@ trivy vm [flags] VM_IMAGE
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
       --parallel int                      number of goroutines enabled for parallel scanning (default 5)
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/defsec:0")
+      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
