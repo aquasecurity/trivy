@@ -2,7 +2,6 @@ package cargo
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -165,10 +164,7 @@ type Dependencies map[string]interface{}
 func tomlDependencies(fsys fs.FS, path string) (Dependencies, []string, error) {
 	// Parse Cargo.toml
 	f, err := fsys.Open(path)
-	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Cargo: %s not found", path)
-		return nil, nil, nil
-	} else if err != nil {
+	if err != nil {
 		return nil, nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
@@ -209,7 +205,8 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]strin
 		newToml := filepath.Join(filepath.Join(filepath.Dir(path), value), types.CargoToml)
 		tomlDeps, _, err := tomlDependencies(fsys, newToml)
 		if err != nil {
-			return nil, err
+			log.Logger.Warnf("Unable to parse %q: %s", newToml, err)
+			continue
 		}
 		maps.Copy(dependencies, tomlDeps)
 	}
