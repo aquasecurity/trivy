@@ -22,7 +22,7 @@ For more details, see [Policy Testing][opa-testing].
     }
     ```
 
-To write tests for custom policies, you can refer to existing tests under [defsec][defsec].
+To write tests for custom policies, you can refer to existing tests under [trivy-policies][trivy-policies].
 
 ## Go testing
 [Fanal][fanal] which is a core library of Trivy can be imported as a Go library.
@@ -85,6 +85,6 @@ The following example stores allowed and denied configuration files in a directo
 `Dockerfile.allowed` has one successful result in `Successes`, while `Dockerfile.denied` has one failure result in `Failures`.
 
 [opa-testing]: https://www.openpolicyagent.org/docs/latest/policy-testing/
-[defsec]: https://github.com/aquasecurity/defsec
+[defsec]: https://github.com/aquasecurity/trivy-policies/tree/main
 [table]: https://github.com/golang/go/wiki/TableDrivenTests
 [fanal]: https://github.com/aquasecurity/fanal

@@ -4,7 +4,7 @@
 Policies can be defined with custom schemas that allow inputs to be verified against them. Adding a policy schema
 enables Trivy to show more detailed error messages when an invalid input is encountered.
 
-In Trivy we have been able to define a schema for a [Dockerfile](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json).
+In Trivy we have been able to define a schema for a [Dockerfile](https://github.com/aquasecurity/trivy-iac/blob/main/pkg/rego/schemas/dockerfile.json)
 Without input schemas, a policy would be as follows:
 
 !!! example
@@ -50,9 +50,9 @@ Now if this policy is evaluated against, a more descriptive error will be availa
 
 Currently, out of the box the following schemas are supported natively:
 
-1. [Docker](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json)
-2. [Kubernetes](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/kubernetes.json)
-3. [Cloud](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/cloud.json)
+1. [Docker](https://github.com/aquasecurity/trivy-iac/blob/main/pkg/rego/schemas/dockerfile.json)
+2. [Kubernetes](https://github.com/aquasecurity/trivy-iac/blob/main/pkg/rego/schemas/kubernetes.json)
+3. [Cloud](https://github.com/aquasecurity/trivy-iac/blob/main/pkg/rego/schemas/cloud.json)
 
 
 ## Custom Policies with Custom Schemas
