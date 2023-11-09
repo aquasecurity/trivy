@@ -69,7 +69,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
+						BlobID: "sha256:754c66ef82bae2e07dc6e7a7bc42f078e1f48cbbc5b9124d18f1c18a48e1ad31",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							OS: types.OS{
@@ -107,9 +107,9 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
+				ID:   "sha256:754c66ef82bae2e07dc6e7a7bc42f078e1f48cbbc5b9124d18f1c18a48e1ad31",
 				BlobIDs: []string{
-					"sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
+					"sha256:754c66ef82bae2e07dc6e7a7bc42f078e1f48cbbc5b9124d18f1c18a48e1ad31",
 				},
 			},
 		},
@@ -211,7 +211,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:d07a1894bfd283b4ac26682ab48f12ad22cdc4fef9cf8b4c09056f631d3667a5",
+						BlobID: "sha256:c4e3bd56d4b5f9634c918d0953f7667928c2410e23bdacb299bfe5802217809a",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Applications: []types.Application{
@@ -221,12 +221,18 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 										{
 											Name:    "github.com/opencontainers/go-digest",
 											Version: "v1.0.0",
-											Ref:     "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
+											},
+											Ref: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
 										},
 										{
 											Name:    "golang.org/x/sync",
 											Version: "v0.1.0",
-											Ref:     "pkg:golang/golang.org/x/sync@v0.1.0",
+											Identifier: &types.PkgIdentifier{
+												PURL: "pkg:golang/golang.org/x/sync@v0.1.0",
+											},
+											Ref: "pkg:golang/golang.org/x/sync@v0.1.0",
 										},
 									},
 								},
@@ -238,9 +244,9 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: registry + "/test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:d07a1894bfd283b4ac26682ab48f12ad22cdc4fef9cf8b4c09056f631d3667a5",
+				ID:   "sha256:c4e3bd56d4b5f9634c918d0953f7667928c2410e23bdacb299bfe5802217809a",
 				BlobIDs: []string{
-					"sha256:d07a1894bfd283b4ac26682ab48f12ad22cdc4fef9cf8b4c09056f631d3667a5",
+					"sha256:c4e3bd56d4b5f9634c918d0953f7667928c2410e23bdacb299bfe5802217809a",
 				},
 			},
 		},

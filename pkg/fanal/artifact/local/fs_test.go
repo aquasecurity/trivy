@@ -47,7 +47,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
+					BlobID: "sha256:a05a861159ed86b98a5bd666fc903902dcdf270962c051dad30481aa21a0b25e",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -85,9 +85,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
+				ID:   "sha256:a05a861159ed86b98a5bd666fc903902dcdf270962c051dad30481aa21a0b25e",
 				BlobIDs: []string{
-					"sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
+					"sha256:a05a861159ed86b98a5bd666fc903902dcdf270962c051dad30481aa21a0b25e",
 				},
 			},
 		},
@@ -181,7 +181,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
+					BlobID: "sha256:a459a9caa835ae83ce90eb02768da8f7259ec4ee9693879fd0622fe3daa95cad",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -193,7 +193,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Name:    "Flask",
 										Version: "2.0.0",
 										Identifier: &types.PkgIdentifier{
-											PURL: "pkg:pypi/Flask@2.0.0",
+											PURL: "pkg:pypi/flask@2.0.0",
 										},
 									},
 								},
@@ -206,9 +206,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+				ID:   "sha256:a459a9caa835ae83ce90eb02768da8f7259ec4ee9693879fd0622fe3daa95cad",
 				BlobIDs: []string{
-					"sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+					"sha256:a459a9caa835ae83ce90eb02768da8f7259ec4ee9693879fd0622fe3daa95cad",
 				},
 			},
 		},
@@ -219,7 +219,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+					BlobID: "sha256:a459a9caa835ae83ce90eb02768da8f7259ec4ee9693879fd0622fe3daa95cad",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -231,7 +231,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Name:    "Flask",
 										Version: "2.0.0",
 										Identifier: &types.PkgIdentifier{
-											PURL: "pkg:pypi/Flask@2.0.0",
+											PURL: "pkg:pypi/flask@2.0.0",
 										},
 									},
 								},
@@ -244,9 +244,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+				ID:   "sha256:a459a9caa835ae83ce90eb02768da8f7259ec4ee9693879fd0622fe3daa95cad",
 				BlobIDs: []string{
-					"sha256:0e0d362332d8928f71ac2c11e0813e2ec251dca9bdf1a66bd69cad8f2ef66ca1",
+					"sha256:a459a9caa835ae83ce90eb02768da8f7259ec4ee9693879fd0622fe3daa95cad",
 				},
 			},
 		},
