@@ -337,6 +337,7 @@ func toApplication(component cdx.Component) *ftypes.Application {
 	}
 }
 
+// nolint: gocyclo
 func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, error) {
 	if component.PackageURL == "" {
 		log.Logger.Warnf("Skip the component (BOM-Ref: %s) as the PURL is empty", component.BOMRef)
