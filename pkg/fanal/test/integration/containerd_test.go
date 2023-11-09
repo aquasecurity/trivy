@@ -197,16 +197,21 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 
 	client, err := containerd.New(socketPath)
 	if err != nil {
-		i, r, err := containerdC.Exec(ctx, []string{
+		i, r, execErr := containerdC.Exec(ctx, []string{
 			"ls",
 			"-hl",
 			"/run/containerd",
 		})
-
-		b, err := io.ReadAll(r)
-		require.NoError(t, err)
+		require.NoError(t, execErr)
+		b, readErr := io.ReadAll(r)
+		require.NoError(t, readErr)
 		fmt.Println(i)
 		fmt.Println(string(b))
+
+		info, statErr := os.Stat(socketPath)
+		require.NoError(t, statErr)
+		fmt.Println(info.Mode())
+
 		require.NoError(t, err)
 	}
 	defer client.Close()
@@ -672,16 +677,21 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 
 	client, err := containerd.New(socketPath)
 	if err != nil {
-		i, r, err := containerdC.Exec(ctx, []string{
+		i, r, execErr := containerdC.Exec(ctx, []string{
 			"ls",
 			"-hl",
 			"/run/containerd",
 		})
-
-		b, err := io.ReadAll(r)
-		require.NoError(t, err)
+		require.NoError(t, execErr)
+		b, readErr := io.ReadAll(r)
+		require.NoError(t, readErr)
 		fmt.Println(i)
 		fmt.Println(string(b))
+
+		info, statErr := os.Stat(socketPath)
+		require.NoError(t, statErr)
+		fmt.Println(info.Mode())
+
 		require.NoError(t, err)
 	}
 	defer client.Close()
@@ -827,16 +837,21 @@ func TestContainerd_PullImage(t *testing.T) {
 
 	cli, err := containerd.New(socketPath)
 	if err != nil {
-		i, r, err := containerdC.Exec(ctx, []string{
+		i, r, execErr := containerdC.Exec(ctx, []string{
 			"ls",
 			"-hl",
 			"/run/containerd",
 		})
-
-		b, err := io.ReadAll(r)
-		require.NoError(t, err)
+		require.NoError(t, execErr)
+		b, readErr := io.ReadAll(r)
+		require.NoError(t, readErr)
 		fmt.Println(i)
 		fmt.Println(string(b))
+
+		info, statErr := os.Stat(socketPath)
+		require.NoError(t, statErr)
+		fmt.Println(info.Mode())
+
 		require.NoError(t, err)
 	}
 	defer cli.Close()
