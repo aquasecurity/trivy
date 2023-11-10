@@ -4,10 +4,10 @@ import (
 	"io"
 	"strings"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
