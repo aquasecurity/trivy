@@ -16,4 +16,5 @@ type ScanOptions struct {
 	FilePatterns        []string
 	OnlyInspectArtifact bool
 	IncludeDevDeps      bool
+	ArtifactType        types.ArtifactType
 }

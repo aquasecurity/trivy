@@ -187,9 +187,10 @@ var (
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{
 		TypeBundler,
-		TypeNpmPkgLock,
-		TypeYarn,
-		TypePnpm,
+		// Commenting to enable these analyzers for image scans
+		// TypeNpmPkgLock,
+		// TypeYarn,
+		// TypePnpm,
 		TypePip,
 		TypePipenv,
 		TypePoetry,

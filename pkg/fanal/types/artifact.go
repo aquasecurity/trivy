@@ -100,6 +100,12 @@ type Package struct {
 
 	// store warnings
 	Warnings []string `json:",omitempty"`
+
+	// Root dependencies of this package
+	RootDependencies []string `json:"-"`
+
+	// Node dedupe match found
+	NodeDedupeMatchFound bool `json:"-"`
 }
 
 type Location struct {

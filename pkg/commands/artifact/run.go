@@ -184,6 +184,7 @@ func (r *runner) ScanImage(ctx context.Context, opts flag.Options) (types.Report
 		s = imageRemoteScanner
 	}
 
+	opts.ScanOptions.ArtifactType = ftypes.ArtifactContainerImage
 	return r.scanArtifact(ctx, opts, s)
 }
 
@@ -191,6 +192,7 @@ func (r *runner) ScanFilesystem(ctx context.Context, opts flag.Options) (types.R
 	// Disable the individual package scanning
 	opts.DisabledAnalyzers = append(opts.DisabledAnalyzers, analyzer.TypeIndividualPkgs...)
 
+	opts.ScanOptions.ArtifactType = ftypes.ArtifactFilesystem
 	return r.scanFS(ctx, opts)
 }
 
@@ -557,6 +559,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		FilePatterns:        opts.FilePatterns,
 		OnlyInspectArtifact: opts.OnlyInspectArtifact,
 		IncludeDevDeps:      opts.IncludeDevDeps,
+		ArtifactType:        opts.ArtifactType,
 	}
 
 	if len(opts.ImageConfigScanners) != 0 {
