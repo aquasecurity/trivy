@@ -73,9 +73,6 @@ type ScannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
-
-	// Walk options
-	WalkerOption walker.Option
 }
 
 type Runner interface {
@@ -666,10 +663,12 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 				Full:                      opts.LicenseFull,
 				ClassifierConfidenceLevel: opts.LicenseConfidenceLevel,
 			},
-		},
-		WalkerOption: walker.Option{
-			SkipFiles: opts.SkipFiles,
-			SkipDirs:  opts.SkipDirs,
+
+			// For file walking
+			WalkerOption: walker.Option{
+				SkipFiles: opts.SkipFiles,
+				SkipDirs:  opts.SkipDirs,
+			},
 		},
 	}, scanOptions, nil
 }
