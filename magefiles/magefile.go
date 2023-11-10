@@ -181,6 +181,11 @@ func (Test) FixtureVMImages() error {
 	return fixtureVMImages()
 }
 
+// FixturePackageData generate Go package arrays from package databases
+func (Test) FixturePackageData() error {
+	return fixturePackageData()
+}
+
 // GenerateModules compiles WASM modules for unit tests
 func (Test) GenerateModules() error {
 	pattern := filepath.Join("pkg", "module", "testdata", "*", "*.go")

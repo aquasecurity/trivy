@@ -40,6 +40,7 @@ require (
 	github.com/containerd/containerd v1.7.7
 	github.com/docker/docker v24.0.7+incompatible
 	github.com/docker/go-connections v0.4.0
+	github.com/ettle/strcase v0.2.0
 	github.com/fatih/color v1.15.0
 	github.com/go-git/go-git/v5 v5.7.0
 	github.com/go-openapi/runtime v0.26.0
