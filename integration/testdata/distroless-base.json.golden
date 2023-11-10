@@ -55,6 +55,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/libssl1.1@1.1.0k-1~deb9u1"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
           "Layer": {
@@ -128,6 +131,9 @@
           ],
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/libssl1.1@1.1.0k-1~deb9u1"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
           "Status": "fixed",
@@ -207,6 +213,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/openssl@1.1.0k-1~deb9u1"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
           "Layer": {
@@ -280,6 +289,9 @@
           ],
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/openssl@1.1.0k-1~deb9u1"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
           "Status": "fixed",

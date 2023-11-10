@@ -57,6 +57,9 @@
           "VulnerabilityID": "CVE-2019-1549",
           "PkgID": "libcrypto1.1@1.1.1b-r1",
           "PkgName": "libcrypto1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/libcrypto1.1@1.1.1b-r1"
+          },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
           "Status": "fixed",
@@ -118,6 +121,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libcrypto1.1@1.1.1b-r1",
           "PkgName": "libcrypto1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/libcrypto1.1@1.1.1b-r1"
+          },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
           "Status": "fixed",
@@ -189,6 +195,9 @@
           "VulnerabilityID": "CVE-2019-1549",
           "PkgID": "libssl1.1@1.1.1b-r1",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/libssl1.1@1.1.1b-r1"
+          },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
           "Status": "fixed",
@@ -250,6 +259,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libssl1.1@1.1.1b-r1",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/libssl1.1@1.1.1b-r1"
+          },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
           "Status": "fixed",
@@ -321,6 +333,9 @@
           "VulnerabilityID": "CVE-2019-14697",
           "PkgID": "musl@1.1.20-r4",
           "PkgName": "musl",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/musl@1.1.20-r4"
+          },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
           "Status": "fixed",
@@ -360,6 +375,9 @@
           "VulnerabilityID": "CVE-2019-14697",
           "PkgID": "musl-utils@1.1.20-r4",
           "PkgName": "musl-utils",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/musl-utils@1.1.20-r4"
+          },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
           "Status": "fixed",

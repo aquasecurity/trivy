@@ -68,6 +68,9 @@
           "VulnerabilityID": "CVE-2019-18276",
           "PkgID": "bash@4.2.46-31.el7.x86_64",
           "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/bash@4.2.46-31.el7"
+          },
           "InstalledVersion": "4.2.46-31.el7",
           "Status": "will_not_fix",
           "Layer": {
@@ -117,6 +120,9 @@
           ],
           "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/openssl-libs@1%3A1.0.2k-16.el7"
+          },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
           "Status": "fixed",
@@ -199,6 +205,9 @@
           ],
           "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/openssl-libs@1%3A1.0.2k-16.el7"
+          },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
           "Status": "fixed",

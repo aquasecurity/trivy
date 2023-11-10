@@ -40,6 +40,9 @@
         {
           "VulnerabilityID": "CVE-2022-0261",
           "PkgName": "vim",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/vim@8.2.4081-1.cm1"
+          },
           "InstalledVersion": "8.2.4081-1.cm1",
           "Status": "affected",
           "Layer": {
@@ -70,6 +73,9 @@
         {
           "VulnerabilityID": "CVE-2022-0158",
           "PkgName": "vim",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/vim@8.2.4081-1.cm1"
+          },
           "InstalledVersion": "8.2.4081-1.cm1",
           "FixedVersion": "8.2.4082-1.cm1",
           "Status": "fixed",

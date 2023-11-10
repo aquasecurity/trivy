@@ -65,6 +65,9 @@
           "VulnerabilityID": "CVE-2019-3823",
           "PkgID": "curl@7.61.1-8.el8.x86_64",
           "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/curl@7.61.1-8.el8"
+          },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-11.el8",
           "Status": "fixed",
@@ -123,6 +126,9 @@
           "VulnerabilityID": "CVE-2019-5436",
           "PkgID": "curl@7.61.1-8.el8.x86_64",
           "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/curl@7.61.1-8.el8"
+          },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-12.el8",
           "Status": "fixed",

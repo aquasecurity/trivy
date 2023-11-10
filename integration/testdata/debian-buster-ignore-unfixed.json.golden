@@ -59,6 +59,9 @@
           ],
           "PkgID": "libidn2-0@2.0.5-1",
           "PkgName": "libidn2-0",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/libidn2-0@2.0.5-1"
+          },
           "InstalledVersion": "2.0.5-1",
           "FixedVersion": "2.0.5-1+deb10u1",
           "Status": "fixed",

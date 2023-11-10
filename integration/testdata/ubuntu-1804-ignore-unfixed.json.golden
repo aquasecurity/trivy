@@ -75,6 +75,9 @@
           "VulnerabilityID": "CVE-2019-5094",
           "PkgID": "e2fsprogs@1.44.1-1ubuntu1.1",
           "PkgName": "e2fsprogs",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/e2fsprogs@1.44.1-1ubuntu1.1"
+          },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
           "Status": "fixed",
@@ -133,6 +136,9 @@
           "VulnerabilityID": "CVE-2019-5094",
           "PkgID": "libcom-err2@1.44.1-1ubuntu1.1",
           "PkgName": "libcom-err2",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/libcom-err2@1.44.1-1ubuntu1.1"
+          },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
           "Status": "fixed",
@@ -191,6 +197,9 @@
           "VulnerabilityID": "CVE-2019-5094",
           "PkgID": "libext2fs2@1.44.1-1ubuntu1.1",
           "PkgName": "libext2fs2",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/libext2fs2@1.44.1-1ubuntu1.1"
+          },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
           "Status": "fixed",
@@ -249,6 +258,9 @@
           "VulnerabilityID": "CVE-2019-5094",
           "PkgID": "libss2@1.44.1-1ubuntu1.1",
           "PkgName": "libss2",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/libss2@1.44.1-1ubuntu1.1"
+          },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
           "Status": "fixed",

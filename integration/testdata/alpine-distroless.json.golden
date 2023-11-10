@@ -52,6 +52,9 @@
           "VulnerabilityID": "CVE-2022-24765",
           "PkgID": "git@2.35.1-r2",
           "PkgName": "git",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/git@2.35.1-r2"
+          },
           "InstalledVersion": "2.35.1-r2",
           "FixedVersion": "2.35.2-r0",
           "Status": "fixed",
