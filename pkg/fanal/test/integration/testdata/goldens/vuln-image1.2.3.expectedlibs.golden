@@ -6,6 +6,9 @@
       {
         "ID": "actioncable@5.2.3",
         "Name": "actioncable",
+        "Identifier": {
+          "PURL": "pkg:gem/actioncable@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -24,6 +27,9 @@
       {
         "ID": "actionmailer@5.2.3",
         "Name": "actionmailer",
+        "Identifier": {
+          "PURL": "pkg:gem/actionmailer@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -44,6 +50,9 @@
       {
         "ID": "actionpack@5.2.3",
         "Name": "actionpack",
+        "Identifier": {
+          "PURL": "pkg:gem/actionpack@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -65,6 +74,9 @@
       {
         "ID": "actionview@5.2.3",
         "Name": "actionview",
+        "Identifier": {
+          "PURL": "pkg:gem/actionview@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -85,6 +97,9 @@
       {
         "ID": "activejob@5.2.3",
         "Name": "activejob",
+        "Identifier": {
+          "PURL": "pkg:gem/activejob@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -102,6 +117,9 @@
       {
         "ID": "activemodel@5.2.3",
         "Name": "activemodel",
+        "Identifier": {
+          "PURL": "pkg:gem/activemodel@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -118,6 +136,9 @@
       {
         "ID": "activerecord@5.2.3",
         "Name": "activerecord",
+        "Identifier": {
+          "PURL": "pkg:gem/activerecord@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -136,6 +157,9 @@
       {
         "ID": "activestorage@5.2.3",
         "Name": "activestorage",
+        "Identifier": {
+          "PURL": "pkg:gem/activestorage@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -154,6 +178,9 @@
       {
         "ID": "activesupport@5.2.3",
         "Name": "activesupport",
+        "Identifier": {
+          "PURL": "pkg:gem/activesupport@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -173,6 +200,9 @@
       {
         "ID": "arel@9.0.0",
         "Name": "arel",
+        "Identifier": {
+          "PURL": "pkg:gem/arel@9.0.0"
+        },
         "Version": "9.0.0",
         "Indirect": true,
         "Layer": {},
@@ -186,6 +216,9 @@
       {
         "ID": "ast@2.4.0",
         "Name": "ast",
+        "Identifier": {
+          "PURL": "pkg:gem/ast@2.4.0"
+        },
         "Version": "2.4.0",
         "Indirect": true,
         "Layer": {},
@@ -199,6 +232,9 @@
       {
         "ID": "builder@3.2.3",
         "Name": "builder",
+        "Identifier": {
+          "PURL": "pkg:gem/builder@3.2.3"
+        },
         "Version": "3.2.3",
         "Indirect": true,
         "Layer": {},
@@ -212,6 +248,9 @@
       {
         "ID": "coderay@1.1.2",
         "Name": "coderay",
+        "Identifier": {
+          "PURL": "pkg:gem/coderay@1.1.2"
+        },
         "Version": "1.1.2",
         "Indirect": true,
         "Layer": {},
@@ -225,6 +264,9 @@
       {
         "ID": "concurrent-ruby@1.1.5",
         "Name": "concurrent-ruby",
+        "Identifier": {
+          "PURL": "pkg:gem/concurrent-ruby@1.1.5"
+        },
         "Version": "1.1.5",
         "Indirect": true,
         "Layer": {},
@@ -238,6 +280,9 @@
       {
         "ID": "crass@1.0.4",
         "Name": "crass",
+        "Identifier": {
+          "PURL": "pkg:gem/crass@1.0.4"
+        },
         "Version": "1.0.4",
         "Indirect": true,
         "Layer": {},
@@ -251,6 +296,9 @@
       {
         "ID": "dotenv@2.7.2",
         "Name": "dotenv",
+        "Identifier": {
+          "PURL": "pkg:gem/dotenv@2.7.2"
+        },
         "Version": "2.7.2",
         "Layer": {},
         "Locations": [
@@ -263,6 +311,9 @@
       {
         "ID": "erubi@1.8.0",
         "Name": "erubi",
+        "Identifier": {
+          "PURL": "pkg:gem/erubi@1.8.0"
+        },
         "Version": "1.8.0",
         "Indirect": true,
         "Layer": {},
@@ -276,6 +327,9 @@
       {
         "ID": "faker@1.9.3",
         "Name": "faker",
+        "Identifier": {
+          "PURL": "pkg:gem/faker@1.9.3"
+        },
         "Version": "1.9.3",
         "DependsOn": [
           "i18n@1.6.0"
@@ -291,6 +345,9 @@
       {
         "ID": "globalid@0.4.2",
         "Name": "globalid",
+        "Identifier": {
+          "PURL": "pkg:gem/globalid@0.4.2"
+        },
         "Version": "0.4.2",
         "Indirect": true,
         "DependsOn": [
@@ -307,6 +364,9 @@
       {
         "ID": "i18n@1.6.0",
         "Name": "i18n",
+        "Identifier": {
+          "PURL": "pkg:gem/i18n@1.6.0"
+        },
         "Version": "1.6.0",
         "Indirect": true,
         "DependsOn": [
@@ -323,6 +383,9 @@
       {
         "ID": "jaro_winkler@1.5.2",
         "Name": "jaro_winkler",
+        "Identifier": {
+          "PURL": "pkg:gem/jaro_winkler@1.5.2"
+        },
         "Version": "1.5.2",
         "Indirect": true,
         "Layer": {},
@@ -336,6 +399,9 @@
       {
         "ID": "json@2.2.0",
         "Name": "json",
+        "Identifier": {
+          "PURL": "pkg:gem/json@2.2.0"
+        },
         "Version": "2.2.0",
         "Layer": {},
         "Locations": [
@@ -348,6 +414,9 @@
       {
         "ID": "loofah@2.2.3",
         "Name": "loofah",
+        "Identifier": {
+          "PURL": "pkg:gem/loofah@2.2.3"
+        },
         "Version": "2.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -365,6 +434,9 @@
       {
         "ID": "mail@2.7.1",
         "Name": "mail",
+        "Identifier": {
+          "PURL": "pkg:gem/mail@2.7.1"
+        },
         "Version": "2.7.1",
         "Indirect": true,
         "DependsOn": [
@@ -381,6 +453,9 @@
       {
         "ID": "marcel@0.3.3",
         "Name": "marcel",
+        "Identifier": {
+          "PURL": "pkg:gem/marcel@0.3.3"
+        },
         "Version": "0.3.3",
         "Indirect": true,
         "DependsOn": [
@@ -397,6 +472,9 @@
       {
         "ID": "method_source@0.9.2",
         "Name": "method_source",
+        "Identifier": {
+          "PURL": "pkg:gem/method_source@0.9.2"
+        },
         "Version": "0.9.2",
         "Indirect": true,
         "Layer": {},
@@ -410,6 +488,9 @@
       {
         "ID": "mimemagic@0.3.3",
         "Name": "mimemagic",
+        "Identifier": {
+          "PURL": "pkg:gem/mimemagic@0.3.3"
+        },
         "Version": "0.3.3",
         "Indirect": true,
         "Layer": {},
@@ -423,6 +504,9 @@
       {
         "ID": "mini_mime@1.0.1",
         "Name": "mini_mime",
+        "Identifier": {
+          "PURL": "pkg:gem/mini_mime@1.0.1"
+        },
         "Version": "1.0.1",
         "Indirect": true,
         "Layer": {},
@@ -436,6 +520,9 @@
       {
         "ID": "mini_portile2@2.4.0",
         "Name": "mini_portile2",
+        "Identifier": {
+          "PURL": "pkg:gem/mini_portile2@2.4.0"
+        },
         "Version": "2.4.0",
         "Indirect": true,
         "Layer": {},
@@ -449,6 +536,9 @@
       {
         "ID": "minitest@5.11.3",
         "Name": "minitest",
+        "Identifier": {
+          "PURL": "pkg:gem/minitest@5.11.3"
+        },
         "Version": "5.11.3",
         "Indirect": true,
         "Layer": {},
@@ -462,6 +552,9 @@
       {
         "ID": "nio4r@2.3.1",
         "Name": "nio4r",
+        "Identifier": {
+          "PURL": "pkg:gem/nio4r@2.3.1"
+        },
         "Version": "2.3.1",
         "Indirect": true,
         "Layer": {},
@@ -475,6 +568,9 @@
       {
         "ID": "nokogiri@1.10.3",
         "Name": "nokogiri",
+        "Identifier": {
+          "PURL": "pkg:gem/nokogiri@1.10.3"
+        },
         "Version": "1.10.3",
         "Indirect": true,
         "DependsOn": [
@@ -491,6 +587,9 @@
       {
         "ID": "parallel@1.17.0",
         "Name": "parallel",
+        "Identifier": {
+          "PURL": "pkg:gem/parallel@1.17.0"
+        },
         "Version": "1.17.0",
         "Indirect": true,
         "Layer": {},
@@ -504,6 +603,9 @@
       {
         "ID": "parser@2.6.3.0",
         "Name": "parser",
+        "Identifier": {
+          "PURL": "pkg:gem/parser@2.6.3.0"
+        },
         "Version": "2.6.3.0",
         "Indirect": true,
         "DependsOn": [
@@ -520,6 +622,9 @@
       {
         "ID": "pry@0.12.2",
         "Name": "pry",
+        "Identifier": {
+          "PURL": "pkg:gem/pry@0.12.2"
+        },
         "Version": "0.12.2",
         "DependsOn": [
           "coderay@1.1.2",
@@ -536,6 +641,9 @@
       {
         "ID": "psych@3.1.0",
         "Name": "psych",
+        "Identifier": {
+          "PURL": "pkg:gem/psych@3.1.0"
+        },
         "Version": "3.1.0",
         "Indirect": true,
         "Layer": {},
@@ -549,6 +657,9 @@
       {
         "ID": "rack@2.0.7",
         "Name": "rack",
+        "Identifier": {
+          "PURL": "pkg:gem/rack@2.0.7"
+        },
         "Version": "2.0.7",
         "Indirect": true,
         "Layer": {},
@@ -562,6 +673,9 @@
       {
         "ID": "rack-test@1.1.0",
         "Name": "rack-test",
+        "Identifier": {
+          "PURL": "pkg:gem/rack-test@1.1.0"
+        },
         "Version": "1.1.0",
         "Indirect": true,
         "DependsOn": [
@@ -578,6 +692,9 @@
       {
         "ID": "rails@5.2.0",
         "Name": "rails",
+        "Identifier": {
+          "PURL": "pkg:gem/rails@5.2.0"
+        },
         "Version": "5.2.0",
         "DependsOn": [
           "actioncable@5.2.3",
@@ -603,6 +720,9 @@
       {
         "ID": "rails-dom-testing@2.0.3",
         "Name": "rails-dom-testing",
+        "Identifier": {
+          "PURL": "pkg:gem/rails-dom-testing@2.0.3"
+        },
         "Version": "2.0.3",
         "Indirect": true,
         "DependsOn": [
@@ -620,6 +740,9 @@
       {
         "ID": "rails-html-sanitizer@1.0.3",
         "Name": "rails-html-sanitizer",
+        "Identifier": {
+          "PURL": "pkg:gem/rails-html-sanitizer@1.0.3"
+        },
         "Version": "1.0.3",
         "Indirect": true,
         "DependsOn": [
@@ -636,6 +759,9 @@
       {
         "ID": "railties@5.2.3",
         "Name": "railties",
+        "Identifier": {
+          "PURL": "pkg:gem/railties@5.2.3"
+        },
         "Version": "5.2.3",
         "Indirect": true,
         "DependsOn": [
@@ -656,6 +782,9 @@
       {
         "ID": "rainbow@3.0.0",
         "Name": "rainbow",
+        "Identifier": {
+          "PURL": "pkg:gem/rainbow@3.0.0"
+        },
         "Version": "3.0.0",
         "Indirect": true,
         "Layer": {},
@@ -669,6 +798,9 @@
       {
         "ID": "rake@12.3.2",
         "Name": "rake",
+        "Identifier": {
+          "PURL": "pkg:gem/rake@12.3.2"
+        },
         "Version": "12.3.2",
         "Indirect": true,
         "Layer": {},
@@ -682,6 +814,9 @@
       {
         "ID": "rubocop@0.67.2",
         "Name": "rubocop",
+        "Identifier": {
+          "PURL": "pkg:gem/rubocop@0.67.2"
+        },
         "Version": "0.67.2",
         "DependsOn": [
           "jaro_winkler@1.5.2",
@@ -703,6 +838,9 @@
       {
         "ID": "ruby-progressbar@1.10.0",
         "Name": "ruby-progressbar",
+        "Identifier": {
+          "PURL": "pkg:gem/ruby-progressbar@1.10.0"
+        },
         "Version": "1.10.0",
         "Indirect": true,
         "Layer": {},
@@ -716,6 +854,9 @@
       {
         "ID": "sprockets@3.7.2",
         "Name": "sprockets",
+        "Identifier": {
+          "PURL": "pkg:gem/sprockets@3.7.2"
+        },
         "Version": "3.7.2",
         "Indirect": true,
         "DependsOn": [
@@ -733,6 +874,9 @@
       {
         "ID": "sprockets-rails@3.2.1",
         "Name": "sprockets-rails",
+        "Identifier": {
+          "PURL": "pkg:gem/sprockets-rails@3.2.1"
+        },
         "Version": "3.2.1",
         "Indirect": true,
         "DependsOn": [
@@ -751,6 +895,9 @@
       {
         "ID": "thor@0.20.3",
         "Name": "thor",
+        "Identifier": {
+          "PURL": "pkg:gem/thor@0.20.3"
+        },
         "Version": "0.20.3",
         "Indirect": true,
         "Layer": {},
@@ -764,6 +911,9 @@
       {
         "ID": "thread_safe@0.3.6",
         "Name": "thread_safe",
+        "Identifier": {
+          "PURL": "pkg:gem/thread_safe@0.3.6"
+        },
         "Version": "0.3.6",
         "Indirect": true,
         "Layer": {},
@@ -777,6 +927,9 @@
       {
         "ID": "tzinfo@1.2.5",
         "Name": "tzinfo",
+        "Identifier": {
+          "PURL": "pkg:gem/tzinfo@1.2.5"
+        },
         "Version": "1.2.5",
         "Indirect": true,
         "DependsOn": [
@@ -793,6 +946,9 @@
       {
         "ID": "unicode-display_width@1.5.0",
         "Name": "unicode-display_width",
+        "Identifier": {
+          "PURL": "pkg:gem/unicode-display_width@1.5.0"
+        },
         "Version": "1.5.0",
         "Indirect": true,
         "Layer": {},
@@ -806,6 +962,9 @@
       {
         "ID": "websocket-driver@0.7.0",
         "Name": "websocket-driver",
+        "Identifier": {
+          "PURL": "pkg:gem/websocket-driver@0.7.0"
+        },
         "Version": "0.7.0",
         "Indirect": true,
         "DependsOn": [
@@ -822,6 +981,9 @@
       {
         "ID": "websocket-extensions@0.1.3",
         "Name": "websocket-extensions",
+        "Identifier": {
+          "PURL": "pkg:gem/websocket-extensions@0.1.3"
+        },
         "Version": "0.1.3",
         "Indirect": true,
         "Layer": {},
@@ -841,6 +1003,9 @@
       {
         "ID": "ammonia@1.9.0",
         "Name": "ammonia",
+        "Identifier": {
+          "PURL": "pkg:cargo/ammonia@1.9.0"
+        },
         "Version": "1.9.0",
         "DependsOn": [
           "html5ever@0.23.0",
@@ -861,6 +1026,9 @@
       {
         "ID": "autocfg@0.1.2",
         "Name": "autocfg",
+        "Identifier": {
+          "PURL": "pkg:cargo/autocfg@0.1.2"
+        },
         "Version": "0.1.2",
         "Layer": {},
         "Locations": [
@@ -873,6 +1041,9 @@
       {
         "ID": "bitflags@0.7.0",
         "Name": "bitflags",
+        "Identifier": {
+          "PURL": "pkg:cargo/bitflags@0.7.0"
+        },
         "Version": "0.7.0",
         "Layer": {},
         "Locations": [
@@ -885,6 +1056,9 @@
       {
         "ID": "bitflags@1.0.4",
         "Name": "bitflags",
+        "Identifier": {
+          "PURL": "pkg:cargo/bitflags@1.0.4"
+        },
         "Version": "1.0.4",
         "Layer": {},
         "Locations": [
@@ -897,6 +1071,9 @@
       {
         "ID": "cfg-if@0.1.7",
         "Name": "cfg-if",
+        "Identifier": {
+          "PURL": "pkg:cargo/cfg-if@0.1.7"
+        },
         "Version": "0.1.7",
         "Layer": {},
         "Locations": [
@@ -909,6 +1086,9 @@
       {
         "ID": "cloudabi@0.0.3",
         "Name": "cloudabi",
+        "Identifier": {
+          "PURL": "pkg:cargo/cloudabi@0.0.3"
+        },
         "Version": "0.0.3",
         "DependsOn": [
           "bitflags@1.0.4"
@@ -924,6 +1104,9 @@
       {
         "ID": "fuchsia-cprng@0.1.1",
         "Name": "fuchsia-cprng",
+        "Identifier": {
+          "PURL": "pkg:cargo/fuchsia-cprng@0.1.1"
+        },
         "Version": "0.1.1",
         "Layer": {},
         "Locations": [
@@ -936,6 +1119,9 @@
       {
         "ID": "futf@0.1.4",
         "Name": "futf",
+        "Identifier": {
+          "PURL": "pkg:cargo/futf@0.1.4"
+        },
         "Version": "0.1.4",
         "DependsOn": [
           "mac@0.1.1",
@@ -952,6 +1138,9 @@
       {
         "ID": "gdi32-sys@0.2.0",
         "Name": "gdi32-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/gdi32-sys@0.2.0"
+        },
         "Version": "0.2.0",
         "DependsOn": [
           "winapi-build@0.1.1",
@@ -968,6 +1157,9 @@
       {
         "ID": "html5ever@0.23.0",
         "Name": "html5ever",
+        "Identifier": {
+          "PURL": "pkg:cargo/html5ever@0.23.0"
+        },
         "Version": "0.23.0",
         "DependsOn": [
           "log@0.4.6",
@@ -988,6 +1180,9 @@
       {
         "ID": "idna@0.1.5",
         "Name": "idna",
+        "Identifier": {
+          "PURL": "pkg:cargo/idna@0.1.5"
+        },
         "Version": "0.1.5",
         "DependsOn": [
           "matches@0.1.8",
@@ -1005,6 +1200,9 @@
       {
         "ID": "itoa@0.4.4",
         "Name": "itoa",
+        "Identifier": {
+          "PURL": "pkg:cargo/itoa@0.4.4"
+        },
         "Version": "0.4.4",
         "Layer": {},
         "Locations": [
@@ -1017,6 +1215,9 @@
       {
         "ID": "kernel32-sys@0.2.2",
         "Name": "kernel32-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/kernel32-sys@0.2.2"
+        },
         "Version": "0.2.2",
         "DependsOn": [
           "winapi-build@0.1.1",
@@ -1033,6 +1234,9 @@
       {
         "ID": "lazy_static@0.2.11",
         "Name": "lazy_static",
+        "Identifier": {
+          "PURL": "pkg:cargo/lazy_static@0.2.11"
+        },
         "Version": "0.2.11",
         "Layer": {},
         "Locations": [
@@ -1045,6 +1249,9 @@
       {
         "ID": "lazy_static@1.3.0",
         "Name": "lazy_static",
+        "Identifier": {
+          "PURL": "pkg:cargo/lazy_static@1.3.0"
+        },
         "Version": "1.3.0",
         "Layer": {},
         "Locations": [
@@ -1057,6 +1264,9 @@
       {
         "ID": "libc@0.2.54",
         "Name": "libc",
+        "Identifier": {
+          "PURL": "pkg:cargo/libc@0.2.54"
+        },
         "Version": "0.2.54",
         "Layer": {},
         "Locations": [
@@ -1069,6 +1279,9 @@
       {
         "ID": "libressl-pnacl-sys@2.1.6",
         "Name": "libressl-pnacl-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/libressl-pnacl-sys@2.1.6"
+        },
         "Version": "2.1.6",
         "DependsOn": [
           "pnacl-build-helper@1.4.11"
@@ -1084,6 +1297,9 @@
       {
         "ID": "log@0.4.6",
         "Name": "log",
+        "Identifier": {
+          "PURL": "pkg:cargo/log@0.4.6"
+        },
         "Version": "0.4.6",
         "DependsOn": [
           "cfg-if@0.1.7"
@@ -1099,6 +1315,9 @@
       {
         "ID": "mac@0.1.1",
         "Name": "mac",
+        "Identifier": {
+          "PURL": "pkg:cargo/mac@0.1.1"
+        },
         "Version": "0.1.1",
         "Layer": {},
         "Locations": [
@@ -1111,6 +1330,9 @@
       {
         "ID": "maplit@1.0.1",
         "Name": "maplit",
+        "Identifier": {
+          "PURL": "pkg:cargo/maplit@1.0.1"
+        },
         "Version": "1.0.1",
         "Layer": {},
         "Locations": [
@@ -1123,6 +1345,9 @@
       {
         "ID": "markup5ever@0.8.1",
         "Name": "markup5ever",
+        "Identifier": {
+          "PURL": "pkg:cargo/markup5ever@0.8.1"
+        },
         "Version": "0.8.1",
         "DependsOn": [
           "log@0.4.6",
@@ -1146,6 +1371,9 @@
       {
         "ID": "matches@0.1.8",
         "Name": "matches",
+        "Identifier": {
+          "PURL": "pkg:cargo/matches@0.1.8"
+        },
         "Version": "0.1.8",
         "Layer": {},
         "Locations": [
@@ -1158,6 +1386,9 @@
       {
         "ID": "new_debug_unreachable@1.0.3",
         "Name": "new_debug_unreachable",
+        "Identifier": {
+          "PURL": "pkg:cargo/new_debug_unreachable@1.0.3"
+        },
         "Version": "1.0.3",
         "Layer": {},
         "Locations": [
@@ -1170,6 +1401,9 @@
       {
         "ID": "normal@0.1.0",
         "Name": "normal",
+        "Identifier": {
+          "PURL": "pkg:cargo/normal@0.1.0"
+        },
         "Version": "0.1.0",
         "DependsOn": [
           "ammonia@2.0.0",
@@ -1187,6 +1421,9 @@
       {
         "ID": "openssl@0.8.3",
         "Name": "openssl",
+        "Identifier": {
+          "PURL": "pkg:cargo/openssl@0.8.3"
+        },
         "Version": "0.8.3",
         "DependsOn": [
           "bitflags@0.7.0",
@@ -1205,6 +1442,9 @@
       {
         "ID": "openssl-sys@0.7.17",
         "Name": "openssl-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/openssl-sys@0.7.17"
+        },
         "Version": "0.7.17",
         "DependsOn": [
           "gdi32-sys@0.2.0",
@@ -1224,6 +1464,9 @@
       {
         "ID": "percent-encoding@1.0.1",
         "Name": "percent-encoding",
+        "Identifier": {
+          "PURL": "pkg:cargo/percent-encoding@1.0.1"
+        },
         "Version": "1.0.1",
         "Layer": {},
         "Locations": [
@@ -1236,6 +1479,9 @@
       {
         "ID": "phf@0.7.24",
         "Name": "phf",
+        "Identifier": {
+          "PURL": "pkg:cargo/phf@0.7.24"
+        },
         "Version": "0.7.24",
         "DependsOn": [
           "phf_shared@0.7.24"
@@ -1251,6 +1497,9 @@
       {
         "ID": "phf_codegen@0.7.24",
         "Name": "phf_codegen",
+        "Identifier": {
+          "PURL": "pkg:cargo/phf_codegen@0.7.24"
+        },
         "Version": "0.7.24",
         "DependsOn": [
           "phf_generator@0.7.24",
@@ -1267,6 +1516,9 @@
       {
         "ID": "phf_generator@0.7.24",
         "Name": "phf_generator",
+        "Identifier": {
+          "PURL": "pkg:cargo/phf_generator@0.7.24"
+        },
         "Version": "0.7.24",
         "DependsOn": [
           "phf_shared@0.7.24",
@@ -1283,6 +1535,9 @@
       {
         "ID": "phf_shared@0.7.24",
         "Name": "phf_shared",
+        "Identifier": {
+          "PURL": "pkg:cargo/phf_shared@0.7.24"
+        },
         "Version": "0.7.24",
         "DependsOn": [
           "siphasher@0.2.3"
@@ -1298,6 +1553,9 @@
       {
         "ID": "pkg-config@0.3.14",
         "Name": "pkg-config",
+        "Identifier": {
+          "PURL": "pkg:cargo/pkg-config@0.3.14"
+        },
         "Version": "0.3.14",
         "Layer": {},
         "Locations": [
@@ -1310,6 +1568,9 @@
       {
         "ID": "pnacl-build-helper@1.4.11",
         "Name": "pnacl-build-helper",
+        "Identifier": {
+          "PURL": "pkg:cargo/pnacl-build-helper@1.4.11"
+        },
         "Version": "1.4.11",
         "DependsOn": [
           "tempdir@0.3.7",
@@ -1326,6 +1587,9 @@
       {
         "ID": "precomputed-hash@0.1.1",
         "Name": "precomputed-hash",
+        "Identifier": {
+          "PURL": "pkg:cargo/precomputed-hash@0.1.1"
+        },
         "Version": "0.1.1",
         "Layer": {},
         "Locations": [
@@ -1338,6 +1602,9 @@
       {
         "ID": "proc-macro2@0.4.30",
         "Name": "proc-macro2",
+        "Identifier": {
+          "PURL": "pkg:cargo/proc-macro2@0.4.30"
+        },
         "Version": "0.4.30",
         "DependsOn": [
           "unicode-xid@0.1.0"
@@ -1353,6 +1620,9 @@
       {
         "ID": "quote@0.6.12",
         "Name": "quote",
+        "Identifier": {
+          "PURL": "pkg:cargo/quote@0.6.12"
+        },
         "Version": "0.6.12",
         "DependsOn": [
           "proc-macro2@0.4.30"
@@ -1368,6 +1638,9 @@
       {
         "ID": "rand@0.4.6",
         "Name": "rand",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand@0.4.6"
+        },
         "Version": "0.4.6",
         "DependsOn": [
           "fuchsia-cprng@0.1.1",
@@ -1387,6 +1660,9 @@
       {
         "ID": "rand@0.6.5",
         "Name": "rand",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand@0.6.5"
+        },
         "Version": "0.6.5",
         "DependsOn": [
           "autocfg@0.1.2",
@@ -1412,6 +1688,9 @@
       {
         "ID": "rand_chacha@0.1.1",
         "Name": "rand_chacha",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_chacha@0.1.1"
+        },
         "Version": "0.1.1",
         "DependsOn": [
           "autocfg@0.1.2",
@@ -1428,6 +1707,9 @@
       {
         "ID": "rand_core@0.3.1",
         "Name": "rand_core",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_core@0.3.1"
+        },
         "Version": "0.3.1",
         "DependsOn": [
           "rand_core@0.4.0"
@@ -1443,6 +1725,9 @@
       {
         "ID": "rand_core@0.4.0",
         "Name": "rand_core",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_core@0.4.0"
+        },
         "Version": "0.4.0",
         "Layer": {},
         "Locations": [
@@ -1455,6 +1740,9 @@
       {
         "ID": "rand_hc@0.1.0",
         "Name": "rand_hc",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_hc@0.1.0"
+        },
         "Version": "0.1.0",
         "DependsOn": [
           "rand_core@0.3.1"
@@ -1470,6 +1758,9 @@
       {
         "ID": "rand_isaac@0.1.1",
         "Name": "rand_isaac",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_isaac@0.1.1"
+        },
         "Version": "0.1.1",
         "DependsOn": [
           "rand_core@0.3.1"
@@ -1485,6 +1776,9 @@
       {
         "ID": "rand_jitter@0.1.4",
         "Name": "rand_jitter",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_jitter@0.1.4"
+        },
         "Version": "0.1.4",
         "DependsOn": [
           "libc@0.2.54",
@@ -1502,6 +1796,9 @@
       {
         "ID": "rand_os@0.1.3",
         "Name": "rand_os",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_os@0.1.3"
+        },
         "Version": "0.1.3",
         "DependsOn": [
           "cloudabi@0.0.3",
@@ -1522,6 +1819,9 @@
       {
         "ID": "rand_pcg@0.1.2",
         "Name": "rand_pcg",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_pcg@0.1.2"
+        },
         "Version": "0.1.2",
         "DependsOn": [
           "autocfg@0.1.2",
@@ -1538,6 +1838,9 @@
       {
         "ID": "rand_xorshift@0.1.1",
         "Name": "rand_xorshift",
+        "Identifier": {
+          "PURL": "pkg:cargo/rand_xorshift@0.1.1"
+        },
         "Version": "0.1.1",
         "DependsOn": [
           "rand_core@0.3.1"
@@ -1553,6 +1856,9 @@
       {
         "ID": "rdrand@0.4.0",
         "Name": "rdrand",
+        "Identifier": {
+          "PURL": "pkg:cargo/rdrand@0.4.0"
+        },
         "Version": "0.4.0",
         "DependsOn": [
           "rand_core@0.3.1"
@@ -1568,6 +1874,9 @@
       {
         "ID": "remove_dir_all@0.5.1",
         "Name": "remove_dir_all",
+        "Identifier": {
+          "PURL": "pkg:cargo/remove_dir_all@0.5.1"
+        },
         "Version": "0.5.1",
         "DependsOn": [
           "winapi@0.3.7"
@@ -1583,6 +1892,9 @@
       {
         "ID": "ryu@0.2.8",
         "Name": "ryu",
+        "Identifier": {
+          "PURL": "pkg:cargo/ryu@0.2.8"
+        },
         "Version": "0.2.8",
         "Layer": {},
         "Locations": [
@@ -1595,6 +1907,9 @@
       {
         "ID": "same-file@0.1.3",
         "Name": "same-file",
+        "Identifier": {
+          "PURL": "pkg:cargo/same-file@0.1.3"
+        },
         "Version": "0.1.3",
         "DependsOn": [
           "kernel32-sys@0.2.2",
@@ -1611,6 +1926,9 @@
       {
         "ID": "serde@1.0.91",
         "Name": "serde",
+        "Identifier": {
+          "PURL": "pkg:cargo/serde@1.0.91"
+        },
         "Version": "1.0.91",
         "Layer": {},
         "Locations": [
@@ -1623,6 +1941,9 @@
       {
         "ID": "serde_derive@1.0.91",
         "Name": "serde_derive",
+        "Identifier": {
+          "PURL": "pkg:cargo/serde_derive@1.0.91"
+        },
         "Version": "1.0.91",
         "DependsOn": [
           "proc-macro2@0.4.30",
@@ -1640,6 +1961,9 @@
       {
         "ID": "serde_json@1.0.39",
         "Name": "serde_json",
+        "Identifier": {
+          "PURL": "pkg:cargo/serde_json@1.0.39"
+        },
         "Version": "1.0.39",
         "DependsOn": [
           "itoa@0.4.4",
@@ -1657,6 +1981,9 @@
       {
         "ID": "siphasher@0.2.3",
         "Name": "siphasher",
+        "Identifier": {
+          "PURL": "pkg:cargo/siphasher@0.2.3"
+        },
         "Version": "0.2.3",
         "Layer": {},
         "Locations": [
@@ -1669,6 +1996,9 @@
       {
         "ID": "smallvec@0.6.9",
         "Name": "smallvec",
+        "Identifier": {
+          "PURL": "pkg:cargo/smallvec@0.6.9"
+        },
         "Version": "0.6.9",
         "Layer": {},
         "Locations": [
@@ -1681,6 +2011,9 @@
       {
         "ID": "string_cache@0.7.3",
         "Name": "string_cache",
+        "Identifier": {
+          "PURL": "pkg:cargo/string_cache@0.7.3"
+        },
         "Version": "0.7.3",
         "DependsOn": [
           "lazy_static@1.3.0",
@@ -1702,6 +2035,9 @@
       {
         "ID": "string_cache_codegen@0.4.2",
         "Name": "string_cache_codegen",
+        "Identifier": {
+          "PURL": "pkg:cargo/string_cache_codegen@0.4.2"
+        },
         "Version": "0.4.2",
         "DependsOn": [
           "phf_generator@0.7.24",
@@ -1721,6 +2057,9 @@
       {
         "ID": "string_cache_shared@0.3.0",
         "Name": "string_cache_shared",
+        "Identifier": {
+          "PURL": "pkg:cargo/string_cache_shared@0.3.0"
+        },
         "Version": "0.3.0",
         "Layer": {},
         "Locations": [
@@ -1733,6 +2072,9 @@
       {
         "ID": "syn@0.15.34",
         "Name": "syn",
+        "Identifier": {
+          "PURL": "pkg:cargo/syn@0.15.34"
+        },
         "Version": "0.15.34",
         "DependsOn": [
           "proc-macro2@0.4.30",
@@ -1750,6 +2092,9 @@
       {
         "ID": "tempdir@0.3.7",
         "Name": "tempdir",
+        "Identifier": {
+          "PURL": "pkg:cargo/tempdir@0.3.7"
+        },
         "Version": "0.3.7",
         "DependsOn": [
           "rand@0.4.6",
@@ -1766,6 +2111,9 @@
       {
         "ID": "tendril@0.4.1",
         "Name": "tendril",
+        "Identifier": {
+          "PURL": "pkg:cargo/tendril@0.4.1"
+        },
         "Version": "0.4.1",
         "DependsOn": [
           "futf@0.1.4",
@@ -1783,6 +2131,9 @@
       {
         "ID": "unicode-bidi@0.3.4",
         "Name": "unicode-bidi",
+        "Identifier": {
+          "PURL": "pkg:cargo/unicode-bidi@0.3.4"
+        },
         "Version": "0.3.4",
         "DependsOn": [
           "matches@0.1.8"
@@ -1798,6 +2149,9 @@
       {
         "ID": "unicode-normalization@0.1.8",
         "Name": "unicode-normalization",
+        "Identifier": {
+          "PURL": "pkg:cargo/unicode-normalization@0.1.8"
+        },
         "Version": "0.1.8",
         "DependsOn": [
           "smallvec@0.6.9"
@@ -1813,6 +2167,9 @@
       {
         "ID": "unicode-xid@0.1.0",
         "Name": "unicode-xid",
+        "Identifier": {
+          "PURL": "pkg:cargo/unicode-xid@0.1.0"
+        },
         "Version": "0.1.0",
         "Layer": {},
         "Locations": [
@@ -1825,6 +2182,9 @@
       {
         "ID": "url@1.7.2",
         "Name": "url",
+        "Identifier": {
+          "PURL": "pkg:cargo/url@1.7.2"
+        },
         "Version": "1.7.2",
         "DependsOn": [
           "idna@0.1.5",
@@ -1842,6 +2202,9 @@
       {
         "ID": "user32-sys@0.2.0",
         "Name": "user32-sys",
+        "Identifier": {
+          "PURL": "pkg:cargo/user32-sys@0.2.0"
+        },
         "Version": "0.2.0",
         "DependsOn": [
           "winapi-build@0.1.1",
@@ -1858,6 +2221,9 @@
       {
         "ID": "utf-8@0.7.5",
         "Name": "utf-8",
+        "Identifier": {
+          "PURL": "pkg:cargo/utf-8@0.7.5"
+        },
         "Version": "0.7.5",
         "Layer": {},
         "Locations": [
@@ -1870,6 +2236,9 @@
       {
         "ID": "walkdir@1.0.7",
         "Name": "walkdir",
+        "Identifier": {
+          "PURL": "pkg:cargo/walkdir@1.0.7"
+        },
         "Version": "1.0.7",
         "DependsOn": [
           "kernel32-sys@0.2.2",
@@ -1887,6 +2256,9 @@
       {
         "ID": "winapi@0.2.8",
         "Name": "winapi",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi@0.2.8"
+        },
         "Version": "0.2.8",
         "Layer": {},
         "Locations": [
@@ -1899,6 +2271,9 @@
       {
         "ID": "winapi@0.3.7",
         "Name": "winapi",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi@0.3.7"
+        },
         "Version": "0.3.7",
         "DependsOn": [
           "winapi-i686-pc-windows-gnu@0.4.0",
@@ -1915,6 +2290,9 @@
       {
         "ID": "winapi-build@0.1.1",
         "Name": "winapi-build",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi-build@0.1.1"
+        },
         "Version": "0.1.1",
         "Layer": {},
         "Locations": [
@@ -1927,6 +2305,9 @@
       {
         "ID": "winapi-i686-pc-windows-gnu@0.4.0",
         "Name": "winapi-i686-pc-windows-gnu",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi-i686-pc-windows-gnu@0.4.0"
+        },
         "Version": "0.4.0",
         "Layer": {},
         "Locations": [
@@ -1939,6 +2320,9 @@
       {
         "ID": "winapi-x86_64-pc-windows-gnu@0.4.0",
         "Name": "winapi-x86_64-pc-windows-gnu",
+        "Identifier": {
+          "PURL": "pkg:cargo/winapi-x86_64-pc-windows-gnu@0.4.0"
+        },
         "Version": "0.4.0",
         "Layer": {},
         "Locations": [
@@ -1957,6 +2341,9 @@
       {
         "ID": "guzzlehttp/guzzle@6.2.0",
         "Name": "guzzlehttp/guzzle",
+        "Identifier": {
+          "PURL": "pkg:composer/guzzlehttp/guzzle@6.2.0"
+        },
         "Version": "6.2.0",
         "Licenses": [
           "MIT"
@@ -1976,6 +2363,9 @@
       {
         "ID": "guzzlehttp/promises@v1.3.1",
         "Name": "guzzlehttp/promises",
+        "Identifier": {
+          "PURL": "pkg:composer/guzzlehttp/promises@v1.3.1"
+        },
         "Version": "v1.3.1",
         "Licenses": [
           "MIT"
@@ -1991,6 +2381,9 @@
       {
         "ID": "guzzlehttp/psr7@1.5.2",
         "Name": "guzzlehttp/psr7",
+        "Identifier": {
+          "PURL": "pkg:composer/guzzlehttp/psr7@1.5.2"
+        },
         "Version": "1.5.2",
         "Licenses": [
           "MIT"
@@ -2010,6 +2403,9 @@
       {
         "ID": "laravel/installer@v2.0.1",
         "Name": "laravel/installer",
+        "Identifier": {
+          "PURL": "pkg:composer/laravel/installer@v2.0.1"
+        },
         "Version": "v2.0.1",
         "Licenses": [
           "MIT"
@@ -2031,6 +2427,9 @@
       {
         "ID": "pear/log@1.13.1",
         "Name": "pear/log",
+        "Identifier": {
+          "PURL": "pkg:composer/pear/log@1.13.1"
+        },
         "Version": "1.13.1",
         "Licenses": [
           "MIT"
@@ -2049,6 +2448,9 @@
       {
         "ID": "pear/pear_exception@v1.0.0",
         "Name": "pear/pear_exception",
+        "Identifier": {
+          "PURL": "pkg:composer/pear/pear_exception@v1.0.0"
+        },
         "Version": "v1.0.0",
         "Licenses": [
           "BSD-2-Clause"
@@ -2064,6 +2466,9 @@
       {
         "ID": "psr/http-message@1.0.1",
         "Name": "psr/http-message",
+        "Identifier": {
+          "PURL": "pkg:composer/psr/http-message@1.0.1"
+        },
         "Version": "1.0.1",
         "Licenses": [
           "MIT"
@@ -2079,6 +2484,9 @@
       {
         "ID": "ralouphie/getallheaders@2.0.5",
         "Name": "ralouphie/getallheaders",
+        "Identifier": {
+          "PURL": "pkg:composer/ralouphie/getallheaders@2.0.5"
+        },
         "Version": "2.0.5",
         "Licenses": [
           "MIT"
@@ -2094,6 +2502,9 @@
       {
         "ID": "symfony/console@v4.2.7",
         "Name": "symfony/console",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/console@v4.2.7"
+        },
         "Version": "v4.2.7",
         "Licenses": [
           "MIT"
@@ -2113,6 +2524,9 @@
       {
         "ID": "symfony/contracts@v1.0.2",
         "Name": "symfony/contracts",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/contracts@v1.0.2"
+        },
         "Version": "v1.0.2",
         "Licenses": [
           "MIT"
@@ -2128,6 +2542,9 @@
       {
         "ID": "symfony/filesystem@v4.2.7",
         "Name": "symfony/filesystem",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/filesystem@v4.2.7"
+        },
         "Version": "v4.2.7",
         "Licenses": [
           "MIT"
@@ -2146,6 +2563,9 @@
       {
         "ID": "symfony/polyfill-ctype@v1.11.0",
         "Name": "symfony/polyfill-ctype",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/polyfill-ctype@v1.11.0"
+        },
         "Version": "v1.11.0",
         "Licenses": [
           "MIT"
@@ -2161,6 +2581,9 @@
       {
         "ID": "symfony/polyfill-mbstring@v1.11.0",
         "Name": "symfony/polyfill-mbstring",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/polyfill-mbstring@v1.11.0"
+        },
         "Version": "v1.11.0",
         "Licenses": [
           "MIT"
@@ -2176,6 +2599,9 @@
       {
         "ID": "symfony/process@v4.2.7",
         "Name": "symfony/process",
+        "Identifier": {
+          "PURL": "pkg:composer/symfony/process@v4.2.7"
+        },
         "Version": "v4.2.7",
         "Licenses": [
           "MIT"
@@ -2197,6 +2623,9 @@
       {
         "ID": "asap@2.0.6",
         "Name": "asap",
+        "Identifier": {
+          "PURL": "pkg:npm/asap@2.0.6"
+        },
         "Version": "2.0.6",
         "Indirect": true,
         "Layer": {},
@@ -2210,6 +2639,9 @@
       {
         "ID": "jquery@3.3.9",
         "Name": "jquery",
+        "Identifier": {
+          "PURL": "pkg:npm/jquery@3.3.9"
+        },
         "Version": "3.3.9",
         "Indirect": true,
         "Layer": {},
@@ -2223,6 +2655,9 @@
       {
         "ID": "js-tokens@4.0.0",
         "Name": "js-tokens",
+        "Identifier": {
+          "PURL": "pkg:npm/js-tokens@4.0.0"
+        },
         "Version": "4.0.0",
         "Indirect": true,
         "Layer": {},
@@ -2236,6 +2671,9 @@
       {
         "ID": "lodash@4.17.4",
         "Name": "lodash",
+        "Identifier": {
+          "PURL": "pkg:npm/lodash@4.17.4"
+        },
         "Version": "4.17.4",
         "Indirect": true,
         "Layer": {},
@@ -2249,6 +2687,9 @@
       {
         "ID": "loose-envify@1.4.0",
         "Name": "loose-envify",
+        "Identifier": {
+          "PURL": "pkg:npm/loose-envify@1.4.0"
+        },
         "Version": "1.4.0",
         "Indirect": true,
         "DependsOn": [
@@ -2265,6 +2706,9 @@
       {
         "ID": "object-assign@4.1.1",
         "Name": "object-assign",
+        "Identifier": {
+          "PURL": "pkg:npm/object-assign@4.1.1"
+        },
         "Version": "4.1.1",
         "Indirect": true,
         "Layer": {},
@@ -2278,6 +2722,9 @@
       {
         "ID": "promise@8.0.3",
         "Name": "promise",
+        "Identifier": {
+          "PURL": "pkg:npm/promise@8.0.3"
+        },
         "Version": "8.0.3",
         "Indirect": true,
         "DependsOn": [
@@ -2294,6 +2741,9 @@
       {
         "ID": "prop-types@15.7.2",
         "Name": "prop-types",
+        "Identifier": {
+          "PURL": "pkg:npm/prop-types@15.7.2"
+        },
         "Version": "15.7.2",
         "Indirect": true,
         "DependsOn": [
@@ -2312,6 +2762,9 @@
       {
         "ID": "react@16.8.6",
         "Name": "react",
+        "Identifier": {
+          "PURL": "pkg:npm/react@16.8.6"
+        },
         "Version": "16.8.6",
         "Indirect": true,
         "DependsOn": [
@@ -2331,6 +2784,9 @@
       {
         "ID": "react-is@16.8.6",
         "Name": "react-is",
+        "Identifier": {
+          "PURL": "pkg:npm/react-is@16.8.6"
+        },
         "Version": "16.8.6",
         "Indirect": true,
         "Layer": {},
@@ -2344,6 +2800,9 @@
       {
         "ID": "redux@4.0.1",
         "Name": "redux",
+        "Identifier": {
+          "PURL": "pkg:npm/redux@4.0.1"
+        },
         "Version": "4.0.1",
         "Indirect": true,
         "DependsOn": [
@@ -2361,6 +2820,9 @@
       {
         "ID": "scheduler@0.13.6",
         "Name": "scheduler",
+        "Identifier": {
+          "PURL": "pkg:npm/scheduler@0.13.6"
+        },
         "Version": "0.13.6",
         "Indirect": true,
         "DependsOn": [
@@ -2378,6 +2840,9 @@
       {
         "ID": "symbol-observable@1.2.0",
         "Name": "symbol-observable",
+        "Identifier": {
+          "PURL": "pkg:npm/symbol-observable@1.2.0"
+        },
         "Version": "1.2.0",
         "Indirect": true,
         "Layer": {},
@@ -2396,6 +2861,9 @@
     "Libraries": [
       {
         "Name": "amqp",
+        "Identifier": {
+          "PURL": "pkg:pypi/amqp@2.4.2"
+        },
         "Version": "2.4.2",
         "Layer": {},
         "Locations": [
@@ -2407,6 +2875,9 @@
       },
       {
         "Name": "autopep8",
+        "Identifier": {
+          "PURL": "pkg:pypi/autopep8@1.4.3"
+        },
         "Version": "1.4.3",
         "Layer": {},
         "Locations": [
@@ -2418,6 +2889,9 @@
       },
       {
         "Name": "babel",
+        "Identifier": {
+          "PURL": "pkg:pypi/babel@2.6.0"
+        },
         "Version": "2.6.0",
         "Layer": {},
         "Locations": [
@@ -2429,6 +2903,9 @@
       },
       {
         "Name": "billiard",
+        "Identifier": {
+          "PURL": "pkg:pypi/billiard@3.6.0.0"
+        },
         "Version": "3.6.0.0",
         "Layer": {},
         "Locations": [
@@ -2440,6 +2917,9 @@
       },
       {
         "Name": "boto3",
+        "Identifier": {
+          "PURL": "pkg:pypi/boto3@1.9.130"
+        },
         "Version": "1.9.130",
         "Layer": {},
         "Locations": [
@@ -2451,6 +2931,9 @@
       },
       {
         "Name": "botocore",
+        "Identifier": {
+          "PURL": "pkg:pypi/botocore@1.12.130"
+        },
         "Version": "1.12.130",
         "Layer": {},
         "Locations": [
@@ -2462,6 +2945,9 @@
       },
       {
         "Name": "celery",
+        "Identifier": {
+          "PURL": "pkg:pypi/celery@4.3.0"
+        },
         "Version": "4.3.0",
         "Layer": {},
         "Locations": [
@@ -2473,6 +2959,9 @@
       },
       {
         "Name": "certifi",
+        "Identifier": {
+          "PURL": "pkg:pypi/certifi@2019.3.9"
+        },
         "Version": "2019.3.9",
         "Layer": {},
         "Locations": [
@@ -2484,6 +2973,9 @@
       },
       {
         "Name": "chardet",
+        "Identifier": {
+          "PURL": "pkg:pypi/chardet@3.0.4"
+        },
         "Version": "3.0.4",
         "Layer": {},
         "Locations": [
@@ -2495,6 +2987,9 @@
       },
       {
         "Name": "decorator",
+        "Identifier": {
+          "PURL": "pkg:pypi/decorator@4.4.0"
+        },
         "Version": "4.4.0",
         "Layer": {},
         "Locations": [
@@ -2506,6 +3001,9 @@
       },
       {
         "Name": "django",
+        "Identifier": {
+          "PURL": "pkg:pypi/django@2.0.9"
+        },
         "Version": "2.0.9",
         "Layer": {},
         "Locations": [
@@ -2517,6 +3015,9 @@
       },
       {
         "Name": "django-celery-beat",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-celery-beat@1.4.0"
+        },
         "Version": "1.4.0",
         "Layer": {},
         "Locations": [
@@ -2528,6 +3029,9 @@
       },
       {
         "Name": "django-cors-headers",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-cors-headers@2.5.2"
+        },
         "Version": "2.5.2",
         "Layer": {},
         "Locations": [
@@ -2539,6 +3043,9 @@
       },
       {
         "Name": "django-extensions",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-extensions@2.1.6"
+        },
         "Version": "2.1.6",
         "Layer": {},
         "Locations": [
@@ -2550,6 +3057,9 @@
       },
       {
         "Name": "django-postgres-extra",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-postgres-extra"
+        },
         "Layer": {},
         "Locations": [
           {
@@ -2560,6 +3070,9 @@
       },
       {
         "Name": "django-redis-cache",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-redis-cache@2.0.0"
+        },
         "Version": "2.0.0",
         "Layer": {},
         "Locations": [
@@ -2571,6 +3084,9 @@
       },
       {
         "Name": "django-silk",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-silk@3.0.1"
+        },
         "Version": "3.0.1",
         "Layer": {},
         "Locations": [
@@ -2582,6 +3098,9 @@
       },
       {
         "Name": "django-timezone-field",
+        "Identifier": {
+          "PURL": "pkg:pypi/django-timezone-field@3.0"
+        },
         "Version": "3.0",
         "Layer": {},
         "Locations": [
@@ -2593,6 +3112,9 @@
       },
       {
         "Name": "djangorestframework",
+        "Identifier": {
+          "PURL": "pkg:pypi/djangorestframework@3.9.2"
+        },
         "Version": "3.9.2",
         "Layer": {},
         "Locations": [
@@ -2604,6 +3126,9 @@
       },
       {
         "Name": "djangorestframework-jwt",
+        "Identifier": {
+          "PURL": "pkg:pypi/djangorestframework-jwt@1.11.0"
+        },
         "Version": "1.11.0",
         "Layer": {},
         "Locations": [
@@ -2615,6 +3140,9 @@
       },
       {
         "Name": "docutils",
+        "Identifier": {
+          "PURL": "pkg:pypi/docutils@0.14"
+        },
         "Version": "0.14",
         "Layer": {},
         "Locations": [
@@ -2626,6 +3154,9 @@
       },
       {
         "Name": "flower",
+        "Identifier": {
+          "PURL": "pkg:pypi/flower@0.9.3"
+        },
         "Version": "0.9.3",
         "Layer": {},
         "Locations": [
@@ -2637,6 +3168,9 @@
       },
       {
         "Name": "gprof2dot",
+        "Identifier": {
+          "PURL": "pkg:pypi/gprof2dot@2016.10.13"
+        },
         "Version": "2016.10.13",
         "Layer": {},
         "Locations": [
@@ -2648,6 +3182,9 @@
       },
       {
         "Name": "gunicorn",
+        "Identifier": {
+          "PURL": "pkg:pypi/gunicorn@19.9.0"
+        },
         "Version": "19.9.0",
         "Layer": {},
         "Locations": [
@@ -2659,6 +3196,9 @@
       },
       {
         "Name": "hiredis",
+        "Identifier": {
+          "PURL": "pkg:pypi/hiredis@1.0.0"
+        },
         "Version": "1.0.0",
         "Layer": {},
         "Locations": [
@@ -2670,6 +3210,9 @@
       },
       {
         "Name": "httplib2",
+        "Identifier": {
+          "PURL": "pkg:pypi/httplib2@0.12.1"
+        },
         "Version": "0.12.1",
         "Layer": {},
         "Locations": [
@@ -2681,6 +3224,9 @@
       },
       {
         "Name": "idna",
+        "Identifier": {
+          "PURL": "pkg:pypi/idna@2.8"
+        },
         "Version": "2.8",
         "Layer": {},
         "Locations": [
@@ -2692,6 +3238,9 @@
       },
       {
         "Name": "jinja2",
+        "Identifier": {
+          "PURL": "pkg:pypi/jinja2@2.10.1"
+        },
         "Version": "2.10.1",
         "Layer": {},
         "Locations": [
@@ -2703,6 +3252,9 @@
       },
       {
         "Name": "jmespath",
+        "Identifier": {
+          "PURL": "pkg:pypi/jmespath@0.9.4"
+        },
         "Version": "0.9.4",
         "Layer": {},
         "Locations": [
@@ -2714,6 +3266,9 @@
       },
       {
         "Name": "kombu",
+        "Identifier": {
+          "PURL": "pkg:pypi/kombu@4.5.0"
+        },
         "Version": "4.5.0",
         "Layer": {},
         "Locations": [
@@ -2725,6 +3280,9 @@
       },
       {
         "Name": "markupsafe",
+        "Identifier": {
+          "PURL": "pkg:pypi/markupsafe@1.1.1"
+        },
         "Version": "1.1.1",
         "Layer": {},
         "Locations": [
@@ -2736,6 +3294,9 @@
       },
       {
         "Name": "oauth2",
+        "Identifier": {
+          "PURL": "pkg:pypi/oauth2@1.9.0.post1"
+        },
         "Version": "1.9.0.post1",
         "Layer": {},
         "Locations": [
@@ -2747,6 +3308,9 @@
       },
       {
         "Name": "psycopg2-binary",
+        "Identifier": {
+          "PURL": "pkg:pypi/psycopg2-binary@2.8.1"
+        },
         "Version": "2.8.1",
         "Layer": {},
         "Locations": [
@@ -2758,6 +3322,9 @@
       },
       {
         "Name": "py",
+        "Identifier": {
+          "PURL": "pkg:pypi/py@1.8.0"
+        },
         "Version": "1.8.0",
         "Layer": {},
         "Locations": [
@@ -2769,6 +3336,9 @@
       },
       {
         "Name": "pycodestyle",
+        "Identifier": {
+          "PURL": "pkg:pypi/pycodestyle@2.5.0"
+        },
         "Version": "2.5.0",
         "Layer": {},
         "Locations": [
@@ -2780,6 +3350,9 @@
       },
       {
         "Name": "pycurl",
+        "Identifier": {
+          "PURL": "pkg:pypi/pycurl@7.43.0.2"
+        },
         "Version": "7.43.0.2",
         "Layer": {},
         "Locations": [
@@ -2791,6 +3364,9 @@
       },
       {
         "Name": "pygments",
+        "Identifier": {
+          "PURL": "pkg:pypi/pygments@2.3.1"
+        },
         "Version": "2.3.1",
         "Layer": {},
         "Locations": [
@@ -2802,6 +3378,9 @@
       },
       {
         "Name": "pyjwt",
+        "Identifier": {
+          "PURL": "pkg:pypi/pyjwt@1.7.1"
+        },
         "Version": "1.7.1",
         "Layer": {},
         "Locations": [
@@ -2813,6 +3392,9 @@
       },
       {
         "Name": "python-crontab",
+        "Identifier": {
+          "PURL": "pkg:pypi/python-crontab@2.3.6"
+        },
         "Version": "2.3.6",
         "Layer": {},
         "Locations": [
@@ -2824,6 +3406,9 @@
       },
       {
         "Name": "python-dateutil",
+        "Identifier": {
+          "PURL": "pkg:pypi/python-dateutil@2.8.0"
+        },
         "Version": "2.8.0",
         "Layer": {},
         "Locations": [
@@ -2835,6 +3420,9 @@
       },
       {
         "Name": "python-http-client",
+        "Identifier": {
+          "PURL": "pkg:pypi/python-http-client@3.1.0"
+        },
         "Version": "3.1.0",
         "Layer": {},
         "Locations": [
@@ -2846,6 +3434,9 @@
       },
       {
         "Name": "pytz",
+        "Identifier": {
+          "PURL": "pkg:pypi/pytz@2019.1"
+        },
         "Version": "2019.1",
         "Layer": {},
         "Locations": [
@@ -2857,6 +3448,9 @@
       },
       {
         "Name": "pyyaml",
+        "Identifier": {
+          "PURL": "pkg:pypi/pyyaml@5.1"
+        },
         "Version": "5.1",
         "Layer": {},
         "Locations": [
@@ -2868,6 +3462,9 @@
       },
       {
         "Name": "redis",
+        "Identifier": {
+          "PURL": "pkg:pypi/redis@3.2.1"
+        },
         "Version": "3.2.1",
         "Layer": {},
         "Locations": [
@@ -2879,6 +3476,9 @@
       },
       {
         "Name": "requests",
+        "Identifier": {
+          "PURL": "pkg:pypi/requests@2.21.0"
+        },
         "Version": "2.21.0",
         "Layer": {},
         "Locations": [
@@ -2890,6 +3490,9 @@
       },
       {
         "Name": "retry",
+        "Identifier": {
+          "PURL": "pkg:pypi/retry@0.9.2"
+        },
         "Version": "0.9.2",
         "Layer": {},
         "Locations": [
@@ -2901,6 +3504,9 @@
       },
       {
         "Name": "s3transfer",
+        "Identifier": {
+          "PURL": "pkg:pypi/s3transfer@0.2.0"
+        },
         "Version": "0.2.0",
         "Layer": {},
         "Locations": [
@@ -2912,6 +3518,9 @@
       },
       {
         "Name": "sendgrid",
+        "Identifier": {
+          "PURL": "pkg:pypi/sendgrid@6.0.4"
+        },
         "Version": "6.0.4",
         "Layer": {},
         "Locations": [
@@ -2923,6 +3532,9 @@
       },
       {
         "Name": "sentry-sdk",
+        "Identifier": {
+          "PURL": "pkg:pypi/sentry-sdk@0.7.10"
+        },
         "Version": "0.7.10",
         "Layer": {},
         "Locations": [
@@ -2934,6 +3546,9 @@
       },
       {
         "Name": "six",
+        "Identifier": {
+          "PURL": "pkg:pypi/six@1.12.0"
+        },
         "Version": "1.12.0",
         "Layer": {},
         "Locations": [
@@ -2945,6 +3560,9 @@
       },
       {
         "Name": "sqlparse",
+        "Identifier": {
+          "PURL": "pkg:pypi/sqlparse@0.3.0"
+        },
         "Version": "0.3.0",
         "Layer": {},
         "Locations": [
@@ -2956,6 +3574,9 @@
       },
       {
         "Name": "tornado",
+        "Identifier": {
+          "PURL": "pkg:pypi/tornado@5.1.1"
+        },
         "Version": "5.1.1",
         "Layer": {},
         "Locations": [
@@ -2967,6 +3588,9 @@
       },
       {
         "Name": "urllib3",
+        "Identifier": {
+          "PURL": "pkg:pypi/urllib3@1.24.1"
+        },
         "Version": "1.24.1",
         "Layer": {},
         "Locations": [
@@ -2978,6 +3602,9 @@
       },
       {
         "Name": "vine",
+        "Identifier": {
+          "PURL": "pkg:pypi/vine@1.3.0"
+        },
         "Version": "1.3.0",
         "Layer": {},
         "Locations": [
@@ -2989,6 +3616,9 @@
       },
       {
         "Name": "xmltodict",
+        "Identifier": {
+          "PURL": "pkg:pypi/xmltodict@0.12.0"
+        },
         "Version": "0.12.0",
         "Layer": {},
         "Locations": [
