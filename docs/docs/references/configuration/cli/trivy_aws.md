@@ -26,6 +26,7 @@ The following services are supported:
 - elb
 - emr
 - iam
+- kinesis
 - kms
 - lambda
 - mq
@@ -33,12 +34,11 @@ The following services are supported:
 - neptune
 - rds
 - redshift
+- s3
 - sns
 - sqs
 - ssm
 - workspaces
-- kinesis
-- s3
 
 
 ```
