@@ -44,11 +44,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	if option.Debug {
-		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&defsecLogger{}))
+		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&DebugLogger{}))
 	}
 
 	if option.Trace {
-		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&defsecLogger{}))
+		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&DebugLogger{}))
 	}
 
 	if option.Region != "" {
@@ -160,11 +160,11 @@ func createState(freshState *state.State, awsCache *cache.Cache) (*state.State, 
 	return fullState, nil
 }
 
-type defsecLogger struct {
+type DebugLogger struct {
 }
 
-func (d *defsecLogger) Write(p []byte) (n int, err error) {
-	log.Logger.Debug("[defsec] " + strings.TrimSpace(string(p)))
+func (d *DebugLogger) Write(p []byte) (n int, err error) {
+	log.Logger.Debug("[aws] " + strings.TrimSpace(string(p)))
 	return len(p), nil
 }
 func addPolicyNamespaces(namespaces []string, scannerOpts []options.ScannerOption) []options.ScannerOption {
