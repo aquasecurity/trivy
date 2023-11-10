@@ -5,7 +5,6 @@ import (
 	"time"
 
 	version "github.com/knqyf263/go-deb-version"
-	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -30,7 +29,6 @@ var (
 
 type options struct {
 	clock clock.Clock
-	l     *zap.SugaredLogger
 }
 
 type option func(*options)
@@ -50,7 +48,6 @@ type Scanner struct {
 // NewScanner is the factory method to return Amazon scanner
 func NewScanner(opts ...option) *Scanner {
 	o := &options{
-		l:     log.Logger,
 		clock: clock.RealClock{},
 	}
 

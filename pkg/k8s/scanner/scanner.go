@@ -226,7 +226,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 	var resources []report.Resource
 	var nodeName string
 	if nodeName = findNodeName(artifactsData); nodeName == "" {
-		return nil, fmt.Errorf("failed to find node name")
+		return resources, nil
 	}
 
 	k8sScanner := k8s.NewKubenetesScanner()
@@ -383,7 +383,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 					return nil, xerrors.Errorf("failed to create PURL: %w", err)
 				}
 				imageComponents = append(imageComponents, &core.Component{
-					PackageURL: &imagePURL,
+					PackageURL: imagePURL,
 					Type:       cdx.ComponentTypeContainer,
 					Name:       name,
 					Version:    cDigest,

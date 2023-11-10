@@ -401,6 +401,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:         true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "688d98e7e5660b879fd1fc548af8c0df3b7d785a",
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d5443dbcbba0dbd4"),
@@ -421,6 +425,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:         true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "c7526b18eaaeb410e82cb0da9288dd02b38ea171",
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
@@ -692,6 +700,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:         true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+						},
 					},
 				},
 				Files: []*spdx.File{
