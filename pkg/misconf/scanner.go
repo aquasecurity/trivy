@@ -68,13 +68,13 @@ func (o *ScannerOption) Sort() {
 	sort.Strings(o.DataPaths)
 }
 
-type DebugLogger struct {
-}
-
-func (d *DebugLogger) Write(p []byte) (n int, err error) {
-	log.Logger.Debug("[misconf] " + strings.TrimSpace(string(p)))
-	return len(p), nil
-}
+//type DebugLogger struct {
+//}
+//
+//func (d *DebugLogger) Write(p []byte) (n int, err error) {
+//	log.Logger.Debug("[misconf] " + strings.TrimSpace(string(p)))
+//	return len(p), nil
+//}
 
 type Scanner struct {
 	fileType       detection.FileType
@@ -267,7 +267,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	)
 
 	if opt.Debug {
-		opts = append(opts, options.ScannerWithDebug(&DebugLogger{}))
+		opts = append(opts, options.ScannerWithDebug(&log.DebugLogger{Name: "misconf"}))
 	}
 
 	if opt.Trace {

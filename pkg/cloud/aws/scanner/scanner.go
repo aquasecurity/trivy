@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
-	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -44,11 +43,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	if option.Debug {
-		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&DebugLogger{}))
+		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&log.DebugLogger{Name: "aws"}))
 	}
 
 	if option.Trace {
-		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&DebugLogger{}))
+		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&log.DebugLogger{Name: "aws"}))
 	}
 
 	if option.Region != "" {
@@ -160,13 +159,14 @@ func createState(freshState *state.State, awsCache *cache.Cache) (*state.State, 
 	return fullState, nil
 }
 
-type DebugLogger struct {
-}
-
-func (d *DebugLogger) Write(p []byte) (n int, err error) {
-	log.Logger.Debug("[aws] " + strings.TrimSpace(string(p)))
-	return len(p), nil
-}
+//	type DebugLogger struct {
+//		name string
+//	}
+//
+//	func (d *DebugLogger) Write(p []byte) (n int, err error) {
+//		log.Logger.Debug("[aws] " + strings.TrimSpace(string(p)))
+//		return len(p), nil
+//	}
 func addPolicyNamespaces(namespaces []string, scannerOpts []options.ScannerOption) []options.ScannerOption {
 	if len(namespaces) > 0 {
 		scannerOpts = append(
