@@ -34,6 +34,14 @@ The trivy buildkite plugin provides a convenient mechanism for running the open-
 
 👉 Get it at: https://github.com/equinixmetal-buildkite/trivy-buildkite-plugin
 
+## Dagger (Community)
+[Dagger](https://dagger.io/) is CI/CD as code that runs anywhere.
+
+The Dagger module for Trivy provides functions for scanning container images from registries as well as Dagger Container objects from any Dagger SDK (e.g. Go, Python, Node.js, etc).
+
+👉 Get it at: <https://daggerverse.dev/mod/github.com/jpadams/daggerverse/trivy>
+
+
 ## Semaphore (Community)
 [Semaphore](https://semaphoreci.com/) is a CI/CD service.
 
