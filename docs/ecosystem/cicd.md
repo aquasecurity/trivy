@@ -1,5 +1,12 @@
 # CI/CD Integrations
 
+## Azure DevOps (Official)
+[Azure Devops](https://azure.microsoft.com/en-us/products/devops/#overview) is Microsoft Azure cloud native CI/CD service.
+
+Trivy has a "Azure Devops Pipelines Task" for Trivy, that lets you easily introduce security scanning into your workflow, with an integrated Azure Devops UI.
+
+👉 Get it at: <https://github.com/aquasecurity/trivy-azure-pipelines-task>
+
 ## GitHub Actions
 [GitHub Actions](https://github.com/features/actions) is GitHub's native CI/CD and job orchestration service.
 
@@ -8,13 +15,6 @@
 GitHub Action for integrating Trivy into your GitHub pipeline
 
 👉 Get it at: <https://github.com/aquasecurity/trivy-action>
-
-## Azure DevOps (Official)
-[Azure Devops](https://azure.microsoft.com/en-us/products/devops/#overview) is Microsoft Azure cloud native CI/CD service.
-
-Trivy has a "Azure Devops Pipelines Task" for Trivy, that lets you easily introduce security scanning into your workflow, with an integrated Azure Devops UI.
-
-👉 Get it at: <https://github.com/aquasecurity/trivy-azure-pipelines-task>
 
 ### trivy-action (Community)
 
