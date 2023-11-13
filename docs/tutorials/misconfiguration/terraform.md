@@ -97,7 +97,7 @@ We have lots of examples in the [documentation](https://aquasecurity.github.io/t
 The `trivy config` command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your `trivy fs` scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: 
 
 ```
-trivy fs --scanners secret,config ./
+trivy fs --scanners secret,misconfig ./
 ```
 
 The `trivy config` command is a sub-command of the `trivy fs` command. You can learn more about this command in the [documentation.](https://aquasecurity.github.io/trivy/latest/docs/target/filesystem/) 
