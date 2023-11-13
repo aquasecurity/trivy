@@ -2,6 +2,7 @@ package cargo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -104,7 +105,10 @@ func (a cargoAnalyzer) parseCargoLock(path string, r io.Reader) (*types.Applicat
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
 	cargoTOMLPath := filepath.Join(dir, types.CargoToml)
 	directDeps, err := a.parseCargoTOML(fsys, cargoTOMLPath)
-	if err != nil {
+	if errors.Is(err, fs.ErrNotExist) {
+		log.Logger.Debugf("Cargo: %s not found", cargoTOMLPath)
+		return nil
+	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
 	}
 
