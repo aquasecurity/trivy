@@ -360,10 +360,10 @@ func TestRepository(t *testing.T) {
 			},
 		},
 		{
-			name: "dockerfile with fs subcommand",
+			name: "dockerfile with fs subcommand and an alias scanner",
 			args: args{
 				command:     "fs",
-				scanner:     types.MisconfigScanner,
+				scanner:     "config", // for backward compatibility
 				policyPaths: []string{"testdata/fixtures/repo/custom-policy/policy"},
 				namespaces:  []string{"user"},
 				input:       "testdata/fixtures/repo/custom-policy",
