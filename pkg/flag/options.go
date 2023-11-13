@@ -20,7 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version"
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -114,6 +113,10 @@ type Options struct {
 
 	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
+
+	// outputWriter is not initialized via the CLI.
+	// It is mainly used for testing purposes or by tools that use Trivy as a library.
+	outputWriter io.Writer
 }
 
 // Align takes consistency of options
@@ -159,17 +162,26 @@ func (o *Options) FilterOpts() result.FilterOption {
 	}
 }
 
+// SetOutputWriter sets an output writer.
+func (o *Options) SetOutputWriter(w io.Writer) {
+	o.outputWriter = w
+}
+
 // OutputWriter returns an output writer.
 // If the output file is not specified, it returns os.Stdout.
-func (o *Options) OutputWriter() (io.WriteCloser, error) {
+func (o *Options) OutputWriter() (io.Writer, func(), error) {
+	if o.outputWriter != nil {
+		return o.outputWriter, func() {}, nil
+	}
+
 	if o.Output != "" {
 		f, err := os.Create(o.Output)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to create output file: %w", err)
+			return nil, nil, xerrors.Errorf("failed to create output file: %w", err)
 		}
-		return f, nil
+		return f, func() { _ = f.Close() }, nil
 	}
-	return xio.NopCloser(os.Stdout), nil
+	return os.Stdout, func() {}, nil
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {
