@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -972,6 +973,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	services := awsScanner.AllSupportedServices()
+	sort.Strings(services)
 
 	cmd := &cobra.Command{
 		Use:     "aws [flags]",
