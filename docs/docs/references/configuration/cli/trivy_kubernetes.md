@@ -67,7 +67,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
   -o, --output string                     output file name
       --parallel int                      number (between 1-20) of goroutines enabled for parallel scanning (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/defsec:0")
+      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
@@ -79,7 +79,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --reset                             remove all caches and database
       --reset-policy-bundle               remove policy bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
-      --scanners string                   comma-separated list of what security issues to detect (vuln,config,secret,license) (default "vuln,config,secret,rbac")
+      --scanners strings                  comma-separated list of what security issues to detect (vuln,config,secret,rbac) (default [vuln,config,secret,rbac])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --show-ignored                      show ignored vulnerabilities in a separate list

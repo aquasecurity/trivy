@@ -5,7 +5,7 @@ import (
 
 	"github.com/samber/lo"
 
-	defsecRules "github.com/aquasecurity/defsec/pkg/rules"
+	defsecRules "github.com/aquasecurity/trivy-iac/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -49,6 +49,7 @@ var (
 	CategoryHubSpot              = types.SecretRuleCategory("HubSpot")
 	CategoryIntercom             = types.SecretRuleCategory("Intercom")
 	CategoryIonic                = types.SecretRuleCategory("Ionic")
+	CategoryJWT                  = types.SecretRuleCategory("JWT")
 	CategoryLinear               = types.SecretRuleCategory("Linear")
 	CategoryLob                  = types.SecretRuleCategory("Lob")
 	CategoryMailchimp            = types.SecretRuleCategory("Mailchimp")
@@ -561,6 +562,14 @@ var builtinRules = []Rule{
 		Title:    "Ionic API token",
 		Regex:    MustCompile(`(?i)(ionic[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"](ion_[a-z0-9]{42})['\"]`),
 		Keywords: []string{"ionic"},
+	},
+	{
+		ID:       "jwt-token",
+		Category: CategoryJWT,
+		Title:    "JWT token",
+		Severity: "MEDIUM",
+		Regex:    MustCompile(`ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?`),
+		Keywords: []string{"jwt"},
 	},
 	{
 		ID:       "linear-api-token",

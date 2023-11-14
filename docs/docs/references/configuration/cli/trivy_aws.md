@@ -7,6 +7,7 @@
 Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
 
 The following services are supported:
+
 - accessanalyzer
 - api-gateway
 - athena
@@ -85,7 +86,7 @@ trivy aws [flags]
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
       --max-cache-age duration            The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this. (default 24h0m0s)
   -o, --output string                     output file name
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/defsec:0")
+      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
       --region string                     AWS Region to scan
       --report string                     specify a report format for the output (all,summary) (default "all")

@@ -165,5 +165,8 @@ func buildPurl(t ftypes.TargetType, pkg ftypes.Package) (string, error) {
 	if err != nil {
 		return "", xerrors.Errorf("purl error: %w", err)
 	}
+	if packageUrl == nil {
+		return "", nil
+	}
 	return packageUrl.ToString(), nil
 }
