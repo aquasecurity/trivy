@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -972,6 +973,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	services := awsScanner.AllSupportedServices()
+	sort.Strings(services)
 
 	cmd := &cobra.Command{
 		Use:     "aws [flags]",
@@ -982,6 +984,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Long: fmt.Sprintf(`Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
 
 The following services are supported:
+
 - %s
 `, strings.Join(services, "\n- ")),
 		Example: `  # basic scanning
