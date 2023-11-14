@@ -54,7 +54,7 @@ func Test_shouldSkipFile(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
-			w := newWalker(tc.skipFiles, nil, false)
+			w := newWalker(tc.skipFiles, nil)
 			for file, skipResult := range tc.skipMap {
 				assert.Equal(t, skipResult, w.shouldSkipFile(filepath.ToSlash(filepath.Clean(file))), fmt.Sprintf("skipFiles: %s, file: %s", tc.skipFiles, file))
 			}
@@ -115,7 +115,7 @@ func Test_shouldSkipDir(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
-			w := newWalker(nil, tc.skipDirs, false)
+			w := newWalker(nil, tc.skipDirs)
 			for dir, skipResult := range tc.skipMap {
 				assert.Equal(t, skipResult, w.shouldSkipDir(filepath.ToSlash(filepath.Clean(dir))), fmt.Sprintf("skipDirs: %s, dir: %s", tc.skipDirs, dir))
 			}

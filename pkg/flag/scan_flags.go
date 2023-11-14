@@ -57,6 +57,13 @@ var (
 		ConfigName: "scan.slow",
 		Default:    false,
 		Usage:      "scan over time with lower CPU and memory utilization",
+		Deprecated: true,
+	}
+	ParallelFlag = Flag{
+		Name:       "parallel",
+		ConfigName: "scan.parallel",
+		Default:    5,
+		Usage:      "number of goroutines enabled for parallel scanning",
 	}
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
@@ -85,7 +92,8 @@ type ScanFlagGroup struct {
 	OfflineScan    *Flag
 	Scanners       *Flag
 	FilePatterns   *Flag
-	Slow           *Flag
+	Slow           *Flag // deprecated
+	Parallel       *Flag
 	SBOMSources    *Flag
 	RekorURL       *Flag
 	IncludeDevDeps *Flag
@@ -98,7 +106,7 @@ type ScanOptions struct {
 	OfflineScan    bool
 	Scanners       types.Scanners
 	FilePatterns   []string
-	Slow           bool
+	Parallel       int
 	SBOMSources    []string
 	RekorURL       string
 	IncludeDevDeps bool
@@ -111,10 +119,11 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		OfflineScan:    &OfflineScanFlag,
 		Scanners:       &ScannersFlag,
 		FilePatterns:   &FilePatternsFlag,
-		Slow:           &SlowFlag,
+		Parallel:       &ParallelFlag,
 		SBOMSources:    &SBOMSourcesFlag,
 		RekorURL:       &RekorURLFlag,
 		IncludeDevDeps: &IncludeDevDepsFlag,
+		Slow:           &SlowFlag,
 	}
 }
 
@@ -130,6 +139,7 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 		f.Scanners,
 		f.FilePatterns,
 		f.Slow,
+		f.Parallel,
 		f.SBOMSources,
 		f.RekorURL,
 		f.IncludeDevDeps,
@@ -149,7 +159,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    getBool(f.OfflineScan),
 		Scanners:       getUnderlyingStringSlice[types.Scanner](f.Scanners),
 		FilePatterns:   getStringSlice(f.FilePatterns),
-		Slow:           getBool(f.Slow),
+		Parallel:       getInt(f.Parallel),
 		SBOMSources:    getStringSlice(f.SBOMSources),
 		RekorURL:       getString(f.RekorURL),
 		IncludeDevDeps: getBool(f.IncludeDevDeps),
