@@ -95,11 +95,11 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	output, err := r.flagOpts.OutputWriter()
+	output, cleanup, err := r.flagOpts.OutputWriter()
 	if err != nil {
 		return xerrors.Errorf("failed to create output file: %w", err)
 	}
-	defer output.Close()
+	defer cleanup()
 
 	if r.flagOpts.Compliance.Spec.ID != "" {
 		var scanResults []types.Results

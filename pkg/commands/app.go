@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -862,13 +863,14 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := flag.NewScanFlagGroup()
 	scanners := flag.ScannersFlag
-	scanners.Default = fmt.Sprintf( // overwrite the default value
-		"%s,%s,%s,%s",
+	// overwrite the default scanners
+	scanners.Values = xstrings.ToStringSlice(types.Scanners{
 		types.VulnerabilityScanner,
 		types.MisconfigScanner,
 		types.SecretScanner,
 		types.RBACScanner,
-	)
+	})
+	scanners.Default = scanners.Values
 	scanFlags.Scanners = &scanners
 	scanFlags.IncludeDevDeps = nil // disable '--include-dev-deps'
 
@@ -971,6 +973,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	services := awsScanner.AllSupportedServices()
+	sort.Strings(services)
 
 	cmd := &cobra.Command{
 		Use:     "aws [flags]",
@@ -981,6 +984,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Long: fmt.Sprintf(`Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
 
 The following services are supported:
+
 - %s
 `, strings.Join(services, "\n- ")),
 		Example: `  # basic scanning

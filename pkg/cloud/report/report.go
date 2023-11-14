@@ -59,11 +59,11 @@ func (r *Report) Failed() bool {
 
 // Write writes the results in the give format
 func Write(rep *Report, opt flag.Options, fromCache bool) error {
-	output, err := opt.OutputWriter()
+	output, cleanup, err := opt.OutputWriter()
 	if err != nil {
 		return xerrors.Errorf("failed to create output file: %w", err)
 	}
-	defer output.Close()
+	defer cleanup()
 
 	if opt.Compliance.Spec.ID != "" {
 		return writeCompliance(rep, opt, output)
@@ -104,7 +104,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		// ensure color/formatting is disabled for pipes/non-pty
 		var useANSI bool
-		if opt.Output == "" {
+		if output == os.Stdout {
 			if o, err := os.Stdout.Stat(); err == nil {
 				useANSI = (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 			}
