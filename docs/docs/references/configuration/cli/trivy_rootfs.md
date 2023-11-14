@@ -56,6 +56,7 @@ trivy rootfs [flags] ROOTDIR
       --no-progress                       suppress progress bar
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
+      --parallel int                      number of goroutines enabled for parallel scanning (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
@@ -77,7 +78,6 @@ trivy rootfs [flags] ROOTDIR
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
       --skip-policy-update                skip fetching rego policy updates
-      --slow                              scan over time with lower CPU and memory utilization
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
