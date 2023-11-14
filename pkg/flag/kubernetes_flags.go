@@ -203,8 +203,8 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 			if err != nil {
 				return nil, fmt.Errorf("TolerationSeconds must must be a number")
 			}
+			toleration.TolerationSeconds = lo.ToPtr(int64(tolerationSec))
 		}
-		toleration.TolerationSeconds = lo.ToPtr(int64(tolerationSec))
 		tolerations = append(tolerations, toleration)
 	}
 	return tolerations, nil
