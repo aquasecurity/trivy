@@ -863,13 +863,14 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := flag.NewScanFlagGroup()
 	scanners := flag.ScannersFlag
-	scanners.Default = fmt.Sprintf( // overwrite the default value
-		"%s,%s,%s,%s",
+	// overwrite the default scanners
+	scanners.Values = xstrings.ToStringSlice(types.Scanners{
 		types.VulnerabilityScanner,
 		types.MisconfigScanner,
 		types.SecretScanner,
 		types.RBACScanner,
-	)
+	})
+	scanners.Default = scanners.Values
 	scanFlags.Scanners = &scanners
 	scanFlags.IncludeDevDeps = nil // disable '--include-dev-deps'
 
