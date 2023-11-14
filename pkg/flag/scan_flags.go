@@ -1,6 +1,9 @@
 package flag
 
 import (
+	"runtime"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
@@ -63,7 +66,7 @@ var (
 		Name:       "parallel",
 		ConfigName: "scan.parallel",
 		Default:    5,
-		Usage:      "number of goroutines enabled for parallel scanning",
+		Usage:      "number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism",
 	}
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
@@ -152,6 +155,12 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		target = args[0]
 	}
 
+	parallel := getInt(f.Parallel)
+	if parallel == 0 {
+		log.Logger.Infof("Set '--parallel' to the number of CPUs (%d)", runtime.NumCPU())
+		parallel = runtime.NumCPU()
+	}
+
 	return ScanOptions{
 		Target:         target,
 		SkipDirs:       getStringSlice(f.SkipDirs),
@@ -159,7 +168,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    getBool(f.OfflineScan),
 		Scanners:       getUnderlyingStringSlice[types.Scanner](f.Scanners),
 		FilePatterns:   getStringSlice(f.FilePatterns),
-		Parallel:       getInt(f.Parallel),
+		Parallel:       parallel,
 		SBOMSources:    getStringSlice(f.SBOMSources),
 		RekorURL:       getString(f.RekorURL),
 		IncludeDevDeps: getBool(f.IncludeDevDeps),
