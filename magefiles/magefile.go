@@ -266,6 +266,12 @@ func (t Test) Module() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=module_integration", "./integration/...")
 }
 
+// UpdateModuleGolden updates golden files for Wasm integration tests
+func (t Test) UpdateModuleGolden() error {
+	mg.Deps(t.FixtureContainerImages, t.GenerateExampleModules)
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=module_integration", "./integration/...", "-update")
+}
+
 // VM runs VM integration tests
 func (t Test) VM() error {
 	mg.Deps(t.FixtureVMImages)
