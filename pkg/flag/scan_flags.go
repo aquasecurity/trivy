@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
@@ -41,7 +42,10 @@ var (
 			switch s {
 			case "vulnerability":
 				return string(types.VulnerabilityScanner)
-			case "config", "misconf", "misconfiguration":
+			case "misconf", "misconfiguration":
+				return string(types.MisconfigScanner)
+			case "config":
+				log.Logger.Warn("'--scanner config' is deprecated. Use '--scanner misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.")
 				return string(types.MisconfigScanner)
 			}
 			return s
