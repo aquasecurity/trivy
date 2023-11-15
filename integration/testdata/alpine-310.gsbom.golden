@@ -11,7 +11,7 @@
     "correlator": "workflow-name_integration",
     "id": "1910764383"
   },
-  "scanned": "2020-08-10T07:28:17Z",
+  "scanned": "2021-08-25T12:20:30Z",
   "manifests": {
     "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)": {
       "name": "alpine",

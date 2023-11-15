@@ -11,6 +11,7 @@ import (
 // Report represents a scan result
 type Report struct {
 	SchemaVersion int                 `json:",omitempty"`
+	CreatedAt     int64               `json:",omitempty"`
 	ArtifactName  string              `json:",omitempty"`
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
 	Metadata      Metadata            `json:",omitempty"`

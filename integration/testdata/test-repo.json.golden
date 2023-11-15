@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": 1629894030,
   "ArtifactName": "https://github.com/knqyf263/trivy-ci-test",
   "ArtifactType": "repository",
   "Metadata": {

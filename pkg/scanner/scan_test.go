@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -17,6 +19,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 	type args struct {
 		options types.ScanOptions
 	}
+	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	tests := []struct {
 		name               string
 		args               args
@@ -96,6 +99,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			},
 			want: types.Report{
 				SchemaVersion: 2,
+				CreatedAt:     1629894030,
 				ArtifactName:  "alpine:3.11",
 				ArtifactType:  ftypes.ArtifactContainerImage,
 				Metadata: types.Metadata{
