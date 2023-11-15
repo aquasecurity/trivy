@@ -259,7 +259,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	)
 
 	if opt.Debug {
-		opts = append(opts, options.ScannerWithDebug(&log.DebugLogger{Name: "misconf"}))
+		opts = append(opts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "misconf"}))
 	}
 
 	if opt.Trace {

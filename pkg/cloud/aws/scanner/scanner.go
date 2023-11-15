@@ -43,11 +43,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	if option.Debug {
-		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&log.DebugLogger{Name: "aws"}))
+		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "aws"}))
 	}
 
 	if option.Trace {
-		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&log.DebugLogger{Name: "aws"}))
+		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&log.PrefixedLogger{Name: "aws"}))
 	}
 
 	if option.Region != "" {

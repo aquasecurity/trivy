@@ -123,11 +123,11 @@ func String(key, val string) zap.Field {
 	return zap.String(key, val)
 }
 
-type DebugLogger struct {
+type PrefixedLogger struct {
 	Name string
 }
 
-func (d *DebugLogger) Write(p []byte) (n int, err error) {
+func (d *PrefixedLogger) Write(p []byte) (n int, err error) {
 	Logger.Debugf("[%s] %s", d.Name, strings.TrimSpace(string(p)))
 	return len(p), nil
 }
