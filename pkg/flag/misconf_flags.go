@@ -57,9 +57,9 @@ var (
 	}
 	CfParamsFlag = Flag{
 		Name:       "cf-params",
-		ConfigName: "misconfiguration.cloudformation.vars",
+		ConfigName: "misconfiguration.cloudformation.params",
 		Default:    []string{},
-		Usage:      "specify paths to override the Cloudformation parameters files",
+		Usage:      "specify paths to override the CloudFormation parameters files",
 	}
 	TerraformExcludeDownloaded = Flag{
 		Name:       "tf-exclude-downloaded-modules",
