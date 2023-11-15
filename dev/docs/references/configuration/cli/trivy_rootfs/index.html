@@ -3675,7 +3675,7 @@ You're not viewing the latest version.
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignored-licenses strings          specify a list of license to ignore
       --ignorefile string                 specify .trivyignore file (default &quot;.trivyignore&quot;)
-      --include-non-failures              include successes and exceptions, available with &#39;--scanners config&#39;
+      --include-non-failures              include successes and exceptions, available with &#39;--scanners misconfig&#39;
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default &quot;ghcr.io/aquasecurity/trivy-java-db&quot;)
       --license-confidence-level float    specify license classifier&#39;s confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files
@@ -3696,7 +3696,7 @@ You're not viewing the latest version.
       --reset                             remove all caches and database
       --reset-policy-bundle               remove policy bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
-      --scanners strings                  comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
+      --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,license) (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default &quot;trivy-secret.yaml&quot;)
       --server string                     server address in client mode
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])

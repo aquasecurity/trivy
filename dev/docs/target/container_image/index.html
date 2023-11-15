@@ -4028,8 +4028,8 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 <h3 id="misconfigurations">Misconfigurations</h3>
 <p>It is supported, but it is not useful in most cases.
 As mentioned <a href="../../scanner/misconfiguration/">here</a>, Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
-If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with <code>--scanners config</code>.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --scanners config [YOUR_IMAGE_NAME]
+If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with <code>--scanners misconfig</code>.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --scanners misconfig [YOUR_IMAGE_NAME]
 </code></pre></div>
 <h3 id="secrets">Secrets</h3>
 <p>It is enabled by default.

@@ -3791,7 +3791,7 @@ In this case, the folder only containes Terraform configuration files. However, 
 <p>We have lots of examples in the <a href="https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/custom/">documentation</a> on how you can write and pass custom Rego policies into terraform misconfiguration scans. </p>
 <h2 id="secret-and-vulnerability-scans">Secret and vulnerability scans</h2>
 <p>The <code>trivy config</code> command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your <code>trivy fs</code> scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: </p>
-<div class="highlight"><pre><span></span><code>trivy fs --scanners secret,config ./
+<div class="highlight"><pre><span></span><code>trivy fs --scanners secret,misconfig ./
 </code></pre></div>
 <p>The <code>trivy config</code> command is a sub-command of the <code>trivy fs</code> command. You can learn more about this command in the <a href="https://aquasecurity.github.io/trivy/latest/docs/target/filesystem/">documentation.</a> </p>
 <h2 id="scanning-terraform-plan-files">Scanning Terraform Plan files</h2>
