@@ -41,7 +41,7 @@ type Storage struct {
 
 func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobInfo, error) {
 	var wg sync.WaitGroup
-	limit := semaphore.New(a.artifactOption.Slow)
+	limit := semaphore.New(a.artifactOption.Parallel)
 	result := analyzer.NewAnalysisResult()
 
 	opts := analyzer.AnalysisOptions{
@@ -119,14 +119,7 @@ func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (art
 	if err != nil {
 		return nil, xerrors.Errorf("handler init error: %w", err)
 	}
-	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-		Group:                opt.AnalyzerGroup,
-		FilePatterns:         opt.FilePatterns,
-		DisabledAnalyzers:    opt.DisabledAnalyzers,
-		MisconfScannerOption: opt.MisconfScannerOption,
-		SecretScannerOption:  opt.SecretScannerOption,
-		LicenseScannerOption: opt.LicenseScannerOption,
-	})
+	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerOptions())
 	if err != nil {
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
@@ -135,7 +128,7 @@ func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (art
 		cache:          c,
 		analyzer:       a,
 		handlerManager: handlerManager,
-		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
+		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs),
 		artifactOption: opt,
 	}
 

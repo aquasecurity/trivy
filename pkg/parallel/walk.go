@@ -12,10 +12,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+const defaultParallel = 5
+
 type onFile[T any] func(string, fs.FileInfo, dio.ReadSeekerAt) (T, error)
 type onWalkResult[T any] func(T) error
 
-func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, slow bool,
+func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 	onFile onFile[T], onResult onWalkResult[T]) error {
 
 	g, ctx := errgroup.WithContext(ctx)
@@ -54,11 +56,10 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, slow bool,
 
 	// Start a fixed number of goroutines to read and digest files.
 	c := make(chan T)
-	limit := 10
-	if slow {
-		limit = 1
+	if parallel == 0 {
+		parallel = defaultParallel
 	}
-	for i := 0; i < limit; i++ {
+	for i := 0; i < parallel; i++ {
 		g.Go(func() error {
 			for path := range paths {
 				if err := walk(ctx, fsys, path, c, onFile); err != nil {

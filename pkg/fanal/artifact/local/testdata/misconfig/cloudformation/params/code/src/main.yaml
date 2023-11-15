@@ -1,0 +1,10 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  KmsMasterKeyId:
+    Type: String
+Resources:
+  TestQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: worst-possible-queue
+      KmsMasterKeyId: !Ref KmsMasterKeyId

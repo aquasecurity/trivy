@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": 1629894030,
   "ArtifactName": "testdata/fixtures/images/rockylinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
