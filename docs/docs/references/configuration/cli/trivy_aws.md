@@ -82,7 +82,7 @@ trivy aws [flags]
   -h, --help                              help for aws
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
-      --include-non-failures              include successes and exceptions, available with '--scanners config'
+      --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
       --max-cache-age duration            The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this. (default 24h0m0s)
   -o, --output string                     output file name

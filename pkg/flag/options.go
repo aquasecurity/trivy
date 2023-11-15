@@ -41,6 +41,10 @@ type Flag struct {
 	// It currently supports string flags and string slice flags only.
 	Values []string
 
+	// ValueNormalize is a function to normalize the value.
+	// It can be used for aliases, etc.
+	ValueNormalize func(string) string
+
 	// Usage explains how to use the flag.
 	Usage string
 
@@ -203,13 +207,13 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 		if len(flag.Values) > 0 {
 			usage += fmt.Sprintf(" (%s)", strings.Join(flag.Values, ","))
 		}
-		flags.VarP(newCustomStringValue(v, flag.Values), flag.Name, flag.Shorthand, usage)
+		flags.VarP(newCustomStringValue(v, flag.Values, flag.ValueNormalize), flag.Name, flag.Shorthand, usage)
 	case []string:
 		usage := flag.Usage
 		if len(flag.Values) > 0 {
 			usage += fmt.Sprintf(" (%s)", strings.Join(flag.Values, ","))
 		}
-		flags.VarP(newCustomStringSliceValue(v, flag.Values), flag.Name, flag.Shorthand, usage)
+		flags.VarP(newCustomStringSliceValue(v, flag.Values, flag.ValueNormalize), flag.Name, flag.Shorthand, usage)
 	case bool:
 		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:

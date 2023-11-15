@@ -37,6 +37,15 @@ var (
 			types.SecretScanner,
 			types.LicenseScanner,
 		}),
+		ValueNormalize: func(s string) string {
+			switch s {
+			case "vulnerability":
+				return string(types.VulnerabilityScanner)
+			case "config", "misconf", "misconfiguration":
+				return string(types.MisconfigScanner)
+			}
+			return s
+		},
 		Aliases: []Alias{
 			{
 				Name:       "security-checks",

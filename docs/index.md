@@ -82,7 +82,7 @@ trivy image python:3.4-alpine
 </details>
 
 ```bash
-trivy fs --scanners vuln,secret,config myproject/
+trivy fs --scanners vuln,secret,misconfig myproject/
 ```
 
 <details>
