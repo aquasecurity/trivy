@@ -112,8 +112,9 @@ scan:
   # Default depends on subcommand
   scanners:
     - vuln
-    - config
+    - misconfig
     - secret
+    - license
 ```
 
 ## Cache Options

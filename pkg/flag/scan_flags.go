@@ -40,6 +40,18 @@ var (
 			types.SecretScanner,
 			types.LicenseScanner,
 		}),
+		ValueNormalize: func(s string) string {
+			switch s {
+			case "vulnerability":
+				return string(types.VulnerabilityScanner)
+			case "misconf", "misconfiguration":
+				return string(types.MisconfigScanner)
+			case "config":
+				log.Logger.Warn("'--scanner config' is deprecated. Use '--scanner misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.")
+				return string(types.MisconfigScanner)
+			}
+			return s
+		},
 		Aliases: []Alias{
 			{
 				Name:       "security-checks",

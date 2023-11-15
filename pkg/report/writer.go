@@ -25,11 +25,11 @@ const (
 
 // Write writes the result to output, format as passed in argument
 func Write(report types.Report, option flag.Options) error {
-	output, err := option.OutputWriter()
+	output, cleanup, err := option.OutputWriter()
 	if err != nil {
 		return xerrors.Errorf("failed to create a file: %w", err)
 	}
-	defer output.Close()
+	defer cleanup()
 
 	// Compliance report
 	if option.Compliance.Spec.ID != "" {

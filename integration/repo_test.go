@@ -371,10 +371,10 @@ func TestRepository(t *testing.T) {
 			},
 		},
 		{
-			name: "dockerfile with fs subcommand",
+			name: "dockerfile with fs subcommand and an alias scanner",
 			args: args{
 				command:     "fs",
-				scanner:     types.MisconfigScanner,
+				scanner:     "config", // for backward compatibility
 				policyPaths: []string{"testdata/fixtures/repo/custom-policy/policy"},
 				namespaces:  []string{"user"},
 				input:       "testdata/fixtures/repo/custom-policy",
@@ -490,7 +490,7 @@ func TestRepository(t *testing.T) {
 			osArgs = append(osArgs, "--output", outputFile)
 			osArgs = append(osArgs, tt.args.input)
 
-			clock.SetFakeTime(t, time.Date(2020, 9, 10, 14, 20, 30, 5, time.UTC))
+			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			// Run "trivy repo"
