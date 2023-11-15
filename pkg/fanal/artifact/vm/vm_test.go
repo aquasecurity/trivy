@@ -55,6 +55,7 @@ func (m *mockWalker) Walk(_ *io.SectionReader, _ string, fn walker.WalkFunc) err
 		if err != nil {
 			return err
 		}
+		relPath = filepath.ToSlash(relPath)
 		return fn(relPath, info, opener)
 	})
 }
