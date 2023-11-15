@@ -273,7 +273,8 @@ func (t Test) VM() error {
 }
 
 // UpdateVMGolden updates golden files for integration tests
-func (Test) UpdateVMGolden() error {
+func (t Test) UpdateVMGolden() error {
+	mg.Deps(t.FixtureVMImages)
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
 }
 
