@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
   "CreatedAt": 1629894030,
-  "ArtifactName": "localhost:55844/alpine:3.10",
+  "ArtifactName": "localhost:53869/alpine:3.10",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
@@ -14,10 +14,10 @@
       "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     ],
     "RepoTags": [
-      "localhost:55844/alpine:3.10"
+      "localhost:53869/alpine:3.10"
     ],
     "RepoDigests": [
-      "localhost:55844/alpine@sha256:b1c5a500182b21d0bfa5a584a8526b56d8be316f89e87d951be04abed2446e60"
+      "localhost:53869/alpine@sha256:b1c5a500182b21d0bfa5a584a8526b56d8be316f89e87d951be04abed2446e60"
     ],
     "ImageConfig": {
       "architecture": "amd64",
@@ -56,7 +56,7 @@
   },
   "Results": [
     {
-      "Target": "localhost:55844/alpine:3.10 (alpine 3.10.2)",
+      "Target": "localhost:53869/alpine:3.10 (alpine 3.10.2)",
       "Class": "os-pkgs",
       "Type": "alpine",
       "Vulnerabilities": [
