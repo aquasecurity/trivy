@@ -68,6 +68,7 @@ trivy aws [flags]
 ```
       --account string                    The AWS account to scan. It's useful to specify this when reviewing cached results for multiple accounts.
       --arn string                        The AWS ARN to show results for. Useful to filter results once a scan is cached.
+      --cf-params strings                 specify paths to override the CloudFormation parameters files
       --compliance string                 compliance report to generate (aws-cis-1.2,aws-cis-1.4)
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files

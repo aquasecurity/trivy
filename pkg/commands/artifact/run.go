@@ -583,6 +583,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			HelmFileValues:           opts.HelmFileValues,
 			HelmStringValues:         opts.HelmStringValues,
 			TerraformTFVars:          opts.TerraformTFVars,
+			CloudFormationParamVars:  opts.CloudFormationParamVars,
 			K8sVersion:               opts.K8sVersion,
 			DisableEmbeddedPolicies:  disableEmbedded,
 			DisableEmbeddedLibraries: disableEmbedded,

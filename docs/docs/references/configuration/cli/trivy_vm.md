@@ -71,7 +71,6 @@ trivy vm [flags] VM_IMAGE
       --skip-java-db-update               skip updating Java index database
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
-      --tf-vars strings                   specify paths to override the Terraform tfvars files
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
