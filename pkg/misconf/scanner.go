@@ -68,14 +68,6 @@ func (o *ScannerOption) Sort() {
 	sort.Strings(o.DataPaths)
 }
 
-//type DebugLogger struct {
-//}
-//
-//func (d *DebugLogger) Write(p []byte) (n int, err error) {
-//	log.Logger.Debug("[misconf] " + strings.TrimSpace(string(p)))
-//	return len(p), nil
-//}
-
 type Scanner struct {
 	fileType       detection.FileType
 	scanner        scanners.FSScanner

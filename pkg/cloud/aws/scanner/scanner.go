@@ -159,14 +159,6 @@ func createState(freshState *state.State, awsCache *cache.Cache) (*state.State, 
 	return fullState, nil
 }
 
-//	type DebugLogger struct {
-//		name string
-//	}
-//
-//	func (d *DebugLogger) Write(p []byte) (n int, err error) {
-//		log.Logger.Debug("[aws] " + strings.TrimSpace(string(p)))
-//		return len(p), nil
-//	}
 func addPolicyNamespaces(namespaces []string, scannerOpts []options.ScannerOption) []options.ScannerOption {
 	if len(namespaces) > 0 {
 		scannerOpts = append(
