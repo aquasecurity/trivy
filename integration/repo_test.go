@@ -3,6 +3,7 @@
 package integration
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,6 +37,7 @@ func TestRepository(t *testing.T) {
 		command        string
 		format         types.Format
 		includeDevDeps bool
+		parallel       int
 	}
 	tests := []struct {
 		name     string
@@ -68,6 +70,15 @@ func TestRepository(t *testing.T) {
 				skipDirs: []string{"testdata/fixtures/repo/gomod/submod2"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
+		},
+		{
+			name: "gomod in series",
+			args: args{
+				scanner:  types.VulnerabilityScanner,
+				input:    "testdata/fixtures/repo/gomod",
+				parallel: 1,
+			},
+			golden: "testdata/gomod.json.golden",
 		},
 		{
 			name: "npm",
@@ -396,13 +407,12 @@ func TestRepository(t *testing.T) {
 
 			osArgs := []string{
 				"-q",
-				"--cache-dir",
-				cacheDir,
+				"--cache-dir", cacheDir,
 				command,
 				"--skip-db-update",
 				"--skip-policy-update",
-				"--format",
-				string(format),
+				"--format", string(format),
+				"--parallel", fmt.Sprint(tt.args.parallel),
 				"--offline-scan",
 			}
 

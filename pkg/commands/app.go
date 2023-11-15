@@ -1098,6 +1098,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlagGroup := flag.NewScanFlagGroup()
 	scanFlagGroup.Scanners = nil       // disable '--scanners' as it always scans for vulnerabilities
 	scanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+	scanFlagGroup.Parallel = nil       // disable '--parallel'
 
 	sbomFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
