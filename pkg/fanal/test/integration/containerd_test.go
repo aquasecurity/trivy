@@ -205,12 +205,12 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 		require.NoError(t, execErr)
 		b, readErr := io.ReadAll(r)
 		require.NoError(t, readErr)
-		fmt.Println(i)
-		fmt.Println(string(b))
+		t.Log(i)
+		t.Log(string(b))
 
 		info, statErr := os.Stat(socketPath)
 		require.NoError(t, statErr)
-		fmt.Println(info.Mode())
+		t.Log(info.Mode())
 
 		require.NoError(t, err)
 	}
@@ -685,12 +685,12 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 		require.NoError(t, execErr)
 		b, readErr := io.ReadAll(r)
 		require.NoError(t, readErr)
-		fmt.Println(i)
-		fmt.Println(string(b))
+		t.Log(i)
+		t.Log(string(b))
 
 		info, statErr := os.Stat(socketPath)
 		require.NoError(t, statErr)
-		fmt.Println(info.Mode())
+		t.Log(info.Mode())
 
 		require.NoError(t, err)
 	}
@@ -845,12 +845,12 @@ func TestContainerd_PullImage(t *testing.T) {
 		require.NoError(t, execErr)
 		b, readErr := io.ReadAll(r)
 		require.NoError(t, readErr)
-		fmt.Println(i)
-		fmt.Println(string(b))
+		t.Log(i)
+		t.Log(string(b))
 
 		info, statErr := os.Stat(socketPath)
 		require.NoError(t, statErr)
-		fmt.Println(info.Mode())
+		t.Log(info.Mode())
 
 		require.NoError(t, err)
 	}
