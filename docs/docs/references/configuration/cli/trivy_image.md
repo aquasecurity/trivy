@@ -36,7 +36,6 @@ trivy image [flags] IMAGE_NAME
 ```
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
-      --cf-params strings                 specify paths to override the Cloudformation parameters files
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate (docker-cis)
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
@@ -101,7 +100,6 @@ trivy image [flags] IMAGE_NAME
       --slow                              scan over time with lower CPU and memory utilization
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
-      --tf-vars strings                   specify paths to override the Terraform tfvars files
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --trace                             enable more verbose trace output for custom queries

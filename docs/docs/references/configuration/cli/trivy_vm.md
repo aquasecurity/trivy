@@ -23,7 +23,6 @@ trivy vm [flags] VM_IMAGE
       --aws-region string                 AWS region to scan
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
-      --cf-params strings                 specify paths to override the Cloudformation parameters files
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate
       --custom-headers strings            custom headers in client mode
@@ -72,7 +71,6 @@ trivy vm [flags] VM_IMAGE
       --slow                              scan over time with lower CPU and memory utilization
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
-      --tf-vars strings                   specify paths to override the Terraform tfvars files
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])

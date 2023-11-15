@@ -24,7 +24,7 @@ trivy rootfs [flags] ROOTDIR
 ```
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
-      --cf-params strings                 specify paths to override the Cloudformation parameters files
+      --cf-params strings                 specify paths to override the CloudFormation parameters files
       --clear-cache                       clear image caches without scanning
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
