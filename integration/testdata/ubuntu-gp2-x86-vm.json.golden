@@ -29,6 +29,9 @@
           "VulnerabilityID": "CVE-2022-3715",
           "PkgID": "bash@5.1-6ubuntu1",
           "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:dpkg/bash@5.1-6ubuntu1"
+          },
           "InstalledVersion": "5.1-6ubuntu1",
           "Status": "affected",
           "Layer": {},

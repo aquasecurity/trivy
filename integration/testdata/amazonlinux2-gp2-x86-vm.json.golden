@@ -29,6 +29,9 @@
           "VulnerabilityID": "CVE-2022-38177",
           "PkgID": "bind-export-libs@9.11.4-26.P2.amzn2.5.2.x86_64",
           "PkgName": "bind-export-libs",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/bind-export-libs@32%3A9.11.4-26.P2.amzn2.5.2"
+          },
           "InstalledVersion": "32:9.11.4-26.P2.amzn2.5.2",
           "FixedVersion": "99:9.11.4-26.P2.amzn2.13",
           "Status": "fixed",
