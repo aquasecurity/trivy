@@ -156,7 +156,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	}
 
 	parallel := getInt(f.Parallel)
-	if parallel == 0 {
+	if f.Parallel != nil && parallel == 0 {
 		log.Logger.Infof("Set '--parallel' to the number of CPUs (%d)", runtime.NumCPU())
 		parallel = runtime.NumCPU()
 	}
