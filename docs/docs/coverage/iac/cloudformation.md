@@ -24,12 +24,12 @@ You can provide `cf-params` with path to [CloudFormation Parameters] file to Tri
 trivy conf --cf-params params.json ./infrastructure/cf
 ```
 
-You can find an example of CloudFormation parameters [here](CloudFormation Params Example)
+You can check a [CloudFormation Parameters Example]
 
 ## Secret
 The secret scan is performed on plain text files, with no special treatment for CloudFormation.
 
 [Misconfiguration]: ../../scanner/misconfiguration/index.md
 [Secret]: ../../scanner/secret.md
-[CloudFormation Params]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-[CloudFormation Params Example]: https://awscli.amazonaws.com/v2/documentation/api/latest/reference/cloudformation/deploy.html#supported-json-syntax
+[CloudFormation Parameters]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+[CloudFormation Parameters Example]: https://awscli.amazonaws.com/v2/documentation/api/latest/reference/cloudformation/deploy.html#supported-json-syntax
