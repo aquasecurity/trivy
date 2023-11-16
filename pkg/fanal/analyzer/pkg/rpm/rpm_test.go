@@ -151,6 +151,11 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 					SrcVersion: "2.17",
 					SrcRelease: "317.el7",
 					Maintainer: "Red Hat",
+					InstalledFiles: []string{
+						"/etc/ld.so.conf",
+						"/etc/rpc",
+						"/lib64/libm-2.27.so",
+					},
 				},
 			},
 			wantFiles: []string{
