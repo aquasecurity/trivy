@@ -20,7 +20,7 @@ type onWalkResult[T any] func(T) error
 func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 	onFile onFile[T], onResult onWalkResult[T]) error {
 	if parallel == 0 {
-		parallel = 5 // Set the default value
+		parallel = defaultParallel // Set the default value
 	}
 
 	g, ctx := errgroup.WithContext(ctx)

@@ -2,13 +2,12 @@ package vm
 
 import (
 	"context"
-	semaphore "github.com/aquasecurity/trivy/pkg/semaphore"
-	"github.com/google/wire"
 	"io"
 	"os"
 	"strings"
 	"sync"
 
+	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -17,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	semaphore "github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Type string

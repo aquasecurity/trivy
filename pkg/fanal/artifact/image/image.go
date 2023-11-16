@@ -3,7 +3,6 @@ package image
 import (
 	"context"
 	"errors"
-	"github.com/aquasecurity/trivy/pkg/semaphore"
 	"io"
 	"os"
 	"reflect"
@@ -24,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/parallel"
+	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Artifact struct {
