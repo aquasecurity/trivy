@@ -2,7 +2,9 @@ package report
 
 import (
 	"bytes"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"testing"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/stretchr/testify/assert"
@@ -146,6 +148,7 @@ Scan Overview for AWS Account
 			},
 			fromCache: false,
 			expected: `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactType": "aws_account",
   "Metadata": {
     "ImageConfig": {
@@ -306,6 +309,7 @@ Scan Overview for AWS Account
 }`,
 		},
 	}
+	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			report := New(

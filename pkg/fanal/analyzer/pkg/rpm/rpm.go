@@ -139,9 +139,10 @@ func (a rpmPkgAnalyzer) listPkgs(db RPMDB) (types.Packages, []string, error) {
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
 			}
-			files = lo.Map(files, func(file string, _ int) string {
-				return filepath.ToSlash(file)
-			})
+
+			for i, file := range files {
+				files[i] = filepath.ToSlash(file)
+			}
 		}
 
 		// RPM DB uses MD5 digest
@@ -172,6 +173,7 @@ func (a rpmPkgAnalyzer) listPkgs(db RPMDB) (types.Packages, []string, error) {
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
 			Digest:          d,
+			InstalledFiles:  files,
 		}
 		p.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeRpm), p)
 		pkgs = append(pkgs, p)

@@ -3,6 +3,7 @@ package commands
 import (
 	"bytes"
 	"context"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"os"
 	"path/filepath"
 	"testing"
@@ -18,6 +19,7 @@ import (
 )
 
 const expectedS3ScanResult = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "12345678",
   "ArtifactType": "aws_account",
   "Metadata": {
@@ -265,6 +267,7 @@ const expectedS3ScanResult = `{
 `
 
 const expectedCustomScanResult = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "12345678",
   "ArtifactType": "aws_account",
   "Metadata": {
@@ -545,6 +548,7 @@ const expectedCustomScanResult = `{
 `
 
 const expectedS3AndCloudTrailResult = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "123456789",
   "ArtifactType": "aws_account",
   "Metadata": {
@@ -1124,6 +1128,8 @@ Summary Report for compliance: my-custom-spec
 			expectErr:    true,
 		},
 	}
+
+	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			if test.allServices != nil {
