@@ -41,12 +41,6 @@ type Option struct {
 	WalkerOption walker.Option
 }
 
-func (o *Option) Init() {
-	if o.Parallel == 0 {
-		o.Parallel = 5 // Set the default value
-	}
-}
-
 func (o *Option) AnalyzerOptions() analyzer.AnalyzerOptions {
 	return analyzer.AnalyzerOptions{
 		Group:                o.AnalyzerGroup,
