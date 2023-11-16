@@ -6,6 +6,7 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	flocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
@@ -66,7 +67,7 @@ var StandaloneSBOMSet = wire.NewSet(
 
 // StandaloneVMSet binds vm dependencies
 var StandaloneVMSet = wire.NewSet(
-	vm.NewArtifact,
+	vm.ArtifactSet,
 	StandaloneSuperSet,
 )
 
@@ -102,7 +103,7 @@ var RemoteSBOMSet = wire.NewSet(
 
 // RemoteVMSet binds vm dependencies for client/server mode
 var RemoteVMSet = wire.NewSet(
-	vm.NewArtifact,
+	vm.ArtifactSet,
 	RemoteSuperSet,
 )
 
@@ -172,6 +173,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	return types.Report{
 		SchemaVersion: report.SchemaVersion,
+		CreatedAt:     clock.Now().Unix(),
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{

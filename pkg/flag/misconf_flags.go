@@ -23,7 +23,7 @@ var (
 		Name:       "include-non-failures",
 		ConfigName: "misconfiguration.include-non-failures",
 		Default:    false,
-		Usage:      "include successes and exceptions, available with '--scanners config'",
+		Usage:      "include successes and exceptions, available with '--scanners misconfig'",
 	}
 	HelmValuesFileFlag = Flag{
 		Name:       "helm-values",
@@ -55,6 +55,12 @@ var (
 		Default:    []string{},
 		Usage:      "specify paths to override the Terraform tfvars files",
 	}
+	CfParamsFlag = Flag{
+		Name:       "cf-params",
+		ConfigName: "misconfiguration.cloudformation.params",
+		Default:    []string{},
+		Usage:      "specify paths to override the CloudFormation parameters files",
+	}
 	TerraformExcludeDownloaded = Flag{
 		Name:       "tf-exclude-downloaded-modules",
 		ConfigName: "misconfiguration.terraform.exclude-downloaded-modules",
@@ -69,7 +75,7 @@ var (
 	}
 )
 
-// MisconfFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
+// MisconfFlagGroup composes common printer flag structs used for commands providing misconfiguration scanning.
 type MisconfFlagGroup struct {
 	IncludeNonFailures     *Flag
 	ResetPolicyBundle      *Flag
@@ -81,6 +87,7 @@ type MisconfFlagGroup struct {
 	HelmFileValues             *Flag
 	HelmStringValues           *Flag
 	TerraformTFVars            *Flag
+	CloudformationParamVars    *Flag
 	TerraformExcludeDownloaded *Flag
 }
 
@@ -90,12 +97,13 @@ type MisconfOptions struct {
 	PolicyBundleRepository string
 
 	// Values Files
-	HelmValues          []string
-	HelmValueFiles      []string
-	HelmFileValues      []string
-	HelmStringValues    []string
-	TerraformTFVars     []string
-	TfExcludeDownloaded bool
+	HelmValues              []string
+	HelmValueFiles          []string
+	HelmFileValues          []string
+	HelmStringValues        []string
+	TerraformTFVars         []string
+	CloudFormationParamVars []string
+	TfExcludeDownloaded     bool
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -109,6 +117,7 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		HelmStringValues:           &HelmSetStringFlag,
 		HelmValueFiles:             &HelmValuesFileFlag,
 		TerraformTFVars:            &TfVarsFlag,
+		CloudformationParamVars:    &CfParamsFlag,
 		TerraformExcludeDownloaded: &TerraformExcludeDownloaded,
 	}
 }
@@ -128,19 +137,21 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 		f.HelmStringValues,
 		f.TerraformTFVars,
 		f.TerraformExcludeDownloaded,
+		f.CloudformationParamVars,
 	}
 }
 
 func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 	return MisconfOptions{
-		IncludeNonFailures:     getBool(f.IncludeNonFailures),
-		ResetPolicyBundle:      getBool(f.ResetPolicyBundle),
-		PolicyBundleRepository: getString(f.PolicyBundleRepository),
-		HelmValues:             getStringSlice(f.HelmValues),
-		HelmValueFiles:         getStringSlice(f.HelmValueFiles),
-		HelmFileValues:         getStringSlice(f.HelmFileValues),
-		HelmStringValues:       getStringSlice(f.HelmStringValues),
-		TerraformTFVars:        getStringSlice(f.TerraformTFVars),
-		TfExcludeDownloaded:    getBool(f.TerraformExcludeDownloaded),
+		IncludeNonFailures:      getBool(f.IncludeNonFailures),
+		ResetPolicyBundle:       getBool(f.ResetPolicyBundle),
+		PolicyBundleRepository:  getString(f.PolicyBundleRepository),
+		HelmValues:              getStringSlice(f.HelmValues),
+		HelmValueFiles:          getStringSlice(f.HelmValueFiles),
+		HelmFileValues:          getStringSlice(f.HelmFileValues),
+		HelmStringValues:        getStringSlice(f.HelmStringValues),
+		TerraformTFVars:         getStringSlice(f.TerraformTFVars),
+		CloudFormationParamVars: getStringSlice(f.CloudformationParamVars),
+		TfExcludeDownloaded:     getBool(f.TerraformExcludeDownloaded),
 	}, nil
 }

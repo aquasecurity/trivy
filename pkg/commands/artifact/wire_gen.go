@@ -134,7 +134,8 @@ func initializeVMScanner(ctx context.Context, filePath string, artifactCache cac
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
-	artifactArtifact, err := vm.NewArtifact(filePath, artifactCache, artifactOption)
+	walkerVM := walker.NewVM()
+	artifactArtifact, err := vm.NewArtifact(filePath, artifactCache, walkerVM, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -230,7 +231,8 @@ func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache
 func initializeRemoteVMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	artifactArtifact, err := vm.NewArtifact(path, artifactCache, artifactOption)
+	walkerVM := walker.NewVM()
+	artifactArtifact, err := vm.NewArtifact(path, artifactCache, walkerVM, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

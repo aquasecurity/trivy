@@ -575,6 +575,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			disableEmbedded = true
 		}
 		configScannerOptions = misconf.ScannerOption{
+			Debug:                    opts.Debug,
 			Trace:                    opts.Trace,
 			Namespaces:               append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
@@ -584,6 +585,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			HelmFileValues:           opts.HelmFileValues,
 			HelmStringValues:         opts.HelmStringValues,
 			TerraformTFVars:          opts.TerraformTFVars,
+			CloudFormationParamVars:  opts.CloudFormationParamVars,
 			K8sVersion:               opts.K8sVersion,
 			DisableEmbeddedPolicies:  disableEmbedded,
 			DisableEmbeddedLibraries: disableEmbedded,
@@ -627,8 +629,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
 			FilePatterns:      opts.FilePatterns,
-			Offline:           opts.OfflineScan,
 			Parallel:          opts.Parallel,
+			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
 			Insecure:          opts.Insecure,
 			RepoBranch:        opts.RepoBranch,

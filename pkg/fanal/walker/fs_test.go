@@ -79,7 +79,6 @@ func TestFS_Walk(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := walker.NewFS()
-
 			err := w.Walk(tt.rootDir, tt.option, tt.analyzeFn)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)

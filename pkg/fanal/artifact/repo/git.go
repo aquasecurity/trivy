@@ -19,18 +19,26 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
-var ArtifactSet = wire.NewSet(
-	walker.NewFS,
-	wire.Bind(new(walker.FSWalker), new(*walker.FS)),
-	NewArtifact,
+var (
+	ArtifactSet = wire.NewSet(
+		walker.NewFS,
+		wire.Bind(new(Walker), new(*walker.FS)),
+		NewArtifact,
+	)
+
+	_ Walker = (*walker.FS)(nil)
 )
+
+type Walker interface {
+	Walk(root string, opt walker.Option, fn walker.WalkFunc) error
+}
 
 type Artifact struct {
 	url   string
 	local artifact.Artifact
 }
 
-func NewArtifact(target string, c cache.ArtifactCache, w walker.FSWalker, artifactOpt artifact.Option) (
+func NewArtifact(target string, c cache.ArtifactCache, w Walker, artifactOpt artifact.Option) (
 	artifact.Artifact, func(), error) {
 
 	var cleanup func()
@@ -72,7 +80,7 @@ func (Artifact) Clean(_ types.ArtifactReference) error {
 	return nil
 }
 
-func tryLocalRepo(target string, c cache.ArtifactCache, w walker.FSWalker, artifactOpt artifact.Option) (artifact.Artifact, error) {
+func tryLocalRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt artifact.Option) (artifact.Artifact, error) {
 	if _, err := os.Stat(target); err != nil {
 		return nil, xerrors.Errorf("no such path: %w", err)
 	}
@@ -86,7 +94,7 @@ func tryLocalRepo(target string, c cache.ArtifactCache, w walker.FSWalker, artif
 	}, nil
 }
 
-func tryRemoteRepo(target string, c cache.ArtifactCache, w walker.FSWalker, artifactOpt artifact.Option) (artifact.Artifact, func(), error) {
+func tryRemoteRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt artifact.Option) (artifact.Artifact, func(), error) {
 	cleanup := func() {}
 	u, err := newURL(target)
 	if err != nil {

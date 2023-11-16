@@ -1,6 +1,9 @@
 package flag
 
 import (
+	"runtime"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
@@ -37,6 +40,18 @@ var (
 			types.SecretScanner,
 			types.LicenseScanner,
 		}),
+		ValueNormalize: func(s string) string {
+			switch s {
+			case "vulnerability":
+				return string(types.VulnerabilityScanner)
+			case "misconf", "misconfiguration":
+				return string(types.MisconfigScanner)
+			case "config":
+				log.Logger.Warn("'--scanner config' is deprecated. Use '--scanner misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.")
+				return string(types.MisconfigScanner)
+			}
+			return s
+		},
 		Aliases: []Alias{
 			{
 				Name:       "security-checks",
@@ -59,6 +74,12 @@ var (
 		Usage:      "scan over time with lower CPU and memory utilization",
 		Deprecated: true,
 	}
+	ParallelFlag = Flag{
+		Name:       "parallel",
+		ConfigName: "scan.parallel",
+		Default:    5,
+		Usage:      "number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism",
+	}
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
@@ -78,12 +99,6 @@ var (
 		Default:    false,
 		Usage:      "include development dependencies in the report (supported: npm, yarn)",
 	}
-	ParallelFlag = Flag{
-		Name:       "parallel",
-		ConfigName: "scan.parallel",
-		Default:    5,
-		Usage:      "number of goroutines enabled for parallel scanning",
-	}
 )
 
 type ScanFlagGroup struct {
@@ -92,7 +107,7 @@ type ScanFlagGroup struct {
 	OfflineScan    *Flag
 	Scanners       *Flag
 	FilePatterns   *Flag
-	Slow           *Flag
+	Slow           *Flag // deprecated
 	Parallel       *Flag
 	SBOMSources    *Flag
 	RekorURL       *Flag
@@ -152,6 +167,12 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		target = args[0]
 	}
 
+	parallel := getInt(f.Parallel)
+	if f.Parallel != nil && parallel == 0 {
+		log.Logger.Infof("Set '--parallel' to the number of CPUs (%d)", runtime.NumCPU())
+		parallel = runtime.NumCPU()
+	}
+
 	return ScanOptions{
 		Target:         target,
 		SkipDirs:       getStringSlice(f.SkipDirs),
@@ -159,7 +180,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    getBool(f.OfflineScan),
 		Scanners:       getUnderlyingStringSlice[types.Scanner](f.Scanners),
 		FilePatterns:   getStringSlice(f.FilePatterns),
-		Parallel:       getInt(f.Parallel),
+		Parallel:       parallel,
 		SBOMSources:    getStringSlice(f.SBOMSources),
 		RekorURL:       getString(f.RekorURL),
 		IncludeDevDeps: getBool(f.IncludeDevDeps),

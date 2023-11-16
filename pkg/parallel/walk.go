@@ -12,6 +12,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+const defaultParallel = 5
+
 type onFile[T any] func(string, fs.FileInfo, dio.ReadSeekerAt) (T, error)
 type onWalkResult[T any] func(T) error
 

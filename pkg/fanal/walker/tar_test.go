@@ -78,7 +78,6 @@ func TestLayerTar_Walk(t *testing.T) {
 			require.NoError(t, err)
 
 			w := walker.NewLayerTar(tt.option)
-
 			gotOpqDirs, gotWhFiles, err := w.Walk(f, tt.analyzeFn)
 			if tt.wantErr != "" {
 				require.Error(t, err)

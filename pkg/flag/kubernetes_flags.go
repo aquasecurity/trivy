@@ -149,6 +149,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 	if err != nil {
 		return K8sOptions{}, err
 	}
+
 	exludeNodeLabels := make(map[string]string)
 	exludeNodes := getStringSlice(f.ExcludeNodes)
 	for _, exludeNodeValue := range exludeNodes {

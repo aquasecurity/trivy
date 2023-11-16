@@ -13,12 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var _ FSWalker = (*FS)(nil)
-
-type FSWalker interface {
-	Walk(root string, opt Option, fn WalkFunc) error
-}
-
 // FS is the filesystem walker
 type FS struct{}
 

@@ -39,14 +39,14 @@ type VM struct {
 	analyzeFn WalkFunc
 }
 
-func NewVM(opt Option) VM {
-	return VM{
-		skipFiles: CleanSkipPaths(opt.SkipFiles),
-		skipDirs:  CleanSkipPaths(opt.SkipDirs),
-	}
+func NewVM() *VM {
+	return new(VM)
 }
 
-func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
+func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFunc) error {
+	w.skipFiles = opt.SkipFiles
+	w.skipDirs = append(w.skipDirs, defaultSkipDirs...)
+
 	// This function will be called on each file.
 	w.analyzeFn = fn
 

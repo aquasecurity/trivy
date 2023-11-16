@@ -109,8 +109,7 @@ func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner
 
 // vmStandaloneScanner initializes a VM scanner in standalone mode
 func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		conf.ArtifactOption)
+	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a vm scanner: %w", err)
 	}

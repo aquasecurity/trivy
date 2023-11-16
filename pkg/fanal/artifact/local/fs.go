@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"github.com/aquasecurity/trivy/pkg/semaphore"
 	"os"
 	"path"
 	"path/filepath"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/google/wire"
 	"github.com/opencontainers/go-digest"
-	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -23,25 +23,31 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
-var ArtifactSet = wire.NewSet(
-	walker.NewFS,
-	wire.Bind(new(walker.FSWalker), new(*walker.FS)),
-	NewArtifact,
+var (
+	ArtifactSet = wire.NewSet(
+		walker.NewFS,
+		wire.Bind(new(Walker), new(*walker.FS)),
+		NewArtifact,
+	)
+
+	_ Walker = (*walker.FS)(nil)
 )
+
+type Walker interface {
+	Walk(root string, opt walker.Option, fn walker.WalkFunc) error
+}
 
 type Artifact struct {
 	rootPath       string
 	cache          cache.ArtifactCache
-	walker         walker.FSWalker
+	walker         Walker
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 
 	artifactOption artifact.Option
 }
 
-func NewArtifact(rootPath string, c cache.ArtifactCache, w walker.FSWalker, opt artifact.Option) (artifact.Artifact, error) {
-	opt.Init()
-
+func NewArtifact(rootPath string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
 	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
 		return nil, xerrors.Errorf("handler initialize error: %w", err)
@@ -65,7 +71,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, w walker.FSWalker, opt 
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.NewWeighted(int64(a.artifactOption.Parallel))
+	limit := semaphore.New(a.artifactOption.Parallel)
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
 		FileChecksum: a.artifactOption.FileChecksum,

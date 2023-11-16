@@ -5,7 +5,6 @@ package artifact
 
 import (
 	"context"
-
 	"github.com/google/wire"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"

@@ -3,6 +3,7 @@ package image
 import (
 	"context"
 	"errors"
+	"github.com/aquasecurity/trivy/pkg/semaphore"
 	"io"
 	"os"
 	"reflect"
@@ -12,7 +13,6 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
-	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -43,8 +43,6 @@ type LayerInfo struct {
 }
 
 func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
-	opt.Init()
-
 	// Initialize handlers
 	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
@@ -257,7 +255,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		FileChecksum: a.artifactOption.FileChecksum,
 	}
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.NewWeighted(int64(a.artifactOption.Parallel))
+	limit := semaphore.New(a.artifactOption.Parallel)
 
 	// Prepare filesystem for post analysis
 	composite, err := a.analyzer.PostAnalyzerFS()

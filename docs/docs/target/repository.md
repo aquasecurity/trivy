@@ -82,11 +82,11 @@ Total: 10 (UNKNOWN: 2, LOW: 0, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
 </details>
 
 ### Misconfigurations
-It is disabled by default and can be enabled with `--scanners config`.
+It is disabled by default and can be enabled with `--scanners misconfig`.
 See [here](../scanner/misconfiguration/index.md) for the detail.
 
 ```shell
-$ trivy repo --scanners config (REPO_PATH | REPO_URL)
+$ trivy repo --scanners misconfig (REPO_PATH | REPO_URL)
 ```
 
 ### Secrets

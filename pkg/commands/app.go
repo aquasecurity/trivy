@@ -232,12 +232,16 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance.Values = []string{types.ComplianceDockerCIS}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
+	misconfFlagGroup := flag.NewMisconfFlagGroup()
+	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
+	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
+
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		MisconfFlagGroup:       misconfFlagGroup,
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
@@ -896,12 +900,16 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	})
 	reportFlagGroup.Format = &formatFlag
 
+	misconfFlagGroup := flag.NewMisconfFlagGroup()
+	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
+	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
+
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		ImageFlagGroup:         imageFlags,
 		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		MisconfFlagGroup:       misconfFlagGroup,
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          scanFlags,
@@ -1046,8 +1054,10 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			},
 		},
 	}
-	vmFlags.ReportFlagGroup.ReportFormat = nil // disable '--report'
-	vmFlags.ScanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+	vmFlags.ReportFlagGroup.ReportFormat = nil             // disable '--report'
+	vmFlags.ScanFlagGroup.IncludeDevDeps = nil             // disable '--include-dev-deps'
+	vmFlags.MisconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
+	vmFlags.MisconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
 
 	cmd := &cobra.Command{
 		Use:     "vm [flags] VM_IMAGE",
@@ -1098,6 +1108,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlagGroup := flag.NewScanFlagGroup()
 	scanFlagGroup.Scanners = nil       // disable '--scanners' as it always scans for vulnerabilities
 	scanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+	scanFlagGroup.Parallel = nil       // disable '--parallel'
 
 	sbomFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),

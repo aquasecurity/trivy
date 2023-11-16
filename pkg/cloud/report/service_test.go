@@ -1,8 +1,7 @@
 package report
 
 import (
-	"os"
-	"path/filepath"
+	"bytes"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
@@ -317,8 +316,8 @@ Scan Overview for AWS Account
 				tt.options.AWSOptions.Services,
 			)
 
-			output := filepath.Join(t.TempDir(), "output")
-			tt.options.Output = output
+			output := bytes.NewBuffer(nil)
+			tt.options.SetOutputWriter(output)
 			require.NoError(t, Write(report, tt.options, tt.fromCache))
 
 			assert.Equal(t, "AWS", report.Provider)
@@ -326,13 +325,11 @@ Scan Overview for AWS Account
 			assert.Equal(t, tt.options.AWSOptions.Region, report.Region)
 			assert.ElementsMatch(t, tt.options.AWSOptions.Services, report.ServicesInScope)
 
-			b, err := os.ReadFile(output)
-			require.NoError(t, err)
 			if tt.options.Format == "json" {
 				// json output can be formatted/ordered differently - we just care that the data matches
-				assert.JSONEq(t, tt.expected, string(b))
+				assert.JSONEq(t, tt.expected, output.String())
 			} else {
-				assert.Equal(t, tt.expected, string(b))
+				assert.Equal(t, tt.expected, output.String())
 			}
 		})
 	}
