@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/samber/lo"
 
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/images"
@@ -23,9 +24,10 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	testcontainers "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
@@ -50,11 +52,22 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *conta
 
 	startContainerd(t, ctx, tmpDir)
 
-	client, err := containerd.New(socketPath)
-	require.NoError(t, err)
-	t.Cleanup(func() {
-		assert.NoError(t, client.Close())
+	// Retry up to 3 times until containerd is ready
+	var client *containerd.Client
+	iteration, _, err := lo.AttemptWhileWithDelay(3, 1*time.Second, func(int, time.Duration) (error, bool) {
+		client, err = containerd.New(socketPath)
+		if err != nil {
+			if !errors.Is(err, os.ErrPermission) {
+				return err, false // unexpected error
+			}
+			return err, true
+		}
+		t.Cleanup(func() {
+			assert.NoError(t, client.Close())
+		})
+		return nil, false
 	})
+	require.NoErrorf(t, err, "attempted %d times ", iteration)
 
 	return client
 }
