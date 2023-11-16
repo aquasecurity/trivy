@@ -75,6 +75,10 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 }
 
 func ConvertToRPCPkgIdentifier(pkg *ftypes.PkgIdentifier) *common.PkgIdentifier {
+	if pkg == nil {
+		return nil
+	}
+
 	return &common.PkgIdentifier{
 		Purl: pkg.PURL,
 		Cpe:  pkg.CPE,
@@ -209,6 +213,10 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 }
 
 func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) *ftypes.PkgIdentifier {
+	if pkg == nil {
+		return nil
+	}
+
 	return &ftypes.PkgIdentifier{
 		PURL: pkg.Purl,
 		CPE:  pkg.Cpe,
