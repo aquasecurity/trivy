@@ -36,7 +36,7 @@ type mockWalker struct {
 	root string
 }
 
-func (m *mockWalker) Walk(_ *io.SectionReader, _ string, fn walker.WalkFunc) error {
+func (m *mockWalker) Walk(_ *io.SectionReader, _ string, _ walker.Option, fn walker.WalkFunc) error {
 	return filepath.WalkDir(m.root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
