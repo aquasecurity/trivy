@@ -44,6 +44,7 @@ var enabledDefsecTypes = map[detection.FileType]types.ConfigType{
 }
 
 type ScannerOption struct {
+	Debug                    bool
 	Trace                    bool
 	RegoOnly                 bool
 	Namespaces               []string
@@ -224,6 +225,10 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		options.ScannerWithDataDirs(dataPaths...),
 		options.ScannerWithDataFilesystem(dataFS),
 	)
+
+	if opt.Debug {
+		opts = append(opts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "misconf"}))
+	}
 
 	if opt.Trace {
 		opts = append(opts, options.ScannerWithPerResultTracing(true))

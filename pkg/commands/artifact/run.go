@@ -574,6 +574,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			disableEmbedded = true
 		}
 		configScannerOptions = misconf.ScannerOption{
+			Debug:                    opts.Debug,
 			Trace:                    opts.Trace,
 			Namespaces:               append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
