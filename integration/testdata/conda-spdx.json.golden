@@ -75,23 +75,23 @@
   ],
   "files": [
     {
-      "fileName": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json",
-      "SPDXID": "SPDXRef-File-7eb62e2a3edddc0a",
-      "checksums": [
-        {
-          "algorithm": "SHA1",
-          "checksumValue": "a6a2db7668f1ad541d704369fc66c96a4415aa24"
-        }
-      ],
-      "copyrightText": ""
-    },
-    {
       "fileName": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json",
       "SPDXID": "SPDXRef-File-600e5e0110a84891",
       "checksums": [
         {
           "algorithm": "SHA1",
           "checksumValue": "237db0da53131e4548cb1181337fa0f420299e1f"
+        }
+      ],
+      "copyrightText": ""
+    },
+    {
+      "fileName": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json",
+      "SPDXID": "SPDXRef-File-7eb62e2a3edddc0a",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a6a2db7668f1ad541d704369fc66c96a4415aa24"
         }
       ],
       "copyrightText": ""
@@ -110,22 +110,22 @@
     },
     {
       "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "relatedSpdxElement": "SPDXRef-Package-4ad2b2835d1d985a",
-      "relationshipType": "CONTAINS"
-    },
-    {
-      "spdxElementId": "SPDXRef-Package-4ad2b2835d1d985a",
-      "relatedSpdxElement": "SPDXRef-File-7eb62e2a3edddc0a",
-      "relationshipType": "CONTAINS"
-    },
-    {
-      "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
       "relatedSpdxElement": "SPDXRef-Package-ab386d45795e7d41",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Package-ab386d45795e7d41",
       "relatedSpdxElement": "SPDXRef-File-600e5e0110a84891",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
+      "relatedSpdxElement": "SPDXRef-Package-4ad2b2835d1d985a",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-4ad2b2835d1d985a",
+      "relatedSpdxElement": "SPDXRef-File-7eb62e2a3edddc0a",
       "relationshipType": "CONTAINS"
     }
   ]

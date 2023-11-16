@@ -259,6 +259,7 @@ func compareSBOMReports(t *testing.T, wantFile, gotFile string, overrideWant typ
 	for i, result := range overrideWant.Results {
 		want.Results[i].Target = result.Target
 		for j, vuln := range result.Vulnerabilities {
+			want.Results[i].Vulnerabilities[j].PkgRef = vuln.PkgRef
 			if vuln.PkgIdentifier == nil {
 				continue
 			}
