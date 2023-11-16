@@ -38,13 +38,14 @@ message Package {
   string version = 2;
   string release = 3;
   int32  epoch   = 4;
-  string arch    = 5;
+  PkgIdentifier identifier = 5;
+  string arch    = 6;
   // src package containing some binary packages
   // e.g. bind
-  string          src_name    = 6;
-  string          src_version = 7;
-  string          src_release = 8;
-  int32           src_epoch   = 9;
+  string          src_name    = 7;
+  string          src_version = 8;
+  string          src_release = 9;
+  int32           src_epoch   = 10;
   repeated string licenses    = 15;
   Layer           layer       = 11;
   string          file_path   = 12;
@@ -52,6 +53,11 @@ message Package {
   string          digest      = 16;
   bool            dev         = 17;
   bool            indirect    = 18;
+}
+
+message PkgIdentifier {
+  string purl = 1;
+  string cpe = 2;
 }
 
 message Misconfiguration {
@@ -110,6 +116,7 @@ message Vulnerability {
   string                    description          = 6;
   Severity                  severity             = 7;
   repeated string           references           = 8;
+  PkgIdentifier pkg_identifier = 9;
   Layer                     layer                = 10;
   string                    severity_source      = 11;
   map<string, CVSS>         cvss                 = 12;
