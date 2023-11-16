@@ -48,12 +48,12 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 		return clusterRun(ctx, opts, cluster)
 	case allArtifact:
 		if opts.Format == types.FormatCycloneDX {
-			return xerrors.Errorf("Error: KBOM with CycloneDX format is not supported for all namespace scans")
+			return xerrors.Errorf("KBOM with CycloneDX format is not supported for all namespace scans")
 		}
 		return namespaceRun(ctx, opts, cluster)
 	default: // resourceArtifact
 		if opts.Format == types.FormatCycloneDX {
-			return xerrors.Errorf("Error: KBOM with CycloneDX format is not supported for resource scans")
+			return xerrors.Errorf("KBOM with CycloneDX format is not supported for resource scans")
 		}
 		return resourceRun(ctx, args, opts, cluster)
 	}
