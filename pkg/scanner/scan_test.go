@@ -99,7 +99,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			},
 			want: types.Report{
 				SchemaVersion: 2,
-				CreatedAt:     1629894030,
+				CreatedAt:     time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
 				ArtifactName:  "alpine:3.11",
 				ArtifactType:  ftypes.ArtifactContainerImage,
 				Metadata: types.Metadata{

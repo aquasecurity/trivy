@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/tml"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -94,6 +95,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	})
 
 	base := types.Report{
+		CreatedAt:    clock.Now(),
 		ArtifactName: rep.AccountID,
 		ArtifactType: ftypes.ArtifactAWSAccount,
 		Results:      filtered,
