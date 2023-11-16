@@ -1196,8 +1196,8 @@ github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422 h1:PPPlUUq
 github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422/go.mod h1:ijAmSS4jErO6+KRzcK6ixsm3Vt96hMhJ+W+x+VmbrQA=
 github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075 h1:aC6MEAs3PE3lWD7lqrJfDxHd6hcced9R4JTZu85cJwU=
 github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075/go.mod h1:i4sF0l1fFnY1aiw08QQSwVAFxHEm311Me3WsU/X7nL0=
-github.com/knqyf263/go-rpmdb v0.0.0-20231008124120-ac49267ab4e1 h1:lrciwn7tj0j7HS5DfpAFnFZEqxzPGIkVOVS89dLOkf0=
-github.com/knqyf263/go-rpmdb v0.0.0-20231008124120-ac49267ab4e1/go.mod h1:9LQcoMCMQ9vrF7HcDtXfvqGO4+ddxFQ8+YF/0CVGDww=
+github.com/knqyf263/go-rpmdb v0.0.0-20231116065719-139974672846 h1:C0+dTcd5auBU8VWBAfwLmpI2lGfxQB/++G55T3U3lm4=
+github.com/knqyf263/go-rpmdb v0.0.0-20231116065719-139974672846/go.mod h1:9LQcoMCMQ9vrF7HcDtXfvqGO4+ddxFQ8+YF/0CVGDww=
 github.com/knqyf263/nested v0.0.1 h1:Sv26CegUMhjt19zqbBKntjwESdxe5hxVPSk0+AKjdUc=
 github.com/knqyf263/nested v0.0.1/go.mod h1:zwhsIhMkBg90DTOJQvxPkKIypEHPYkgWHs4gybdlUmk=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=

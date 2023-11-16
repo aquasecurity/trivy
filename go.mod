@@ -61,7 +61,7 @@ require (
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422
 	github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075
-	github.com/knqyf263/go-rpmdb v0.0.0-20231008124120-ac49267ab4e1
+	github.com/knqyf263/go-rpmdb v0.0.0-20231116065719-139974672846
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/magefile/mage v1.15.0
