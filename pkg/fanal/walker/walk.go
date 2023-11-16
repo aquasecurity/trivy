@@ -22,20 +22,16 @@ var (
 	}
 )
 
-const (
-	defaultSizeThreshold = int64(200) << 20 // 200MB
-	slowSizeThreshold    = int64(100) << 10 // 10KB
-)
+const defaultSizeThreshold = int64(200) << 20 // 200MB
 
 type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) error
 
 type walker struct {
 	skipFiles []string
 	skipDirs  []string
-	slow      bool
 }
 
-func newWalker(skipFiles, skipDirs []string, slow bool) walker {
+func newWalker(skipFiles, skipDirs []string) walker {
 	var cleanSkipFiles, cleanSkipDirs []string
 	for _, skipFile := range skipFiles {
 		skipFile = filepath.ToSlash(filepath.Clean(skipFile))
@@ -52,7 +48,6 @@ func newWalker(skipFiles, skipDirs []string, slow bool) walker {
 	return walker{
 		skipFiles: cleanSkipFiles,
 		skipDirs:  cleanSkipDirs,
-		slow:      slow,
 	}
 }
 

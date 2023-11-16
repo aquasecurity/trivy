@@ -63,6 +63,10 @@ var osVendors = []string{
 
 type rpmPkgAnalyzer struct{}
 
+type RPMDB interface {
+	ListPackages() ([]*rpmdb.PackageInfo, error)
+}
+
 func (a rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	parsedPkgs, installedFiles, err := a.parsePkgInfo(input.Content)
 	if err != nil {
@@ -93,7 +97,12 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to open RPM DB: %w", err)
 	}
+	defer db.Close()
 
+	return a.listPkgs(db)
+}
+
+func (a rpmPkgAnalyzer) listPkgs(db RPMDB) (types.Packages, []string, error) {
 	// equivalent:
 	//   new version: rpm -qa --qf "%{NAME} %{EPOCHNUM} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
 	//   old version: rpm -qa --qf "%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
@@ -142,6 +151,11 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			d = digest.NewDigestFromString(digest.MD5, pkg.SigMD5)
 		}
 
+		var licenses []string
+		if pkg.License != "" {
+			licenses = []string{pkg.License}
+		}
+
 		p := types.Package{
 			ID:              fmt.Sprintf("%s@%s-%s.%s", pkg.Name, pkg.Version, pkg.Release, pkg.Arch),
 			Name:            pkg.Name,
@@ -154,7 +168,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			SrcVersion:      srcVer,
 			SrcRelease:      srcRel,
 			Modularitylabel: pkg.Modularitylabel,
-			Licenses:        []string{pkg.License},
+			Licenses:        licenses,
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
 			Digest:          d,

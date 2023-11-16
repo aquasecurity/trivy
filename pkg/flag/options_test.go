@@ -53,7 +53,7 @@ func Test_getStringSlice(t *testing.T) {
 			flag: &ScannersFlag,
 			env: env{
 				key:   "TRIVY_SECURITY_CHECKS",
-				value: "rbac,config",
+				value: "rbac,misconfig",
 			},
 			want: []string{
 				string(types.RBACScanner),
