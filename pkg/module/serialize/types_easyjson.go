@@ -1640,6 +1640,8 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 			out.SeveritySource = types2.SourceID(in.String())
 		case "PrimaryURL":
 			out.PrimaryURL = string(in.String())
+		case "PkgRef":
+			out.PkgRef = string(in.String())
 		case "DataSource":
 			if in.IsNull() {
 				in.Skip()
@@ -1912,6 +1914,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 			out.RawString(prefix)
 		}
 		out.String(string(in.PrimaryURL))
+	}
+	if in.PkgRef != "" {
+		const prefix string = ",\"PkgRef\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.PkgRef))
 	}
 	if in.DataSource != nil {
 		const prefix string = ",\"DataSource\":"
@@ -2935,7 +2947,105 @@ func (v *PostScanSpec) UnmarshalJSON(data []byte) error {
 func (v *PostScanSpec) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(l, v)
 }
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(in *jlexer.Lexer, out *CustomResource) {
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(in *jlexer.Lexer, out *AnalysisResult) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "CustomResources":
+			if in.IsNull() {
+				in.Skip()
+				out.CustomResources = nil
+			} else {
+				in.Delim('[')
+				if out.CustomResources == nil {
+					if !in.IsDelim(']') {
+						out.CustomResources = make([]CustomResource, 0, 1)
+					} else {
+						out.CustomResources = []CustomResource{}
+					}
+				} else {
+					out.CustomResources = (out.CustomResources)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v68 CustomResource
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize5(in, &v68)
+					out.CustomResources = append(out.CustomResources, v68)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(out *jwriter.Writer, in AnalysisResult) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"CustomResources\":"
+		out.RawString(prefix[1:])
+		if in.CustomResources == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v69, v70 := range in.CustomResources {
+				if v69 > 0 {
+					out.RawByte(',')
+				}
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize5(out, v70)
+			}
+			out.RawByte(']')
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v AnalysisResult) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v AnalysisResult) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *AnalysisResult) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *AnalysisResult) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(l, v)
+}
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize5(in *jlexer.Lexer, out *CustomResource) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2976,7 +3086,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(in *jle
 		in.Consumed()
 	}
 }
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(out *jwriter.Writer, in CustomResource) {
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize5(out *jwriter.Writer, in CustomResource) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -3002,126 +3112,4 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(out *jw
 		}
 	}
 	out.RawByte('}')
-}
-
-// MarshalJSON supports json.Marshaler interface
-func (v CustomResource) MarshalJSON() ([]byte, error) {
-	w := jwriter.Writer{}
-	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(&w, v)
-	return w.Buffer.BuildBytes(), w.Error
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v CustomResource) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(w, v)
-}
-
-// UnmarshalJSON supports json.Unmarshaler interface
-func (v *CustomResource) UnmarshalJSON(data []byte) error {
-	r := jlexer.Lexer{Data: data}
-	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(&r, v)
-	return r.Error()
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *CustomResource) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(l, v)
-}
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize5(in *jlexer.Lexer, out *AnalysisResult) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "CustomResources":
-			if in.IsNull() {
-				in.Skip()
-				out.CustomResources = nil
-			} else {
-				in.Delim('[')
-				if out.CustomResources == nil {
-					if !in.IsDelim(']') {
-						out.CustomResources = make([]CustomResource, 0, 1)
-					} else {
-						out.CustomResources = []CustomResource{}
-					}
-				} else {
-					out.CustomResources = (out.CustomResources)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v68 CustomResource
-					(v68).UnmarshalEasyJSON(in)
-					out.CustomResources = append(out.CustomResources, v68)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize5(out *jwriter.Writer, in AnalysisResult) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"CustomResources\":"
-		out.RawString(prefix[1:])
-		if in.CustomResources == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v69, v70 := range in.CustomResources {
-				if v69 > 0 {
-					out.RawByte(',')
-				}
-				(v70).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-
-// MarshalJSON supports json.Marshaler interface
-func (v AnalysisResult) MarshalJSON() ([]byte, error) {
-	w := jwriter.Writer{}
-	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize5(&w, v)
-	return w.Buffer.BuildBytes(), w.Error
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v AnalysisResult) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize5(w, v)
-}
-
-// UnmarshalJSON supports json.Unmarshaler interface
-func (v *AnalysisResult) UnmarshalJSON(data []byte) error {
-	r := jlexer.Lexer{Data: data}
-	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize5(&r, v)
-	return r.Error()
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *AnalysisResult) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize5(l, v)
 }

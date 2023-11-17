@@ -38,14 +38,14 @@ message Package {
   string version = 2;
   string release = 3;
   int32  epoch   = 4;
-  PkgIdentifier identifier = 5;
-  string arch    = 6;
+  PkgIdentifier identifier = 19;
+  string arch    = 5;
   // src package containing some binary packages
   // e.g. bind
-  string          src_name    = 7;
-  string          src_version = 8;
-  string          src_release = 9;
-  int32           src_epoch   = 10;
+  string          src_name    = 6;
+  string          src_version = 7;
+  string          src_release = 8;
+  int32           src_epoch   = 9;
   repeated string licenses    = 15;
   Layer           layer       = 11;
   string          file_path   = 12;
