@@ -105,12 +105,6 @@ type Package struct {
 	InstalledFiles []string `json:",omitempty"`
 }
 
-const (
-	PkgIdFormatCPE     = "cpe"
-	PkgIdFormatPURL    = "purl"
-	PkgIdFormatUnknown = "unknown"
-)
-
 // PkgIdentifier represents a software identifiers in one of more of the supported formats.
 type PkgIdentifier struct {
 	// Software identifier in PURL format
