@@ -95,8 +95,10 @@ const (
 
 // Language-specific file names
 const (
-	NuGetPkgsLock   = "packages.lock.json"
-	NuGetPkgsConfig = "packages.config"
+	NuGetPkgsLock           = "packages.lock.json"
+	NuGetPkgsConfig         = "packages.config"
+	NuGetDirectoryPkgsProps = "directory.packages.props"
+	NuGetPkgsProps          = "packages.props"
 
 	GoMod = "go.mod"
 	GoSum = "go.sum"
