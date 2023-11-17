@@ -59,7 +59,7 @@
           "PkgID": "musl@1.1.20-r4",
           "PkgName": "musl",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/musl@1.1.20-r4"
+            "PURL": "pkg:apk/musl@1.1.20-r4?arch=x86_64"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
@@ -101,7 +101,7 @@
           "PkgID": "musl-utils@1.1.20-r4",
           "PkgName": "musl-utils",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/musl-utils@1.1.20-r4"
+            "PURL": "pkg:apk/musl-utils@1.1.20-r4?arch=x86_64"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",

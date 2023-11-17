@@ -74,7 +74,7 @@
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:dpkg/libssl1.1@1.1.0k-1~deb9u1"
+            "PURL": "pkg:dpkg/libssl1.1@1.1.0k-1~deb9u1?arch=amd64"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
@@ -150,7 +150,7 @@
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:dpkg/libssl1.1@1.1.0k-1~deb9u1"
+            "PURL": "pkg:dpkg/libssl1.1@1.1.0k-1~deb9u1?arch=amd64"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
@@ -232,7 +232,7 @@
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
           "PkgIdentifier": {
-            "PURL": "pkg:dpkg/openssl@1.1.0k-1~deb9u1"
+            "PURL": "pkg:dpkg/openssl@1.1.0k-1~deb9u1?arch=amd64"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
@@ -308,7 +308,7 @@
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
           "PkgIdentifier": {
-            "PURL": "pkg:dpkg/openssl@1.1.0k-1~deb9u1"
+            "PURL": "pkg:dpkg/openssl@1.1.0k-1~deb9u1?arch=amd64"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",

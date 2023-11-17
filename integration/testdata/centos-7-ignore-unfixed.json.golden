@@ -73,7 +73,7 @@
           "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/openssl-libs@1%3A1.0.2k-16.el7"
+            "PURL": "pkg:rpm/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026epoch=1"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
@@ -158,7 +158,7 @@
           "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/openssl-libs@1%3A1.0.2k-16.el7"
+            "PURL": "pkg:rpm/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026epoch=1"
           },
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",

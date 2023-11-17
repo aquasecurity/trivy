@@ -148,7 +148,7 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 					Version: "2.17",
 					Release: "307.el7.1",
 					Identifier: types.PkgIdentifier{
-						PURL: "pkg:rpm/glibc@2.17-307.el7.1",
+						PURL: "pkg:rpm/glibc@2.17-307.el7.1?arch=x86_64",
 					},
 					Arch:       "x86_64",
 					SrcName:    "glibc",
@@ -188,7 +188,7 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 					Version: "2.17",
 					Release: "307.el7.1",
 					Identifier: types.PkgIdentifier{
-						PURL: "pkg:rpm/glibc@2.17-307.el7.1",
+						PURL: "pkg:rpm/glibc@2.17-307.el7.1?arch=x86_64",
 					},
 					Arch: "x86_64",
 				},

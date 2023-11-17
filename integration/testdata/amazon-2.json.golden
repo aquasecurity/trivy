@@ -58,7 +58,7 @@
           "PkgID": "curl@7.61.1-9.amzn2.0.1.x86_64",
           "PkgName": "curl",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/curl@7.61.1-9.amzn2.0.1"
+            "PURL": "pkg:rpm/curl@7.61.1-9.amzn2.0.1?arch=x86_64"
           },
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-12.amzn2.0.1",
@@ -120,7 +120,7 @@
           "PkgID": "curl@7.61.1-9.amzn2.0.1.x86_64",
           "PkgName": "curl",
           "PkgIdentifier": {
-            "PURL": "pkg:rpm/curl@7.61.1-9.amzn2.0.1"
+            "PURL": "pkg:rpm/curl@7.61.1-9.amzn2.0.1?arch=x86_64"
           },
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-11.amzn2.0.2",

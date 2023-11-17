@@ -215,11 +215,8 @@ func NewPackageIdentifier(target ftypes.TargetType, pkg ftypes.Package) ftypes.P
 
 // nolint: gocyclo
 func NewPackageURL(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*PackageURL, error) {
-	var qualifiers packageurl.Qualifiers
-	if metadata.OS != nil {
-		qualifiers = parseQualifier(pkg)
-		pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
-	}
+	qualifiers := parseQualifier(pkg)
+	pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
 
 	ptype := purlType(t)
 	name := pkg.Name
@@ -465,7 +462,7 @@ func purlType(t ftypes.TargetType) string {
 }
 
 func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
-	qualifiers := packageurl.Qualifiers{}
+	var qualifiers packageurl.Qualifiers
 	if pkg.Arch != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "arch",
@@ -478,6 +475,7 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 			Value: strconv.Itoa(pkg.Epoch),
 		})
 	}
+
 	return qualifiers
 }
 

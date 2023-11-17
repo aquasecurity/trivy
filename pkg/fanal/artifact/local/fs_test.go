@@ -47,7 +47,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:a05a861159ed86b98a5bd666fc903902dcdf270962c051dad30481aa21a0b25e",
+					BlobID: "sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -63,7 +63,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Name:    "musl",
 										Version: "1.1.24-r2",
 										Identifier: types.PkgIdentifier{
-											PURL: "pkg:apk/musl@1.1.24-r2",
+											PURL: "pkg:apk/musl@1.1.24-r2?arch=x86_64",
 										},
 										SrcName:    "musl",
 										SrcVersion: "1.1.24-r2",
@@ -85,9 +85,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:a05a861159ed86b98a5bd666fc903902dcdf270962c051dad30481aa21a0b25e",
+				ID:   "sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
 				BlobIDs: []string{
-					"sha256:a05a861159ed86b98a5bd666fc903902dcdf270962c051dad30481aa21a0b25e",
+					"sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
 				},
 			},
 		},
@@ -128,7 +128,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:a05a861159ed86b98a5bd666fc903902dcdf270962c051dad30481aa21a0b25e",
+					BlobID: "sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -144,7 +144,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Name:    "musl",
 										Version: "1.1.24-r2",
 										Identifier: types.PkgIdentifier{
-											PURL: "pkg:apk/musl@1.1.24-r2",
+											PURL: "pkg:apk/musl@1.1.24-r2?arch=x86_64",
 										},
 										SrcName:    "musl",
 										SrcVersion: "1.1.24-r2",

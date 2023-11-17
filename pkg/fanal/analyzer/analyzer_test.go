@@ -339,7 +339,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								Name:    "musl",
 								Version: "1.1.24-r2",
 								Identifier: types.PkgIdentifier{
-									PURL: "pkg:apk/musl@1.1.24-r2",
+									PURL: "pkg:apk/musl@1.1.24-r2?arch=x86_64",
 								},
 								SrcName:        "musl",
 								SrcVersion:     "1.1.24-r2",

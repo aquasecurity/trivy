@@ -43,19 +43,19 @@ func TestSBOM(t *testing.T) {
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
 								},
 							},
 							{
 								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
 								},
 							},
 							{
 								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
 								},
 							},
@@ -99,19 +99,19 @@ func TestSBOM(t *testing.T) {
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
 								},
 							},
 							{
 								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
 								},
 							},
 							{
 								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
 								},
 							},
@@ -137,19 +137,19 @@ func TestSBOM(t *testing.T) {
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
 								},
 							},
 							{
 								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
 								},
 							},
 							{
 								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
 								},
 							},
@@ -175,19 +175,19 @@ func TestSBOM(t *testing.T) {
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
 								},
 							},
 							{
 								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
 								},
 							},
 							{
 								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-								PkgIdentifier: &ftypes.PkgIdentifier{
+								PkgIdentifier: ftypes.PkgIdentifier{
 									PURL: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
 								},
 							},
@@ -260,10 +260,10 @@ func compareSBOMReports(t *testing.T, wantFile, gotFile string, overrideWant typ
 		want.Results[i].Target = result.Target
 		for j, vuln := range result.Vulnerabilities {
 			want.Results[i].Vulnerabilities[j].PkgRef = vuln.PkgRef
-			if vuln.PkgIdentifier == nil {
+			if vuln.PkgIdentifier.Empty() {
 				continue
 			}
-			want.Results[i].Vulnerabilities[j].PkgIdentifier = &ftypes.PkgIdentifier{
+			want.Results[i].Vulnerabilities[j].PkgIdentifier = ftypes.PkgIdentifier{
 				PURL: vuln.PkgIdentifier.PURL,
 			}
 		}
