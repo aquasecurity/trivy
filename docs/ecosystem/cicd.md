@@ -28,7 +28,7 @@ In this action, Trivy scans the dependency files such as package-lock.json and g
 
 👉 Get it at: <https://github.com/marketplace/actions/trivy-github-issues>
 
-### Buildkite Plugin (Community)
+## Buildkite Plugin (Community)
 
 The trivy buildkite plugin provides a convenient mechanism for running the open-source trivy static analysis tool on your project. 
 
