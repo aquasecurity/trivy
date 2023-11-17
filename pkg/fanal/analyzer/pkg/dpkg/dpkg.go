@@ -189,6 +189,7 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[
 		pkg = a.parseDpkgPkg(header)
 		if pkg != nil {
 			pkg.Digest = digests[pkg.ID]
+			pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeDpkg), *pkg)
 			pkgs[pkg.ID] = pkg
 			pkgIDs[pkg.Name] = pkg.ID
 		}
@@ -271,8 +272,6 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 		pkg.SrcEpoch = v.Epoch()
 		pkg.SrcRelease = v.Revision()
 	}
-
-	pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeDpkg), *pkg)
 
 	return pkg
 }

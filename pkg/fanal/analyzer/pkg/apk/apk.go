@@ -64,6 +64,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		// check package if paragraph end
 		if len(line) < 2 {
 			if !pkg.Empty() {
+				pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeApk), pkg)
 				pkgs = append(pkgs, pkg)
 			}
 			pkg = types.Package{}
@@ -113,11 +114,10 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			// e.g. D:scanelf so:libc.musl-x86_64.so.1
 			provides[pkg.Name] = pkg.ID
 		}
-
-		pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeApk), pkg)
 	}
 	// in case of last paragraph
 	if !pkg.Empty() {
+		pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeApk), pkg)
 		pkgs = append(pkgs, pkg)
 	}
 
