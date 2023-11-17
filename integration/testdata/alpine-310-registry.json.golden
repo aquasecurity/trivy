@@ -65,7 +65,7 @@
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/libcrypto1.1@1.1.1c-r0"
+            "PURL": "pkg:apk/libcrypto1.1@1.1.1c-r0?arch=x86_64"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -129,7 +129,7 @@
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/libcrypto1.1@1.1.1c-r0"
+            "PURL": "pkg:apk/libcrypto1.1@1.1.1c-r0?arch=x86_64"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
@@ -203,7 +203,7 @@
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/libssl1.1@1.1.1c-r0"
+            "PURL": "pkg:apk/libssl1.1@1.1.1c-r0?arch=x86_64"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -267,7 +267,7 @@
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/libssl1.1@1.1.1c-r0"
+            "PURL": "pkg:apk/libssl1.1@1.1.1c-r0?arch=x86_64"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
