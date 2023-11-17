@@ -32,7 +32,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "co.elastic.apm:apm-agent",
 								Version: "1.36.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 								},
 								Ref:      "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
@@ -41,7 +41,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version: "1.36.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 								},
 								Ref:      "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
@@ -50,7 +50,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "co.elastic.apm:apm-agent-common",
 								Version: "1.36.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/co.elastic.apm/apm-agent-common@1.36.0",
 								},
 								Ref:      "pkg:maven/co.elastic.apm/apm-agent-common@1.36.0",
@@ -59,7 +59,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "co.elastic.apm:apm-agent-core",
 								Version: "1.36.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0",
 								},
 								Ref:      "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0",
@@ -74,7 +74,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "elasticsearch",
 								Version: "8.9.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:bitnami/elasticsearch@8.9.1?arch=arm64",
 								},
 								Ref:      "pkg:bitnami/elasticsearch@8.9.1?arch=arm64",
@@ -100,7 +100,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 								},
 								Ref: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
@@ -109,7 +109,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 								},
 								Ref: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
@@ -133,7 +133,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "gdal",
 								Version: "3.7.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:bitnami/gdal@3.7.1",
 								},
 								Ref:      "pkg:bitnami/gdal@3.7.1",
@@ -142,7 +142,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "geos",
 								Version: "3.8.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:bitnami/geos@3.8.3",
 								},
 								Ref:      "pkg:bitnami/geos@3.8.3",
@@ -151,7 +151,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "postgresql",
 								Version: "15.3.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:bitnami/postgresql@15.3.0",
 								},
 								Ref:      "pkg:bitnami/postgresql@15.3.0",
@@ -160,7 +160,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "proj",
 								Version: "6.3.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:bitnami/proj@6.3.2",
 								},
 								Ref:      "pkg:bitnami/proj@6.3.2",

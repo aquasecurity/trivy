@@ -338,7 +338,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								ID:      "musl@1.1.24-r2",
 								Name:    "musl",
 								Version: "1.1.24-r2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:apk/musl@1.1.24-r2",
 								},
 								SrcName:        "musl",
@@ -382,7 +382,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								ID:      "actioncable@5.2.3",
 								Name:    "actioncable",
 								Version: "5.2.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:gem/actioncable@5.2.3",
 								},
 								Indirect: false,
@@ -400,7 +400,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								ID:      "actionpack@5.2.3",
 								Name:    "actionpack",
 								Version: "5.2.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:gem/actionpack@5.2.3",
 								},
 								Indirect: true,
@@ -449,7 +449,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								ID:      "actioncable@5.2.3",
 								Name:    "actioncable",
 								Version: "5.2.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:gem/actioncable@5.2.3",
 								},
 								Indirect: false,
@@ -467,7 +467,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								ID:      "actionpack@5.2.3",
 								Name:    "actionpack",
 								Version: "5.2.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:gem/actionpack@5.2.3",
 								},
 								Indirect: true,
@@ -587,7 +587,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 							{
 								Name:    "com.fasterxml.jackson.core:jackson-annotations",
 								Version: "2.15.0-rc2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.15.0-rc2",
 								},
 								FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
@@ -611,7 +611,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 								ID:      "certifi@2022.12.7",
 								Name:    "certifi",
 								Version: "2022.12.7",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/certifi@2022.12.7",
 								},
 							},

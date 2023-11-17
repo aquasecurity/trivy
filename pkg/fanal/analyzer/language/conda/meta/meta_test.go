@@ -31,7 +31,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "pip",
 								Version: "22.2.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:conda/pip@22.2.2",
 								},
 								Licenses: []string{"MIT"},

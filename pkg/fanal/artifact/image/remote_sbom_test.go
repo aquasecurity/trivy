@@ -82,7 +82,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 										{
 											Name:    "musl",
 											Version: "1.2.3-r0",
-											Identifier: &types.PkgIdentifier{
+											Identifier: types.PkgIdentifier{
 												PURL: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
 											},
 											SrcName:    "musl",
@@ -221,7 +221,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 										{
 											Name:    "github.com/opencontainers/go-digest",
 											Version: "v1.0.0",
-											Identifier: &types.PkgIdentifier{
+											Identifier: types.PkgIdentifier{
 												PURL: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
 											},
 											Ref: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
@@ -229,7 +229,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 										{
 											Name:    "golang.org/x/sync",
 											Version: "v0.1.0",
-											Identifier: &types.PkgIdentifier{
+											Identifier: types.PkgIdentifier{
 												PURL: "pkg:golang/golang.org/x/sync@v0.1.0",
 											},
 											Ref: "pkg:golang/golang.org/x/sync@v0.1.0",

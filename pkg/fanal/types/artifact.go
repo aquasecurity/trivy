@@ -65,20 +65,20 @@ type Layer struct {
 }
 
 type Package struct {
-	ID         string         `json:",omitempty"`
-	Name       string         `json:",omitempty"`
-	Identifier *PkgIdentifier `json:",omitempty"`
-	Version    string         `json:",omitempty"`
-	Release    string         `json:",omitempty"`
-	Epoch      int            `json:",omitempty"`
-	Arch       string         `json:",omitempty"`
-	Dev        bool           `json:",omitempty"`
-	SrcName    string         `json:",omitempty"`
-	SrcVersion string         `json:",omitempty"`
-	SrcRelease string         `json:",omitempty"`
-	SrcEpoch   int            `json:",omitempty"`
-	Licenses   []string       `json:",omitempty"`
-	Maintainer string         `json:",omitempty"`
+	ID         string        `json:",omitempty"`
+	Name       string        `json:",omitempty"`
+	Identifier PkgIdentifier `json:",omitempty"`
+	Version    string        `json:",omitempty"`
+	Release    string        `json:",omitempty"`
+	Epoch      int           `json:",omitempty"`
+	Arch       string        `json:",omitempty"`
+	Dev        bool          `json:",omitempty"`
+	SrcName    string        `json:",omitempty"`
+	SrcVersion string        `json:",omitempty"`
+	SrcRelease string        `json:",omitempty"`
+	SrcEpoch   int           `json:",omitempty"`
+	Licenses   []string      `json:",omitempty"`
+	Maintainer string        `json:",omitempty"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
@@ -120,7 +120,7 @@ type PkgIdentifier struct {
 }
 
 // NewPkgIdentifier returns a new PkgIdentifier instance
-func NewPkgIdentifier(value string) (*PkgIdentifier, error) {
+func NewPkgIdentifier(value string) (PkgIdentifier, error) {
 	var id PkgIdentifier
 	switch {
 	case isCPE(value):
@@ -128,10 +128,14 @@ func NewPkgIdentifier(value string) (*PkgIdentifier, error) {
 	case isPURL(value):
 		id.PURL = value
 	default:
-		return nil, errors.New("package identifier does not match any supported format")
+		return PkgIdentifier{}, errors.New("package identifier does not match any supported format")
 	}
 
-	return &id, nil
+	return id, nil
+}
+
+func (id PkgIdentifier) Empty() bool {
+	return id.CPE == "" && id.PURL == ""
 }
 
 func isCPE(value string) bool {

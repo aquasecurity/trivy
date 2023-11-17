@@ -74,8 +74,8 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 	return rpcPkgs
 }
 
-func ConvertToRPCPkgIdentifier(pkg *ftypes.PkgIdentifier) *common.PkgIdentifier {
-	if pkg == nil {
+func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
+	if pkg.Empty() {
 		return nil
 	}
 
@@ -212,12 +212,12 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	return pkgs
 }
 
-func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) *ftypes.PkgIdentifier {
+func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier {
 	if pkg == nil {
-		return nil
+		return ftypes.PkgIdentifier{}
 	}
 
-	return &ftypes.PkgIdentifier{
+	return ftypes.PkgIdentifier{
 		PURL: pkg.Purl,
 		CPE:  pkg.Cpe,
 	}

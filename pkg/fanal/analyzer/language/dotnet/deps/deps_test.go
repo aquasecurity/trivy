@@ -31,7 +31,7 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:nuget/Newtonsoft.Json@9.0.1",
 								},
 								Locations: []types.Location{

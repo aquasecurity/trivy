@@ -29,7 +29,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "com.example:example",
 								Version: "0.0.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.example/example@0.0.1",
 								},
 							},

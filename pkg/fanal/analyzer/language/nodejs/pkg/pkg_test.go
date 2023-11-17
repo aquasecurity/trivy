@@ -33,7 +33,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "lodash@5.0.0",
 								Name:    "lodash",
 								Version: "5.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/lodash@5.0.0",
 								},
 								Licenses: []string{"MIT"},
@@ -58,7 +58,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "lodash@5.0.0",
 								Name:    "lodash",
 								Version: "5.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/lodash@5.0.0",
 								},
 								Licenses: []string{"MIT"},

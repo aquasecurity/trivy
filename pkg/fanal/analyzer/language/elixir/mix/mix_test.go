@@ -30,7 +30,7 @@ func Test_mixLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "bunt@0.2.0",
 								Name:    "bunt",
 								Version: "0.2.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:hex/bunt@0.2.0",
 								},
 								Locations: []types.Location{

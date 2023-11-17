@@ -31,7 +31,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								ID:      "pear/log@1.13.3",
 								Name:    "pear/log",
 								Version: "1.13.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:composer/pear/log@1.13.3",
 								},
 								Indirect: false,
@@ -48,7 +48,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								ID:      "pear/pear_exception@v1.0.2",
 								Name:    "pear/pear_exception",
 								Version: "v1.0.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:composer/pear/pear_exception@v1.0.2",
 								},
 								Indirect: true,
@@ -78,7 +78,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								ID:      "pear/log@1.13.3",
 								Name:    "pear/log",
 								Version: "1.13.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:composer/pear/log@1.13.3",
 								},
 								Indirect: false,
@@ -95,7 +95,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								ID:      "pear/pear_exception@v1.0.2",
 								Name:    "pear/pear_exception",
 								Version: "v1.0.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:composer/pear/pear_exception@v1.0.2",
 								},
 								Indirect: false,
@@ -125,7 +125,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								ID:      "pear/log@1.13.3",
 								Name:    "pear/log",
 								Version: "1.13.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:composer/pear/log@1.13.3",
 								},
 								Indirect: false,
@@ -142,7 +142,7 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 								ID:      "pear/pear_exception@v1.0.2",
 								Name:    "pear/pear_exception",
 								Version: "v1.0.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:composer/pear/pear_exception@v1.0.2",
 								},
 								Indirect: false,

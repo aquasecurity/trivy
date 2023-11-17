@@ -40,7 +40,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "org.glassfish:javax.el",
 								FilePath: "testdata/test.war/WEB-INF/lib/javax.el-3.0.0.jar",
 								Version:  "3.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/org.glassfish/javax.el@3.0.0",
 								},
 							},
@@ -48,7 +48,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-databind",
 								FilePath: "testdata/test.war/WEB-INF/lib/jackson-databind-2.9.10.6.jar",
 								Version:  "2.9.10.6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.10.6",
 								},
 							},
@@ -56,7 +56,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-annotations",
 								FilePath: "testdata/test.war/WEB-INF/lib/jackson-annotations-2.9.10.jar",
 								Version:  "2.9.10",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.9.10",
 								},
 							},
@@ -64,7 +64,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.war/WEB-INF/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.9.10",
 								},
 							},
@@ -72,7 +72,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "org.slf4j:slf4j-api",
 								FilePath: "testdata/test.war/WEB-INF/lib/slf4j-api-1.7.30.jar",
 								Version:  "1.7.30",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/org.slf4j/slf4j-api@1.7.30",
 								},
 							},
@@ -80,7 +80,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.cronutils:cron-utils",
 								FilePath: "testdata/test.war/WEB-INF/lib/cron-utils-9.1.2.jar",
 								Version:  "9.1.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.cronutils/cron-utils@9.1.2",
 								},
 							},
@@ -88,7 +88,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "org.apache.commons:commons-lang3",
 								FilePath: "testdata/test.war/WEB-INF/lib/commons-lang3-3.11.jar",
 								Version:  "3.11",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/org.apache.commons/commons-lang3@3.11",
 								},
 							},
@@ -96,7 +96,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.example:web-app",
 								FilePath: "testdata/test.war",
 								Version:  "1.0-SNAPSHOT",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.example/web-app@1.0-SNAPSHOT",
 								},
 							},
@@ -119,7 +119,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.9.10",
 								},
 								Digest: "sha1:d40913470259cfba6dcc90f96bcaa9bcff1b72e0",
@@ -142,7 +142,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
 								FilePath: "testdata/test.jar",
 								Version:  "9.0.65",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@9.0.65",
 								},
 							},

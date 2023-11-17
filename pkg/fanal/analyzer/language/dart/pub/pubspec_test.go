@@ -37,7 +37,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "collection@1.17.0",
 								Name:    "collection",
 								Version: "1.17.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dart/collection@1.17.0",
 								},
 								Indirect: true,
@@ -46,7 +46,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "crypto@3.0.3",
 								Name:    "crypto",
 								Version: "3.0.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dart/crypto@3.0.3",
 								},
 								DependsOn: []string{
@@ -57,7 +57,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "meta@1.11.0",
 								Name:    "meta",
 								Version: "1.11.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dart/meta@1.11.0",
 								},
 							},
@@ -65,7 +65,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "typed_data@1.3.2",
 								Name:    "typed_data",
 								Version: "1.3.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dart/typed_data@1.3.2",
 								},
 								Indirect: true,
@@ -93,7 +93,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "collection@1.17.0",
 								Name:    "collection",
 								Version: "1.17.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dart/collection@1.17.0",
 								},
 								Indirect: true,
@@ -102,7 +102,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "crypto@3.0.3",
 								Name:    "crypto",
 								Version: "3.0.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dart/crypto@3.0.3",
 								},
 							},
@@ -110,7 +110,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "meta@1.11.0",
 								Name:    "meta",
 								Version: "1.11.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dart/meta@1.11.0",
 								},
 							},
@@ -118,7 +118,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "typed_data@1.3.2",
 								Name:    "typed_data",
 								Version: "1.3.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dart/typed_data@1.3.2",
 								},
 								Indirect: true,

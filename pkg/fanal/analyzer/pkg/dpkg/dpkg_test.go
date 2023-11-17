@@ -34,7 +34,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "adduser@3.116ubuntu1",
 								Name: "adduser",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/adduser@3.116ubuntu1",
 								},
 								Version:    "3.116ubuntu1",
@@ -50,7 +50,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "apt@1.6.3ubuntu0.1",
 								Name: "apt",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/apt@1.6.3ubuntu0.1",
 								},
 								Version:    "1.6.3ubuntu0.1",
@@ -73,7 +73,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "base-files@10.1ubuntu2.2",
 								Name: "base-files",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/base-files@10.1ubuntu2.2",
 								},
 								Version:    "10.1ubuntu2.2",
@@ -85,7 +85,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "base-passwd@3.5.44",
 								Name: "base-passwd",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/base-passwd@3.5.44",
 								},
 								Version:    "3.5.44",
@@ -101,7 +101,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "bash@4.4.18-2ubuntu1",
 								Name: "bash",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/bash@4.4.18-2ubuntu1",
 								},
 								Version:    "4.4.18",
@@ -119,7 +119,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "bsdutils@1:2.31.1-0.4ubuntu3.1",
 								Name: "bsdutils",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/bsdutils@1%3A2.31.1-0.4ubuntu3.1",
 								},
 								Version:    "2.31.1",
@@ -134,7 +134,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "bzip2@1.0.6-8.1",
 								Name: "bzip2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/bzip2@1.0.6-8.1",
 								},
 								Version:    "1.0.6",
@@ -152,7 +152,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "coreutils@8.28-1ubuntu1",
 								Name: "coreutils",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/coreutils@8.28-1ubuntu1",
 								},
 								Version:    "8.28",
@@ -166,7 +166,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "dash@0.5.8-2.10",
 								Name: "dash",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/dash@0.5.8-2.10",
 								},
 								Version:    "0.5.8",
@@ -184,7 +184,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "debconf@1.5.66",
 								Name: "debconf",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/debconf@1.5.66",
 								},
 								Version:    "1.5.66",
@@ -196,7 +196,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "debianutils@4.8.4",
 								Name: "debianutils",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/debianutils@4.8.4",
 								},
 								Version:    "4.8.4",
@@ -208,7 +208,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "diffutils@1:3.6-1",
 								Name: "diffutils",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/diffutils@1%3A3.6-1",
 								},
 								Epoch:      1,
@@ -224,7 +224,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "dpkg@1.19.0.5ubuntu2",
 								Name: "dpkg",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/dpkg@1.19.0.5ubuntu2",
 								},
 								Version:    "1.19.0.5ubuntu2",
@@ -239,7 +239,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "e2fsprogs@1.44.1-1",
 								Name: "e2fsprogs",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/e2fsprogs@1.44.1-1",
 								},
 								Version:    "1.44.1",
@@ -253,7 +253,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "fdisk@2.31.1-0.4ubuntu3.1",
 								Name: "fdisk",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/fdisk@2.31.1-0.4ubuntu3.1",
 								},
 								Version:    "2.31.1",
@@ -275,7 +275,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "findutils@4.6.0+git+20170828-2",
 								Name: "findutils",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/findutils@4.6.0%2Bgit%2B20170828-2",
 								},
 								Version:    "4.6.0+git+20170828",
@@ -289,7 +289,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "gcc-8-base@8-20180414-1ubuntu2",
 								Name: "gcc-8-base",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/gcc-8-base@8-20180414-1ubuntu2",
 								},
 								Version:    "8-20180414",
@@ -303,7 +303,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "gpgv@2.2.4-1ubuntu1.1",
 								Name: "gpgv",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/gpgv@2.2.4-1ubuntu1.1",
 								},
 								Version:    "2.2.4",
@@ -324,7 +324,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "grep@3.1-2",
 								Name: "grep",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/grep@3.1-2",
 								},
 								Version:    "3.1",
@@ -341,7 +341,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "gzip@1.6-5ubuntu1",
 								Name: "gzip",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/gzip@1.6-5ubuntu1",
 								},
 								Version:    "1.6",
@@ -358,7 +358,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "hostname@3.20",
 								Name: "hostname",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/hostname@3.20",
 								},
 								Version:    "3.20",
@@ -370,7 +370,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "init-system-helpers@1.51",
 								Name: "init-system-helpers",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/init-system-helpers@1.51",
 								},
 								Version:    "1.51",
@@ -385,7 +385,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libacl1@2.2.52-3build1",
 								Name: "libacl1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libacl1@2.2.52-3build1",
 								},
 								Version:    "2.2.52",
@@ -403,7 +403,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libapt-pkg5.0@1.6.3ubuntu0.1",
 								Name: "libapt-pkg5.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libapt-pkg5.0@1.6.3ubuntu0.1",
 								},
 								Version:    "1.6.3ubuntu0.1",
@@ -426,7 +426,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libattr1@1:2.4.47-2build1",
 								Name: "libattr1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libattr1@1%3A2.4.47-2build1",
 								},
 								Epoch:      1,
@@ -445,7 +445,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libaudit-common@1:2.8.2-1ubuntu1",
 								Name: "libaudit-common",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libaudit-common@1%3A2.8.2-1ubuntu1",
 								},
 								Version:    "2.8.2",
@@ -461,7 +461,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libaudit1@1:2.8.2-1ubuntu1",
 								Name: "libaudit1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libaudit1@1%3A2.8.2-1ubuntu1",
 								},
 								Epoch:      1,
@@ -482,7 +482,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libblkid1@2.31.1-0.4ubuntu3.1",
 								Name: "libblkid1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libblkid1@2.31.1-0.4ubuntu3.1",
 								},
 								Version:    "2.31.1",
@@ -500,7 +500,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libbz2-1.0@1.0.6-8.1",
 								Name: "libbz2-1.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libbz2-1.0@1.0.6-8.1",
 								},
 								Version:    "1.0.6",
@@ -517,7 +517,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libc-bin@2.27-3ubuntu1",
 								Name: "libc-bin",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libc-bin@2.27-3ubuntu1",
 								},
 								Version:    "2.27",
@@ -534,7 +534,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libc6@2.27-3ubuntu1",
 								Name: "libc6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libc6@2.27-3ubuntu1",
 								},
 								Version:    "2.27",
@@ -551,7 +551,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libcap-ng0@0.7.7-3.1",
 								Name: "libcap-ng0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libcap-ng0@0.7.7-3.1",
 								},
 								Version:    "0.7.7",
@@ -568,7 +568,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libcom-err2@1.44.1-1",
 								Name: "libcom-err2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libcom-err2@1.44.1-1",
 								},
 								Version:    "1.44.1",
@@ -585,7 +585,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libdb5.3@5.3.28-13.1ubuntu1",
 								Name: "libdb5.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libdb5.3@5.3.28-13.1ubuntu1",
 								},
 								Version:    "5.3.28",
@@ -602,7 +602,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libdebconfclient0@0.213ubuntu1",
 								Name: "libdebconfclient0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libdebconfclient0@0.213ubuntu1",
 								},
 								Version:    "0.213ubuntu1",
@@ -617,7 +617,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libext2fs2@1.44.1-1",
 								Name: "libext2fs2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libext2fs2@1.44.1-1",
 								},
 								Version:    "1.44.1",
@@ -634,7 +634,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libfdisk1@2.31.1-0.4ubuntu3.1",
 								Name: "libfdisk1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libfdisk1@2.31.1-0.4ubuntu3.1",
 								},
 								Version:    "2.31.1",
@@ -653,7 +653,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libffi6@3.2.1-8",
 								Name: "libffi6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libffi6@3.2.1-8",
 								},
 								Version:    "3.2.1",
@@ -670,7 +670,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libgcc1@1:8-20180414-1ubuntu2",
 								Name: "libgcc1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libgcc1@1%3A8-20180414-1ubuntu2",
 								},
 								Epoch:      1,
@@ -689,7 +689,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libgcrypt20@1.8.1-4ubuntu1.1",
 								Name: "libgcrypt20",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libgcrypt20@1.8.1-4ubuntu1.1",
 								},
 								Version:    "1.8.1",
@@ -707,7 +707,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libgmp10@2:6.1.2+dfsg-2",
 								Name: "libgmp10",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libgmp10@2%3A6.1.2%2Bdfsg-2",
 								},
 								Epoch:      2,
@@ -726,7 +726,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libgnutls30@3.5.18-1ubuntu1",
 								Name: "libgnutls30",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libgnutls30@3.5.18-1ubuntu1",
 								},
 								Version:    "3.5.18",
@@ -751,7 +751,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libgpg-error0@1.27-6",
 								Name: "libgpg-error0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libgpg-error0@1.27-6",
 								},
 								Version:    "1.27",
@@ -768,7 +768,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libhogweed4@3.4-1",
 								Name: "libhogweed4",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libhogweed4@3.4-1",
 								},
 								Version:    "3.4",
@@ -787,7 +787,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libidn2-0@2.0.4-1.1build2",
 								Name: "libidn2-0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libidn2-0@2.0.4-1.1build2",
 								},
 								Version:    "2.0.4",
@@ -805,7 +805,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "liblz4-1@0.0~r131-2ubuntu3",
 								Name: "liblz4-1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/liblz4-1@0.0~r131-2ubuntu3",
 								},
 								Version:    "0.0~r131",
@@ -822,7 +822,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "liblzma5@5.1.1alpha+20120614-2+b3",
 								Name: "liblzma5",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/liblzma5@5.1.1alpha%2B20120614-2%2Bb3",
 								},
 								Version:    "5.1.1alpha+20120614",
@@ -839,7 +839,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libmount1@2.31.1-0.4ubuntu3.1",
 								Name: "libmount1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libmount1@2.31.1-0.4ubuntu3.1",
 								},
 								Version:    "2.31.1",
@@ -858,7 +858,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libncurses5@6.1-1ubuntu1.18.04",
 								Name: "libncurses5",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libncurses5@6.1-1ubuntu1.18.04",
 								},
 								Version:    "6.1",
@@ -876,7 +876,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libncursesw5@6.1-1ubuntu1.18.04",
 								Name: "libncursesw5",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libncursesw5@6.1-1ubuntu1.18.04",
 								},
 								Version:    "6.1",
@@ -894,7 +894,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libnettle6@3.4-1",
 								Name: "libnettle6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libnettle6@3.4-1",
 								},
 								Version:    "3.4",
@@ -911,7 +911,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libp11-kit0@0.23.9-2",
 								Name: "libp11-kit0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libp11-kit0@0.23.9-2",
 								},
 								Version:    "0.23.9",
@@ -929,7 +929,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libpam-modules@1.1.8-3.6ubuntu2",
 								Name: "libpam-modules",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libpam-modules@1.1.8-3.6ubuntu2",
 								},
 								Version:    "1.1.8",
@@ -943,7 +943,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libpam-modules-bin@1.1.8-3.6ubuntu2",
 								Name: "libpam-modules-bin",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libpam-modules-bin@1.1.8-3.6ubuntu2",
 								},
 								Version:    "1.1.8",
@@ -963,7 +963,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libpam-runtime@1.1.8-3.6ubuntu2",
 								Name: "libpam-runtime",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libpam-runtime@1.1.8-3.6ubuntu2",
 								},
 								Version:    "1.1.8",
@@ -981,7 +981,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libpam0g@1.1.8-3.6ubuntu2",
 								Name: "libpam0g",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libpam0g@1.1.8-3.6ubuntu2",
 								},
 								Version:    "1.1.8",
@@ -1000,7 +1000,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libpcre3@2:8.39-9",
 								Name: "libpcre3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libpcre3@2%3A8.39-9",
 								},
 								Version:    "8.39",
@@ -1019,7 +1019,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libprocps6@2:3.3.12-3ubuntu1.1",
 								Name: "libprocps6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libprocps6@2%3A3.3.12-3ubuntu1.1",
 								},
 								Version:    "3.3.12",
@@ -1039,7 +1039,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libseccomp2@2.3.1-2.1ubuntu4",
 								Name: "libseccomp2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libseccomp2@2.3.1-2.1ubuntu4",
 								},
 								Version:    "2.3.1",
@@ -1056,7 +1056,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libselinux1@2.7-2build2",
 								Name: "libselinux1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libselinux1@2.7-2build2",
 								},
 								Version:    "2.7",
@@ -1074,7 +1074,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libsemanage-common@2.7-2build2",
 								Name: "libsemanage-common",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libsemanage-common@2.7-2build2",
 								},
 								Version:    "2.7",
@@ -1088,7 +1088,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libsemanage1@2.7-2build2",
 								Name: "libsemanage1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libsemanage1@2.7-2build2",
 								},
 								Version:    "2.7",
@@ -1110,7 +1110,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libsepol1@2.7-1",
 								Name: "libsepol1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libsepol1@2.7-1",
 								},
 								Version:    "2.7",
@@ -1127,7 +1127,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libsmartcols1@2.31.1-0.4ubuntu3.1",
 								Name: "libsmartcols1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libsmartcols1@2.31.1-0.4ubuntu3.1",
 								},
 								Version:    "2.31.1",
@@ -1144,7 +1144,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libss2@1.44.1-1",
 								Name: "libss2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libss2@1.44.1-1",
 								},
 								Version:    "1.44.1",
@@ -1162,7 +1162,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libstdc++6@8-20180414-1ubuntu2",
 								Name: "libstdc++6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libstdc%2B%2B6@8-20180414-1ubuntu2",
 								},
 								Version:    "8-20180414",
@@ -1181,7 +1181,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libsystemd0@237-3ubuntu10.3",
 								Name: "libsystemd0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libsystemd0@237-3ubuntu10.3",
 								},
 								Version:    "237",
@@ -1195,7 +1195,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libtasn1-6@4.13-2",
 								Name: "libtasn1-6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libtasn1-6@4.13-2",
 								},
 								Version:    "4.13",
@@ -1212,7 +1212,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libtinfo5@6.1-1ubuntu1.18.04",
 								Name: "libtinfo5",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libtinfo5@6.1-1ubuntu1.18.04",
 								},
 								Version:    "6.1",
@@ -1229,7 +1229,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libudev1@237-3ubuntu10.3",
 								Name: "libudev1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libudev1@237-3ubuntu10.3",
 								},
 								Version:    "237",
@@ -1246,7 +1246,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libunistring2@0.9.9-0ubuntu1",
 								Name: "libunistring2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libunistring2@0.9.9-0ubuntu1",
 								},
 								Version:    "0.9.9",
@@ -1263,7 +1263,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libustr-1.0-1@1.0.4-3+b2",
 								Name: "libustr-1.0-1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libustr-1.0-1@1.0.4-3%2Bb2",
 								},
 								Version:    "1.0.4",
@@ -1280,7 +1280,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libuuid1@2.31.1-0.4ubuntu3.1",
 								Name: "libuuid1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libuuid1@2.31.1-0.4ubuntu3.1",
 								},
 								Version:    "2.31.1",
@@ -1297,7 +1297,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libzstd1@1.3.3+dfsg-2ubuntu1",
 								Name: "libzstd1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libzstd1@1.3.3%2Bdfsg-2ubuntu1",
 								},
 								Version:    "1.3.3+dfsg",
@@ -1314,7 +1314,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "login@1:4.5-1ubuntu1",
 								Name: "login",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/login@1%3A4.5-1ubuntu1",
 								},
 								Version:    "4.5",
@@ -1330,7 +1330,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "lsb-base@9.20170808ubuntu1",
 								Name: "lsb-base",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/lsb-base@9.20170808ubuntu1",
 								},
 								Version:    "9.20170808ubuntu1",
@@ -1342,7 +1342,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "mawk@1.3.3-17ubuntu3",
 								Name: "mawk",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/mawk@1.3.3-17ubuntu3",
 								},
 								Version:    "1.3.3",
@@ -1356,7 +1356,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "mount@2.31.1-0.4ubuntu3.1",
 								Name: "mount",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/mount@2.31.1-0.4ubuntu3.1",
 								},
 								Version:    "2.31.1",
@@ -1373,7 +1373,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "ncurses-base@6.1-1ubuntu1.18.04",
 								Name: "ncurses-base",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/ncurses-base@6.1-1ubuntu1.18.04",
 								},
 								Version:    "6.1",
@@ -1387,7 +1387,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "ncurses-bin@6.1-1ubuntu1.18.04",
 								Name: "ncurses-bin",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/ncurses-bin@6.1-1ubuntu1.18.04",
 								},
 								Version:    "6.1",
@@ -1401,7 +1401,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "passwd@1:4.5-1ubuntu1",
 								Name: "passwd",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/passwd@1%3A4.5-1ubuntu1",
 								},
 								Epoch:      1,
@@ -1425,7 +1425,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "perl-base@5.26.1-6ubuntu0.2",
 								Name: "perl-base",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/perl-base@5.26.1-6ubuntu0.2",
 								},
 								Version:    "5.26.1",
@@ -1439,7 +1439,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "procps@2:3.3.12-3ubuntu1.1",
 								Name: "procps",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/procps@2%3A3.3.12-3ubuntu1.1",
 								},
 								Epoch:      2,
@@ -1464,7 +1464,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "sed@4.4-2",
 								Name: "sed",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/sed@4.4-2",
 								},
 								Version:    "4.4",
@@ -1478,7 +1478,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "sensible-utils@0.0.12",
 								Name: "sensible-utils",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/sensible-utils@0.0.12",
 								},
 								Version:    "0.0.12",
@@ -1490,7 +1490,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "sysvinit-utils@2.88dsf-59.10ubuntu1",
 								Name: "sysvinit-utils",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/sysvinit-utils@2.88dsf-59.10ubuntu1",
 								},
 								Version:    "2.88dsf",
@@ -1509,7 +1509,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "tar@1.29b-2",
 								Name: "tar",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/tar@1.29b-2",
 								},
 								Version:    "1.29b",
@@ -1523,7 +1523,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "ubuntu-keyring@2018.02.28",
 								Name: "ubuntu-keyring",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/ubuntu-keyring@2018.02.28",
 								},
 								Version:    "2018.02.28",
@@ -1535,7 +1535,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "util-linux@2.31.1-0.4ubuntu3.1",
 								Name: "util-linux",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/util-linux@2.31.1-0.4ubuntu3.1",
 								},
 								Version:    "2.31.1",
@@ -1552,7 +1552,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "zlib1g@1:1.2.11.dfsg-0ubuntu2",
 								Name: "zlib1g",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/zlib1g@1%3A1.2.11.dfsg-0ubuntu2",
 								},
 								Epoch:      1,
@@ -1584,7 +1584,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libgcc1@1:5.1.1-12ubuntu1",
 								Name: "libgcc1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libgcc1@1%3A5.1.1-12ubuntu1",
 								},
 								Version:    "5.1.1",
@@ -1599,7 +1599,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libpam-modules-bin@1.1.8-3.1ubuntu3",
 								Name: "libpam-modules-bin",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libpam-modules-bin@1.1.8-3.1ubuntu3",
 								},
 								Version:    "1.1.8",
@@ -1613,7 +1613,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "libpam-runtime@1.1.8-3.1ubuntu3",
 								Name: "libpam-runtime",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/libpam-runtime@1.1.8-3.1ubuntu3",
 								},
 								Version:    "1.1.8",
@@ -1627,7 +1627,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "makedev@2.3.1-93ubuntu1",
 								Name: "makedev",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/makedev@2.3.1-93ubuntu1",
 								},
 								Version:    "2.3.1",
@@ -1652,7 +1652,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 						FilePath: "var/lib/dpkg/status",
 						Packages: []types.Package{
 							{
-								ID: "apt@1.6.3ubuntu0.1", Name: "apt", Version: "1.6.3ubuntu0.1", Identifier: &types.PkgIdentifier{PURL: "pkg:dpkg/apt@1.6.3ubuntu0.1"},
+								ID: "apt@1.6.3ubuntu0.1", Name: "apt", Version: "1.6.3ubuntu0.1", Identifier: types.PkgIdentifier{PURL: "pkg:dpkg/apt@1.6.3ubuntu0.1"},
 								SrcName: "apt", SrcVersion: "1.6.3ubuntu0.1", Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>", Arch: "amd64"},
 						},
 					},
@@ -1673,7 +1673,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "sed@4.4-2",
 								Name: "sed",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/sed@4.4-2",
 								},
 								Version:    "4.4",
@@ -1687,7 +1687,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:   "tar@1.34+dfsg-1",
 								Name: "tar",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:dpkg/tar@1.34%2Bdfsg-1",
 								},
 								Version:    "1.34+dfsg",

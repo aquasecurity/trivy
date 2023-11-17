@@ -236,7 +236,7 @@ var expectedBlobInfo = types.BlobInfo{
 					ID:      "musl@1.2.3-r5",
 					Name:    "musl",
 					Version: "1.2.3-r5",
-					Identifier: &types.PkgIdentifier{
+					Identifier: types.PkgIdentifier{
 						PURL: "pkg:apk/musl@1.2.3-r5",
 					},
 					SrcName:    "musl",

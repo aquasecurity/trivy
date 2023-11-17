@@ -31,7 +31,7 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "github.com/Quick/Nimble@9.2.1",
 								Name:    "github.com/Quick/Nimble",
 								Version: "9.2.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:swift/github.com/Quick/Nimble@9.2.1",
 								},
 								Locations: []types.Location{
@@ -45,7 +45,7 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "github.com/Quick/Quick@7.0.0",
 								Name:    "github.com/Quick/Quick",
 								Version: "7.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:swift/github.com/Quick/Quick@7.0.0",
 								},
 								Locations: []types.Location{
@@ -59,7 +59,7 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "github.com/ReactiveCocoa/ReactiveSwift@7.1.1",
 								Name:    "github.com/ReactiveCocoa/ReactiveSwift",
 								Version: "7.1.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:swift/github.com/ReactiveCocoa/ReactiveSwift@7.1.1",
 								},
 								Locations: []types.Location{

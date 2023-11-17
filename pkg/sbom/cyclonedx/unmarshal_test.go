@@ -37,7 +37,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcName:    "musl",
 								SrcVersion: "1.2.3-r0",
 								Licenses:   []string{"MIT"},
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 								},
 								Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
@@ -56,7 +56,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/log@1.13.1",
 								},
 								Ref: "pkg:composer/pear/log@1.13.1",
@@ -68,7 +68,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/pear_exception@v1.0.0",
 								},
 								Ref: "pkg:composer/pear/pear_exception@v1.0.0",
@@ -85,7 +85,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "github.com/package-url/packageurl-go",
 								Version: "v0.1.1-0.20220203205134-d70459300c8a",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 								},
 								Ref: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
@@ -101,7 +101,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Libraries: ftypes.Packages{
 							{
 								Name: "com.example:example",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:maven/com.example/example@0.0.1",
 								},
 								Ref:     "pkg:maven/com.example/example@0.0.1",
@@ -117,7 +117,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Libraries: ftypes.Packages{
 							{
 								Name: "org.codehaus.mojo:child-project",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 								},
 								Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
@@ -136,7 +136,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "bootstrap",
 								Version: "5.0.2",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 								},
 								Ref:      "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
@@ -171,7 +171,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "docker",
 								Version: "24.0.4",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:golang/docker@24.0.4",
 								},
 								Ref: "pkg:golang/docker@24.0.4",
@@ -188,7 +188,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "k8s.io/apiserver",
 								Version: "1.27.4",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
 								},
 								Ref: "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
@@ -196,7 +196,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "k8s.io/controller-manager",
 								Version: "1.27.4",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
 								},
 								Ref: "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
@@ -204,7 +204,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "k8s.io/kube-proxy",
 								Version: "1.27.4",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
 								},
 								Ref: "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
@@ -212,7 +212,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "k8s.io/kube-scheduler",
 								Version: "1.27.4",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
 								},
 								Ref: "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
@@ -220,7 +220,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "k8s.io/kubelet",
 								Version: "1.27.4",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
 								},
 								Ref: "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
@@ -228,7 +228,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "k8s.io/kubernetes",
 								Version: "1.27.4",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
 								},
 								Ref: "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
@@ -261,7 +261,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									"GPL-2.0",
 									"GFDL-1.3",
 								},
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
 								},
 								Ref: "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
@@ -279,7 +279,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcVersion: "4.4.27",
 								SrcRelease: "1",
 								SrcEpoch:   1,
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1&distro=ubuntu-22.04",
 								},
 								Ref: "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1&distro=ubuntu-22.04",
@@ -310,7 +310,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcName:    "musl",
 								SrcVersion: "1.2.3-r0",
 								Licenses:   []string{"MIT"},
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 								},
 								Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
@@ -326,7 +326,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/log@1.13.1",
 								},
 								Ref: "pkg:composer/pear/log@1.13.1",
@@ -335,7 +335,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/pear_exception@v1.0.0",
 								},
 								Ref: "pkg:composer/pear/pear_exception@v1.0.0",
@@ -357,7 +357,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/log@1.13.1",
 								},
 								Ref: "pkg:composer/pear/log@1.13.1",
@@ -379,7 +379,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/log@1.13.1",
 								},
 								Ref: "pkg:composer/pear/log@1.13.1",
@@ -388,7 +388,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/pear_exception@v1.0.0",
 								},
 								Ref: "pkg:composer/pear/pear_exception@v1.0.0",
@@ -410,7 +410,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "pear/core",
 								Version: "1.13.1",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/core@1.13.1",
 								},
 								Ref: "pkg:composer/pear/core@1.13.1",
@@ -418,7 +418,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/log@1.13.1",
 								},
 								Ref: "pkg:composer/pear/log@1.13.1",
@@ -427,7 +427,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:composer/pear/pear_exception@v1.0.0",
 								},
 								Ref: "pkg:composer/pear/pear_exception@v1.0.0",
@@ -448,7 +448,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name:    "org.springframework:spring-web",
 								Version: "5.3.22",
-								Identifier: &ftypes.PkgIdentifier{
+								Identifier: ftypes.PkgIdentifier{
 									PURL: "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 								},
 								Ref:      "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",

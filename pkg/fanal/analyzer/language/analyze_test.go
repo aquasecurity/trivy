@@ -67,7 +67,7 @@ func TestAnalyze(t *testing.T) {
 							{
 								Name:    "test",
 								Version: "1.2.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:golang/test@1.2.3",
 								},
 							},

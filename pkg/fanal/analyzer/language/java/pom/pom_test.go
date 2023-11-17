@@ -33,7 +33,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								ID:      "com.example:example:1.0.0",
 								Name:    "com.example:example",
 								Version: "1.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.example/example@1.0.0",
 								},
 								Licenses: []string{"Apache-2.0"},
@@ -57,7 +57,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								ID:      "com.example:example:1.0.0",
 								Name:    "com.example:example",
 								Version: "1.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.example/example@1.0.0",
 								},
 								Licenses: []string{"Apache-2.0"},
@@ -80,7 +80,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 								ID:      "com.example:example:2.0.0",
 								Name:    "com.example:example",
 								Version: "2.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:maven/com.example/example@2.0.0",
 								},
 								Licenses: []string{"Apache-2.0"},

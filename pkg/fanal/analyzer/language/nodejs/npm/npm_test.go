@@ -38,7 +38,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "ansi-colors@3.2.3",
 								Name:    "ansi-colors",
 								Version: "3.2.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/ansi-colors@3.2.3",
 								},
 								Dev:      true,
@@ -54,7 +54,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "array-flatten@1.1.1",
 								Name:    "array-flatten",
 								Version: "1.1.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/array-flatten@1.1.1",
 								},
 								Indirect: true,
@@ -69,7 +69,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "body-parser@1.18.3",
 								Name:    "body-parser",
 								Version: "1.18.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/body-parser@1.18.3",
 								},
 								Indirect:  true,
@@ -86,7 +86,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "debug@2.6.9",
 								Name:    "debug",
 								Version: "2.6.9",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/debug@2.6.9",
 								},
 								Indirect:  true,
@@ -107,7 +107,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "express@4.16.4",
 								Name:    "express",
 								Version: "4.16.4",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/express@4.16.4",
 								},
 								Indirect:  true,
@@ -124,7 +124,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "ms@2.0.0",
 								Name:    "ms",
 								Version: "2.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/ms@2.0.0",
 								},
 								Indirect: true,
@@ -144,7 +144,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "ms@2.1.1",
 								Name:    "ms",
 								Version: "2.1.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/ms@2.1.1",
 								},
 								Indirect: true,
@@ -174,7 +174,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "ms@2.1.1",
 								Name:    "ms",
 								Version: "2.1.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/ms@2.1.1",
 								},
 								Indirect: true,

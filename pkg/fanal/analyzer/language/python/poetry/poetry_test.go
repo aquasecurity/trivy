@@ -31,7 +31,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "certifi@2022.12.7",
 								Name:    "certifi",
 								Version: "2022.12.7",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/certifi@2022.12.7",
 								},
 								Indirect: true,
@@ -40,7 +40,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "charset-normalizer@2.1.1",
 								Name:    "charset-normalizer",
 								Version: "2.1.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/charset-normalizer@2.1.1",
 								},
 								Indirect: true,
@@ -49,7 +49,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "click@7.1.2",
 								Name:    "click",
 								Version: "7.1.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/click@7.1.2",
 								},
 								Indirect: true,
@@ -58,7 +58,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "flask@1.1.4",
 								Name:    "flask",
 								Version: "1.1.4",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/flask@1.1.4",
 								},
 								DependsOn: []string{
@@ -72,7 +72,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "idna@3.4",
 								Name:    "idna",
 								Version: "3.4",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/idna@3.4",
 								},
 								Indirect: true,
@@ -81,7 +81,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "itsdangerous@1.1.0",
 								Name:    "itsdangerous",
 								Version: "1.1.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/itsdangerous@1.1.0",
 								},
 								Indirect: true,
@@ -90,7 +90,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "jinja2@2.11.3",
 								Name:    "jinja2",
 								Version: "2.11.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/jinja2@2.11.3",
 								},
 								Indirect: true,
@@ -102,7 +102,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "markupsafe@2.1.2",
 								Name:    "markupsafe",
 								Version: "2.1.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/markupsafe@2.1.2",
 								},
 								Indirect: true,
@@ -111,7 +111,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "requests@2.28.1",
 								Name:    "requests",
 								Version: "2.28.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/requests@2.28.1",
 								},
 								DependsOn: []string{
@@ -125,7 +125,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "urllib3@1.26.14",
 								Name:    "urllib3",
 								Version: "1.26.14",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/urllib3@1.26.14",
 								},
 								Indirect: true,
@@ -134,7 +134,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "werkzeug@1.0.1",
 								Name:    "werkzeug",
 								Version: "1.0.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/werkzeug@1.0.1",
 								},
 								Indirect: true,
@@ -157,7 +157,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "click@8.1.3",
 								Name:    "click",
 								Version: "8.1.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/click@8.1.3",
 								},
 								DependsOn: []string{
@@ -168,7 +168,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "colorama@0.4.6",
 								Name:    "colorama",
 								Version: "0.4.6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/colorama@0.4.6",
 								},
 							},
@@ -190,7 +190,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "click@8.1.3",
 								Name:    "click",
 								Version: "8.1.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/click@8.1.3",
 								},
 								DependsOn: []string{
@@ -201,7 +201,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "colorama@0.4.6",
 								Name:    "colorama",
 								Version: "0.4.6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/colorama@0.4.6",
 								},
 							},

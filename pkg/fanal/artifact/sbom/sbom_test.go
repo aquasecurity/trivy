@@ -42,7 +42,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "musl",
 										Version: "1.2.3-r0",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										},
 										SrcName:    "musl",
@@ -64,7 +64,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "pear/log",
 										Version: "1.13.1",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:composer/pear/log@1.13.1",
 										},
 										Ref: "pkg:composer/pear/log@1.13.1",
@@ -76,7 +76,7 @@ func TestArtifact_Inspect(t *testing.T) {
 
 										Name:    "pear/pear_exception",
 										Version: "v1.0.0",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:composer/pear/pear_exception@v1.0.0",
 										},
 										Ref: "pkg:composer/pear/pear_exception@v1.0.0",
@@ -93,7 +93,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 										},
 										Ref: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
@@ -111,7 +111,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Name:    "org.codehaus.mojo:child-project",
 										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										Version: "1.0",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										},
 										Layer: types.Layer{
@@ -128,7 +128,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "bootstrap",
 										Version: "5.0.2",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 										},
 										Ref:      "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
@@ -172,7 +172,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "musl",
 										Version: "1.2.3-r0",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										},
 										SrcName:    "musl",
@@ -194,7 +194,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "pear/log",
 										Version: "1.13.1",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:composer/pear/log@1.13.1",
 										},
 										Ref: "pkg:composer/pear/log@1.13.1",
@@ -206,7 +206,7 @@ func TestArtifact_Inspect(t *testing.T) {
 
 										Name:    "pear/pear_exception",
 										Version: "v1.0.0",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:composer/pear/pear_exception@v1.0.0",
 										},
 										Ref: "pkg:composer/pear/pear_exception@v1.0.0",
@@ -223,7 +223,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 										},
 										Ref: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
@@ -241,7 +241,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Name:    "org.codehaus.mojo:child-project",
 										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										Version: "1.0",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										},
 										Layer: types.Layer{
@@ -259,7 +259,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Name:    "bootstrap",
 										Version: "5.0.2",
 										Ref:     "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 										},
 										Licenses: []string{"MIT"},

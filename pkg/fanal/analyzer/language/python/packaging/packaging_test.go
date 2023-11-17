@@ -32,7 +32,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "kitchen",
 								Version: "1.2.6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/kitchen@1.2.6",
 								},
 								Licenses: []string{"LGPLv2+"},
@@ -56,7 +56,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "distlib",
 								Version: "0.3.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/distlib@0.3.1",
 								},
 								Licenses: []string{"Python license"},
@@ -80,7 +80,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "setuptools",
 								Version: "51.3.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/setuptools@51.3.3",
 								},
 								Licenses: []string{"MIT License"},
@@ -103,7 +103,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "setuptools",
 								Version: "51.3.3",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/setuptools@51.3.3",
 								},
 								Licenses: []string{"MIT License"},
@@ -126,7 +126,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "distlib",
 								Version: "0.3.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:pypi/distlib@0.3.1",
 								},
 								Licenses: []string{"Python license"},

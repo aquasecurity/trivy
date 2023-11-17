@@ -62,7 +62,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										ID:      "musl@1.1.24-r2",
 										Name:    "musl",
 										Version: "1.1.24-r2",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:apk/musl@1.1.24-r2",
 										},
 										SrcName:    "musl",
@@ -143,7 +143,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										ID:      "musl@1.1.24-r2",
 										Name:    "musl",
 										Version: "1.1.24-r2",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:apk/musl@1.1.24-r2",
 										},
 										SrcName:    "musl",
@@ -192,7 +192,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:pypi/flask@2.0.0",
 										},
 									},
@@ -230,7 +230,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
-										Identifier: &types.PkgIdentifier{
+										Identifier: types.PkgIdentifier{
 											PURL: "pkg:pypi/flask@2.0.0",
 										},
 									},

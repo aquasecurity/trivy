@@ -1617,15 +1617,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 		case "PkgPath":
 			out.PkgPath = string(in.String())
 		case "PkgIdentifier":
-			if in.IsNull() {
-				in.Skip()
-				out.PkgIdentifier = nil
-			} else {
-				if out.PkgIdentifier == nil {
-					out.PkgIdentifier = new(types1.PkgIdentifier)
-				}
-				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, out.PkgIdentifier)
-			}
+			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, &out.PkgIdentifier)
 		case "InstalledVersion":
 			out.InstalledVersion = string(in.String())
 		case "FixedVersion":
@@ -1845,7 +1837,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 		}
 		out.String(string(in.PkgPath))
 	}
-	if in.PkgIdentifier != nil {
+	if true {
 		const prefix string = ",\"PkgIdentifier\":"
 		if first {
 			first = false
@@ -1853,7 +1845,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 		} else {
 			out.RawString(prefix)
 		}
-		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, *in.PkgIdentifier)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, in.PkgIdentifier)
 	}
 	if in.InstalledVersion != "" {
 		const prefix string = ",\"InstalledVersion\":"
@@ -2314,15 +2306,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 		case "Name":
 			out.Name = string(in.String())
 		case "Identifier":
-			if in.IsNull() {
-				in.Skip()
-				out.Identifier = nil
-			} else {
-				if out.Identifier == nil {
-					out.Identifier = new(types1.PkgIdentifier)
-				}
-				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, out.Identifier)
-			}
+			easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, &out.Identifier)
 		case "Version":
 			out.Version = string(in.String())
 		case "Release":
@@ -2487,7 +2471,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		}
 		out.String(string(in.Name))
 	}
-	if in.Identifier != nil {
+	if true {
 		const prefix string = ",\"Identifier\":"
 		if first {
 			first = false
@@ -2495,7 +2479,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		} else {
 			out.RawString(prefix)
 		}
-		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, *in.Identifier)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, in.Identifier)
 	}
 	if in.Version != "" {
 		const prefix string = ",\"Version\":"

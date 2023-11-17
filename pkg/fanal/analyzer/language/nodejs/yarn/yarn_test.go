@@ -31,7 +31,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
 								Version: "2.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/js-tokens@2.0.0",
 								},
 								Locations: []types.Location{
@@ -45,7 +45,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "js-tokens@4.0.0",
 								Name:    "js-tokens",
 								Version: "4.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/js-tokens@4.0.0",
 								},
 								Indirect: true,
@@ -60,7 +60,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "loose-envify@1.4.0",
 								Name:    "loose-envify",
 								Version: "1.4.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/loose-envify@1.4.0",
 								},
 								Indirect: true,
@@ -78,7 +78,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "object-assign@4.1.1",
 								Name:    "object-assign",
 								Version: "4.1.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/object-assign@4.1.1",
 								},
 								Indirect: true,
@@ -93,7 +93,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "prop-types@15.7.2",
 								Name:    "prop-types",
 								Version: "15.7.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/prop-types@15.7.2",
 								},
 								Dev: true,
@@ -113,7 +113,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "react-is@16.13.1",
 								Name:    "react-is",
 								Version: "16.13.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/react-is@16.13.1",
 								},
 								Dev:      true,
@@ -129,7 +129,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "scheduler@0.13.6",
 								Name:    "scheduler",
 								Version: "0.13.6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/scheduler@0.13.6",
 								},
 								Locations: []types.Location{
@@ -161,7 +161,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
 								Version: "2.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/js-tokens@2.0.0",
 								},
 								Locations: []types.Location{
@@ -175,7 +175,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "js-tokens@4.0.0",
 								Name:    "js-tokens",
 								Version: "4.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/js-tokens@4.0.0",
 								},
 								Locations: []types.Location{
@@ -189,7 +189,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "loose-envify@1.4.0",
 								Name:    "loose-envify",
 								Version: "1.4.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/loose-envify@1.4.0",
 								},
 								Locations: []types.Location{
@@ -206,7 +206,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "object-assign@4.1.1",
 								Name:    "object-assign",
 								Version: "4.1.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/object-assign@4.1.1",
 								},
 								Locations: []types.Location{
@@ -220,7 +220,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "prop-types@15.7.2",
 								Name:    "prop-types",
 								Version: "15.7.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/prop-types@15.7.2",
 								},
 								Locations: []types.Location{
@@ -239,7 +239,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "react-is@16.13.1",
 								Name:    "react-is",
 								Version: "16.13.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/react-is@16.13.1",
 								},
 								Locations: []types.Location{
@@ -253,7 +253,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "scheduler@0.13.6",
 								Name:    "scheduler",
 								Version: "0.13.6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/scheduler@0.13.6",
 								},
 								Locations: []types.Location{
@@ -285,7 +285,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
 								Version: "2.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/js-tokens@2.0.0",
 								},
 								Locations: []types.Location{
@@ -324,7 +324,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "is-callable@1.2.7",
 								Name:    "is-callable",
 								Version: "1.2.7",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/is-callable@1.2.7",
 								},
 								Licenses: []string{"MIT"},
@@ -339,7 +339,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "is-number@6.0.0",
 								Name:    "is-number",
 								Version: "6.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/is-number@6.0.0",
 								},
 								Licenses: []string{"MIT"},
@@ -355,7 +355,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "is-odd@3.0.1",
 								Name:    "is-odd",
 								Version: "3.0.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/is-odd@3.0.1",
 								},
 								Licenses:  []string{"MIT"},
@@ -385,7 +385,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "is-number@6.0.0",
 								Name:    "is-number",
 								Version: "6.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/is-number@6.0.0",
 								},
 								Indirect: true,
@@ -400,7 +400,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "is-number@7.0.0",
 								Name:    "is-number",
 								Version: "7.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/is-number@7.0.0",
 								},
 								Locations: []types.Location{
@@ -414,7 +414,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "is-odd@3.0.1",
 								Name:    "is-odd",
 								Version: "3.0.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/is-odd@3.0.1",
 								},
 								DependsOn: []string{"is-number@6.0.0"},
@@ -429,7 +429,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "js-tokens@4.0.0",
 								Name:    "js-tokens",
 								Version: "4.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/js-tokens@4.0.0",
 								},
 								Indirect: true,
@@ -444,7 +444,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "js-tokens@8.0.1",
 								Name:    "js-tokens",
 								Version: "8.0.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/js-tokens@8.0.1",
 								},
 								Locations: []types.Location{
@@ -458,7 +458,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "loose-envify@1.4.0",
 								Name:    "loose-envify",
 								Version: "1.4.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/loose-envify@1.4.0",
 								},
 								Indirect:  true,
@@ -474,7 +474,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "object-assign@4.1.1",
 								Name:    "object-assign",
 								Version: "4.1.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/object-assign@4.1.1",
 								},
 								Indirect: true,
@@ -490,7 +490,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "prettier@2.8.8",
 								Name:    "prettier",
 								Version: "2.8.8",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/prettier@2.8.8",
 								},
 								Dev: true,
@@ -505,7 +505,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "prop-types@15.8.1",
 								Name:    "prop-types",
 								Version: "15.8.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/prop-types@15.8.1",
 								},
 								Dev: true,
@@ -525,7 +525,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "react-is@16.13.1",
 								Name:    "react-is",
 								Version: "16.13.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/react-is@16.13.1",
 								},
 								Dev:      true,
@@ -541,7 +541,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "scheduler@0.23.0",
 								Name:    "scheduler",
 								Version: "0.23.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/scheduler@0.23.0",
 								},
 								DependsOn: []string{"loose-envify@1.4.0"},
@@ -574,7 +574,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "@babel/parser@7.22.7",
 								Name:    "@babel/parser",
 								Version: "7.22.7",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/%40babel/parser@7.22.7",
 								},
 								Indirect: true,
@@ -590,7 +590,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "@vue/compiler-sfc@2.7.14",
 								Name:    "@vue/compiler-sfc",
 								Version: "2.7.14",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/%40vue/compiler-sfc@2.7.14",
 								},
 								Indirect: false,
@@ -611,7 +611,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "nanoid@3.3.6",
 								Name:    "nanoid",
 								Version: "3.3.6",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/nanoid@3.3.6",
 								},
 								Indirect: true,
@@ -627,7 +627,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "picocolors@1.0.0",
 								Name:    "picocolors",
 								Version: "1.0.0",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/picocolors@1.0.0",
 								},
 								Indirect: true,
@@ -643,7 +643,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "postcss@8.4.27",
 								Name:    "postcss",
 								Version: "8.4.27",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/postcss@8.4.27",
 								},
 								Indirect: true,
@@ -664,7 +664,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "source-map@0.6.1",
 								Name:    "source-map",
 								Version: "0.6.1",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/source-map@0.6.1",
 								},
 								Indirect: true,
@@ -680,7 +680,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "source-map-js@1.0.2",
 								Name:    "source-map-js",
 								Version: "1.0.2",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:npm/source-map-js@1.0.2",
 								},
 								Indirect: true,

@@ -32,7 +32,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "openssl/3.0.5",
 								Name:    "openssl",
 								Version: "3.0.5",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:conan/openssl@3.0.5",
 								},
 								DependsOn: []string{
@@ -49,7 +49,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "zlib/1.2.12",
 								Name:    "zlib",
 								Version: "1.2.12",
-								Identifier: &types.PkgIdentifier{
+								Identifier: types.PkgIdentifier{
 									PURL: "pkg:conan/zlib@1.2.12",
 								},
 								Indirect: true,
