@@ -11,11 +11,13 @@ The following scanners are supported.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File               | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
-|:---------------:|--------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
-|    .Net Core    | *.deps.json        |            ✓            |     Excluded     |                  -                   |    ✓     |
-|      NuGet      | packages.config    |            ✓            |     Excluded     |                  -                   |    -     |
-|      NuGet      | packages.lock.json |            ✓            |     Included     |                  ✓                   |    ✓     |
+| Package manager | File                         | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
+|:---------------:|------------------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
+|    .Net Core    | *.deps.json                  |            ✓            |     Excluded     |                  -                   |    ✓     |
+|      NuGet      | packages.config              |            ✓            |     Excluded     |                  -                   |    -     |
+|      NuGet      | packages.props               |            -            |     Excluded     |                  -                   |    -     |
+|      NuGet      | Directory.packages.props     |            -            |     Excluded     |                  -                   |    -     |
+|      NuGet      | packages.lock.json           |            ✓            |     Included     |                  ✓                   |    ✓     |
 
 ## *.deps.json
 Trivy parses `*.deps.json` files. Trivy currently excludes dev dependencies from the report.
