@@ -16,7 +16,6 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/nuget/config"
 	"github.com/aquasecurity/go-dep-parser/pkg/nuget/lock"
 	"github.com/aquasecurity/go-dep-parser/pkg/nuget/packagesprops"
-
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
