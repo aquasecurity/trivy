@@ -225,6 +225,12 @@ func TestGetDependency(t *testing.T) {
 			expectName:    "@types/color-name",
 			expactVersion: "^1.1.1",
 		},
+		{
+			name:          "version with protocol",
+			target:        `    ms: "npm:2.1.2"`,
+			expectName:    "ms",
+			expactVersion: "2.1.2",
+		},
 	}
 
 	for _, v := range vectors {
@@ -315,6 +321,12 @@ func TestParse(t *testing.T) {
 			file:     "testdata/yarn_with_local.lock",
 			want:     yarnNormal,
 			wantDeps: yarnNormalDeps,
+		},
+		{
+			name:     "yarn v2 with protocols in dependency section",
+			file:     "testdata/yarn_v2_deps_with_protocol.lock",
+			want:     yarnV2DepsWithProtocol,
+			wantDeps: yarnV2DepsWithProtocolDeps,
 		},
 		{
 			name: "yarn with git dependency",
