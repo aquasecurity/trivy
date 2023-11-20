@@ -181,6 +181,9 @@ func TestFSCache_PutBlob(t *testing.T) {
 								{
 									Name:    "musl",
 									Version: "1.1.22-r3",
+									Identifier: types.PkgIdentifier{
+										PURL: "pkg:apk/musl@1.1.22-r3",
+									},
 								},
 							},
 						},
@@ -193,10 +196,16 @@ func TestFSCache_PutBlob(t *testing.T) {
 								{
 									Name:    "guzzlehttp/guzzle",
 									Version: "6.2.0",
+									Identifier: types.PkgIdentifier{
+										PURL: "pkg:composer/guzzlehttp/guzzle@6.2.0",
+									},
 								},
 								{
 									Name:    "guzzlehttp/promises",
 									Version: "v1.3.1",
+									Identifier: types.PkgIdentifier{
+										PURL: "pkg:composer/guzzlehttp/promises@1.3.1",
+									},
 								},
 							},
 						},
@@ -225,7 +234,9 @@ func TestFSCache_PutBlob(t *testing.T) {
 				        {
 				          "Name": "musl",
 				          "Version": "1.1.22-r3",
-						  "Identifier": {},
+						  "Identifier": {
+							"PURL": "pkg:apk/musl@1.1.22-r3"
+						  },
 						  "Layer": {}
 				        }
 				      ]
@@ -239,13 +250,17 @@ func TestFSCache_PutBlob(t *testing.T) {
                         {
                            "Name":"guzzlehttp/guzzle",
                            "Version":"6.2.0",
-						   "Identifier": {},
+						   "Identifier": {
+							 "PURL": "pkg:composer/guzzlehttp/guzzle@6.2.0"
+						   },
 						   "Layer": {}
                         },
                         {
                            "Name":"guzzlehttp/promises",
                            "Version":"v1.3.1",
-						   "Identifier": {},
+						   "Identifier": {
+							 "PURL": "pkg:composer/guzzlehttp/promises@1.3.1"
+						   },
 						   "Layer": {}
                         }
 				      ]
