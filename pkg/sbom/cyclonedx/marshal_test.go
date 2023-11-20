@@ -54,12 +54,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								ID:              "binutils@2.30-93.el8",
-								Name:            "binutils",
-								Version:         "2.30",
-								Release:         "93.el8",
-								Epoch:           0,
-								Arch:            "aarch64",
+								ID:      "binutils@2.30-93.el8",
+								Name:    "binutils",
+								Version: "2.30",
+								Release: "93.el8",
+								Epoch:   0,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								},
 								SrcName:         "binutils",
 								SrcVersion:      "2.30",
 								SrcRelease:      "93.el8",
@@ -119,15 +122,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
-								ID:       "actionpack@7.0.0",
-								Name:     "actionpack",
-								Version:  "7.0.0",
+								ID:      "actionpack@7.0.0",
+								Name:    "actionpack",
+								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.0",
+								},
 								Indirect: false,
 							},
 							{
-								ID:       "actioncontroller@7.0.0",
-								Name:     "actioncontroller",
-								Version:  "7.0.0",
+								ID:      "actioncontroller@7.0.0",
+								Name:    "actioncontroller",
+								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actioncontroller@7.0.0",
+								},
 								Indirect: false,
 								DependsOn: []string{
 									"actionpack@7.0.0",
@@ -144,6 +153,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.0",
+								},
 							},
 						},
 					},
@@ -156,6 +168,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "Newtonsoft.Json@9.0.1",
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:nuget/Newtonsoft.Json@9.0.1",
+								},
 							},
 						},
 					},
@@ -167,6 +182,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.0-20210421170649-83a5a9bb288b",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+								},
 							},
 							// dependency has been replaced with local directory
 							{
@@ -592,12 +610,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								ID:              "acl@2.2.53-1.el8",
-								Name:            "acl",
-								Version:         "2.2.53",
-								Release:         "1.el8",
-								Epoch:           1,
-								Arch:            "aarch64",
+								ID:      "acl@2.2.53-1.el8",
+								Name:    "acl",
+								Version: "2.2.53",
+								Release: "1.el8",
+								Epoch:   1,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
+								},
 								SrcName:         "acl",
 								SrcVersion:      "2.2.53",
 								SrcRelease:      "1.el8",
@@ -610,12 +631,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Digest: "md5:483792b8b5f9eb8be7dc4407733118d0",
 							},
 							{
-								ID:              "glibc@2.28-151.el8",
-								Name:            "glibc",
-								Version:         "2.28",
-								Release:         "151.el8",
-								Epoch:           0,
-								Arch:            "aarch64",
+								ID:      "glibc@2.28-151.el8",
+								Name:    "glibc",
+								Version: "2.28",
+								Release: "151.el8",
+								Epoch:   0,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+								},
 								SrcName:         "glibc",
 								SrcVersion:      "2.28",
 								SrcRelease:      "151.el8",
@@ -635,6 +659,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.0",
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -644,6 +671,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actionpack@7.0.1",
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.1",
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -800,7 +830,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						BOMRef:     "pkg:gem/actionpack@7.0.0",
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actionpack",
 						Version:    "7.0.0",
@@ -825,7 +855,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						BOMRef:     "pkg:gem/actionpack@7.0.1",
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actionpack",
 						Version:    "7.0.1",
@@ -943,8 +973,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
-							"pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
-							"pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+							"pkg:gem/actionpack@7.0.0",
+							"pkg:gem/actionpack@7.0.1",
 						},
 					},
 					{
@@ -956,11 +986,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						Ref:          "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						Ref:          "pkg:gem/actionpack@7.0.0",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref:          "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						Ref:          "pkg:gem/actionpack@7.0.1",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
@@ -1033,7 +1063,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Updated:   "2022-02-22T21:47:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+								Ref: "pkg:gem/actionpack@7.0.0",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "7.0.0",
@@ -1042,7 +1072,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+								Ref: "pkg:gem/actionpack@7.0.1",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "7.0.1",
@@ -1070,6 +1100,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actioncable",
 								Version: "6.1.4.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actioncable@6.1.4.1",
+								},
 							},
 						},
 					},
@@ -1079,8 +1112,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Jar,
 						Packages: []ftypes.Package{
 							{
-								Name:     "org.springframework:spring-web",
-								Version:  "5.3.22",
+								Name:    "org.springframework:spring-web",
+								Version: "5.3.22",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:maven/org.springframework/spring-web@5.3.22",
+								},
 								FilePath: "spring-web-5.3.22.jar",
 							},
 						},
@@ -1145,7 +1181,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+						BOMRef:     "pkg:maven/org.springframework/spring-web@5.3.22",
 						Type:       "library",
 						Name:       "spring-web",
 						Group:      "org.springframework",
@@ -1169,7 +1205,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
-							"pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+							"pkg:maven/org.springframework/spring-web@5.3.22",
 						},
 					},
 					{
@@ -1183,7 +1219,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1202,21 +1238,30 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Jar,
 						Packages: []ftypes.Package{
 							{
-								Name:     "org.apache.nifi:nifi-dbcp-base",
-								Version:  "1.20.0",
+								Name:    "org.apache.nifi:nifi-dbcp-base",
+								Version: "1.20.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+								},
 								FilePath: "nifi-dbcp-base-1.20.0.jar",
 							},
 							{
-								Name:     "org.apache.nifi:nifi-hikari-dbcp-service",
-								Version:  "1.20.0",
+								Name:    "org.apache.nifi:nifi-hikari-dbcp-service",
+								Version: "1.20.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+								},
 								FilePath: "nifi-hikari-dbcp-service-1.20.0.jar",
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								VulnerabilityID:  "CVE-2023-34468",
-								PkgName:          "org.apache.nifi:nifi-dbcp-base",
-								PkgPath:          "nifi-dbcp-base-1.20.0.jar",
+								VulnerabilityID: "CVE-2023-34468",
+								PkgName:         "org.apache.nifi:nifi-dbcp-base",
+								PkgPath:         "nifi-dbcp-base-1.20.0.jar",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
 								SeveritySource:   vulnerability.GHSA,
@@ -1256,9 +1301,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								VulnerabilityID:  "CVE-2023-34468",
-								PkgName:          "org.apache.nifi:nifi-hikari-dbcp-service",
-								PkgPath:          "nifi-hikari-dbcp-service-1.20.0.jar",
+								VulnerabilityID: "CVE-2023-34468",
+								PkgName:         "org.apache.nifi:nifi-hikari-dbcp-service",
+								PkgPath:         "nifi-hikari-dbcp-service-1.20.0.jar",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
 								SeveritySource:   vulnerability.GHSA,
@@ -1331,7 +1379,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:     "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+						BOMRef:     "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 						Type:       "library",
 						Name:       "nifi-dbcp-base",
 						Group:      "org.apache.nifi",
@@ -1349,7 +1397,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+						BOMRef:     "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 						Type:       "library",
 						Name:       "nifi-hikari-dbcp-service",
 						Group:      "org.apache.nifi",
@@ -1371,16 +1419,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
-							"pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
-							"pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+							"pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+							"pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 						},
 					},
 					{
-						Ref:          "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+						Ref:          "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref:          "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+						Ref:          "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1429,7 +1477,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Updated:   "2023-06-21T02:20:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+								Ref: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "1.20.0",
@@ -1438,7 +1486,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								Ref: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+								Ref: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "1.20.0",
@@ -1464,9 +1512,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.NodePkg,
 						Packages: []ftypes.Package{
 							{
-								ID:       "ruby-typeprof@0.20.1",
-								Name:     "ruby-typeprof",
-								Version:  "0.20.1",
+								ID:      "ruby-typeprof@0.20.1",
+								Name:    "ruby-typeprof",
+								Version: "0.20.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:npm/ruby-typeprof@0.20.1",
+								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
@@ -1507,7 +1558,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:     "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+						BOMRef:     "pkg:npm/ruby-typeprof@0.20.1",
 						Type:       "library",
 						Name:       "ruby-typeprof",
 						Version:    "0.20.1",
@@ -1544,11 +1595,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
-							"pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+							"pkg:npm/ruby-typeprof@0.20.1",
 						},
 					},
 					{
-						Ref:          "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+						Ref:          "pkg:npm/ruby-typeprof@0.20.1",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},

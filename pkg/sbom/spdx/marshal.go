@@ -333,9 +333,17 @@ func (m *Marshaler) pkgToSpdxPackage(t ftypes.TargetType, pkgDownloadLocation st
 		pkgSrcInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, pkg.SrcName, utils.FormatSrcVersion(pkg))
 	}
 
-	packageURL, err := purl.NewPackageURL(t, metadata, pkg)
-	if err != nil {
-		return spdx.Package{}, xerrors.Errorf("failed to parse purl (%s): %w", pkg.Name, err)
+	var packageURL *purl.PackageURL
+	if !pkg.Identifier.Empty() && pkg.Identifier.PURL != "" {
+		packageURL, err = purl.FromString(pkg.Identifier.PURL)
+		if err != nil {
+			return spdx.Package{}, xerrors.Errorf("failed to create package purl: %w", err)
+		}
+	} else {
+		packageURL, err = purl.NewPackageURL(t, metadata, pkg)
+		if err != nil {
+			return spdx.Package{}, xerrors.Errorf("failed to create package purl: %w", err)
+		}
 	}
 
 	var pkgExtRefs []*spdx.PackageExternalReference

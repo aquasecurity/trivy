@@ -54,11 +54,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								Name:            "binutils",
-								Version:         "2.30",
-								Release:         "93.el8",
-								Epoch:           0,
-								Arch:            "aarch64",
+								Name:    "binutils",
+								Version: "2.30",
+								Release: "93.el8",
+								Epoch:   0,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								},
 								SrcName:         "binutils",
 								SrcVersion:      "2.30",
 								SrcRelease:      "93.el8",
@@ -78,10 +81,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.1",
+								},
 							},
 							{
 								Name:    "actioncontroller",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actioncontroller@7.0.1",
+								},
 							},
 						},
 					},
@@ -93,6 +102,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.1",
+								},
 							},
 						},
 					},
@@ -296,11 +308,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								Name:            "acl",
-								Version:         "2.2.53",
-								Release:         "1.el8",
-								Epoch:           1,
-								Arch:            "aarch64",
+								Name:    "acl",
+								Version: "2.2.53",
+								Release: "1.el8",
+								Epoch:   1,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
+								},
 								SrcName:         "acl",
 								SrcVersion:      "2.2.53",
 								SrcRelease:      "1.el8",
@@ -319,6 +334,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.1",
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -328,6 +346,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.1",
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -542,6 +563,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actioncable",
 								Version: "6.1.4.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actioncable@6.1.4.1",
+								},
 							},
 						},
 					},
@@ -633,8 +657,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.NodePkg,
 						Packages: []ftypes.Package{
 							{
-								Name:     "ruby-typeprof",
-								Version:  "0.20.1",
+								Name:    "ruby-typeprof",
+								Version: "0.20.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:npm/ruby-typeprof@0.20.1",
+								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
@@ -862,10 +889,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
 								Version: "(devel)",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:golang/cnrm.googlesource.com/cnrm/@v/(devel)",
+								},
 							},
 							{
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: "pkg:golang/golang.org/x/crypto@v0.0.1",
+								},
 							},
 						},
 					},
@@ -898,8 +931,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "(devel)",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
-						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
-						PackageSupplier:         &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:golang/cnrm.googlesource.com/cnrm/%40v/%28devel%29",
+							},
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 					{
 						PackageName:             "go-artifact",

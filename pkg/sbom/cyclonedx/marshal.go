@@ -315,9 +315,18 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 }
 
 func pkgComponent(pkg Package) (*core.Component, error) {
-	pu, err := purl.NewPackageURL(pkg.Type, pkg.Metadata, pkg.Package)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to new package purl: %w", err)
+	var err error
+	var pu *purl.PackageURL
+	if !pkg.Identifier.Empty() && pkg.Identifier.PURL != "" {
+		pu, err = purl.FromString(pkg.Identifier.PURL)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to create package purl: %w", err)
+		}
+	} else {
+		pu, err = purl.NewPackageURL(pkg.Type, pkg.Metadata, pkg.Package)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to create package purl: %w", err)
+		}
 	}
 
 	name := pkg.Name
