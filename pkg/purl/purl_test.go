@@ -14,6 +14,63 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+func TestNewPackageIdentifier(t *testing.T) {
+	testCases := []struct {
+		name string
+		typ  ftypes.TargetType
+		pkg  ftypes.Package
+		want ftypes.PkgIdentifier
+	}{
+		{
+			name: "no target type",
+			pkg: ftypes.Package{
+				Name:    "test",
+				Version: "0.1.0",
+			},
+			want: ftypes.PkgIdentifier{},
+		},
+		{
+			name: "no package",
+			typ:  ftypes.Jar,
+			want: ftypes.PkgIdentifier{},
+		},
+		{
+			name: "library package",
+			typ:  ftypes.Jar,
+			pkg: ftypes.Package{
+				Name:    "org.springframework:spring-core",
+				Version: "5.3.14",
+			},
+			want: ftypes.PkgIdentifier{
+				PURL: "pkg:maven/org.springframework/spring-core@5.3.14",
+			},
+		},
+		{
+			name: "os package",
+			typ:  ftypes.RedHat,
+			pkg: ftypes.Package{
+				Name:    "acl",
+				Version: "2.2.53",
+				Release: "1.el8",
+				Arch:    "aarch64",
+				Epoch:   1,
+			},
+			want: ftypes.PkgIdentifier{
+				PURL: "pkg:rpm/acl@2.2.53-1.el8?arch=aarch64&epoch=1",
+			},
+		},
+	}
+	t.Parallel()
+	for _, tc := range testCases {
+		test := tc
+		t.Run(tc.name, func(tt *testing.T) {
+			tt.Parallel()
+			pkgIdentifier := purl.NewPackageIdentifier(test.typ, test.pkg)
+			assert.Equal(tt, test.want, pkgIdentifier, test.name)
+		})
+	}
+}
+
 func TestNewPackageURL(t *testing.T) {
 	testCases := []struct {
 		name     string
