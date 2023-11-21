@@ -82,9 +82,15 @@ type Package struct {
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
+	Indirect        bool       `json:",omitempty"` // this package is direct dependency of the project or not
 
-	Ref      string `json:",omitempty"` // identifier which can be used to reference the component elsewhere
-	Indirect bool   `json:",omitempty"` // this package is direct dependency of the project or not
+	// TO BE DEPRECATED - use Identifier instead
+	// Only used when scanning SBOM and contains the reference ID used in it.
+	// It could be PURL, UUID, etc.
+	// e.g.
+	//    - pkg:npm/acme/component@1.0.0
+	//    - b2a46a4b-8367-4bae-9820-95557cfe03a8
+	Ref string `json:",omitempty"`
 
 	// Dependencies of this package
 	// Note:　it may have interdependencies, which may lead to infinite loops.
