@@ -889,9 +889,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
 								Version: "(devel)",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:golang/cnrm.googlesource.com/cnrm/@v/(devel)",
-								},
 							},
 							{
 								Name:    "golang.org/x/crypto",
@@ -931,15 +928,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "(devel)",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
-						PackageExternalReferences: []*spdx.PackageExternalReference{
-							{
-								Category: tspdx.CategoryPackageManager,
-								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:golang/cnrm.googlesource.com/cnrm/%40v/%28devel%29",
-							},
-						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
-						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
+						PackageSupplier:         &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 					{
 						PackageName:             "go-artifact",

@@ -660,7 +660,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.0",
+									PURL: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
@@ -672,7 +672,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.1",
+									PURL: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
@@ -682,10 +682,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								VulnerabilityID:  "CVE-2022-23633",
-								PkgID:            "actionpack@7.0.0",
-								PkgName:          "actionpack",
-								PkgPath:          "tools/project-john/specifications/actionpack.gemspec",
+								VulnerabilityID: "CVE-2022-23633",
+								PkgID:           "actionpack@7.0.0",
+								PkgName:         "actionpack",
+								PkgPath:         "tools/project-john/specifications/actionpack.gemspec",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+								},
 								InstalledVersion: "7.0.0",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 								SeveritySource:   vulnerability.RubySec,
@@ -725,10 +728,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								VulnerabilityID:  "CVE-2022-23633",
-								PkgID:            "actionpack@7.0.1",
-								PkgName:          "actionpack",
-								PkgPath:          "tools/project-doe/specifications/actionpack.gemspec",
+								VulnerabilityID: "CVE-2022-23633",
+								PkgID:           "actionpack@7.0.1",
+								PkgName:         "actionpack",
+								PkgPath:         "tools/project-doe/specifications/actionpack.gemspec",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+								},
 								InstalledVersion: "7.0.1",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 								SeveritySource:   vulnerability.RubySec,
@@ -830,11 +836,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:gem/actionpack@7.0.0",
+						BOMRef:     "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actionpack",
 						Version:    "7.0.0",
-						PackageURL: "pkg:gem/actionpack@7.0.0",
+						PackageURL: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -855,11 +861,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:gem/actionpack@7.0.1",
+						BOMRef:     "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actionpack",
 						Version:    "7.0.1",
-						PackageURL: "pkg:gem/actionpack@7.0.1",
+						PackageURL: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -973,8 +979,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
-							"pkg:gem/actionpack@7.0.0",
-							"pkg:gem/actionpack@7.0.1",
+							"pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+							"pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 						},
 					},
 					{
@@ -986,11 +992,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						Ref:          "pkg:gem/actionpack@7.0.0",
+						Ref:          "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref:          "pkg:gem/actionpack@7.0.1",
+						Ref:          "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
@@ -1063,7 +1069,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Updated:   "2022-02-22T21:47:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "pkg:gem/actionpack@7.0.0",
+								Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "7.0.0",
@@ -1072,7 +1078,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								Ref: "pkg:gem/actionpack@7.0.1",
+								Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "7.0.1",
@@ -1115,7 +1121,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "org.springframework:spring-web",
 								Version: "5.3.22",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.springframework/spring-web@5.3.22",
+									PURL: "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 								},
 								FilePath: "spring-web-5.3.22.jar",
 							},
@@ -1181,12 +1187,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:maven/org.springframework/spring-web@5.3.22",
+						BOMRef:     "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						Type:       "library",
 						Name:       "spring-web",
 						Group:      "org.springframework",
 						Version:    "5.3.22",
-						PackageURL: "pkg:maven/org.springframework/spring-web@5.3.22",
+						PackageURL: "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -1205,7 +1211,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
-							"pkg:maven/org.springframework/spring-web@5.3.22",
+							"pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						},
 					},
 					{
@@ -1219,7 +1225,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22",
+						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1241,7 +1247,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "org.apache.nifi:nifi-dbcp-base",
 								Version: "1.20.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
 								},
 								FilePath: "nifi-dbcp-base-1.20.0.jar",
 							},
@@ -1249,7 +1255,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "org.apache.nifi:nifi-hikari-dbcp-service",
 								Version: "1.20.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
 								},
 								FilePath: "nifi-hikari-dbcp-service-1.20.0.jar",
 							},
@@ -1260,7 +1266,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "org.apache.nifi:nifi-dbcp-base",
 								PkgPath:         "nifi-dbcp-base-1.20.0.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
 								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
@@ -1305,7 +1311,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "org.apache.nifi:nifi-hikari-dbcp-service",
 								PkgPath:         "nifi-hikari-dbcp-service-1.20.0.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
 								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
@@ -1379,12 +1385,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:     "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+						BOMRef:     "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
 						Type:       "library",
 						Name:       "nifi-dbcp-base",
 						Group:      "org.apache.nifi",
 						Version:    "1.20.0",
-						PackageURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+						PackageURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -1397,12 +1403,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+						BOMRef:     "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
 						Type:       "library",
 						Name:       "nifi-hikari-dbcp-service",
 						Group:      "org.apache.nifi",
 						Version:    "1.20.0",
-						PackageURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+						PackageURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -1419,16 +1425,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
-							"pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
-							"pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+							"pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+							"pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
 						},
 					},
 					{
-						Ref:          "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+						Ref:          "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref:          "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+						Ref:          "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1477,7 +1483,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Updated:   "2023-06-21T02:20:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+								Ref: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "1.20.0",
@@ -1486,7 +1492,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								Ref: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+								Ref: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "1.20.0",
@@ -1516,7 +1522,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "ruby-typeprof",
 								Version: "0.20.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:npm/ruby-typeprof@0.20.1",
+									PURL: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
@@ -1558,11 +1564,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:     "pkg:npm/ruby-typeprof@0.20.1",
+						BOMRef:     "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 						Type:       "library",
 						Name:       "ruby-typeprof",
 						Version:    "0.20.1",
-						PackageURL: "pkg:npm/ruby-typeprof@0.20.1",
+						PackageURL: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{
 								License: &cdx.License{
@@ -1595,11 +1601,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
-							"pkg:npm/ruby-typeprof@0.20.1",
+							"pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 						},
 					},
 					{
-						Ref:          "pkg:npm/ruby-typeprof@0.20.1",
+						Ref:          "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},

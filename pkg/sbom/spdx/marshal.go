@@ -339,11 +339,6 @@ func (m *Marshaler) pkgToSpdxPackage(t ftypes.TargetType, pkgDownloadLocation st
 		if err != nil {
 			return spdx.Package{}, xerrors.Errorf("failed to create package purl: %w", err)
 		}
-	} else {
-		packageURL, err = purl.NewPackageURL(t, metadata, pkg)
-		if err != nil {
-			return spdx.Package{}, xerrors.Errorf("failed to create package purl: %w", err)
-		}
 	}
 
 	var pkgExtRefs []*spdx.PackageExternalReference
