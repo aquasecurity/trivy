@@ -59,15 +59,15 @@ brew install trivy
 
 ### Arch Linux (Community)
 
-Arch Community Package Manager.
+Arch Linux Package Repository.
 
 ```bash
 pacman -S trivy
 ```
 
 References: 
-- <https://archlinux.org/packages/community/x86_64/trivy/>
-- <https://github.com/archlinux/svntogit-community/blob/packages/trivy/trunk/PKGBUILD>
+- <https://archlinux.org/packages/extra/x86_64/trivy/>
+- <https://gitlab.archlinux.org/archlinux/packaging/packages/trivy/-/blob/main/PKGBUILD>
 
 
 ### MacPorts (Community)
