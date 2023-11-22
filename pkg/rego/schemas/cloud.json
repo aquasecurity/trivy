@@ -138,6 +138,10 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.defsec.pkg.providers.aws.lambda.Lambda"
         },
+        "meta": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.defsec.pkg.providers.aws.Meta"
+        },
         "mq": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.defsec.pkg.providers.aws.mq.MQ"
@@ -149,13 +153,6 @@
         "neptune": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.defsec.pkg.providers.aws.neptune.Neptune"
-        },
-        "providers": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/github.com.aquasecurity.defsec.pkg.providers.aws.TerraformProvider"
-          }
         },
         "rds": {
           "type": "object",
@@ -298,6 +295,18 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/github.com.aquasecurity.defsec.pkg.types.StringValue"
+          }
+        }
+      }
+    },
+    "github.com.aquasecurity.defsec.pkg.providers.aws.Meta": {
+      "type": "object",
+      "properties": {
+        "tfproviders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/github.com.aquasecurity.defsec.pkg.providers.aws.TerraformProvider"
           }
         }
       }
