@@ -8,14 +8,12 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/nuget/config"
 	"github.com/aquasecurity/go-dep-parser/pkg/nuget/lock"
-	"github.com/aquasecurity/go-dep-parser/pkg/nuget/packagesprops"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -28,28 +26,24 @@ func init() {
 }
 
 const (
-	version                    = 3
-	lockFile                   = types.NuGetPkgsLock
-	configFile                 = types.NuGetPkgsConfig
-	directoryPackagesPropsFile = types.NuGetDirectoryPkgsProps
-	packagesPropsFile          = types.NuGetPkgsProps
+	version    = 3
+	lockFile   = types.NuGetPkgsLock
+	configFile = types.NuGetPkgsConfig
 )
 
-var requiredFiles = []string{lockFile, configFile, directoryPackagesPropsFile, packagesPropsFile}
+var requiredFiles = []string{lockFile, configFile}
 
 type nugetLibraryAnalyzer struct {
-	lockParser          godeptypes.Parser
-	configParser        godeptypes.Parser
-	packagesPropsParser godeptypes.Parser
-	licenseParser       nuspecParser
+	lockParser    godeptypes.Parser
+	configParser  godeptypes.Parser
+	licenseParser nuspecParser
 }
 
 func newNugetLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &nugetLibraryAnalyzer{
-		lockParser:          lock.NewParser(),
-		configParser:        config.NewParser(),
-		packagesPropsParser: packagesprops.NewParser(),
-		licenseParser:       newNuspecParser(),
+		lockParser:    lock.NewParser(),
+		configParser:  config.NewParser(),
+		licenseParser: newNuspecParser(),
 	}, nil
 }
 
@@ -70,10 +64,6 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 		targetFile := filepath.Base(path)
 		if targetFile == configFile {
 			parser = a.configParser
-		}
-		lowercaseTargetFile := strings.ToLower(targetFile)
-		if lowercaseTargetFile == directoryPackagesPropsFile || lowercaseTargetFile == packagesPropsFile {
-			parser = a.packagesPropsParser
 		}
 
 		app, err := language.Parse(types.NuGet, path, r, parser)
@@ -113,7 +103,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 }
 
 func (a *nugetLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	fileName := strings.ToLower(filepath.Base(filePath))
+	fileName := filepath.Base(filePath)
 	return slices.Contains(requiredFiles, fileName)
 }
 

@@ -45,54 +45,6 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path packages.props file.",
-			dir:  "testdata/packagesProps",
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.NuGet,
-						FilePath: "packages.props",
-						Libraries: types.Packages{
-							{
-								ID:      "Package1@22.1.4",
-								Name:    "Package1",
-								Version: "22.1.4",
-							},
-							{
-								ID:      "Package2@2.3.0",
-								Name:    "Package2",
-								Version: "2.3.0",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "happy path directory.packages.props file.",
-			dir:  "testdata/directoryPackagesProps",
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.NuGet,
-						FilePath: "Directory.Packages.props",
-						Libraries: types.Packages{
-							{
-								ID:      "Package1@4.2.1",
-								Name:    "Package1",
-								Version: "4.2.1",
-							},
-							{
-								ID:      "Package2@8.2.0",
-								Name:    "Package2",
-								Version: "8.2.0",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
 			name: "happy path lock file.",
 			dir:  "testdata/lock",
 			env: map[string]string{
@@ -263,16 +215,6 @@ func Test_nugetLibraryAnalyzer_Required(t *testing.T) {
 		{
 			name:     "lock",
 			filePath: "test/packages.lock.json",
-			want:     true,
-		},
-		{
-			name:     "packagesProps",
-			filePath: "test/packages.props",
-			want:     true,
-		},
-		{
-			name:     "directoryPackagesProps",
-			filePath: "test/Directory.Packages.props",
 			want:     true,
 		},
 		{
