@@ -660,7 +660,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+									PURL: "pkg:gem/actionpack@7.0.0",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
@@ -672,7 +672,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+									PURL: "pkg:gem/actionpack@7.0.1",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
@@ -687,7 +687,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "actionpack",
 								PkgPath:         "tools/project-john/specifications/actionpack.gemspec",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+									PURL: "pkg:gem/actionpack@7.0.0",
 								},
 								InstalledVersion: "7.0.0",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
@@ -733,7 +733,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "actionpack",
 								PkgPath:         "tools/project-doe/specifications/actionpack.gemspec",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+									PURL: "pkg:gem/actionpack@7.0.1",
 								},
 								InstalledVersion: "7.0.1",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
@@ -840,7 +840,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actionpack",
 						Version:    "7.0.0",
-						PackageURL: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						PackageURL: "pkg:gem/actionpack@7.0.0",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -865,7 +865,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actionpack",
 						Version:    "7.0.1",
-						PackageURL: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						PackageURL: "pkg:gem/actionpack@7.0.1",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -1121,7 +1121,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "org.springframework:spring-web",
 								Version: "5.3.22",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+									PURL: "pkg:maven/org.springframework/spring-web@5.3.22",
 								},
 								FilePath: "spring-web-5.3.22.jar",
 							},
@@ -1192,7 +1192,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:       "spring-web",
 						Group:      "org.springframework",
 						Version:    "5.3.22",
-						PackageURL: "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+						PackageURL: "pkg:maven/org.springframework/spring-web@5.3.22",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -1247,7 +1247,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "org.apache.nifi:nifi-dbcp-base",
 								Version: "1.20.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 								},
 								FilePath: "nifi-dbcp-base-1.20.0.jar",
 							},
@@ -1255,7 +1255,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "org.apache.nifi:nifi-hikari-dbcp-service",
 								Version: "1.20.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 								},
 								FilePath: "nifi-hikari-dbcp-service-1.20.0.jar",
 							},
@@ -1266,7 +1266,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "org.apache.nifi:nifi-dbcp-base",
 								PkgPath:         "nifi-dbcp-base-1.20.0.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+									PURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
@@ -1311,7 +1311,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "org.apache.nifi:nifi-hikari-dbcp-service",
 								PkgPath:         "nifi-hikari-dbcp-service-1.20.0.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+									PURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
@@ -1390,7 +1390,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:       "nifi-dbcp-base",
 						Group:      "org.apache.nifi",
 						Version:    "1.20.0",
-						PackageURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+						PackageURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -1408,7 +1408,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:       "nifi-hikari-dbcp-service",
 						Group:      "org.apache.nifi",
 						Version:    "1.20.0",
-						PackageURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+						PackageURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:FilePath",
@@ -1522,7 +1522,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "ruby-typeprof",
 								Version: "0.20.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+									PURL: "pkg:npm/ruby-typeprof@0.20.1",
 								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
@@ -1568,7 +1568,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:       "library",
 						Name:       "ruby-typeprof",
 						Version:    "0.20.1",
-						PackageURL: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+						PackageURL: "pkg:npm/ruby-typeprof@0.20.1",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{
 								License: &cdx.License{

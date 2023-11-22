@@ -322,6 +322,8 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		if err != nil {
 			return nil, xerrors.Errorf("failed to create package purl: %w", err)
 		}
+
+		pu.FilePath = pkg.FilePath
 	}
 
 	name := pkg.Name
