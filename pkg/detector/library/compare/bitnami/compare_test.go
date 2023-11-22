@@ -73,7 +73,7 @@ func TestBitnamiComparer_IsVulnerable(t *testing.T) {
 		{
 			name: "patched with revision on current version",
 			args: args{
-				currentVersion: "1.2.3-r1",
+				currentVersion: "1.2.3-1",
 				advisory: types.Advisory{
 					PatchedVersions: []string{">=1.2.3"},
 				},
@@ -83,7 +83,7 @@ func TestBitnamiComparer_IsVulnerable(t *testing.T) {
 		{
 			name: "vulnerable with revision on current version",
 			args: args{
-				currentVersion: "1.2.3-r1",
+				currentVersion: "1.2.3-1",
 				advisory: types.Advisory{
 					PatchedVersions: []string{">=1.2.4"},
 				},
@@ -95,7 +95,7 @@ func TestBitnamiComparer_IsVulnerable(t *testing.T) {
 			args: args{
 				currentVersion: "1.2.4",
 				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3-r1"},
+					PatchedVersions: []string{">=1.2.3-1"},
 				},
 			},
 			want: false,
@@ -105,7 +105,7 @@ func TestBitnamiComparer_IsVulnerable(t *testing.T) {
 			args: args{
 				currentVersion: "1.2.3",
 				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3-r1"},
+					PatchedVersions: []string{">=1.2.3-1"},
 				},
 			},
 			want: true,
@@ -113,9 +113,9 @@ func TestBitnamiComparer_IsVulnerable(t *testing.T) {
 		{
 			name: "patched with revisions on both current and patch",
 			args: args{
-				currentVersion: "1.2.4-r2",
+				currentVersion: "1.2.4-2",
 				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3-r1"},
+					PatchedVersions: []string{">=1.2.3-1"},
 				},
 			},
 			want: false,
@@ -123,9 +123,9 @@ func TestBitnamiComparer_IsVulnerable(t *testing.T) {
 		{
 			name: "vulnerable with revision on both current and patch",
 			args: args{
-				currentVersion: "1.2.3-r0",
+				currentVersion: "1.2.3-0",
 				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.3-r1"},
+					PatchedVersions: []string{">=1.2.3-1"},
 				},
 			},
 			want: true,
