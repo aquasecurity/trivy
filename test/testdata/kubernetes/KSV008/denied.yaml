@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-ipc
+spec:
+  hostIPC: true
+  containers:
+    - command:
+        - sh
+        - "-c"
+        - echo 'Hello' && sleep 1h
+      image: busybox
+      name: hello

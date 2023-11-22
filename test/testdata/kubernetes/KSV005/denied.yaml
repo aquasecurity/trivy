@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-sys-admin-capabilities
+spec:
+  containers:
+    - command:
+        - sh
+        - "-c"
+        - echo 'Hello' && sleep 1h
+      image: busybox
+      name: hello
+      securityContext:
+        capabilities:
+          add:
+            - SYS_ADMIN

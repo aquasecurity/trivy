@@ -1,0 +1,4 @@
+FROM debian:9.13
+RUN apt-get update && apt-get install -y curl && apt-get clean
+USER mike
+CMD python /usr/src/app/app.py

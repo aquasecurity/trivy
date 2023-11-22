@@ -5,8 +5,8 @@ import (
 
 	"github.com/samber/lo"
 
-	defsecRules "github.com/aquasecurity/trivy-iac/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	defsecRules "github.com/aquasecurity/trivy/pkg/rules"
 )
 
 var (
