@@ -20,6 +20,26 @@ func TestBitnamiComparer_IsVulnerable(t *testing.T) {
 		want bool
 	}{
 		{
+			name: "not vulnerable",
+			args: args{
+				currentVersion: "1.2.3",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<1.2.3"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "vulnerable",
+			args: args{
+				currentVersion: "1.2.3",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<=1.2.3"},
+				},
+			},
+			want: true,
+		},
+		{
 			name: "patched",
 			args: args{
 				currentVersion: "1.2.3",
@@ -30,11 +50,22 @@ func TestBitnamiComparer_IsVulnerable(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "vulnerable",
+			name: "unaffected",
 			args: args{
 				currentVersion: "1.2.3",
 				advisory: types.Advisory{
-					PatchedVersions: []string{">=1.2.4"},
+					UnaffectedVersions: []string{"=1.2.3"},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "vulnerable based on patched & unaffected versions",
+			args: args{
+				currentVersion: "1.2.3",
+				advisory: types.Advisory{
+					UnaffectedVersions: []string{"=1.2.0"},
+					PatchedVersions:    []string{">=1.2.4"},
 				},
 			},
 			want: true,
