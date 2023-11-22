@@ -142,37 +142,49 @@ func (d *DB) SearchBySHA1(sha1 string) (jar.Properties, error) {
 	}, nil
 }
 
-func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
+func (d *DB) SearchByArtifactID(artifactID, version string) (string, error) {
 	indexes, err := d.driver.SelectIndexesByArtifactIDAndFileType(artifactID, types.JarType)
 	if err != nil {
 		return "", xerrors.Errorf("select error: %w", err)
 	} else if len(indexes) == 0 {
 		return "", xerrors.Errorf("artifactID %s: %w", artifactID, jar.ArtifactNotFoundErr)
 	}
+
+	return foundGroupID(version, indexes), nil
+}
+
+// foundGroupID checks all indexes and returns a group ID containing the required version and with the maximum number of indexes(versions).
+func foundGroupID(version string, indexes []types.Index) string {
+	var groupID, maxGroupID string
+	var count, maxCount int
+	var versionFound bool
+
 	sort.Slice(indexes, func(i, j int) bool {
 		return indexes[i].GroupID < indexes[j].GroupID
 	})
 
-	// Some artifacts might have the same artifactId.
-	// e.g. "javax.servlet:jstl" and "jstl:jstl"
-	groupIDs := make(map[string]int)
 	for _, index := range indexes {
-		if i, ok := groupIDs[index.GroupID]; ok {
-			groupIDs[index.GroupID] = i + 1
-			continue
+		if index.GroupID != groupID {
+			// save a new GroupID with the max number of indexes (if this GroupID contains the required version)
+			if count > maxCount && versionFound {
+				maxGroupID = groupID
+				maxCount = count
+			}
+			count = 0
+			versionFound = false
 		}
-		groupIDs[index.GroupID] = 1
-	}
-	maxCount := 0
-	var groupID string
-	for k, v := range groupIDs {
-		if v > maxCount {
-			maxCount = v
-			groupID = k
+		// iterate over all indexes of the current GroupID
+		groupID = index.GroupID
+		count++
+		if index.Version == version {
+			versionFound = true
 		}
 	}
-
-	return groupID, nil
+	// save latest groupID
+	if count > maxCount && versionFound {
+		maxGroupID = groupID
+	}
+	return maxGroupID
 }
 
 func (d *DB) Close() error {
