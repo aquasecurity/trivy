@@ -24,8 +24,8 @@ Trivy parses `*.deps.json` files. Trivy currently excludes dev dependencies from
 ## packages.config
 Trivy only finds dependency names and versions from `packages.config` files. To build dependency graph, it is better to use `packages.lock.json` files.
 
-## *.deps.json
-Trivy parses `*.packages.props` files. Both legacy packages.props and modern Directory.Packages.props are supported.
+## *packages.props
+Trivy parses `*packages.props` files. Both legacy `packages.props` and modern `Directory.Packages.props` are supported.
 
 ### license detection
 `packages.config` files don't have information about the licenses used.
