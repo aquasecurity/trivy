@@ -17,19 +17,21 @@
   },
   "Results": [
     {
-      "Target": "packages.props",
+      "Target": "Directory.Packages.props",
       "Class": "lang-pkgs",
       "Type": "packages-props",
       "Packages": [
         {
+          "ID": "Newtonsoft.Json@9.0.1",
           "Name": "Newtonsoft.Json",
           "Version": "9.0.1",
-          "Layer": {},
+          "Layer": {}
         }
       ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
+          "PkgID": "Newtonsoft.Json@9.0.1",
           "PkgName": "Newtonsoft.Json",
           "InstalledVersion": "9.0.1",
           "FixedVersion": "13.0.1",

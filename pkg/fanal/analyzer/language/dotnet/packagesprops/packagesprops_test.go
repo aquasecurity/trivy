@@ -21,12 +21,12 @@ func Test_packagesPropsAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path packages props",
-			inputFile: "testdata/packages.props",
+			inputFile: "testdata/Packages.props",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PackagesProps,
-						FilePath: "testdata/packages.props",
+						FilePath: "testdata/Packages.props",
 						Libraries: types.Packages{
 							{
 								ID:      "Package1@22.1.4",
@@ -44,7 +44,7 @@ func Test_packagesPropsAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path pdirectory ackages props",
+			name:      "happy path directory packages props",
 			inputFile: "testdata/Directory.Packages.props",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -70,7 +70,7 @@ func Test_packagesPropsAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "sad path",
 			inputFile: "testdata/invalid.txt",
-			wantErr:   "*packages.props dependencies analysis error",
+			wantErr:   "*Packages.props dependencies analysis error",
 		},
 	}
 	for _, tt := range tests {
@@ -87,8 +87,7 @@ func Test_packagesPropsAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
@@ -111,7 +110,7 @@ func Test_packagesPropsAnalyzer_Required(t *testing.T) {
 		},
 		{
 			name:     "packages props",
-			filePath: "test/packages.props",
+			filePath: "test/Packages.props",
 			want:     true,
 		},
 		{
