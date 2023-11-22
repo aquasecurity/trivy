@@ -2,6 +2,7 @@ package image
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -50,6 +51,7 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 			// Return v1.Image if the image is found
 			return img, cleanup, nil
 		}
+		err = multierror.Prefix(err, fmt.Sprintf("%s error:", src))
 		errs = multierror.Append(errs, err)
 	}
 
