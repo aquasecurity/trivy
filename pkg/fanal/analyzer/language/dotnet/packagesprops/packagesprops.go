@@ -19,7 +19,7 @@ func init() {
 
 const (
 	version             = 1
-	packagesPropsSuffix = "Packages.props" // https://github.com/dotnet/roslyn-tools/blob/b4c5220f5dfc4278847b6d38eff91cc1188f8066/src/RoslynInsertionTool/RoslynInsertionTool/CoreXT.cs#L39-L40
+	packagesPropsSuffix = "packages.props" // https://github.com/dotnet/roslyn-tools/blob/b4c5220f5dfc4278847b6d38eff91cc1188f8066/src/RoslynInsertionTool/RoslynInsertionTool/CoreXT.cs#L39-L40
 )
 
 type packagesPropsAnalyzer struct{}
@@ -35,7 +35,9 @@ func (a packagesPropsAnalyzer) Analyze(_ context.Context, input analyzer.Analysi
 }
 
 func (a packagesPropsAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasSuffix(filePath, packagesPropsSuffix)
+	// There is no information about this in the documentation,
+	// but NuGet works correctly with lowercase filenames
+	return strings.HasSuffix(strings.ToLower(filePath), packagesPropsSuffix)
 }
 
 func (a packagesPropsAnalyzer) Type() analyzer.Type {

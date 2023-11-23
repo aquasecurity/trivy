@@ -114,6 +114,11 @@ func Test_packagesPropsAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "packages props lower case",
+			filePath: "test/packages.props",
+			want:     true,
+		},
+		{
 			name:     "zip",
 			filePath: "test.zip",
 			want:     false,
