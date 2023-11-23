@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	genericTypes "github.com/aquasecurity/trivy/pkg/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -130,7 +131,7 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.
 			Locations: locs,
 			Digest:    d,
 		}
-		newPkg.Identifier = purl.NewPackageIdentifier(fileType, newPkg)
+		newPkg.Identifier = purl.NewPackageIdentifier(fileType, genericTypes.Metadata{}, newPkg)
 		pkgs = append(pkgs, newPkg)
 	}
 

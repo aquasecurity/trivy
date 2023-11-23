@@ -39,7 +39,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "alpine-baselayout",
 			Version: "3.2.0-r3",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/alpine-baselayout@3.2.0-r3?arch=x86_64",
+				PURL: "pkg:apk/alpine/alpine-baselayout@3.2.0-r3?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "alpine-baselayout",
 			SrcVersion: "3.2.0-r3",
@@ -85,7 +85,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "alpine-keys",
 			Version: "2.1-r2",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/alpine-keys@2.1-r2?arch=x86_64",
+				PURL: "pkg:apk/alpine/alpine-keys@2.1-r2?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "alpine-keys",
 			SrcVersion: "2.1-r2",
@@ -118,7 +118,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "apk-tools",
 			Version: "2.10.4-r3",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/apk-tools@2.10.4-r3?arch=x86_64",
+				PURL: "pkg:apk/alpine/apk-tools@2.10.4-r3?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "apk-tools",
 			SrcVersion: "2.10.4-r3",
@@ -140,7 +140,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "busybox",
 			Version: "1.31.1-r9",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/busybox@1.31.1-r9?arch=x86_64",
+				PURL: "pkg:apk/alpine/busybox@1.31.1-r9?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
@@ -165,7 +165,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "ca-certificates-cacert",
 			Version: "20191127-r1",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/ca-certificates-cacert@20191127-r1?arch=x86_64",
+				PURL: "pkg:apk/alpine/ca-certificates-cacert@20191127-r1?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "ca-certificates",
 			SrcVersion: "20191127-r1",
@@ -184,7 +184,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "libc-utils",
 			Version: "0.7.2-r0",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/libc-utils@0.7.2-r0?arch=x86_64",
+				PURL: "pkg:apk/alpine/libc-utils@0.7.2-r0?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "libc-dev",
 			SrcVersion: "0.7.2-r0",
@@ -200,7 +200,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "libcrypto1.1",
 			Version: "1.1.1d-r3",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/libcrypto1.1@1.1.1d-r3?arch=x86_64",
+				PURL: "pkg:apk/alpine/libcrypto1.1@1.1.1d-r3?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "openssl",
 			SrcVersion: "1.1.1d-r3",
@@ -230,7 +230,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "libssl1.1",
 			Version: "1.1.1d-r3",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/libssl1.1@1.1.1d-r3?arch=x86_64",
+				PURL: "pkg:apk/alpine/libssl1.1@1.1.1d-r3?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "openssl",
 			SrcVersion: "1.1.1d-r3",
@@ -251,7 +251,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "libtls-standalone",
 			Version: "2.9.1-r0",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/libtls-standalone@2.9.1-r0?arch=x86_64",
+				PURL: "pkg:apk/alpine/libtls-standalone@2.9.1-r0?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "libtls-standalone",
 			SrcVersion: "2.9.1-r0",
@@ -274,7 +274,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "musl",
 			Version: "1.1.24-r2",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/musl@1.1.24-r2?arch=x86_64",
+				PURL: "pkg:apk/alpine/musl@1.1.24-r2?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "musl",
 			SrcVersion: "1.1.24-r2",
@@ -291,7 +291,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "musl-utils",
 			Version: "1.1.24-r2",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/musl-utils@1.1.24-r2?arch=x86_64",
+				PURL: "pkg:apk/alpine/musl-utils@1.1.24-r2?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "musl",
 			SrcVersion: "1.1.24-r2",
@@ -319,7 +319,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "scanelf",
 			Version: "1.2.4-r0",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/scanelf@1.2.4-r0?arch=x86_64",
+				PURL: "pkg:apk/alpine/scanelf@1.2.4-r0?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "pax-utils",
 			SrcVersion: "1.2.4-r0",
@@ -338,7 +338,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "ssl_client",
 			Version: "1.31.1-r9",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/ssl_client@1.31.1-r9?arch=x86_64",
+				PURL: "pkg:apk/alpine/ssl_client@1.31.1-r9?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "busybox",
 			SrcVersion: "1.31.1-r9",
@@ -358,7 +358,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			Name:    "zlib",
 			Version: "1.2.11-r3",
 			Identifier: types.PkgIdentifier{
-				PURL: "pkg:apk/zlib@1.2.11-r3?arch=x86_64",
+				PURL: "pkg:apk/alpine/zlib@1.2.11-r3?arch=x86_64&distro=3.11.5",
 			},
 			SrcName:    "zlib",
 			SrcVersion: "1.2.11-r3",
@@ -567,7 +567,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name:    "base-files",
 											Version: "9.9+deb9u9",
 											Identifier: types.PkgIdentifier{
-												PURL: "pkg:dpkg/base-files@9.9%2Bdeb9u9?arch=amd64",
+												PURL: "pkg:deb/debian/base-files@9.9%2Bdeb9u9?arch=amd64&distro=debian-9.9",
 											},
 											SrcName:    "base-files",
 											SrcVersion: "9.9+deb9u9",
@@ -584,7 +584,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name:    "netbase",
 											Version: "5.4",
 											Identifier: types.PkgIdentifier{
-												PURL: "pkg:dpkg/netbase@5.4?arch=all",
+												PURL: "pkg:deb/debian/netbase@5.4?arch=all&distro=debian-9.9",
 											},
 											SrcName:    "netbase",
 											SrcVersion: "5.4",
@@ -601,7 +601,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name:    "tzdata",
 											Version: "2019a",
 											Identifier: types.PkgIdentifier{
-												PURL: "pkg:dpkg/tzdata@2019a-0%2Bdeb9u1?arch=all",
+												PURL: "pkg:deb/debian/tzdata@2019a-0%2Bdeb9u1?arch=all&distro=debian-9.9",
 											},
 											SrcName:    "tzdata",
 											Release:    "0+deb9u1",

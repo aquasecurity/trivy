@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	genericTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func init() {
@@ -78,7 +79,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 			SrcVersion: srcVer,
 			SrcRelease: srcRel,
 		}
-		pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeRpmqa), pkg)
+		pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeRpmqa), genericTypes.Metadata{}, pkg)
 		pkgs = append(pkgs, pkg)
 	}
 	return pkgs, nil

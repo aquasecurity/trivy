@@ -199,8 +199,8 @@ func (p *PackageURL) BOMRef() string {
 }
 
 // NewPackageIdentifier creates a new package identifier based on PURL for the given package.
-func NewPackageIdentifier(t ftypes.TargetType, pkg ftypes.Package) ftypes.PkgIdentifier {
-	pkgURL, err := NewPackageURL(t, types.Metadata{}, pkg)
+func NewPackageIdentifier(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) ftypes.PkgIdentifier {
+	pkgURL, err := NewPackageURL(t, metadata, pkg)
 	if err != nil || pkgURL == nil {
 		return ftypes.PkgIdentifier{}
 	}

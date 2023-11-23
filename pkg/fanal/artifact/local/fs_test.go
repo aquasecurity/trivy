@@ -47,7 +47,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
+					BlobID: "sha256:72713d08a6ce79f6f1dd12b9d1394d42a88cd2a6a79745ce1b597c1c180b224b",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -63,7 +63,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Name:    "musl",
 										Version: "1.1.24-r2",
 										Identifier: types.PkgIdentifier{
-											PURL: "pkg:apk/musl@1.1.24-r2?arch=x86_64",
+											PURL: "pkg:apk/alpine/musl@1.1.24-r2?arch=x86_64&distro=3.11.6",
 										},
 										SrcName:    "musl",
 										SrcVersion: "1.1.24-r2",
@@ -85,9 +85,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
+				ID:   "sha256:72713d08a6ce79f6f1dd12b9d1394d42a88cd2a6a79745ce1b597c1c180b224b",
 				BlobIDs: []string{
-					"sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
+					"sha256:72713d08a6ce79f6f1dd12b9d1394d42a88cd2a6a79745ce1b597c1c180b224b",
 				},
 			},
 		},
@@ -128,7 +128,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
+					BlobID: "sha256:72713d08a6ce79f6f1dd12b9d1394d42a88cd2a6a79745ce1b597c1c180b224b",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -144,7 +144,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Name:    "musl",
 										Version: "1.1.24-r2",
 										Identifier: types.PkgIdentifier{
-											PURL: "pkg:apk/musl@1.1.24-r2?arch=x86_64",
+											PURL: "pkg:apk/alpine/musl@1.1.24-r2?arch=x86_64&distro=3.11.6",
 										},
 										SrcName:    "musl",
 										SrcVersion: "1.1.24-r2",

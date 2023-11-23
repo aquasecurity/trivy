@@ -16,10 +16,11 @@ import (
 
 func TestNewPackageIdentifier(t *testing.T) {
 	testCases := []struct {
-		name string
-		typ  ftypes.TargetType
-		pkg  ftypes.Package
-		want ftypes.PkgIdentifier
+		name     string
+		typ      ftypes.TargetType
+		metadata types.Metadata
+		pkg      ftypes.Package
+		want     ftypes.PkgIdentifier
 	}{
 		{
 			name: "no target type",
@@ -48,6 +49,26 @@ func TestNewPackageIdentifier(t *testing.T) {
 		{
 			name: "os package",
 			typ:  ftypes.RedHat,
+			metadata: types.Metadata{
+				OS: &ftypes.OS{
+					Family: ftypes.RedHat,
+					Name:   "8",
+				},
+			},
+			pkg: ftypes.Package{
+				Name:    "acl",
+				Version: "2.2.53",
+				Release: "1.el8",
+				Arch:    "aarch64",
+				Epoch:   1,
+			},
+			want: ftypes.PkgIdentifier{
+				PURL: "pkg:rpm/redhat/acl@2.2.53-1.el8?arch=aarch64&distro=redhat-8&epoch=1",
+			},
+		},
+		{
+			name: "os package (no metadata)",
+			typ:  ftypes.RedHat,
 			pkg: ftypes.Package{
 				Name:    "acl",
 				Version: "2.2.53",
@@ -65,7 +86,7 @@ func TestNewPackageIdentifier(t *testing.T) {
 		test := tc
 		t.Run(tc.name, func(tt *testing.T) {
 			tt.Parallel()
-			pkgIdentifier := purl.NewPackageIdentifier(test.typ, test.pkg)
+			pkgIdentifier := purl.NewPackageIdentifier(test.typ, test.metadata, test.pkg)
 			assert.Equal(tt, test.want, pkgIdentifier, test.name)
 		})
 	}

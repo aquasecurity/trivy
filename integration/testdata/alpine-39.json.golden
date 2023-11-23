@@ -59,7 +59,7 @@
           "PkgID": "libcrypto1.1@1.1.1b-r1",
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/libcrypto1.1@1.1.1b-r1?arch=x86_64"
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
@@ -123,7 +123,7 @@
           "PkgID": "libcrypto1.1@1.1.1b-r1",
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/libcrypto1.1@1.1.1b-r1?arch=x86_64"
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
@@ -197,7 +197,7 @@
           "PkgID": "libssl1.1@1.1.1b-r1",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/libssl1.1@1.1.1b-r1?arch=x86_64"
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
@@ -261,7 +261,7 @@
           "PkgID": "libssl1.1@1.1.1b-r1",
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/libssl1.1@1.1.1b-r1?arch=x86_64"
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
@@ -335,7 +335,7 @@
           "PkgID": "musl@1.1.20-r4",
           "PkgName": "musl",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/musl@1.1.20-r4?arch=x86_64"
+            "PURL": "pkg:apk/alpine/musl@1.1.20-r4?arch=x86_64\u0026distro=3.9.4"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
@@ -377,7 +377,7 @@
           "PkgID": "musl-utils@1.1.20-r4",
           "PkgName": "musl-utils",
           "PkgIdentifier": {
-            "PURL": "pkg:apk/musl-utils@1.1.20-r4?arch=x86_64"
+            "PURL": "pkg:apk/alpine/musl-utils@1.1.20-r4?arch=x86_64\u0026distro=3.9.4"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
