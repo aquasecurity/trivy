@@ -198,6 +198,26 @@ func (p *PackageURL) BOMRef() string {
 	return purl.String()
 }
 
+// OverwritePkgIdentifiers overwrites package identifiers on the packages available
+// on the provided PackageInfo list adding missing OS metadata to existing PURLs
+// This is useful to overwrite identifiers for packages added by pkg (apk, rpm, etc.) analyzers
+func OverwritePkgIdentifiers(pkgInfos []ftypes.PackageInfo, os ftypes.OS) []ftypes.PackageInfo {
+	if os.Family == "" {
+		return pkgInfos
+	}
+
+	metadata := types.Metadata{
+		OS: &os,
+	}
+	for i, pkgInfo := range pkgInfos {
+		for j, pkg := range pkgInfo.Packages {
+			mewIdentifier := NewPackageIdentifier(os.Family, metadata, pkg)
+			pkgInfos[i].Packages[j].Identifier.PURL = mewIdentifier.PURL
+		}
+	}
+	return pkgInfos
+}
+
 // NewPackageIdentifier creates a new package identifier based on PURL for the given package.
 func NewPackageIdentifier(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) ftypes.PkgIdentifier {
 	pkgURL, err := NewPackageURL(t, metadata, pkg)

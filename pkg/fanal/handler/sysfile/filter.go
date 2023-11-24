@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 func init() {
@@ -64,6 +65,10 @@ func (h systemFileFilteringPostHandler) Handle(_ context.Context, result *analyz
 		}
 	}
 
+	if blob == nil {
+		return nil
+	}
+
 	var apps []types.Application
 	for _, app := range blob.Applications {
 		// If the lang-specific package was installed by OS package manager, it should not be taken.
@@ -100,6 +105,10 @@ func (h systemFileFilteringPostHandler) Handle(_ context.Context, result *analyz
 
 	// Overwrite Applications
 	blob.Applications = apps
+
+	// Overwrite package identifiers for OS packages which original ones miss OS metadata
+	// info since they were generated in pkg (apk, rpm, etc.) analyzers
+	blob.PackageInfos = purl.OverwritePkgIdentifiers(blob.PackageInfos, blob.OS)
 
 	return nil
 }

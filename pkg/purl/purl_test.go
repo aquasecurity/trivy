@@ -14,6 +14,76 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+func TestOverwritePkgIdentifiers(t *testing.T) {
+	testCases := []struct {
+		name     string
+		pkgInfos []ftypes.PackageInfo
+		os       ftypes.OS
+		want     []ftypes.PackageInfo
+	}{
+		{
+			name: "no os family",
+			pkgInfos: []ftypes.PackageInfo{{
+				Packages: []ftypes.Package{{
+					Name:    "test",
+					Version: "0.1.0",
+					Arch:    "amd64",
+					Identifier: ftypes.PkgIdentifier{
+						PURL: "pkg:dpkg/test@0.1.0?arch=amd64",
+					},
+				}},
+			}},
+			os: ftypes.OS{},
+			want: []ftypes.PackageInfo{{
+				Packages: []ftypes.Package{{
+					Name:    "test",
+					Version: "0.1.0",
+					Arch:    "amd64",
+					Identifier: ftypes.PkgIdentifier{
+						PURL: "pkg:dpkg/test@0.1.0?arch=amd64",
+					},
+				}},
+			}},
+		},
+		{
+			name: "success",
+			pkgInfos: []ftypes.PackageInfo{{
+				Packages: []ftypes.Package{{
+					Name:    "test",
+					Version: "0.1.0",
+					Arch:    "amd64",
+					Identifier: ftypes.PkgIdentifier{
+						PURL: "pkg:dpkg/test@0.1.0?arch=amd64",
+					},
+				}},
+			}},
+			os: ftypes.OS{
+				Family: ftypes.Debian,
+				Name:   "10.2",
+			},
+			want: []ftypes.PackageInfo{{
+				Packages: []ftypes.Package{{
+					Name:    "test",
+					Version: "0.1.0",
+					Arch:    "amd64",
+					Identifier: ftypes.PkgIdentifier{
+						PURL: "pkg:deb/debian/test@0.1.0?arch=amd64&distro=debian-10.2",
+					},
+				}},
+			}},
+		},
+	}
+	t.Parallel()
+	for _, tc := range testCases {
+		test := tc
+		t.Run(tc.name, func(tt *testing.T) {
+			tt.Parallel()
+			pkgIdentifier := purl.OverwritePkgIdentifiers(test.pkgInfos, test.os)
+			assert.Equal(tt, test.want, pkgIdentifier, test.name)
+		})
+	}
+}
+
 func TestNewPackageIdentifier(t *testing.T) {
 	testCases := []struct {
 		name     string

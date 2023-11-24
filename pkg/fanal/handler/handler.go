@@ -10,8 +10,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/purl"
-	genericTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
@@ -78,32 +76,5 @@ func (m Manager) PostHandle(ctx context.Context, result *analyzer.AnalysisResult
 		}
 	}
 
-	// Overwrite package identifier info for system packages
-	if result != nil {
-		result.PackageInfos = overwritePackageIdentifiers(result.PackageInfos, result.OS)
-	}
-	if blob != nil {
-		blob.PackageInfos = overwritePackageIdentifiers(blob.PackageInfos, blob.OS)
-	}
-
 	return nil
-}
-
-// overwritePackageIdentifiers overwrite package identifiers on a given list of package info
-// This is useful when we want to overwrite package identifiers for OS packages
-// which original ones miss OS metadata info since they were generated in pkg (apk, rpm, etc.) analyzers
-func overwritePackageIdentifiers(pkgInfos []types.PackageInfo, os types.OS) []types.PackageInfo {
-	if os.Family == "" {
-		return pkgInfos
-	}
-
-	metadata := genericTypes.Metadata{
-		OS: &os,
-	}
-	for i, pkgInfo := range pkgInfos {
-		for j, pkg := range pkgInfo.Packages {
-			pkgInfos[i].Packages[j].Identifier = purl.NewPackageIdentifier(os.Family, metadata, pkg)
-		}
-	}
-	return pkgInfos
 }
