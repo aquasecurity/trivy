@@ -42,10 +42,6 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 				},
 			},
 			blob: &types.BlobInfo{
-				OS: types.OS{
-					Family: types.CentOS,
-					Name:   "7.9.2009",
-				},
 				PackageInfos: []types.PackageInfo{
 					{
 						FilePath: "var/lib/rpm/Packages",
@@ -123,10 +119,6 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 				},
 			},
 			want: &types.BlobInfo{
-				OS: types.OS{
-					Family: types.CentOS,
-					Name:   "7.9.2009",
-				},
 				PackageInfos: []types.PackageInfo{
 					{
 						FilePath: "var/lib/rpm/Packages",
@@ -135,17 +127,11 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 								Name:    "python",
 								Version: "2.7.5",
 								Release: "89.el7",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:rpm/centos/python@2.7.5-89.el7?distro=centos-7.9.2009",
-								},
 							},
 							{
 								Name:    "python-libs",
 								Version: "2.7.5",
 								Release: "89.el7",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:rpm/centos/python-libs@2.7.5-89.el7?distro=centos-7.9.2009",
-								},
 							},
 						},
 					},
