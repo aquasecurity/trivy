@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -17,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version"
@@ -173,19 +175,46 @@ func (o *Options) SetOutputWriter(w io.Writer) {
 
 // OutputWriter returns an output writer.
 // If the output file is not specified, it returns os.Stdout.
-func (o *Options) OutputWriter() (io.Writer, func(), error) {
-	if o.outputWriter != nil {
-		return o.outputWriter, func() {}, nil
+func (o *Options) OutputWriter() (io.Writer, func() error, error) {
+	cleanup := func() error { return nil }
+	switch {
+	case o.outputWriter != nil:
+		return o.outputWriter, cleanup, nil
+	case o.Output == "":
+		return os.Stdout, cleanup, nil
+	case strings.HasPrefix(o.Output, "plugin="):
+		return o.outputPluginWriter()
 	}
 
-	if o.Output != "" {
-		f, err := os.Create(o.Output)
-		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to create output file: %w", err)
-		}
-		return f, func() { _ = f.Close() }, nil
+	f, err := os.Create(o.Output)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("failed to create output file: %w", err)
 	}
-	return os.Stdout, func() {}, nil
+	return f, f.Close, nil
+}
+
+func (o *Options) outputPluginWriter() (io.Writer, func() error, error) {
+	pluginName := strings.TrimPrefix(o.Output, "plugin=")
+
+	pr, pw := io.Pipe()
+	wait, err := plugin.Start(context.TODO(), pluginName, plugin.RunOptions{
+		Args:  o.OutputPluginArgs,
+		Stdin: pr,
+	})
+	if err != nil {
+		return nil, nil, xerrors.Errorf("plugin start: %w", err)
+	}
+
+	cleanup := func() error {
+		if err := pw.Close(); err != nil {
+			return xerrors.Errorf("failed to close pipe: %w", err)
+		}
+		if err := wait(); err != nil {
+			return xerrors.Errorf("plugin error: %w", err)
+		}
+		return nil
+	}
+	return pw, cleanup, nil
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {

@@ -10,7 +10,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -64,20 +63,49 @@ type RunOptions struct {
 	Stdin io.Reader
 }
 
-// Run runs the plugin
-func (p Plugin) Run(ctx context.Context, opts RunOptions) error {
+func (p Plugin) Cmd(ctx context.Context, opts RunOptions) (*exec.Cmd, error) {
 	platform, err := p.selectPlatform()
 	if err != nil {
-		return xerrors.Errorf("platform selection error: %w", err)
+		return nil, xerrors.Errorf("platform selection error: %w", err)
 	}
 
 	execFile := filepath.Join(dir(), p.Name, platform.Bin)
 
 	cmd := exec.CommandContext(ctx, execFile, opts.Args...)
-	cmd.Stdin = lo.Ternary(opts.Stdin != nil, opts.Stdin, os.Stdin)
+	cmd.Stdin = os.Stdin
+	if opts.Stdin != nil {
+		cmd.Stdin = opts.Stdin
+	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = os.Environ()
+
+	return cmd, nil
+}
+
+type Wait func() error
+
+// Start starts the plugin
+//
+// After a successful call to Start the Wait method must be called.
+func (p Plugin) Start(ctx context.Context, opts RunOptions) (Wait, error) {
+	cmd, err := p.Cmd(ctx, opts)
+	if err != nil {
+		return nil, xerrors.Errorf("cmd: %w", err)
+	}
+
+	if err = cmd.Start(); err != nil {
+		return nil, xerrors.Errorf("plugin start: %w", err)
+	}
+	return cmd.Wait, nil
+}
+
+// Run runs the plugin
+func (p Plugin) Run(ctx context.Context, opts RunOptions) error {
+	cmd, err := p.Cmd(ctx, opts)
+	if err != nil {
+		return xerrors.Errorf("cmd: %w", err)
+	}
 
 	// If an error is found during the execution of the plugin, figure
 	// out if the error was from not being able to execute the plugin or
@@ -86,10 +114,8 @@ func (p Plugin) Run(ctx context.Context, opts RunOptions) error {
 		if _, ok := err.(*exec.ExitError); !ok {
 			return xerrors.Errorf("exit: %w", err)
 		}
-
 		return xerrors.Errorf("plugin exec: %w", err)
 	}
-
 	return nil
 }
 
@@ -270,17 +296,18 @@ func LoadAll() ([]Plugin, error) {
 	return plugins, nil
 }
 
-// Run runs the plugin
-func Run(ctx context.Context, name string, opts RunOptions) error {
+// Start starts the plugin
+func Start(ctx context.Context, name string, opts RunOptions) (Wait, error) {
 	plugin, err := load(name)
 	if err != nil {
-		return xerrors.Errorf("plugin load error: %w", err)
+		return nil, xerrors.Errorf("plugin load error: %w", err)
 	}
 
-	if err = plugin.Run(ctx, opts); err != nil {
-		return xerrors.Errorf("unable to run %s plugin: %w", plugin.Name, err)
+	wait, err := plugin.Start(ctx, opts)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to run %s plugin: %w", plugin.Name, err)
 	}
-	return nil
+	return wait, nil
 }
 
 // RunWithURL runs the plugin with URL
