@@ -42,6 +42,7 @@ trivy sbom [flags] SBOM_PATH
       --no-progress                 suppress progress bar
       --offline-scan                do not issue API requests to identify dependencies
   -o, --output string               output file name
+      --output-plugin-arg string    [EXPERIMENTAL] output plugin argument
       --redis-ca string             redis ca file location, if using redis as cache backend
       --redis-cert string           redis certificate file location, if using redis as cache backend
       --redis-key string            redis key file location, if using redis as cache backend
