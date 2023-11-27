@@ -332,7 +332,7 @@ func load(name string) (Plugin, error) {
 	pluginDir := filepath.Join(dir(), name)
 	if _, err := os.Stat(pluginDir); err != nil {
 		if os.IsNotExist(err) {
-			return Plugin{}, xerrors.Errorf("could not find a plugin called '%s': %w", name, err)
+			return Plugin{}, xerrors.Errorf("could not find a plugin called '%s', did you install it?", name)
 		}
 		return Plugin{}, xerrors.Errorf("plugin stat error: %w", err)
 	}

@@ -227,9 +227,12 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
 	}
 
-	outputPluginArgs, err := shellwords.Parse(getString(f.OutputPluginArg))
-	if err != nil {
-		return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
+	var outputPluginArgs []string
+	if arg := getString(f.OutputPluginArg); arg != "" {
+		outputPluginArgs, err = shellwords.Parse(arg)
+		if err != nil {
+			return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
+		}
 	}
 
 	return ReportOptions{
