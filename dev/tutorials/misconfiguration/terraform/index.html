@@ -3737,7 +3737,7 @@ You're not viewing the latest version.
 <p><strong>A note to tfsec users</strong> 
 We have been consolidating all of our scanning-related efforts in one place, and that is Trivy. You can read more on the decision in the <a href="https://github.com/aquasecurity/tfsec/discussions/1994">tfsec discussions.</a></p>
 <h2 id="trivy-config-command">Trivy Config Command</h2>
-<p>Terraform configuration scanning is available as part of the <code>trivy config</code> command. This command scans all configuration files for misconfiguration issues. You can find the details within <a href="https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/scanning/">misconfiguration scans in the Trivy documentation.</a> </p>
+<p>Terraform configuration scanning is available as part of the <code>trivy config</code> command. This command scans all configuration files for misconfiguration issues. You can find the details within <a href="https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/">misconfiguration scans in the Trivy documentation.</a> </p>
 <p>Command structure: 
 <div class="highlight"><pre><span></span><code>trivy config &lt;any flags you want to use&gt; &lt;file or directory that you would like to scan&gt; 
 </code></pre></div></p>
@@ -3784,11 +3784,11 @@ In this case, the folder only containes Terraform configuration files. However, 
 <div class="highlight"><pre><span></span><code>trivy config --severity CRITICAL, MEDIUM terraform-infra 
 </code></pre></div>
 <h3 id="passing-tftfvars-files-into-trivy-config-scans">Passing tf.tfvars files into <code>trivy config</code> scans</h3>
-<p>You can pass terraform values to Trivy to override default values found in the Terraform HCL code. More information are provided <a href="https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/options/values/">in the documentation.</a> </p>
+<p>You can pass terraform values to Trivy to override default values found in the Terraform HCL code. More information are provided <a href="https://aquasecurity.github.io/trivy/latest/docs/coverage/iac/terraform/#value-overrides">in the documentation.</a> </p>
 <div class="highlight"><pre><span></span><code>trivy conf --tf-vars terraform.tfvars ./
 </code></pre></div>
 <h3 id="custom-checks">Custom Checks</h3>
-<p>We have lots of examples in the <a href="https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/custom/">documentation</a> on how you can write and pass custom Rego policies into terraform misconfiguration scans. </p>
+<p>We have lots of examples in the <a href="https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/">documentation</a> on how you can write and pass custom Rego policies into terraform misconfiguration scans. </p>
 <h2 id="secret-and-vulnerability-scans">Secret and vulnerability scans</h2>
 <p>The <code>trivy config</code> command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your <code>trivy fs</code> scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: </p>
 <div class="highlight"><pre><span></span><code>trivy fs --scanners secret,misconfig ./
