@@ -7,17 +7,17 @@ import (
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/google/uuid"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
-	"k8s.io/utils/clock"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 const (
@@ -29,26 +29,8 @@ const (
 	timeLayout = "2006-01-02T15:04:05+00:00"
 )
 
-type NewUUID func() uuid.UUID
-
-type Option func(dx *CycloneDX)
-
-func WithClock(clock clock.Clock) Option {
-	return func(opts *CycloneDX) {
-		opts.clock = clock
-	}
-}
-
-func WithNewUUID(newUUID NewUUID) Option {
-	return func(opts *CycloneDX) {
-		opts.newUUID = newUUID
-	}
-}
-
 type CycloneDX struct {
 	appVersion string
-	clock      clock.Clock
-	newUUID    NewUUID
 }
 
 type Component struct {
@@ -72,27 +54,20 @@ type Property struct {
 	Namespace string
 }
 
-func NewCycloneDX(version string, opts ...Option) *CycloneDX {
-	c := &CycloneDX{
+func NewCycloneDX(version string) *CycloneDX {
+	return &CycloneDX{
 		appVersion: version,
-		clock:      clock.RealClock{},
-		newUUID:    uuid.New,
 	}
-	for _, opt := range opts {
-		opt(c)
-	}
-
-	return c
 }
 
 func (c *CycloneDX) Marshal(root *Component) *cdx.BOM {
 	bom := cdx.NewBOM()
-	bom.SerialNumber = c.newUUID().URN()
+	bom.SerialNumber = uuid.New().URN()
 	bom.Metadata = c.Metadata()
 
-	components := map[string]*cdx.Component{}
-	dependencies := map[string]*[]string{}
-	vulnerabilities := map[string]*cdx.Vulnerability{}
+	components := make(map[string]*cdx.Component)
+	dependencies := make(map[string]*[]string)
+	vulnerabilities := make(map[string]*cdx.Vulnerability)
 	bom.Metadata.Component = c.MarshalComponent(root, components, dependencies, vulnerabilities)
 
 	// Remove metadata component
@@ -161,7 +136,7 @@ func (c *CycloneDX) MarshalComponent(component *Component, components map[string
 		}
 	}
 
-	dependencies := make([]string, 0) // Components that do not have their own dependencies must be declared as empty elements
+	dependencies := make([]string, 0) // nolint:gocritic // Components that do not have their own dependencies must be declared as empty elements
 	for _, child := range component.Components {
 		childComponent := c.MarshalComponent(child, components, deps, vulns)
 		dependencies = append(dependencies, childComponent.BOMRef)
@@ -180,7 +155,7 @@ func (c *CycloneDX) marshalVulnerability(bomRef string, vuln types.DetectedVulne
 		Ratings:     cdxRatings(vuln),
 		CWEs:        cwes(vuln.CweIDs),
 		Description: vuln.Description,
-		Advisories:  cdxAdvisories(vuln.References),
+		Advisories:  cdxAdvisories(append([]string{vuln.PrimaryURL}, vuln.References...)),
 	}
 	if vuln.FixedVersion != "" {
 		v.Recommendation = fmt.Sprintf("Upgrade %s to version %s", vuln.PkgName, vuln.FixedVersion)
@@ -200,14 +175,14 @@ func (c *CycloneDX) marshalVulnerability(bomRef string, vuln types.DetectedVulne
 func (c *CycloneDX) BOMRef(component *Component) string {
 	// PURL takes precedence over UUID
 	if component.PackageURL == nil {
-		return c.newUUID().String()
+		return uuid.New().String()
 	}
 	return component.PackageURL.BOMRef()
 }
 
 func (c *CycloneDX) Metadata() *cdx.Metadata {
 	return &cdx.Metadata{
-		Timestamp: c.clock.Now().UTC().Format(timeLayout),
+		Timestamp: clock.Now().UTC().Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
 				Vendor:  ToolVendor,
@@ -256,11 +231,11 @@ func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.V
 	return &vulns
 }
 
-func (c *CycloneDX) PackageURL(purl *purl.PackageURL) string {
-	if purl == nil {
+func (c *CycloneDX) PackageURL(p *purl.PackageURL) string {
+	if p == nil {
 		return ""
 	}
-	return purl.String()
+	return p.String()
 }
 
 func (c *CycloneDX) Supplier(supplier string) *cdx.OrganizationalEntity {
@@ -304,7 +279,11 @@ func (c *CycloneDX) Licenses(licenses []string) *cdx.Licenses {
 		return nil
 	}
 	choices := lo.Map(licenses, func(license string, i int) cdx.LicenseChoice {
-		return cdx.LicenseChoice{Expression: license}
+		return cdx.LicenseChoice{
+			License: &cdx.License{
+				Name: license,
+			},
+		}
 	})
 	return lo.ToPtr(cdx.Licenses(choices))
 }
@@ -351,7 +330,7 @@ func LookupProperty(properties *[]cdx.Property, key string) string {
 }
 
 func UnmarshalProperties(properties *[]cdx.Property) map[string]string {
-	props := map[string]string{}
+	props := make(map[string]string)
 	for _, prop := range lo.FromPtr(properties) {
 		if !strings.HasPrefix(prop.Name, Namespace) {
 			continue
@@ -362,12 +341,18 @@ func UnmarshalProperties(properties *[]cdx.Property) map[string]string {
 }
 
 func cdxAdvisories(refs []string) *[]cdx.Advisory {
-	var advs []cdx.Advisory
-	for _, ref := range refs {
-		advs = append(advs, cdx.Advisory{
-			URL: ref,
-		})
+	refs = lo.Uniq(refs)
+	advs := lo.FilterMap(refs, func(ref string, _ int) (cdx.Advisory, bool) {
+		return cdx.Advisory{URL: ref}, ref != ""
+	})
+
+	// cyclonedx converts link to empty `[]cdx.Advisory` to `null`
+	// `bom-1.5.schema.json` doesn't support this - `Invalid type. Expected: array, given: null`
+	// we need to explicitly set `nil` for empty `refs` slice
+	if len(advs) == 0 {
+		return nil
 	}
+
 	return &advs
 }
 
@@ -389,11 +374,11 @@ func cwes(cweIDs []string) *[]int {
 	return &ret
 }
 
-func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
-	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
-	for sourceID, severity := range vulnerability.VendorSeverity {
+func cdxRatings(vuln types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
+	rates := make([]cdx.VulnerabilityRating, 0) // nolint:gocritic // To export an empty array in JSON
+	for sourceID, severity := range vuln.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
-		if cvss, ok := vulnerability.CVSS[sourceID]; ok {
+		if cvss, ok := vuln.CVSS[sourceID]; ok {
 			if cvss.V2Score != 0 || cvss.V2Vector != "" {
 				rates = append(rates, cdxRatingV2(sourceID, severity, cvss))
 			}

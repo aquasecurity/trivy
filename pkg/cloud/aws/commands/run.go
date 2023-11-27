@@ -5,14 +5,14 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/defsec/pkg/errs"
-	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
+	"github.com/aquasecurity/trivy-aws/pkg/errs"
+	awsScanner "github.com/aquasecurity/trivy-aws/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud"
+	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud/report"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -22,15 +22,12 @@ import (
 
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
 
-func getAccountIDAndRegion(ctx context.Context, region string) (string, string, error) {
+func getAccountIDAndRegion(ctx context.Context, region, endpoint string) (string, string, error) {
 	log.Logger.Debug("Looking for AWS credentials provider...")
 
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+	cfg, err := config.LoadDefaultAWSConfig(ctx, region, endpoint)
 	if err != nil {
 		return "", "", err
-	}
-	if region != "" {
-		cfg.Region = region
 	}
 
 	svc := sts.NewFromConfig(cfg)
@@ -82,7 +79,7 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 
 	if opt.Account == "" || opt.Region == "" {
 		var err error
-		opt.Account, opt.Region, err = getAccountIDAndRegion(ctx, opt.Region)
+		opt.Account, opt.Region, err = getAccountIDAndRegion(ctx, opt.Region, opt.Endpoint)
 		if err != nil {
 			return err
 		}
@@ -98,10 +95,11 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 }
 
 func filterServices(opt *flag.Options) error {
-	if len(opt.Services) == 0 && len(opt.SkipServices) == 0 {
+	switch {
+	case len(opt.Services) == 0 && len(opt.SkipServices) == 0:
 		log.Logger.Debug("No service(s) specified, scanning all services...")
 		opt.Services = allSupportedServicesFunc()
-	} else if len(opt.SkipServices) > 0 {
+	case len(opt.SkipServices) > 0:
 		log.Logger.Debug("excluding services: ", opt.SkipServices)
 		for _, s := range allSupportedServicesFunc() {
 			if slices.Contains(opt.SkipServices, s) {
@@ -111,7 +109,7 @@ func filterServices(opt *flag.Options) error {
 				opt.Services = append(opt.Services, s)
 			}
 		}
-	} else if len(opt.Services) > 0 {
+	case len(opt.Services) > 0:
 		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(opt.Services, ", "))
 		for _, service := range opt.Services {
 			var found bool

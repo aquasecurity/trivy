@@ -116,7 +116,7 @@ Total: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 CVE-2020-8911 is no longer shown as it is filtered out according to the given CycloneDX VEX document.
 
 ## OpenVEX
-Trivy also supports [OpenVEX](https://github.com/openvex/spec) that is designed to be minimal, compliant, interoperable, and embeddable.
+Trivy also supports [OpenVEX][openvex] that is designed to be minimal, compliant, interoperable, and embeddable.
 Since OpenVEX aims to be SBOM format agnostic, both CycloneDX and SPDX formats are available for use as input SBOMs in Trivy.
 
 The following steps are required:
@@ -134,24 +134,21 @@ $ trivy image --format spdx-json --output debian11.spdx.json debian:11
 
 ### Create the VEX
 Please see also [the example](https://github.com/openvex/examples).
-The product identifiers differ depending on the SBOM format the VEX references.
-
-- SPDX: [Package URL (PURL)](https://github.com/package-url/purl-spec)
-- CycloneDX: [BOM-Link](https://cyclonedx.org/capabilities/bomlink/)
+In Trivy, [the Package URL (PURL)][purl] is used as the product identifier.
 
 ```
-$ cat <<EOF > trivy.openvex
+$ cat <<EOF > debian11.openvex
 {
-  "@context": "https://openvex.dev/ns",
+  "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://openvex.dev/docs/public/vex-2e67563e128250cbcb3e98930df948dd053e43271d70dc50cfa22d57e03fe96f",
   "author": "Aqua Security",
-  "timestamp": "2023-01-16T19:07:16.853479631-06:00",
-  "version": "1",
+  "timestamp": "2023-08-29T19:07:16.853479631-06:00",
+  "version": 1,
   "statements": [
     {
-      "vulnerability": "CVE-2019-8457",
+      "vulnerability": {"name": "CVE-2019-8457"},
       "products": [
-        "pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8?arch=arm64\u0026distro=debian-11.6"
+        {"@id": "pkg:deb/debian/libdb5.3@5.3.28+dfsg1-0.8"}
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_in_execute_path"
@@ -161,15 +158,19 @@ $ cat <<EOF > trivy.openvex
 EOF
 ```
 
-In the above example, PURLs, located in `packages.externalRefs.referenceLocator` are used since the input SBOM format is SPDX.
+In the above example, PURLs, located in `packages.externalRefs.referenceLocator` in SPDX are used for the product identifier.
 
-As for CycloneDX BOM-Link, please reference [the CycloneDX section](#cyclonedx).
+!!! note
+    If a qualifier is specified in the PURL used as the product id in the VEX, the qualifier is compared.
+    Other qualifiers are ignored in the comparison.
+    `pkg:deb/debian/curl@7.50.3-1` in OpenVEX matches `pkg:deb/debian/curl@7.50.3-1?arch=i386`, 
+    while `pkg:deb/debian/curl@7.50.3-1?arch=amd64` does not match `pkg:deb/debian/curl@7.50.3-1?arch=i386`.
 
 ### Scan SBOM with VEX
 Provide the VEX when scanning the SBOM.
 
 ```
-$ trivy sbom debian11.spdx.json --vex trivy.openvex
+$ trivy sbom debian11.spdx.json --vex debian11.openvex
 ...
 2023-04-26T17:56:05.358+0300    INFO    Filtered out the detected vulnerability {"VEX format": "OpenVEX", "vulnerability-id": "CVE-2019-8457", "status": "not_affected", "justification": "vulnerable_code_not_in_execute_path"}
 
@@ -179,3 +180,6 @@ Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
 ```
 
 CVE-2019-8457 is no longer shown as it is filtered out according to the given OpenVEX document.
+
+[openvex]: https://github.com/openvex/spec
+[purl]: https://github.com/package-url/purl-spec

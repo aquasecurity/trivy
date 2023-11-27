@@ -37,7 +37,7 @@ func buildLdflags() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("-s -w -X=main.version=%s", ver), nil
+	return fmt.Sprintf("-s -w -X=github.com/aquasecurity/trivy/pkg/version.ver=%s", ver), nil
 }
 
 type Tool mg.Namespace
@@ -60,7 +60,7 @@ func (Tool) Wire() error {
 
 // GolangciLint installs golangci-lint
 func (Tool) GolangciLint() error {
-	const version = "v1.52.2"
+	const version = "v1.54.2"
 	if exists(filepath.Join(GOBIN, "golangci-lint")) {
 		return nil
 	}
@@ -108,7 +108,7 @@ func (Tool) Mockery() error {
 // Wire generates the wire_gen.go file for each package
 func Wire() error {
 	mg.Deps(Tool{}.Wire)
-	return sh.RunV("wire", "gen", "./pkg/commands/...", "./pkg/rpc/...")
+	return sh.RunV("wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
 }
 
 // Mock generates mocks
@@ -154,7 +154,7 @@ func Protoc() error {
 	if err := sh.RunV("bash", "-c", "docker build -t trivy-protoc - < Dockerfile.protoc"); err != nil {
 		return err
 	}
-	return sh.Run("docker", "run", "--rm", "-it", "-v", "${PWD}:/app", "-w", "/app", "trivy-protoc", "mage", "protoc")
+	return sh.Run("docker", "run", "--rm", "-it", "--platform", "linux/x86_64", "-v", "${PWD}:/app", "-w", "/app", "trivy-protoc", "mage", "protoc")
 }
 
 // Yacc generates parser
@@ -239,7 +239,7 @@ func (t Test) Unit() error {
 // Integration runs integration tests
 func (t Test) Integration() error {
 	mg.Deps(t.FixtureContainerImages)
-	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
+	return sh.RunWithV(ENV, "go", "test", "-timeout", "15m", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
 }
 
 // K8s runs k8s integration tests
@@ -266,6 +266,12 @@ func (t Test) Module() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=module_integration", "./integration/...")
 }
 
+// UpdateModuleGolden updates golden files for Wasm integration tests
+func (t Test) UpdateModuleGolden() error {
+	mg.Deps(t.FixtureContainerImages, t.GenerateExampleModules)
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=module_integration", "./integration/...", "-update")
+}
+
 // VM runs VM integration tests
 func (t Test) VM() error {
 	mg.Deps(t.FixtureVMImages)
@@ -273,14 +279,23 @@ func (t Test) VM() error {
 }
 
 // UpdateVMGolden updates golden files for integration tests
-func (Test) UpdateVMGolden() error {
+func (t Test) UpdateVMGolden() error {
+	mg.Deps(t.FixtureVMImages)
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
 }
 
-// Lint runs linters
-func Lint() error {
+type Lint mg.Namespace
+
+// Run runs linters
+func (Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint)
 	return sh.RunV("golangci-lint", "run", "--timeout", "5m")
+}
+
+// Fix auto fixes linters
+func (Lint) Fix() error {
+	mg.Deps(Tool{}.GolangciLint)
+	return sh.RunV("golangci-lint", "run", "--timeout", "5m", "--fix")
 }
 
 // Fmt formats Go code and proto files
@@ -357,6 +372,12 @@ func Clean() error {
 	return nil
 }
 
+// Label updates labels
+func Label() error {
+	mg.Deps(Tool{}.Labeler)
+	return sh.RunV("labeler", "apply", "misc/triage/labels.yaml", "-l", "5")
+}
+
 type Docs mg.Namespace
 
 // Serve launches MkDocs development server to preview the documentation page
@@ -379,11 +400,12 @@ func (Docs) Generate() error {
 func findProtoFiles() ([]string, error) {
 	var files []string
 	err := filepath.WalkDir("rpc", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
+		switch {
+		case err != nil:
 			return err
-		} else if d.IsDir() {
+		case d.IsDir():
 			return nil
-		} else if filepath.Ext(path) == ".proto" {
+		case filepath.Ext(path) == ".proto":
 			files = append(files, path)
 		}
 		return nil

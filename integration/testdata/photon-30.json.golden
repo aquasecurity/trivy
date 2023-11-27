@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/photon-30.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -68,6 +69,7 @@
           "PkgName": "bash",
           "InstalledVersion": "4.4.18-1.ph3",
           "FixedVersion": "4.4.18-2.ph3",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
             "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
@@ -119,6 +121,7 @@
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
             "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
@@ -177,6 +180,7 @@
           "PkgName": "curl-libs",
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
+          "Status": "fixed",
           "Layer": {
             "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
             "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"

@@ -38,7 +38,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			name: "happy path for configs",
 			args: []string{"alpine:latest"},
 			fields: fields{
-				scanners: "config",
+				scanners: "misconfig",
 			},
 			want: flag.ScanOptions{
 				Target:   "alpine:latest",

@@ -30,10 +30,14 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Packages: []ftypes.PackageInfo{
 					{
-						Packages: []ftypes.Package{
+						Packages: ftypes.Packages{
 							{
-								Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", Licenses: []string{"MIT"},
-								Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+								Name:       "musl",
+								Version:    "1.2.3-r0",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3-r0",
+								Licenses:   []string{"MIT"},
+								Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 								},
@@ -43,9 +47,9 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Applications: []ftypes.Application{
 					{
-						Type:     "composer",
+						Type:     ftypes.Composer,
 						FilePath: "app/composer/composer.lock",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -66,9 +70,9 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type:     "gobinary",
+						Type:     ftypes.GoBinary,
 						FilePath: "app/gobinary/gobinary",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "github.com/package-url/packageurl-go",
 								Version: "v0.1.1-0.20220203205134-d70459300c8a",
@@ -80,22 +84,22 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type: "gradle",
-						Libraries: []ftypes.Package{
+						Type:     ftypes.Gradle,
+						FilePath: "app/gradle/target/gradle.lockfile",
+						Libraries: ftypes.Packages{
 							{
 								Name:    "com.example:example",
-								Ref:     "pkg:gradle/com.example/example@0.0.1",
+								Ref:     "pkg:maven/com.example/example@0.0.1",
 								Version: "0.0.1",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
-								FilePath: "app/gradle/target/gradle.lockfile",
 							},
 						},
 					},
 					{
-						Type: "jar",
-						Libraries: []ftypes.Package{
+						Type: ftypes.Jar,
+						Libraries: ftypes.Packages{
 							{
 								Name:    "org.codehaus.mojo:child-project",
 								Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
@@ -108,9 +112,9 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type:     "node-pkg",
+						Type:     ftypes.NodePkg,
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:     "bootstrap",
 								Version:  "5.0.2",
@@ -127,6 +131,72 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path KBOM",
+			inputFile: "testdata/happy/kbom.json",
+			want: types.SBOM{
+				OS: ftypes.OS{
+					Family: "ubuntu",
+					Name:   "22.04.2",
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						FilePath: "",
+					},
+				},
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.GoBinary,
+						Libraries: ftypes.Packages{
+							{
+								Name:    "docker",
+								Version: "24.0.4",
+								Ref:     "pkg:golang/docker@24.0.4",
+							},
+						},
+					},
+					{
+						Type:     "golang",
+						FilePath: "node-core-components",
+					},
+					{
+						Type: ftypes.K8sUpstream,
+						Libraries: ftypes.Packages{
+							{
+								Name:    "k8s.io/apiserver",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
+							},
+							{
+								Name:    "k8s.io/controller-manager",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kube-proxy",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kube-scheduler",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kubelet",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
+							},
+							{
+								Name:    "k8s.io/kubernetes",
+								Version: "1.27.4",
+								Ref:     "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path with infinity loop",
 			inputFile: "testdata/happy/infinite-loop-bom.json",
 			want: types.SBOM{
@@ -136,7 +206,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Packages: []ftypes.PackageInfo{
 					{
-						Packages: []ftypes.Package{
+						Packages: ftypes.Packages{
 							{
 								ID:         "libc6@2.35-0ubuntu3.1",
 								Name:       "libc6",
@@ -144,9 +214,14 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcName:    "glibc",
 								SrcVersion: "2.35",
 								SrcRelease: "0ubuntu3.1",
-								Licenses:   []string{"LGPL-2.1", "GPL-2.0", "GFDL-1.3"},
-								Ref:        "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
+								Licenses: []string{
+									"LGPL-2.1",
+									"GPL-2.0",
+									"GFDL-1.3",
+								},
+								Ref: "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
 								Layer: ftypes.Layer{
+									Digest: "sha256:74ac377868f863e123f24c409f79709f7563fa464557c36a09cf6f85c8b92b7f",
 									DiffID: "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466",
 								},
 							},
@@ -161,6 +236,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcEpoch:   1,
 								Ref:        "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1&distro=ubuntu-22.04",
 								Layer: ftypes.Layer{
+									Digest: "sha256:74ac377868f863e123f24c409f79709f7563fa464557c36a09cf6f85c8b92b7f",
 									DiffID: "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466",
 								},
 							},
@@ -179,10 +255,14 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Packages: []ftypes.PackageInfo{
 					{
-						Packages: []ftypes.Package{
+						Packages: ftypes.Packages{
 							{
-								Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", Licenses: []string{"MIT"},
-								Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+								Name:       "musl",
+								Version:    "1.2.3-r0",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3-r0",
+								Licenses:   []string{"MIT"},
+								Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 							},
 						},
 					},
@@ -191,7 +271,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -216,7 +296,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -235,7 +315,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
@@ -260,7 +340,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:    "pear/core",
 								Version: "1.13.1",
@@ -289,7 +369,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type: "jar",
-						Libraries: []ftypes.Package{
+						Libraries: ftypes.Packages{
 							{
 								Name:     "org.springframework:spring-web",
 								Version:  "5.3.22",

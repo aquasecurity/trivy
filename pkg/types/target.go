@@ -33,7 +33,7 @@ const (
 	VulnerabilityScanner = Scanner("vuln")
 
 	// MisconfigScanner is the scanner of misconfigurations
-	MisconfigScanner = Scanner("config")
+	MisconfigScanner = Scanner("misconfig")
 
 	// SecretScanner is the scanner of secrets
 	SecretScanner = Scanner("secret")

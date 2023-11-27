@@ -5,7 +5,7 @@ import (
 
 	"github.com/samber/lo"
 
-	defsecRules "github.com/aquasecurity/defsec/pkg/rules"
+	defsecRules "github.com/aquasecurity/trivy-iac/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -49,6 +49,7 @@ var (
 	CategoryHubSpot              = types.SecretRuleCategory("HubSpot")
 	CategoryIntercom             = types.SecretRuleCategory("Intercom")
 	CategoryIonic                = types.SecretRuleCategory("Ionic")
+	CategoryJWT                  = types.SecretRuleCategory("JWT")
 	CategoryLinear               = types.SecretRuleCategory("Linear")
 	CategoryLob                  = types.SecretRuleCategory("Lob")
 	CategoryMailchimp            = types.SecretRuleCategory("Mailchimp")
@@ -72,7 +73,7 @@ var (
 // Reusable regex patterns
 const (
 	quote       = `["']?`
-	connect     = `\s*(:|=>|=)\s*`
+	connect     = `\s*(:|=>|=)?\s*`
 	startSecret = `(^|\s+)`
 	endSecret   = `(\s+|$)`
 
@@ -104,7 +105,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAWS,
 		Severity:        "CRITICAL",
 		Title:           "AWS Secret Access Key",
-		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s%s(secret)?_?(access)?_?key%s%s%s(?P<secret>[A-Za-z0-9\/\+=]{40})%s%s`, startSecret, quote, aws, quote, connect, quote, quote, endSecret)),
+		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s%s(sec(ret)?)?_?(access)?_?key%s%s%s(?P<secret>[A-Za-z0-9\/\+=]{40})%s%s`, startSecret, quote, aws, quote, connect, quote, quote, endSecret)),
 		SecretGroupName: "secret",
 		Keywords:        []string{"key"},
 	},
@@ -278,7 +279,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAlibaba,
 		Title:           "Alibaba AccessKey ID",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`([^0-9a-z]|^)(?P<secret>(LTAI)(?i)[a-z0-9]{20})([^0-9a-z]|$)`),
+		Regex:           MustCompile(`([^0-9A-Za-z]|^)(?P<secret>(LTAI)(?i)[a-z0-9]{20})([^0-9A-Za-z]|$)`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"LTAI"},
 	},
@@ -561,6 +562,14 @@ var builtinRules = []Rule{
 		Title:    "Ionic API token",
 		Regex:    MustCompile(`(?i)(ionic[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"](ion_[a-z0-9]{42})['\"]`),
 		Keywords: []string{"ionic"},
+	},
+	{
+		ID:       "jwt-token",
+		Category: CategoryJWT,
+		Title:    "JWT token",
+		Severity: "MEDIUM",
+		Regex:    MustCompile(`ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?`),
+		Keywords: []string{"jwt"},
 	},
 	{
 		ID:       "linear-api-token",

@@ -23,7 +23,7 @@ $ trivy fs ~/src/github.com/aquasecurity/trivy-ci-test/Pipfile.lock
 ### Vulnerabilities
 It is enabled by default.
 Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
-See [here](../scanner/vulnerability/index.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ```
 $ trivy fs ~/src/github.com/aquasecurity/trivy-ci-test
@@ -65,11 +65,11 @@ Total: 10 (UNKNOWN: 2, LOW: 0, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
 </details>
 
 ### Misconfigurations
-It is disabled by default and can be enabled with `--scanners config`.
+It is disabled by default and can be enabled with `--scanners misconfig`.
 See [here](../scanner/misconfiguration/index.md) for the detail.
 
 ```shell
-$ trivy fs --scanners config /path/to/project
+$ trivy fs --scanners misconfig /path/to/project
 ```
 
 ### Secrets

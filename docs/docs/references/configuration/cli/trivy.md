@@ -51,7 +51,7 @@ trivy [global flags] command [flags] target
 * [trivy kubernetes](trivy_kubernetes.md)	 - [EXPERIMENTAL] Scan kubernetes cluster
 * [trivy module](trivy_module.md)	 - Manage modules
 * [trivy plugin](trivy_plugin.md)	 - Manage plugins
-* [trivy repository](trivy_repository.md)	 - Scan a remote repository
+* [trivy repository](trivy_repository.md)	 - Scan a repository
 * [trivy rootfs](trivy_rootfs.md)	 - Scan rootfs
 * [trivy sbom](trivy_sbom.md)	 - Scan SBOM for vulnerabilities
 * [trivy server](trivy_server.md)	 - Server mode

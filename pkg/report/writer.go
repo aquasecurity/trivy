@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
@@ -26,11 +27,11 @@ const (
 
 // Write writes the result to output, format as passed in argument
 func Write(report types.Report, option flag.Options) error {
-	output, err := option.OutputWriter()
+	output, cleanup, err := option.OutputWriter()
 	if err != nil {
 		return xerrors.Errorf("failed to create a file: %w", err)
 	}
-	defer output.Close()
+	defer cleanup()
 
 	// Compliance report
 	if option.Compliance.Spec.ID != "" {
@@ -77,9 +78,14 @@ func Write(report types.Report, option flag.Options) error {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	case types.FormatSarif:
+		target := ""
+		if report.ArtifactType == ftypes.ArtifactFilesystem {
+			target = option.Target
+		}
 		writer = &SarifWriter{
 			Output:  output,
 			Version: option.AppVersion,
+			Target:  target,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)

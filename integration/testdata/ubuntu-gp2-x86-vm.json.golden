@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "disk.img",
   "ArtifactType": "vm",
   "Metadata": {
@@ -29,6 +30,7 @@
           "PkgID": "bash@5.1-6ubuntu1",
           "PkgName": "bash",
           "InstalledVersion": "5.1-6ubuntu1",
+          "Status": "affected",
           "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-3715",

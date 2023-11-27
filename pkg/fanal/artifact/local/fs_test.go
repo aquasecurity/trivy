@@ -47,7 +47,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+					BlobID: "sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -57,7 +57,7 @@ func TestArtifact_Inspect(t *testing.T) {
 						PackageInfos: []types.PackageInfo{
 							{
 								FilePath: "lib/apk/db/installed",
-								Packages: []types.Package{
+								Packages: types.Packages{
 									{
 										ID:         "musl@1.1.24-r2",
 										Name:       "musl",
@@ -67,6 +67,10 @@ func TestArtifact_Inspect(t *testing.T) {
 										Licenses:   []string{"MIT"},
 										Arch:       "x86_64",
 										Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+										InstalledFiles: []string{
+											"lib/libc.musl-x86_64.so.1",
+											"lib/ld-musl-x86_64.so.1",
+										},
 									},
 								},
 							},
@@ -78,9 +82,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+				ID:   "sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
 				BlobIDs: []string{
-					"sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+					"sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
 				},
 			},
 		},
@@ -121,7 +125,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:9101fcb54fd63b7dfde027bd669e159ed65aff15842057780f4b0c846bab6369",
+					BlobID: "sha256:bb194ca778e3ecfa4b2addeae7b2c6b22ed10ab054b9d23e601c54e332913055",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -131,7 +135,7 @@ func TestArtifact_Inspect(t *testing.T) {
 						PackageInfos: []types.PackageInfo{
 							{
 								FilePath: "lib/apk/db/installed",
-								Packages: []types.Package{
+								Packages: types.Packages{
 									{
 										ID:         "musl@1.1.24-r2",
 										Name:       "musl",
@@ -141,6 +145,10 @@ func TestArtifact_Inspect(t *testing.T) {
 										Licenses:   []string{"MIT"},
 										Arch:       "x86_64",
 										Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+										InstalledFiles: []string{
+											"lib/libc.musl-x86_64.so.1",
+											"lib/ld-musl-x86_64.so.1",
+										},
 									},
 								},
 							},
@@ -158,7 +166,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fields: fields{
 				dir: "./testdata/unknown",
 			},
-			wantErr: "walk error",
+			wantErr: "walk dir error",
 		},
 		{
 			name: "happy path with single file",
@@ -174,7 +182,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "pip",
 								FilePath: "requirements.txt",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
@@ -209,7 +217,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "pip",
 								FilePath: "requirements.txt",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "Flask",
 										Version: "2.0.0",
@@ -659,6 +667,56 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			},
 		},
 		{
+			name: "tfvars outside the scan folder",
+			fields: fields{
+				dir: "./testdata/misconfig/terraform/tfvar-outside/tf",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					RegoOnly:                true,
+					Namespaces:              []string{"user"},
+					PolicyPaths:             []string{"./testdata/misconfig/terraform/rego"},
+					TerraformTFVars:         []string{"./testdata/misconfig/terraform/tfvar-outside/main.tfvars"},
+					TfExcludeDownloaded:     true,
+					DisableEmbeddedPolicies: true,
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobIDAnything: true,
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: 2,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: types.Terraform,
+								FilePath: ".",
+								Successes: types.MisconfResults{
+									{
+										Namespace:      "user.something",
+										Query:          "data.user.something.deny",
+										PolicyMetadata: policyMetadata,
+										CauseMetadata: types.CauseMetadata{
+											Provider: "Generic",
+											Service:  "general",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/misconfig/terraform/tfvar-outside/tf",
+				Type: types.ArtifactFilesystem,
+				ID:   "sha256:4e2b9cba04625f1d9cc57f74640d039779b0ee176e958aaea37883e03842056d",
+				BlobIDs: []string{
+					"sha256:4e2b9cba04625f1d9cc57f74640d039779b0ee176e958aaea37883e03842056d",
+				},
+			},
+		},
+		{
 			name: "relative paths",
 			fields: fields{
 				dir: "./testdata/misconfig/terraform/relative-paths/child",
@@ -796,7 +854,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2,
+						SchemaVersion: types.BlobJSONSchemaVersion,
 						Misconfigurations: []types.Misconfiguration{
 							{
 								FileType: "cloudformation",
@@ -957,6 +1015,64 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			},
 		},
 		{
+			name: "CloudFormation parameters outside the scan directory",
+			fields: fields{
+				dir: "./testdata/misconfig/cloudformation/params/code/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					RegoOnly:                 true,
+					Namespaces:               []string{"user"},
+					PolicyPaths:              []string{"./testdata/misconfig/cloudformation/params/code/rego"},
+					CloudFormationParamVars:  []string{"./testdata/misconfig/cloudformation/params/cfparams.json"},
+					DisableEmbeddedPolicies:  true,
+					DisableEmbeddedLibraries: true,
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobIDAnything: true,
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: "cloudformation",
+								FilePath: "main.yaml",
+								Successes: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "CloudFormation Security Check",
+											Title:              "Bad stuff is bad",
+											Description:        "Its not good!",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove bad stuff",
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "sqs",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/misconfig/cloudformation/params/code/src",
+				Type: types.ArtifactFilesystem,
+				ID:   "sha256:0c66c19a4df3ecc11db9f90fbc921f1050325c05c480847369e07ee309e8a897",
+				BlobIDs: []string{
+					"sha256:0c66c19a4df3ecc11db9f90fbc921f1050325c05c480847369e07ee309e8a897",
+				},
+			},
+		},
+		{
 			name: "passed",
 			fields: fields{
 				dir: "./testdata/misconfig/cloudformation/passed/src",
@@ -974,7 +1090,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2,
+						SchemaVersion: types.BlobJSONSchemaVersion,
 						Misconfigurations: []types.Misconfiguration{
 							{
 								FileType: "cloudformation",

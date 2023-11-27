@@ -97,7 +97,7 @@ func TestK8s(t *testing.T) {
 		err = json.NewDecoder(f).Decode(&got)
 		require.NoError(t, err)
 
-		assert.Equal(t, got.Metadata.Component.Name, "kind-kind-test")
+		assert.Equal(t, got.Metadata.Component.Name, "k8s.io/kubernetes")
 		assert.Equal(t, got.Metadata.Component.Type, cdx.ComponentType("platform"))
 
 		// Has components
@@ -108,5 +108,50 @@ func TestK8s(t *testing.T) {
 			return len(*r.Dependencies) > 0
 		}))
 
+	})
+
+	t.Run("specific resource scan", func(t *testing.T) {
+		// Set up the output file
+		outputFile := filepath.Join(t.TempDir(), "output.json")
+
+		osArgs := []string{
+			"k8s",
+			"-n",
+			"default",
+			"deployments/nginx-deployment",
+			"-q",
+			"--timeout",
+			"5m0s",
+			"--format",
+			"json",
+			"--components",
+			"workload",
+			"--context",
+			"kind-kind-test",
+			"--output",
+			outputFile,
+		}
+
+		// Run Trivy
+		err := execute(osArgs)
+		require.NoError(t, err)
+
+		var got report.Report
+		f, err := os.Open(outputFile)
+		require.NoError(t, err)
+		defer f.Close()
+
+		err = json.NewDecoder(f).Decode(&got)
+		require.NoError(t, err)
+
+		// Flatten findings
+		results := lo.FlatMap(got.Resources, func(resource report.Resource, _ int) []types.Result {
+			return resource.Results
+		})
+
+		// Has vulnerabilities
+		assert.True(t, lo.SomeBy(results, func(r types.Result) bool {
+			return len(r.Vulnerabilities) > 0
+		}))
 	})
 }

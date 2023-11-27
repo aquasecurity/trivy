@@ -3,10 +3,9 @@ package report
 import (
 	"io"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
 	"golang.org/x/xerrors"
 
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -68,7 +67,10 @@ type Writer interface {
 func Write(report *ComplianceReport, option Option) error {
 	switch option.Format {
 	case types.FormatJSON:
-		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
+		jwriter := JSONWriter{
+			Output: option.Output,
+			Report: option.Report,
+		}
 		return jwriter.Write(report)
 	case types.FormatTable:
 		if !report.empty() {
@@ -94,7 +96,7 @@ func (r ComplianceReport) empty() bool {
 
 // buildControlCheckResults create compliance results data
 func buildControlCheckResults(checksMap map[string]types.Results, controls []defsecTypes.Control) []*ControlCheckResult {
-	complianceResults := make([]*ControlCheckResult, 0)
+	var complianceResults []*ControlCheckResult
 	for _, control := range controls {
 		var results types.Results
 		for _, c := range control.Checks {
@@ -113,14 +115,14 @@ func buildControlCheckResults(checksMap map[string]types.Results, controls []def
 }
 
 // buildComplianceReportResults create compliance results data
-func buildComplianceReportResults(checksMap map[string]types.Results, spec defsecTypes.Spec) *ComplianceReport {
-	controlCheckResult := buildControlCheckResults(checksMap, spec.Controls)
+func buildComplianceReportResults(checksMap map[string]types.Results, s defsecTypes.Spec) *ComplianceReport {
+	controlCheckResult := buildControlCheckResults(checksMap, s.Controls)
 	return &ComplianceReport{
-		ID:               spec.ID,
-		Title:            spec.Title,
-		Description:      spec.Description,
-		Version:          spec.Version,
-		RelatedResources: spec.RelatedResources,
+		ID:               s.ID,
+		Title:            s.Title,
+		Description:      s.Description,
+		Version:          s.Version,
+		RelatedResources: s.RelatedResources,
 		Results:          controlCheckResult,
 	}
 }

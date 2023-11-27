@@ -33,7 +33,7 @@ import (
 )
 
 func TestArtifact_Inspect(t *testing.T) {
-	alpinePkgs := []types.Package{
+	alpinePkgs := types.Packages{
 		{
 			ID:         "alpine-baselayout@3.2.0-r3",
 			Name:       "alpine-baselayout",
@@ -47,6 +47,35 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"etc/hosts",
+				"etc/sysctl.conf",
+				"etc/group",
+				"etc/protocols",
+				"etc/fstab",
+				"etc/mtab",
+				"etc/profile",
+				"etc/shells",
+				"etc/motd",
+				"etc/inittab",
+				"etc/hostname",
+				"etc/modules",
+				"etc/services",
+				"etc/shadow",
+				"etc/passwd",
+				"etc/profile.d/locale",
+				"etc/profile.d/color_prompt",
+				"etc/sysctl.d/00-alpine.conf",
+				"etc/modprobe.d/i386.conf",
+				"etc/modprobe.d/blacklist.conf",
+				"etc/modprobe.d/aliases.conf",
+				"etc/modprobe.d/kms.conf",
+				"etc/crontabs/root",
+				"sbin/mkmntdirs",
+				"var/run",
+				"var/spool/mail",
+				"var/spool/cron/crontabs",
+			},
 		},
 		{
 			ID:         "alpine-keys@2.1-r2",
@@ -57,6 +86,26 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"MIT"},
 			Arch:       "x86_64",
 			Digest:     "sha1:64929f85b7f8b4adbb664d905410312936b79d9b",
+			InstalledFiles: []string{
+				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+				"usr/share/apk/keys/aarch64/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+				"usr/share/apk/keys/ppc64le/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+				"usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+				"usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				"usr/share/apk/keys/s390x/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+				"usr/share/apk/keys/armhf/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+			},
 		},
 		{
 			ID:         "apk-tools@2.10.4-r3",
@@ -73,6 +122,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				"zlib@1.2.11-r3",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"sbin/apk",
+			},
 		},
 		{
 			ID:         "busybox@1.31.1-r9",
@@ -86,6 +138,15 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"bin/busybox",
+				"bin/sh",
+				"etc/securetty",
+				"etc/udhcpd.conf",
+				"etc/logrotate.d/acpid",
+				"etc/network/if-up.d/dad",
+				"usr/share/udhcpc/default.script",
+			},
 		},
 		{
 			ID:         "ca-certificates-cacert@20191127-r1",
@@ -99,6 +160,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			Arch:   "x86_64",
 			Digest: "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
+			InstalledFiles: []string{
+				"etc/ssl/cert.pem",
+			},
 		},
 		{
 			ID:         "libc-utils@0.7.2-r0",
@@ -125,6 +189,20 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"etc/ssl/openssl.cnf.dist",
+				"etc/ssl/ct_log_list.cnf",
+				"etc/ssl/ct_log_list.cnf.dist",
+				"etc/ssl/openssl.cnf",
+				"etc/ssl/misc/CA.pl",
+				"etc/ssl/misc/tsget.pl",
+				"etc/ssl/misc/tsget",
+				"lib/libcrypto.so.1.1",
+				"usr/lib/libcrypto.so.1.1",
+				"usr/lib/engines-1.1/capi.so",
+				"usr/lib/engines-1.1/padlock.so",
+				"usr/lib/engines-1.1/afalg.so",
+			},
 		},
 		{
 			ID:         "libssl1.1@1.1.1d-r3",
@@ -139,6 +217,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"lib/libssl.so.1.1",
+				"usr/lib/libssl.so.1.1",
+			},
 		},
 		{
 			ID:         "libtls-standalone@2.9.1-r0",
@@ -155,6 +237,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"usr/lib/libtls-standalone.so.1.0.0",
+				"usr/lib/libtls-standalone.so.1",
+			},
 		},
 		{
 			ID:         "musl@1.1.24-r2",
@@ -165,6 +251,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"MIT"},
 			Arch:       "x86_64",
 			Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+			InstalledFiles: []string{
+				"lib/libc.musl-x86_64.so.1",
+				"lib/ld-musl-x86_64.so.1",
+			},
 		},
 		{
 			ID:         "musl-utils@1.1.24-r2",
@@ -183,6 +273,13 @@ func TestArtifact_Inspect(t *testing.T) {
 				"scanelf@1.2.4-r0",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"sbin/ldconfig",
+				"usr/bin/iconv",
+				"usr/bin/ldd",
+				"usr/bin/getconf",
+				"usr/bin/getent",
+			},
 		},
 		{
 			ID:         "scanelf@1.2.4-r0",
@@ -196,6 +293,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"usr/bin/scanelf",
+			},
 		},
 		{
 			ID:         "ssl_client@1.31.1-r9",
@@ -210,6 +310,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"usr/bin/ssl_client",
+			},
 		},
 		{
 			ID:         "zlib@1.2.11-r3",
@@ -223,6 +326,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			Arch: "x86_64",
+			InstalledFiles: []string{
+				"lib/libz.so.1.2.11",
+				"lib/libz.so.1",
+			},
 		},
 	}
 
@@ -412,7 +519,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/base",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											ID:         "base-files@9.9+deb9u9",
 											Name:       "base-files",
@@ -426,7 +533,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 								{
 									FilePath: "var/lib/dpkg/status.d/netbase",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											ID:         "netbase@5.4",
 											Name:       "netbase",
@@ -440,7 +547,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 								{
 									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											ID:         "tzdata@2019a-0+deb9u1",
 											Name:       "tzdata",
@@ -496,7 +603,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/libc6",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											ID:         "libc6@2.24-11+deb9u4",
 											Name:       "libc6",
@@ -512,7 +619,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 								{
 									FilePath: "var/lib/dpkg/status.d/libssl1",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											ID:         "libssl1.1@1.1.0k-1~deb9u1",
 											Name:       "libssl1.1",
@@ -528,7 +635,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 								{
 									FilePath: "var/lib/dpkg/status.d/openssl",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											ID:         "openssl@1.1.0k-1~deb9u1",
 											Name:       "openssl",
@@ -593,37 +700,68 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: []types.Package{
+									Libraries: types.Packages{
 										{
-											ID:        "guzzlehttp/guzzle@6.2.0",
-											Name:      "guzzlehttp/guzzle",
-											Version:   "6.2.0",
-											Licenses:  []string{"MIT"},
-											DependsOn: []string{"guzzlehttp/promises@v1.3.1", "guzzlehttp/psr7@1.5.2"},
-											Locations: []types.Location{{StartLine: 9, EndLine: 73}},
+											ID:       "guzzlehttp/guzzle@6.2.0",
+											Name:     "guzzlehttp/guzzle",
+											Version:  "6.2.0",
+											Licenses: []string{"MIT"},
+											DependsOn: []string{
+												"guzzlehttp/promises@v1.3.1",
+												"guzzlehttp/psr7@1.5.2",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 9,
+													EndLine:   73,
+												},
+											},
 										},
 										{
-											ID:        "guzzlehttp/promises@v1.3.1",
-											Name:      "guzzlehttp/promises",
-											Version:   "v1.3.1",
-											Licenses:  []string{"MIT"},
-											Locations: []types.Location{{StartLine: 74, EndLine: 124}},
+											ID:       "guzzlehttp/promises@v1.3.1",
+											Name:     "guzzlehttp/promises",
+											Version:  "v1.3.1",
+											Licenses: []string{"MIT"},
+											Locations: []types.Location{
+												{
+													StartLine: 74,
+													EndLine:   124,
+												},
+											},
 										},
 										{
-											ID:        "guzzlehttp/psr7@1.5.2",
-											Name:      "guzzlehttp/psr7",
-											Version:   "1.5.2",
-											Licenses:  []string{"MIT"},
-											DependsOn: []string{"psr/http-message@1.0.1", "ralouphie/getallheaders@2.0.5"},
-											Locations: []types.Location{{StartLine: 125, EndLine: 191}},
+											ID:       "guzzlehttp/psr7@1.5.2",
+											Name:     "guzzlehttp/psr7",
+											Version:  "1.5.2",
+											Licenses: []string{"MIT"},
+											DependsOn: []string{
+												"psr/http-message@1.0.1",
+												"ralouphie/getallheaders@2.0.5",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 125,
+													EndLine:   191,
+												},
+											},
 										},
 										{
-											ID:        "laravel/installer@v2.0.1",
-											Name:      "laravel/installer",
-											Version:   "v2.0.1",
-											Licenses:  []string{"MIT"},
-											DependsOn: []string{"guzzlehttp/guzzle@6.2.0", "symfony/console@v4.2.7", "symfony/filesystem@v4.2.7", "symfony/process@v4.2.7"},
-											Locations: []types.Location{{StartLine: 192, EndLine: 237}},
+											ID:       "laravel/installer@v2.0.1",
+											Name:     "laravel/installer",
+											Version:  "v2.0.1",
+											Licenses: []string{"MIT"},
+											DependsOn: []string{
+												"guzzlehttp/guzzle@6.2.0",
+												"symfony/console@v4.2.7",
+												"symfony/filesystem@v4.2.7",
+												"symfony/process@v4.2.7",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 192,
+													EndLine:   237,
+												},
+											},
 										},
 										{
 											ID:        "pear/log@1.13.1",
@@ -631,43 +769,76 @@ func TestArtifact_Inspect(t *testing.T) {
 											Version:   "1.13.1",
 											Licenses:  []string{"MIT"},
 											DependsOn: []string{"pear/pear_exception@v1.0.0"},
-											Locations: []types.Location{{StartLine: 238, EndLine: 290}},
+											Locations: []types.Location{
+												{
+													StartLine: 238,
+													EndLine:   290,
+												},
+											},
 										},
 										{
-											ID:        "pear/pear_exception@v1.0.0",
-											Name:      "pear/pear_exception",
-											Version:   "v1.0.0",
-											Licenses:  []string{"BSD-2-Clause"},
-											Locations: []types.Location{{StartLine: 291, EndLine: 345}},
+											ID:       "pear/pear_exception@v1.0.0",
+											Name:     "pear/pear_exception",
+											Version:  "v1.0.0",
+											Licenses: []string{"BSD-2-Clause"},
+											Locations: []types.Location{
+												{
+													StartLine: 291,
+													EndLine:   345,
+												},
+											},
 										},
 										{
-											ID:        "psr/http-message@1.0.1",
-											Name:      "psr/http-message",
-											Version:   "1.0.1",
-											Licenses:  []string{"MIT"},
-											Locations: []types.Location{{StartLine: 346, EndLine: 395}},
+											ID:       "psr/http-message@1.0.1",
+											Name:     "psr/http-message",
+											Version:  "1.0.1",
+											Licenses: []string{"MIT"},
+											Locations: []types.Location{
+												{
+													StartLine: 346,
+													EndLine:   395,
+												},
+											},
 										},
 										{
-											ID:        "ralouphie/getallheaders@2.0.5",
-											Name:      "ralouphie/getallheaders",
-											Version:   "2.0.5",
-											Licenses:  []string{"MIT"},
-											Locations: []types.Location{{StartLine: 396, EndLine: 435}},
+											ID:       "ralouphie/getallheaders@2.0.5",
+											Name:     "ralouphie/getallheaders",
+											Version:  "2.0.5",
+											Licenses: []string{"MIT"},
+											Locations: []types.Location{
+												{
+													StartLine: 396,
+													EndLine:   435,
+												},
+											},
 										},
 										{
-											ID:        "symfony/console@v4.2.7",
-											Name:      "symfony/console",
-											Version:   "v4.2.7",
-											Licenses:  []string{"MIT"},
-											DependsOn: []string{"symfony/contracts@v1.0.2", "symfony/polyfill-mbstring@v1.11.0"},
-											Locations: []types.Location{{StartLine: 436, EndLine: 507}},
+											ID:       "symfony/console@v4.2.7",
+											Name:     "symfony/console",
+											Version:  "v4.2.7",
+											Licenses: []string{"MIT"},
+											DependsOn: []string{
+												"symfony/contracts@v1.0.2",
+												"symfony/polyfill-mbstring@v1.11.0",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 436,
+													EndLine:   507,
+												},
+											},
 										},
 										{
-											ID:        "symfony/contracts@v1.0.2",
-											Name:      "symfony/contracts",
-											Version:   "v1.0.2",
-											Licenses:  []string{"MIT"},
-											Locations: []types.Location{{StartLine: 508, EndLine: 575}},
+											ID:       "symfony/contracts@v1.0.2",
+											Name:     "symfony/contracts",
+											Version:  "v1.0.2",
+											Licenses: []string{"MIT"},
+											Locations: []types.Location{
+												{
+													StartLine: 508,
+													EndLine:   575,
+												},
+											},
 										},
 										{
 											ID:        "symfony/filesystem@v4.2.7",
@@ -675,28 +846,48 @@ func TestArtifact_Inspect(t *testing.T) {
 											Version:   "v4.2.7",
 											Licenses:  []string{"MIT"},
 											DependsOn: []string{"symfony/polyfill-ctype@v1.11.0"},
-											Locations: []types.Location{{StartLine: 576, EndLine: 625}},
+											Locations: []types.Location{
+												{
+													StartLine: 576,
+													EndLine:   625,
+												},
+											},
 										},
 										{
-											ID:        "symfony/polyfill-ctype@v1.11.0",
-											Name:      "symfony/polyfill-ctype",
-											Version:   "v1.11.0",
-											Licenses:  []string{"MIT"},
-											Locations: []types.Location{{StartLine: 626, EndLine: 683}},
+											ID:       "symfony/polyfill-ctype@v1.11.0",
+											Name:     "symfony/polyfill-ctype",
+											Version:  "v1.11.0",
+											Licenses: []string{"MIT"},
+											Locations: []types.Location{
+												{
+													StartLine: 626,
+													EndLine:   683,
+												},
+											},
 										},
 										{
-											ID:        "symfony/polyfill-mbstring@v1.11.0",
-											Name:      "symfony/polyfill-mbstring",
-											Version:   "v1.11.0",
-											Licenses:  []string{"MIT"},
-											Locations: []types.Location{{StartLine: 684, EndLine: 742}},
+											ID:       "symfony/polyfill-mbstring@v1.11.0",
+											Name:     "symfony/polyfill-mbstring",
+											Version:  "v1.11.0",
+											Licenses: []string{"MIT"},
+											Locations: []types.Location{
+												{
+													StartLine: 684,
+													EndLine:   742,
+												},
+											},
 										},
 										{
-											ID:        "symfony/process@v4.2.7",
-											Name:      "symfony/process",
-											Version:   "v4.2.7",
-											Licenses:  []string{"MIT"},
-											Locations: []types.Location{{StartLine: 743, EndLine: 791}},
+											ID:       "symfony/process@v4.2.7",
+											Name:     "symfony/process",
+											Version:  "v4.2.7",
+											Licenses: []string{"MIT"},
+											Locations: []types.Location{
+												{
+													StartLine: 743,
+													EndLine:   791,
+												},
+											},
 										},
 									},
 								},
@@ -717,7 +908,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									Type:     "bundler",
 									FilePath: "ruby-app/Gemfile.lock",
-									Libraries: []types.Package{
+									Libraries: types.Packages{
 										{
 											ID:       "actioncable@5.2.3",
 											Name:     "actioncable",
@@ -1844,11 +2035,8 @@ func TestArtifact_Inspect(t *testing.T) {
 			wantErr: "put layer failed",
 		},
 		{
-			name:      "sad path, PutBlob returns an error with multiple layers and Slow enabled",
+			name:      "sad path, PutBlob returns an error with multiple layers",
 			imagePath: "../../test/testdata/vuln-image.tar.gz",
-			artifactOpt: artifact.Option{
-				Slow: true,
-			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",

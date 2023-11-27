@@ -14,7 +14,6 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
@@ -58,7 +57,7 @@ func TestScanner_Scan(t *testing.T) {
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
 						OS: ftypes.OS{
-							Family: fos.Alpine,
+							Family: ftypes.Alpine,
 							Name:   "3.11",
 						},
 						Packages: []ftypes.Package{
@@ -94,13 +93,14 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-9999",
 							PkgName:          "musl",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
 							},
@@ -123,6 +123,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 							},
@@ -214,7 +215,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Packages: []ftypes.Package{
 						{
 							Name:       "ausl",
@@ -242,6 +243,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "musl",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
 							},
@@ -274,6 +276,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 							},
@@ -364,7 +367,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Packages: []ftypes.Package{
 						{
 							Name:       "ausl",
@@ -470,6 +473,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -550,6 +554,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2014-0081",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "xss",
@@ -580,6 +585,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "laravel/framework",
 							InstalledVersion: "6.0.0",
 							FixedVersion:     "8.22.1, 7.30.3, 6.20.12",
+							Status:           dbTypes.StatusFixed,
 						},
 					},
 				},
@@ -632,7 +638,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -644,6 +650,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 							},
@@ -721,6 +728,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -839,6 +847,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
 							},
@@ -866,6 +875,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "laravel/framework",
 							InstalledVersion: "6.0.0",
 							FixedVersion:     "8.22.1, 7.30.3, 6.20.12",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},

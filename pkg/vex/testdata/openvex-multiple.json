@@ -1,0 +1,29 @@
+{
+  "@context": "https://openvex.dev/ns",
+  "author": "Aqua Security",
+  "role": "Project Release Bot",
+  "timestamp": "2023-01-16T19:07:16.853479631-06:00",
+  "version": 1,
+  "statements": [
+    {
+      "timestamp": "2023-01-15T01:02:03.853479631-06:00",
+      "vulnerability": {
+        "name": "CVE-2021-44228"
+      },
+      "products": [
+        {"@id": "pkg:maven/org.springframework.boot/spring-boot@2.6.0"}
+      ],
+      "status": "affected"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2021-44228"
+      },
+      "products": [
+        {"@id": "pkg:maven/org.springframework.boot/spring-boot@2.6.0"}
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path"
+    }
+  ]
+}

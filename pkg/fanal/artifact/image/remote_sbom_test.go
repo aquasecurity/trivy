@@ -78,7 +78,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 							},
 							PackageInfos: []types.PackageInfo{
 								{
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											Name:       "musl",
 											Version:    "1.2.3-r0",
@@ -214,7 +214,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 							Applications: []types.Application{
 								{
 									Type: types.GoBinary,
-									Libraries: []types.Package{
+									Libraries: types.Packages{
 										{
 											Name:    "github.com/opencontainers/go-digest",
 											Version: "v1.0.0",

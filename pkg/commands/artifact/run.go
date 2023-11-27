@@ -273,11 +273,9 @@ func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initialize
 
 func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error) {
 	// Filter results
-	err := result.Filter(ctx, report, opts.FilterOpts())
-	if err != nil {
+	if err := result.Filter(ctx, report, opts.FilterOpts()); err != nil {
 		return types.Report{}, xerrors.Errorf("filtering error: %w", err)
 	}
-
 	return report, nil
 }
 
@@ -331,7 +329,7 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 
 	// Update the Java DB
 	noProgress := opts.Quiet || opts.NoProgress
-	javadb.Init(opts.CacheDir, opts.JavaDBRepository, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
+	javadb.Init(opts.CacheDir, opts.JavaDBRepository, opts.SkipJavaDBUpdate, noProgress, opts.RegistryOpts())
 	if opts.DownloadJavaDBOnly {
 		if err := javadb.Update(); err != nil {
 			return xerrors.Errorf("Java DB error: %w", err)
@@ -372,7 +370,7 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	if opts.ResetPolicyBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true)
+		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.PolicyBundleRepository)
 		if err != nil {
 			return xerrors.Errorf("failed to instantiate policy client: %w", err)
 		}
@@ -566,7 +564,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 		var downloadedPolicyPaths []string
 		var disableEmbedded bool
-		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate)
+		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate, opts.MisconfOptions.PolicyBundleRepository)
 		if err != nil {
 			if !opts.SkipPolicyUpdate {
 				log.Logger.Errorf("Falling back to embedded policies: %s", err)
@@ -576,6 +574,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			disableEmbedded = true
 		}
 		configScannerOptions = misconf.ScannerOption{
+			Debug:                    opts.Debug,
 			Trace:                    opts.Trace,
 			Namespaces:               append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
@@ -585,6 +584,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			HelmFileValues:           opts.HelmFileValues,
 			HelmStringValues:         opts.HelmStringValues,
 			TerraformTFVars:          opts.TerraformTFVars,
+			CloudFormationParamVars:  opts.CloudFormationParamVars,
 			K8sVersion:               opts.K8sVersion,
 			DisableEmbeddedPolicies:  disableEmbedded,
 			DisableEmbeddedLibraries: disableEmbedded,
@@ -639,8 +639,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
 			//Platform:          opts.Platform,
-			Slow:         opts.Slow,
+			Parallel:     opts.Parallel,
 			AWSRegion:    opts.Region,
+			AWSEndpoint:  opts.Endpoint,
 			FileChecksum: fileChecksum,
 
 			// For image scanning
