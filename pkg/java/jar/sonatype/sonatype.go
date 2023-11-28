@@ -153,7 +153,7 @@ func (s Sonatype) SearchBySHA1(sha1 string) (jar.Properties, error) {
 	}, nil
 }
 
-func (s Sonatype) SearchByArtifactID(artifactID string) (string, error) {
+func (s Sonatype) SearchByArtifactID(artifactID, _ string) (string, error) {
 	req, err := http.NewRequest(http.MethodGet, s.baseURL, nil)
 	if err != nil {
 		return "", xerrors.Errorf("unable to initialize HTTP client: %w", err)
