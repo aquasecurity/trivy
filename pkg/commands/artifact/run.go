@@ -521,7 +521,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	return analyzers
 }
 
-func filterMisconfigAnalyzers(included []analyzer.Type, all []analyzer.Type) ([]analyzer.Type, error) {
+func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, error) {
 	_, missing := lo.Difference(all, included)
 	if len(missing) > 0 {
 		return nil, xerrors.Errorf("invalid misconfiguration scanner specified %s valid scanners: %s", missing, all)
