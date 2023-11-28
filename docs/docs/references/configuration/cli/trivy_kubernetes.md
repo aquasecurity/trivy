@@ -60,7 +60,6 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
-      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan])
   -n, --namespace string                  specify a namespace to scan
       --no-progress                       suppress progress bar
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
