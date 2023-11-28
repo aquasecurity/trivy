@@ -1858,7 +1858,14 @@ You're not viewing the latest version.
     packages.config
   </a>
   
-    <nav class="md-nav" aria-label="packages.config">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#packagesprops" class="md-nav__link">
+    *Packages.props
+  </a>
+  
+    <nav class="md-nav" aria-label="*Packages.props">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3596,7 +3603,14 @@ You're not viewing the latest version.
     packages.config
   </a>
   
-    <nav class="md-nav" aria-label="packages.config">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#packagesprops" class="md-nav__link">
+    *Packages.props
+  </a>
+  
+    <nav class="md-nav" aria-label="*Packages.props">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3707,6 +3721,14 @@ You're not viewing the latest version.
 </tr>
 <tr>
 <td align="center">NuGet</td>
+<td>*Packages.props</td>
+<td align="center">-</td>
+<td align="center">Excluded</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center">NuGet</td>
 <td>packages.lock.json</td>
 <td align="center">✓</td>
 <td align="center">Included</td>
@@ -3719,6 +3741,8 @@ You're not viewing the latest version.
 <p>Trivy parses <code>*.deps.json</code> files. Trivy currently excludes dev dependencies from the report.</p>
 <h2 id="packagesconfig">packages.config</h2>
 <p>Trivy only finds dependency names and versions from <code>packages.config</code> files. To build dependency graph, it is better to use <code>packages.lock.json</code> files.</p>
+<h2 id="packagesprops">*Packages.props</h2>
+<p>Trivy parses <code>*Packages.props</code> files. Both legacy <code>Packages.props</code> and modern <code>Directory.Packages.props</code> are supported.</p>
 <h3 id="license-detection">license detection</h3>
 <p><code>packages.config</code> files don't have information about the licenses used.
 Trivy uses <a href="https://learn.microsoft.com/en-us/nuget/reference/nuspec">*.nuspec</a> files from <a href="https://learn.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders">global packages folder</a> to detect licenses.</p>
