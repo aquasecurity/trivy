@@ -132,7 +132,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			// init java-trivy-db with skip update
 			javadb.Init("testdata", defaultJavaDBRepository, true, false, types.RegistryOptions{Insecure: false})
 
-			a := javaLibraryAnalyzer{slow: true}
+			a := javaLibraryAnalyzer{}
 			ctx := context.Background()
 
 			mfs := mapfs.New()

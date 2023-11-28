@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
@@ -11,6 +12,7 @@ import (
 // Report represents a scan result
 type Report struct {
 	SchemaVersion int                 `json:",omitempty"`
+	CreatedAt     time.Time           `json:",omitempty"`
 	ArtifactName  string              `json:",omitempty"`
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
 	Metadata      Metadata            `json:",omitempty"`

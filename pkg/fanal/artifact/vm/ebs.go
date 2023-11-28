@@ -26,7 +26,6 @@ type EBS struct {
 }
 
 func newEBS(snapshotID string, vm Storage, region, endpoint string) (*EBS, error) {
-
 	ebs, err := ebsfile.New(context.TODO(), config.MakeAWSOptions(region, endpoint)...)
 	if err != nil {
 		return nil, xerrors.Errorf("new ebsfile error: %w", err)

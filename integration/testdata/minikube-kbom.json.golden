@@ -1,12 +1,12 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/sbom/minikube-kbom.json",
   "ArtifactType": "cyclonedx",
   "Metadata": {
     "OS": {
       "Family": "ubuntu",
-      "Name": "22.04.2",
-      "EOSL": false
+      "Name": "22.04.2"
     },
     "ImageConfig": {
       "architecture": "",

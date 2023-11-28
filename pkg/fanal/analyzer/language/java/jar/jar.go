@@ -33,12 +33,12 @@ var requiredExtensions = []string{
 
 // javaLibraryAnalyzer analyzes jar/war/ear/par files
 type javaLibraryAnalyzer struct {
-	slow bool
+	parallel int
 }
 
 func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &javaLibraryAnalyzer{
-		slow: options.Slow,
+		parallel: options.Parallel,
 	}, nil
 }
 
@@ -70,7 +70,7 @@ func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Po
 		return nil
 	}
 
-	if err = parallel.WalkDir(ctx, input.FS, ".", a.slow, onFile, onResult); err != nil {
+	if err = parallel.WalkDir(ctx, input.FS, ".", a.parallel, onFile, onResult); err != nil {
 		return nil, xerrors.Errorf("walk dir error: %w", err)
 	}
 

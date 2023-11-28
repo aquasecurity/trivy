@@ -3,6 +3,7 @@
 package integration
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,6 +37,7 @@ func TestRepository(t *testing.T) {
 		command        string
 		format         types.Format
 		includeDevDeps bool
+		parallel       int
 	}
 	tests := []struct {
 		name     string
@@ -68,6 +70,15 @@ func TestRepository(t *testing.T) {
 				skipDirs: []string{"testdata/fixtures/repo/gomod/submod2"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
+		},
+		{
+			name: "gomod in series",
+			args: args{
+				scanner:  types.VulnerabilityScanner,
+				input:    "testdata/fixtures/repo/gomod",
+				parallel: 1,
+			},
+			golden: "testdata/gomod.json.golden",
 		},
 		{
 			name: "npm",
@@ -174,6 +185,15 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/dotnet",
 			},
 			golden: "testdata/dotnet.json.golden",
+		},
+		{
+			name: "packages-props",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/packagesprops",
+			},
+			golden: "testdata/packagesprops.json.golden",
 		},
 		{
 			name: "swift",
@@ -360,10 +380,10 @@ func TestRepository(t *testing.T) {
 			},
 		},
 		{
-			name: "dockerfile with fs subcommand",
+			name: "dockerfile with fs subcommand and an alias scanner",
 			args: args{
 				command:     "fs",
-				scanner:     types.MisconfigScanner,
+				scanner:     "config", // for backward compatibility
 				policyPaths: []string{"testdata/fixtures/repo/custom-policy/policy"},
 				namespaces:  []string{"user"},
 				input:       "testdata/fixtures/repo/custom-policy",
@@ -396,13 +416,12 @@ func TestRepository(t *testing.T) {
 
 			osArgs := []string{
 				"-q",
-				"--cache-dir",
-				cacheDir,
+				"--cache-dir", cacheDir,
 				command,
 				"--skip-db-update",
 				"--skip-policy-update",
-				"--format",
-				string(format),
+				"--format", string(format),
+				"--parallel", fmt.Sprint(tt.args.parallel),
 				"--offline-scan",
 			}
 
@@ -480,7 +499,7 @@ func TestRepository(t *testing.T) {
 			osArgs = append(osArgs, "--output", outputFile)
 			osArgs = append(osArgs, tt.args.input)
 
-			clock.SetFakeTime(t, time.Date(2020, 9, 10, 14, 20, 30, 5, time.UTC))
+			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			// Run "trivy repo"

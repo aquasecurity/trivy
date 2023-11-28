@@ -65,6 +65,8 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return path != availableFile
 	}
 
+	packageFiles := make(map[string][]string)
+
 	// parse other files
 	err = fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		// parse list files
@@ -74,6 +76,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 			if err != nil {
 				return err
 			}
+			packageFiles[strings.TrimSuffix(filepath.Base(path), ".list")] = systemFiles
 			systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
 			return nil
 		}
@@ -87,6 +90,17 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
+	}
+
+	// map the packages to their respective files
+	for i, pkgInfo := range packageInfos {
+		for j, pkg := range pkgInfo.Packages {
+			installedFiles, found := packageFiles[pkg.Name]
+			if !found {
+				installedFiles = packageFiles[pkg.Name+":"+pkg.Arch]
+			}
+			packageInfos[i].Packages[j].InstalledFiles = installedFiles
+		}
 	}
 
 	return &analyzer.AnalysisResult{
