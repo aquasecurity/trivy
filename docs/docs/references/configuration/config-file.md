@@ -269,7 +269,7 @@ misconfiguration:
   
   # Same as '--miconfig-scanners'
   # Default is all scanners
-  type:
+  scanners:
     - dockerfile
     - terraform
 
