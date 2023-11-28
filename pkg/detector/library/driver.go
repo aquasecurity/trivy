@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -135,19 +136,22 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 }
 
 func createFixedVersions(advisory dbTypes.Advisory) string {
-	if len(advisory.PatchedVersions) != 0 {
-		return strings.Join(advisory.PatchedVersions, ", ")
-	}
-
 	var fixedVersions []string
-	for _, version := range advisory.VulnerableVersions {
-		for _, s := range strings.Split(version, ",") {
-			s = strings.TrimSpace(s)
-			if !strings.HasPrefix(s, "<=") && strings.HasPrefix(s, "<") {
-				s = strings.TrimPrefix(s, "<")
-				fixedVersions = append(fixedVersions, strings.TrimSpace(s))
+	if len(advisory.PatchedVersions) != 0 {
+		for _, version := range advisory.PatchedVersions {
+			fixedVersions = append(fixedVersions, version)
+		}
+	} else {
+		for _, version := range advisory.VulnerableVersions {
+			for _, s := range strings.Split(version, ",") {
+				s = strings.TrimSpace(s)
+				if !strings.HasPrefix(s, "<=") && strings.HasPrefix(s, "<") {
+					s = strings.TrimPrefix(s, "<")
+					fixedVersions = append(fixedVersions, strings.TrimSpace(s))
+				}
 			}
 		}
 	}
-	return strings.Join(fixedVersions, ", ")
+
+	return strings.Join(lo.Uniq(fixedVersions), ", ")
 }
