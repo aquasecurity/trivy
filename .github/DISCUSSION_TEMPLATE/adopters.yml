@@ -7,6 +7,12 @@ body:
       label: "[Optional] How do you use Trivy?"
     validations:
       required: false
+  - type: textarea
+    id: info
+    attributes:
+      label: "[Optional] Can you provide us with a quote on your favourite part of Trivy? This may be used on the trivy.dev website, posted on Twitter (@AquaTrivy) or similar marketing material."
+    validations:
+      required: false
   - type: checkboxes
     attributes:
       label: "[Optional] Which targets are you scanning with Trivy?"
@@ -29,3 +35,13 @@ body:
         - label: "IaC issues and misconfigurations"
         - label: "Sensitive information and secrets"
         - label: "Software licenses"
+  - type: markdown
+    attributes:
+      value: |
+        ## Get in touch
+        We are always looking for 
+        * User feedback
+        * Collaboration with other companies and organisations
+        * Or just to have a chat with you about trivy. 
+        If any of this interests you or your marketing team, please reach out at: oss@aquasec.com
+        We would love to hear from you!

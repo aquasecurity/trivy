@@ -276,6 +276,22 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "dotnet Packages.props",
+			typ:  ftypes.PackagesProps,
+			pkg: ftypes.Package{
+				ID:      "Newtonsoft.Json@9.0.1",
+				Name:    "Newtonsoft.Json",
+				Version: "9.0.1",
+			},
+			want: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeNuget,
+					Name:    "Newtonsoft.Json",
+					Version: "9.0.1",
+				},
+			},
+		},
+		{
 			name: "os package",
 			typ:  ftypes.RedHat,
 			pkg: ftypes.Package{

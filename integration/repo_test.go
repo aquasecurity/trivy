@@ -187,6 +187,15 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/dotnet.json.golden",
 		},
 		{
+			name: "packages-props",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/packagesprops",
+			},
+			golden: "testdata/packagesprops.json.golden",
+		},
+		{
 			name: "swift",
 			args: args{
 				scanner:     types.VulnerabilityScanner,
