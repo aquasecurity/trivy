@@ -87,7 +87,7 @@ linters:
     - gocritic
 
 run:
-  go: '1.20'
+  go: '1.21'
   skip-files:
     - ".*_mock.go$"
     - ".*_test.go$"
