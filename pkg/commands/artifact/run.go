@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/go-multierror"
+	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -480,6 +481,14 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
+	// Filter only enabled misconfiguration scanners
+	ma, err := filterMisconfigAnalyzers(opts.MisconfigScanners, analyzer.TypeConfigFiles)
+	if err != nil {
+		log.Logger.Errorf("Invalid misconfig scanners specified: %s defaulting to use all misconfig scanners", opts.MisconfigScanners)
+	} else {
+		analyzers = append(analyzers, ma...)
+	}
+
 	// Do not perform misconfiguration scanning when it is not specified.
 	if !opts.Scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
@@ -510,6 +519,16 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	return analyzers
+}
+
+func filterMisconfigAnalyzers(included []analyzer.Type, all []analyzer.Type) ([]analyzer.Type, error) {
+	_, missing := lo.Difference(all, included)
+	if len(missing) > 0 {
+		return nil, xerrors.Errorf("invalid misconfiguration scanner specified %s valid scanners: %s", missing, all)
+	}
+
+	log.Logger.Debugf("Enabling misconfiguration scanners: %s", included)
+	return lo.Without(all, included...), nil
 }
 
 func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
