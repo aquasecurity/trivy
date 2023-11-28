@@ -235,7 +235,6 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	misconfFlagGroup := flag.NewMisconfFlagGroup()
 	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
 	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
-	misconfFlagGroup.MisconfigScanners = nil       // disable '--misconfig-scanners'
 
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -904,7 +903,6 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	misconfFlagGroup := flag.NewMisconfFlagGroup()
 	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
 	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
-	misconfFlagGroup.MisconfigScanners = nil       // disable '--misconfig-scanners'
 
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -1060,7 +1058,6 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	vmFlags.ScanFlagGroup.IncludeDevDeps = nil             // disable '--include-dev-deps'
 	vmFlags.MisconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
 	vmFlags.MisconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
-	vmFlags.MisconfFlagGroup.MisconfigScanners = nil       // disable '--misconfig-scanners'
 
 	cmd := &cobra.Command{
 		Use:     "vm [flags] VM_IMAGE",
