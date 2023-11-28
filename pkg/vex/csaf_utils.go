@@ -38,10 +38,8 @@ func findEveryProductPURLs(adv csaf.Advisory) map[string][]string {
 		if pid != nil && h != nil && h.PURL != nil {
 			if _, ok := pURLsMap[string(*pid)]; !ok {
 				pURLsMap[string(*pid)] = []string{string(*h.PURL)}
-			} else {
-				if !slices.Contains(pURLsMap[string(*pid)], string(*h.PURL)) {
-					pURLsMap[string(*pid)] = append(pURLsMap[string(*pid)], string(*h.PURL))
-				}
+			} else if !slices.Contains(pURLsMap[string(*pid)], string(*h.PURL)) {
+				pURLsMap[string(*pid)] = append(pURLsMap[string(*pid)], string(*h.PURL))
 			}
 		}
 	}
