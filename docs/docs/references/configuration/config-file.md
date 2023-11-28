@@ -266,6 +266,12 @@ misconfiguration:
   # Same as '--include-non-failures'
   # Default is false
   include-non-failures: false
+  
+  # Same as '--miconfig-scanners'
+  # Default is all scanners
+  type:
+    - dockerfile
+    - terraform
 
   # helm value override configurations
   # set individual values
