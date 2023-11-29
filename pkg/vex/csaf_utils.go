@@ -67,5 +67,16 @@ func findEveryProductPURLs(adv csaf.Advisory) map[string][]string {
 		recBranch(b)
 	}
 
+	// Third, iterate over relationships
+	if rels := tree.RelationShips; rels != nil {
+		for _, rel := range *rels {
+			if rel != nil {
+				if p := rel.FullProductName; p != nil && p.ProductID != nil {
+					add(p.ProductID, p.ProductIdentificationHelper)
+				}
+			}
+		}
+	}
+
 	return pURLsMap
 }
