@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/defsec/pkg/providers"
+	"github.com/aquasecurity/defsec/pkg/rules"
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/severity"
 	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/trivy/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"

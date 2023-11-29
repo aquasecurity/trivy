@@ -14,10 +14,10 @@ import (
 	"github.com/aquasecurity/defsec/pkg/state"
 	"github.com/aquasecurity/defsec/pkg/types"
 
+	"github.com/aquasecurity/defsec/pkg/rego"
+	"github.com/aquasecurity/defsec/pkg/rules"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/internal/adapters/arm"
-	"github.com/aquasecurity/trivy/pkg/rego"
-	"github.com/aquasecurity/trivy/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/scanners"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/arm/parser"

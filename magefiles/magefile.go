@@ -425,8 +425,3 @@ func installed(cmd string) bool {
 	_, err := exec.LookPath(cmd)
 	return err == nil
 }
-
-// Schema generates the schema for cloud scanning
-func Schema() error {
-	return sh.Run("go", "run", "./cmd/schema", "generate")
-}

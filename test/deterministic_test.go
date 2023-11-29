@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/rules"
+	"github.com/aquasecurity/defsec/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/test/testutil"

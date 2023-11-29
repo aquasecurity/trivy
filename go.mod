@@ -418,9 +418,3 @@ replace oras.land/oras-go => oras.land/oras-go v1.2.4-0.20230801060855-932dd06d3
 // testcontainers-go has a bug with versions v0.25.0 and v0.26.0
 // ref: https://github.com/testcontainers/testcontainers-go/issues/1782
 replace github.com/testcontainers/testcontainers-go => github.com/testcontainers/testcontainers-go v0.23.0
-
-replace github.com/aquasecurity/defsec => /Users/simarpreetsingh/repos/defsec
-
-replace github.com/aquasecurity/trivy-policies => /Users/simarpreetsingh/repos/trivy-policies
-
-replace github.com/aquasecurity/trivy-aws => /Users/simarpreetsingh/repos/trivy-aws

@@ -14,9 +14,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	trivyRego "github.com/aquasecurity/defsec/pkg/rego"
+	"github.com/aquasecurity/defsec/pkg/rego/schemas"
 	"github.com/aquasecurity/trivy-policies/rules"
-	trivyRego "github.com/aquasecurity/trivy/pkg/rego"
-	"github.com/aquasecurity/trivy/pkg/rego/schemas"
 )
 
 var embeddedFilesystems = []fs.FS{rules.EmbeddedLibraryFileSystem, rules.EmbeddedPolicyFileSystem}

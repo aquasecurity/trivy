@@ -9,10 +9,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/defsec/pkg/rego"
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/state"
 	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/trivy/pkg/rego"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

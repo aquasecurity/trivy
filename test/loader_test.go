@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/rules"
+	"github.com/aquasecurity/defsec/pkg/rules"
 )
 
 func Test_loader_returns_expected_providers(t *testing.T) {

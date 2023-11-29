@@ -14,9 +14,9 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/types"
 
+	"github.com/aquasecurity/defsec/pkg/rego"
+	"github.com/aquasecurity/defsec/pkg/rules"
 	adapter "github.com/aquasecurity/trivy/internal/adapters/cloudformation"
-	"github.com/aquasecurity/trivy/pkg/rego"
-	"github.com/aquasecurity/trivy/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/scanners"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
