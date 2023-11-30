@@ -1240,6 +1240,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#enabling-a-subset-of-misconfiguration-scanners" class="md-nav__link">
+    Enabling a subset of misconfiguration scanners
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pass-custom-policies" class="md-nav__link">
     Pass custom policies
   </a>
@@ -3608,6 +3615,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#enabling-a-subset-of-misconfiguration-scanners" class="md-nav__link">
+    Enabling a subset of misconfiguration scanners
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pass-custom-policies" class="md-nav__link">
     Pass custom policies
   </a>
@@ -3947,6 +3961,12 @@ Failures: <span class="m">2</span> <span class="o">(</span>MEDIUM: <span class="
 <h2 id="configuration">Configuration</h2>
 <p>This section describes misconfiguration-specific configuration.
 Other common options are documented <a href="../../configuration/">here</a>.</p>
+<h3 id="enabling-a-subset-of-misconfiguration-scanners">Enabling a subset of misconfiguration scanners</h3>
+<p>It's possible to only enable certain misconfiguration scanners if you prefer. You can do so by passing the <code>--misconfig-scanners</code> option.
+This flag takes a comma-separated list of configuration scanner types.
+<div class="highlight"><pre><span></span><code>trivy config --misconfig-scanners<span class="o">=</span>terraform,dockerfile .
+</code></pre></div></p>
+<p>Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.</p>
 <h3 id="pass-custom-policies">Pass custom policies</h3>
 <p>You can pass policy files or directories including your custom policies through <code>--policy</code> option.
 This can be repeated for specifying multiple files or directories.</p>
