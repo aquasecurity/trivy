@@ -44,7 +44,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
 		ecosystem = vulnerability.Npm
 		comparer = npm.Comparer{}
-	case ftypes.NuGet, ftypes.DotNetCore:
+	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
 		ecosystem = vulnerability.NuGet
 		comparer = compare.GenericComparer{}
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
