@@ -23,7 +23,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 	var err error
 	switch opts.Format {
 	case types.FormatCycloneDX:
-		artifacts, err = trivyk8s.New(cluster, log.Logger).ListBomInfo(ctx)
+		artifacts, err = trivyk8s.New(cluster, log.Logger).ListClusterBomInfo(ctx)
 		if err != nil {
 			return xerrors.Errorf("get k8s artifacts with node info error: %w", err)
 		}
