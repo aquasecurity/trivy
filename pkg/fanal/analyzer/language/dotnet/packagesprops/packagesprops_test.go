@@ -32,11 +32,17 @@ func Test_packagesPropsAnalyzer_Analyze(t *testing.T) {
 								ID:      "Package1@22.1.4",
 								Name:    "Package1",
 								Version: "22.1.4",
+								Identifier: types.PkgIdentifier{
+									PURL: "pkg:nuget/Package1@22.1.4",
+								},
 							},
 							{
 								ID:      "Package2@2.3.0",
 								Name:    "Package2",
 								Version: "2.3.0",
+								Identifier: types.PkgIdentifier{
+									PURL: "pkg:nuget/Package2@2.3.0",
+								},
 							},
 						},
 					},
@@ -56,11 +62,17 @@ func Test_packagesPropsAnalyzer_Analyze(t *testing.T) {
 								ID:      "Package1@4.2.1",
 								Name:    "Package1",
 								Version: "4.2.1",
+								Identifier: types.PkgIdentifier{
+									PURL: "pkg:nuget/Package1@4.2.1",
+								},
 							},
 							{
 								ID:      "Package2@8.2.0",
 								Name:    "Package2",
 								Version: "8.2.0",
+								Identifier: types.PkgIdentifier{
+									PURL: "pkg:nuget/Package2@8.2.0",
+								},
 							},
 						},
 					},
