@@ -38,8 +38,8 @@ func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulne
 
 func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgRef string) bool {
 	if vuln.ProductStatus != nil {
-		if vuln.ProductStatus.KnownNotAffected != nil {
-			notAffectedPURLs := findProductsPURLs(v.advisory, *vuln.ProductStatus.KnownNotAffected)
+		for _, product := range *vuln.ProductStatus.KnownNotAffected {
+			notAffectedPURLs := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
 			if slices.Contains(notAffectedPURLs, pkgRef) {
 				v.logger.Infow(
 					"Filtered out the detected vulnerability",
@@ -49,8 +49,9 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgRef string) bool {
 				return false
 			}
 		}
-		if vuln.ProductStatus.Fixed != nil {
-			fixedPURLS := findProductsPURLs(v.advisory, *vuln.ProductStatus.Fixed)
+
+		for _, product := range *vuln.ProductStatus.Fixed {
+			fixedPURLS := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
 			if slices.Contains(fixedPURLS, pkgRef) {
 				v.logger.Infow(
 					"Filtered out the detected vulnerability",
@@ -63,4 +64,12 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgRef string) bool {
 	}
 
 	return true
+}
+
+func pURLsFromProductIdentificationHelpers(helpers []*csaf.ProductIdentificationHelper) []string {
+	pURLs := make([]string, 0, len(helpers))
+	for _, helper := range helpers {
+		pURLs = append(pURLs, string(*helper.PURL))
+	}
+	return pURLs
 }

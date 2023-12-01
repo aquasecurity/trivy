@@ -704,8 +704,8 @@ github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7Do
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/creack/pty v1.1.18 h1:n56/Zwd5o6whRC5PMGretI4IdRLlmBXYNjScPaBgsbY=
 github.com/creack/pty v1.1.18/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
-github.com/csaf-poc/csaf_distribution/v3 v3.0.0-rc.1.0.20231128093716-91ab7f6b1cbc h1:x/SvPc3qUZuJcqS6Mr5sWBZCQkonO4sEYQiOAZFkaRo=
-github.com/csaf-poc/csaf_distribution/v3 v3.0.0-rc.1.0.20231128093716-91ab7f6b1cbc/go.mod h1:uilCTiNKivq+6zrDvjtZaUeLk70oe21iwKivo6ILwlQ=
+github.com/csaf-poc/csaf_distribution/v3 v3.0.0-rc.1.0.20231201143125-9073a8a282a4 h1:PvFqZfX3E/mXPyDlBGomvQ4oY5qdIgSSLNQ8b1zdqNQ=
+github.com/csaf-poc/csaf_distribution/v3 v3.0.0-rc.1.0.20231201143125-9073a8a282a4/go.mod h1:uilCTiNKivq+6zrDvjtZaUeLk70oe21iwKivo6ILwlQ=
 github.com/cyphar/filepath-securejoin v0.2.2/go.mod h1:FpkQEhXnPnOthhzymB7CGsFk2G9VLXONKD9G7QGMM+4=
 github.com/cyphar/filepath-securejoin v0.2.3/go.mod h1:aPGpWjXOXUn2NCNjFvBE6aRxGGx79pTxQpKOJNYHHl4=
 github.com/cyphar/filepath-securejoin v0.2.4 h1:Ugdm7cg7i6ZK6x3xDF1oEu1nfkyfH53EtKeQYTC3kyg=
