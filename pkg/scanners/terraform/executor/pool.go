@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/state"
 	"github.com/aquasecurity/defsec/pkg/terraform"
-	//"github.com/aquasecurity/trivy/pkg/types"
 	types "github.com/aquasecurity/defsec/pkg/types/rules"
 )
 
