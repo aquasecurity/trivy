@@ -3,7 +3,9 @@ package flag
 import (
 	"fmt"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/policy"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // e.g. config yaml:
@@ -73,6 +75,12 @@ var (
 		Default:    fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
 		Usage:      "OCI registry URL to retrieve policy bundle from",
 	}
+	MisconfigScannersFlag = Flag{
+		Name:       "misconfig-scanners",
+		ConfigName: "misconfiguration.scanners",
+		Default:    xstrings.ToStringSlice(analyzer.TypeConfigFiles),
+		Usage:      "comma-separated list of misconfig scanners to use for misconfiguration scanning",
+	}
 )
 
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfiguration scanning.
@@ -89,6 +97,7 @@ type MisconfFlagGroup struct {
 	TerraformTFVars            *Flag
 	CloudformationParamVars    *Flag
 	TerraformExcludeDownloaded *Flag
+	MisconfigScanners          *Flag
 }
 
 type MisconfOptions struct {
@@ -104,6 +113,7 @@ type MisconfOptions struct {
 	TerraformTFVars         []string
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
+	MisconfigScanners       []analyzer.Type
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -119,6 +129,7 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		TerraformTFVars:            &TfVarsFlag,
 		CloudformationParamVars:    &CfParamsFlag,
 		TerraformExcludeDownloaded: &TerraformExcludeDownloaded,
+		MisconfigScanners:          &MisconfigScannersFlag,
 	}
 }
 
@@ -138,6 +149,7 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 		f.TerraformTFVars,
 		f.TerraformExcludeDownloaded,
 		f.CloudformationParamVars,
+		f.MisconfigScanners,
 	}
 }
 
@@ -153,5 +165,6 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		TerraformTFVars:         getStringSlice(f.TerraformTFVars),
 		CloudFormationParamVars: getStringSlice(f.CloudformationParamVars),
 		TfExcludeDownloaded:     getBool(f.TerraformExcludeDownloaded),
+		MisconfigScanners:       getUnderlyingStringSlice[analyzer.Type](f.MisconfigScanners),
 	}, nil
 }
