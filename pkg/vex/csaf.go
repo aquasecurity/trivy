@@ -38,27 +38,31 @@ func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulne
 
 func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgRef string) bool {
 	if vuln.ProductStatus != nil {
-		for _, product := range *vuln.ProductStatus.KnownNotAffected {
-			notAffectedPURLs := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
-			if slices.Contains(notAffectedPURLs, pkgRef) {
-				v.logger.Infow(
-					"Filtered out the detected vulnerability",
-					zap.String("vulnerability-id", string(*vuln.CVE)),
-					zap.String("status", string(StatusNotAffected)),
-				)
-				return false
+		if vuln.ProductStatus.KnownNotAffected != nil {
+			for _, product := range *vuln.ProductStatus.KnownNotAffected {
+				notAffectedPURLs := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
+				if len(notAffectedPURLs) > 0 && slices.Contains(notAffectedPURLs, pkgRef) {
+					v.logger.Infow(
+						"Filtered out the detected vulnerability",
+						zap.String("vulnerability-id", string(*vuln.CVE)),
+						zap.String("status", string(StatusNotAffected)),
+					)
+					return false
+				}
 			}
 		}
 
-		for _, product := range *vuln.ProductStatus.Fixed {
-			fixedPURLS := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
-			if slices.Contains(fixedPURLS, pkgRef) {
-				v.logger.Infow(
-					"Filtered out the detected vulnerability",
-					zap.String("vulnerability-id", string(*vuln.CVE)),
-					zap.String("status", string(StatusFixed)),
-				)
-				return false
+		if vuln.ProductStatus.Fixed != nil {
+			for _, product := range *vuln.ProductStatus.Fixed {
+				fixedPURLS := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
+				if len(fixedPURLS) > 0 && slices.Contains(fixedPURLS, pkgRef) {
+					v.logger.Infow(
+						"Filtered out the detected vulnerability",
+						zap.String("vulnerability-id", string(*vuln.CVE)),
+						zap.String("status", string(StatusFixed)),
+					)
+					return false
+				}
 			}
 		}
 	}
@@ -69,7 +73,9 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgRef string) bool {
 func pURLsFromProductIdentificationHelpers(helpers []*csaf.ProductIdentificationHelper) []string {
 	pURLs := make([]string, 0, len(helpers))
 	for _, helper := range helpers {
-		pURLs = append(pURLs, string(*helper.PURL))
+		if helper != nil && helper.PURL != nil {
+			pURLs = append(pURLs, string(*helper.PURL))
+		}
 	}
 	return pURLs
 }
