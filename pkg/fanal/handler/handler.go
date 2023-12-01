@@ -75,6 +75,5 @@ func (m Manager) PostHandle(ctx context.Context, result *analyzer.AnalysisResult
 			return xerrors.Errorf("post handler error: %w", err)
 		}
 	}
-
 	return nil
 }

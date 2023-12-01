@@ -30,8 +30,8 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/ospkgid"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/sysfile"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/syspackage"
 )
 
 func TestArtifact_Inspect(t *testing.T) {

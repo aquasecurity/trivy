@@ -1,4 +1,4 @@
-package syspackage
+package ospkgid
 
 import (
 	"context"
@@ -78,6 +78,76 @@ func Test_systemPackagesPostHandler_Handle(t *testing.T) {
 			err := h.Handle(context.TODO(), nil, tt.blob)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, tt.blob)
+		})
+	}
+}
+
+func TestOverwritePkgIdentifiers(t *testing.T) {
+	testCases := []struct {
+		name     string
+		pkgInfos []types.PackageInfo
+		os       types.OS
+		want     []types.PackageInfo
+	}{
+		{
+			name: "no os family",
+			pkgInfos: []types.PackageInfo{{
+				Packages: []types.Package{{
+					Name:    "test",
+					Version: "0.1.0",
+					Arch:    "amd64",
+					Identifier: types.PkgIdentifier{
+						PURL: "pkg:dpkg/test@0.1.0?arch=amd64",
+					},
+				}},
+			}},
+			os: types.OS{},
+			want: []types.PackageInfo{{
+				Packages: []types.Package{{
+					Name:    "test",
+					Version: "0.1.0",
+					Arch:    "amd64",
+					Identifier: types.PkgIdentifier{
+						PURL: "pkg:dpkg/test@0.1.0?arch=amd64",
+					},
+				}},
+			}},
+		},
+		{
+			name: "success",
+			pkgInfos: []types.PackageInfo{{
+				Packages: []types.Package{{
+					Name:    "test",
+					Version: "0.1.0",
+					Arch:    "amd64",
+					Identifier: types.PkgIdentifier{
+						PURL: "pkg:dpkg/test@0.1.0?arch=amd64",
+					},
+				}},
+			}},
+			os: types.OS{
+				Family: types.Debian,
+				Name:   "10.2",
+			},
+			want: []types.PackageInfo{{
+				Packages: []types.Package{{
+					Name:    "test",
+					Version: "0.1.0",
+					Arch:    "amd64",
+					Identifier: types.PkgIdentifier{
+						PURL: "pkg:deb/debian/test@0.1.0?arch=amd64&distro=debian-10.2",
+					},
+				}},
+			}},
+		},
+	}
+	t.Parallel()
+	for _, tc := range testCases {
+		test := tc
+		t.Run(tc.name, func(tt *testing.T) {
+			tt.Parallel()
+			pkgIdentifier := overwritePkgIdentifiers(test.pkgInfos, test.os)
+			assert.Equal(tt, test.want, pkgIdentifier, test.name)
 		})
 	}
 }

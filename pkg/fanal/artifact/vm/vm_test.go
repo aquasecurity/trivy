@@ -25,7 +25,7 @@ import (
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/syspackage"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/ospkgid"
 )
 
 const (
