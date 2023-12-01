@@ -355,4 +355,4 @@ Digest: sha256:6416d0199d66ce52ced19f01d75454b22692ff3aa7737e45f7a189880840424f
 [trivy-module-wordpress]: https://github.com/aquasecurity/trivy-module-wordpress
 
 [tinygo-installation]: https://tinygo.org/getting-started/install/
-[oras]: https://oras.land/cli/
+[oras]: https://oras.land/docs/installation/
