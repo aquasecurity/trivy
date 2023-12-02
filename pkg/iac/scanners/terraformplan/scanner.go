@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/fs"
 
+	"github.com/bmatcuk/doublestar/v4"
+
 	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/scan"
@@ -13,7 +15,6 @@ import (
 	terraformScanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/parser"
-	"github.com/bmatcuk/doublestar/v4"
 )
 
 var tfPlanExts = []string{

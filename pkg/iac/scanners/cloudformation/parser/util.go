@@ -3,10 +3,10 @@ package parser
 import (
 	"strconv"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
-
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 )
 
 func setPropertyValueFromJson(node jfather.Node, propertyData *PropertyInner) error {
@@ -57,7 +57,7 @@ func setPropertyValueFromYaml(node *yaml.Node, propertyData *PropertyInner) erro
 
 		newContent = createNode(node, newContent)
 
-		node.Tag = "!!map"
+		node.Tag = "!!map" //nolint:goconst
 		node.Kind = yaml.MappingNode
 		node.Content = newContent
 	}
@@ -80,7 +80,7 @@ func setPropertyValueFromYaml(node *yaml.Node, propertyData *PropertyInner) erro
 	}
 
 	switch node.Tag {
-	case "!!map":
+	case "!!map": //nolint:goconst
 		var childData map[string]*Property
 		if err := node.Decode(&childData); err != nil {
 			return err
@@ -119,7 +119,7 @@ func createNode(node *yaml.Node, newContent []*yaml.Node) []*yaml.Node {
 		case yaml.SequenceNode:
 			newNode.Tag = "!!seq"
 		case yaml.MappingNode:
-			newNode.Tag = "!!map"
+			newNode.Tag = "!!map" //nolint:goconst
 		case yaml.ScalarNode:
 		default:
 			newNode.Tag = node.Tag

@@ -105,7 +105,7 @@ func (n *node) decodeObjectToStruct(v reflect.Value) error {
 
 		subject := v.Field(i)
 
-		// if fields are nil pointers, initialise them with values of the correct type
+		// if fields are nil pointers, initialize them with values of the correct type
 		if subject.Kind() == reflect.Ptr {
 			if subject.IsNil() {
 				subject.Set(reflect.New(subject.Type().Elem()))

@@ -8,6 +8,8 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/liamg/memoryfs"
+
 	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/scan"
@@ -16,7 +18,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
-	"github.com/liamg/memoryfs"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)

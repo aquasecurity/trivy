@@ -1,10 +1,9 @@
-// Copied from github.com/hashicorp/terraform/internal/lang/funcs
 package funcs
 
 import (
-	"crypto/md5"
+	"crypto/md5" //nolint:gosec
 	"crypto/rsa"
-	"crypto/sha1"
+	"crypto/sha1" //nolint:gosec
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/asn1"
@@ -274,7 +273,7 @@ func UUID() (cty.Value, error) {
 
 // UUIDV5 generates and returns a Type-5 UUID in the standard hexadecimal string
 // format.
-func UUIDV5(namespace cty.Value, name cty.Value) (cty.Value, error) {
+func UUIDV5(namespace, name cty.Value) (cty.Value, error) {
 	return UUIDV5Func.Call([]cty.Value{namespace, name})
 }
 

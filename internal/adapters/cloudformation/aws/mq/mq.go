@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts mq resources
 func Adapt(cfFile parser.FileContext) mq.MQ {
 	return mq.MQ{
 		Brokers: getBrokers(cfFile),

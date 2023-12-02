@@ -3,7 +3,6 @@ package rules
 import (
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/scan"
-
 	"github.com/aquasecurity/trivy/internal/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )

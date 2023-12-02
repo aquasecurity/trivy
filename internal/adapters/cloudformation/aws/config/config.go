@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts config resources
 func Adapt(cfFile parser.FileContext) config.Config {
 	return config.Config{
 		ConfigurationAggregrator: getConfigurationAggregator(cfFile),

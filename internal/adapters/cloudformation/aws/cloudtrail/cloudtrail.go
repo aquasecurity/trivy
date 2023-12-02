@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts cloudtrail resources
 func Adapt(cfFile parser.FileContext) cloudtrail.CloudTrail {
 	return cloudtrail.CloudTrail{
 		Trails: getCloudTrails(cfFile),

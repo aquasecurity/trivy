@@ -30,7 +30,7 @@ func (a *adapter) adaptBuckets() []storage.Bucket {
 
 	var buckets []storage.Bucket
 	for _, module := range a.modules {
-		for _, resource := range module.GetResourcesByType("google_storage_bucket") {
+		for _, resource := range module.GetResourcesByType(GoogleStorageBucket) {
 			buckets = append(buckets, a.adaptBucketResource(resource))
 		}
 	}

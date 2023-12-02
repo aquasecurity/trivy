@@ -70,8 +70,7 @@ func (v *Resource) UnmarshalJSONWithMetadata(node armjson.Node) error {
 		if err := comment.Decode(&str); err != nil {
 			return err
 		}
-		// TODO
-		// v.Metadata.Comments = append(v.Metadata.Comments, str)
+		// v.Metadata.Comments = append(v.Metadata.Comments, str) // TODO look into implementing/removing
 	}
 
 	return nil

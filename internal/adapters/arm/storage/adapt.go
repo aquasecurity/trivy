@@ -4,9 +4,8 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/defsec/pkg/providers/azure/storage"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-
 	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 )
 
 func Adapt(deployment azure.Deployment) storage.Storage {

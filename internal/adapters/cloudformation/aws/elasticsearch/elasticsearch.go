@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts elasticsearch resources
 func Adapt(cfFile parser.FileContext) elasticsearch.Elasticsearch {
 	return elasticsearch.Elasticsearch{
 		Domains: getDomains(cfFile),

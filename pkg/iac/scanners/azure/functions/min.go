@@ -9,8 +9,7 @@ func Min(args ...interface{}) interface{} {
 		}
 		return minInt(ints)
 	case interface{}:
-		switch iType := args[0].(type) {
-		case []int:
+		if iType, ok := args[0].([]int); ok {
 			return minInt(iType)
 		}
 	}

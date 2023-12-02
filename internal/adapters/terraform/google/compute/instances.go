@@ -1,10 +1,11 @@
 package compute
 
 import (
+	"github.com/zclconf/go-cty/cty"
+
 	"github.com/aquasecurity/defsec/pkg/providers/google/compute"
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-	"github.com/zclconf/go-cty/cty"
 )
 
 func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {

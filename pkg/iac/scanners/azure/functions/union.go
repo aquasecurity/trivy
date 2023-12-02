@@ -25,8 +25,7 @@ func unionMap(args ...interface{}) interface{} {
 	result := make(map[string]interface{})
 
 	for _, arg := range args {
-		switch iType := arg.(type) {
-		case map[string]interface{}:
+		if iType, ok := arg.(map[string]interface{}); ok {
 			for k, v := range iType {
 				result[k] = v
 			}
@@ -37,7 +36,7 @@ func unionMap(args ...interface{}) interface{} {
 }
 
 func unionArray(args ...interface{}) interface{} {
-	result := []interface{}{}
+	var result []interface{}
 	union := make(map[interface{}]bool)
 
 	for _, arg := range args {

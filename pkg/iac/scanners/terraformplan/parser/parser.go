@@ -8,8 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/liamg/memoryfs"
+
+	"github.com/aquasecurity/defsec/pkg/terraform"
 )
 
 type Parser struct {
@@ -142,8 +143,7 @@ func getResources(module Module, resourceChanges []ResourceChange, configuration
 }
 
 func unpackConfigurationValue(val interface{}, r Resource) (interface{}, bool) {
-	switch t := val.(type) {
-	case map[string]interface{}:
+	if t, ok := val.(map[string]interface{}); ok {
 		for k, v := range t {
 			switch k {
 			case "references":

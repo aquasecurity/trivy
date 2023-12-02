@@ -6,9 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/open-policy-agent/opa/ast"
+
 	rules2 "github.com/aquasecurity/trivy-policies/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
-	"github.com/open-policy-agent/opa/ast"
 )
 
 func init() {

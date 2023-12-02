@@ -1,10 +1,11 @@
 package iam
 
 import (
+	"github.com/liamg/iamgo"
+
 	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-	"github.com/liamg/iamgo"
 )
 
 func parsePolicy(policyBlock *terraform.Block, modules terraform.Modules) (iam.Policy, error) {

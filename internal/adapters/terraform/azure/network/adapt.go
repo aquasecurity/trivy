@@ -4,13 +4,11 @@ import (
 	"strconv"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/google/uuid"
 
 	"github.com/aquasecurity/defsec/pkg/providers/azure/network"
-
-	"github.com/google/uuid"
+	"github.com/aquasecurity/defsec/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) network.Network {

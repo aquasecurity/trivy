@@ -12,12 +12,14 @@ func (a *adapter) adaptFolderIAM() {
 	a.adaptFolderBindings()
 }
 
+const GoogleFolder = "google_folder"
+
 func (a *adapter) adaptFolderMembers() {
 	for _, iamBlock := range a.modules.GetResourcesByType("google_folder_iam_member") {
 		member := a.adaptMember(iamBlock)
 		folderAttr := iamBlock.GetAttribute("folder")
 		if refBlock, err := a.modules.GetReferencedBlock(folderAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_folder" {
+			if refBlock.TypeLabel() == GoogleFolder {
 				var foundFolder bool
 				for i, folder := range a.folders {
 					if folder.blockID == refBlock.ID() {
@@ -59,7 +61,7 @@ func (a *adapter) adaptFolderBindings() {
 		folderAttr := iamBlock.GetAttribute("folder")
 
 		if refBlock, err := a.modules.GetReferencedBlock(folderAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_folder" {
+			if refBlock.TypeLabel() == GoogleFolder {
 				var foundFolder bool
 				for i, folder := range a.folders {
 					if folder.blockID == refBlock.ID() {
@@ -89,7 +91,7 @@ func (a *adapter) adaptFolderBindings() {
 		binding := a.adaptBinding(iamBlock)
 		folderAttr := iamBlock.GetAttribute("folder")
 		if refBlock, err := a.modules.GetReferencedBlock(folderAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_folder" {
+			if refBlock.TypeLabel() == GoogleFolder {
 				var foundFolder bool
 				for i, folder := range a.folders {
 					if folder.blockID == refBlock.ID() {

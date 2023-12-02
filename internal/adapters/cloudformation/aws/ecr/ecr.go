@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts ecr resources
 func Adapt(cfFile parser.FileContext) ecr.ECR {
 	return ecr.ECR{
 		Repositories: getRepositories(cfFile),

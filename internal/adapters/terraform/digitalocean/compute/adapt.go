@@ -41,7 +41,7 @@ func adaptFirewalls(module terraform.Modules) []compute.Firewall {
 		inboundRules := block.GetBlocks("inbound_rule")
 		outboundRules := block.GetBlocks("outbound_rule")
 
-		inboundFirewallRules := []compute.InboundFirewallRule{}
+		var inboundFirewallRules []compute.InboundFirewallRule
 		for _, inBoundRule := range inboundRules {
 			inboundFirewallRule := compute.InboundFirewallRule{
 				Metadata: inBoundRule.GetMetadata(),
@@ -52,7 +52,7 @@ func adaptFirewalls(module terraform.Modules) []compute.Firewall {
 			inboundFirewallRules = append(inboundFirewallRules, inboundFirewallRule)
 		}
 
-		outboundFirewallRules := []compute.OutboundFirewallRule{}
+		var outboundFirewallRules []compute.OutboundFirewallRule
 		for _, outBoundRule := range outboundRules {
 			outboundFirewallRule := compute.OutboundFirewallRule{
 				Metadata: outBoundRule.GetMetadata(),

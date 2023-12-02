@@ -1,10 +1,11 @@
 package openstack
 
 import (
+	"github.com/google/uuid"
+
 	"github.com/aquasecurity/defsec/pkg/providers/openstack"
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-	"github.com/google/uuid"
 )
 
 func adaptNetworking(modules terraform.Modules) openstack.Networking {

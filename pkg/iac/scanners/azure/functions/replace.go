@@ -12,15 +12,15 @@ func Replace(args ...interface{}) interface{} {
 		return ""
 	}
 
-	old, ok := args[1].(string)
+	o, ok := args[1].(string)
 	if !ok {
 		return ""
 	}
 
-	new, ok := args[2].(string)
+	n, ok := args[2].(string)
 	if !ok {
 		return ""
 	}
 
-	return strings.ReplaceAll(input, old, new)
+	return strings.ReplaceAll(input, o, n)
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts sam resources
 func Adapt(cfFile parser.FileContext) sam.SAM {
 	return sam.SAM{
 		APIs:          getApis(cfFile),

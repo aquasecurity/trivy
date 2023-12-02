@@ -2,6 +2,7 @@ package rules
 
 import (
 	trules "github.com/aquasecurity/trivy-policies/pkg/rules"
+
 	_ "github.com/aquasecurity/trivy-policies/rules/cloud/policies/aws/accessanalyzer"
 	_ "github.com/aquasecurity/trivy-policies/rules/cloud/policies/aws/apigateway"
 	_ "github.com/aquasecurity/trivy-policies/rules/cloud/policies/aws/athena"

@@ -4,9 +4,10 @@ import (
 	"strings"
 	"time"
 
+	"k8s.io/utils/strings/slices"
+
 	"github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
-	"k8s.io/utils/strings/slices"
 )
 
 type EvalContext struct{}

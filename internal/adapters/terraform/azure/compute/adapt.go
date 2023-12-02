@@ -3,12 +3,12 @@ package compute
 import (
 	"encoding/base64"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
-	"github.com/aquasecurity/defsec/pkg/terraform"
-
 	"github.com/aquasecurity/defsec/pkg/providers/azure/compute"
+	"github.com/aquasecurity/defsec/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 )
+
+const AzureVirtualMachine = "azurerm_virtual_machine"
 
 func Adapt(modules terraform.Modules) compute.Compute {
 	return adaptCompute(modules)
@@ -28,7 +28,7 @@ func adaptCompute(modules terraform.Modules) compute.Compute {
 		for _, resource := range module.GetResourcesByType("azurerm_windows_virtual_machine") {
 			windowsVirtualMachines = append(windowsVirtualMachines, adaptWindowsVM(resource))
 		}
-		for _, resource := range module.GetResourcesByType("azurerm_virtual_machine") {
+		for _, resource := range module.GetResourcesByType(AzureVirtualMachine) {
 			if resource.HasChild("os_profile_linux_config") {
 				linuxVirtualMachines = append(linuxVirtualMachines, adaptLinuxVM(resource))
 			} else if resource.HasChild("os_profile_windows_config") {
@@ -71,7 +71,7 @@ func adaptManagedDisk(resource *terraform.Block) compute.ManagedDisk {
 func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
 	workingBlock := resource
 
-	if resource.TypeLabel() == "azurerm_virtual_machine" {
+	if resource.TypeLabel() == AzureVirtualMachine {
 		if b := resource.GetBlock("os_profile"); b.IsNotNil() {
 			workingBlock = b
 		}
@@ -86,7 +86,7 @@ func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
 		customDataVal = defsecTypes.String(string(encoded), customDataAttr.GetMetadata())
 	}
 
-	if resource.TypeLabel() == "azurerm_virtual_machine" {
+	if resource.TypeLabel() == AzureVirtualMachine {
 		workingBlock = resource.GetBlock("os_profile_linux_config")
 	}
 	disablePasswordAuthAttr := workingBlock.GetAttribute("disable_password_authentication")
@@ -108,7 +108,7 @@ func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
 func adaptWindowsVM(resource *terraform.Block) compute.WindowsVirtualMachine {
 	workingBlock := resource
 
-	if resource.TypeLabel() == "azurerm_virtual_machine" {
+	if resource.TypeLabel() == AzureVirtualMachine {
 		if b := resource.GetBlock("os_profile"); b.IsNotNil() {
 			workingBlock = b
 		}

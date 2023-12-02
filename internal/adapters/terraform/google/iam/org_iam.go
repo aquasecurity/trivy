@@ -1,9 +1,10 @@
 package iam
 
 import (
+	"github.com/google/uuid"
+
 	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
 	"github.com/aquasecurity/defsec/pkg/types"
-	"github.com/google/uuid"
 )
 
 // see https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_organization_iam
@@ -22,7 +23,7 @@ func (a *adapter) adaptOrganizationMembers() {
 		}
 
 		if refBlock, err := a.modules.GetReferencedBlock(organizationAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_organization" {
+			if refBlock.TypeLabel() == GoogleOrganization {
 				a.addOrg(refBlock.ID())
 				org, ok := a.orgs[refBlock.ID()]
 				if !ok {
@@ -67,7 +68,7 @@ func (a *adapter) adaptOrganizationBindings() {
 		orgAttr := iamBlock.GetAttribute("organization")
 
 		if refBlock, err := a.modules.GetReferencedBlock(orgAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_organization" {
+			if refBlock.TypeLabel() == GoogleOrganization {
 				if org, ok := a.orgs[refBlock.ID()]; ok {
 					org.Bindings = append(org.Bindings, bindings...)
 					a.orgs[refBlock.ID()] = org
@@ -93,7 +94,7 @@ func (a *adapter) adaptOrganizationBindings() {
 		}
 
 		if refBlock, err := a.modules.GetReferencedBlock(organizationAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_organization" {
+			if refBlock.TypeLabel() == GoogleOrganization {
 				a.addOrg(refBlock.ID())
 				org := a.orgs[refBlock.ID()]
 				org.Bindings = append(org.Bindings, binding)

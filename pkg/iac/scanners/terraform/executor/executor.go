@@ -12,7 +12,6 @@ import (
 	"github.com/aquasecurity/defsec/pkg/severity"
 	"github.com/aquasecurity/defsec/pkg/state"
 	"github.com/aquasecurity/defsec/pkg/terraform"
-
 	adapter "github.com/aquasecurity/trivy/internal/adapters/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
@@ -107,7 +106,7 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 
 	checksTime := time.Now()
 	registeredRules := rules.GetRegistered(e.frameworks...)
-	e.debug.Log("Initialised %d rule(s).", len(registeredRules))
+	e.debug.Log("Initialized %d rule(s).", len(registeredRules))
 
 	pool := NewPool(threads, registeredRules, modules, infra, e.ignoreCheckErrors, e.regoScanner, e.regoOnly)
 	e.debug.Log("Created pool with %d worker(s) to apply rules.", threads)

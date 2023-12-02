@@ -25,7 +25,7 @@ func locateCacheFS() (fs.FS, error) {
 
 func locateCacheDir() (string, error) {
 	cacheDir := filepath.Join(os.TempDir(), tempDirName, "cache")
-	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+	if err := os.MkdirAll(cacheDir, 0o750); err != nil {
 		return "", err
 	}
 	if !isWritable(cacheDir) {

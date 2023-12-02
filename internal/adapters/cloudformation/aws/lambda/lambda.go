@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts lambda resources
 func Adapt(cfFile parser.FileContext) lambda.Lambda {
 	return lambda.Lambda{
 		Functions: getFunctions(cfFile),

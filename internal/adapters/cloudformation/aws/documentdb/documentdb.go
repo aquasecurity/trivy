@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts documentdb resources
 func Adapt(cfFile parser.FileContext) documentdb.DocumentDB {
 	return documentdb.DocumentDB{
 		Clusters: getClusters(cfFile),

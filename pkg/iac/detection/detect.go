@@ -29,7 +29,7 @@ const (
 	FileTypeAzureARM       FileType = "azure-arm"
 )
 
-var matchers = map[FileType]func(name string, r io.ReadSeeker) bool{}
+var matchers = make(map[FileType]func(name string, r io.ReadSeeker) bool)
 
 // nolint
 func init() {

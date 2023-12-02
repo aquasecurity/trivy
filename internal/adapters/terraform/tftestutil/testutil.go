@@ -6,7 +6,6 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
-
 	"github.com/aquasecurity/trivy/test/testutil"
 )
 

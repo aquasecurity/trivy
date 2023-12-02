@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts elb resources
 func Adapt(cfFile parser.FileContext) elb.ELB {
 	return elb.ELB{
 		LoadBalancers: getLoadBalancers(cfFile),

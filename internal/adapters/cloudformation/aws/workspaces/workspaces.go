@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts workspaces resources
 func Adapt(cfFile parser.FileContext) workspaces.WorkSpaces {
 	return workspaces.WorkSpaces{
 		WorkSpaces: getWorkSpaces(cfFile),

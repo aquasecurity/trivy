@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts cloudfront resources
 func Adapt(cfFile parser.FileContext) cloudfront.Cloudfront {
 	return cloudfront.Cloudfront{
 		Distributions: getDistributions(cfFile),
