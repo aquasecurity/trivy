@@ -85,7 +85,7 @@ var (
 	NodeCollectorImageRef = Flag{
 		Name:       "node-collector-imageref",
 		ConfigName: "node.collector.imageref",
-		Default:    "",
+		Default:    "ghcr.io/aquasecurity/node-collector:0.0.9",
 		Usage:      "indicate the image reference for the node-collector scan job",
 	}
 )

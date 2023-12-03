@@ -63,7 +63,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan])
   -n, --namespace string                  specify a namespace to scan
       --no-progress                       suppress progress bar
-      --node-collector-imageref string    indicate the image reference for the node-collector scan job
+      --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.0.9")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
