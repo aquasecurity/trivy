@@ -82,6 +82,12 @@ var (
 		Default:    []string{},
 		Usage:      "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)",
 	}
+	NodeCollectorImageRef = Flag{
+		Name:       "node-collector-imageref",
+		ConfigName: "node.collector.imageref",
+		Default:    "",
+		Usage:      "indicate the image reference for the node-collector scan job",
+	}
 )
 
 type K8sFlagGroup struct {
@@ -91,6 +97,7 @@ type K8sFlagGroup struct {
 	Components             *Flag
 	K8sVersion             *Flag
 	Tolerations            *Flag
+	NodeCollectorImageRef  *Flag
 	AllNamespaces          *Flag
 	NodeCollectorNamespace *Flag
 	ExcludeOwned           *Flag
@@ -104,6 +111,7 @@ type K8sOptions struct {
 	Components             []string
 	K8sVersion             string
 	Tolerations            []corev1.Toleration
+	NodeCollectorImageRef  string
 	AllNamespaces          bool
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
@@ -122,6 +130,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		NodeCollectorNamespace: &NodeCollectorNamespace,
 		ExcludeOwned:           &ExcludeOwned,
 		ExcludeNodes:           &ExcludeNodes,
+		NodeCollectorImageRef:  &NodeCollectorImageRef,
 	}
 }
 
@@ -141,6 +150,7 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.NodeCollectorNamespace,
 		f.ExcludeOwned,
 		f.ExcludeNodes,
+		f.NodeCollectorImageRef,
 	}
 }
 
@@ -171,6 +181,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		NodeCollectorNamespace: getString(f.NodeCollectorNamespace),
 		ExcludeOwned:           getBool(f.ExcludeOwned),
 		ExcludeNodes:           exludeNodeLabels,
+		NodeCollectorImageRef:  getString(f.NodeCollectorImageRef),
 	}, nil
 }
 
