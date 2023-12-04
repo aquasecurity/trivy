@@ -31,7 +31,7 @@ trivy config [flags] DIR
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
   -o, --output string                     output file name
-      --output-plugin-arg string          [EXPERIMENTAL] output plugin argument
+      --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces

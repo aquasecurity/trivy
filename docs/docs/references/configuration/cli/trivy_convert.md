@@ -28,7 +28,7 @@ trivy convert [flags] RESULT_JSON
       --ignorefile string          specify .trivyignore file (default ".trivyignore")
       --list-all-pkgs              enabling the option will output all packages regardless of vulnerability
   -o, --output string              output file name
-      --output-plugin-arg string   [EXPERIMENTAL] output plugin argument
+      --output-plugin-arg string   [EXPERIMENTAL] output plugin arguments
       --report string              specify a report format for the output (all,summary) (default "all")
   -s, --severity strings           severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
   -t, --template string            output template

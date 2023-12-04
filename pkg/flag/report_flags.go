@@ -91,7 +91,7 @@ var (
 		Name:       "output-plugin-arg",
 		ConfigName: "output-plugin-arg",
 		Default:    "",
-		Usage:      "[EXPERIMENTAL] output plugin argument",
+		Usage:      "[EXPERIMENTAL] output plugin arguments",
 	}
 	SeverityFlag = Flag{
 		Name:       "severity",

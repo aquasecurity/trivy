@@ -87,7 +87,7 @@ trivy aws [flags]
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
       --max-cache-age duration            The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this. (default 24h0m0s)
   -o, --output string                     output file name
-      --output-plugin-arg string          [EXPERIMENTAL] output plugin argument
+      --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
       --region string                     AWS Region to scan
