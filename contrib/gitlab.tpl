@@ -1,6 +1,6 @@
 {{- /* Template based on https://docs.gitlab.com/ee/user/application_security/container_scanning/#reports-json-format */ -}}
 {
-  "version": "15.0.4",
+  "version": "15.0.7",
   "scan": {
     "analyzer": {
       "id": "trivy",
@@ -37,11 +37,8 @@
     {{- end }}
     {
       "id": "{{ .VulnerabilityID }}",
-      "category": "container_scanning",
-      "message": {{ .Title | printf "%q" }},
+      "name": {{ .Title | printf "%q" }},
       "description": {{ .Description | printf "%q" }},
-      {{- /* cve is a deprecated key, use id instead */}}
-      "cve": "{{ .VulnerabilityID }}",
       "severity": {{ if eq .Severity "UNKNOWN" -}}
                     "Unknown"
                   {{- else if eq .Severity "LOW" -}}
@@ -60,10 +57,6 @@
                   {{- else -}}
                     "No solution provided"
                   {{- end }},
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
       "location": {
         "dependency": {
           "package": {
