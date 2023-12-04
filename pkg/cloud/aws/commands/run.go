@@ -129,7 +129,6 @@ func filterServices(opt *flag.Options) error {
 }
 
 func Run(ctx context.Context, opt flag.Options) error {
-
 	ctx, cancel := context.WithTimeout(ctx, opt.GlobalOptions.Timeout)
 	defer cancel()
 
@@ -168,7 +167,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, res, opt.Services)
-	if err := report.Write(r, opt, cached); err != nil {
+	if err := report.Write(ctx, r, opt, cached); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

@@ -124,7 +124,7 @@ func loadPluginCommands() []*cobra.Command {
 			Short:   p.Usage,
 			GroupID: groupPlugin,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if err = p.Run(cmd.Context(), args); err != nil {
+				if err = p.Run(cmd.Context(), plugin.RunOptions{Args: args}); err != nil {
 					return xerrors.Errorf("plugin error: %w", err)
 				}
 				return nil
@@ -773,7 +773,7 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "Run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return plugin.RunWithArgs(cmd.Context(), args[0], args[1:])
+				return plugin.RunWithURL(cmd.Context(), args[0], plugin.RunOptions{Args: args[1:]})
 			},
 		},
 		&cobra.Command{
