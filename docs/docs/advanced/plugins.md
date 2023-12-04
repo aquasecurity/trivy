@@ -182,8 +182,51 @@ $ trivy myplugin
 Hello from Trivy demo plugin!
 ```
 
+## Plugin Types
+Plugins are typically intended to be used as subcommands of Trivy,
+but some plugins can be invoked as part of Trivy's built-in commands.
+Currently, the following type of plugin is experimentally supported:
+
+- Output plugins
+
+### Output Plugins
+
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+Trivy supports "output plugins" which process Trivy's output, 
+such as by transforming the output format or sending it elsewhere.
+For instance, in the case of image scanning, the output plugin can be called as follows:
+
+```shell
+$ trivy image --format json --output plugin=<plugin_name> [--output-plugin-arg <plugin_flags>] <image_name>
+```
+
+Since scan results are passed to the plugin via standard input, plugins must be capable of handling standard input.
+
+!!! warning
+    To avoid Trivy hanging, you need to read all data from `Stdin` before the plugin exits successfully or stops with an error.
+
+While the example passes JSON to the plugin, other formats like SBOM can also be passed (e.g., `--format cyclonedx`).
+
+If a plugin requires flags or other arguments, they can be passed using `--output-plugin-arg`.
+This is directly forwarded as arguments to the plugin.
+For example, `--output plugin=myplugin --output-plugin-arg "--foo --bar=baz"` translates to `myplugin --foo --bar=baz` in execution.
+
+An example of the output plugin is available [here](https://github.com/aquasecurity/trivy-output-plugin-count).
+It can be used as below:
+
+```shell
+# Install the plugin first
+$ trivy plugin install github.com/aquasecurity/trivy-output-plugin-count
+
+# Call the output plugin in image scanning
+$ trivy image --format json --output plugin=count --output-plugin-arg "--published-after 2023-10-01" debian:12
+```
+
 ## Example
-https://github.com/aquasecurity/trivy-plugin-kubectl
+- https://github.com/aquasecurity/trivy-plugin-kubectl
+- https://github.com/aquasecurity/trivy-output-plugin-count 
 
 [kubectl]: https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/
 [helm]: https://helm.sh/docs/topics/plugins/

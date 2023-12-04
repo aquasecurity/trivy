@@ -18,20 +18,20 @@ import (
 
 func TestReportFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		format         types.Format
-		template       string
-		dependencyTree bool
-		listAllPkgs    bool
-		ignoreUnfixed  bool
-		ignoreFile     string
-		exitCode       int
-		exitOnEOSL     bool
-		ignorePolicy   string
-		output         string
-		severities     string
-		compliane      string
-
-		debug bool
+		format           types.Format
+		template         string
+		dependencyTree   bool
+		listAllPkgs      bool
+		ignoreUnfixed    bool
+		ignoreFile       string
+		exitCode         int
+		exitOnEOSL       bool
+		ignorePolicy     string
+		output           string
+		outputPluginArgs string
+		severities       string
+		compliance       string
+		debug            bool
 	}
 	tests := []struct {
 		name     string
@@ -63,8 +63,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				severities:  "CRITICAL",
 				format:      "cyclonedx",
 				listAllPkgs: false,
-
-				debug: true,
+				debug:       true,
 			},
 			wantLogs: []string{
 				`["cyclonedx" "spdx" "spdx-json" "github"] automatically enables '--list-all-pkgs'.`,
@@ -139,9 +138,25 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with output plugin args",
+			fields: fields{
+				output:           "plugin=count",
+				outputPluginArgs: "--publish-after 2023-10-01 --publish-before 2023-10-02",
+			},
+			want: flag.ReportOptions{
+				Output: "plugin=count",
+				OutputPluginArgs: []string{
+					"--publish-after",
+					"2023-10-01",
+					"--publish-before",
+					"2023-10-02",
+				},
+			},
+		},
+		{
 			name: "happy path with compliance",
 			fields: fields{
-				compliane:  "@testdata/example-spec.yaml",
+				compliance: "@testdata/example-spec.yaml",
 				severities: dbTypes.SeverityLow.String(),
 			},
 			want: flag.ReportOptions{
@@ -187,22 +202,24 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			viper.Set(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
 			viper.Set(flag.ExitOnEOLFlag.ConfigName, tt.fields.exitOnEOSL)
 			viper.Set(flag.OutputFlag.ConfigName, tt.fields.output)
+			viper.Set(flag.OutputPluginArgFlag.ConfigName, tt.fields.outputPluginArgs)
 			viper.Set(flag.SeverityFlag.ConfigName, tt.fields.severities)
-			viper.Set(flag.ComplianceFlag.ConfigName, tt.fields.compliane)
+			viper.Set(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
 
 			// Assert options
 			f := &flag.ReportFlagGroup{
-				Format:         &flag.FormatFlag,
-				Template:       &flag.TemplateFlag,
-				DependencyTree: &flag.DependencyTreeFlag,
-				ListAllPkgs:    &flag.ListAllPkgsFlag,
-				IgnoreFile:     &flag.IgnoreFileFlag,
-				IgnorePolicy:   &flag.IgnorePolicyFlag,
-				ExitCode:       &flag.ExitCodeFlag,
-				ExitOnEOL:      &flag.ExitOnEOLFlag,
-				Output:         &flag.OutputFlag,
-				Severity:       &flag.SeverityFlag,
-				Compliance:     &flag.ComplianceFlag,
+				Format:          &flag.FormatFlag,
+				Template:        &flag.TemplateFlag,
+				DependencyTree:  &flag.DependencyTreeFlag,
+				ListAllPkgs:     &flag.ListAllPkgsFlag,
+				IgnoreFile:      &flag.IgnoreFileFlag,
+				IgnorePolicy:    &flag.IgnorePolicyFlag,
+				ExitCode:        &flag.ExitCodeFlag,
+				ExitOnEOL:       &flag.ExitOnEOLFlag,
+				Output:          &flag.OutputFlag,
+				OutputPluginArg: &flag.OutputPluginArgFlag,
+				Severity:        &flag.SeverityFlag,
+				Compliance:      &flag.ComplianceFlag,
 			}
 
 			got, err := f.ToOptions()
