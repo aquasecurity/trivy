@@ -1,6 +1,29 @@
 {{- /* Template based on https://docs.gitlab.com/ee/user/application_security/container_scanning/#reports-json-format */ -}}
 {
-  "version": "14.0.6",
+  "version": "15.0.4",
+  "scan": {
+    "analyzer": {
+      "id": "trivy",
+      "name": "Trivy",
+      "vendor": {
+        "name": "Aquasecurity"
+      },
+      "version": "{{ appVersion }}"
+    },
+    "end_time": "{{ now | date "2006-01-02T15:04:05" }}",
+    "scanner": {
+      "id": "trivy",
+      "name": "Trivy",
+      "url": "https://github.com/aquasecurity/trivy/",
+      "vendor": {
+        "name": "Aquasecurity"
+      },
+      "version": "{{ appVersion }}"
+    },
+    "start_time": "{{ now | date "2006-01-02T15:04:05" }}",
+    "status": "success",
+    "type": "container_scanning"
+  },
   "vulnerabilities": [
   {{- $t_first := true }}
   {{- range . }}
