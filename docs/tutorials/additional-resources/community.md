@@ -30,7 +30,6 @@ Below is a list of additional resources from the community.
 
 - [the vulnerability remediation lifecycle of Alpine containers](https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/)
 - [Open Source CVE Scanner Round-Up: Clair vs Anchore vs Trivy](https://boxboat.com/2020/04/24/image-scanning-tech-compared/)
-<!-- - [Docker Image Security: Static Analysis Tool Comparison – Anchore Engine vs Clair vs Trivy](https://www.a10o.net/devsecops/docker-image-security-static-analysis-tool-comparison-anchore-engine-vs-clair-vs-trivy/) The blog post no longer exists commented out for removal -->
 
 ### Evaluations
 
