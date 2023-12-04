@@ -29,7 +29,7 @@ func (r *remoteResolver) GetDownloadCount() int {
 	return int(atomic.LoadInt32(&r.count))
 }
 
-func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix string, downloadPath string, applies bool, err error) {
+func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {
 	if !opt.hasPrefix("github.com/", "bitbucket.org/", "s3:", "git@", "git:", "hg:", "https:", "gcs:") {
 		return nil, "", "", false, nil
 	}

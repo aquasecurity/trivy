@@ -17,11 +17,11 @@ type FileContext struct {
 	filepath     string
 	lines        []string
 	SourceFormat SourceFormat
-	Parameters   map[string]*Parameter  `json:"Parameters" yaml:"Parameters"`
-	Resources    map[string]*Resource   `json:"Resources" yaml:"Resources"`
-	Globals      map[string]*Resource   `json:"Globals" yaml:"Globals"`
-	Mappings     map[string]interface{} `json:"Mappings,omitempty" yaml:"Mappings"`
-	Conditions   map[string]Property    `json:"Conditions,omitempty" yaml:"Conditions"`
+	Parameters   map[string]*Parameter `json:"Parameters" yaml:"Parameters"`
+	Resources    map[string]*Resource  `json:"Resources" yaml:"Resources"`
+	Globals      map[string]*Resource  `json:"Globals" yaml:"Globals"`
+	Mappings     map[string]any        `json:"Mappings,omitempty" yaml:"Mappings"`
+	Conditions   map[string]Property   `json:"Conditions,omitempty" yaml:"Conditions"`
 }
 
 func (t *FileContext) GetResourceByLogicalID(name string) *Resource {

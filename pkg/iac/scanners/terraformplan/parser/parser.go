@@ -101,14 +101,14 @@ func getResources(module Module, resourceChanges []ResourceChange, configuration
 		// process the changes to get the after state
 		for k, v := range changes.After {
 			switch t := v.(type) {
-			case []interface{}:
+			case []any:
 				if len(t) == 0 {
 					continue
 				}
 				val := t[0]
 				switch v := val.(type) {
 				// is it a HCL block?
-				case map[string]interface{}:
+				case map[string]any:
 					res.Blocks[k] = v
 				// just a normal attribute then
 				default:
@@ -142,12 +142,12 @@ func getResources(module Module, resourceChanges []ResourceChange, configuration
 	return resources, nil
 }
 
-func unpackConfigurationValue(val interface{}, r Resource) (interface{}, bool) {
-	if t, ok := val.(map[string]interface{}); ok {
+func unpackConfigurationValue(val any, r Resource) (any, bool) {
+	if t, ok := val.(map[string]any); ok {
 		for k, v := range t {
 			switch k {
 			case "references":
-				reference := v.([]interface{})[0].(string)
+				reference := v.([]any)[0].(string)
 				if strings.HasPrefix(r.Address, "module.") {
 					hashable := strings.TrimSuffix(strings.Split(r.Address, fmt.Sprintf(".%s.", r.Type))[0], ".data")
 					/* #nosec */

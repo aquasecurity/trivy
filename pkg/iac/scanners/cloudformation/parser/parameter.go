@@ -18,8 +18,8 @@ type Parameter struct {
 }
 
 type parameterInner struct {
-	Type    string      `yaml:"Type"`
-	Default interface{} `yaml:"Default"`
+	Type    string `yaml:"Type"`
+	Default any    `yaml:"Default"`
 }
 
 func (p *Parameter) UnmarshalYAML(node *yaml.Node) error {
@@ -43,11 +43,11 @@ func (p *Parameter) Type() cftypes.CfType {
 	}
 }
 
-func (p *Parameter) Default() interface{} {
+func (p *Parameter) Default() any {
 	return p.inner.Default
 }
 
-func (p *Parameter) UpdateDefault(inVal interface{}) {
+func (p *Parameter) UpdateDefault(inVal any) {
 	passedVal := inVal.(string)
 
 	switch p.inner.Type {
@@ -90,36 +90,34 @@ func (p *Parameters) UnmarshalJSON(data []byte) error {
 
 		(*p) = params.Params
 	case data[0] == '[' && data[len(data)-1] == ']': // array
-		{
-			// Original format
-			var params []string
+		// Original format
+		var params []string
 
-			if err := json.Unmarshal(data, &params); err == nil {
-				for _, param := range params {
-					parts := strings.Split(param, "=")
-					if len(parts) != 2 {
-						return fmt.Errorf("invalid key-value parameter: %q", param)
-					}
-					(*p)[parts[0]] = parts[1]
+		if err := json.Unmarshal(data, &params); err == nil {
+			for _, param := range params {
+				parts := strings.Split(param, "=")
+				if len(parts) != 2 {
+					return fmt.Errorf("invalid key-value parameter: %q", param)
 				}
-				return nil
+				(*p)[parts[0]] = parts[1]
 			}
+			return nil
+		}
 
-			// CloudFormation like format
-			var cfparams []struct {
-				ParameterKey   string `json:"ParameterKey"`
-				ParameterValue string `json:"ParameterValue"`
-			}
+		// CloudFormation like format
+		var cfparams []struct {
+			ParameterKey   string `json:"ParameterKey"`
+			ParameterValue string `json:"ParameterValue"`
+		}
 
-			d := json.NewDecoder(bytes.NewReader(data))
-			d.DisallowUnknownFields()
-			if err := d.Decode(&cfparams); err != nil {
-				return err
-			}
+		d := json.NewDecoder(bytes.NewReader(data))
+		d.DisallowUnknownFields()
+		if err := d.Decode(&cfparams); err != nil {
+			return err
+		}
 
-			for _, param := range cfparams {
-				(*p)[param.ParameterKey] = param.ParameterValue
-			}
+		for _, param := range cfparams {
+			(*p)[param.ParameterKey] = param.ParameterValue
 		}
 	default:
 		return fmt.Errorf("unsupported parameters format")

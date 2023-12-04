@@ -59,7 +59,7 @@ func getEncryption(block *terraform.Block, a *adapter) s3.Encryption {
 	}
 }
 
-func newS3Encryption(root *terraform.Block, sseConfgihuration *terraform.Block) s3.Encryption {
+func newS3Encryption(root, sseConfgihuration *terraform.Block) s3.Encryption {
 	return s3.Encryption{
 		Metadata: root.GetMetadata(),
 		Enabled:  isEncrypted(sseConfgihuration),

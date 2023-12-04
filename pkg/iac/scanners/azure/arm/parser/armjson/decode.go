@@ -7,7 +7,7 @@ import (
 	"github.com/aquasecurity/defsec/pkg/types"
 )
 
-func (n *node) Decode(target interface{}) error {
+func (n *node) Decode(target any) error {
 	v := reflect.ValueOf(target)
 	return n.decodeToValue(v)
 }

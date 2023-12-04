@@ -23,6 +23,6 @@ func (o *Options) hasPrefix(prefixes ...string) bool {
 	return false
 }
 
-func (o *Options) Debug(format string, args ...interface{}) {
+func (o *Options) Debug(format string, args ...any) {
 	o.DebugLogger.Log(format, args...)
 }

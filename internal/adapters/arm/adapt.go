@@ -21,7 +21,7 @@ import (
 	scanner "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 )
 
-// Adapt ...
+// Adapt ARM templates
 func Adapt(ctx context.Context, deployment scanner.Deployment) *state.State {
 	return &state.State{
 		Azure: adaptAzure(deployment),

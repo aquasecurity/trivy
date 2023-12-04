@@ -52,19 +52,19 @@ func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
 }
 
 // New creates a new Scanner
-func New(options ...options.ScannerOption) *Scanner {
+func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
-		options: options,
+		options: opts,
 	}
 
-	for _, option := range options {
+	for _, option := range opts {
 		option(s)
 	}
 	return s
 }
 
-func (s *Scanner) AddParserOptions(options ...options.ParserOption) {
-	s.parserOptions = append(s.parserOptions, options...)
+func (s *Scanner) AddParserOptions(opts ...options.ParserOption) {
+	s.parserOptions = append(s.parserOptions, opts...)
 }
 
 func (s *Scanner) SetUseEmbeddedPolicies(b bool) {

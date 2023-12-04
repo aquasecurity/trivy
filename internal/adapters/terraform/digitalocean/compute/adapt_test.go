@@ -138,9 +138,7 @@ func Test_adaptFirewalls(t *testing.T) {
 `,
 			expected: []compute.Firewall{
 				{
-					Metadata:      defsecTypes.NewTestMetadata(),
-					OutboundRules: []compute.OutboundFirewallRule{},
-					InboundRules:  []compute.InboundFirewallRule{},
+					Metadata: defsecTypes.NewTestMetadata(),
 				},
 			},
 		},

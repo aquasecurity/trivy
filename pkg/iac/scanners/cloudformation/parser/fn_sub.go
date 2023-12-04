@@ -26,7 +26,7 @@ func ResolveSub(property *Property) (resolved *Property, success bool) {
 	return property, false
 }
 
-func resolveMapSub(refValue *Property, original *Property) (*Property, bool) {
+func resolveMapSub(refValue, original *Property) (*Property, bool) {
 	refValues := refValue.AsList()
 	if len(refValues) != 2 {
 		return abortIntrinsic(original, "Fn::Sub with list expects 2 values, returning original property")
@@ -60,7 +60,7 @@ func resolveMapSub(refValue *Property, original *Property) (*Property, bool) {
 	return original.deriveResolved(cftypes.String, workingString), true
 }
 
-func resolveStringSub(refValue *Property, original *Property) *Property {
+func resolveStringSub(refValue, original *Property) *Property {
 	workingString := refValue.AsString()
 
 	for k, param := range pseudoParameters {

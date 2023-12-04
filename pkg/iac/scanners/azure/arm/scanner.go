@@ -25,6 +25,7 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
+	mu                    sync.Mutex
 	scannerOptions        []options.ScannerOption
 	parserOptions         []options.ParserOption
 	debug                 debug.Logger
@@ -37,7 +38,6 @@ type Scanner struct {
 	policyReaders         []io.Reader
 	regoScanner           *rego.Scanner
 	spec                  string
-	sync.Mutex
 }
 
 func (s *Scanner) SetSpec(spec string) {
@@ -104,8 +104,8 @@ func (s *Scanner) SetPolicyNamespaces(...string)   {}
 func (s *Scanner) SetRegoErrorLimit(_ int)         {}
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return nil
 	}
@@ -118,17 +118,17 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) error {
 	return nil
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, dir string) (scan.Results, error) {
-	p := parser.New(fs, s.parserOptions...)
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
+	p := parser.New(fsys, s.parserOptions...)
 	deployments, err := p.ParseFS(ctx, dir)
 	if err != nil {
 		return nil, err
 	}
-	if err := s.initRegoScanner(fs); err != nil {
+	if err := s.initRegoScanner(fsys); err != nil {
 		return nil, err
 	}
 
-	return s.scanDeployments(ctx, deployments, fs)
+	return s.scanDeployments(ctx, deployments, fsys)
 }
 
 func (s *Scanner) scanDeployments(ctx context.Context, deployments []azure.Deployment, f fs.FS) (scan.Results, error) {
@@ -147,7 +147,7 @@ func (s *Scanner) scanDeployments(ctx context.Context, deployments []azure.Deplo
 	return results, nil
 }
 
-func (s *Scanner) scanDeployment(ctx context.Context, deployment azure.Deployment, fs fs.FS) (scan.Results, error) {
+func (s *Scanner) scanDeployment(ctx context.Context, deployment azure.Deployment, fsys fs.FS) (scan.Results, error) {
 	var results scan.Results
 	deploymentState := s.adaptDeployment(ctx, deployment)
 	if !s.regoOnly {
@@ -170,7 +170,7 @@ func (s *Scanner) scanDeployment(ctx context.Context, deployment azure.Deploymen
 
 	regoResults, err := s.regoScanner.ScanInput(ctx, rego.Input{
 		Path:     deployment.Metadata.Range().GetFilename(),
-		FS:       fs,
+		FS:       fsys,
 		Contents: deploymentState.ToRego(),
 	})
 	if err != nil {

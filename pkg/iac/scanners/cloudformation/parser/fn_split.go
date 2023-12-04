@@ -30,7 +30,7 @@ func ResolveSplit(property *Property) (resolved *Property, success bool) {
 	return property.deriveResolved(cftypes.List, propertyList), true
 }
 
-func createPropertyList(splitProp *Property, delimiterProp *Property, parent *Property) []*Property {
+func createPropertyList(splitProp, delimiterProp, parent *Property) []*Property {
 
 	splitString := splitProp.AsString()
 	delimiter := delimiterProp.AsString()

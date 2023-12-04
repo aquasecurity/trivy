@@ -36,7 +36,7 @@ func Test_Intersect(t *testing.T) {
 				[]interface{}{"a", "b", "c"},
 				[]interface{}{},
 			},
-			expected: []interface{}{},
+			expected: *new([]interface{}),
 		},
 		{
 			name: "intersect two arrays with both empty",
@@ -44,7 +44,7 @@ func Test_Intersect(t *testing.T) {
 				[]interface{}{},
 				[]interface{}{},
 			},
-			expected: []interface{}{},
+			expected: *new([]interface{}),
 		},
 		{
 			name: "intersect two arrays with both nil",

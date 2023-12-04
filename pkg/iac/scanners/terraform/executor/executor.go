@@ -66,7 +66,7 @@ func New(options ...Option) *Executor {
 }
 
 // Find element in list
-func checkInList(id string, altIDs []string, list []string) bool {
+func checkInList(id string, altIDs, list []string) bool {
 	for _, codeIgnored := range list {
 		if codeIgnored == id {
 			return true

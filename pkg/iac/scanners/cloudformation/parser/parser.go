@@ -62,9 +62,9 @@ func (p *Parser) SetSkipRequiredCheck(b bool) {
 	p.skipRequired = b
 }
 
-func New(options ...options.ParserOption) *Parser {
+func New(opts ...options.ParserOption) *Parser {
 	p := &Parser{}
-	for _, option := range options {
+	for _, option := range opts {
 		option(p)
 	}
 	return p
@@ -103,12 +103,12 @@ func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, dir string) (FileConte
 	return contexts, nil
 }
 
-func (p *Parser) Required(fs fs.FS, path string) bool {
+func (p *Parser) Required(fsys fs.FS, path string) bool {
 	if p.skipRequired {
 		return true
 	}
 
-	f, err := fs.Open(filepath.ToSlash(path))
+	f, err := fsys.Open(filepath.ToSlash(path))
 	if err != nil {
 		return false
 	}
@@ -120,7 +120,7 @@ func (p *Parser) Required(fs fs.FS, path string) bool {
 
 }
 
-func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (context *FileContext, err error) {
+func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *FileContext, err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			err = fmt.Errorf("panic during parse: %s", e)
@@ -159,40 +159,40 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (contex
 
 	lines := strings.Split(string(content), "\n")
 
-	context = &FileContext{
+	fctx = &FileContext{
 		filepath:     path,
 		lines:        lines,
 		SourceFormat: sourceFmt,
 	}
 
 	if strings.HasSuffix(strings.ToLower(path), ".json") {
-		if err := jfather.Unmarshal(content, context); err != nil {
+		if err := jfather.Unmarshal(content, fctx); err != nil {
 			return nil, NewErrInvalidContent(path, err)
 		}
 	} else {
-		if err := yaml.Unmarshal(content, context); err != nil {
+		if err := yaml.Unmarshal(content, fctx); err != nil {
 			return nil, NewErrInvalidContent(path, err)
 		}
 	}
 
-	context.OverrideParameters(p.overridedParameters)
+	fctx.OverrideParameters(p.overridedParameters)
 
-	context.lines = lines
-	context.SourceFormat = sourceFmt
-	context.filepath = path
+	fctx.lines = lines
+	fctx.SourceFormat = sourceFmt
+	fctx.filepath = path
 
 	p.debug.Log("Context loaded from source %s", path)
 
 	// the context must be set to conditions before resources
-	for _, c := range context.Conditions {
-		c.setContext(context)
+	for _, c := range fctx.Conditions {
+		c.setContext(fctx)
 	}
 
-	for name, r := range context.Resources {
-		r.ConfigureResource(name, fsys, path, context)
+	for name, r := range fctx.Resources {
+		r.ConfigureResource(name, fsys, path, fctx)
 	}
 
-	return context, nil
+	return fctx, nil
 }
 
 func (p *Parser) parseParams() error {

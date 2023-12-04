@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func (s *Scanner) isIgnored(ctx context.Context, namespace string, ruleName string, input interface{}) (bool, error) {
+func (s *Scanner) isIgnored(ctx context.Context, namespace, ruleName string, input any) (bool, error) {
 	if ignored, err := s.isNamespaceIgnored(ctx, namespace, input); err != nil {
 		return false, err
 	} else if ignored {
@@ -14,7 +14,7 @@ func (s *Scanner) isIgnored(ctx context.Context, namespace string, ruleName stri
 	return s.isRuleIgnored(ctx, namespace, ruleName, input)
 }
 
-func (s *Scanner) isNamespaceIgnored(ctx context.Context, namespace string, input interface{}) (bool, error) {
+func (s *Scanner) isNamespaceIgnored(ctx context.Context, namespace string, input any) (bool, error) {
 	exceptionQuery := fmt.Sprintf("data.namespace.exceptions.exception[_] == %q", namespace)
 	result, _, err := s.runQuery(ctx, exceptionQuery, input, true)
 	if err != nil {
@@ -23,7 +23,7 @@ func (s *Scanner) isNamespaceIgnored(ctx context.Context, namespace string, inpu
 	return result.Allowed(), nil
 }
 
-func (s *Scanner) isRuleIgnored(ctx context.Context, namespace string, ruleName string, input interface{}) (bool, error) {
+func (s *Scanner) isRuleIgnored(ctx context.Context, namespace, ruleName string, input any) (bool, error) {
 	exceptionQuery := fmt.Sprintf("endswith(%q, data.%s.exception[_][_])", ruleName, namespace)
 	result, _, err := s.runQuery(ctx, exceptionQuery, input, true)
 	if err != nil {

@@ -10,7 +10,7 @@ import (
 )
 
 func BenchmarkUnmarshal_JFather(b *testing.B) {
-	target := make(map[string]interface{})
+	target := make(map[string]any)
 	input := []byte(`{
     "glossary": {
         "title": "example glossary",
@@ -41,7 +41,7 @@ func BenchmarkUnmarshal_JFather(b *testing.B) {
 }
 
 func BenchmarkUnmarshal_Traditional(b *testing.B) {
-	target := make(map[string]interface{})
+	target := make(map[string]any)
 	input := []byte(`{
     "glossary": {
         "title": "example glossary",

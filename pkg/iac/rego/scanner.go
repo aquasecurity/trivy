@@ -39,7 +39,7 @@ type Scanner struct {
 	dataFS         fs.FS
 	frameworks     []framework.Framework
 	spec           string
-	inputSchema    interface{} // unmarshalled into this from a json schema document
+	inputSchema    any // unmarshalled into this from a json schema document
 	sourceType     types.Source
 }
 
@@ -61,7 +61,7 @@ func (s *Scanner) SetUseEmbeddedPolicies(b bool) {
 	// handled externally
 }
 
-func (s *Scanner) trace(heading string, input interface{}) {
+func (s *Scanner) trace(heading string, input any) {
 	if s.traceWriter == nil {
 		return
 	}
@@ -72,12 +72,12 @@ func (s *Scanner) trace(heading string, input interface{}) {
 	_, _ = fmt.Fprintf(s.traceWriter, "REGO %[1]s:\n%s\nEND REGO %[1]s\n\n", heading, string(data))
 }
 
-func (s *Scanner) SetPolicyFilesystem(fs fs.FS) {
-	s.policyFS = fs
+func (s *Scanner) SetPolicyFilesystem(fsys fs.FS) {
+	s.policyFS = fsys
 }
 
-func (s *Scanner) SetDataFilesystem(fs fs.FS) {
-	s.dataFS = fs
+func (s *Scanner) SetDataFilesystem(fsys fs.FS) {
+	s.dataFS = fsys
 }
 
 func (s *Scanner) SetPolicyReaders(_ []io.Reader) {
@@ -126,7 +126,7 @@ type DynamicMetadata struct {
 	EndLine   int
 }
 
-func NewScanner(source types.Source, options ...options.ScannerOption) *Scanner {
+func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
 	schema, ok := schemas.SchemaMap[source]
 	if !ok {
 		schema = schemas.Anything
@@ -142,7 +142,7 @@ func NewScanner(source types.Source, options ...options.ScannerOption) *Scanner 
 		},
 		runtimeValues: addRuntimeValues(),
 	}
-	for _, opt := range options {
+	for _, opt := range opts {
 		opt(s)
 	}
 	if schema != schemas.None {
@@ -158,7 +158,7 @@ func (s *Scanner) SetParentDebugLogger(l debug.Logger) {
 	s.debug = l.Extend("rego")
 }
 
-func (s *Scanner) runQuery(ctx context.Context, query string, input interface{}, disableTracing bool) (rego.ResultSet, []string, error) {
+func (s *Scanner) runQuery(ctx context.Context, query string, input any, disableTracing bool) (rego.ResultSet, []string, error) {
 
 	trace := (s.traceWriter != nil || s.tracePerResult) && !disableTracing
 
@@ -203,9 +203,9 @@ func (s *Scanner) runQuery(ctx context.Context, query string, input interface{},
 }
 
 type Input struct {
-	Path     string      `json:"path"`
-	FS       fs.FS       `json:"-"`
-	Contents interface{} `json:"contents"`
+	Path     string `json:"path"`
+	FS       fs.FS  `json:"-"`
+	Contents any    `json:"contents"`
 }
 
 func GetInputsContents(inputs []Input) []any {
@@ -284,14 +284,14 @@ func isPolicyWithSubtype(sourceType types.Source) bool {
 	return false
 }
 
-func checkSubtype(ii map[string]interface{}, provider string, subTypes []SubType) bool {
+func checkSubtype(ii map[string]any, provider string, subTypes []SubType) bool {
 	if len(subTypes) == 0 {
 		return true
 	}
 
 	for _, st := range subTypes {
 		switch services := ii[provider].(type) {
-		case map[string]interface{}: // cloud
+		case map[string]any: // cloud
 			for service := range services {
 				if (service == st.Service) && (st.Provider == provider) {
 					return true
@@ -311,7 +311,7 @@ func checkSubtype(ii map[string]interface{}, provider string, subTypes []SubType
 
 func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 	for _, input := range inputs {
-		if ii, ok := input.Contents.(map[string]interface{}); ok {
+		if ii, ok := input.Contents.(map[string]any); ok {
 			for provider := range ii {
 				// TODO(simar): Add other providers
 				if !strings.Contains(strings.Join([]string{"kind", "aws", "azure"}, ","), provider) {
@@ -334,8 +334,7 @@ func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 	return false
 }
 
-func (s *Scanner) applyRule(ctx context.Context, namespace string, rule string, inputs []Input, combined bool) (scan.Results, error) {
-
+func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs []Input, combined bool) (scan.Results, error) {
 	// handle combined evaluations if possible
 	if combined {
 		s.trace("INPUT", inputs)
@@ -376,7 +375,7 @@ func (s *Scanner) applyRule(ctx context.Context, namespace string, rule string, 
 	return results, nil
 }
 
-func (s *Scanner) applyRuleCombined(ctx context.Context, namespace string, rule string, inputs []Input) (scan.Results, error) {
+func (s *Scanner) applyRuleCombined(ctx context.Context, namespace, rule string, inputs []Input) (scan.Results, error) {
 	if len(inputs) == 0 {
 		return nil, nil
 	}

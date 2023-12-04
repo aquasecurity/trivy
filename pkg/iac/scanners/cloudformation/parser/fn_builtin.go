@@ -43,7 +43,7 @@ func GetCidr(property *Property) (*Property, bool) {
 	return property.deriveResolved(cftypes.List, ranges), true
 }
 
-func calculateCidrs(ipaddress string, count int, bit int, original *Property) ([]*Property, error) {
+func calculateCidrs(ipaddress string, count, bit int, original *Property) ([]*Property, error) {
 
 	var cidrProperties []*Property
 

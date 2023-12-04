@@ -33,7 +33,7 @@ func TestScanner_Scan(t *testing.T) {
 					Namespace: "kube-system",
 					Kind:      "Cluster",
 					Name:      "k8s.io/kubernetes",
-					RawResource: map[string]interface{}{
+					RawResource: map[string]any{
 						"name":    "k8s.io/kubernetes",
 						"version": "1.21.1",
 						"type":    "ClusterInfo",
@@ -47,9 +47,9 @@ func TestScanner_Scan(t *testing.T) {
 					Namespace: "kube-system",
 					Kind:      "ControlPlaneComponents",
 					Name:      "k8s.io/apiserver",
-					RawResource: map[string]interface{}{
-						"Containers": []interface{}{
-							map[string]interface{}{
+					RawResource: map[string]any{
+						"Containers": []any{
+							map[string]any{
 								"Digest":     "18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
 								"ID":         "kube-apiserver:v1.21.1",
 								"Registry":   "k8s.gcr.io",
@@ -64,7 +64,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Kind: "NodeComponents",
 					Name: "kind-control-plane",
-					RawResource: map[string]interface{}{
+					RawResource: map[string]any{
 						"ContainerRuntimeVersion": "containerd://1.5.2",
 						"Hostname":                "kind-control-plane",
 						"KubeProxyVersion":        "6.2.13-300.fc38.aarch64",
@@ -509,18 +509,18 @@ func TestFindNodeName(t *testing.T) {
 					Namespace:   "kube-system",
 					Kind:        "Cluster",
 					Name:        "k8s.io/kubernetes",
-					RawResource: map[string]interface{}{},
+					RawResource: map[string]any{},
 				},
 				{
 					Namespace:   "kube-system",
 					Kind:        "ControlPlaneComponents",
 					Name:        "k8s.io/apiserver",
-					RawResource: map[string]interface{}{},
+					RawResource: map[string]any{},
 				},
 				{
 					Kind:        "NodeComponents",
 					Name:        "kind-control-plane",
-					RawResource: map[string]interface{}{},
+					RawResource: map[string]any{},
 				},
 			},
 			want: "kind-control-plane",
@@ -532,13 +532,13 @@ func TestFindNodeName(t *testing.T) {
 					Namespace:   "kube-system",
 					Kind:        "Cluster",
 					Name:        "k8s.io/kubernetes",
-					RawResource: map[string]interface{}{},
+					RawResource: map[string]any{},
 				},
 				{
 					Namespace:   "kube-system",
 					Kind:        "ControlPlaneComponents",
 					Name:        "k8s.io/apiserver",
-					RawResource: map[string]interface{}{},
+					RawResource: map[string]any{},
 				},
 			},
 			want: "",

@@ -75,12 +75,12 @@ FOLDER_NESTED:
 			if folder.parentBlockID != "" && folder.parentBlockID == existing.blockID {
 				existing.folder.Folders = append(existing.folder.Folders, folder.folder)
 				a.folders[i] = existing
-				continue FOLDER_NESTED
+				continue FOLDER_NESTED // nolint:gocritic
 			}
 
 		}
 	}
-FOLDER_ORG:
+FOLDER_ORG: // nolint:gocritic
 	for _, folder := range a.folders {
 		if folder.parentBlockID != "" {
 			if org, ok := a.orgs[folder.parentBlockID]; ok {

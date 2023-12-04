@@ -20,16 +20,16 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	debug         debug.Logger
-	policyDirs    []string
-	policyReaders []io.Reader
-	parser        *parser.Parser
-	regoScanner   *rego.Scanner
-	skipRequired  bool
-	options       []options.ScannerOption
-	frameworks    []framework.Framework
-	spec          string
-	sync.Mutex
+	mu                    sync.Mutex
+	debug                 debug.Logger
+	policyDirs            []string
+	policyReaders         []io.Reader
+	parser                *parser.Parser
+	regoScanner           *rego.Scanner
+	skipRequired          bool
+	options               []options.ScannerOption
+	frameworks            []framework.Framework
+	spec                  string
 	loadEmbeddedLibraries bool
 	loadEmbeddedPolicies  bool
 }
@@ -112,9 +112,9 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	return s
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, path string) (scan.Results, error) {
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, path string) (scan.Results, error) {
 
-	files, err := s.parser.ParseFS(ctx, fs, path)
+	files, err := s.parser.ParseFS(ctx, fsys, path)
 	if err != nil {
 		return nil, err
 	}
@@ -127,33 +127,33 @@ func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, path string) (scan.Resul
 	for path, dfile := range files {
 		inputs = append(inputs, rego.Input{
 			Path:     path,
-			FS:       fs,
+			FS:       fsys,
 			Contents: dfile.ToRego(),
 		})
 	}
 
-	results, err := s.scanRego(ctx, fs, inputs...)
+	results, err := s.scanRego(ctx, fsys, inputs...)
 	if err != nil {
 		return nil, err
 	}
 	return results, nil
 }
 
-func (s *Scanner) ScanFile(ctx context.Context, fs fs.FS, path string) (scan.Results, error) {
-	dockerfile, err := s.parser.ParseFile(ctx, fs, path)
+func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.Results, error) {
+	dockerfile, err := s.parser.ParseFile(ctx, fsys, path)
 	if err != nil {
 		return nil, err
 	}
 	s.debug.Log("Scanning %s...", path)
-	return s.scanRego(ctx, fs, rego.Input{
+	return s.scanRego(ctx, fsys, rego.Input{
 		Path:     path,
 		Contents: dockerfile.ToRego(),
 	})
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}

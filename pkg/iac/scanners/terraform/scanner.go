@@ -31,7 +31,7 @@ var _ options.ConfigurableScanner = (*Scanner)(nil)
 var _ ConfigurableTerraformScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	sync.Mutex
+	mu                    sync.Mutex
 	options               []options.ScannerOption
 	parserOpt             []options.ParserOption
 	executorOpt           []executor.Option
@@ -76,12 +76,12 @@ func (s *Scanner) SetForceAllDirs(b bool) {
 	s.forceAllDirs = b
 }
 
-func (s *Scanner) AddParserOptions(options ...options.ParserOption) {
-	s.parserOpt = append(s.parserOpt, options...)
+func (s *Scanner) AddParserOptions(opts ...options.ParserOption) {
+	s.parserOpt = append(s.parserOpt, opts...)
 }
 
-func (s *Scanner) AddExecutorOptions(options ...executor.Option) {
-	s.executorOpt = append(s.executorOpt, options...)
+func (s *Scanner) AddExecutorOptions(opts ...executor.Option) {
+	s.executorOpt = append(s.executorOpt, opts...)
 }
 
 func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
@@ -128,12 +128,12 @@ type Metrics struct {
 	}
 }
 
-func New(options ...options.ScannerOption) *Scanner {
+func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		dirs:    make(map[string]struct{}),
-		options: options,
+		options: opts,
 	}
-	for _, opt := range options {
+	for _, opt := range opts {
 		opt(s)
 	}
 	return s
@@ -145,8 +145,8 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Re
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}

@@ -23,7 +23,7 @@ func Test_Scanning_Plan(t *testing.T) {
 		"testdata/plan.json": {Data: b},
 	}
 
-	results, err := scanner.ScanFile("testdata/plan.json", testFS)
+	results, err := scanner.ScanFile(testFS, "testdata/plan.json")
 	require.NoError(t, err)
 	require.NotNil(t, results)
 

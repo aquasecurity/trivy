@@ -89,13 +89,14 @@ func (sm *StaticMetadata) Update(meta map[string]any) error {
 		}
 	}
 	if raw, ok := meta["related_resources"]; ok {
-		if relatedResources, ok := raw.([]map[string]any); ok {
+		switch relatedResources := raw.(type) {
+		case []map[string]any:
 			for _, relatedResource := range relatedResources {
 				if raw, ok := relatedResource["ref"]; ok {
 					sm.References = append(sm.References, fmt.Sprintf("%s", raw))
 				}
 			}
-		} else if relatedResources, ok := raw.([]string); ok {
+		case []string:
 			sm.References = append(sm.References, relatedResources...)
 		}
 	}
@@ -132,10 +133,10 @@ func (sm *StaticMetadata) FromAnnotations(annotations *ast.Annotations) error {
 	return nil
 }
 
-func NewEngineMetadata(schema string, meta map[string]interface{}) (*scan.EngineMetadata, error) {
-	var sMap map[string]interface{}
+func NewEngineMetadata(schema string, meta map[string]any) (*scan.EngineMetadata, error) {
+	var sMap map[string]any
 	if raw, ok := meta[schema]; ok {
-		sMap, ok = raw.(map[string]interface{})
+		sMap, ok = raw.(map[string]any)
 		if !ok {
 			return nil, fmt.Errorf("failed to parse %s metadata: not an object", schema)
 		}
@@ -280,7 +281,7 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 		return nil, fmt.Errorf("failed to parse metadata: unexpected expression length")
 	}
 	expression := set[0].Expressions[0]
-	meta, ok := expression.Value.(map[string]interface{})
+	meta, ok := expression.Value.(map[string]any)
 	if !ok {
 		return nil, fmt.Errorf("failed to parse metadata: not an object")
 	}
@@ -292,7 +293,7 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 	return metadata, nil
 }
 
-// nolint:cyclop
+// nolint:gocyclo
 func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.Module) InputOptions {
 
 	options := InputOptions{
@@ -300,12 +301,12 @@ func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.M
 		Selectors: nil,
 	}
 
-	var metadata map[string]interface{}
+	var metadata map[string]any
 
 	// read metadata from official rego annotations if possible
 	if annotation := m.findPackageAnnotations(module); annotation != nil && annotation.Custom != nil {
 		if input, ok := annotation.Custom["input"]; ok {
-			if mapped, ok := input.(map[string]interface{}); ok {
+			if mapped, ok := input.(map[string]any); ok {
 				metadata = mapped
 			}
 		}
@@ -332,7 +333,7 @@ func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.M
 			return options
 		}
 		expression := set[0].Expressions[0]
-		meta, ok := expression.Value.(map[string]interface{})
+		meta, ok := expression.Value.(map[string]any)
 		if !ok {
 			return options
 		}
@@ -346,10 +347,10 @@ func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.M
 	}
 
 	if raw, ok := metadata["selector"]; ok {
-		if each, ok := raw.([]interface{}); ok {
+		if each, ok := raw.([]any); ok {
 			for _, rawSelector := range each {
 				var selector Selector
-				if selectorMap, ok := rawSelector.(map[string]interface{}); ok {
+				if selectorMap, ok := rawSelector.(map[string]any); ok {
 					if rawType, ok := selectorMap["type"]; ok {
 						selector.Type = fmt.Sprintf("%s", rawType)
 						// handle backward compatibility for "defsec" source type which is now "cloud"
@@ -357,9 +358,9 @@ func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.M
 							selector.Type = string(defsecTypes.SourceCloud)
 						}
 					}
-					if subType, ok := selectorMap["subtypes"].([]interface{}); ok {
+					if subType, ok := selectorMap["subtypes"].([]any); ok {
 						for _, subT := range subType {
-							if st, ok := subT.(map[string]interface{}); ok {
+							if st, ok := subT.(map[string]any); ok {
 								s := SubType{}
 								_ = mapstructure.Decode(st, &s)
 								selector.Subtypes = append(selector.Subtypes, s)

@@ -5,14 +5,14 @@ import (
 )
 
 type Node interface {
-	Evaluate(deploymentProvider functions.DeploymentData) interface{}
+	Evaluate(deploymentProvider functions.DeploymentData) any
 }
 
 type expressionValue struct {
-	val interface{}
+	val any
 }
 
-func (e expressionValue) Evaluate(deploymentProvider functions.DeploymentData) interface{} {
+func (e expressionValue) Evaluate(deploymentProvider functions.DeploymentData) any {
 	if f, ok := e.val.(expression); ok {
 		return f.Evaluate(deploymentProvider)
 	}
@@ -24,8 +24,8 @@ type expression struct {
 	args []Node
 }
 
-func (f expression) Evaluate(deploymentProvider functions.DeploymentData) interface{} {
-	args := make([]interface{}, len(f.args))
+func (f expression) Evaluate(deploymentProvider functions.DeploymentData) any {
+	args := make([]any, len(f.args))
 	for i, arg := range f.args {
 		args[i] = arg.Evaluate(deploymentProvider)
 	}

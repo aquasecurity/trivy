@@ -50,7 +50,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 		FS: srcFS,
@@ -85,7 +85,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 		FS: srcFS,
@@ -120,7 +120,7 @@ warn {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -152,7 +152,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": false,
 		},
 	})
@@ -195,7 +195,7 @@ exception[ns] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -243,7 +243,7 @@ exception[ns] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -280,7 +280,7 @@ exception[rules] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -316,7 +316,7 @@ exception[rules] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -350,7 +350,7 @@ deny_evil {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -381,7 +381,7 @@ deny[msg] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -419,7 +419,7 @@ deny[res] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -461,7 +461,7 @@ deny[res] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -515,7 +515,7 @@ deny[res] {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -564,7 +564,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -598,7 +598,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -629,7 +629,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -664,7 +664,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -698,7 +698,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"evil": true,
 		},
 	})
@@ -736,7 +736,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"text": "dynamic",
 		},
 	})
@@ -769,7 +769,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"text": "test",
 		},
 	})
@@ -816,7 +816,7 @@ deny {
 
 	results, err := scanner.ScanInput(context.TODO(), Input{
 		Path: "/evil.lol",
-		Contents: map[string]interface{}{
+		Contents: map[string]any{
 			"text": "test",
 		},
 	})

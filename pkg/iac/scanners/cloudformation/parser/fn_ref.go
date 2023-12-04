@@ -25,22 +25,24 @@ func ResolveReference(property *Property) (resolved *Property, success bool) {
 
 	var param *Parameter
 	for k := range property.ctx.Parameters {
-		if k == refValue {
-			param = property.ctx.Parameters[k]
-			resolvedType := param.Type()
-
-			switch param.Default().(type) {
-			case bool:
-				resolvedType = cftypes.Bool
-			case string:
-				resolvedType = cftypes.String
-			case int:
-				resolvedType = cftypes.Int
-			}
-
-			resolved = property.deriveResolved(resolvedType, param.Default())
-			return resolved, true
+		if k != refValue {
+			continue
 		}
+
+		param = property.ctx.Parameters[k]
+		resolvedType := param.Type()
+
+		switch param.Default().(type) {
+		case bool:
+			resolvedType = cftypes.Bool
+		case string:
+			resolvedType = cftypes.String
+		case int:
+			resolvedType = cftypes.Int
+		}
+
+		resolved = property.deriveResolved(resolvedType, param.Default())
+		return resolved, true
 	}
 
 	for k := range property.ctx.Resources {

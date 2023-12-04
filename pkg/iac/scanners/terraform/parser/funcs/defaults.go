@@ -69,7 +69,7 @@ var DefaultsFunc = function.New(&function.Spec{
 	},
 })
 
-// nolint:cyclop
+// nolint:gocyclo
 func defaultsApply(input, fallback cty.Value) cty.Value {
 	wantTy := input.Type()
 

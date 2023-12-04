@@ -4,8 +4,8 @@ import "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 
 type pseudoParameter struct {
 	t   cftypes.CfType
-	val interface{}
-	raw interface{}
+	val any
+	raw any
 }
 
 var pseudoParameters = map[string]pseudoParameter{
@@ -36,7 +36,7 @@ var pseudoParameters = map[string]pseudoParameter{
 	"AWS::URLSuffix": {t: cftypes.String, val: "amazonaws.com"},
 }
 
-func (p pseudoParameter) getRawValue() interface{} {
+func (p pseudoParameter) getRawValue() any {
 	switch p.t {
 	case cftypes.List:
 		return p.raw

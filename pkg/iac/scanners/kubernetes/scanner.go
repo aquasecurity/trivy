@@ -24,14 +24,14 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	debug         debug.Logger
-	options       []options.ScannerOption
-	policyDirs    []string
-	policyReaders []io.Reader
-	regoScanner   *rego.Scanner
-	parser        *parser.Parser
-	skipRequired  bool
-	sync.Mutex
+	mu                    sync.Mutex
+	debug                 debug.Logger
+	options               []options.ScannerOption
+	policyDirs            []string
+	policyReaders         []io.Reader
+	regoScanner           *rego.Scanner
+	parser                *parser.Parser
+	skipRequired          bool
 	loadEmbeddedPolicies  bool
 	frameworks            []framework.Framework
 	spec                  string
@@ -107,8 +107,8 @@ func (s *Scanner) Name() string {
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.regoScanner != nil {
 		return s.regoScanner, nil
 	}

@@ -9,7 +9,7 @@ import (
 	"github.com/aquasecurity/trivy/test/testutil"
 )
 
-func CreateModulesFromSource(t *testing.T, source string, ext string) terraform.Modules {
+func CreateModulesFromSource(t *testing.T, source, ext string) terraform.Modules {
 	fs := testutil.CreateFS(t, map[string]string{
 		"source" + ext: source,
 	})

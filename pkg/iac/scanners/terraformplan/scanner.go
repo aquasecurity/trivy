@@ -115,7 +115,7 @@ func (s *Scanner) ScanFS(ctx context.Context, inputFS fs.FS, dir string) (scan.R
 
 	var results scan.Results
 	for _, f := range filesFound {
-		res, err := s.ScanFile(f, inputFS)
+		res, err := s.ScanFile(inputFS, f)
 		if err != nil {
 			return nil, err
 		}
@@ -124,21 +124,21 @@ func (s *Scanner) ScanFS(ctx context.Context, inputFS fs.FS, dir string) (scan.R
 	return results, nil
 }
 
-func New(options ...options.ScannerOption) *Scanner {
+func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
 		parser:  *parser.New(),
-		options: options,
+		options: opts,
 	}
-	for _, o := range options {
+	for _, o := range opts {
 		o(scanner)
 	}
 	return scanner
 }
 
-func (s *Scanner) ScanFile(filepath string, fs fs.FS) (scan.Results, error) {
+func (s *Scanner) ScanFile(fsys fs.FS, filepath string) (scan.Results, error) {
 
 	s.debug.Log("Scanning file %s", filepath)
-	file, err := fs.Open(filepath)
+	file, err := fsys.Open(filepath)
 	if err != nil {
 		return nil, err
 	}

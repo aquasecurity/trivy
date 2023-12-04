@@ -26,11 +26,11 @@ type Pool struct {
 	regoOnly     bool
 }
 
-func NewPool(size int, rules []types.RegisteredRule, modules terraform.Modules, state *state.State, ignoreErrors bool, regoScanner *rego.Scanner, regoOnly bool) *Pool {
+func NewPool(size int, rules []types.RegisteredRule, modules terraform.Modules, s *state.State, ignoreErrors bool, regoScanner *rego.Scanner, regoOnly bool) *Pool {
 	return &Pool{
 		size:         size,
 		rules:        rules,
-		state:        state,
+		state:        s,
 		modules:      modules,
 		ignoreErrors: ignoreErrors,
 		rs:           regoScanner,
@@ -227,7 +227,7 @@ func cleanPathRelativeToWorkingDir(dir, path string) string {
 	return relPath
 }
 
-func wildcardMatch(pattern string, subject string) bool {
+func wildcardMatch(pattern, subject string) bool {
 	if pattern == "" {
 		return false
 	}
@@ -260,7 +260,7 @@ type Worker struct {
 	incoming <-chan Job
 	mu       sync.Mutex
 	results  scan.Results
-	panic    interface{}
+	panic    any
 }
 
 func NewWorker(incoming <-chan Job) *Worker {

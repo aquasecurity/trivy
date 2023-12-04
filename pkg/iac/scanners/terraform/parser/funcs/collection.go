@@ -597,10 +597,11 @@ var TransposeFunc = function.New(&function.Spec{
 	},
 })
 
+// nolint:gocritic
 // ListFunc constructs a function that takes an arbitrary number of arguments
 // and returns a list containing those values in the same order.
 //
-// This function is deprecated in Terraform v0.12 // nolint:gocritic
+// This function is deprecated in Terraform v0.12
 var ListFunc = function.New(&function.Spec{
 	Params: []function.Parameter{},
 	VarParam: &function.Parameter{
@@ -618,10 +619,11 @@ var ListFunc = function.New(&function.Spec{
 	},
 })
 
+// nolint:gocritic
 // MapFunc constructs a function that takes an even number of arguments and
 // returns a map whose elements are constructed from consecutive pairs of arguments.
 //
-// This function is deprecated in Terraform v0.12 // nolint:gocritic
+// This function is deprecated in Terraform v0.12
 var MapFunc = function.New(&function.Spec{
 	Params: []function.Parameter{},
 	VarParam: &function.Parameter{
