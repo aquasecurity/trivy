@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -136,7 +137,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 
 func createFixedVersions(advisory dbTypes.Advisory) string {
 	if len(advisory.PatchedVersions) != 0 {
-		return strings.Join(advisory.PatchedVersions, ", ")
+		return joinFixedVersions(advisory.PatchedVersions)
 	}
 
 	var fixedVersions []string
@@ -149,5 +150,9 @@ func createFixedVersions(advisory dbTypes.Advisory) string {
 			}
 		}
 	}
-	return strings.Join(fixedVersions, ", ")
+	return joinFixedVersions(fixedVersions)
+}
+
+func joinFixedVersions(fixedVersions []string) string {
+	return strings.Join(lo.Uniq(fixedVersions), ", ")
 }
