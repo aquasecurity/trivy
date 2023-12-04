@@ -1,6 +1,6 @@
 # Reporting
 
-## Supported Formats
+## Format
 Trivy supports the following formats:
 
 - Table
@@ -372,6 +372,33 @@ $ trivy image --format template --template "@/usr/local/share/trivy/templates/ht
 
 ### SBOM
 See [here](../supply-chain/sbom.md) for details.
+
+## Output
+Trivy supports the following output destinations:
+
+- File
+- Plugin
+
+### File
+By specifying `--output <file_path>`, you can output the results to a file.
+Here is an example:
+
+```
+$ trivy image --format json --output result.json debian:12
+```
+
+### Plugin
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+Plugins capable of receiving Trivy's results via standard input, called "output plugin", can be seamlessly invoked using the `--output` flag.
+
+```
+$ trivy <target> [--format <format>] --output plugin=<plugin_name> [--output-plugin-arg <plugin_flags>] <target_name>
+```
+
+This is useful for cases where you want to convert the output into a custom format, or when you want to send the output somewhere.
+For more details, please check [here](../advanced/plugins.md#output-plugins).
 
 ## Converting
 To generate multiple reports, you can generate the JSON report first and convert it to other formats with the `convert` subcommand.
