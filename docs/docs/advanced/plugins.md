@@ -204,6 +204,9 @@ $ trivy image --format json --output plugin=<plugin_name> [--output-plugin-arg <
 
 Since scan results are passed to the plugin via standard input, plugins must be capable of handling standard input.
 
+!!! warning
+    To avoid Trivy hanging, you need to read all data from `Stdin` before the plugin exits successfully or stops with an error code.
+
 While the example passes JSON to the plugin, other formats like SBOM can also be passed (e.g., `--format cyclonedx`).
 
 If a plugin requires flags or other arguments, they can be passed using `--output-plugin-arg`.
