@@ -80,7 +80,7 @@ func LoadPoliciesFromDirs(target fs.FS, paths ...string) (map[string]*ast.Module
 				return nil
 			}
 
-			if strings.HasSuffix(filepath.Dir(filepath.ToSlash(path)), "policies/advanced/optional") {
+			if strings.HasSuffix(filepath.Dir(path), filepath.Join("policies", "advanced", "optional")) {
 				return fs.SkipDir
 			}
 
