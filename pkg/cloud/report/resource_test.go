@@ -2,6 +2,7 @@ package report
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -111,7 +112,7 @@ No problems detected.
 
 			output := bytes.NewBuffer(nil)
 			tt.options.SetOutputWriter(output)
-			require.NoError(t, Write(report, tt.options, tt.fromCache))
+			require.NoError(t, Write(context.Background(), report, tt.options, tt.fromCache))
 
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)

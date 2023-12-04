@@ -72,6 +72,7 @@ require (
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd
 	github.com/masahiro331/go-xfs-filesystem v0.0.0-20230608043311-a335f4599b70
+	github.com/mattn/go-shellwords v1.0.12
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/moby/buildkit v0.11.6

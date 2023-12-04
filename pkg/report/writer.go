@@ -1,6 +1,8 @@
 package report
 
 import (
+	"context"
+	"errors"
 	"io"
 	"strings"
 	"sync"
@@ -24,12 +26,16 @@ const (
 )
 
 // Write writes the result to output, format as passed in argument
-func Write(report types.Report, option flag.Options) error {
-	output, cleanup, err := option.OutputWriter()
+func Write(ctx context.Context, report types.Report, option flag.Options) (err error) {
+	output, cleanup, err := option.OutputWriter(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to create a file: %w", err)
 	}
-	defer cleanup()
+	defer func() {
+		if cerr := cleanup(); cerr != nil {
+			err = errors.Join(err, cerr)
+		}
+	}()
 
 	// Compliance report
 	if option.Compliance.Spec.ID != "" {
@@ -91,9 +97,10 @@ func Write(report types.Report, option flag.Options) error {
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
 
-	if err := writer.Write(report); err != nil {
+	if err = writer.Write(report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
+
 	return nil
 }
 
