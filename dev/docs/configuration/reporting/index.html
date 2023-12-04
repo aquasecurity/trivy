@@ -2214,11 +2214,11 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#format" class="md-nav__link">
-    Format
+  <a href="#supported-formats" class="md-nav__link">
+    Supported Formats
   </a>
   
-    <nav class="md-nav" aria-label="Format">
+    <nav class="md-nav" aria-label="Supported Formats">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2326,33 +2326,6 @@ You're not viewing the latest version.
           <li class="md-nav__item">
   <a href="#sbom" class="md-nav__link">
     SBOM
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#output" class="md-nav__link">
-    Output
-  </a>
-  
-    <nav class="md-nav" aria-label="Output">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#file" class="md-nav__link">
-    File
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#plugin" class="md-nav__link">
-    Plugin
   </a>
   
 </li>
@@ -3692,11 +3665,11 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#format" class="md-nav__link">
-    Format
+  <a href="#supported-formats" class="md-nav__link">
+    Supported Formats
   </a>
   
-    <nav class="md-nav" aria-label="Format">
+    <nav class="md-nav" aria-label="Supported Formats">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3814,33 +3787,6 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#output" class="md-nav__link">
-    Output
-  </a>
-  
-    <nav class="md-nav" aria-label="Output">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#file" class="md-nav__link">
-    File
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#plugin" class="md-nav__link">
-    Plugin
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#converting" class="md-nav__link">
     Converting
   </a>
@@ -3866,7 +3812,7 @@ You're not viewing the latest version.
 
 
 <h1 id="reporting">Reporting</h1>
-<h2 id="format">Format</h2>
+<h2 id="supported-formats">Supported Formats</h2>
 <p>Trivy supports the following formats:</p>
 <ul>
 <li>Table</li>
@@ -4388,27 +4334,6 @@ As an example you can summarize the different classes of issues:</p>
 </code></pre></div>
 <h3 id="sbom">SBOM</h3>
 <p>See <a href="../../supply-chain/sbom/">here</a> for details.</p>
-<h2 id="output">Output</h2>
-<p>Trivy supports the following output destinations:</p>
-<ul>
-<li>File</li>
-<li>Plugin</li>
-</ul>
-<h3 id="file">File</h3>
-<p>By specifying <code>--output &lt;file_path&gt;</code>, you can output the results to a file.
-Here is an example:</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format json --output result.json debian:12
-</code></pre></div>
-<h3 id="plugin">Plugin</h3>
-<div class="admonition warning">
-<p class="admonition-title">EXPERIMENTAL</p>
-<p>This feature might change without preserving backwards compatibility.</p>
-</div>
-<p>Plugins capable of receiving Trivy's results via standard input, called "output plugin", can be seamlessly invoked using the <code>--output</code> flag.</p>
-<div class="highlight"><pre><span></span><code>$ trivy &lt;target&gt; [--format &lt;format&gt;] --output plugin=&lt;plugin_name&gt; [--output-plugin-arg &lt;plugin_flags&gt;] &lt;target_name&gt;
-</code></pre></div>
-<p>This is useful for cases where you want to convert the output into a custom format, or when you want to send the output somewhere.
-For more details, please check <a href="../../advanced/plugins/#output-plugins">here</a>.</p>
 <h2 id="converting">Converting</h2>
 <p>To generate multiple reports, you can generate the JSON report first and convert it to other formats with the <code>convert</code> subcommand.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format json -o result.json --list-all-pkgs debian:11
