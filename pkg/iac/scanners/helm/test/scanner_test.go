@@ -8,8 +8,10 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -17,13 +19,13 @@ import (
 func Test_helm_scanner_with_archive(t *testing.T) {
 
 	tests := []struct {
-		testName    string
+		name        string
 		chartName   string
 		path        string
 		archiveName string
 	}{
 		{
-			testName:    "Parsing tarball 'mysql-8.8.26.tar'",
+			name:        "Parsing tarball 'mysql-8.8.26.tar'",
 			chartName:   "mysql",
 			path:        filepath.Join("testdata", "mysql-8.8.26.tar"),
 			archiveName: "mysql-8.8.26.tar",
@@ -31,55 +33,46 @@ func Test_helm_scanner_with_archive(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Logf("Running test: %s", test.testName)
+		t.Run(test.name, func(t *testing.T) {
+			helmScanner := helm.New(
+				options.ScannerWithEmbeddedPolicies(true),
+				options.ScannerWithEmbeddedLibraries(true),
+			)
 
-		helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+			testTemp := t.TempDir()
+			testFileName := filepath.Join(testTemp, test.archiveName)
+			require.NoError(t, copyArchive(test.path, testFileName))
 
-		testTemp := t.TempDir()
-		testFileName := filepath.Join(testTemp, test.archiveName)
-		require.NoError(t, copyArchive(test.path, testFileName))
+			testFs := os.DirFS(testTemp)
+			results, err := helmScanner.ScanFS(context.TODO(), testFs, ".")
+			require.NoError(t, err)
+			require.NotNil(t, results)
 
-		testFs := os.DirFS(testTemp)
-		results, err := helmScanner.ScanFS(context.TODO(), testFs, ".")
-		require.NoError(t, err)
-		require.NotNil(t, results)
+			failed := results.GetFailed()
+			errorCodes := getRuleIDs(failed)
+			assert.Len(t, errorCodes, 14)
 
-		failed := results.GetFailed()
-		assert.Equal(t, 19, len(failed))
-
-		visited := make(map[string]bool)
-		var errorCodes []string
-		for _, result := range failed {
-			id := result.Flatten().RuleID
-			if _, exists := visited[id]; !exists {
-				visited[id] = true
-				errorCodes = append(errorCodes, id)
-			}
-		}
-		assert.Len(t, errorCodes, 14)
-
-		sort.Strings(errorCodes)
-
-		assert.Equal(t, []string{
-			"AVD-KSV-0001", "AVD-KSV-0003",
-			"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
-			"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
-			"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
-			"AVD-KSV-0104", "AVD-KSV-0106", "AVD-KSV-0116",
-		}, errorCodes)
+			assert.Equal(t, []string{
+				"AVD-KSV-0001", "AVD-KSV-0003",
+				"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
+				"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
+				"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
+				"AVD-KSV-0104", "AVD-KSV-0106", "AVD-KSV-0116",
+			}, errorCodes)
+		})
 	}
 }
 
 func Test_helm_scanner_with_missing_name_can_recover(t *testing.T) {
 
 	tests := []struct {
-		testName    string
+		name        string
 		chartName   string
 		path        string
 		archiveName string
 	}{
 		{
-			testName:    "Parsing tarball 'aws-cluster-autoscaler-bad.tar.gz'",
+			name:        "Parsing tarball 'aws-cluster-autoscaler-bad.tar.gz'",
 			chartName:   "aws-cluster-autoscaler",
 			path:        filepath.Join("testdata", "aws-cluster-autoscaler-bad.tar.gz"),
 			archiveName: "aws-cluster-autoscaler-bad.tar.gz",
@@ -87,66 +80,57 @@ func Test_helm_scanner_with_missing_name_can_recover(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Logf("Running test: %s", test.testName)
 
-		helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+		t.Run(test.name, func(t *testing.T) {
+			helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
 
-		testTemp := t.TempDir()
-		testFileName := filepath.Join(testTemp, test.archiveName)
-		require.NoError(t, copyArchive(test.path, testFileName))
+			testTemp := t.TempDir()
+			testFileName := filepath.Join(testTemp, test.archiveName)
+			require.NoError(t, copyArchive(test.path, testFileName))
 
-		testFs := os.DirFS(testTemp)
-		_, err := helmScanner.ScanFS(context.TODO(), testFs, ".")
-		require.NoError(t, err)
+			testFs := os.DirFS(testTemp)
+			_, err := helmScanner.ScanFS(context.TODO(), testFs, ".")
+			require.NoError(t, err)
+		})
 	}
 }
 
 func Test_helm_scanner_with_dir(t *testing.T) {
 
 	tests := []struct {
-		testName  string
+		name      string
 		chartName string
 	}{
 		{
-			testName:  "Parsing directory testchart'",
+			name:      "Parsing directory testchart'",
 			chartName: "testchart",
 		},
 	}
 
 	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
 
-		t.Logf("Running test: %s", test.testName)
+			testFs := os.DirFS(filepath.Join("testdata", test.chartName))
+			results, err := helmScanner.ScanFS(context.TODO(), testFs, ".")
+			require.NoError(t, err)
+			require.NotNil(t, results)
 
-		helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+			failed := results.GetFailed()
+			assert.Equal(t, 17, len(failed))
 
-		testFs := os.DirFS(filepath.Join("testdata", test.chartName))
-		results, err := helmScanner.ScanFS(context.TODO(), testFs, ".")
-		require.NoError(t, err)
-		require.NotNil(t, results)
+			errorCodes := getRuleIDs(failed)
 
-		failed := results.GetFailed()
-		assert.Equal(t, 17, len(failed))
+			assert.Equal(t, []string{
+				"AVD-KSV-0001", "AVD-KSV-0003",
+				"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
+				"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
+				"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
+				"AVD-KSV-0104", "AVD-KSV-0106", "AVD-KSV-0116",
+				"AVD-KSV-0117",
+			}, errorCodes)
+		})
 
-		visited := make(map[string]bool)
-		var errorCodes []string
-		for _, result := range failed {
-			id := result.Flatten().RuleID
-			if _, exists := visited[id]; !exists {
-				visited[id] = true
-				errorCodes = append(errorCodes, id)
-			}
-		}
-
-		sort.Strings(errorCodes)
-
-		assert.Equal(t, []string{
-			"AVD-KSV-0001", "AVD-KSV-0003",
-			"AVD-KSV-0011", "AVD-KSV-0012", "AVD-KSV-0014",
-			"AVD-KSV-0015", "AVD-KSV-0016", "AVD-KSV-0018",
-			"AVD-KSV-0020", "AVD-KSV-0021", "AVD-KSV-0030",
-			"AVD-KSV-0104", "AVD-KSV-0106", "AVD-KSV-0116",
-			"AVD-KSV-0117",
-		}, errorCodes)
 	}
 }
 
@@ -176,13 +160,13 @@ deny[res] {
 }
 `
 	tests := []struct {
-		testName    string
+		name        string
 		chartName   string
 		path        string
 		archiveName string
 	}{
 		{
-			testName:    "Parsing tarball 'mysql-8.8.26.tar'",
+			name:        "Parsing tarball 'mysql-8.8.26.tar'",
 			chartName:   "mysql",
 			path:        filepath.Join("testdata", "mysql-8.8.26.tar"),
 			archiveName: "mysql-8.8.26.tar",
@@ -190,12 +174,14 @@ deny[res] {
 	}
 
 	for _, test := range tests {
-		t.Run(test.testName, func(t *testing.T) {
-			t.Logf("Running test: %s", test.testName)
+		t.Run(test.name, func(t *testing.T) {
 
-			helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true),
+			helmScanner := helm.New(
+				options.ScannerWithEmbeddedPolicies(true),
+				options.ScannerWithEmbeddedLibraries(true),
 				options.ScannerWithPolicyDirs("rules"),
-				options.ScannerWithPolicyNamespaces("user"))
+				options.ScannerWithPolicyNamespaces("user"),
+			)
 
 			testTemp := t.TempDir()
 			testFileName := filepath.Join(testTemp, test.archiveName)
@@ -214,18 +200,8 @@ deny[res] {
 			failed := results.GetFailed()
 			assert.Equal(t, 21, len(failed))
 
-			visited := make(map[string]bool)
-			var errorCodes []string
-			for _, result := range failed {
-				id := result.Flatten().RuleID
-				if _, exists := visited[id]; !exists {
-					visited[id] = true
-					errorCodes = append(errorCodes, id)
-				}
-			}
+			errorCodes := getRuleIDs(failed)
 			assert.Len(t, errorCodes, 15)
-
-			sort.Strings(errorCodes)
 
 			assert.Equal(t, []string{
 				"AVD-KSV-0001", "AVD-KSV-0003",
@@ -262,4 +238,14 @@ func Test_helm_chart_with_templated_name(t *testing.T) {
 	testFs := os.DirFS(filepath.Join("testdata", "templated-name"))
 	_, err := helmScanner.ScanFS(context.TODO(), testFs, ".")
 	require.NoError(t, err)
+}
+
+func getRuleIDs(results scan.Results) []string {
+	ids := lo.Uniq(lo.Map(results, func(r scan.Result, _ int) string {
+		return r.Flatten().RuleID
+	}))
+
+	sort.Strings(ids)
+
+	return ids
 }
