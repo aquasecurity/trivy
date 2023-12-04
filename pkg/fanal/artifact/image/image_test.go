@@ -653,6 +653,10 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 							CreatedBy:     "bazel build ...",
+							OS: types.OS{
+								Family: "debian",
+								Name:   "9.9",
+							},
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/libc6",
@@ -662,7 +666,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name:    "libc6",
 											Version: "2.24",
 											Identifier: types.PkgIdentifier{
-												PURL: "pkg:dpkg/libc6@2.24-11%2Bdeb9u4?arch=amd64",
+												PURL: "pkg:deb/debian/libc6@2.24-11%2Bdeb9u4?arch=amd64&distro=debian-9.9",
 											},
 											Release:    "11+deb9u4",
 											SrcName:    "glibc",
@@ -681,7 +685,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name:    "libssl1.1",
 											Version: "1.1.0k",
 											Identifier: types.PkgIdentifier{
-												PURL: "pkg:dpkg/libssl1.1@1.1.0k-1~deb9u1?arch=amd64",
+												PURL: "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64&distro=debian-9.9",
 											},
 											SrcName:    "openssl",
 											Release:    "1~deb9u1",
@@ -700,7 +704,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name:    "openssl",
 											Version: "1.1.0k",
 											Identifier: types.PkgIdentifier{
-												PURL: "pkg:dpkg/openssl@1.1.0k-1~deb9u1?arch=amd64",
+												PURL: "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64&distro=debian-9.9",
 											},
 											SrcName:    "openssl",
 											Release:    "1~deb9u1",
@@ -758,6 +762,10 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 							CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
+							OS: types.OS{
+								Family: "debian",
+								Name:   "9.9",
+							},
 							Applications: []types.Application{
 								{
 									Type:     "composer",
@@ -1008,6 +1016,10 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 							CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
+							OS: types.OS{
+								Family: "debian",
+								Name:   "9.9",
+							},
 							Applications: []types.Application{
 								{
 									Type:     "bundler",

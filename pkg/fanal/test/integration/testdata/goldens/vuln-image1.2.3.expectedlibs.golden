@@ -3629,5 +3629,48 @@
         ]
       }
     ]
+  },
+  {
+    "Type": "python-pkg",
+    "Libraries": [
+      {
+        "Name": "Python",
+        "Identifier": {
+          "PURL": "pkg:pypi/python@2.7.15"
+        },
+        "Version": "2.7.15",
+        "Licenses": [
+          "PSF license"
+        ],
+        "Layer": {},
+        "FilePath": "usr/lib/python2.7/lib-dynload/Python-2.7.15-py2.7.egg-info"
+      },
+      {
+        "Name": "mercurial",
+        "Identifier": {
+          "PURL": "pkg:pypi/mercurial@4.5.2"
+        },
+        "Version": "4.5.2",
+        "Licenses": [
+          "GNU GPLv2",
+          "any later version"
+        ],
+        "Layer": {},
+        "FilePath": "usr/lib/python2.7/site-packages/mercurial-4.5.2-py2.7.egg-info"
+      },
+      {
+        "Name": "wsgiref",
+        "Identifier": {
+          "PURL": "pkg:pypi/wsgiref@0.1.2"
+        },
+        "Version": "0.1.2",
+        "Licenses": [
+          "PSF",
+          "ZPL"
+        ],
+        "Layer": {},
+        "FilePath": "usr/lib/python2.7/wsgiref.egg-info"
+      }
+    ]
   }
 ]

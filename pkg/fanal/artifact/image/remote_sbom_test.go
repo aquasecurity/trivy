@@ -176,7 +176,6 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 		case "/v2/test/image/blobs/sha256:9e05dda2a2dcdd526c9204be8645ae48742861c27f093bf496a6397834acecf2":
 			http.ServeFile(w, r, "testdata/cyclonedx.json")
 		}
-		return
 	}))
 	defer ts.Close()
 
