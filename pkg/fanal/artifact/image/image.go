@@ -217,7 +217,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 			disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeSecret)
 		}
 
-		layerInfo, err := a.inspectLayer(ctx, layer, &osFound, disabledAnalyzers)
+		layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyzers)
 		if err != nil {
 			return Layer{}, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 		}
@@ -268,7 +268,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	return nil
 }
 
-func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, osFound *types.OS, disabled []analyzer.Type) (types.BlobInfo, error) {
+func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
 	log.Logger.Debugf("Missing diff ID in cache: %s", layerInfo.DiffID)
 
 	layerDigest, rc, err := a.uncompressedLayer(layerInfo.DiffID)
