@@ -136,22 +136,23 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 }
 
 func createFixedVersions(advisory dbTypes.Advisory) string {
-	var fixedVersions []string
 	if len(advisory.PatchedVersions) != 0 {
-		for _, version := range advisory.PatchedVersions {
-			fixedVersions = append(fixedVersions, version)
-		}
-	} else {
-		for _, version := range advisory.VulnerableVersions {
-			for _, s := range strings.Split(version, ",") {
-				s = strings.TrimSpace(s)
-				if !strings.HasPrefix(s, "<=") && strings.HasPrefix(s, "<") {
-					s = strings.TrimPrefix(s, "<")
-					fixedVersions = append(fixedVersions, strings.TrimSpace(s))
-				}
+		return joinFixedVersions(advisory.PatchedVersions)
+	}
+
+	var fixedVersions []string
+	for _, version := range advisory.VulnerableVersions {
+		for _, s := range strings.Split(version, ",") {
+			s = strings.TrimSpace(s)
+			if !strings.HasPrefix(s, "<=") && strings.HasPrefix(s, "<") {
+				s = strings.TrimPrefix(s, "<")
+				fixedVersions = append(fixedVersions, strings.TrimSpace(s))
 			}
 		}
 	}
+	return joinFixedVersions(fixedVersions)
+}
 
+func joinFixedVersions(fixedVersions []string) string {
 	return strings.Join(lo.Uniq(fixedVersions), ", ")
 }
