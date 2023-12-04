@@ -1,6 +1,7 @@
 package report
 
 import (
+	"context"
 	"errors"
 	"io"
 	"strings"
@@ -25,8 +26,8 @@ const (
 )
 
 // Write writes the result to output, format as passed in argument
-func Write(report types.Report, option flag.Options) (err error) {
-	output, cleanup, err := option.OutputWriter()
+func Write(ctx context.Context, report types.Report, option flag.Options) (err error) {
+	output, cleanup, err := option.OutputWriter(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to create a file: %w", err)
 	}

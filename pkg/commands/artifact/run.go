@@ -90,7 +90,7 @@ type Runner interface {
 	// Filter filter a report
 	Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error)
 	// Report a writes a report
-	Report(opts flag.Options, report types.Report) error
+	Report(ctx context.Context, opts flag.Options, report types.Report) error
 	// Close closes runner
 	Close(ctx context.Context) error
 }
@@ -279,8 +279,8 @@ func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Rep
 	return report, nil
 }
 
-func (r *runner) Report(opts flag.Options, report types.Report) error {
-	if err := pkgReport.Write(report, opts); err != nil {
+func (r *runner) Report(ctx context.Context, opts flag.Options, report types.Report) error {
+	if err := pkgReport.Write(ctx, report, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -450,7 +450,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return xerrors.Errorf("filter error: %w", err)
 	}
 
-	if err = r.Report(opts, report); err != nil {
+	if err = r.Report(ctx, opts, report); err != nil {
 		return xerrors.Errorf("report error: %w", err)
 	}
 

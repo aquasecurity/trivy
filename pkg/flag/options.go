@@ -175,7 +175,7 @@ func (o *Options) SetOutputWriter(w io.Writer) {
 
 // OutputWriter returns an output writer.
 // If the output file is not specified, it returns os.Stdout.
-func (o *Options) OutputWriter() (io.Writer, func() error, error) {
+func (o *Options) OutputWriter(ctx context.Context) (io.Writer, func() error, error) {
 	cleanup := func() error { return nil }
 	switch {
 	case o.outputWriter != nil:
@@ -183,7 +183,7 @@ func (o *Options) OutputWriter() (io.Writer, func() error, error) {
 	case o.Output == "":
 		return os.Stdout, cleanup, nil
 	case strings.HasPrefix(o.Output, "plugin="):
-		return o.outputPluginWriter()
+		return o.outputPluginWriter(ctx)
 	}
 
 	f, err := os.Create(o.Output)
@@ -193,11 +193,11 @@ func (o *Options) OutputWriter() (io.Writer, func() error, error) {
 	return f, f.Close, nil
 }
 
-func (o *Options) outputPluginWriter() (io.Writer, func() error, error) {
+func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() error, error) {
 	pluginName := strings.TrimPrefix(o.Output, "plugin=")
 
 	pr, pw := io.Pipe()
-	wait, err := plugin.Start(context.TODO(), pluginName, plugin.RunOptions{
+	wait, err := plugin.Start(ctx, pluginName, plugin.RunOptions{
 		Args:  o.OutputPluginArgs,
 		Stdin: pr,
 	})
@@ -206,10 +206,10 @@ func (o *Options) outputPluginWriter() (io.Writer, func() error, error) {
 	}
 
 	cleanup := func() error {
-		if err := pw.Close(); err != nil {
+		if err = pw.Close(); err != nil {
 			return xerrors.Errorf("failed to close pipe: %w", err)
 		}
-		if err := wait(); err != nil {
+		if err = wait(); err != nil {
 			return xerrors.Errorf("plugin error: %w", err)
 		}
 		return nil
