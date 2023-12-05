@@ -794,12 +794,11 @@ var builtinRules = []Rule{
 		Keywords:        []string{"typeform"},
 	},
 	{
-		ID:              "dockerconfig-secret",
-		Category:        CategoryDocker,
-		Title:           "Dockerconfig secret exposed",
-		Severity:        "HIGH",
-		Regex:           MustCompile(`(?i)(\.(dockerconfigjson|dockercfg):\s*\|*\s*(ey|ew)+)`),
-		SecretGroupName: "secret",
-		Keywords:        []string{"dockerconfig"},
+		ID:       "dockerconfig-secret",
+		Category: CategoryDocker,
+		Title:    "Dockerconfig secret exposed",
+		Severity: "HIGH",
+		Regex:    MustCompile(`(?i)(\.(dockerconfigjson|dockercfg):\s*\|*\s*(ey|ew)+)`),
+		Keywords: []string{"dockerc"},
 	},
 }
