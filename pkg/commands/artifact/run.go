@@ -636,10 +636,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RepoTag:           opts.RepoTag,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
-			//Platform:          opts.Platform,
-			Slow:         opts.Slow,
-			AWSRegion:    opts.Region,
-			FileChecksum: fileChecksum,
+			Parallel:          5, // Set the default value
+			AWSRegion:         opts.Region,
+			FileChecksum:      fileChecksum,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"github.com/samber/lo"
 	"os"
 	"path"
 	"path/filepath"
@@ -11,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/opencontainers/go-digest"
+	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -20,7 +22,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Artifact struct {
@@ -41,7 +42,6 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 
 	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
 		Group:                opt.AnalyzerGroup,
-		Slow:                 opt.Slow,
 		FilePatterns:         opt.FilePatterns,
 		DisabledAnalyzers:    opt.DisabledAnalyzers,
 		MisconfScannerOption: opt.MisconfScannerOption,
@@ -122,7 +122,8 @@ func buildPathsToSkip(base string, paths []string) []string {
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.New(a.artifactOption.Slow)
+	parallel := lo.Ternary(a.artifactOption.Parallel > 0, a.artifactOption.Parallel, 5)
+	limit := semaphore.NewWeighted(int64(parallel))
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
 		FileChecksum: a.artifactOption.FileChecksum,

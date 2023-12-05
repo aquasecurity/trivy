@@ -2,6 +2,8 @@ package vm
 
 import (
 	"context"
+	"github.com/samber/lo"
+	"golang.org/x/sync/semaphore"
 	"io"
 	"os"
 	"strings"
@@ -15,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Type string
@@ -41,7 +42,8 @@ type Storage struct {
 
 func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobInfo, error) {
 	var wg sync.WaitGroup
-	limit := semaphore.New(a.artifactOption.Slow)
+	parallel := lo.Ternary(a.artifactOption.Parallel > 0, a.artifactOption.Parallel, 5)
+	limit := semaphore.NewWeighted(int64(parallel))
 	result := analyzer.NewAnalysisResult()
 
 	opts := analyzer.AnalysisOptions{
@@ -135,7 +137,7 @@ func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (art
 		cache:          c,
 		analyzer:       a,
 		handlerManager: handlerManager,
-		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
+		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs),
 		artifactOption: opt,
 	}
 

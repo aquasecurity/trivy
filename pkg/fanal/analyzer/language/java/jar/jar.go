@@ -2,6 +2,7 @@ package jar
 
 import (
 	"context"
+	"github.com/samber/lo"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -35,14 +36,14 @@ var requiredExtensions = []string{
 
 // javaLibraryAnalyzer analyzes jar/war/ear/par files
 type javaLibraryAnalyzer struct {
-	once   sync.Once
-	client *javadb.DB
-	slow   bool
+	once     sync.Once
+	client   *javadb.DB
+	parallel int
 }
 
 func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &javaLibraryAnalyzer{
-		slow: options.Slow,
+		parallel: lo.Ternary(options.Parallel > 0, options.Parallel, 5),
 	}, nil
 }
 
@@ -82,7 +83,7 @@ func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Po
 		return nil
 	}
 
-	if err = parallel.WalkDir(ctx, input.FS, ".", a.slow, onFile, onResult); err != nil {
+	if err = parallel.WalkDir(ctx, input.FS, ".", a.parallel, onFile, onResult); err != nil {
 		return nil, xerrors.Errorf("walk dir error: %w", err)
 	}
 

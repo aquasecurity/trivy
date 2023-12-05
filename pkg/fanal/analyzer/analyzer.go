@@ -41,7 +41,7 @@ var (
 // AnalyzerOptions is used to initialize analyzers
 type AnalyzerOptions struct {
 	Group                Group
-	Slow                 bool
+	Parallel             int
 	FilePatterns         []string
 	DisabledAnalyzers    []Type
 	MisconfScannerOption misconf.ScannerOption

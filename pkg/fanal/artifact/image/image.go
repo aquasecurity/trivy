@@ -3,6 +3,7 @@ package image
 import (
 	"context"
 	"errors"
+	"golang.org/x/sync/semaphore"
 	"io"
 	"os"
 	"reflect"
@@ -23,7 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/parallel"
-	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Artifact struct {
@@ -51,7 +51,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 
 	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
 		Group:                opt.AnalyzerGroup,
-		Slow:                 opt.Slow,
+		Parallel:             opt.Parallel,
 		FilePatterns:         opt.FilePatterns,
 		DisabledAnalyzers:    opt.DisabledAnalyzers,
 		MisconfScannerOption: opt.MisconfScannerOption,
@@ -215,7 +215,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
 
 	var osFound types.OS
-	workers := lo.Ternary(a.artifactOption.Slow, 1, 5)
+	workers := lo.Ternary(a.artifactOption.Parallel > 0, a.artifactOption.Parallel, 5)
 	p := parallel.NewPipeline(workers, false, layerKeys, func(ctx context.Context, layerKey string) (any, error) {
 		layer := layerKeyMap[layerKey]
 
@@ -268,7 +268,8 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		FileChecksum: a.artifactOption.FileChecksum,
 	}
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.New(a.artifactOption.Slow)
+	parallel := lo.Ternary(a.artifactOption.Parallel > 0, a.artifactOption.Parallel, 5)
+	limit := semaphore.NewWeighted(int64(parallel))
 
 	// Prepare filesystem for post analysis
 	composite, err := a.analyzer.PostAnalyzerFS()

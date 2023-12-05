@@ -1847,7 +1847,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			name:      "sad path, PutBlob returns an error with multiple layers and Slow enabled",
 			imagePath: "../../test/testdata/vuln-image.tar.gz",
 			artifactOpt: artifact.Option{
-				Slow: true,
+				Parallel: 1,
 			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
