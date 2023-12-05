@@ -27,7 +27,7 @@ type TemplateWriter struct {
 }
 
 // NewTemplateWriter is the factory method to return TemplateWriter object
-func NewTemplateWriter(output io.Writer, outputTemplate string, appVersion string) (*TemplateWriter, error) {
+func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*TemplateWriter, error) {
 	if strings.HasPrefix(outputTemplate, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
 		if err != nil {
