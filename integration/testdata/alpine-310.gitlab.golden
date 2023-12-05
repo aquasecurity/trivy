@@ -9,7 +9,7 @@
       },
       "version": "dev"
     },
-    "end_time": "2020-08-10T07:28:17",
+    "end_time": "2021-08-25T12:20:30",
     "scanner": {
       "id": "trivy",
       "name": "Trivy",
@@ -19,7 +19,7 @@
       },
       "version": "dev"
     },
-    "start_time": "2020-08-10T07:28:17",
+    "start_time": "2021-08-25T12:20:30",
     "status": "success",
     "type": "container_scanning"
   },
