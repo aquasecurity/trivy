@@ -798,7 +798,7 @@ var builtinRules = []Rule{
 		Category: CategoryDocker,
 		Title:    "Dockerconfig secret exposed",
 		Severity: "HIGH",
-		Regex:    MustCompile(`(?i)(\.(dockerconfigjson|dockercfg):\s*\|*\s*(ey|ew)+)`),
+		Regex:    MustCompile(`(?i)(\.(dockerconfigjson|dockercfg):\s*\|*\s*(?P<secret>(ey|ew)+[A-Za-z0-9\/\+=]+))`),
 		Keywords: []string{"dockerc"},
 	},
 }
