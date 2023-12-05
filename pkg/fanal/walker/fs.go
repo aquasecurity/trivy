@@ -4,6 +4,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"time"
 
 	swalker "github.com/saracen/walker"
 	"golang.org/x/xerrors"
@@ -16,12 +17,12 @@ type ErrorCallback func(pathname string, err error) error
 
 type FS struct {
 	walker
-	errCallback ErrorCallback
+	opt Option
 }
 
-func NewFS(skipFiles, skipDirs []string, slow bool, errCallback ErrorCallback) FS {
-	if errCallback == nil {
-		errCallback = func(pathname string, err error) error {
+func NewFS(skipFiles, skipDirs []string, opt Option) FS {
+	if opt.ErrCallback == nil {
+		opt.ErrCallback = func(pathname string, err error) error {
 			// ignore permission errors
 			if os.IsPermission(err) {
 				return nil
@@ -32,8 +33,8 @@ func NewFS(skipFiles, skipDirs []string, slow bool, errCallback ErrorCallback) F
 	}
 
 	return FS{
-		walker:      newWalker(skipFiles, skipDirs, slow),
-		errCallback: errCallback,
+		walker: newWalker(skipFiles, skipDirs),
+		opt:    opt,
 	}
 }
 
@@ -42,6 +43,8 @@ func NewFS(skipFiles, skipDirs []string, slow bool, errCallback ErrorCallback) F
 func (w FS) Walk(root string, fn WalkFunc) error {
 	// walk function called for every path found
 	walkFn := func(pathname string, fi os.FileInfo) error {
+		time.Sleep(w.opt.Delay)
+
 		pathname = filepath.Clean(pathname)
 
 		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
@@ -68,10 +71,11 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 		return nil
 	}
 
-	if w.slow {
-		// In series: fast, with higher CPU/memory
-		return w.walkSlow(root, walkFn)
-	}
+	// Not used
+	//if w.slow {
+	//	// In series: fast, with higher CPU/memory
+	//	return w.walkSlow(root, walkFn)
+	//}
 
 	// In parallel: slow, with lower CPU/memory
 	return w.walkFast(root, walkFn)
@@ -81,7 +85,7 @@ type fastWalkFunc func(pathname string, fi os.FileInfo) error
 
 func (w FS) walkFast(root string, walkFn fastWalkFunc) error {
 	// error function called for every error encountered
-	errorCallbackOption := swalker.WithErrorCallback(w.errCallback)
+	errorCallbackOption := swalker.WithErrorCallback(w.opt.ErrCallback)
 
 	// Multiple goroutines stat the filesystem concurrently. The provided
 	// walkFn must be safe for concurrent use.
@@ -96,7 +100,7 @@ func (w FS) walkSlow(root string, walkFn fastWalkFunc) error {
 	log.Logger.Debugf("Walk the file tree rooted at '%s' in series", root)
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return w.errCallback(path, err)
+			return w.opt.ErrCallback(path, err)
 		}
 		info, err := d.Info()
 		if err != nil {

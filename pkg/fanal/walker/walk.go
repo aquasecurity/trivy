@@ -5,6 +5,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/bmatcuk/doublestar"
 
@@ -26,13 +27,19 @@ const (
 
 type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) error
 
+// Option allows users to define a custom walking behavior.
+// This option is only available when using Trivy as an imported library and not through CLI flags.
+type Option struct {
+	Delay       time.Duration
+	ErrCallback ErrorCallback
+}
+
 type walker struct {
 	skipFiles []string
 	skipDirs  []string
-	slow      bool
 }
 
-func newWalker(skipFiles, skipDirs []string, slow bool) walker {
+func newWalker(skipFiles, skipDirs []string) walker {
 	var cleanSkipFiles, cleanSkipDirs []string
 	for _, skipFile := range skipFiles {
 		skipFile = filepath.ToSlash(filepath.Clean(skipFile))
@@ -49,7 +56,6 @@ func newWalker(skipFiles, skipDirs []string, slow bool) walker {
 	return walker{
 		skipFiles: cleanSkipFiles,
 		skipDirs:  cleanSkipDirs,
-		slow:      slow,
 	}
 }
 

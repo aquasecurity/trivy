@@ -40,13 +40,7 @@ type Option struct {
 	LicenseScannerOption analyzer.LicenseScannerOption
 
 	// File walk
-	WalkOption WalkOption
-}
-
-// WalkOption is a struct that allows users to define a custom walking behavior.
-// This option is only available when using Trivy as an imported library and not through CLI flags.
-type WalkOption struct {
-	ErrorCallback walker.ErrorCallback
+	WalkOption walker.Option
 }
 
 func (o *Option) Sort() {

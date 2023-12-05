@@ -75,7 +75,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	return Artifact{
 		image:          img,
 		cache:          c,
-		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs, opt.Slow),
+		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs),
 		analyzer:       a,
 		configAnalyzer: ca,
 		handlerManager: handlerManager,

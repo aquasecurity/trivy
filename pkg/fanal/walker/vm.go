@@ -46,7 +46,7 @@ func NewVM(skipFiles, skipDirs []string, slow bool) VM {
 	}
 
 	return VM{
-		walker:    newWalker(skipFiles, skipDirs, slow),
+		walker:    newWalker(skipFiles, skipDirs),
 		threshold: threshold,
 	}
 }
