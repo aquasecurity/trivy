@@ -526,6 +526,68 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingDockerKey1 := types.SecretFinding{
+		RuleID:    "dockerconfig-secret",
+		Category:  secret.CategoryDocker,
+		Title:     "Dockerconfig secret exposed",
+		Severity:  "HIGH",
+		StartLine: 4,
+		EndLine:   4,
+		Match:     "  .dockercfg: ************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      2,
+					Content:     "  .dockerconfigjson: ************",
+					Highlighted: "  .dockerconfigjson: ************",
+				},
+				{
+					Number:      3,
+					Content:     "data2:",
+					Highlighted: "data2:",
+				},
+				{
+					Number:      4,
+					Content:     "  .dockercfg: ************",
+					Highlighted: "  .dockercfg: ************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
+	wantFindingDockerKey2 := types.SecretFinding{
+		RuleID:    "dockerconfig-secret",
+		Category:  secret.CategoryDocker,
+		Title:     "Dockerconfig secret exposed",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "  .dockerconfigjson: ************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "data1:",
+					Highlighted: "data1:",
+				},
+				{
+					Number:      2,
+					Content:     "  .dockerconfigjson: ************",
+					Highlighted: "  .dockerconfigjson: ************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "data2:",
+					Highlighted: "data2:",
+				},
+			},
+		},
+	}
 	wantMultiLine := types.SecretFinding{
 		RuleID:    "multi-line-secret",
 		Category:  "general",
@@ -607,6 +669,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
 				Findings: []types.SecretFinding{wantFindingAsymmetricPrivateKeyJson},
+			},
+		},
+		{
+			name:          "find Docker registry credentials",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "docker-secrets.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "docker-secrets.txt"),
+				Findings: []types.SecretFinding{wantFindingDockerKey1, wantFindingDockerKey2},
 			},
 		},
 		{
