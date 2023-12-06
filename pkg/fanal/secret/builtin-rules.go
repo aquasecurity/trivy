@@ -68,6 +68,7 @@ var (
 	CategoryLinkedIn             = types.SecretRuleCategory("LinkedIn")
 	CategoryTwitch               = types.SecretRuleCategory("Twitch")
 	CategoryTypeform             = types.SecretRuleCategory("Typeform")
+	CategoryDocker               = types.SecretRuleCategory("Docker")
 )
 
 // Reusable regex patterns
@@ -791,5 +792,14 @@ var builtinRules = []Rule{
 		Regex:           MustCompile(`(?i)(?P<key>typeform[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}(?P<secret>tfp_[a-z0-9\-_\.=]{59})`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"typeform"},
+	},
+	{
+		ID:              "dockerconfig-secret",
+		Category:        CategoryDocker,
+		Title:           "Dockerconfig secret exposed",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)(\.(dockerconfigjson|dockercfg):\s*\|*\s*(?P<secret>(ey|ew)+[A-Za-z0-9\/\+=]+))`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"dockerc"},
 	},
 }
