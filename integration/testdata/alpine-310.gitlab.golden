@@ -5,7 +5,7 @@
       "id": "trivy",
       "name": "Trivy",
       "vendor": {
-        "name": "Aquasecurity"
+        "name": "Aqua Security"
       },
       "version": "dev"
     },
@@ -15,7 +15,7 @@
       "name": "Trivy",
       "url": "https://github.com/aquasecurity/trivy/",
       "vendor": {
-        "name": "Aquasecurity"
+        "name": "Aqua Security"
       },
       "version": "dev"
     },
