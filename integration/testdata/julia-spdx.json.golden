@@ -1,0 +1,124 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "testdata/fixtures/repo/julia",
+  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/julia-3ff14136-e09f-4df9-80ea-000000000001",
+  "creationInfo": {
+    "creators": [
+      "Organization: aquasecurity",
+      "Tool: trivy-dev"
+    ],
+    "created": "2021-08-25T12:20:30Z"
+  },
+  "packages": [
+    {
+      "name": "A",
+      "SPDXID": "SPDXRef-Package-46973d9aca091871",
+      "versionInfo": "1.9.0",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NONE",
+      "licenseDeclared": "NONE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:julia/A@1.9.0?uuid=ead4f63c-334e-11e9-00e6-e7f0a5f21b60"
+        }
+      ],
+      "attributionTexts": [
+        "PkgID: ead4f63c-334e-11e9-00e6-e7f0a5f21b60"
+      ],
+      "primaryPackagePurpose": "LIBRARY"
+    },
+    {
+      "name": "B",
+      "SPDXID": "SPDXRef-Package-436cd42285772e07",
+      "versionInfo": "1.9.0",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NONE",
+      "licenseDeclared": "NONE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:julia/B@1.9.0?uuid=f41f7b98-334e-11e9-1257-49272045fb24"
+        }
+      ],
+      "attributionTexts": [
+        "PkgID: f41f7b98-334e-11e9-1257-49272045fb24"
+      ],
+      "primaryPackagePurpose": "LIBRARY"
+    },
+    {
+      "name": "B",
+      "SPDXID": "SPDXRef-Package-fa368ab116ed505f",
+      "versionInfo": "1.9.0",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NONE",
+      "licenseDeclared": "NONE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c"
+        }
+      ],
+      "attributionTexts": [
+        "PkgID: edca9bc6-334e-11e9-3554-9595dbb4349c"
+      ],
+      "primaryPackagePurpose": "LIBRARY"
+    },
+    {
+      "name": "julia",
+      "SPDXID": "SPDXRef-Application-7d3c9e4ebc4e0210",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "sourceInfo": "Manifest.toml",
+      "primaryPackagePurpose": "APPLICATION"
+    },
+    {
+      "name": "testdata/fixtures/repo/julia",
+      "SPDXID": "SPDXRef-Filesystem-1be792dd0077c431",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "attributionTexts": [
+        "SchemaVersion: 2"
+      ],
+      "primaryPackagePurpose": "SOURCE"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Filesystem-1be792dd0077c431",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-Filesystem-1be792dd0077c431",
+      "relatedSpdxElement": "SPDXRef-Application-7d3c9e4ebc4e0210",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-7d3c9e4ebc4e0210",
+      "relatedSpdxElement": "SPDXRef-Package-46973d9aca091871",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-7d3c9e4ebc4e0210",
+      "relatedSpdxElement": "SPDXRef-Package-fa368ab116ed505f",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-7d3c9e4ebc4e0210",
+      "relatedSpdxElement": "SPDXRef-Package-436cd42285772e07",
+      "relationshipType": "CONTAINS"
+    }
+  ]
+}

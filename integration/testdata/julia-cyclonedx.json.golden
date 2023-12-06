@@ -1,0 +1,126 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2021-08-25T12:20:30+00:00",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ],
+    "component": {
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "type": "application",
+      "name": "testdata/fixtures/repo/julia",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "98bde055-d07d-4cb8-91a7-cf00399e7169",
+      "type": "application",
+      "name": "Manifest.toml",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "julia"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:julia/A@1.9.0?uuid=ead4f63c-334e-11e9-00e6-e7f0a5f21b60",
+      "type": "library",
+      "name": "A",
+      "version": "1.9.0",
+      "purl": "pkg:julia/A@1.9.0?uuid=ead4f63c-334e-11e9-00e6-e7f0a5f21b60",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "ead4f63c-334e-11e9-00e6-e7f0a5f21b60"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "julia"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c",
+      "type": "library",
+      "name": "B",
+      "version": "1.9.0",
+      "purl": "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "edca9bc6-334e-11e9-3554-9595dbb4349c"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "julia"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:julia/B@1.9.0?uuid=f41f7b98-334e-11e9-1257-49272045fb24",
+      "type": "library",
+      "name": "B",
+      "version": "1.9.0",
+      "purl": "pkg:julia/B@1.9.0?uuid=f41f7b98-334e-11e9-1257-49272045fb24",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "f41f7b98-334e-11e9-1257-49272045fb24"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "julia"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "dependsOn": [
+        "3ff14136-e09f-4df9-80ea-000000000003"
+      ]
+    },
+    {
+      "ref": "3ff14136-e09f-4df9-80ea-000000000003",
+      "dependsOn": [
+        "pkg:julia/A@1.9.0?uuid=ead4f63c-334e-11e9-00e6-e7f0a5f21b60",
+        "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c"
+      ]
+    },
+    {
+      "ref": "pkg:julia/A@1.9.0?uuid=ead4f63c-334e-11e9-00e6-e7f0a5f21b60",
+      "dependsOn": [
+        "pkg:julia/B@1.9.0?uuid=f41f7b98-334e-11e9-1257-49272045fb24"
+      ]
+    },
+    {
+      "ref": "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:julia/B@1.9.0?uuid=f41f7b98-334e-11e9-1257-49272045fb24",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": []
+}
