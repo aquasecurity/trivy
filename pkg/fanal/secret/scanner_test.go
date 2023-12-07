@@ -304,7 +304,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "GITHUB_TOKEN=*********************************************************************************************\nGITHUB_PAT=********",
+		Match:     "GITHUB_TOKEN=*********************************************************************************************",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
