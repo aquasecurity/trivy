@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"time"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
@@ -60,6 +61,7 @@ func (w FS) walkDirFunc(root string, fn WalkFunc) fs.WalkDirFunc {
 		if err != nil {
 			return w.opt.ErrCallback(filePath, err)
 		}
+		time.Sleep(w.opt.Delay)
 
 		filePath = filepath.Clean(filePath)
 
