@@ -75,14 +75,15 @@ func (w FS) walkDirFunc(root string, fn WalkFunc) fs.WalkDirFunc {
 			return xerrors.Errorf("file info error: %w", err)
 		}
 
-		if info.IsDir() {
+		switch {
+		case info.IsDir():
 			if w.shouldSkipDir(relPath) {
 				return filepath.SkipDir
 			}
 			return nil
-		} else if !info.Mode().IsRegular() {
+		case !info.Mode().IsRegular():
 			return nil
-		} else if w.shouldSkipFile(relPath) {
+		case w.shouldSkipFile(relPath):
 			return nil
 		}
 
