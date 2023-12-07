@@ -78,7 +78,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			break
 		}
 		var err error
-		if writer, err = NewTemplateWriter(output, option.Template); err != nil {
+		if writer, err = NewTemplateWriter(output, option.Template, option.AppVersion); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	case types.FormatSarif:
