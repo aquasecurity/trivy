@@ -145,7 +145,7 @@ var builtinRules = []Rule{
 	{
 		ID:       "github-fine-grained-pat",
 		Category: CategoryGitHub,
-		Title:    "GitHub Personal Access Token (classic)",
+		Title:    "GitHub Fine-grained personal access tokens",
 		Severity: "CRITICAL",
 		Regex:    MustCompile(`github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}`),
 		Keywords: []string{"github_pat_"},

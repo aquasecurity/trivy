@@ -300,7 +300,7 @@ func TestSecretScanner(t *testing.T) {
 	wantFindingGitHubPAT := types.SecretFinding{
 		RuleID:    "github-fine-grained-pat",
 		Category:  secret.CategoryGitHub,
-		Title:     "GitHub Personal Access Token (classic)",
+		Title:     "GitHub Fine-grained personal access tokens",
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
