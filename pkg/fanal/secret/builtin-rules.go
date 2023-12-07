@@ -143,11 +143,11 @@ var builtinRules = []Rule{
 		Keywords: []string{"ghr_"},
 	},
 	{
-		ID:       "github_pat",
+		ID:       "github-fine-grained-pat",
 		Category: CategoryGitHub,
-		Title:    "GitHub Fine-grained personal access tokens",
+		Title:    "GitHub Personal Access Token (classic)",
 		Severity: "CRITICAL",
-		Regex:    MustCompile(`^github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}$`),
+		Regex:    MustCompile(`github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}`),
 		Keywords: []string{"github_pat_"},
 	},
 	{

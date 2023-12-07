@@ -297,6 +297,27 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingGitHubPAT := types.SecretFinding{
+		RuleID:    "github-fine-grained-pat",
+		Category:  secret.CategoryGitHub,
+		Title:     "GitHub Personal Access Token (classic)",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "GITHUB_TOKEN=*********************************************************************************************\nGITHUB_PAT=********",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GITHUB_TOKEN=*********************************************************************************************",
+					Highlighted: "GITHUB_TOKEN=*********************************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
 	wantFindingGHButDisableAWS := types.SecretFinding{
 		RuleID:    "github-pat",
 		Category:  secret.CategoryGitHub,
@@ -719,6 +740,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 				Findings: []types.SecretFinding{wantFinding5a, wantFinding6},
+			},
+		},
+		{
+			name:          "should find GitHub Personal Access Token (classic)",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: "testdata/github-token.txt",
+			want: types.Secret{
+				FilePath: "testdata/github-token.txt",
+				Findings: []types.SecretFinding{wantFindingGitHubPAT},
 			},
 		},
 		{
