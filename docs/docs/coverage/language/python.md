@@ -61,7 +61,7 @@ requests==2.28.2
 urllib3==1.26.15
 ```
 
-`pip freeze` also helps to resolve [extras](https://packaging.python.org/en/latest/tutorials/installing-packages/#installing-extras)(optional) dependencies (like `package[extras]=0.0.0`).
+`pip freeze` also helps to resolve [extras](https://packaging.python.org/en/latest/tutorials/installing-packages/#installing-extras)(optional) dependencies (like `package[extras]=0.0.0`) and [compatible releases](https://peps.python.org/pep-0440/#compatible-release) (like `boto3~=1.24.60`).
 
 `requirements.txt` files don't contain information about dependencies used for development.
 Trivy could detect vulnerabilities on the development packages, which not affect your production environment.
