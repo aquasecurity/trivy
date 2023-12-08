@@ -34,6 +34,7 @@ func (w Writer) Write(report types.Report) error {
 
 	encoder := cdx.NewBOMEncoder(w.output, w.format)
 	encoder.SetPretty(true)
+	encoder.SetEscapeHTML(false)
 	if err = encoder.Encode(bom); err != nil {
 		return xerrors.Errorf("failed to encode bom: %w", err)
 	}
