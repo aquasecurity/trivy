@@ -222,7 +222,7 @@ func infraResource(misConfig Resource) bool {
 }
 
 func CreateResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
-	r := CreateK8sResource(artifact, report.Results)
+	r := createK8sResource(artifact, report.Results)
 
 	r.Metadata = report.Metadata
 	r.Report = report
@@ -234,7 +234,7 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 	return r
 }
 
-func CreateK8sResource(artifact *artifacts.Artifact, scanResults types.Results) Resource {
+func createK8sResource(artifact *artifacts.Artifact, scanResults types.Results) Resource {
 	results := make([]types.Result, 0, len(scanResults))
 	// fix target name
 	for _, result := range scanResults {

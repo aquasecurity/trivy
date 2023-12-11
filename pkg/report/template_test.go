@@ -178,7 +178,7 @@ func TestReportWriter_Template(t *testing.T) {
 				},
 			}
 
-			w, err := report.NewTemplateWriter(&got, tc.template)
+			w, err := report.NewTemplateWriter(&got, tc.template, "dev")
 			require.NoError(t, err)
 			err = w.Write(inputReport)
 			assert.NoError(t, err)
