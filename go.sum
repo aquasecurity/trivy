@@ -351,8 +351,6 @@ github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d h1:fjI9mkoTU
 github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d/go.mod h1:cj9/QmD9N3OZnKQMp+/DvdV+ym3HyIkd4e+F0ZM3ZGs=
 github.com/aquasecurity/trivy-iac v0.7.0 h1:L2/mqQJD1iwY4xOr1un5Prg51epYBQgM34JVZtkp4Gg=
 github.com/aquasecurity/trivy-iac v0.7.0/go.mod h1:GG9Y2YylH3e16PoJ0RUZ+C0Xw93Gic/5fwdkKjKwwqU=
-github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728 h1:0eS+V7SXHgqoT99tV1mtMW6HL4HdoB9qGLMCb1fZp8A=
-github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.5.9-0.20231115100645-921512b4d163 h1:6TsI0lQN7H/d3pM5vK1/taYbWMgnNYEOk+V2ydBdg0s=
 github.com/aquasecurity/trivy-kubernetes v0.5.9-0.20231115100645-921512b4d163/go.mod h1:u+rEg3lTLpv3EJVSC7HOhWWlUwuuxlfczMncYPMqTPI=
 github.com/aquasecurity/trivy-policies v0.6.1-0.20231120231532-f6f2330bf842 h1:RnxM3eTcwPlA/WBwnmaEpeEk3WOCDcnz7yTIFxVL7us=
@@ -725,6 +723,8 @@ github.com/distribution/distribution/v3 v3.0.0-20221208165359-362910506bc2 h1:aB
 github.com/distribution/distribution/v3 v3.0.0-20221208165359-362910506bc2/go.mod h1:WHNsWjnIn2V1LYOrME7e8KxSeKunYHsxEm4am0BUtcI=
 github.com/dlclark/regexp2 v1.4.0 h1:F1rxgk7p4uKjwIQxBs9oAXe5CqrXlCduYEJvrF4u93E=
 github.com/dlclark/regexp2 v1.4.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
+github.com/dmitriylewen/trivy-java-db v0.0.0-20231211064214-68c706b80bab h1:gwuluWh/XYFqGJ7QVESn85gxC0OFi1RyAvMCIbKxJDw=
+github.com/dmitriylewen/trivy-java-db v0.0.0-20231211064214-68c706b80bab/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/dnaeon/go-vcr v1.0.1/go.mod h1:aBB1+wY4s93YsC3HHjMBMrwTj2R9FHDzUr9KyGc8n1E=
 github.com/dnaeon/go-vcr v1.2.0 h1:zHCHvJYTMh1N7xnV7zf1m1GPBF9Ad0Jk/whtQ1663qI=
 github.com/dnaeon/go-vcr v1.2.0/go.mod h1:R4UdLID7HZT3taECzJs4YgbbH6PIGXB6W/sc5OLb6RQ=
