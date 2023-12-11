@@ -1,6 +1,29 @@
 {{- /* Template based on https://docs.gitlab.com/ee/user/application_security/container_scanning/#reports-json-format */ -}}
 {
-  "version": "14.0.6",
+  "version": "15.0.7",
+  "scan": {
+    "analyzer": {
+      "id": "trivy",
+      "name": "Trivy",
+      "vendor": {
+        "name": "Aqua Security"
+      },
+      "version": "{{ appVersion }}"
+    },
+    "end_time": "{{ now | date "2006-01-02T15:04:05" }}",
+    "scanner": {
+      "id": "trivy",
+      "name": "Trivy",
+      "url": "https://github.com/aquasecurity/trivy/",
+      "vendor": {
+        "name": "Aqua Security"
+      },
+      "version": "{{ appVersion }}"
+    },
+    "start_time": "{{ now | date "2006-01-02T15:04:05" }}",
+    "status": "success",
+    "type": "container_scanning"
+  },
   "vulnerabilities": [
   {{- $t_first := true }}
   {{- range . }}
@@ -14,11 +37,8 @@
     {{- end }}
     {
       "id": "{{ .VulnerabilityID }}",
-      "category": "container_scanning",
-      "message": {{ .Title | printf "%q" }},
+      "name": {{ .Title | printf "%q" }},
       "description": {{ .Description | printf "%q" }},
-      {{- /* cve is a deprecated key, use id instead */}}
-      "cve": "{{ .VulnerabilityID }}",
       "severity": {{ if eq .Severity "UNKNOWN" -}}
                     "Unknown"
                   {{- else if eq .Severity "LOW" -}}
@@ -37,10 +57,6 @@
                   {{- else -}}
                     "No solution provided"
                   {{- end }},
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
       "location": {
         "dependency": {
           "package": {

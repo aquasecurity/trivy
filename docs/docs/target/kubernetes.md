@@ -134,7 +134,7 @@ Filter by scanners (Vulnerabilities, Secrets or Misconfigurations):
 ```
 trivy k8s --scanners=secret --report=summary cluster
 # or
-trivy k8s --scanners=config --report=summary cluster
+trivy k8s --scanners=misconfig --report=summary cluster
 ```
 
 The supported output formats are `table`, which is the default, and `json`.

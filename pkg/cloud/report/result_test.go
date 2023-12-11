@@ -2,6 +2,7 @@ package report
 
 import (
 	"bytes"
+	"context"
 	"strings"
 	"testing"
 
@@ -70,7 +71,7 @@ See https://avd.aquasec.com/misconfig/avd-aws-9999
 
 			output := bytes.NewBuffer(nil)
 			tt.options.SetOutputWriter(output)
-			require.NoError(t, Write(report, tt.options, tt.fromCache))
+			require.NoError(t, Write(context.Background(), report, tt.options, tt.fromCache))
 
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)
