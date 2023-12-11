@@ -116,7 +116,7 @@ require (
 	modernc.org/sqlite v1.23.1
 )
 
-require github.com/bitnami/go-version v0.0.0-20231130082345-3f6796aa059b
+require github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
 
 require (
 	cloud.google.com/go v0.110.7 // indirect
