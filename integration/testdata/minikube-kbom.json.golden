@@ -51,6 +51,9 @@
           "Title": "Bypass of seccomp profile enforcement ",
           "Description": "A security issue was discovered in Kubelet that allows pods to bypass the seccomp profile enforcement...",
           "Severity": "LOW",
+          "VendorSeverity": {
+            "k8s": 1
+          },
           "CVSS": {
             "k8s": {
               "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:N",

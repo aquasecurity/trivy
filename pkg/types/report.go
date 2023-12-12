@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
@@ -112,22 +111,6 @@ type Result struct {
 	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
 	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
-}
-
-func (r *Result) MarshalJSON() ([]byte, error) {
-	// VendorSeverity includes all vendor severities.
-	// It would be noisy to users, so it should be removed from the JSON output.
-	for i := range r.Vulnerabilities {
-		r.Vulnerabilities[i].VendorSeverity = nil
-	}
-
-	// Notice the Alias struct prevents MarshalJSON being called infinitely
-	type ResultAlias Result
-	return json.Marshal(&struct {
-		*ResultAlias
-	}{
-		ResultAlias: (*ResultAlias)(r),
-	})
 }
 
 func (r *Result) IsEmpty() bool {

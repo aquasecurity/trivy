@@ -27,7 +27,7 @@ jobs:
       contents: read  # Not required for public repositories, but for clarity
     steps:
       - name: Maximize build space
-        uses: easimon/maximize-build-space@v8
+        uses: easimon/maximize-build-space@v9
         with:
           root-reserve-mb: 35840 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
           remove-android: 'true'
@@ -36,7 +36,7 @@ jobs:
           remove-haskell: 'true'
 
       - name: Cosign install
-        uses: sigstore/cosign-installer@4a861528be5e691840a69536975ada1d4c30349d
+        uses: sigstore/cosign-installer@1fc5bd396d372bee37d608f955b336615edf79c8
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

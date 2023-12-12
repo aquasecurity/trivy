@@ -99,6 +99,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -160,6 +169,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -221,6 +239,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -282,6 +309,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",

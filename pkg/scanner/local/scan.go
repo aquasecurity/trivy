@@ -211,7 +211,8 @@ func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Re
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
-	if !ShouldScanMisconfigOrRbac(options.Scanners) {
+	if !ShouldScanMisconfigOrRbac(options.Scanners) &&
+		!options.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		return nil
 	}
 

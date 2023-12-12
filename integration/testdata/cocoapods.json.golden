@@ -47,6 +47,9 @@
           "Title": "SwiftNIO vulnerable to Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Response Splitting')",
           "Description": "`NIOHTTP1` and projects using it for generating HTTP responses, including SwiftNIO, can be subject to a HTTP Response Injection attack...",
           "Severity": "MEDIUM",
+          "VendorSeverity": {
+            "ghsa": 2
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",

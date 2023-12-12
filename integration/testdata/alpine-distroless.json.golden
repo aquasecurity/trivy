@@ -70,6 +70,9 @@
           "CweIDs": [
             "CWE-427"
           ],
+          "VendorSeverity": {
+            "ubuntu": 2
+          },
           "References": [
             "http://www.openwall.com/lists/oss-security/2022/04/12/7",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-24765",

@@ -299,6 +299,18 @@
           "CweIDs": [
             "CWE-79"
           ],
+          "VendorSeverity": {
+            "alma": 2,
+            "amazon": 2,
+            "arch-linux": 2,
+            "ghsa": 2,
+            "nodejs-security-wg": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "redhat": 2,
+            "ruby-advisory-db": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",

@@ -194,6 +194,9 @@
           "Title": "Phoenix before 1.6.14 mishandles check_origin wildcarding",
           "Description": "socket/transport.ex in Phoenix before 1.6.14 mishandles check_origin wildcarding. NOTE: LiveView applications are unaffected by default because of the presence of a LiveView CSRF token.",
           "Severity": "HIGH",
+          "VendorSeverity": {
+            "ghsa": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",

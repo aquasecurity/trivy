@@ -71,6 +71,9 @@
           "CweIDs": [
             "CWE-682"
           ],
+          "VendorSeverity": {
+            "nvd": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
