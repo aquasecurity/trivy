@@ -47,7 +47,7 @@ func TestTryOCI(t *testing.T) {
 		{
 			name:         "incorrect path to tar archive",
 			ociImagePath: filepath.Join("testdata", "invalid/image.tar"),
-			wantErr:      "no such file or directory",
+			wantErr:      "unable to open",
 		},
 		{
 			name:         "correct path to index with incorrect tag",
