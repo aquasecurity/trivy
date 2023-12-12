@@ -25,7 +25,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	genericTypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -190,7 +189,7 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[
 		pkg = a.parseDpkgPkg(header)
 		if pkg != nil {
 			pkg.Digest = digests[pkg.ID]
-			pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeDpkg), genericTypes.Metadata{}, *pkg)
+			pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeDpkg), nil, *pkg)
 			pkgs[pkg.ID] = pkg
 			pkgIDs[pkg.Name] = pkg.ID
 		}

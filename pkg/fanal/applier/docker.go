@@ -9,6 +9,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 type Config struct {
@@ -213,6 +214,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			DiffID: originLayerDiffID,
 		}
 		mergedLayer.Packages[i].BuildInfo = buildInfo
+		// Overwrite package identifiers on the packages adding missing OS metadata to existing PURLs
+		// Required for packages added by pkg (apk, rpm, etc.) analyzers
+		newIdentifier := purl.NewPackageIdentifier(mergedLayer.OS.Family, &mergedLayer.OS, pkg)
+		mergedLayer.Packages[i].Identifier.PURL = newIdentifier.PURL
 
 		// Only debian packages
 		if licenses, ok := dpkgLicenses[pkg.Name]; ok {

@@ -21,7 +21,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	genericTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func init() {
@@ -65,7 +64,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		// check package if paragraph end
 		if len(line) < 2 {
 			if !pkg.Empty() {
-				pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeApk), genericTypes.Metadata{}, pkg)
+				pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeApk), nil, pkg)
 				pkgs = append(pkgs, pkg)
 			}
 			pkg = types.Package{}
@@ -118,7 +117,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 	}
 	// in case of last paragraph
 	if !pkg.Empty() {
-		pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeApk), genericTypes.Metadata{}, pkg)
+		pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeApk), nil, pkg)
 		pkgs = append(pkgs, pkg)
 	}
 

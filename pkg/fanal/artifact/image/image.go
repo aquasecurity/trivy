@@ -198,17 +198,11 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	return layerKeyMap
 }
 
-type Layer struct {
-	Key  string
-	Info types.BlobInfo
-}
-
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
 
 	var osFound types.OS
-	var layers []Layer
-	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context, layerKey string) (Layer, error) {
+	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context, layerKey string) (any, error) {
 		layer := layerKeyMap[layerKey]
 
 		// If it is a base layer, secret scanning should not be performed.
@@ -219,43 +213,19 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 
 		layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyzers)
 		if err != nil {
-			return Layer{}, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
+			return nil, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 		}
-
-		return Layer{
-			Key:  layerKey,
-			Info: layerInfo,
-		}, nil
-	}, func(layer Layer) error {
-		layers = append(layers, layer)
-		if lo.IsNotEmpty(layer.Info.OS) {
-			osFound = layer.Info.OS
+		if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
+			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 		}
+		if lo.IsNotEmpty(layerInfo.OS) {
+			osFound = layerInfo.OS
+		}
+		return nil, nil
 
-		return nil
-	})
+	}, nil)
 
 	if err := p.Do(ctx); err != nil {
-		return xerrors.Errorf("pipeline error: %w", err)
-	}
-
-	p2 := parallel.NewPipeline(a.artifactOption.Parallel, false, layers, func(ctx context.Context, layer Layer) (Layer, error) {
-		// Call post handlers to modify layer info
-		layer.Info.OS.Merge(osFound)
-		if err := a.handlerManager.PostHandle(ctx, nil, &layer.Info); err != nil {
-			return Layer{}, xerrors.Errorf("post handler error: %w", err)
-		}
-
-		return layer, nil
-	}, func(layer Layer) error {
-		if err := a.cache.PutBlob(layer.Key, layer.Info); err != nil {
-			return xerrors.Errorf("failed to store layer: %s in cache: %w", layer.Key, err)
-		}
-
-		return nil
-	})
-
-	if err := p2.Do(ctx); err != nil {
 		return xerrors.Errorf("pipeline error: %w", err)
 	}
 
@@ -349,6 +319,11 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 
 		// For Red Hat
 		BuildInfo: result.BuildInfo,
+	}
+
+	// Call post handlers to modify blob info
+	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("post handler error: %w", err)
 	}
 
 	return blobInfo, nil

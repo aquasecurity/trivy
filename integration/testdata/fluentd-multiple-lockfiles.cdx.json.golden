@@ -5776,70 +5776,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/bigdecimal@1.3.4?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fbigdecimal-1.3.4.gemspec",
-      "type": "library",
-      "name": "bigdecimal",
-      "version": "1.3.4",
-      "licenses": [
-        {
-          "license": {
-            "name": "Ruby"
-          }
-        }
-      ],
-      "purl": "pkg:gem/bigdecimal@1.3.4",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/bigdecimal-1.3.4.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/cmath@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fcmath-1.0.0.gemspec",
-      "type": "library",
-      "name": "cmath",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/cmath@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/cmath-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/concurrent-ruby@1.1.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fconcurrent-ruby-1.1.6.gemspec",
       "type": "library",
       "name": "concurrent-ruby",
@@ -5881,134 +5817,6 @@
         {
           "name": "aquasecurity:trivy:FilePath",
           "value": "var/lib/gems/2.5.0/specifications/cool.io-1.6.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/csv@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fcsv-1.0.0.gemspec",
-      "type": "library",
-      "name": "csv",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/csv@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/csv-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/date@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fdate-1.0.0.gemspec",
-      "type": "library",
-      "name": "date",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/date@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/date-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/dbm@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fdbm-1.0.0.gemspec",
-      "type": "library",
-      "name": "dbm",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/dbm@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/dbm-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/did_you_mean@1.2.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fdid_you_mean-1.2.1.gemspec",
-      "type": "library",
-      "name": "did_you_mean",
-      "version": "1.2.1",
-      "licenses": [
-        {
-          "license": {
-            "name": "MIT"
-          }
-        }
-      ],
-      "purl": "pkg:gem/did_you_mean@1.2.1",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/share/rubygems-integration/all/specifications/did_you_mean-1.2.1.gemspec"
         },
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -6195,38 +6003,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/etc@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fetc-1.0.0.gemspec",
-      "type": "library",
-      "name": "etc",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/etc@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/etc-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/excon@0.72.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fexcon-0.72.0.gemspec",
       "type": "library",
       "name": "excon",
@@ -6291,38 +6067,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/fcntl@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Ffcntl-1.0.0.gemspec",
-      "type": "library",
-      "name": "fcntl",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/fcntl@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/fcntl-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/ffi-compiler@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-compiler-1.0.1.gemspec",
       "type": "library",
       "name": "ffi-compiler",
@@ -6371,70 +6115,6 @@
         {
           "name": "aquasecurity:trivy:FilePath",
           "value": "var/lib/gems/2.5.0/specifications/ffi-1.12.2.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/fiddle@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Ffiddle-1.0.0.gemspec",
-      "type": "library",
-      "name": "fiddle",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/fiddle@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/fiddle-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/fileutils@1.0.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Ffileutils-1.0.2.gemspec",
-      "type": "library",
-      "name": "fileutils",
-      "version": "1.0.2",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/fileutils@1.0.2",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/fileutils-1.0.2.gemspec"
         },
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -6707,38 +6387,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/gdbm@2.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fgdbm-2.0.0.gemspec",
-      "type": "library",
-      "name": "gdbm",
-      "version": "2.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/gdbm@2.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/gdbm-2.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/http-accept@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-accept-1.7.0.gemspec",
       "type": "library",
       "name": "http-accept",
@@ -6956,95 +6604,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/io-console@0.4.6?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fio-console-0.4.6.gemspec",
-      "type": "library",
-      "name": "io-console",
-      "version": "0.4.6",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/io-console@0.4.6",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/io-console-0.4.6.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/ipaddr@1.2.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fipaddr-1.2.0.gemspec",
-      "type": "library",
-      "name": "ipaddr",
-      "version": "1.2.0",
-      "purl": "pkg:gem/ipaddr@1.2.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/ipaddr-1.2.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/json@2.1.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fjson-2.1.0.gemspec",
-      "type": "library",
-      "name": "json",
-      "version": "2.1.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "Ruby"
-          }
-        }
-      ],
-      "purl": "pkg:gem/json@2.1.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/json-2.1.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/kubeclient@4.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fkubeclient-4.6.0.gemspec",
       "type": "library",
       "name": "kubeclient",
@@ -7157,38 +6716,6 @@
         {
           "name": "aquasecurity:trivy:FilePath",
           "value": "var/lib/gems/2.5.0/specifications/mime-types-3.3.1.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/minitest@5.11.3?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fminitest-5.11.3.gemspec",
-      "type": "library",
-      "name": "minitest",
-      "version": "5.11.3",
-      "licenses": [
-        {
-          "license": {
-            "name": "MIT"
-          }
-        }
-      ],
-      "purl": "pkg:gem/minitest@5.11.3",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/share/rubygems-integration/all/specifications/minitest-5.11.3.gemspec"
         },
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -7333,31 +6860,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/net-telnet@0.1.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fnet-telnet-0.1.1.gemspec",
-      "type": "library",
-      "name": "net-telnet",
-      "version": "0.1.1",
-      "purl": "pkg:gem/net-telnet@0.1.1",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/share/rubygems-integration/all/specifications/net-telnet-0.1.1.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/netrc@0.11.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fnetrc-0.11.0.gemspec",
       "type": "library",
       "name": "netrc",
@@ -7422,75 +6924,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/openssl@2.1.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fopenssl-2.1.2.gemspec",
-      "type": "library",
-      "name": "openssl",
-      "version": "2.1.2",
-      "licenses": [
-        {
-          "license": {
-            "name": "Ruby"
-          }
-        }
-      ],
-      "purl": "pkg:gem/openssl@2.1.2",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/openssl-2.1.2.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/power_assert@1.1.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fpower_assert-1.1.1.gemspec",
-      "type": "library",
-      "name": "power_assert",
-      "version": "1.1.1",
-      "licenses": [
-        {
-          "license": {
-            "name": "2-clause BSDL"
-          }
-        },
-        {
-          "license": {
-            "name": "Ruby's"
-          }
-        }
-      ],
-      "purl": "pkg:gem/power_assert@1.1.1",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/share/rubygems-integration/all/specifications/power_assert-1.1.1.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/prometheus-client@0.9.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fprometheus-client-0.9.0.gemspec",
       "type": "library",
       "name": "prometheus-client",
@@ -7507,38 +6940,6 @@
         {
           "name": "aquasecurity:trivy:FilePath",
           "value": "var/lib/gems/2.5.0/specifications/prometheus-client-0.9.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/psych@3.0.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fpsych-3.0.2.gemspec",
-      "type": "library",
-      "name": "psych",
-      "version": "3.0.2",
-      "licenses": [
-        {
-          "license": {
-            "name": "MIT"
-          }
-        }
-      ],
-      "purl": "pkg:gem/psych@3.0.2",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/psych-3.0.2.gemspec"
         },
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -7619,38 +7020,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/rake@12.3.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Frake-12.3.1.gemspec",
-      "type": "library",
-      "name": "rake",
-      "version": "12.3.1",
-      "licenses": [
-        {
-          "license": {
-            "name": "MIT"
-          }
-        }
-      ],
-      "purl": "pkg:gem/rake@12.3.1",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/share/rubygems-integration/all/specifications/rake-12.3.1.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/rake@13.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frake-13.0.1.gemspec",
       "type": "library",
       "name": "rake",
@@ -7667,38 +7036,6 @@
         {
           "name": "aquasecurity:trivy:FilePath",
           "value": "var/lib/gems/2.5.0/specifications/rake-13.0.1.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/rdoc@6.0.1?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Frdoc-6.0.1.gemspec",
-      "type": "library",
-      "name": "rdoc",
-      "version": "6.0.1",
-      "licenses": [
-        {
-          "license": {
-            "name": "Ruby"
-          }
-        }
-      ],
-      "purl": "pkg:gem/rdoc@6.0.1",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/rdoc-6.0.1.gemspec"
         },
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -7779,70 +7116,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/scanf@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fscanf-1.0.0.gemspec",
-      "type": "library",
-      "name": "scanf",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/scanf@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/scanf-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/sdbm@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fsdbm-1.0.0.gemspec",
-      "type": "library",
-      "name": "sdbm",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/sdbm@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/sdbm-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/serverengine@2.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fserverengine-2.2.1.gemspec",
       "type": "library",
       "name": "serverengine",
@@ -7907,38 +7180,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/stringio@0.0.1?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fstringio-0.0.1.gemspec",
-      "type": "library",
-      "name": "stringio",
-      "version": "0.0.1",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/stringio@0.0.1",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/stringio-0.0.1.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/strptime@0.2.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fstrptime-0.2.3.gemspec",
       "type": "library",
       "name": "strptime",
@@ -7971,38 +7212,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/strscan@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fstrscan-1.0.0.gemspec",
-      "type": "library",
-      "name": "strscan",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/strscan@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/strscan-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/systemd-journal@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsystemd-journal-1.3.3.gemspec",
       "type": "library",
       "name": "systemd-journal",
@@ -8019,43 +7228,6 @@
         {
           "name": "aquasecurity:trivy:FilePath",
           "value": "var/lib/gems/2.5.0/specifications/systemd-journal-1.3.3.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/test-unit@3.2.8?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Ftest-unit-3.2.8.gemspec",
-      "type": "library",
-      "name": "test-unit",
-      "version": "3.2.8",
-      "licenses": [
-        {
-          "license": {
-            "name": "Ruby"
-          }
-        },
-        {
-          "license": {
-            "name": "PSFL"
-          }
-        }
-      ],
-      "purl": "pkg:gem/test-unit@3.2.8",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/share/rubygems-integration/all/specifications/test-unit-3.2.8.gemspec"
         },
         {
           "name": "aquasecurity:trivy:LayerDiffID",
@@ -8232,70 +7404,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/webrick@1.4.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fwebrick-1.4.2.gemspec",
-      "type": "library",
-      "name": "webrick",
-      "version": "1.4.2",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/webrick@1.4.2",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/webrick-1.4.2.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:gem/xmlrpc@0.3.0?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fxmlrpc-0.3.0.gemspec",
-      "type": "library",
-      "name": "xmlrpc",
-      "version": "0.3.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "Ruby"
-          }
-        }
-      ],
-      "purl": "pkg:gem/xmlrpc@0.3.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/share/rubygems-integration/all/specifications/xmlrpc-0.3.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:gem/yajl-ruby@1.4.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fyajl-ruby-1.4.1.gemspec",
       "type": "library",
       "name": "yajl-ruby",
@@ -8358,38 +7466,6 @@
           "value": "gemspec"
         }
       ]
-    },
-    {
-      "bom-ref": "pkg:gem/zlib@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fzlib-1.0.0.gemspec",
-      "type": "library",
-      "name": "zlib",
-      "version": "1.0.0",
-      "licenses": [
-        {
-          "license": {
-            "name": "BSD-2-Clause"
-          }
-        }
-      ],
-      "purl": "pkg:gem/zlib@1.0.0",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "usr/lib/ruby/gems/2.5.0/specifications/default/zlib-1.0.0.gemspec"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDiffID",
-          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        {
-          "name": "aquasecurity:trivy:LayerDigest",
-          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
-        },
-        {
-          "name": "aquasecurity:trivy:PkgType",
-          "value": "gemspec"
-        }
-      ]
     }
   ],
   "dependencies": [
@@ -8399,27 +7475,17 @@
         "3ff14136-e09f-4df9-80ea-000000000003",
         "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
         "pkg:gem/addressable@2.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Faddressable-2.7.0.gemspec",
-        "pkg:gem/bigdecimal@1.3.4?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fbigdecimal-1.3.4.gemspec",
-        "pkg:gem/cmath@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fcmath-1.0.0.gemspec",
         "pkg:gem/concurrent-ruby@1.1.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fconcurrent-ruby-1.1.6.gemspec",
         "pkg:gem/cool.io@1.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fcool.io-1.6.0.gemspec",
-        "pkg:gem/csv@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fcsv-1.0.0.gemspec",
-        "pkg:gem/date@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fdate-1.0.0.gemspec",
-        "pkg:gem/dbm@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fdbm-1.0.0.gemspec",
-        "pkg:gem/did_you_mean@1.2.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fdid_you_mean-1.2.1.gemspec",
         "pkg:gem/dig_rb@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fdig_rb-1.0.1.gemspec",
         "pkg:gem/domain_name@0.5.20190701?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fdomain_name-0.5.20190701.gemspec",
         "pkg:gem/elasticsearch-api@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-api-7.5.0.gemspec",
         "pkg:gem/elasticsearch-transport@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-transport-7.5.0.gemspec",
         "pkg:gem/elasticsearch@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-7.5.0.gemspec",
-        "pkg:gem/etc@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fetc-1.0.0.gemspec",
         "pkg:gem/excon@0.72.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fexcon-0.72.0.gemspec",
         "pkg:gem/faraday@0.17.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffaraday-0.17.3.gemspec",
-        "pkg:gem/fcntl@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Ffcntl-1.0.0.gemspec",
         "pkg:gem/ffi-compiler@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-compiler-1.0.1.gemspec",
         "pkg:gem/ffi@1.12.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-1.12.2.gemspec",
-        "pkg:gem/fiddle@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Ffiddle-1.0.0.gemspec",
-        "pkg:gem/fileutils@1.0.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Ffileutils-1.0.2.gemspec",
         "pkg:gem/fluent-plugin-concat@2.4.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-concat-2.4.0.gemspec",
         "pkg:gem/fluent-plugin-detect-exceptions@0.0.13?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-detect-exceptions-0.0.13.gemspec",
         "pkg:gem/fluent-plugin-elasticsearch@3.8.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-elasticsearch-3.8.0.gemspec",
@@ -8428,7 +7494,6 @@
         "pkg:gem/fluent-plugin-prometheus@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-prometheus-1.7.0.gemspec",
         "pkg:gem/fluent-plugin-systemd@1.0.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-systemd-1.0.2.gemspec",
         "pkg:gem/fluentd@1.8.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluentd-1.8.0.gemspec",
-        "pkg:gem/gdbm@2.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fgdbm-2.0.0.gemspec",
         "pkg:gem/http-accept@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-accept-1.7.0.gemspec",
         "pkg:gem/http-cookie@1.0.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-cookie-1.0.3.gemspec",
         "pkg:gem/http-form_data@2.2.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-form_data-2.2.0.gemspec",
@@ -8436,51 +7501,33 @@
         "pkg:gem/http@4.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-4.3.0.gemspec",
         "pkg:gem/http_parser.rb@0.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp_parser.rb-0.6.0.gemspec",
         "pkg:gem/i18n@1.8.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fi18n-1.8.2.gemspec",
-        "pkg:gem/io-console@0.4.6?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fio-console-0.4.6.gemspec",
-        "pkg:gem/ipaddr@1.2.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fipaddr-1.2.0.gemspec",
-        "pkg:gem/json@2.1.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fjson-2.1.0.gemspec",
         "pkg:gem/kubeclient@4.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fkubeclient-4.6.0.gemspec",
         "pkg:gem/lru_redux@1.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Flru_redux-1.1.0.gemspec",
         "pkg:gem/mime-types-data@3.2019.1009?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmime-types-data-3.2019.1009.gemspec",
         "pkg:gem/mime-types@3.3.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmime-types-3.3.1.gemspec",
-        "pkg:gem/minitest@5.11.3?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fminitest-5.11.3.gemspec",
         "pkg:gem/minitest@5.14.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fminitest-5.14.0.gemspec",
         "pkg:gem/msgpack@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmsgpack-1.3.3.gemspec",
         "pkg:gem/multi_json@1.14.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmulti_json-1.14.1.gemspec",
         "pkg:gem/multipart-post@2.1.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmultipart-post-2.1.1.gemspec",
-        "pkg:gem/net-telnet@0.1.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fnet-telnet-0.1.1.gemspec",
         "pkg:gem/netrc@0.11.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fnetrc-0.11.0.gemspec",
         "pkg:gem/oj@3.10.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Foj-3.10.0.gemspec",
-        "pkg:gem/openssl@2.1.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fopenssl-2.1.2.gemspec",
-        "pkg:gem/power_assert@1.1.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fpower_assert-1.1.1.gemspec",
         "pkg:gem/prometheus-client@0.9.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fprometheus-client-0.9.0.gemspec",
-        "pkg:gem/psych@3.0.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fpsych-3.0.2.gemspec",
         "pkg:gem/public_suffix@4.0.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fpublic_suffix-4.0.3.gemspec",
         "pkg:gem/quantile@0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fquantile-0.2.1.gemspec",
-        "pkg:gem/rake@12.3.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Frake-12.3.1.gemspec",
         "pkg:gem/rake@13.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frake-13.0.1.gemspec",
-        "pkg:gem/rdoc@6.0.1?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Frdoc-6.0.1.gemspec",
         "pkg:gem/recursive-open-struct@1.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frecursive-open-struct-1.1.0.gemspec",
         "pkg:gem/rest-client@2.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frest-client-2.1.0.gemspec",
-        "pkg:gem/scanf@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fscanf-1.0.0.gemspec",
-        "pkg:gem/sdbm@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fsdbm-1.0.0.gemspec",
         "pkg:gem/serverengine@2.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fserverengine-2.2.1.gemspec",
         "pkg:gem/sigdump@0.2.4?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsigdump-0.2.4.gemspec",
-        "pkg:gem/stringio@0.0.1?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fstringio-0.0.1.gemspec",
         "pkg:gem/strptime@0.2.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fstrptime-0.2.3.gemspec",
-        "pkg:gem/strscan@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fstrscan-1.0.0.gemspec",
         "pkg:gem/systemd-journal@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsystemd-journal-1.3.3.gemspec",
-        "pkg:gem/test-unit@3.2.8?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Ftest-unit-3.2.8.gemspec",
         "pkg:gem/thread_safe@0.3.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fthread_safe-0.3.6.gemspec",
         "pkg:gem/tzinfo-data@1.2019.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ftzinfo-data-1.2019.3.gemspec",
         "pkg:gem/tzinfo@1.2.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ftzinfo-1.2.6.gemspec",
         "pkg:gem/unf@0.1.4?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Funf-0.1.4.gemspec",
         "pkg:gem/unf_ext@0.0.7.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Funf_ext-0.0.7.6.gemspec",
-        "pkg:gem/webrick@1.4.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fwebrick-1.4.2.gemspec",
-        "pkg:gem/xmlrpc@0.3.0?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fxmlrpc-0.3.0.gemspec",
         "pkg:gem/yajl-ruby@1.4.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fyajl-ruby-1.4.1.gemspec",
-        "pkg:gem/zeitwerk@2.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fzeitwerk-2.3.0.gemspec",
-        "pkg:gem/zlib@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fzlib-1.0.0.gemspec"
+        "pkg:gem/zeitwerk@2.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fzeitwerk-2.3.0.gemspec"
       ]
     },
     {
@@ -9282,35 +8329,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/bigdecimal@1.3.4?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fbigdecimal-1.3.4.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/cmath@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fcmath-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/concurrent-ruby@1.1.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fconcurrent-ruby-1.1.6.gemspec",
       "dependsOn": []
     },
     {
       "ref": "pkg:gem/cool.io@1.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fcool.io-1.6.0.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/csv@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fcsv-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/date@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fdate-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/dbm@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fdbm-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/did_you_mean@1.2.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fdid_you_mean-1.2.1.gemspec",
       "dependsOn": []
     },
     {
@@ -9334,10 +8357,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/etc@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fetc-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/excon@0.72.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fexcon-0.72.0.gemspec",
       "dependsOn": []
     },
@@ -9346,23 +8365,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/fcntl@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Ffcntl-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/ffi-compiler@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-compiler-1.0.1.gemspec",
       "dependsOn": []
     },
     {
       "ref": "pkg:gem/ffi@1.12.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-1.12.2.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/fiddle@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Ffiddle-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/fileutils@1.0.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Ffileutils-1.0.2.gemspec",
       "dependsOn": []
     },
     {
@@ -9398,10 +8405,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/gdbm@2.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fgdbm-2.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/http-accept@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-accept-1.7.0.gemspec",
       "dependsOn": []
     },
@@ -9430,18 +8433,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/io-console@0.4.6?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fio-console-0.4.6.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/ipaddr@1.2.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fipaddr-1.2.0.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/json@2.1.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fjson-2.1.0.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/kubeclient@4.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fkubeclient-4.6.0.gemspec",
       "dependsOn": []
     },
@@ -9455,10 +8446,6 @@
     },
     {
       "ref": "pkg:gem/mime-types@3.3.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmime-types-3.3.1.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/minitest@5.11.3?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fminitest-5.11.3.gemspec",
       "dependsOn": []
     },
     {
@@ -9478,10 +8465,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/net-telnet@0.1.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fnet-telnet-0.1.1.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/netrc@0.11.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fnetrc-0.11.0.gemspec",
       "dependsOn": []
     },
@@ -9490,19 +8473,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/openssl@2.1.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fopenssl-2.1.2.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/power_assert@1.1.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fpower_assert-1.1.1.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/prometheus-client@0.9.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fprometheus-client-0.9.0.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/psych@3.0.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fpsych-3.0.2.gemspec",
       "dependsOn": []
     },
     {
@@ -9514,15 +8485,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/rake@12.3.1?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Frake-12.3.1.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/rake@13.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frake-13.0.1.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/rdoc@6.0.1?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Frdoc-6.0.1.gemspec",
       "dependsOn": []
     },
     {
@@ -9534,14 +8497,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/scanf@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fscanf-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/sdbm@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fsdbm-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/serverengine@2.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fserverengine-2.2.1.gemspec",
       "dependsOn": []
     },
@@ -9550,23 +8505,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/stringio@0.0.1?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fstringio-0.0.1.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/strptime@0.2.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fstrptime-0.2.3.gemspec",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/strscan@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fstrscan-1.0.0.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/systemd-journal@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsystemd-journal-1.3.3.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/test-unit@3.2.8?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Ftest-unit-3.2.8.gemspec",
       "dependsOn": []
     },
     {
@@ -9590,23 +8533,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/webrick@1.4.2?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fwebrick-1.4.2.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/xmlrpc@0.3.0?file_path=usr%2Fshare%2Frubygems-integration%2Fall%2Fspecifications%2Fxmlrpc-0.3.0.gemspec",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:gem/yajl-ruby@1.4.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fyajl-ruby-1.4.1.gemspec",
       "dependsOn": []
     },
     {
       "ref": "pkg:gem/zeitwerk@2.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fzeitwerk-2.3.0.gemspec",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:gem/zlib@1.0.0?file_path=usr%2Flib%2Fruby%2Fgems%2F2.5.0%2Fspecifications%2Fdefault%2Fzlib-1.0.0.gemspec",
       "dependsOn": []
     }
   ],

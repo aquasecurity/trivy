@@ -143,6 +143,9 @@ func TestApplyLayers(t *testing.T) {
 						Name:    "musl",
 						Version: "1.2.4",
 						Release: "4.5.8",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:apk/alpine/musl@1.2.4-4.5.8?distro=3.10",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -152,6 +155,9 @@ func TestApplyLayers(t *testing.T) {
 						Name:    "openssl",
 						Version: "1.2.3",
 						Release: "4.5.6",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:apk/alpine/openssl@1.2.3-4.5.6?distro=3.10",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -691,6 +697,9 @@ func TestApplyLayers(t *testing.T) {
 						Version:  "1.2.4",
 						Release:  "4.5.7",
 						Licenses: []string{"GPL-2"},
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:deb/debian/libc@1.2.4-4.5.7?distro=debian-8",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -701,6 +710,9 @@ func TestApplyLayers(t *testing.T) {
 						Version:  "1.2.3",
 						Release:  "4.5.6",
 						Licenses: []string{"OpenSSL"},
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:deb/debian/openssl@1.2.3-4.5.6?distro=debian-8",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
@@ -837,6 +849,9 @@ func TestApplyLayers(t *testing.T) {
 						Name:    "bash",
 						Version: "5.6.7",
 						Release: "8",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:rpm/redhat/bash@5.6.7-8?distro=redhat-8",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -850,6 +865,9 @@ func TestApplyLayers(t *testing.T) {
 						Name:    "libc",
 						Version: "1.2.4",
 						Release: "5",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:rpm/redhat/libc@1.2.4-5?distro=redhat-8",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -865,6 +883,9 @@ func TestApplyLayers(t *testing.T) {
 						Name:    "openssl",
 						Version: "1.2.3",
 						Release: "4",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:rpm/redhat/openssl@1.2.3-4?distro=redhat-8",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",

@@ -25,7 +25,6 @@ import (
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/ospkgid"
 )
 
 const (
@@ -122,7 +121,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID:   "sha256:4d6b9815ae24507b0913bdbe0bdf29f3fc9e20428fe8bd410afa6de9bd149655",
+					BlobID:   "sha256:3ef49550a2690d623d52475fc2308069da453ceeb2bdf09b99d1acbdfcc17782",
 					BlobInfo: expectedBlobInfo,
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -130,7 +129,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:4d6b9815ae24507b0913bdbe0bdf29f3fc9e20428fe8bd410afa6de9bd149655",
+						ArtifactID: "sha256:3ef49550a2690d623d52475fc2308069da453ceeb2bdf09b99d1acbdfcc17782",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -140,9 +139,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "rawdata.img",
 				Type: types.ArtifactVM,
-				ID:   "sha256:4d6b9815ae24507b0913bdbe0bdf29f3fc9e20428fe8bd410afa6de9bd149655",
+				ID:   "sha256:3ef49550a2690d623d52475fc2308069da453ceeb2bdf09b99d1acbdfcc17782",
 				BlobIDs: []string{
-					"sha256:4d6b9815ae24507b0913bdbe0bdf29f3fc9e20428fe8bd410afa6de9bd149655",
+					"sha256:3ef49550a2690d623d52475fc2308069da453ceeb2bdf09b99d1acbdfcc17782",
 				},
 			},
 		},
@@ -152,13 +151,13 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:989d81700cfcdaa3b57456e23fc613da4c72f09ce2ec2f71f83a2b8214761295",
-					BlobIDs:    []string{"sha256:989d81700cfcdaa3b57456e23fc613da4c72f09ce2ec2f71f83a2b8214761295"},
+					ArtifactID: "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
+					BlobIDs:    []string{"sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID:   "sha256:989d81700cfcdaa3b57456e23fc613da4c72f09ce2ec2f71f83a2b8214761295",
+					BlobID:   "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
 					BlobInfo: expectedBlobInfo,
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -166,7 +165,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:989d81700cfcdaa3b57456e23fc613da4c72f09ce2ec2f71f83a2b8214761295",
+						ArtifactID: "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -176,9 +175,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "ebs-012345",
 				Type: types.ArtifactVM,
-				ID:   "sha256:989d81700cfcdaa3b57456e23fc613da4c72f09ce2ec2f71f83a2b8214761295",
+				ID:   "sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
 				BlobIDs: []string{
-					"sha256:989d81700cfcdaa3b57456e23fc613da4c72f09ce2ec2f71f83a2b8214761295",
+					"sha256:c28da2df41e019b5d18459440178341ec05e9082b12b6f11afe73f0600bfe96a",
 				},
 			},
 		},
@@ -238,7 +237,7 @@ var expectedBlobInfo = types.BlobInfo{
 					Name:    "musl",
 					Version: "1.2.3-r5",
 					Identifier: types.PkgIdentifier{
-						PURL: "pkg:apk/alpine/musl@1.2.3-r5?arch=aarch64&distro=3.17.5",
+						PURL: "pkg:apk/musl@1.2.3-r5?arch=aarch64",
 					},
 					SrcName:    "musl",
 					SrcVersion: "1.2.3-r5",

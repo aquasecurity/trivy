@@ -149,6 +149,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Version:    "2.24-11+deb9u4",
 						SrcName:    "glibc",
 						SrcVersion: "2.24-11+deb9u4",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:deb/debian/libc6@2.24-11%2Bdeb9u4?distro=debian-9.9",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
@@ -159,6 +162,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Version:    "2019a-0+deb9u1",
 						SrcName:    "tzdata",
 						SrcVersion: "2019a-0+deb9u1",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:deb/debian/tzdata@2019a-0%2Bdeb9u1?distro=debian-9.9",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -299,6 +305,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "busybox",
 						Version: "1.30.1-r3",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:apk/alpine/busybox@1.30.1-r3?distro=3.10.4",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
@@ -307,6 +316,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "libcrypto1.1",
 						Version: "1.1.1d-r2",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:apk/alpine/libcrypto1.1@1.1.1d-r2?distro=3.10.4",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
@@ -315,6 +327,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "libssl1.1",
 						Version: "1.1.1d-r2",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:apk/alpine/libssl1.1@1.1.1d-r2?distro=3.10.4",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
@@ -323,6 +338,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "musl",
 						Version: "1.1.22-r3",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:apk/alpine/musl@1.1.22-r3?distro=3.10.4",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
@@ -331,6 +349,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Name:    "openssl",
 						Version: "1.1.1d-r2",
+						Identifier: types.PkgIdentifier{
+							PURL: "pkg:apk/alpine/openssl@1.1.1d-r2?distro=3.10.4",
+						},
 						Layer: types.Layer{
 							Digest: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
