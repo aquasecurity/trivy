@@ -30,11 +30,21 @@ func UniqueLibraries(libs []types.Library) []types.Library {
 		identifier := fmt.Sprintf("%s@%s", lib.Name, lib.Version)
 		if l, ok := unique[identifier]; !ok {
 			unique[identifier] = lib
-		} else if len(lib.Locations) > 0 {
-			// merge locations
-			l.Locations = append(l.Locations, lib.Locations...)
-			sort.Sort(l.Locations)
-			unique[identifier] = l
+		} else {
+			// There are times when we get 2 same libraries as root and dev dependencies.
+			// https://github.com/aquasecurity/trivy/issues/5532
+			// In these cases, we need to mark the dependency as a root dependency.
+			if !lib.Dev {
+				l.Dev = lib.Dev
+				unique[identifier] = l
+			}
+
+			if len(lib.Locations) > 0 {
+				// merge locations
+				l.Locations = append(l.Locations, lib.Locations...)
+				sort.Sort(l.Locations)
+				unique[identifier] = l
+			}
 		}
 	}
 	libSlice := maps.Values(unique)
