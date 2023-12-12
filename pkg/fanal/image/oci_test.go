@@ -24,6 +24,32 @@ func TestTryOCI(t *testing.T) {
 			wantErr:      "",
 		},
 		{
+			name:         "correct path to index from tar without tag",
+			ociImagePath: filepath.Join("testdata", "tar/image.tar"),
+			wantErr:      "",
+		},
+		{
+			name:         "correct path to index from tar with correct tag",
+			ociImagePath: filepath.Join("testdata", "tar/image.tar:tg11"),
+			wantErr:      "",
+		},
+		{
+			name:         "correct path to index from tar with incorrect tag",
+			ociImagePath: filepath.Join("testdata", "tar/image.tar:tg12"),
+			wantErr:      "invalid OCI image ref",
+		},
+		{
+			name: "correct path to index from tar with correct digest",
+			ociImagePath: filepath.Join("testdata",
+				"tar/image.tar@sha256:56f658ee7c94c1a65099c680916c12f6b81ae4c586c662a8146791054fa466ab"),
+			wantErr: "",
+		},
+		{
+			name:         "incorrect path to tar archive",
+			ociImagePath: filepath.Join("testdata", "invalid/image.tar"),
+			wantErr:      "no such file or directory",
+		},
+		{
 			name:         "correct path to index with incorrect tag",
 			ociImagePath: filepath.Join("testdata", "multi:tg12"),
 			wantErr:      "invalid OCI image ref",
