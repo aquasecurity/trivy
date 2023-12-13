@@ -16,8 +16,7 @@ import (
 )
 
 const (
-	TypeOCI  = "oci"
-	TypeDart = "dart"
+	TypeOCI = "oci"
 
 	// TypeK8s is a custom type for Kubernetes components in PURL.
 	//  - namespace: The service provider such as EKS or GKE. It is not case sensitive and must be lowercased.
@@ -141,7 +140,7 @@ func (p *PackageURL) LangType() ftypes.LangType {
 		return ftypes.Hex
 	case packageurl.TypeConan:
 		return ftypes.Conan
-	case TypeDart: // TODO: replace with packageurl.TypeDart once they add it.
+	case packageurl.TypePub:
 		return ftypes.Pub
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
@@ -432,7 +431,7 @@ func purlType(t ftypes.TargetType) string {
 	case ftypes.Conan:
 		return packageurl.TypeConan
 	case ftypes.Pub:
-		return TypeDart // TODO: replace with packageurl.TypeDart once they add it.
+		return packageurl.TypePub
 	case ftypes.RustBinary, ftypes.Cargo:
 		return packageurl.TypeCargo
 	case ftypes.Alpine:
