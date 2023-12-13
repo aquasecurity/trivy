@@ -181,9 +181,6 @@ func TestFSCache_PutBlob(t *testing.T) {
 								{
 									Name:    "musl",
 									Version: "1.1.22-r3",
-									Identifier: types.PkgIdentifier{
-										PURL: "pkg:apk/musl@1.1.22-r3",
-									},
 								},
 							},
 						},
@@ -234,9 +231,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				        {
 				          "Name": "musl",
 				          "Version": "1.1.22-r3",
-						  "Identifier": {
-							"PURL": "pkg:apk/musl@1.1.22-r3"
-						  },
+						  "Identifier": {},
 						  "Layer": {}
 				        }
 				      ]

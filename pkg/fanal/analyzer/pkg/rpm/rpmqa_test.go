@@ -23,11 +23,8 @@ filesystem	1.1-9.cm2	1653816591	1653628924	Microsoft Corporation	(none)	7596	x86
 glibc	2.35-2.cm2	1653816591	1653628955	Microsoft Corporation	(none)	10855265	x86_64	0	glibc-2.35-2.cm2.src.rpm`,
 			wantPkgs: []types.Package{
 				{
-					Name:    "mariner-release",
-					Version: "2.0",
-					Identifier: types.PkgIdentifier{
-						PURL: "pkg:rpmqa/mariner-release@2.0-12.cm2?arch=noarch",
-					},
+					Name:       "mariner-release",
+					Version:    "2.0",
 					Release:    "12.cm2",
 					Arch:       "noarch",
 					SrcName:    "mariner-release",
@@ -35,11 +32,8 @@ glibc	2.35-2.cm2	1653816591	1653628955	Microsoft Corporation	(none)	10855265	x86
 					SrcRelease: "12.cm2",
 				},
 				{
-					Name:    "filesystem",
-					Version: "1.1",
-					Identifier: types.PkgIdentifier{
-						PURL: "pkg:rpmqa/filesystem@1.1-9.cm2?arch=x86_64",
-					},
+					Name:       "filesystem",
+					Version:    "1.1",
 					Release:    "9.cm2",
 					Arch:       "x86_64",
 					SrcName:    "filesystem",
@@ -47,11 +41,8 @@ glibc	2.35-2.cm2	1653816591	1653628955	Microsoft Corporation	(none)	10855265	x86
 					SrcRelease: "9.cm2",
 				},
 				{
-					Name:    "glibc",
-					Version: "2.35",
-					Identifier: types.PkgIdentifier{
-						PURL: "pkg:rpmqa/glibc@2.35-2.cm2?arch=x86_64",
-					},
+					Name:       "glibc",
+					Version:    "2.35",
 					Release:    "2.cm2",
 					Arch:       "x86_64",
 					SrcName:    "glibc",

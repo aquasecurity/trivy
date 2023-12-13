@@ -54,15 +54,13 @@ func newSystemFileFilteringPostHandler(artifact.Option) (handler.PostHandler, er
 // Handle removes files installed by OS package manager such as yum.
 func (h systemFileFilteringPostHandler) Handle(_ context.Context, result *analyzer.AnalysisResult, blob *types.BlobInfo) error {
 	var systemFiles []string
-	if result != nil {
-		for _, file := range append(result.SystemInstalledFiles, defaultSystemFiles...) {
-			// Trim leading slashes to be the same format as the path in container images.
-			systemFile := strings.TrimPrefix(file, "/")
-			// We should check the root filepath ("/") and ignore it.
-			// Otherwise libraries with an empty filePath will be removed.
-			if systemFile != "" {
-				systemFiles = append(systemFiles, systemFile)
-			}
+	for _, file := range append(result.SystemInstalledFiles, defaultSystemFiles...) {
+		// Trim leading slashes to be the same format as the path in container images.
+		systemFile := strings.TrimPrefix(file, "/")
+		// We should check the root filepath ("/") and ignore it.
+		// Otherwise libraries with an empty filePath will be removed.
+		if systemFile != "" {
+			systemFiles = append(systemFiles, systemFile)
 		}
 	}
 

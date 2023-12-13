@@ -47,7 +47,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
+					BlobID: "sha256:ff28bff7756fb32d0a060b3b474b31a781a2d365dcd2789f47b4ae556a34947e",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -59,12 +59,9 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "lib/apk/db/installed",
 								Packages: types.Packages{
 									{
-										ID:      "musl@1.1.24-r2",
-										Name:    "musl",
-										Version: "1.1.24-r2",
-										Identifier: types.PkgIdentifier{
-											PURL: "pkg:apk/musl@1.1.24-r2?arch=x86_64",
-										},
+										ID:         "musl@1.1.24-r2",
+										Name:       "musl",
+										Version:    "1.1.24-r2",
 										SrcName:    "musl",
 										SrcVersion: "1.1.24-r2",
 										Licenses:   []string{"MIT"},
@@ -85,9 +82,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
+				ID:   "sha256:ff28bff7756fb32d0a060b3b474b31a781a2d365dcd2789f47b4ae556a34947e",
 				BlobIDs: []string{
-					"sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
+					"sha256:ff28bff7756fb32d0a060b3b474b31a781a2d365dcd2789f47b4ae556a34947e",
 				},
 			},
 		},
@@ -128,7 +125,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f42410ad6c6d288f527b79d226543b02502cbd1416fd721379e0b8a86c03a325",
+					BlobID: "sha256:ff28bff7756fb32d0a060b3b474b31a781a2d365dcd2789f47b4ae556a34947e",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -140,12 +137,9 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "lib/apk/db/installed",
 								Packages: types.Packages{
 									{
-										ID:      "musl@1.1.24-r2",
-										Name:    "musl",
-										Version: "1.1.24-r2",
-										Identifier: types.PkgIdentifier{
-											PURL: "pkg:apk/musl@1.1.24-r2?arch=x86_64",
-										},
+										ID:         "musl@1.1.24-r2",
+										Name:       "musl",
+										Version:    "1.1.24-r2",
 										SrcName:    "musl",
 										SrcVersion: "1.1.24-r2",
 										Licenses:   []string{"MIT"},

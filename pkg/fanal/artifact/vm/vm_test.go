@@ -121,7 +121,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID:   "sha256:3ef49550a2690d623d52475fc2308069da453ceeb2bdf09b99d1acbdfcc17782",
+					BlobID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 					BlobInfo: expectedBlobInfo,
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -129,7 +129,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:3ef49550a2690d623d52475fc2308069da453ceeb2bdf09b99d1acbdfcc17782",
+						ArtifactID: "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -139,9 +139,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "rawdata.img",
 				Type: types.ArtifactVM,
-				ID:   "sha256:3ef49550a2690d623d52475fc2308069da453ceeb2bdf09b99d1acbdfcc17782",
+				ID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 				BlobIDs: []string{
-					"sha256:3ef49550a2690d623d52475fc2308069da453ceeb2bdf09b99d1acbdfcc17782",
+					"sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 				},
 			},
 		},
@@ -233,12 +233,9 @@ var expectedBlobInfo = types.BlobInfo{
 			FilePath: "lib/apk/db/installed",
 			Packages: types.Packages{
 				{
-					ID:      "musl@1.2.3-r5",
-					Name:    "musl",
-					Version: "1.2.3-r5",
-					Identifier: types.PkgIdentifier{
-						PURL: "pkg:apk/musl@1.2.3-r5?arch=aarch64",
-					},
+					ID:         "musl@1.2.3-r5",
+					Name:       "musl",
+					Version:    "1.2.3-r5",
 					SrcName:    "musl",
 					SrcVersion: "1.2.3-r5",
 					Licenses:   []string{"MIT"},

@@ -12,7 +12,6 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 func init() {
@@ -69,7 +68,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 		if err != nil {
 			return nil, xerrors.Errorf("failed to split source rpm: %w", err)
 		}
-		pkg := types.Package{
+		pkgs = append(pkgs, types.Package{
 			Name:       name,
 			Version:    ver,
 			Release:    rel,
@@ -77,9 +76,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 			SrcName:    srcName,
 			SrcVersion: srcVer,
 			SrcRelease: srcRel,
-		}
-		pkg.Identifier = purl.NewPackageIdentifier(types.TargetType(analyzer.TypeRpmqa), nil, pkg)
-		pkgs = append(pkgs, pkg)
+		})
 	}
 	return pkgs, nil
 }

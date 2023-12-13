@@ -335,12 +335,9 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/lib/apk/db/installed",
 						Packages: types.Packages{
 							{
-								ID:      "musl@1.1.24-r2",
-								Name:    "musl",
-								Version: "1.1.24-r2",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:apk/musl@1.1.24-r2?arch=x86_64",
-								},
+								ID:             "musl@1.1.24-r2",
+								Name:           "musl",
+								Version:        "1.1.24-r2",
 								SrcName:        "musl",
 								SrcVersion:     "1.1.24-r2",
 								Licenses:       []string{"MIT"},
