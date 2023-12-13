@@ -345,6 +345,15 @@ func TestClientServerWithFormat(t *testing.T) {
 			golden: "testdata/alpine-310.html.golden",
 		},
 		{
+			name: "alpine 3.10 with junit template",
+			args: csArgs{
+				Format:       "template",
+				TemplatePath: "@../contrib/junit.tpl",
+				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.junit.golden",
+		},
+		{
 			name: "alpine 3.10 with github dependency snapshots format",
 			args: csArgs{
 				Format: "github",
