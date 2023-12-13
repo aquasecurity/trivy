@@ -219,7 +219,7 @@ func TestNewPackageURL(t *testing.T) {
 			},
 			want: &purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
-					Type:    purl.TypeDart,
+					Type:    packageurl.TypePub,
 					Name:    "http",
 					Version: "0.13.2",
 				},
@@ -512,10 +512,10 @@ func TestFromString(t *testing.T) {
 		},
 		{
 			name: "happy path for dart",
-			purl: "pkg:dart/http@0.13.2",
+			purl: "pkg:pub/http@0.13.2",
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
-					Type:       purl.TypeDart,
+					Type:       packageurl.TypePub,
 					Name:       "http",
 					Version:    "0.13.2",
 					Qualifiers: packageurl.Qualifiers{},
