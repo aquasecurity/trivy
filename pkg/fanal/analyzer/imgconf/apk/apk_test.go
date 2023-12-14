@@ -570,454 +570,793 @@ var (
 		{
 			Name:    "acl",
 			Version: "2.2.52-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/acl@2.2.52-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "apr",
 			Version: "1.6.5-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/apr@1.6.5-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "apr-util",
 			Version: "1.6.1-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/apr-util@1.6.1-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "argon2",
 			Version: "20171227-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/argon2@20171227-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "argon2-dev",
 			Version: "20171227-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/argon2-dev@20171227-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "argon2-libs",
 			Version: "20171227-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/argon2-libs@20171227-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "attr",
 			Version: "2.4.47-r7",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/attr@2.4.47-r7?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "autoconf",
 			Version: "2.69-r2",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/autoconf@2.69-r2?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "bash",
 			Version: "4.4.19-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/bash@4.4.19-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "binutils",
 			Version: "2.31.1-r2",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/binutils@2.31.1-r2?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "busybox",
 			Version: "1.29.3-r10",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/busybox@1.29.3-r10?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "bzip2",
 			Version: "1.0.6-r6",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/bzip2@1.0.6-r6?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "ca-certificates",
 			Version: "20190108-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/ca-certificates@20190108-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "coreutils",
 			Version: "8.30-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/coreutils@8.30-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "curl",
 			Version: "7.64.0-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/curl@7.64.0-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "curl-dev",
 			Version: "7.64.0-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/curl-dev@7.64.0-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "cyrus-sasl",
 			Version: "2.1.27-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/cyrus-sasl@2.1.27-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "db",
 			Version: "5.3.28-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/db@5.3.28-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "dpkg",
 			Version: "1.19.2-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/dpkg@1.19.2-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "dpkg-dev",
 			Version: "1.19.2-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/dpkg-dev@1.19.2-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "expat",
 			Version: "2.2.6-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/expat@2.2.6-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "file",
 			Version: "5.36-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/file@5.36-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "g++",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/g%2B%2B@8.3.0-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "gcc",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/gcc@8.3.0-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "gdbm",
 			Version: "1.13-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/gdbm@1.13-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "git",
 			Version: "2.20.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/git@2.20.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "gmp",
 			Version: "6.1.2-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/gmp@6.1.2-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "gnupg",
 			Version: "2.2.12-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/gnupg@2.2.12-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "gnutls",
 			Version: "3.6.7-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/gnutls@3.6.7-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "isl",
 			Version: "0.18-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/isl@0.18-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libacl",
 			Version: "2.2.52-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libacl@2.2.52-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libassuan",
 			Version: "2.5.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libassuan@2.5.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libatomic",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libatomic@8.3.0-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libattr",
 			Version: "2.4.47-r7",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libattr@2.4.47-r7?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libbz2",
 			Version: "1.0.6-r6",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libbz2@1.0.6-r6?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libc-dev",
 			Version: "0.7.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libc-dev@0.7.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libcap",
 			Version: "2.26-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libcap@2.26-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libcrypto1.1",
 			Version: "1.1.1b-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libcrypto1.1@1.1.1b-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libcurl",
 			Version: "7.64.0-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libcurl@7.64.0-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libedit",
 			Version: "20181209.3.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libedit@20181209.3.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libedit-dev",
 			Version: "20181209.3.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libedit-dev@20181209.3.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libffi",
 			Version: "3.2.1-r6",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libffi@3.2.1-r6?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libgcc",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libgcc@8.3.0-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libgcrypt",
 			Version: "1.8.4-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libgcrypt@1.8.4-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libgomp",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libgomp@8.3.0-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libgpg-error",
 			Version: "1.33-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libgpg-error@1.33-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libksba",
 			Version: "1.3.5-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libksba@1.3.5-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libldap",
 			Version: "2.4.47-r2",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libldap@2.4.47-r2?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libmagic",
 			Version: "5.36-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libmagic@5.36-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libsasl",
 			Version: "2.1.27-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libsasl@2.1.27-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libsodium",
 			Version: "1.0.16-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libsodium@1.0.16-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libsodium-dev",
 			Version: "1.0.16-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libsodium-dev@1.0.16-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libssh2",
 			Version: "1.8.2-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libssh2@1.8.2-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libssh2-dev",
 			Version: "1.8.2-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libssh2-dev@1.8.2-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libssl1.1",
 			Version: "1.1.1b-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libssl1.1@1.1.1b-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libstdc++",
 			Version: "8.3.0-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libstdc%2B%2B@8.3.0-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libtasn1",
 			Version: "4.13-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libtasn1@4.13-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libunistring",
 			Version: "0.9.10-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libunistring@0.9.10-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libuuid",
 			Version: "2.33-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libuuid@2.33-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libxml2",
 			Version: "2.9.9-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libxml2@2.9.9-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "libxml2-dev",
 			Version: "2.9.9-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/libxml2-dev@2.9.9-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "lz4",
 			Version: "1.8.3-r2",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/lz4@1.8.3-r2?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "lz4-libs",
 			Version: "1.8.3-r2",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/lz4-libs@1.8.3-r2?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "m4",
 			Version: "1.4.18-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/m4@1.4.18-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "make",
 			Version: "4.2.1-r2",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/make@4.2.1-r2?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "mercurial",
 			Version: "4.9.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/mercurial@4.9.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "mpc1",
 			Version: "1.0.3-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/mpc1@1.0.3-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "mpfr3",
 			Version: "3.1.5-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/mpfr3@3.1.5-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "musl",
 			Version: "1.1.20-r4",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/musl@1.1.20-r4?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "musl-dev",
 			Version: "1.1.20-r4",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/musl-dev@1.1.20-r4?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "ncurses",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/ncurses@6.1_p20190105-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "ncurses-dev",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/ncurses-dev@6.1_p20190105-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "ncurses-libs",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/ncurses-libs@6.1_p20190105-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "ncurses-terminfo",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/ncurses-terminfo@6.1_p20190105-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "ncurses-terminfo-base",
 			Version: "6.1_p20190105-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/ncurses-terminfo-base@6.1_p20190105-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "nettle",
 			Version: "3.4.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/nettle@3.4.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "nghttp2",
 			Version: "1.35.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/nghttp2@1.35.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "nghttp2-dev",
 			Version: "1.35.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/nghttp2-dev@1.35.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "nghttp2-libs",
 			Version: "1.35.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/nghttp2-libs@1.35.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "npth",
 			Version: "1.6-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/npth@1.6-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "openldap",
 			Version: "2.4.47-r2",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/openldap@2.4.47-r2?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "openssh",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/openssh@7.9_p1-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "openssh-client",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/openssh-client@7.9_p1-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "openssh-keygen",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/openssh-keygen@7.9_p1-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "openssh-server",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/openssh-server@7.9_p1-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "openssh-server-common",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/openssh-server-common@7.9_p1-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "openssh-sftp-server",
 			Version: "7.9_p1-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/openssh-sftp-server@7.9_p1-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "openssl",
 			Version: "1.1.1b-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/openssl@1.1.1b-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "openssl-dev",
 			Version: "1.1.1b-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/openssl-dev@1.1.1b-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "p11-kit",
 			Version: "0.23.14-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/p11-kit@0.23.14-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "patch",
 			Version: "2.7.6-r4",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/patch@2.7.6-r4?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "pcre2",
 			Version: "10.32-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/pcre2@10.32-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "perl",
 			Version: "5.26.3-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/perl@5.26.3-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "pinentry",
 			Version: "1.1.0-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/pinentry@1.1.0-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "pkgconf",
 			Version: "1.6.0-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/pkgconf@1.6.0-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "python2",
 			Version: "2.7.16-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/python2@2.7.16-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "re2c",
 			Version: "1.1.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/re2c@1.1.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "readline",
 			Version: "7.0.003-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/readline@7.0.003-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "serf",
 			Version: "1.3.9-r5",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/serf@1.3.9-r5?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "sqlite",
 			Version: "3.26.0-r3",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/sqlite@3.26.0-r3?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "sqlite-dev",
 			Version: "3.26.0-r3",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/sqlite-dev@3.26.0-r3?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "sqlite-libs",
 			Version: "3.26.0-r3",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/sqlite-libs@3.26.0-r3?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "subversion",
 			Version: "1.11.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/subversion@1.11.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "subversion-libs",
 			Version: "1.11.1-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/subversion-libs@1.11.1-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "tar",
 			Version: "1.32-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/tar@1.32-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "unzip",
 			Version: "6.0-r4",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/unzip@6.0-r4?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "util-linux",
 			Version: "2.33-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/util-linux@2.33-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "wget",
 			Version: "1.20.3-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/wget@1.20.3-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "xz",
 			Version: "5.2.4-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/xz@5.2.4-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "xz-libs",
 			Version: "5.2.4-r0",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/xz-libs@5.2.4-r0?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "zip",
 			Version: "3.0-r7",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/zip@3.0-r7?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "zlib",
 			Version: "1.2.11-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/zlib@1.2.11-r1?distro=3.9.1",
+			},
 		},
 		{
 			Name:    "zlib-dev",
 			Version: "1.2.11-r1",
+			Identifier: types.PkgIdentifier{
+				PURL: "pkg:apk/alpine/zlib-dev@1.2.11-r1?distro=3.9.1",
+			},
 		},
 	}
 )
@@ -1070,11 +1409,11 @@ func TestAnalyze(t *testing.T) {
 			args: args{
 				targetOS: types.OS{
 					Family: "alpine",
-					Name:   "",
+					Name:   "3.9.1",
 				},
 				config: alpineConfig,
 			},
-			apkIndexArchivePath: testServer.URL + "%v",
+			apkIndexArchivePath: testServer.URL + "/%v",
 			want:                wantPkgs,
 		},
 	}
@@ -1298,6 +1637,9 @@ func TestGuessVersion(t *testing.T) {
 				{
 					Name:    "busybox",
 					Version: "1.24.2-r1",
+					Identifier: types.PkgIdentifier{
+						PURL: "pkg:apk/alpine/busybox@1.24.2-r1?distro=3.9.1",
+					},
 				},
 			},
 		},
@@ -1338,6 +1680,9 @@ func TestGuessVersion(t *testing.T) {
 				{
 					Name:    "busybox",
 					Version: "1.24.2-r1",
+					Identifier: types.PkgIdentifier{
+						PURL: "pkg:apk/alpine/busybox@1.24.2-r1?distro=3.9.1",
+					},
 				},
 			},
 		},
@@ -1361,17 +1706,27 @@ func TestGuessVersion(t *testing.T) {
 				{
 					Name:    "sqlite-dev",
 					Version: "3.26.0-r3",
+					Identifier: types.PkgIdentifier{
+						PURL: "pkg:apk/alpine/sqlite-dev@3.26.0-r3?distro=3.9.1",
+					},
 				},
 				{
 					Name:    "sqlite",
 					Version: "3.26.0-r3",
+					Identifier: types.PkgIdentifier{
+						PURL: "pkg:apk/alpine/sqlite@3.26.0-r3?distro=3.9.1",
+					},
 				},
 			},
 		},
 	}
 	analyzer := alpineCmdAnalyzer{}
 	for testName, v := range tests {
-		actual := analyzer.guessVersion(v.apkIndexArchive, v.pkgs, v.createdAt)
+		os := types.OS{
+			Family: "alpine",
+			Name:   "3.9.1",
+		}
+		actual := analyzer.guessVersion(os, v.apkIndexArchive, v.pkgs, v.createdAt)
 		if !reflect.DeepEqual(v.expected, actual) {
 			t.Errorf("[%s]\n%s", testName, pretty.Compare(v.expected, actual))
 		}

@@ -339,6 +339,9 @@ func TestFSCache_PutArtifact(t *testing.T) {
 						{
 							Name:    "musl",
 							Version: "1.2.3",
+							Identifier: types.PkgIdentifier{
+								PURL: "pkg:apk/alpine/musl-dev@1.1.20-r4?distro=3.9.1",
+							},
 						},
 					},
 				},
@@ -354,7 +357,10 @@ func TestFSCache_PutArtifact(t *testing.T) {
 				    {
 				      "Name": "musl",
 				      "Version": "1.2.3",
-					  "Identifier": {},
+					  "Identifier": 
+						{
+					  	  "PURL": "pkg:apk/alpine/musl-dev@1.1.20-r4?distro=3.9.1"
+						},
 					  "Layer": {}
 				    }
 				  ]
