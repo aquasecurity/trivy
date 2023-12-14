@@ -114,10 +114,16 @@ func TestApplier_ApplyLayers(t *testing.T) {
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
+											Identifier: types.PkgIdentifier{
+												PURL: "pkg:composer/guzzlehttp/guzzle@6.2.0",
+											},
 										},
 										{
 											Name:    "symfony/process",
 											Version: "v4.2.7",
+											Identifier: types.PkgIdentifier{
+												PURL: "pkg:composer/symfony/process@v4.2.7",
+											},
 										},
 									},
 								},
@@ -183,6 +189,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 								},
+								Identifier: types.PkgIdentifier{
+									PURL: "pkg:composer/guzzlehttp/guzzle@6.2.0",
+								},
 							},
 							{
 								Name:    "symfony/process",
@@ -190,6 +199,9 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								Layer: types.Layer{
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+								},
+								Identifier: types.PkgIdentifier{
+									PURL: "pkg:composer/symfony/process@v4.2.7",
 								},
 							},
 						},

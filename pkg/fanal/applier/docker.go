@@ -214,8 +214,9 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			DiffID: originLayerDiffID,
 		}
 		mergedLayer.Packages[i].BuildInfo = buildInfo
-		// Overwrite package identifiers on the packages adding missing OS metadata to existing PURLs
-		// Required for packages added by pkg (apk, rpm, etc.) analyzers
+
+		// We can't fill `Identifier` for os packages in analyzers because we don't have OS info.
+		// So fill the Identifiers here.
 		newIdentifier := purl.NewPackageIdentifier(mergedLayer.OS.Family, &mergedLayer.OS, pkg)
 		mergedLayer.Packages[i].Identifier.PURL = newIdentifier.PURL
 
