@@ -15,10 +15,10 @@ import (
 func TestMisconfigRenderer(t *testing.T) {
 
 	tests := []struct {
-		name               string
-		input              types.Result
-		includeNonFailures bool
-		want               string
+		name  string
+		input types.Result
+		opts  []table.MisconfRendererOption
+		want  string
 	}{
 		{
 			name: "single result",
@@ -31,13 +31,12 @@ func TestMisconfigRenderer(t *testing.T) {
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
-						Severity:    "HIGH",
+						Severity:    dbTypes.SeverityHigh.String(),
 						PrimaryURL:  "https://google.com/search?q=bad%20config",
-						Status:      "FAIL",
+						Status:      types.StatusFailure,
 					},
 				},
 			},
-			includeNonFailures: false,
 			want: `
 my-file ()
 ==========
@@ -65,9 +64,9 @@ See https://google.com/search?q=bad%20config
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
 						Message:     "Oh no, a bad config.",
-						Severity:    "HIGH",
+						Severity:    dbTypes.SeverityHigh.String(),
 						PrimaryURL:  "https://google.com/search?q=bad%20config",
-						Status:      "FAIL",
+						Status:      types.StatusFailure,
 						CauseMetadata: ftypes.CauseMetadata{
 							Resource:  "",
 							Provider:  "",
@@ -96,7 +95,6 @@ See https://google.com/search?q=bad%20config
 					},
 				},
 			},
-			includeNonFailures: false,
 			want: `
 my-file ()
 ==========
@@ -161,13 +159,13 @@ See https://google.com/search?q=bad%20config
 						Title:       "Config file is bad again",
 						Description: "Your config file is still not good.",
 						Message:     "Oh no, a bad config AGAIN.",
-						Severity:    "MEDIUM",
+						Severity:    dbTypes.SeverityMedium.String(),
 						PrimaryURL:  "https://google.com/search?q=bad%20config",
-						Status:      "PASS",
+						Status:      types.StatusPassed,
 					},
 				},
 			},
-			includeNonFailures: true,
+			opts: []table.MisconfRendererOption{table.WithIncludeNonFailures(true)},
 			want: `
 my-file ()
 ==========
@@ -219,13 +217,13 @@ See https://google.com/search?q=bad%20config
 						Message:     "Security group rule allows ingress from public internet.",
 						Query:       "data..",
 						Resolution:  "Set a more restrictive cidr range",
-						Severity:    "CRITICAL",
+						Severity:    dbTypes.SeverityCritical.String(),
 						PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-aws-0107",
 						References: []string{
 							"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html",
 							"https://avd.aquasec.com/misconfig/avd-aws-0107",
 						},
-						Status: "FAIL",
+						Status: types.StatusFailure,
 						CauseMetadata: ftypes.CauseMetadata{
 							Resource:  "module.aws-security-groups[\"db1\"]",
 							Provider:  "AWS",
@@ -337,13 +335,363 @@ See https://avd.aquasec.com/misconfig/avd-aws-0107
 
 `,
 		},
+		{
+			name: "with grouping",
+			input: types.Result{
+				Target:         "main.tf",
+				Class:          types.ClassConfig,
+				Type:           "terraform",
+				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 2, Exceptions: 0},
+				Misconfigurations: []types.DetectedMisconfiguration{
+					{
+						Type:        "Terraform Security Check",
+						ID:          "AVD-GCP-0013",
+						AVDID:       "AVD-GCP-0013",
+						Title:       "Cloud DNS should use DNSSEC",
+						Description: "DNSSEC authenticates DNS responses, preventing MITM attacks and impersonation.",
+						Message:     "Managed zone does not have DNSSEC enabled.",
+						Resolution:  "Enable DNSSEC",
+						Severity:    dbTypes.SeverityMedium.String(),
+						PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-gcp-0013",
+						Status:      types.StatusFailure,
+						CauseMetadata: ftypes.CauseMetadata{
+							Resource:  "google_dns_managed_zone.this[0]",
+							Provider:  "Google",
+							Service:   "dns",
+							StartLine: 16,
+							EndLine:   16,
+							Occurrences: []ftypes.Occurrence{
+								{
+									Resource: "dnssec_config",
+									Filename: "main.tf",
+									Location: ftypes.Location{
+										StartLine: 15,
+										EndLine:   17,
+									},
+								},
+								{
+									Resource: "google_dns_managed_zone.this[0]",
+									Filename: "main.tf",
+									Location: ftypes.Location{
+										StartLine: 9,
+										EndLine:   18,
+									},
+								},
+							},
+							Code: ftypes.Code{
+								Lines: []ftypes.Line{
+									{
+										Number:      9,
+										Content:     "resource \"google_dns_managed_zone\" \"this\" {",
+										Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"google_dns_managed_zone\"\x1b[0m \x1b[38;5;37m\"this\"\x1b[0m {",
+									},
+									{
+										Number:      10,
+										Content:     "  count       = 3",
+										Highlighted: "  \x1b[38;5;245mcount\x1b[0m       = \x1b[38;5;37m3"},
+									{
+										Number:      11,
+										Content:     "  name        = \"example-zone-${count.index}\"",
+										Highlighted: "\x1b[0m  \x1b[38;5;245mname\x1b[0m        = \x1b[38;5;37m\"example-zone-\x1b[0m\x1b[38;5;37m${\x1b[0m\x1b[38;5;33mcount\x1b[0m.index\x1b[38;5;37m}\x1b[0m\x1b[38;5;37m\"",
+									},
+									{
+										Number:      12,
+										Content:     "  dns_name    = \"example-${random_id.dns.hex}.com.\"",
+										Highlighted: "\x1b[0m  \x1b[38;5;245mdns_name\x1b[0m    = \x1b[38;5;37m\"example-\x1b[0m\x1b[38;5;37m${\x1b[0mrandom_id.dns.hex\x1b[38;5;37m}\x1b[0m\x1b[38;5;37m.com.\"",
+									},
+									{
+										Number:      13,
+										Content:     "  description = \"Example DNS zone\"",
+										Highlighted: "\x1b[0m  \x1b[38;5;245mdescription\x1b[0m = \x1b[38;5;37m\"Example DNS zone\"",
+									},
+									{
+										Number:      14,
+										Content:     "",
+										Highlighted: "\x1b[0m",
+									},
+									{
+										Number:      15,
+										Content:     "  dnssec_config {",
+										Highlighted: "  dnssec_config {",
+									},
+									{
+										Number:      16,
+										Content:     "    state = local.dnssec_state[count.index]",
+										IsCause:     true,
+										Highlighted: "    \x1b[38;5;245mstate\x1b[0m = local.dnssec_state[\x1b[38;5;33mcount\x1b[0m.index]",
+										FirstCause:  true,
+										LastCause:   true,
+									},
+									{
+										Number:      17,
+										Content:     "  }",
+										Highlighted: "  }",
+									},
+									{
+										Number:      18,
+										Content:     "}",
+										Highlighted: "}",
+									},
+								},
+							},
+						},
+					},
+					{
+						Type:        "Terraform Security Check",
+						ID:          "AVD-GCP-0013",
+						AVDID:       "AVD-GCP-0013",
+						Title:       "Cloud DNS should use DNSSEC",
+						Description: "DNSSEC authenticates DNS responses, preventing MITM attacks and impersonation.",
+						Message:     "Managed zone does not have DNSSEC enabled.",
+						Resolution:  "Enable DNSSEC",
+						Severity:    dbTypes.SeverityMedium.String(),
+						PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-gcp-0013",
+						Status:      types.StatusFailure,
+						CauseMetadata: ftypes.CauseMetadata{
+							Resource:  "google_dns_managed_zone.this[0]",
+							Provider:  "Google",
+							Service:   "dns",
+							StartLine: 16,
+							EndLine:   16,
+							Occurrences: []ftypes.Occurrence{
+								{
+									Resource: "dnssec_config",
+									Filename: "main.tf",
+									Location: ftypes.Location{
+										StartLine: 15,
+										EndLine:   17,
+									},
+								},
+								{
+									Resource: "google_dns_managed_zone.this[0]",
+									Filename: "main.tf",
+									Location: ftypes.Location{
+										StartLine: 9,
+										EndLine:   18,
+									},
+								},
+							},
+							Code: ftypes.Code{
+								Lines: []ftypes.Line{
+									{
+										Number:      9,
+										Content:     "resource \"google_dns_managed_zone\" \"this\" {",
+										Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"google_dns_managed_zone\"\x1b[0m \x1b[38;5;37m\"this\"\x1b[0m {",
+									},
+									{
+										Number:      10,
+										Content:     "  count       = 3",
+										Highlighted: "  \x1b[38;5;245mcount\x1b[0m       = \x1b[38;5;37m3"},
+									{
+										Number:      11,
+										Content:     "  name        = \"example-zone-${count.index}\"",
+										Highlighted: "\x1b[0m  \x1b[38;5;245mname\x1b[0m        = \x1b[38;5;37m\"example-zone-\x1b[0m\x1b[38;5;37m${\x1b[0m\x1b[38;5;33mcount\x1b[0m.index\x1b[38;5;37m}\x1b[0m\x1b[38;5;37m\"",
+									},
+									{
+										Number:      12,
+										Content:     "  dns_name    = \"example-${random_id.dns.hex}.com.\"",
+										Highlighted: "\x1b[0m  \x1b[38;5;245mdns_name\x1b[0m    = \x1b[38;5;37m\"example-\x1b[0m\x1b[38;5;37m${\x1b[0mrandom_id.dns.hex\x1b[38;5;37m}\x1b[0m\x1b[38;5;37m.com.\"",
+									},
+									{
+										Number:      13,
+										Content:     "  description = \"Example DNS zone\"",
+										Highlighted: "\x1b[0m  \x1b[38;5;245mdescription\x1b[0m = \x1b[38;5;37m\"Example DNS zone\"",
+									},
+									{
+										Number:      14,
+										Content:     "",
+										Highlighted: "\x1b[0m",
+									},
+									{
+										Number:      15,
+										Content:     "  dnssec_config {",
+										Highlighted: "  dnssec_config {",
+									},
+									{
+										Number:      16,
+										Content:     "    state = local.dnssec_state[count.index]",
+										IsCause:     true,
+										Highlighted: "    \x1b[38;5;245mstate\x1b[0m = local.dnssec_state[\x1b[38;5;33mcount\x1b[0m.index]",
+										FirstCause:  true,
+										LastCause:   true,
+									},
+									{
+										Number:      17,
+										Content:     "  }",
+										Highlighted: "  }",
+									},
+									{
+										Number:      18,
+										Content:     "}",
+										Highlighted: "}",
+									},
+								},
+							},
+						},
+					},
+					{
+						Type:        "Terraform Security Check",
+						ID:          "AVD-GCP-0013",
+						AVDID:       "AVD-GCP-0013",
+						Title:       "Cloud DNS should use DNSSEC",
+						Description: "DNSSEC authenticates DNS responses, preventing MITM attacks and impersonation.",
+						Message:     "Managed zone does not have DNSSEC enabled.",
+						Resolution:  "Enable DNSSEC",
+						Severity:    dbTypes.SeverityMedium.String(),
+						PrimaryURL:  "https://avd.aquasec.com/misconfig/avd-gcp-0013",
+						Status:      types.StatusPassed,
+						CauseMetadata: ftypes.CauseMetadata{
+							Resource:  "google_dns_managed_zone.this[0]",
+							Provider:  "Google",
+							Service:   "dns",
+							StartLine: 16,
+							EndLine:   16,
+							Occurrences: []ftypes.Occurrence{
+								{
+									Resource: "dnssec_config",
+									Filename: "main.tf",
+									Location: ftypes.Location{
+										StartLine: 15,
+										EndLine:   17,
+									},
+								},
+								{
+									Resource: "google_dns_managed_zone.this[0]",
+									Filename: "main.tf",
+									Location: ftypes.Location{
+										StartLine: 9,
+										EndLine:   18,
+									},
+								},
+							},
+							Code: ftypes.Code{
+								Lines: []ftypes.Line{
+									{
+										Number:      9,
+										Content:     "resource \"google_dns_managed_zone\" \"this\" {",
+										Highlighted: "\x1b[38;5;33mresource\x1b[0m \x1b[38;5;37m\"google_dns_managed_zone\"\x1b[0m \x1b[38;5;37m\"this\"\x1b[0m {",
+									},
+									{
+										Number:      10,
+										Content:     "  count       = 3",
+										Highlighted: "  \x1b[38;5;245mcount\x1b[0m       = \x1b[38;5;37m3"},
+									{
+										Number:      11,
+										Content:     "  name        = \"example-zone-${count.index}\"",
+										Highlighted: "\x1b[0m  \x1b[38;5;245mname\x1b[0m        = \x1b[38;5;37m\"example-zone-\x1b[0m\x1b[38;5;37m${\x1b[0m\x1b[38;5;33mcount\x1b[0m.index\x1b[38;5;37m}\x1b[0m\x1b[38;5;37m\"",
+									},
+									{
+										Number:      12,
+										Content:     "  dns_name    = \"example-${random_id.dns.hex}.com.\"",
+										Highlighted: "\x1b[0m  \x1b[38;5;245mdns_name\x1b[0m    = \x1b[38;5;37m\"example-\x1b[0m\x1b[38;5;37m${\x1b[0mrandom_id.dns.hex\x1b[38;5;37m}\x1b[0m\x1b[38;5;37m.com.\"",
+									},
+									{
+										Number:      13,
+										Content:     "  description = \"Example DNS zone\"",
+										Highlighted: "\x1b[0m  \x1b[38;5;245mdescription\x1b[0m = \x1b[38;5;37m\"Example DNS zone\"",
+									},
+									{
+										Number:      14,
+										Content:     "",
+										Highlighted: "\x1b[0m",
+									},
+									{
+										Number:      15,
+										Content:     "  dnssec_config {",
+										Highlighted: "  dnssec_config {",
+									},
+									{
+										Number:      16,
+										Content:     "    state = local.dnssec_state[count.index]",
+										IsCause:     true,
+										Highlighted: "    \x1b[38;5;245mstate\x1b[0m = local.dnssec_state[\x1b[38;5;33mcount\x1b[0m.index]",
+										FirstCause:  true,
+										LastCause:   true,
+									},
+									{
+										Number:      17,
+										Content:     "  }",
+										Highlighted: "  }",
+									},
+									{
+										Number:      18,
+										Content:     "}",
+										Highlighted: "}",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			opts: []table.MisconfRendererOption{
+				table.WithGroupingResults(true),
+				table.WithIncludeNonFailures(true),
+			},
+			want: `
+main.tf (terraform)
+===================
+Tests: 3 (SUCCESSES: 1, FAILURES: 2, EXCEPTIONS: 0)
+Failures: 2 (LOW: 0, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
+
+FAIL: MEDIUM: Managed zone does not have DNSSEC enabled. (1 similar result)
+════════════════════════════════════════
+DNSSEC authenticates DNS responses, preventing MITM attacks and impersonation.
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0013
+────────────────────────────────────────
+ main.tf:16
+   via main.tf:15-17 (dnssec_config)
+    via main.tf:9-18 (google_dns_managed_zone.this[0])
+────────────────────────────────────────
+   9   resource "google_dns_managed_zone" "this" {
+  10     count       = 3
+  11     name        = "example-zone-${count.index}"
+  12     dns_name    = "example-${random_id.dns.hex}.com."
+  13     description = "Example DNS zone"
+  14
+  15     dnssec_config {
+  16 [     state = local.dnssec_state[count.index]
+  17     }
+  18   }
+────────────────────────────────────────
+The rest causes:
+ - main.tf:16
+────────────────────────────────────────
+
+
+PASS: MEDIUM: Managed zone does not have DNSSEC enabled.
+════════════════════════════════════════
+DNSSEC authenticates DNS responses, preventing MITM attacks and impersonation.
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0013
+────────────────────────────────────────
+ main.tf:16
+   via main.tf:15-17 (dnssec_config)
+    via main.tf:9-18 (google_dns_managed_zone.this[0])
+────────────────────────────────────────
+   9   resource "google_dns_managed_zone" "this" {
+  10     count       = 3
+  11     name        = "example-zone-${count.index}"
+  12     dns_name    = "example-${random_id.dns.hex}.com."
+  13     description = "Example DNS zone"
+  14
+  15     dnssec_config {
+  16 [     state = local.dnssec_state[count.index]
+  17     }
+  18   }
+────────────────────────────────────────
+
+
+`,
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			severities := []dbTypes.Severity{dbTypes.SeverityLow, dbTypes.SeverityMedium, dbTypes.SeverityHigh,
 				dbTypes.SeverityCritical}
-			renderer := table.NewMisconfigRenderer(test.input, severities, false, test.includeNonFailures, false)
+			renderer := table.NewMisconfigRenderer(test.input, severities, test.opts...)
 			assert.Equal(t, test.want, strings.ReplaceAll(renderer.Render(), "\r\n", "\n"))
 		})
 	}

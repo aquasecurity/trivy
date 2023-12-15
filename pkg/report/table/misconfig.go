@@ -3,13 +3,16 @@ package table
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/fatih/color"
+	"golang.org/x/exp/maps"
 	"golang.org/x/term"
 
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -20,6 +23,16 @@ const (
 	severityLow      = "LOW"
 )
 
+var severityRankMap = map[string]int{
+	dbTypes.SeverityCritical.String(): 0,
+	dbTypes.SeverityHigh.String():     1,
+	dbTypes.SeverityMedium.String():   2,
+	dbTypes.SeverityLow.String():      3,
+	dbTypes.SeverityUnknown.String():  4,
+}
+
+type MisconfRendererOption func(*misconfigRenderer)
+
 type misconfigRenderer struct {
 	w                  *bytes.Buffer
 	result             types.Result
@@ -28,24 +41,54 @@ type misconfigRenderer struct {
 	includeNonFailures bool
 	width              int
 	ansi               bool
+	enableGrouping     bool
 }
 
-func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool) *misconfigRenderer {
+func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, opts ...MisconfRendererOption) *misconfigRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
 	}
-	if !ansi {
+
+	r := &misconfigRenderer{
+		w:          bytes.NewBuffer([]byte{}),
+		result:     result,
+		severities: severities,
+		width:      width,
+	}
+
+	for _, opt := range opts {
+		opt(r)
+	}
+
+	if !r.ansi {
 		tml.DisableFormatting()
 	}
-	return &misconfigRenderer{
-		w:                  bytes.NewBuffer([]byte{}),
-		result:             result,
-		severities:         severities,
-		trace:              trace,
-		includeNonFailures: includeNonFailures,
-		width:              width,
-		ansi:               ansi,
+
+	return r
+}
+
+func WithANSI(ansi bool) MisconfRendererOption {
+	return func(r *misconfigRenderer) {
+		r.ansi = ansi
+	}
+}
+
+func WithTrace(trace bool) MisconfRendererOption {
+	return func(r *misconfigRenderer) {
+		r.trace = trace
+	}
+}
+
+func WithIncludeNonFailures(include bool) MisconfRendererOption {
+	return func(r *misconfigRenderer) {
+		r.includeNonFailures = include
+	}
+}
+
+func WithGroupingResults(grouping bool) MisconfRendererOption {
+	return func(r *misconfigRenderer) {
+		r.enableGrouping = grouping
 	}
 }
 
@@ -60,8 +103,14 @@ func (r *misconfigRenderer) Render() string {
 		summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
 	r.printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
-	for _, m := range r.result.Misconfigurations {
-		r.renderSingle(m)
+	if r.enableGrouping {
+		for _, group := range r.groupMisconfs(r.result.Misconfigurations) {
+			r.renderGroup(group)
+		}
+	} else {
+		for _, m := range r.result.Misconfigurations {
+			r.renderSingle(m)
+		}
 	}
 
 	// For debugging
@@ -87,8 +136,11 @@ func (r *misconfigRenderer) printf(format string, args ...interface{}) {
 }
 
 func (r *misconfigRenderer) println(input string) {
-	// nolint
 	tml.Fprintln(r.w, input)
+}
+
+func (r *misconfigRenderer) newline() {
+	tml.Fprintln(r.w, "")
 }
 
 func (r *misconfigRenderer) printDoubleDivider() {
@@ -100,12 +152,20 @@ func (r *misconfigRenderer) printSingleDivider() {
 }
 
 func (r *misconfigRenderer) renderSingle(misconf types.DetectedMisconfiguration) {
-	r.renderSummary(misconf)
-	r.renderCode(misconf)
+	r.renderSummary(misconf, 0)
+	r.renderCode(misconf.CauseMetadata)
 	r.printf("\r\n\r\n")
 }
 
-func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration) {
+func (r *misconfigRenderer) renderGroup(group groupedMisconfs) {
+	first, rest := group.split()
+	r.renderSummary(first, len(rest))
+	r.renderCode(first.CauseMetadata)
+	r.renderRestCauses(rest)
+	r.printf("\r\n\r\n")
+}
+
+func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration, similar int) {
 
 	// show pass/fail/exception unless we are only showing failures
 	if r.includeNonFailures {
@@ -134,7 +194,16 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 	}
 
 	// heading
-	r.printf("%s\r\n", misconf.Message)
+	r.printf("%s", misconf.Message)
+	if r.enableGrouping && similar > 0 {
+		msg := " <dim>(%d similar results)"
+		if similar == 1 {
+			msg = " <dim>(%d similar result)"
+		}
+		r.printf(msg, similar)
+	}
+
+	r.newline()
 	r.printDoubleDivider()
 
 	// description
@@ -148,19 +217,19 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 	r.printSingleDivider()
 }
 
-func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
+func (r *misconfigRenderer) renderCode(causeMetadata ftypes.CauseMetadata) {
 	// highlight code if we can...
-	if lines := misconf.CauseMetadata.Code.Lines; len(lines) > 0 {
+	if lines := causeMetadata.Code.Lines; len(lines) > 0 {
 
 		var lineInfo string
-		if misconf.CauseMetadata.StartLine > 0 {
-			lineInfo = tml.Sprintf("<dim>:</dim><blue>%d", misconf.CauseMetadata.StartLine)
-			if misconf.CauseMetadata.EndLine > misconf.CauseMetadata.StartLine {
-				lineInfo = tml.Sprintf("%s<blue>-%d", lineInfo, misconf.CauseMetadata.EndLine)
+		if causeMetadata.StartLine > 0 {
+			lineInfo = tml.Sprintf("<dim>:</dim><blue>%d", causeMetadata.StartLine)
+			if causeMetadata.IsMultiLine() {
+				lineInfo = tml.Sprintf("%s<blue>-%d", lineInfo, causeMetadata.EndLine)
 			}
 		}
 		r.printf(" <blue>%s%s\r\n", r.result.Target, lineInfo)
-		for i, occ := range misconf.CauseMetadata.Occurrences {
+		for i, occ := range causeMetadata.Occurrences {
 			lineInfo := fmt.Sprintf("%d-%d", occ.Location.StartLine, occ.Location.EndLine)
 			if occ.Location.StartLine >= occ.Location.EndLine {
 				lineInfo = fmt.Sprintf("%d", occ.Location.StartLine)
@@ -206,6 +275,22 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 	}
 }
 
+func (r *misconfigRenderer) renderRestCauses(misconfs []types.DetectedMisconfiguration) {
+	if len(misconfs) == 0 {
+		return
+	}
+	r.printf("<white>The rest causes:</white>\r\n")
+	for _, misconf := range misconfs {
+		cause := misconf.CauseMetadata
+		lineInfo := fmt.Sprintf("%d", cause.StartLine)
+		if cause.IsMultiLine() {
+			lineInfo = fmt.Sprintf("%d-%d", cause.StartLine, cause.EndLine)
+		}
+		r.printf(" - <dim>%s:%s\r\n", r.result.Target, lineInfo)
+	}
+	r.printSingleDivider()
+}
+
 func (r *misconfigRenderer) outputTrace() {
 	blue := color.New(color.FgBlue).SprintFunc()
 	green := color.New(color.FgGreen).SprintfFunc()
@@ -231,4 +316,78 @@ func (r *misconfigRenderer) outputTrace() {
 		}
 		r.println("")
 	}
+}
+
+func (r *misconfigRenderer) groupMisconfs(misconfs []types.DetectedMisconfiguration) []groupedMisconfs {
+	if len(misconfs) == 0 {
+		return nil
+	}
+	return groupMisconfsByResource(misconfs)
+}
+
+type groupedMisconfs []types.DetectedMisconfiguration
+
+func (g *groupedMisconfs) first() types.DetectedMisconfiguration {
+	return (*g)[0]
+}
+
+func (g *groupedMisconfs) split() (types.DetectedMisconfiguration, []types.DetectedMisconfiguration) {
+	if len(*g) == 1 {
+		return g.first(), nil
+	}
+	return g.first(), (*g)[1:]
+}
+
+func groupMisconfsByResource(misconfs []types.DetectedMisconfiguration) []groupedMisconfs {
+	groupsMap := make(map[string]groupedMisconfs)
+	var rest []groupedMisconfs
+
+	for _, misconf := range misconfs {
+		if len(misconf.CauseMetadata.Occurrences) == 0 {
+			rest = append(rest, groupedMisconfs{misconf})
+			continue
+		}
+
+		occurrence := findBlockOccurrence(misconf.CauseMetadata)
+		if occurrence == nil {
+			rest = append(rest, groupedMisconfs{misconf})
+			continue
+		}
+
+		key := buildKey(misconf, *occurrence)
+		groupsMap[key] = append(groupsMap[key], misconf)
+	}
+	return append(sortedValues(groupsMap), rest...)
+}
+
+func buildKey(misconf types.DetectedMisconfiguration, occurrence ftypes.Occurrence) string {
+	severityRank := severityRankMap[misconf.Severity]
+	return fmt.Sprintf("%d:%s:%s", severityRank, misconf.Status, misconf.AVDID)
+}
+
+func findBlockOccurrence(cause ftypes.CauseMetadata) *ftypes.Occurrence {
+	for i, occurrence := range cause.Occurrences {
+		// The last occurrence or occurrence before the module is a block
+		if strings.HasPrefix(occurrence.Resource, "module.") {
+			if i > 0 {
+				return &cause.Occurrences[i-1]
+			}
+			return nil
+		} else if i == len(cause.Occurrences)-1 {
+			return &occurrence
+		}
+	}
+	return nil
+}
+
+func sortedValues(m map[string]groupedMisconfs) []groupedMisconfs {
+	keys := maps.Keys(m)
+	sort.Strings(keys)
+
+	res := make([]groupedMisconfs, 0, len(m))
+
+	for _, key := range keys {
+		res = append(res, m[key])
+	}
+	return res
 }

@@ -2,7 +2,6 @@ package report
 
 import (
 	"io"
-	"sync"
 
 	"golang.org/x/xerrors"
 
@@ -42,7 +41,7 @@ func InfraColumns() []string {
 func (tw TableWriter) Write(report Report) error {
 	switch tw.Report {
 	case AllReport:
-		t := pkgReport.Writer{Output: tw.Output, Severities: tw.Severities, ShowMessageOnce: &sync.Once{}}
+		t := pkgReport.Writer{Output: tw.Output, Severities: tw.Severities}
 		for _, r := range report.Resources {
 			if r.Report.Results.Failed() {
 				err := t.Write(r.Report)

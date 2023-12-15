@@ -27,7 +27,7 @@ func writeResultsForARN(report *Report, results types.Results, output io.Writer,
 			filtered = append(filtered, misconfiguration)
 		}
 		if len(filtered) > 0 {
-			_, _ = fmt.Fprint(output, renderer.NewMisconfigRenderer(result, severities, false, false, true).Render())
+			_, _ = fmt.Fprint(output, renderer.NewMisconfigRenderer(result, severities, renderer.WithANSI(true)).Render())
 		}
 	}
 

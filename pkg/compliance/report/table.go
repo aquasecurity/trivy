@@ -2,7 +2,6 @@ package report
 
 import (
 	"io"
-	"sync"
 
 	"golang.org/x/xerrors"
 
@@ -30,9 +29,8 @@ func (tw TableWriter) Write(report *ComplianceReport) error {
 	switch tw.Report {
 	case allReport:
 		t := pkgReport.Writer{
-			Output:          tw.Output,
-			Severities:      tw.Severities,
-			ShowMessageOnce: &sync.Once{},
+			Output:     tw.Output,
+			Severities: tw.Severities,
 		}
 		for _, cr := range report.Results {
 			r := types.Report{Results: cr.Results}

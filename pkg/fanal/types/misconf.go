@@ -40,6 +40,10 @@ type CauseMetadata struct {
 	Occurrences []Occurrence `json:",omitempty"`
 }
 
+func (m CauseMetadata) IsMultiLine() bool {
+	return m.StartLine < m.EndLine
+}
+
 type Occurrence struct {
 	Resource string `json:",omitempty"`
 	Filename string `json:",omitempty"`

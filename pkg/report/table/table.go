@@ -6,7 +6,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"sync"
 
 	"github.com/fatih/color"
 	"golang.org/x/exp/slices"
@@ -34,9 +33,6 @@ type Writer struct {
 
 	// Show dependency origin tree
 	Tree bool
-
-	// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
-	ShowMessageOnce *sync.Once
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -75,7 +71,13 @@ func (tw Writer) write(result types.Result) {
 		renderer = NewVulnerabilityRenderer(result, tw.isOutputToTerminal(), tw.Tree, tw.Severities)
 	// misconfiguration
 	case result.Class == types.ClassConfig:
-		renderer = NewMisconfigRenderer(result, tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal())
+		renderer = NewMisconfigRenderer(
+			result, tw.Severities,
+			WithTrace(tw.Trace),
+			WithIncludeNonFailures(tw.IncludeNonFailures),
+			WithANSI(tw.isOutputToTerminal()),
+			WithGroupingResults(true),
+		)
 	// secret
 	case result.Class == types.ClassSecret:
 		renderer = NewSecretRenderer(result.Target, result.Secrets, tw.isOutputToTerminal(), tw.Severities)
