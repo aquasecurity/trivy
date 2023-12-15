@@ -649,7 +649,7 @@ See https://avd.aquasec.com/misconfig/avd-gcp-0013
   11     name        = "example-zone-${count.index}"
   12     dns_name    = "example-${random_id.dns.hex}.com."
   13     description = "Example DNS zone"
-  14
+  14   
   15     dnssec_config {
   16 [     state = local.dnssec_state[count.index]
   17     }
@@ -675,7 +675,7 @@ See https://avd.aquasec.com/misconfig/avd-gcp-0013
   11     name        = "example-zone-${count.index}"
   12     dns_name    = "example-${random_id.dns.hex}.com."
   13     description = "Example DNS zone"
-  14
+  14   
   15     dnssec_config {
   16 [     state = local.dnssec_state[count.index]
   17     }
