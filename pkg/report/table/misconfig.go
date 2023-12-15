@@ -2,7 +2,9 @@ package table
 
 import (
 	"bytes"
+	"cmp"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
@@ -286,7 +288,7 @@ func (r *misconfigRenderer) renderRestCauses(misconfs []types.DetectedMisconfigu
 		if cause.IsMultiLine() {
 			lineInfo = fmt.Sprintf("%d-%d", cause.StartLine, cause.EndLine)
 		}
-		r.printf(" - <dim>%s:%s\r\n", r.result.Target, lineInfo)
+		r.printf(" - <dim>%s:%s (%s)\r\n", r.result.Target, lineInfo, cause.Resource)
 	}
 	r.printSingleDivider()
 }
@@ -322,7 +324,11 @@ func (r *misconfigRenderer) groupMisconfs(misconfs []types.DetectedMisconfigurat
 	if len(misconfs) == 0 {
 		return nil
 	}
-	return groupMisconfsByResource(misconfs)
+	groups := groupMisconfsByResource(misconfs)
+	for _, group := range groups {
+		group.sort()
+	}
+	return groups
 }
 
 type groupedMisconfs []types.DetectedMisconfiguration
@@ -336,6 +342,12 @@ func (g *groupedMisconfs) split() (types.DetectedMisconfiguration, []types.Detec
 		return g.first(), nil
 	}
 	return g.first(), (*g)[1:]
+}
+
+func (g *groupedMisconfs) sort() {
+	slices.SortFunc(*g, func(a, b types.DetectedMisconfiguration) int {
+		return cmp.Compare(a.CauseMetadata.StartLine, b.CauseMetadata.StartLine)
+	})
 }
 
 func groupMisconfsByResource(misconfs []types.DetectedMisconfiguration) []groupedMisconfs {
