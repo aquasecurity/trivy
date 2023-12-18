@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"sync"
 	"time"
 
@@ -142,11 +143,33 @@ func (d *DB) SearchBySHA1(sha1 string) (jar.Properties, error) {
 }
 
 func (d *DB) SearchByArtifactID(artifactID, version string) (string, error) {
-	groupID, err := d.driver.SelectGroupIDByArtifactIDVersionAndFileType(artifactID, version, types.JarType)
+	indexes, err := d.driver.SelectIndexesByArtifactIDAndFileType(artifactID, version, types.JarType)
 	if err != nil {
 		return "", xerrors.Errorf("select error: %w", err)
-	} else if groupID == "" {
+	} else if len(indexes) == 0 {
 		return "", xerrors.Errorf("artifactID %s: %w", artifactID, jar.ArtifactNotFoundErr)
+	}
+	sort.Slice(indexes, func(i, j int) bool {
+		return indexes[i].GroupID < indexes[j].GroupID
+	})
+
+	// Some artifacts might have the same artifactId.
+	// e.g. "javax.servlet:jstl" and "jstl:jstl"
+	groupIDs := make(map[string]int)
+	for _, index := range indexes {
+		if i, ok := groupIDs[index.GroupID]; ok {
+			groupIDs[index.GroupID] = i + 1
+			continue
+		}
+		groupIDs[index.GroupID] = 1
+	}
+	maxCount := 0
+	var groupID string
+	for k, v := range groupIDs {
+		if v > maxCount {
+			maxCount = v
+			groupID = k
+		}
 	}
 
 	return groupID, nil
