@@ -344,8 +344,8 @@ github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da h1:pj/adfN
 github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da/go.mod h1:852lbQLpK2nCwlR4ZLYIccxYCfoQao6q9Nl6tjz54v8=
 github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gwo=
 github.com/aquasecurity/tml v0.6.1/go.mod h1:OnYMWY5lvI9ejU7yH9LCberWaaTBW7hBFsITiIMY2yY=
-github.com/aquasecurity/trivy-aws v0.5.0 h1:6RJrw+QHeVn2MH7bI7bsVIiqRyhDCPvdEqkNn54Ui4I=
-github.com/aquasecurity/trivy-aws v0.5.0/go.mod h1:dPx0xRElmFrVXBxeYqEAl5NejJ2kHb51ybFPzBMxWow=
+github.com/aquasecurity/trivy-aws v0.6.0 h1:+ggTdikr7ON09r/MlR2YDCSRjVFn04SlhQmL2+59F10=
+github.com/aquasecurity/trivy-aws v0.6.0/go.mod h1:C7N/OpmPZIWO6G26djauF8rOFRb8oVUkdKt4eP796Rs=
 github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d h1:fjI9mkoTUAkbGqpzt9nJsO24RAdfG+ZSiLFj0G2jO8c=
 github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d/go.mod h1:cj9/QmD9N3OZnKQMp+/DvdV+ym3HyIkd4e+F0ZM3ZGs=
 github.com/aquasecurity/trivy-iac v0.7.1 h1:YqA0B1P/5uJy2YOrT+QtoB8Z/DCqMxApsMkvmyd5Lsg=
