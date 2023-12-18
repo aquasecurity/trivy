@@ -144,12 +144,20 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 
 	// Group vulnerabilities by package ID
 	vulns := lo.GroupBy(result.Vulnerabilities, func(v types.DetectedVulnerability) string {
-		return lo.Ternary(v.PkgID == "", fmt.Sprintf("%s@%s", v.PkgName, v.InstalledVersion), v.PkgID)
+		pkgID := lo.Ternary(v.PkgID == "", fmt.Sprintf("%s@%s", v.PkgName, v.InstalledVersion), v.PkgID)
+		if v.PkgPath != "" {
+			pkgID = fmt.Sprintf("%s@%s", pkgID, v.PkgPath)
+		}
+		return pkgID
 	})
 
 	// Create package map
 	pkgs := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, Package) {
 		pkgID := lo.Ternary(pkg.ID == "", fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)), pkg.ID)
+		// To avoid skip same packages with different paths
+		if pkg.FilePath != "" {
+			pkgID = fmt.Sprintf("%s@%s", pkgID, pkg.FilePath)
+		}
 		return pkgID, Package{
 			Type:            result.Type,
 			Metadata:        metadata,
