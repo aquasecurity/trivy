@@ -656,7 +656,7 @@ See https://avd.aquasec.com/misconfig/avd-gcp-0013
   18   }
 ────────────────────────────────────────
 The rest causes:
- - main.tf:16
+ - main.tf:16 (google_dns_managed_zone.this[0])
 ────────────────────────────────────────
 
 
