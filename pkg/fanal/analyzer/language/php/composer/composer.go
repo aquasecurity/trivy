@@ -120,6 +120,8 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 		_, devOk := reqDev[lib.Name]
 		_, ok := req[lib.Name]
 
+		// Not checking for lib.Dev cos its not necessary that we'll always get information about dev dependencies.
+		// Customers can choose to disable it
 		if !devOk && !ok {
 			app.Libraries[i].Indirect = true
 		}
