@@ -55,9 +55,9 @@ func dedupePHPPackages(result types.Result, reqDevPHPPackages, reqPHPPackages ma
 }
 
 type DedupeFilter struct {
-	LockFilePackages  map[string]ftypes.Package
-	ReqDevPHPPackages map[string]struct{}
-	ReqPHPPackages    map[string]struct{}
+	NodeLockFilePackages map[string]ftypes.Package
+	ReqDevPHPPackages    map[string]struct{}
+	ReqPHPPackages       map[string]struct{}
 }
 
 func DedupePackages(filter DedupeFilter, results []types.Result) []types.Result {
@@ -65,9 +65,9 @@ func DedupePackages(filter DedupeFilter, results []types.Result) []types.Result 
 
 	// Resource deduplication for Node.js
 	for i, result := range results {
-		if result.Target == "Node.js" && len(filter.LockFilePackages) > 0 {
+		if result.Target == "Node.js" && len(filter.NodeLockFilePackages) > 0 {
 			isFilterRequired = true
-			results[i] = dedupeNodePackages(result, filter.LockFilePackages)
+			results[i] = dedupeNodePackages(result, filter.NodeLockFilePackages)
 		}
 
 		if result.Type == ftypes.ComposerInstalled {

@@ -267,9 +267,9 @@ func (s Scanner) langPkgsToResult(detail ftypes.ArtifactDetail, options types.Sc
 
 	if options.ArtifactType == ftypes.ArtifactContainerImage {
 		results = utils.DedupePackages(utils.DedupeFilter{
-			LockFilePackages:  nodeLockFilePackages,
-			ReqDevPHPPackages: reqDevPHPPackages,
-			ReqPHPPackages:    reqPHPPackages,
+			NodeLockFilePackages: nodeLockFilePackages,
+			ReqDevPHPPackages:    reqDevPHPPackages,
+			ReqPHPPackages:       reqPHPPackages,
 		}, results)
 	}
 
