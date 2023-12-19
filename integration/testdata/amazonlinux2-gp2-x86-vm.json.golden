@@ -43,6 +43,12 @@
           "Title": "bind: memory leak in ECDSA DNSSEC verification code",
           "Description": "By spoofing the target resolver with responses that have a malformed ECDSA signature, an attacker can trigger a small memory leak. It is possible to gradually erode available memory to the point where named crashes for lack of resources.",
           "Severity": "MEDIUM",
+          "VendorSeverity": {
+            "arch-linux": 2,
+            "nvd": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N",

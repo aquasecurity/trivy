@@ -64,6 +64,9 @@ func TestWriter_Write(t *testing.T) {
 											Title:       "foobar",
 											Description: "baz",
 											Severity:    "HIGH",
+											VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+												vulnerability.NVD: dbTypes.SeverityHigh,
+											},
 										},
 									},
 								},

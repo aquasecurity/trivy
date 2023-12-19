@@ -40,6 +40,13 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "nvd": 3,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",

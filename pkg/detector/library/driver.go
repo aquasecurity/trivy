@@ -11,6 +11,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
@@ -76,7 +77,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		return Driver{}, false
 	case ftypes.Bitnami:
 		ecosystem = vulnerability.Bitnami
-		comparer = compare.GenericComparer{}
+		comparer = bitnami.Comparer{}
 	case ftypes.K8sUpstream:
 		ecosystem = vulnerability.Kubernetes
 		comparer = compare.GenericComparer{}
