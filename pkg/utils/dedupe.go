@@ -7,46 +7,83 @@ import (
 
 	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/types"
+
 	"github.com/samber/lo"
 )
 
-func DedupeNodePackages(lockFilePackages map[string]ftypes.Package, results []types.Result) []types.Result {
-
-	// Resource deduplication for Node.js
-	for i, result := range results {
-		if result.Target != "Node.js" {
+func dedupeNodePackages(result types.Result, lockFilePackages map[string]ftypes.Package) types.Result {
+	for j, pkg := range result.Packages {
+		if pkg.ID == "" || pkg.FilePath == "" {
 			continue
 		}
 
-		for j, pkg := range result.Packages {
-			if pkg.ID == "" || pkg.FilePath == "" {
-				continue
-			}
-
-			nodeAppDirInfo := NodeAppDirInfo(pkg.FilePath)
-			if !nodeAppDirInfo.IsNodeAppDir {
-				continue
-			}
-
-			key := nodeAppDirInfo.GetPackageKey(pkg)
-			if lPkg, ok := lockFilePackages[key]; ok {
-				pkg.Indirect = lPkg.Indirect
-				pkg.RootDependencies = lPkg.RootDependencies
-				pkg.DependsOn = lPkg.DependsOn
-				pkg.NodeDedupeMatchFound = true
-
-				result.Packages[j] = pkg
-			}
-
+		nodeAppDirInfo := NodeAppDirInfo(pkg.FilePath)
+		if !nodeAppDirInfo.IsNodeAppDir {
+			continue
 		}
 
-		results[i] = result
+		key := nodeAppDirInfo.GetPackageKey(pkg)
+		if lPkg, ok := lockFilePackages[key]; ok {
+			pkg.Indirect = lPkg.Indirect
+			pkg.RootDependencies = lPkg.RootDependencies
+			pkg.DependsOn = lPkg.DependsOn
+			pkg.NodeDedupeMatchFound = true
+
+			result.Packages[j] = pkg
+		}
+
+	}
+	return result
+}
+
+func dedupePHPPackages(result types.Result, reqDevPHPPackages, reqPHPPackages map[string]struct{}) types.Result {
+	for j, pkg := range result.Packages {
+		if pkg.Dev {
+			if _, ok := reqDevPHPPackages[pkg.Name]; !ok {
+				pkg.Indirect = true
+			}
+		} else {
+			if _, ok := reqPHPPackages[pkg.Name]; !ok {
+				pkg.Indirect = true
+			}
+		}
+
+		result.Packages[j] = pkg
 	}
 
-	// Remove node lock files from result
-	results = lo.Filter(results, func(r types.Result, i int) bool {
-		return lo.IndexOf(ftypes.NodeLockTypes, r.Type) == -1
-	})
+	return result
+}
+
+type DedupeFilter struct {
+	LockFilePackages  map[string]ftypes.Package
+	ReqDevPHPPackages map[string]struct{}
+	ReqPHPPackages    map[string]struct{}
+}
+
+func DedupePackages(filter DedupeFilter, results []types.Result) []types.Result {
+	isFilterRequired := false
+
+	// Resource deduplication for Node.js
+	for i, result := range results {
+		if result.Target == "Node.js" && len(filter.LockFilePackages) > 0 {
+			isFilterRequired = true
+			results[i] = dedupeNodePackages(result, filter.LockFilePackages)
+		}
+
+		if result.Type == ftypes.ComposerInstalled {
+			if len(filter.ReqDevPHPPackages) > 0 || len(filter.ReqPHPPackages) > 0 {
+				isFilterRequired = true
+				results[i] = dedupePHPPackages(result, filter.ReqDevPHPPackages, filter.ReqPHPPackages)
+			}
+		}
+	}
+
+	// Filter results
+	if isFilterRequired {
+		results = lo.Filter(results, func(r types.Result, i int) bool {
+			return lo.IndexOf(ftypes.DedupeFilterTypes, r.Type) == -1
+		})
+	}
 
 	return results
 }

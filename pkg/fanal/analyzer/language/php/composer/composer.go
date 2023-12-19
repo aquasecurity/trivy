@@ -106,7 +106,7 @@ func (a composerAnalyzer) parseComposerLock(path string, r dio.ReadSeekerAt) (*t
 func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.Application) error {
 	// Parse composer.json to identify the direct dependencies
 	path := filepath.Join(dir, types.ComposerJson)
-	p, err := a.parseComposerJson(fsys, path)
+	req, reqDev, err := a.parseComposerJson(fsys, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Assume all the packages are direct dependencies as it cannot identify them from composer.lock
 		log.Logger.Debugf("Unable to determine the direct dependencies: %s not found", path)
@@ -117,30 +117,38 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 
 	for i, lib := range app.Libraries {
 		// Identify the direct/transitive dependencies
-		if _, ok := p[lib.Name]; !ok {
-			app.Libraries[i].Indirect = true
+		if lib.Dev {
+			if _, ok := reqDev[lib.Name]; !ok {
+				app.Libraries[i].Indirect = true
+			}
+		} else {
+			if _, ok := req[lib.Name]; !ok {
+				app.Libraries[i].Indirect = true
+			}
 		}
+
 	}
 
 	return nil
 }
 
 type composerJson struct {
-	Require map[string]string `json:"require"`
+	Require    map[string]string `json:"require"`
+	RequireDev map[string]string `json:"require-dev"`
 }
 
-func (a composerAnalyzer) parseComposerJson(fsys fs.FS, path string) (map[string]string, error) {
+func (a composerAnalyzer) parseComposerJson(fsys fs.FS, path string) (map[string]string, map[string]string, error) {
 	// Parse composer.json
 	f, err := fsys.Open(path)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
 	jsonFile := composerJson{}
 	err = json.NewDecoder(f).Decode(&jsonFile)
 	if err != nil {
-		return nil, xerrors.Errorf("json decode error: %w", err)
+		return nil, nil, xerrors.Errorf("json decode error: %w", err)
 	}
-	return jsonFile.Require, nil
+	return jsonFile.Require, jsonFile.RequireDev, nil
 }

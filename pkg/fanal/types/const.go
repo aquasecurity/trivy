@@ -11,6 +11,7 @@ const (
 	GemSpec           = "gemspec"
 	Cargo             = "cargo"
 	Composer          = "composer"
+	ComposerJSON      = "composer-json"
 	ComposerInstalled = "composer-installed"
 	Npm               = "npm"
 	NuGet             = "nuget"
@@ -88,4 +89,4 @@ const (
 )
 
 var NodeLockFiles = []string{NpmPkgLock, YarnLock, PnpmLock}
-var NodeLockTypes = []string{Npm, Yarn, Pnpm}
+var DedupeFilterTypes = []string{Npm, Yarn, Pnpm, ComposerJSON}

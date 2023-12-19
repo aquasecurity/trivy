@@ -49,6 +49,7 @@ const (
 	// PHP
 	TypeComposer          Type = "composer"
 	TypeComposerInstalled Type = "composer-installed"
+	TypeComposerJSON      Type = "composer-json"
 
 	// Java
 	TypeJar        Type = "jar"
@@ -161,6 +162,7 @@ var (
 		TypeCargo,
 		TypeComposer,
 		TypeComposerInstalled,
+		TypeComposerJSON,
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
@@ -214,6 +216,7 @@ var (
 		TypeJar,
 		TypeRustBinary,
 		TypeComposerInstalled,
+		TypeComposerJSON,
 	}
 
 	// TypeConfigFiles has all config file analyzers
