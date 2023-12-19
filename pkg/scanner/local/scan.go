@@ -613,6 +613,9 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 		return
 	}
 	for i := range apps {
+		// Not filtering ftypes.ComposerInstalled, ftypes.ComposerJSON cos the isDev info is necessary for finding
+		// direct/indirect attributes accurately. We anyway don't highlight these deps as dev/non dev in UI
+		// since static scanner controls thats behaviour
 		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
 			return !lib.Dev || (lib.Dev && lo.IndexOf([]string{ftypes.ComposerInstalled, ftypes.ComposerJSON}, apps[i].Type) != -1)
 		})
