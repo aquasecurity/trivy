@@ -154,7 +154,8 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 	// Create package map
 	pkgs := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, Package) {
 		pkgID := lo.Ternary(pkg.ID == "", fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)), pkg.ID)
-		// To avoid skip same packages with different paths
+		// To avoid merge same packages with different paths.
+		// Only ftypes.NodePkg, ftypes.PythonPkg, ftypes.GemSpec, ftypes.Jar, ftypes.CondaPkg use FilePath.
 		if pkg.FilePath != "" {
 			pkgID = fmt.Sprintf("%s@%s", pkgID, pkg.FilePath)
 		}
