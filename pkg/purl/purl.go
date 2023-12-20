@@ -325,6 +325,8 @@ func purlType(t string) string {
 		return packageurl.TypeSwift
 	case ftypes.Hex:
 		return packageurl.TypeHex
+	case ftypes.Composer, ftypes.ComposerInstalled, ftypes.ComposerJSON:
+		return packageurl.TypeComposer
 	case ftypes.Pub:
 		return TypeDart // TODO: replace with packageurl.TypeDart once they add it.
 	case os.Alpine:

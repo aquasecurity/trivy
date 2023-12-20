@@ -215,6 +215,8 @@ func (s Scanner) langPkgsToResult(detail ftypes.ArtifactDetail, options types.Sc
 
 	// Map to store nodejs lock file packages
 	nodeLockFilePackages := map[string]ftypes.Package{}
+	reqPHPPackages := make(map[string]struct{})
+	reqDevPHPPackages := make(map[string]struct{})
 
 	for _, app := range detail.Applications {
 		if len(app.Libraries) == 0 {
@@ -244,6 +246,15 @@ func (s Scanner) langPkgsToResult(detail ftypes.ArtifactDetail, options types.Sc
 			if nodeAppDirInfo.IsNodeLockFile && nodeAppDirInfo.IsFileinAppDir {
 				nodeLockFilePackages[nodeAppDirInfo.GetPackageKey(pkg)] = pkg
 			}
+
+			if app.Type == string(ftypes.ComposerJSON) {
+				if pkg.Dev {
+					reqDevPHPPackages[pkg.Name] = struct{}{}
+				} else {
+					reqPHPPackages[pkg.Name] = struct{}{}
+				}
+			}
+
 		}
 
 		results = append(results, types.Result{
@@ -255,7 +266,11 @@ func (s Scanner) langPkgsToResult(detail ftypes.ArtifactDetail, options types.Sc
 	}
 
 	if options.ArtifactType == ftypes.ArtifactContainerImage {
-		results = utils.DedupeNodePackages(nodeLockFilePackages, results)
+		results = utils.DedupePackages(utils.DedupeFilter{
+			NodeLockFilePackages: nodeLockFilePackages,
+			ReqDevPHPPackages:    reqDevPHPPackages,
+			ReqPHPPackages:       reqPHPPackages,
+		}, results)
 	}
 
 	return results
@@ -598,8 +613,11 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 		return
 	}
 	for i := range apps {
+		// Not filtering ftypes.ComposerInstalled, ftypes.ComposerJSON cos the isDev info is necessary for finding
+		// direct/indirect attributes accurately. We anyway don't highlight these deps as dev/non dev in UI
+		// since static scanner controls thats behaviour
 		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
-			return !lib.Dev
+			return !lib.Dev || (lib.Dev && lo.IndexOf([]string{ftypes.ComposerInstalled, ftypes.ComposerJSON}, apps[i].Type) != -1)
 		})
 	}
 }
