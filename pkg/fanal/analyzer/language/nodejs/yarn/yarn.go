@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/yarn"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -195,14 +196,22 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 	for _, pkg := range libs {
 		if constraint, ok := directDeps[pkg.Name]; ok {
 			// npm has own comparer to compare versions
-			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
-			} else if match {
-				// Mark as a direct dependency
-				pkg.Indirect = false
-				pkg.Dev = dev
-				pkgs[pkg.ID] = pkg
+			if a.comparer.IsConstraint(constraint) {
+				if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
+					return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
+				} else if !match {
+					continue
+				}
+			} else { // `constraint` is package name for alias
+				delete(pkgs, pkg.ID) // remove alias
+				pkg.Name = pkgNameForAlias(constraint)
+				pkg.ID = utils.PackageID(pkg.Name, pkg.Version)
 			}
+			// Mark as a direct dependency
+			pkg.Indirect = false
+			pkg.Dev = dev
+			pkgs[pkg.ID] = pkg
+
 		}
 	}
 
@@ -212,6 +221,28 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 	}
 
 	return pkgs, nil
+}
+
+// pkgNameForAlias gets package name from alias
+func pkgNameForAlias(pkgName string) string {
+	name := strings.TrimPrefix(pkgName, "npm:") // remove npm protocol
+	// We need to remove the version
+	// Because package.json may not contain a version or use a range,
+	// but we have already determined the version from the Yarn.lock file
+	s := strings.Split(name, "@")
+	switch len(s) {
+	case 1: // `@` doesn't exist
+		return name
+	case 2:
+		if s[0] != "" { // `@` is package name and version separator e.g. `npm:debug@^4.3`
+			return s[0]
+		}
+		return name // package name start from `@` e.g. `npm:@types/jsonstream`
+	case 3: // package name starts from `@` and there is `@` separator for name and version e.g. `npm:@types/jsonstream@0.8.33`
+		return "@" + s[1]
+	}
+	log.Logger.Warnf("Unable to parse %q. Alias uses more that 2 `@` separators", pkgName)
+	return pkgName
 }
 
 func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {

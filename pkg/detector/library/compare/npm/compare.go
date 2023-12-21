@@ -30,3 +30,11 @@ func (n Comparer) MatchVersion(currentVersion, constraint string) (bool, error) 
 
 	return c.Check(v), nil
 }
+
+func (n Comparer) IsConstraint(constraint string) bool {
+	c, err := npm.NewConstraints(constraint)
+	if c.String() == "" || err != nil {
+		return false
+	}
+	return true
+}
