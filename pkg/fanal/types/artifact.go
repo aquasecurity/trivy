@@ -1,12 +1,9 @@
 package types
 
 import (
-	"errors"
-	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	purl "github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
@@ -113,40 +110,12 @@ type Package struct {
 
 // PkgIdentifier represents a software identifiers in one of more of the supported formats.
 type PkgIdentifier struct {
-	// Software identifier in PURL format
-	PURL string `json:",omitempty"`
-	// Software identifier in CPE format
-	CPE string `json:",omitempty"`
+	// PURL is a package URL
+	PURL *PackageURL `json:",omitempty"`
 }
 
-// NewPkgIdentifier returns a new PkgIdentifier instance
-func NewPkgIdentifier(value string) (PkgIdentifier, error) {
-	var id PkgIdentifier
-	switch {
-	case isCPE(value):
-		id.CPE = value
-	case isPURL(value):
-		id.PURL = value
-	default:
-		return PkgIdentifier{}, errors.New("package identifier does not match any supported format")
-	}
-
-	return id, nil
-}
-
-func (id PkgIdentifier) Empty() bool {
-	return id.CPE == "" && id.PURL == ""
-}
-
-func isCPE(value string) bool {
-	// TODO: properly validate CPE with a regex
-	// ref: https://csrc.nist.gov/schema/cpe/2.3/cpe-naming_2.3.xsd
-	return strings.HasPrefix(value, "cpe:2.3")
-}
-
-func isPURL(value string) bool {
-	_, err := purl.FromString(value)
-	return err == nil
+func (id *PkgIdentifier) Empty() bool {
+	return id.PURL == nil
 }
 
 type Location struct {

@@ -193,16 +193,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 								{
 									Name:    "guzzlehttp/guzzle",
 									Version: "6.2.0",
-									Identifier: types.PkgIdentifier{
-										PURL: "pkg:composer/guzzlehttp/guzzle@6.2.0",
-									},
 								},
 								{
 									Name:    "guzzlehttp/promises",
 									Version: "v1.3.1",
-									Identifier: types.PkgIdentifier{
-										PURL: "pkg:composer/guzzlehttp/promises@1.3.1",
-									},
 								},
 							},
 						},
@@ -231,7 +225,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				        {
 				          "Name": "musl",
 				          "Version": "1.1.22-r3",
-						  "Identifier": {},
+                          "Identifier": {},
 						  "Layer": {}
 				        }
 				      ]
@@ -245,17 +239,13 @@ func TestFSCache_PutBlob(t *testing.T) {
                         {
                            "Name":"guzzlehttp/guzzle",
                            "Version":"6.2.0",
-						   "Identifier": {
-							 "PURL": "pkg:composer/guzzlehttp/guzzle@6.2.0"
-						   },
+                           "Identifier": {},
 						   "Layer": {}
                         },
                         {
                            "Name":"guzzlehttp/promises",
                            "Version":"v1.3.1",
-						   "Identifier": {
-							 "PURL": "pkg:composer/guzzlehttp/promises@1.3.1"
-						   },
+                           "Identifier": {},
 						   "Layer": {}
                         }
 				      ]
@@ -339,9 +329,6 @@ func TestFSCache_PutArtifact(t *testing.T) {
 						{
 							Name:    "musl",
 							Version: "1.2.3",
-							Identifier: types.PkgIdentifier{
-								PURL: "pkg:apk/alpine/musl-dev@1.1.20-r4?distro=3.9.1",
-							},
 						},
 					},
 				},
@@ -357,10 +344,7 @@ func TestFSCache_PutArtifact(t *testing.T) {
 				    {
 				      "Name": "musl",
 				      "Version": "1.2.3",
-					  "Identifier": 
-						{
-					  	  "PURL": "pkg:apk/alpine/musl-dev@1.1.20-r4?distro=3.9.1"
-						},
+                      "Identifier": {},
 					  "Layer": {}
 				    }
 				  ]

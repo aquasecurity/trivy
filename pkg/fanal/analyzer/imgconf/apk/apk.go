@@ -12,12 +12,12 @@ import (
 	"strings"
 	"time"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 const (
@@ -57,11 +57,11 @@ type archive struct {
 }
 
 type provide struct {
-	SO      map[string]pkg // package which provides the shared object
-	Package map[string]pkg // package which provides the package
+	SO      map[string]apk // package which provides the shared object
+	Package map[string]apk // package which provides the package
 }
 
-type pkg struct {
+type apk struct {
 	Package  string
 	Versions version
 }
@@ -79,7 +79,7 @@ func (a alpineCmdAnalyzer) Analyze(_ context.Context, input analyzer.ConfigAnaly
 		return nil, xerrors.Errorf("failed to fetch apk index archive: %w", err)
 	}
 
-	pkgs := a.parseConfig(apkIndexArchive, input)
+	pkgs := a.parseConfig(apkIndexArchive, input.Config)
 	if len(pkgs) == 0 {
 		return nil, nil
 	}
@@ -120,18 +120,18 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 	return apkIndexArchive, nil
 }
 
-func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, input analyzer.ConfigAnalysisInput) (packages []types.Package) {
+func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config *v1.ConfigFile) (packages []types.Package) {
 	envs := make(map[string]string)
-	for _, env := range input.Config.Config.Env {
+	for _, env := range config.Config.Env {
 		index := strings.Index(env, "=")
 		envs["$"+env[:index]] = env[index+1:]
 	}
 
 	uniqPkgs := make(map[string]types.Package)
-	for _, history := range input.Config.History {
+	for _, history := range config.History {
 		pkgs := a.parseCommand(history.CreatedBy, envs)
 		pkgs = a.resolveDependencies(apkIndexArchive, pkgs)
-		results := a.guessVersion(input.OS, apkIndexArchive, pkgs, history.Created.Time)
+		results := a.guessVersion(apkIndexArchive, pkgs, history.Created.Time)
 		for _, result := range results {
 			uniqPkgs[result.Name] = result
 		}
@@ -231,7 +231,7 @@ type historyVersion struct {
 	BuiltAt int
 }
 
-func (a alpineCmdAnalyzer) guessVersion(targetOS types.OS, apkIndexArchive *apkIndex, originalPkgs []string,
+func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs []string,
 	createdAt time.Time) (pkgs []types.Package) {
 	for _, pkg := range originalPkgs {
 		archive, ok := apkIndexArchive.Package[pkg]
@@ -263,21 +263,17 @@ func (a alpineCmdAnalyzer) guessVersion(targetOS types.OS, apkIndexArchive *apkI
 			continue
 		}
 
-		p := types.Package{
+		pkgs = append(pkgs, types.Package{
 			Name:    pkg,
 			Version: candidateVersion,
-		}
-		p.Identifier = purl.NewPackageIdentifier(targetOS.Family, &targetOS, p)
-		pkgs = append(pkgs, p)
+		})
 
 		// Add origin package name
 		if archive.Origin != "" && archive.Origin != pkg {
-			originPkg := types.Package{
+			pkgs = append(pkgs, types.Package{
 				Name:    archive.Origin,
 				Version: candidateVersion,
-			}
-			originPkg.Identifier = purl.NewPackageIdentifier(targetOS.Family, &targetOS, originPkg)
-			pkgs = append(pkgs, originPkg)
+			})
 		}
 	}
 	return pkgs

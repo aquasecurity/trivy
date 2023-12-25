@@ -10,7 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
-	"github.com/aquasecurity/trivy/pkg/purl"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -42,7 +42,7 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 								Type:    cdx.ComponentTypeContainer,
 								Name:    "k8s.gcr.io/kube-apiserver",
 								Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-								PackageURL: &purl.PackageURL{
+								PackageURL: &ftypes.PackageURL{
 									PackageURL: packageurl.PackageURL{
 										Type:    "oci",
 										Name:    "kube-apiserver",
@@ -137,7 +137,7 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 												Value: "golang",
 											},
 										},
-										PackageURL: &purl.PackageURL{
+										PackageURL: &ftypes.PackageURL{
 											PackageURL: packageurl.PackageURL{
 												Type:       "golang",
 												Name:       "kubelet",
@@ -156,7 +156,7 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 												Value: "golang",
 											},
 										},
-										PackageURL: &purl.PackageURL{
+										PackageURL: &ftypes.PackageURL{
 											PackageURL: packageurl.PackageURL{
 												Type:       "golang",
 												Name:       "containerd",

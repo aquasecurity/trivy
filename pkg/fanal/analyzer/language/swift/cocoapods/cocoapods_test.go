@@ -31,9 +31,6 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "AppCenter@4.2.0",
 								Name:    "AppCenter",
 								Version: "4.2.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:cocoapods/AppCenter@4.2.0",
-								},
 								DependsOn: []string{
 									"AppCenter/Analytics@4.2.0",
 									"AppCenter/Crashes@4.2.0",
@@ -43,9 +40,6 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "AppCenter/Analytics@4.2.0",
 								Name:    "AppCenter/Analytics",
 								Version: "4.2.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:cocoapods/AppCenter@4.2.0#Analytics",
-								},
 								DependsOn: []string{
 									"AppCenter/Core@4.2.0",
 								},
@@ -54,17 +48,11 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "AppCenter/Core@4.2.0",
 								Name:    "AppCenter/Core",
 								Version: "4.2.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:cocoapods/AppCenter@4.2.0#Core",
-								},
 							},
 							{
 								ID:      "AppCenter/Crashes@4.2.0",
 								Name:    "AppCenter/Crashes",
 								Version: "4.2.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:cocoapods/AppCenter@4.2.0#Crashes",
-								},
 								DependsOn: []string{
 									"AppCenter/Core@4.2.0",
 								},
@@ -73,9 +61,6 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 								ID:      "KeychainAccess@4.2.1",
 								Name:    "KeychainAccess",
 								Version: "4.2.1",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:cocoapods/KeychainAccess@4.2.1",
-								},
 							},
 						},
 					},

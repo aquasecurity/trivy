@@ -35,12 +35,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "package-lock.json",
 						Libraries: types.Packages{
 							{
-								ID:      "ansi-colors@3.2.3",
-								Name:    "ansi-colors",
-								Version: "3.2.3",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/ansi-colors@3.2.3",
-								},
+								ID:       "ansi-colors@3.2.3",
+								Name:     "ansi-colors",
+								Version:  "3.2.3",
 								Dev:      true,
 								Indirect: true,
 								Locations: []types.Location{
@@ -51,12 +48,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:      "array-flatten@1.1.1",
-								Name:    "array-flatten",
-								Version: "1.1.1",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/array-flatten@1.1.1",
-								},
+								ID:       "array-flatten@1.1.1",
+								Name:     "array-flatten",
+								Version:  "1.1.1",
 								Indirect: true,
 								Locations: []types.Location{
 									{
@@ -66,12 +60,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:      "body-parser@1.18.3",
-								Name:    "body-parser",
-								Version: "1.18.3",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/body-parser@1.18.3",
-								},
+								ID:        "body-parser@1.18.3",
+								Name:      "body-parser",
+								Version:   "1.18.3",
 								Indirect:  true,
 								DependsOn: []string{"debug@2.6.9"},
 								Licenses:  []string{"MIT"},
@@ -83,12 +74,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:      "debug@2.6.9",
-								Name:    "debug",
-								Version: "2.6.9",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/debug@2.6.9",
-								},
+								ID:        "debug@2.6.9",
+								Name:      "debug",
+								Version:   "2.6.9",
 								Indirect:  true,
 								DependsOn: []string{"ms@2.0.0"},
 								Licenses:  []string{"MIT"},
@@ -104,12 +92,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:      "express@4.16.4",
-								Name:    "express",
-								Version: "4.16.4",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/express@4.16.4",
-								},
+								ID:        "express@4.16.4",
+								Name:      "express",
+								Version:   "4.16.4",
 								Indirect:  true,
 								DependsOn: []string{"debug@2.6.9"},
 								Licenses:  []string{"MIT"},
@@ -121,12 +106,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:      "ms@2.0.0",
-								Name:    "ms",
-								Version: "2.0.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/ms@2.0.0",
-								},
+								ID:       "ms@2.0.0",
+								Name:     "ms",
+								Version:  "2.0.0",
 								Indirect: true,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
@@ -141,12 +123,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:      "ms@2.1.1",
-								Name:    "ms",
-								Version: "2.1.1",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/ms@2.1.1",
-								},
+								ID:       "ms@2.1.1",
+								Name:     "ms",
+								Version:  "2.1.1",
 								Indirect: true,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
@@ -171,12 +150,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "package-lock.json",
 						Libraries: types.Packages{
 							{
-								ID:      "ms@2.1.1",
-								Name:    "ms",
-								Version: "2.1.1",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/ms@2.1.1",
-								},
+								ID:       "ms@2.1.1",
+								Name:     "ms",
+								Version:  "2.1.1",
 								Indirect: true,
 								Locations: []types.Location{
 									{

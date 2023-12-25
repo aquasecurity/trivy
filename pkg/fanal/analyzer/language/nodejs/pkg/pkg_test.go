@@ -30,12 +30,9 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/package.json",
 						Libraries: types.Packages{
 							{
-								ID:      "lodash@5.0.0",
-								Name:    "lodash",
-								Version: "5.0.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/lodash@5.0.0",
-								},
+								ID:       "lodash@5.0.0",
+								Name:     "lodash",
+								Version:  "5.0.0",
 								Licenses: []string{"MIT"},
 								FilePath: "testdata/package.json",
 							},
@@ -55,12 +52,9 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/package.json",
 						Libraries: types.Packages{
 							{
-								ID:      "lodash@5.0.0",
-								Name:    "lodash",
-								Version: "5.0.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:npm/lodash@5.0.0",
-								},
+								ID:       "lodash@5.0.0",
+								Name:     "lodash",
+								Version:  "5.0.0",
 								Licenses: []string{"MIT"},
 								FilePath: "testdata/package.json",
 								Digest:   "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",

@@ -236,7 +236,7 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 			Value: r.Metadata.ImageID,
 		})
 
-		p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{})
+		p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
 		}
@@ -315,23 +315,12 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 }
 
 func pkgComponent(pkg Package) (*core.Component, error) {
-	var err error
-	var pu *purl.PackageURL
-	if !pkg.Identifier.Empty() && pkg.Identifier.PURL != "" {
-		pu, err = purl.FromString(pkg.Identifier.PURL)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to create package purl: %w", err)
-		}
-
-		pu.FilePath = pkg.FilePath
-	}
-
 	name := pkg.Name
 	version := pkg.Version
 	var group string
 	// there are cases when we can't build purl
 	// e.g. local Go packages
-	if pu != nil {
+	if pu := pkg.Identifier.PURL; pu != nil {
 		version = pu.Version
 		// use `group` field for GroupID and `name` for ArtifactID for jar files
 		if pkg.Type == ftypes.Jar {
@@ -388,7 +377,7 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		Name:            name,
 		Group:           group,
 		Version:         version,
-		PackageURL:      pu,
+		PackageURL:      pkg.Identifier.PURL,
 		Supplier:        pkg.Maintainer,
 		Licenses:        pkg.Licenses,
 		Hashes:          lo.Ternary(pkg.Digest == "", nil, []digest.Digest{pkg.Digest}),

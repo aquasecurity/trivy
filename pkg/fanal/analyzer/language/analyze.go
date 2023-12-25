@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/purl"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -130,7 +129,6 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.
 			Locations: locs,
 			Digest:    d,
 		}
-		newPkg.Identifier = purl.NewPackageIdentifier(fileType, nil, newPkg)
 		pkgs = append(pkgs, newPkg)
 	}
 

@@ -1,6 +1,7 @@
 package vex_test
 
 import (
+	"github.com/package-url/packageurl-go"
 	"os"
 	"testing"
 
@@ -44,7 +45,14 @@ func TestVEX_Filter(t *testing.T) {
 						PkgName:          "spring-boot",
 						InstalledVersion: "2.6.0",
 						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: "pkg:maven/org.springframework.boot/spring-boot@2.6.0",
+							PURL: &ftypes.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeMaven,
+									Namespace: "org.springframework.boot",
+									Name:      "spring-boot",
+									Version:   "2.6.0",
+								},
+							},
 						},
 					},
 				},
@@ -63,7 +71,14 @@ func TestVEX_Filter(t *testing.T) {
 						PkgName:          "spring-boot",
 						InstalledVersion: "2.6.0",
 						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: "pkg:maven/org.springframework.boot/spring-boot@2.6.0",
+							PURL: &ftypes.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeMaven,
+									Namespace: "org.springframework.boot",
+									Name:      "spring-boot",
+									Version:   "2.6.0",
+								},
+							},
 						},
 					},
 					{
@@ -71,7 +86,14 @@ func TestVEX_Filter(t *testing.T) {
 						PkgName:          "spring-boot",
 						InstalledVersion: "2.6.0",
 						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: "pkg:maven/org.springframework.boot/spring-boot@2.6.0",
+							PURL: &ftypes.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeMaven,
+									Namespace: "org.springframework.boot",
+									Name:      "spring-boot",
+									Version:   "2.6.0",
+								},
+							},
 						},
 					},
 				},
@@ -82,7 +104,14 @@ func TestVEX_Filter(t *testing.T) {
 					PkgName:          "spring-boot",
 					InstalledVersion: "2.6.0",
 					PkgIdentifier: ftypes.PkgIdentifier{
-						PURL: "pkg:maven/org.springframework.boot/spring-boot@2.6.0",
+						PURL: &ftypes.PackageURL{
+							PackageURL: packageurl.PackageURL{
+								Type:      packageurl.TypeMaven,
+								Namespace: "org.springframework.boot",
+								Name:      "spring-boot",
+								Version:   "2.6.0",
+							},
+						},
 					},
 				},
 			},
@@ -105,7 +134,14 @@ func TestVEX_Filter(t *testing.T) {
 						PkgName:          "jackson-databind",
 						InstalledVersion: "2.8.0",
 						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
+							PURL: &ftypes.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeMaven,
+									Namespace: "com.fasterxml.jackson.core",
+									Name:      "jackson-databind",
+									Version:   "2.8.0",
+								},
+							},
 						},
 					},
 					{
@@ -113,7 +149,14 @@ func TestVEX_Filter(t *testing.T) {
 						PkgName:          "jackson-databind",
 						InstalledVersion: "2.8.0",
 						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
+							PURL: &ftypes.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeMaven,
+									Namespace: "com.fasterxml.jackson.core",
+									Name:      "jackson-databind",
+									Version:   "2.8.0",
+								},
+							},
 						},
 					},
 				},
@@ -124,7 +167,14 @@ func TestVEX_Filter(t *testing.T) {
 					PkgName:          "jackson-databind",
 					InstalledVersion: "2.8.0",
 					PkgIdentifier: ftypes.PkgIdentifier{
-						PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
+						PURL: &ftypes.PackageURL{
+							PackageURL: packageurl.PackageURL{
+								Type:      packageurl.TypeMaven,
+								Namespace: "com.fasterxml.jackson.core",
+								Name:      "jackson-databind",
+								Version:   "2.8.0",
+							},
+						},
 					},
 				},
 			},
@@ -147,7 +197,14 @@ func TestVEX_Filter(t *testing.T) {
 						PkgName:          "jackson-databind",
 						InstalledVersion: "2.8.0",
 						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
+							PURL: &ftypes.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeMaven,
+									Namespace: "com.fasterxml.jackson.core",
+									Name:      "jackson-databind",
+									Version:   "2.8.0",
+								},
+							},
 						},
 					},
 				},
@@ -158,7 +215,14 @@ func TestVEX_Filter(t *testing.T) {
 					PkgName:          "jackson-databind",
 					InstalledVersion: "2.8.0",
 					PkgIdentifier: ftypes.PkgIdentifier{
-						PURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.8.0",
+						PURL: &ftypes.PackageURL{
+							PackageURL: packageurl.PackageURL{
+								Type:      packageurl.TypeMaven,
+								Namespace: "com.fasterxml.jackson.core",
+								Name:      "jackson-databind",
+								Version:   "2.8.0",
+							},
+						},
 					},
 				},
 			},

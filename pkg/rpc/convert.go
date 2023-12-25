@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -79,9 +80,12 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 		return nil
 	}
 
+	var p string
+	if pkg.PURL != nil {
+		p = pkg.PURL.BOMRef() // Use BOMRef() instead of String() so that we won't lose file_path
+	}
 	return &common.PkgIdentifier{
-		Purl: pkg.PURL,
-		Cpe:  pkg.CPE,
+		Purl: p,
 	}
 }
 
@@ -213,13 +217,15 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 }
 
 func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier {
-	if pkg == nil {
+	if pkg == nil || pkg.Purl == "" {
 		return ftypes.PkgIdentifier{}
 	}
-
+	pu, err := purl.FromString(pkg.Purl)
+	if err != nil {
+		log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
+	}
 	return ftypes.PkgIdentifier{
-		PURL: pkg.Purl,
-		CPE:  pkg.Cpe,
+		PURL: pu,
 	}
 }
 

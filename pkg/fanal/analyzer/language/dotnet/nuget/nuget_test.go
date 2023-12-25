@@ -34,16 +34,10 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "Microsoft.AspNet.WebApi",
 								Version: "5.2.2",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:nuget/Microsoft.AspNet.WebApi@5.2.2",
-								},
 							},
 							{
 								Name:    "Newtonsoft.Json",
 								Version: "6.0.4",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:nuget/Newtonsoft.Json@6.0.4",
-								},
 							},
 						},
 					},
@@ -66,9 +60,6 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "Newtonsoft.Json@12.0.3",
 								Name:    "Newtonsoft.Json",
 								Version: "12.0.3",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:nuget/Newtonsoft.Json@12.0.3",
-								},
 								Locations: []types.Location{
 									{
 										StartLine: 5,
@@ -81,9 +72,6 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "NuGet.Frameworks@5.7.0",
 								Name:    "NuGet.Frameworks",
 								Version: "5.7.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:nuget/NuGet.Frameworks@5.7.0",
-								},
 								Locations: []types.Location{
 									{
 										StartLine: 11,
@@ -113,9 +101,6 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "Newtonsoft.Json@12.0.3",
 								Name:    "Newtonsoft.Json",
 								Version: "12.0.3",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:nuget/Newtonsoft.Json@12.0.3",
-								},
 								Locations: []types.Location{
 									{
 										StartLine: 5,
@@ -128,9 +113,6 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "NuGet.Frameworks@5.7.0",
 								Name:    "NuGet.Frameworks",
 								Version: "5.7.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:nuget/NuGet.Frameworks@5.7.0",
-								},
 								Locations: []types.Location{
 									{
 										StartLine: 11,
@@ -160,9 +142,6 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "Newtonsoft.Json@12.0.3",
 								Name:    "Newtonsoft.Json",
 								Version: "12.0.3",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:nuget/Newtonsoft.Json@12.0.3",
-								},
 								Locations: []types.Location{
 									{
 										StartLine: 5,
@@ -174,9 +153,6 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "NuGet.Frameworks@5.7.0",
 								Name:    "NuGet.Frameworks",
 								Version: "5.7.0",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:nuget/NuGet.Frameworks@5.7.0",
-								},
 								Locations: []types.Location{
 									{
 										StartLine: 11,

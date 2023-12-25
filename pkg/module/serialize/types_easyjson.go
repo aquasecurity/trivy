@@ -2247,9 +2247,17 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in *jlexer.L
 		}
 		switch key {
 		case "PURL":
-			out.PURL = string(in.String())
-		case "CPE":
-			out.CPE = string(in.String())
+			if in.IsNull() {
+				in.Skip()
+				out.PURL = nil
+			} else {
+				if out.PURL == nil {
+					out.PURL = new(types1.PackageURL)
+				}
+				if data := in.Raw(); in.Ok() {
+					in.AddError((*out.PURL).UnmarshalJSON(data))
+				}
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -2264,21 +2272,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out *jwriter
 	out.RawByte('{')
 	first := true
 	_ = first
-	if in.PURL != "" {
+	if in.PURL != nil {
 		const prefix string = ",\"PURL\":"
 		first = false
 		out.RawString(prefix[1:])
-		out.String(string(in.PURL))
-	}
-	if in.CPE != "" {
-		const prefix string = ",\"CPE\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.CPE))
+		out.Raw((*in.PURL).MarshalJSON())
 	}
 	out.RawByte('}')
 }
@@ -2362,10 +2360,10 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 				}
 				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes10(in, out.BuildInfo)
 			}
-		case "Ref":
-			out.Ref = string(in.String())
 		case "Indirect":
 			out.Indirect = bool(in.Bool())
+		case "Ref":
+			out.Ref = string(in.String())
 		case "DependsOn":
 			if in.IsNull() {
 				in.Skip()
@@ -2620,16 +2618,6 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		}
 		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes10(out, *in.BuildInfo)
 	}
-	if in.Ref != "" {
-		const prefix string = ",\"Ref\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Ref))
-	}
 	if in.Indirect {
 		const prefix string = ",\"Indirect\":"
 		if first {
@@ -2639,6 +2627,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 			out.RawString(prefix)
 		}
 		out.Bool(bool(in.Indirect))
+	}
+	if in.Ref != "" {
+		const prefix string = ",\"Ref\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Ref))
 	}
 	if len(in.DependsOn) != 0 {
 		const prefix string = ",\"DependsOn\":"

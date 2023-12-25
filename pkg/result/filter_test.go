@@ -2,6 +2,7 @@ package result_test
 
 import (
 	"context"
+	"github.com/package-url/packageurl-go"
 	"testing"
 	"time"
 
@@ -153,7 +154,14 @@ func TestFilter(t *testing.T) {
 									VulnerabilityID: "CVE-2019-0001",
 									PkgName:         "foo",
 									PkgIdentifier: ftypes.PkgIdentifier{
-										PURL: "pkg:golang/github.com/aquasecurity/foo@1.2.3",
+										PURL: &ftypes.PackageURL{
+											PackageURL: packageurl.PackageURL{
+												Type:      packageurl.TypeGolang,
+												Namespace: "github.com/aquasecurity",
+												Name:      "foo",
+												Version:   "1.2.3",
+											},
+										},
 									},
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
@@ -165,10 +173,17 @@ func TestFilter(t *testing.T) {
 									VulnerabilityID: "CVE-2019-0001",
 									PkgName:         "bar",
 									PkgIdentifier: ftypes.PkgIdentifier{
-										PURL: "pkg:golang/github.com/aquasecurity/bar@1.2.3",
+										PURL: &ftypes.PackageURL{
+											PackageURL: packageurl.PackageURL{
+												Type:      packageurl.TypeGolang,
+												Namespace: "github.com/aquasecurity",
+												Name:      "bar",
+												Version:   "4.5.6",
+											},
+										},
 									},
-									InstalledVersion: "1.2.3",
-									FixedVersion:     "1.2.4",
+									InstalledVersion: "4.5.6",
+									FixedVersion:     "4.5.7",
 									Vulnerability: dbTypes.Vulnerability{
 										Severity: dbTypes.SeverityCritical.String(),
 									},
@@ -194,10 +209,17 @@ func TestFilter(t *testing.T) {
 								VulnerabilityID: "CVE-2019-0001",
 								PkgName:         "bar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: "pkg:golang/github.com/aquasecurity/bar@1.2.3",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeGolang,
+											Namespace: "github.com/aquasecurity",
+											Name:      "bar",
+											Version:   "4.5.6",
+										},
+									},
 								},
-								InstalledVersion: "1.2.3",
-								FixedVersion:     "1.2.4",
+								InstalledVersion: "4.5.6",
+								FixedVersion:     "4.5.7",
 								Vulnerability: dbTypes.Vulnerability{
 									Severity: dbTypes.SeverityCritical.String(),
 								},
@@ -719,7 +741,8 @@ func TestFilter(t *testing.T) {
 									Severity:    dbTypes.SeverityHigh.String(),
 									Status:      types.StatusPassed,
 								},
-								{ // this misconf is ignored
+								{
+									// this misconf is ignored
 									ID:          "AVD-TEST-0003",
 									AVDID:       "AVD-TEST-0003",
 									Title:       "test-0003",

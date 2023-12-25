@@ -1,6 +1,7 @@
 package applier_test
 
 import (
+	"github.com/package-url/packageurl-go"
 	"sort"
 	"testing"
 
@@ -144,7 +145,20 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.4",
 						Release: "4.5.8",
 						Identifier: types.PkgIdentifier{
-							PURL: "pkg:apk/alpine/musl@1.2.4-4.5.8?distro=3.10",
+							PURL: &types.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeApk,
+									Namespace: "alpine",
+									Name:      "musl",
+									Version:   "1.2.4-4.5.8",
+									Qualifiers: packageurl.Qualifiers{
+										{
+											Key:   "distro",
+											Value: "3.10",
+										},
+									},
+								},
+							},
 						},
 						Layer: types.Layer{
 							Digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
@@ -156,7 +170,20 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.3",
 						Release: "4.5.6",
 						Identifier: types.PkgIdentifier{
-							PURL: "pkg:apk/alpine/openssl@1.2.3-4.5.6?distro=3.10",
+							PURL: &types.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeApk,
+									Namespace: "alpine",
+									Name:      "openssl",
+									Version:   "1.2.3-4.5.6",
+									Qualifiers: packageurl.Qualifiers{
+										{
+											Key:   "distro",
+											Value: "3.10",
+										},
+									},
+								},
+							},
 						},
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -176,6 +203,16 @@ func TestApplyLayers(t *testing.T) {
 									Digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
+								Identifier: types.PkgIdentifier{
+									PURL: &types.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "activesupport",
+											Version: "6.0.2.1",
+										},
+										FilePath: "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
+									},
+								},
 							},
 							{
 								Name:     "gon",
@@ -184,6 +221,16 @@ func TestApplyLayers(t *testing.T) {
 								Layer: types.Layer{
 									Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+								},
+								Identifier: types.PkgIdentifier{
+									PURL: &types.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "gon",
+											Version: "6.3.2",
+										},
+										FilePath: "usr/local/bundle/specifications/gon-6.3.2.gemspec",
+									},
 								},
 							},
 						},
@@ -198,6 +245,15 @@ func TestApplyLayers(t *testing.T) {
 								Layer: types.Layer{
 									Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+								},
+								Identifier: types.PkgIdentifier{
+									PURL: &types.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "gemlibrary1",
+											Version: "1.2.3",
+										},
+									},
 								},
 							},
 						},
@@ -419,6 +475,15 @@ func TestApplyLayers(t *testing.T) {
 									Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
+								Identifier: types.PkgIdentifier{
+									PURL: &types.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "rack",
+											Version: "4.0.0",
+										},
+									},
+								},
 							},
 							{
 								Name:    "rails",
@@ -426,6 +491,15 @@ func TestApplyLayers(t *testing.T) {
 								Layer: types.Layer{
 									Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+								},
+								Identifier: types.PkgIdentifier{
+									PURL: &types.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "rails",
+											Version: "6.0.0",
+										},
+									},
 								},
 							},
 						},
@@ -440,6 +514,15 @@ func TestApplyLayers(t *testing.T) {
 								Layer: types.Layer{
 									Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+								},
+								Identifier: types.PkgIdentifier{
+									PURL: &types.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeComposer,
+											Name:    "phplibrary1",
+											Version: "6.6.6",
+										},
+									},
 								},
 							},
 						},
@@ -698,7 +781,20 @@ func TestApplyLayers(t *testing.T) {
 						Release:  "4.5.7",
 						Licenses: []string{"GPL-2"},
 						Identifier: types.PkgIdentifier{
-							PURL: "pkg:deb/debian/libc@1.2.4-4.5.7?distro=debian-8",
+							PURL: &types.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeDebian,
+									Namespace: "debian",
+									Name:      "libc",
+									Version:   "1.2.4-4.5.7",
+									Qualifiers: packageurl.Qualifiers{
+										{
+											Key:   "distro",
+											Value: "debian-8",
+										},
+									},
+								},
+							},
 						},
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -711,7 +807,20 @@ func TestApplyLayers(t *testing.T) {
 						Release:  "4.5.6",
 						Licenses: []string{"OpenSSL"},
 						Identifier: types.PkgIdentifier{
-							PURL: "pkg:deb/debian/openssl@1.2.3-4.5.6?distro=debian-8",
+							PURL: &types.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeDebian,
+									Namespace: "debian",
+									Name:      "openssl",
+									Version:   "1.2.3-4.5.6",
+									Qualifiers: packageurl.Qualifiers{
+										{
+											Key:   "distro",
+											Value: "debian-8",
+										},
+									},
+								},
+							},
 						},
 						Layer: types.Layer{
 							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
@@ -850,7 +959,20 @@ func TestApplyLayers(t *testing.T) {
 						Version: "5.6.7",
 						Release: "8",
 						Identifier: types.PkgIdentifier{
-							PURL: "pkg:rpm/redhat/bash@5.6.7-8?distro=redhat-8",
+							PURL: &types.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeRPM,
+									Namespace: "redhat",
+									Name:      "bash",
+									Version:   "5.6.7-8",
+									Qualifiers: packageurl.Qualifiers{
+										{
+											Key:   "distro",
+											Value: "redhat-8",
+										},
+									},
+								},
+							},
 						},
 						Layer: types.Layer{
 							Digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
@@ -866,7 +988,20 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.4",
 						Release: "5",
 						Identifier: types.PkgIdentifier{
-							PURL: "pkg:rpm/redhat/libc@1.2.4-5?distro=redhat-8",
+							PURL: &types.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeRPM,
+									Namespace: "redhat",
+									Name:      "libc",
+									Version:   "1.2.4-5",
+									Qualifiers: packageurl.Qualifiers{
+										{
+											Key:   "distro",
+											Value: "redhat-8",
+										},
+									},
+								},
+							},
 						},
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -884,7 +1019,20 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.3",
 						Release: "4",
 						Identifier: types.PkgIdentifier{
-							PURL: "pkg:rpm/redhat/openssl@1.2.3-4?distro=redhat-8",
+							PURL: &types.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeRPM,
+									Namespace: "redhat",
+									Name:      "openssl",
+									Version:   "1.2.3-4",
+									Qualifiers: packageurl.Qualifiers{
+										{
+											Key:   "distro",
+											Value: "redhat-8",
+										},
+									},
+								},
+							},
 						},
 						Layer: types.Layer{
 							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",

@@ -1,6 +1,7 @@
 package spdx_test
 
 import (
+	"github.com/package-url/packageurl-go"
 	"hash/fnv"
 	"testing"
 	"time"
@@ -60,7 +61,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Epoch:   0,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeRPM,
+											Namespace: "centos",
+											Name:      "binutils",
+											Version:   "2.30-93.el8",
+											Qualifiers: packageurl.Qualifiers{
+												{
+													Key:   "arch",
+													Value: "aarch64",
+												},
+												{
+													Key:   "distro",
+													Value: "centos-8.3.2011",
+												},
+											},
+										},
+									},
 								},
 								SrcName:         "binutils",
 								SrcVersion:      "2.30",
@@ -82,14 +100,26 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.1",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.1",
+										},
+									},
 								},
 							},
 							{
 								Name:    "actioncontroller",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actioncontroller@7.0.1",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actioncontroller",
+											Version: "7.0.1",
+										},
+									},
 								},
 							},
 						},
@@ -103,7 +133,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.1",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.1",
+										},
+									},
 								},
 							},
 						},
@@ -314,7 +350,28 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Epoch:   1,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeRPM,
+											Namespace: "centos",
+											Name:      "acl",
+											Version:   "2.2.53-1.el8",
+											Qualifiers: packageurl.Qualifiers{
+												{
+													Key:   "arch",
+													Value: "aarch64",
+												},
+												{
+													Key:   "distro",
+													Value: "centos-8.3.2011",
+												},
+												{
+													Key:   "epoch",
+													Value: "1",
+												},
+											},
+										},
+									},
 								},
 								SrcName:         "acl",
 								SrcVersion:      "2.2.53",
@@ -335,7 +392,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.1",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.1",
+										},
+									},
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
@@ -347,7 +410,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actionpack@7.0.1",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.1",
+										},
+									},
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
@@ -564,7 +633,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actioncable",
 								Version: "6.1.4.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:gem/actioncable@6.1.4.1",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actioncable",
+											Version: "6.1.4.1",
+										},
+									},
 								},
 							},
 						},
@@ -660,7 +735,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "ruby-typeprof",
 								Version: "0.20.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:npm/ruby-typeprof@0.20.1",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeNPM,
+											Name:    "ruby-typeprof",
+											Version: "0.20.1",
+										},
+									},
 								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
@@ -894,7 +975,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: "pkg:golang/golang.org/x/crypto@v0.0.1",
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeGolang,
+											Namespace: "golang.org/x",
+											Name:      "crypto",
+											Version:   "v0.0.1",
+										},
+									},
 								},
 							},
 						},

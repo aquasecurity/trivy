@@ -32,9 +32,6 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "test-unit",
 								Version: "3.3.7",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:gem/test-unit@3.3.7",
-								},
 								Licenses: []string{
 									"Ruby",
 									"BSDL",
@@ -60,9 +57,6 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "test-unit",
 								Version: "3.3.7",
-								Identifier: types.PkgIdentifier{
-									PURL: "pkg:gem/test-unit@3.3.7",
-								},
 								Licenses: []string{
 									"Ruby",
 									"BSDL",
