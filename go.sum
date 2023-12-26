@@ -433,8 +433,8 @@ github.com/aws/aws-sdk-go-v2/service/dynamodb v1.21.5 h1:EeNQ3bDA6hlx3vifHf7LT/l
 github.com/aws/aws-sdk-go-v2/service/dynamodb v1.21.5/go.mod h1:X3ThW5RPV19hi7bnQ0RMAiBjZbzxj4rZlj+qdctbMWY=
 github.com/aws/aws-sdk-go-v2/service/ebs v1.18.1 h1:iUgGXA8fg41B4Of0F+BS766SRQ7c8rr5jtka8RgaocQ=
 github.com/aws/aws-sdk-go-v2/service/ebs v1.18.1/go.mod h1:9n0SC5yHomD8IjsR37+/txpdfNdpGSgV1RzmsTHrbWg=
-github.com/aws/aws-sdk-go-v2/service/ec2 v1.116.0 h1:knbx9D59itE07Ihbx+1Po8jPDfo2M/8vDQn/4oUtTxk=
-github.com/aws/aws-sdk-go-v2/service/ec2 v1.116.0/go.mod h1:0FhI2Rzcv5BNM3dNnbcCx2qa2naFZoAidJi11cQgzL0=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.134.0 h1:ZozGfw2s79TxoqisrkALGCpXokhMkfZRQxPkd8+MK+Y=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.134.0/go.mod h1:xYJZQIo/YZxEbeBxUYRQJTCJ924EuKtDfrhVx76yzOE=
 github.com/aws/aws-sdk-go-v2/service/ecr v1.24.1 h1:zqXEIhuR7RcHob2gxB/Xf1X4XuMS0vapn7xr+wCPrpg=
 github.com/aws/aws-sdk-go-v2/service/ecr v1.24.1/go.mod h1:+rWYJfms9p+D/wUN599tx3FtWvxoXCP25b8Porlrxcc=
 github.com/aws/aws-sdk-go-v2/service/ecs v1.30.1 h1:bOS7hAfvd8+glVAG88WnvRITe5N1vopGFHh10ORe/BI=
