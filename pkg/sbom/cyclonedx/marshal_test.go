@@ -1190,7 +1190,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path. 2 packages for 1 CVE",
+			name: "happy path. Multiple packages for 1 CVE (2 same packages from different dirs and 1 package with a different name)",
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "CVE-2023-34468",
@@ -1211,12 +1211,59 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Version:  "1.20.0",
 								FilePath: "nifi-hikari-dbcp-service-1.20.0.jar",
 							},
+							{
+								Name:     "org.apache.nifi:nifi-hikari-dbcp-service",
+								Version:  "1.20.0",
+								FilePath: "dir/nifi-hikari-dbcp-service-1.20.0.jar",
+							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2023-34468",
 								PkgName:          "org.apache.nifi:nifi-dbcp-base",
 								PkgPath:          "nifi-dbcp-base-1.20.0.jar",
+								InstalledVersion: "1.20.0",
+								FixedVersion:     "1.22.0",
+								SeveritySource:   vulnerability.GHSA,
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2023-34468",
+								DataSource: &dtypes.DataSource{
+									ID:   vulnerability.GHSA,
+									Name: "GitHub Security Advisory Maven",
+									URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+								},
+								Vulnerability: dtypes.Vulnerability{
+									Title:       "Apache NiFi vulnerable to Code Injection",
+									Description: "The DBCPConnectionPool and HikariCPConnectionPool Controller Services in Apache NiFi 0.0.2 through 1.21.0...",
+									Severity:    dtypes.SeverityHigh.String(),
+									CweIDs: []string{
+										"CWE-94",
+									},
+									VendorSeverity: dtypes.VendorSeverity{
+										vulnerability.GHSA: dtypes.SeverityHigh,
+										vulnerability.NVD:  dtypes.SeverityHigh,
+									},
+									CVSS: dtypes.VendorCVSS{
+										vulnerability.GHSA: dtypes.CVSS{
+											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+											V3Score:  8.8,
+										},
+										vulnerability.NVD: dtypes.CVSS{
+											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+											V3Score:  8.8,
+										},
+									},
+									References: []string{
+										"http://www.openwall.com/lists/oss-security/2023/06/12/3",
+										"https://github.com/advisories/GHSA-xm2m-2q6h-22jw",
+									},
+									PublishedDate:    lo.ToPtr(time.Date(2023, 6, 12, 16, 15, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2023, 6, 21, 02, 20, 0, 0, time.UTC)),
+								},
+							},
+							{
+								VulnerabilityID:  "CVE-2023-34468",
+								PkgName:          "org.apache.nifi:nifi-hikari-dbcp-service",
+								PkgPath:          "dir/nifi-hikari-dbcp-service-1.20.0.jar",
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
 								SeveritySource:   vulnerability.GHSA,
@@ -1349,6 +1396,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						BOMRef:     "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=dir%2Fnifi-hikari-dbcp-service-1.20.0.jar",
+						Type:       "library",
+						Name:       "nifi-hikari-dbcp-service",
+						Group:      "org.apache.nifi",
+						Version:    "1.20.0",
+						PackageURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "dir/nifi-hikari-dbcp-service-1.20.0.jar",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "jar",
+							},
+						},
+					},
+					{
 						BOMRef:     "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
 						Type:       "library",
 						Name:       "nifi-hikari-dbcp-service",
@@ -1372,11 +1437,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+							"pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=dir%2Fnifi-hikari-dbcp-service-1.20.0.jar",
 							"pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
 						},
 					},
 					{
 						Ref:          "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+						Dependencies: lo.ToPtr([]string{}),
+					},
+					{
+						Ref:          "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=dir%2Fnifi-hikari-dbcp-service-1.20.0.jar",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
@@ -1430,6 +1500,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Affects: &[]cdx.Affects{
 							{
 								Ref: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+								Range: &[]cdx.AffectedVersions{
+									{
+										Version: "1.20.0",
+										Status:  cdx.VulnerabilityStatusAffected,
+									},
+								},
+							},
+							{
+								Ref: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=dir%2Fnifi-hikari-dbcp-service-1.20.0.jar",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "1.20.0",
