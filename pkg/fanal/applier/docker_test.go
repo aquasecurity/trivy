@@ -280,7 +280,6 @@ func TestApplyLayers(t *testing.T) {
 									Arch:       "all",
 									SrcName:    "adduser",
 									SrcVersion: "3.118+deb11u1",
-									Ref:        "pkg:deb/debian/adduser@3.118%2Bdeb11u1?arch=all&distro=debian-11.8",
 									Layer: types.Layer{
 										Digest: "sha256:e67fdae3559346105027c63e7fb032bba57e62b1fe9f2da23e6fdfb56384e00b",
 										DiffID: "sha256:633f5bf471f7595b236a21e62dc60beef321db45916363a02ad5af02d794d497",
@@ -319,7 +318,6 @@ func TestApplyLayers(t *testing.T) {
 						Arch:       "all",
 						SrcName:    "adduser",
 						SrcVersion: "3.118+deb11u1",
-						Ref:        "pkg:deb/debian/adduser@3.118%2Bdeb11u1?arch=all&distro=debian-11.8",
 						Layer: types.Layer{
 							Digest: "sha256:e67fdae3559346105027c63e7fb032bba57e62b1fe9f2da23e6fdfb56384e00b",
 							DiffID: "sha256:633f5bf471f7595b236a21e62dc60beef321db45916363a02ad5af02d794d497",
