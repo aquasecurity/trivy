@@ -177,12 +177,12 @@ func (s *SPDX) parsePackages(pkgs map[common.ElementID]*spdx.Package) error {
 		} else if err != nil {
 			return xerrors.Errorf("failed to parse package: %w", err)
 		}
-		switch pkgURL.Class() {
+		switch purl.Class(pkgURL) {
 		case types.ClassOSPkg:
 			osPkgs = append(osPkgs, *pkg)
 		case types.ClassLangPkg:
 			// Language-specific packages
-			pkgType := pkgURL.LangType()
+			pkgType := purl.LangType(pkgURL)
 			app, ok := apps[pkgType]
 			if !ok {
 				app.Type = pkgType
@@ -246,7 +246,7 @@ func parseOS(pkg spdx.Package) ftypes.OS {
 	}
 }
 
-func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes.Package, *purl.PackageURL, error) {
+func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes.Package, *ftypes.PackageURL, error) {
 	pkg, pkgURL, err := parseExternalReferences(spdxPkg.PackageExternalReferences)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("external references error: %w", err)
@@ -278,7 +278,7 @@ func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes
 	return pkg, pkgURL, nil
 }
 
-func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Package, *purl.PackageURL, error) {
+func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Package, *ftypes.PackageURL, error) {
 	for _, ref := range refs {
 		// Extract the package information from PURL
 		if ref.RefType != RefTypePurl || ref.Category != CategoryPackageManager {
@@ -289,8 +289,11 @@ func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Pac
 		if err != nil {
 			return nil, nil, xerrors.Errorf("failed to parse purl from string: %w", err)
 		}
-		pkg := packageURL.Package()
+		pkg := purl.ToPackage(packageURL)
 		pkg.Ref = ref.Locator
+		pkg.Identifier = ftypes.PkgIdentifier{
+			PURL: packageURL,
+		}
 		return pkg, packageURL, nil
 	}
 	return nil, nil, errUnknownPackageFormat

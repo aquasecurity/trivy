@@ -33,6 +33,9 @@
         {
           "VulnerabilityID": "CVE-2023-2431",
           "PkgName": "k8s.io/kubelet",
+          "PkgIdentifier": {
+            "PURL": "pkg:k8s/k8s.io%2Fkubelet@1.27.0"
+          },
           "InstalledVersion": "1.27.0",
           "FixedVersion": "1.24.14, 1.25.9, 1.26.4, 1.27.1",
           "Status": "fixed",

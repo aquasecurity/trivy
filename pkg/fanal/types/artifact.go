@@ -62,25 +62,32 @@ type Layer struct {
 }
 
 type Package struct {
-	ID         string   `json:",omitempty"`
-	Name       string   `json:",omitempty"`
-	Version    string   `json:",omitempty"`
-	Release    string   `json:",omitempty"`
-	Epoch      int      `json:",omitempty"`
-	Arch       string   `json:",omitempty"`
-	Dev        bool     `json:",omitempty"`
-	SrcName    string   `json:",omitempty"`
-	SrcVersion string   `json:",omitempty"`
-	SrcRelease string   `json:",omitempty"`
-	SrcEpoch   int      `json:",omitempty"`
-	Licenses   []string `json:",omitempty"`
-	Maintainer string   `json:",omitempty"`
+	ID         string        `json:",omitempty"`
+	Name       string        `json:",omitempty"`
+	Identifier PkgIdentifier `json:",omitempty"`
+	Version    string        `json:",omitempty"`
+	Release    string        `json:",omitempty"`
+	Epoch      int           `json:",omitempty"`
+	Arch       string        `json:",omitempty"`
+	Dev        bool          `json:",omitempty"`
+	SrcName    string        `json:",omitempty"`
+	SrcVersion string        `json:",omitempty"`
+	SrcRelease string        `json:",omitempty"`
+	SrcEpoch   int           `json:",omitempty"`
+	Licenses   []string      `json:",omitempty"`
+	Maintainer string        `json:",omitempty"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
+	Indirect        bool       `json:",omitempty"` // this package is direct dependency of the project or not
 
-	Ref      string `json:",omitempty"` // identifier which can be used to reference the component elsewhere
-	Indirect bool   `json:",omitempty"` // this package is direct dependency of the project or not
+	// TO BE DEPRECATED - use Identifier instead
+	// Only used when scanning SBOM and contains the reference ID used in it.
+	// It could be PURL, UUID, etc.
+	// e.g.
+	//    - pkg:npm/acme/component@1.0.0
+	//    - b2a46a4b-8367-4bae-9820-95557cfe03a8
+	Ref string `json:",omitempty"`
 
 	// Dependencies of this package
 	// Note:　it may have interdependencies, which may lead to infinite loops.
@@ -99,6 +106,16 @@ type Package struct {
 
 	// Files installed by the package
 	InstalledFiles []string `json:",omitempty"`
+}
+
+// PkgIdentifier represents a software identifiers in one of more of the supported formats.
+type PkgIdentifier struct {
+	// PURL is a package URL
+	PURL *PackageURL `json:",omitempty"`
+}
+
+func (id *PkgIdentifier) Empty() bool {
+	return id.PURL == nil
 }
 
 type Location struct {

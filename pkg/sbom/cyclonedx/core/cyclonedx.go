@@ -14,8 +14,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -38,7 +38,7 @@ type Component struct {
 	Name       string
 	Group      string
 	Version    string
-	PackageURL *purl.PackageURL
+	PackageURL *ftypes.PackageURL
 	Licenses   []string
 	Hashes     []digest.Digest
 	Supplier   string
@@ -231,7 +231,7 @@ func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.V
 	return &vulns
 }
 
-func (c *CycloneDX) PackageURL(p *purl.PackageURL) string {
+func (c *CycloneDX) PackageURL(p *ftypes.PackageURL) string {
 	if p == nil {
 		return ""
 	}

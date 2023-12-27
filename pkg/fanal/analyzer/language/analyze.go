@@ -116,7 +116,8 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.
 		if lib.FilePath != "" {
 			libPath = lib.FilePath
 		}
-		pkgs = append(pkgs, types.Package{
+
+		newPkg := types.Package{
 			ID:        lib.ID,
 			Name:      lib.Name,
 			Version:   lib.Version,
@@ -127,7 +128,8 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.
 			DependsOn: deps[lib.ID],
 			Locations: locs,
 			Digest:    d,
-		})
+		}
+		pkgs = append(pkgs, newPkg)
 	}
 
 	return &types.Application{

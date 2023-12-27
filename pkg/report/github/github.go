@@ -161,7 +161,7 @@ func getPkgRelationshipType(pkg ftypes.Package) string {
 }
 
 func buildPurl(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (string, error) {
-	packageUrl, err := purl.NewPackageURL(t, metadata, pkg)
+	packageUrl, err := purl.New(t, metadata, pkg)
 	if err != nil {
 		return "", xerrors.Errorf("purl error: %w", err)
 	}

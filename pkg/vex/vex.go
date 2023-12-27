@@ -50,7 +50,13 @@ func newOpenVEX(vex openvex.VEX) VEX {
 
 func (v *OpenVEX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulnerability {
 	return lo.Filter(vulns, func(vuln types.DetectedVulnerability, _ int) bool {
-		stmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgRef, nil)
+		var stmts []openvex.Statement
+		if vuln.PkgIdentifier.PURL != nil {
+			matchedStmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgIdentifier.PURL.String(), nil)
+			if len(matchedStmts) > 0 {
+				stmts = append(stmts, matchedStmts...)
+			}
+		}
 		if len(stmts) == 0 {
 			return true
 		}
@@ -122,14 +128,23 @@ func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) b
 				zap.Int("version", link.Version()))
 			continue
 		}
-		if vuln.PkgRef == link.Reference() &&
-			(stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
+		if v.matchRef(vuln, link.Reference()) && (stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
 			v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
 				zap.String("status", string(stmt.Status)), zap.String("justification", stmt.Justification))
 			return false
 		}
 	}
 	return true
+}
+
+func (v *CycloneDX) matchRef(vuln types.DetectedVulnerability, ref string) bool {
+	switch {
+	case vuln.PkgRef == ref: // BOM-Ref
+		return true
+	case vuln.PkgIdentifier.PURL != nil && vuln.PkgIdentifier.PURL.String() == ref: // PURL
+		return true
+	}
+	return false
 }
 
 func cdxStatus(s cdx.ImpactAnalysisState) Status {

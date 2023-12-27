@@ -68,7 +68,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 		if err != nil {
 			return nil, xerrors.Errorf("failed to split source rpm: %w", err)
 		}
-		pkg := types.Package{
+		pkgs = append(pkgs, types.Package{
 			Name:       name,
 			Version:    ver,
 			Release:    rel,
@@ -76,8 +76,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 			SrcName:    srcName,
 			SrcVersion: srcVer,
 			SrcRelease: srcRel,
-		}
-		pkgs = append(pkgs, pkg)
+		})
 	}
 	return pkgs, nil
 }

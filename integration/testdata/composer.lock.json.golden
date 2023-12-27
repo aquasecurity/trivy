@@ -24,6 +24,9 @@
         {
           "ID": "guzzlehttp/guzzle@7.4.4",
           "Name": "guzzlehttp/guzzle",
+          "Identifier": {
+            "PURL": "pkg:composer/guzzlehttp/guzzle@7.4.4"
+          },
           "Version": "7.4.4",
           "Licenses": [
             "MIT"
@@ -42,6 +45,9 @@
         {
           "ID": "guzzlehttp/psr7@1.8.3",
           "Name": "guzzlehttp/psr7",
+          "Identifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
+          },
           "Version": "1.8.3",
           "Licenses": [
             "MIT"
@@ -61,6 +67,9 @@
           "VulnerabilityID": "CVE-2022-24775",
           "PkgID": "guzzlehttp/psr7@1.8.3",
           "PkgName": "guzzlehttp/psr7",
+          "PkgIdentifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
+          },
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
           "Status": "fixed",

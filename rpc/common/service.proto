@@ -33,12 +33,13 @@ message Application {
 message Package {
   // binary package
   // e.g. bind-utils
-  string id      = 13;
-  string name    = 1;
-  string version = 2;
-  string release = 3;
-  int32  epoch   = 4;
-  string arch    = 5;
+  string          id      = 13;
+  string          name    = 1;
+  string          version = 2;
+  string          release = 3;
+  int32           epoch   = 4;
+  PkgIdentifier   identifier = 19;
+  string          arch    = 5;
   // src package containing some binary packages
   // e.g. bind
   string          src_name    = 6;
@@ -52,6 +53,11 @@ message Package {
   string          digest      = 16;
   bool            dev         = 17;
   bool            indirect    = 18;
+}
+
+message PkgIdentifier {
+  string purl = 1;
+  string cpe = 2;
 }
 
 message Misconfiguration {
@@ -110,6 +116,7 @@ message Vulnerability {
   string                    description          = 6;
   Severity                  severity             = 7;
   repeated string           references           = 8;
+  PkgIdentifier             pkg_identifier       = 25;
   Layer                     layer                = 10;
   string                    severity_source      = 11;
   map<string, CVSS>         cvss                 = 12;

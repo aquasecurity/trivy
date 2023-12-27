@@ -623,8 +623,9 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								Arch:       "amd64",
 							},
 							{
-								ID:         "libgpg-error0@1.27-6",
-								Name:       "libgpg-error0",
+								ID:   "libgpg-error0@1.27-6",
+								Name: "libgpg-error0",
+
 								Version:    "1.27",
 								Release:    "6",
 								SrcName:    "libgpg-error",
