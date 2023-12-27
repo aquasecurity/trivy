@@ -273,9 +273,10 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "",
 						Libraries: ftypes.Packages{
 							{
-								Name:    "pear/log",
-								Version: "1.13.1",
-								Ref:     "pkg:composer/pear/log@1.13.1",
+								Name:     "pear/log",
+								Version:  "1.13.1",
+								Ref:      "pkg:composer/pear/log@1.13.1",
+								Licenses: []string{"MIT"},
 							},
 							{
 
