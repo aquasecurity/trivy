@@ -3,6 +3,7 @@ package sbom_test
 import (
 	"context"
 	"errors"
+	"github.com/package-url/packageurl-go"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -29,7 +30,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
+					BlobID: "sha256:c1cc58e08422fd7606a8e9ee2b42bf722b7af8b703b895461c23b83956f33227",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -49,6 +50,22 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeApk,
+													Namespace: "alpine",
+													Name:      "musl",
+													Version:   "1.2.3-r0",
+													Qualifiers: packageurl.Qualifiers{
+														{
+															Key:   "distro",
+															Value: "3.16.0",
+														},
+													},
+												},
+											},
+										},
 									},
 								},
 							},
@@ -65,6 +82,16 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeComposer,
+													Namespace: "pear",
+													Name:      "log",
+													Version:   "1.13.1",
+												},
+											},
+										},
 									},
 									{
 
@@ -73,6 +100,16 @@ func TestArtifact_Inspect(t *testing.T) {
 										Ref:     "pkg:composer/pear/pear_exception@v1.0.0",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+										},
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeComposer,
+													Namespace: "pear",
+													Name:      "pear_exception",
+													Version:   "v1.0.0",
+												},
+											},
 										},
 									},
 								},
@@ -87,6 +124,16 @@ func TestArtifact_Inspect(t *testing.T) {
 										Ref:     "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+										},
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeGolang,
+													Namespace: "github.com/package-url",
+													Name:      "packageurl-go",
+													Version:   "v0.1.1-0.20220203205134-d70459300c8a",
+												},
+											},
 										},
 									},
 								},
@@ -103,6 +150,17 @@ func TestArtifact_Inspect(t *testing.T) {
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
 										FilePath: "app/maven/target/child-project-1.0.jar",
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeMaven,
+													Namespace: "org.codehaus.mojo",
+													Name:      "child-project",
+													Version:   "1.0",
+												},
+												FilePath: "app/maven/target/child-project-1.0.jar",
+											},
+										},
 									},
 								},
 							},
@@ -119,6 +177,16 @@ func TestArtifact_Inspect(t *testing.T) {
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
 										FilePath: "app/app/package.json",
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:    packageurl.TypeNPM,
+													Name:    "bootstrap",
+													Version: "5.0.2",
+												},
+												FilePath: "app/app/package.json",
+											},
+										},
 									},
 								},
 							},
@@ -130,9 +198,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
+				ID:   "sha256:c1cc58e08422fd7606a8e9ee2b42bf722b7af8b703b895461c23b83956f33227",
 				BlobIDs: []string{
-					"sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
+					"sha256:c1cc58e08422fd7606a8e9ee2b42bf722b7af8b703b895461c23b83956f33227",
 				},
 			},
 		},
@@ -141,7 +209,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
+					BlobID: "sha256:c1cc58e08422fd7606a8e9ee2b42bf722b7af8b703b895461c23b83956f33227",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -157,7 +225,23 @@ func TestArtifact_Inspect(t *testing.T) {
 										SrcName:    "musl",
 										SrcVersion: "1.2.3-r0",
 										Licenses:   []string{"MIT"},
-										Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeApk,
+													Namespace: "alpine",
+													Name:      "musl",
+													Version:   "1.2.3-r0",
+													Qualifiers: packageurl.Qualifiers{
+														{
+															Key:   "distro",
+															Value: "3.16.0",
+														},
+													},
+												},
+											},
+										},
+										Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
@@ -173,7 +257,17 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "pear/log",
 										Version: "1.13.1",
-										Ref:     "pkg:composer/pear/log@1.13.1",
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeComposer,
+													Namespace: "pear",
+													Name:      "log",
+													Version:   "1.13.1",
+												},
+											},
+										},
+										Ref: "pkg:composer/pear/log@1.13.1",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -182,7 +276,17 @@ func TestArtifact_Inspect(t *testing.T) {
 
 										Name:    "pear/pear_exception",
 										Version: "v1.0.0",
-										Ref:     "pkg:composer/pear/pear_exception@v1.0.0",
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeComposer,
+													Namespace: "pear",
+													Name:      "pear_exception",
+													Version:   "v1.0.0",
+												},
+											},
+										},
+										Ref: "pkg:composer/pear/pear_exception@v1.0.0",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -196,7 +300,17 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
-										Ref:     "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeGolang,
+													Namespace: "github.com/package-url",
+													Name:      "packageurl-go",
+													Version:   "v0.1.1-0.20220203205134-d70459300c8a",
+												},
+											},
+										},
+										Ref: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -209,8 +323,19 @@ func TestArtifact_Inspect(t *testing.T) {
 								Libraries: types.Packages{
 									{
 										Name:    "org.codehaus.mojo:child-project",
-										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										Version: "1.0",
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:      packageurl.TypeMaven,
+													Namespace: "org.codehaus.mojo",
+													Name:      "child-project",
+													Version:   "1.0",
+												},
+												FilePath: "app/maven/target/child-project-1.0.jar",
+											},
+										},
+										Ref: "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -223,8 +348,18 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "",
 								Libraries: types.Packages{
 									{
-										Name:     "bootstrap",
-										Version:  "5.0.2",
+										Name:    "bootstrap",
+										Version: "5.0.2",
+										Identifier: types.PkgIdentifier{
+											PURL: &types.PackageURL{
+												PackageURL: packageurl.PackageURL{
+													Type:    packageurl.TypeNPM,
+													Name:    "bootstrap",
+													Version: "5.0.2",
+												},
+												FilePath: "app/app/package.json",
+											},
+										},
 										Ref:      "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 										Licenses: []string{"MIT"},
 										Layer: types.Layer{
@@ -242,9 +377,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
+				ID:   "sha256:c1cc58e08422fd7606a8e9ee2b42bf722b7af8b703b895461c23b83956f33227",
 				BlobIDs: []string{
-					"sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
+					"sha256:c1cc58e08422fd7606a8e9ee2b42bf722b7af8b703b895461c23b83956f33227",
 				},
 			},
 		},

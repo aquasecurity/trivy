@@ -103,98 +103,6 @@
   ],
   "vulnerabilities": [
     {
-      "id": "CVE-2021-20190",
-      "source": {
-        "name": "glad",
-        "url": "https://gitlab.com/gitlab-org/advisories-community"
-      },
-      "ratings": [
-        {
-          "source": {
-            "name": "ghsa"
-          },
-          "severity": "high"
-        },
-        {
-          "source": {
-            "name": "nvd"
-          },
-          "score": 8.3,
-          "severity": "high",
-          "method": "CVSSv2",
-          "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:C"
-        },
-        {
-          "source": {
-            "name": "nvd"
-          },
-          "score": 8.1,
-          "severity": "high",
-          "method": "CVSSv31",
-          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
-        },
-        {
-          "source": {
-            "name": "redhat"
-          },
-          "score": 8.1,
-          "severity": "high",
-          "method": "CVSSv31",
-          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
-        }
-      ],
-      "cwes": [
-        502
-      ],
-      "description": "A flaw was found in jackson-databind before 2.9.10.7. FasterXML mishandles the interaction between serialization gadgets and typing. The highest threat from this vulnerability is to data confidentiality and integrity as well as system availability.",
-      "recommendation": "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.9.10.7",
-      "advisories": [
-        {
-          "url": "https://avd.aquasec.com/nvd/cve-2021-20190"
-        },
-        {
-          "url": "https://access.redhat.com/security/cve/CVE-2021-20190"
-        },
-        {
-          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=1916633"
-        },
-        {
-          "url": "https://github.com/FasterXML/jackson-databind/commit/7dbf51bf78d157098074a20bd9da39bd48c18e4a"
-        },
-        {
-          "url": "https://github.com/FasterXML/jackson-databind/issues/2854"
-        },
-        {
-          "url": "https://github.com/advisories/GHSA-5949-rw7g-wx7w"
-        },
-        {
-          "url": "https://lists.apache.org/thread.html/r380e9257bacb8551ee6fcf2c59890ae9477b2c78e553fa9ea08e9d9a@%3Ccommits.nifi.apache.org%3E"
-        },
-        {
-          "url": "https://lists.debian.org/debian-lts-announce/2021/04/msg00025.html"
-        },
-        {
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-20190"
-        },
-        {
-          "url": "https://security.netapp.com/advisory/ntap-20210219-0008/"
-        }
-      ],
-      "published": "2021-01-19T17:15:00+00:00",
-      "updated": "2021-07-20T23:15:00+00:00",
-      "affects": [
-        {
-          "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
-          "versions": [
-            {
-              "version": "2.9.1",
-              "status": "affected"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "CVE-2020-9548",
       "source": {
         "name": "ghsa",
@@ -304,6 +212,98 @@
       ],
       "published": "2020-03-02T04:15:00+00:00",
       "updated": "2021-12-02T21:23:00+00:00",
+      "affects": [
+        {
+          "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
+          "versions": [
+            {
+              "version": "2.9.1",
+              "status": "affected"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CVE-2021-20190",
+      "source": {
+        "name": "glad",
+        "url": "https://gitlab.com/gitlab-org/advisories-community"
+      },
+      "ratings": [
+        {
+          "source": {
+            "name": "ghsa"
+          },
+          "severity": "high"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 8.3,
+          "severity": "high",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:C"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 8.1,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "source": {
+            "name": "redhat"
+          },
+          "score": 8.1,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes": [
+        502
+      ],
+      "description": "A flaw was found in jackson-databind before 2.9.10.7. FasterXML mishandles the interaction between serialization gadgets and typing. The highest threat from this vulnerability is to data confidentiality and integrity as well as system availability.",
+      "recommendation": "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.9.10.7",
+      "advisories": [
+        {
+          "url": "https://avd.aquasec.com/nvd/cve-2021-20190"
+        },
+        {
+          "url": "https://access.redhat.com/security/cve/CVE-2021-20190"
+        },
+        {
+          "url": "https://bugzilla.redhat.com/show_bug.cgi?id=1916633"
+        },
+        {
+          "url": "https://github.com/FasterXML/jackson-databind/commit/7dbf51bf78d157098074a20bd9da39bd48c18e4a"
+        },
+        {
+          "url": "https://github.com/FasterXML/jackson-databind/issues/2854"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-5949-rw7g-wx7w"
+        },
+        {
+          "url": "https://lists.apache.org/thread.html/r380e9257bacb8551ee6fcf2c59890ae9477b2c78e553fa9ea08e9d9a@%3Ccommits.nifi.apache.org%3E"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2021/04/msg00025.html"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-20190"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20210219-0008/"
+        }
+      ],
+      "published": "2021-01-19T17:15:00+00:00",
+      "updated": "2021-07-20T23:15:00+00:00",
       "affects": [
         {
           "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",

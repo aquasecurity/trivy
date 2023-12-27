@@ -58,6 +58,9 @@
           "VulnerabilityID": "CVE-2019-14697",
           "PkgID": "musl@1.1.20-r4",
           "PkgName": "musl",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/musl@1.1.20-r4?arch=x86_64\u0026distro=3.9.4"
+          },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
           "Status": "fixed",
@@ -100,6 +103,9 @@
           "VulnerabilityID": "CVE-2019-14697",
           "PkgID": "musl-utils@1.1.20-r4",
           "PkgName": "musl-utils",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/musl-utils@1.1.20-r4?arch=x86_64\u0026distro=3.9.4"
+          },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
           "Status": "fixed",

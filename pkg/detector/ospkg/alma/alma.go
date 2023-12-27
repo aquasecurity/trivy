@@ -81,7 +81,6 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
-
 		for _, adv := range advisories {
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 			if installedVersion.LessThan(fixedVersion) {
@@ -92,6 +91,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 					InstalledVersion: installed,
 					FixedVersion:     fixedVersion.String(),
 					PkgRef:           pkg.Ref,
+					PkgIdentifier:    pkg.Identifier,
 					Layer:            pkg.Layer,
 					DataSource:       adv.DataSource,
 					Custom:           adv.Custom,

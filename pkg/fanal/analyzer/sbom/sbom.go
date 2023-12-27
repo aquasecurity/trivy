@@ -86,7 +86,11 @@ func handleBitnamiImages(componentPath string, bom types.SBOM) {
 			// e.g. modules/apm/elastic-apm-agent-1.36.0.jar
 			//      => opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar
 			// If the file path is empty, the file path will be set to the component dir path.
-			bom.Applications[i].Libraries[j].FilePath = path.Join(componentPath, pkg.FilePath)
+			filePath := path.Join(componentPath, pkg.FilePath)
+			bom.Applications[i].Libraries[j].FilePath = filePath
+			if pkg.Identifier.PURL != nil && pkg.Identifier.PURL.FilePath != "" {
+				bom.Applications[i].Libraries[j].Identifier.PURL.FilePath = filePath
+			}
 		}
 	}
 }

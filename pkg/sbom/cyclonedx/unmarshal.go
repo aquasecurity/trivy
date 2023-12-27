@@ -202,7 +202,7 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 		}
 
 		// Skip unsupported package types
-		if pkgURL.Class() == types.ClassUnknown {
+		if purl.Class(pkgURL) == types.ClassUnknown {
 			continue
 		}
 		pkgs = append(pkgs, *pkg)
@@ -290,11 +290,11 @@ func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Applica
 			return nil, nil, xerrors.Errorf("failed to parse the component: %w", err)
 		}
 
-		switch pkgURL.Class() {
+		switch purl.Class(pkgURL) {
 		case types.ClassOSPkg:
 			osPkgMap[pkgURL.Type] = append(osPkgMap[pkgURL.Type], *pkg)
 		case types.ClassLangPkg:
-			langType := pkgURL.LangType()
+			langType := purl.LangType(pkgURL)
 			langPkgMap[langType] = append(langPkgMap[langType], *pkg)
 		}
 	}
@@ -337,7 +337,7 @@ func toApplication(component cdx.Component) *ftypes.Application {
 	}
 }
 
-func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, error) {
+func toPackage(component cdx.Component) (*ftypes.PackageURL, *ftypes.Package, error) {
 	if component.PackageURL == "" {
 		log.Logger.Warnf("Skip the component (BOM-Ref: %s) as the PURL is empty", component.BOMRef)
 		return nil, nil, ErrPURLEmpty
@@ -347,10 +347,10 @@ func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, erro
 		return nil, nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
 
-	pkg := p.Package()
+	pkg := purl.ToPackage(p)
 	// Trivy's marshall loses case-sensitivity in PURL used in SBOM for packages (Go, Npm, PyPI),
 	// so we have to use an original package name
-	pkg.Name = getPackageName(p.Type, pkg.Name, component)
+	pkg.Name = packageName(p.Type, pkg.Name, component)
 	pkg.Ref = component.BOMRef
 
 	for _, license := range lo.FromPtr(component.Licenses) {
@@ -383,23 +383,32 @@ func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, erro
 		}
 	}
 
-	if p.Class() == types.ClassOSPkg {
-		// Fill source package information for components in third-party SBOMs .
-		if pkg.SrcName == "" {
-			pkg.SrcName = pkg.Name
-		}
-		if pkg.SrcVersion == "" {
-			pkg.SrcVersion = pkg.Version
-		}
-		if pkg.SrcRelease == "" {
-			pkg.SrcRelease = pkg.Release
-		}
-		if pkg.SrcEpoch == 0 {
-			pkg.SrcEpoch = pkg.Epoch
-		}
+	if pkg.FilePath != "" {
+		p.FilePath = pkg.FilePath
+	}
+	pkg.Identifier = ftypes.PkgIdentifier{PURL: p}
+
+	if purl.Class(p) == types.ClassOSPkg {
+		fillSrcPkg(pkg)
 	}
 
 	return p, pkg, nil
+}
+
+func fillSrcPkg(pkg *ftypes.Package) {
+	// Fill source package information for components in third-party SBOMs .
+	if pkg.SrcName == "" {
+		pkg.SrcName = pkg.Name
+	}
+	if pkg.SrcVersion == "" {
+		pkg.SrcVersion = pkg.Version
+	}
+	if pkg.SrcRelease == "" {
+		pkg.SrcRelease = pkg.Release
+	}
+	if pkg.SrcEpoch == 0 {
+		pkg.SrcEpoch = pkg.Epoch
+	}
 }
 
 func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
@@ -413,7 +422,7 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 	}
 }
 
-func getPackageName(typ, pkgNameFromPurl string, component cdx.Component) string {
+func packageName(typ, pkgNameFromPurl string, component cdx.Component) string {
 	if typ == packageurl.TypeMaven {
 		// Jar uses `Group` field for `GroupID`
 		if component.Group != "" {

@@ -178,7 +178,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 			},
 		},
 		{
-			name:   "distoless",
+			name:   "distroless",
 			result: &analyzer.AnalysisResult{},
 			blob: &types.BlobInfo{
 				Applications: []types.Application{

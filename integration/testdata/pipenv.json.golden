@@ -23,6 +23,9 @@
       "Packages": [
         {
           "Name": "werkzeug",
+          "Identifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1"
+          },
           "Version": "0.11.1",
           "Layer": {},
           "Locations": [
@@ -37,6 +40,9 @@
         {
           "VulnerabilityID": "CVE-2019-14806",
           "PkgName": "werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1"
+          },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
           "Status": "fixed",
@@ -90,6 +96,9 @@
         {
           "VulnerabilityID": "CVE-2020-28724",
           "PkgName": "werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1"
+          },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",
           "Status": "fixed",
