@@ -193,7 +193,7 @@ type ArtifactCachePutBlobExpectation struct {
 	Returns ArtifactCachePutBlobReturns
 }
 
-func (_m *MockArtifactCache) ApplyPutBlobExpectation(e ArtifactCachePutBlobExpectation) *mock.Call{
+func (_m *MockArtifactCache) ApplyPutBlobExpectation(e ArtifactCachePutBlobExpectation) *mock.Call {
 	var args []interface{}
 	if e.Args.BlobIDAnything {
 		args = append(args, mock.Anything)
