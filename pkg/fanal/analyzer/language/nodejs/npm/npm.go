@@ -8,7 +8,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -87,13 +86,14 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 
 func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
+	// Don't save package-lock.json from the `node_modules` directory to avoid duplication and mistakes.
 	if fileName == types.NpmPkgLock && !xpath.Contains(filePath, "node_modules") {
 		return true
 	}
-	// The file path to package.json - */node_modules/<package_name>/package.json
-	// The path is slashed in analyzers.
-	dirs := strings.Split(path.Dir(filePath), "/")
-	if len(dirs) > 1 && dirs[len(dirs)-2] == "node_modules" && fileName == types.NpmPkg {
+
+	// Save package.json files only from the `node_modules` directory.
+	// Required to search for licenses.
+	if fileName == types.NpmPkg && xpath.Contains(filePath, "node_modules") {
 		return true
 	}
 	return false

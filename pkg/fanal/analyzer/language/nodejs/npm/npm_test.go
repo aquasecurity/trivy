@@ -207,8 +207,13 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "package.json with `/` in name",
+			filePath: "npm/node_modules/@babel/parser/package.json",
+			want:     true,
+		},
+		{
 			name:     "sad path",
-			filePath: "npm/node_modules/package.json",
+			filePath: "npm/package.json",
 			want:     false,
 		},
 		{
