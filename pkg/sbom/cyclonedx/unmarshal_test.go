@@ -479,7 +479,8 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										},
 									},
 								},
-								Ref: "pkg:composer/pear/log@1.13.1",
+								Ref:      "pkg:composer/pear/log@1.13.1",
+								Licenses: []string{"MIT"},
 							},
 							{
 

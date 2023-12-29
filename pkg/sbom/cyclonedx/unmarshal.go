@@ -352,10 +352,7 @@ func toPackage(component cdx.Component) (*ftypes.PackageURL, *ftypes.Package, er
 	// so we have to use an original package name
 	pkg.Name = packageName(p.Type, pkg.Name, component)
 	pkg.Ref = component.BOMRef
-
-	for _, license := range lo.FromPtr(component.Licenses) {
-		pkg.Licenses = append(pkg.Licenses, license.Expression)
-	}
+	pkg.Licenses = parsePackageLicenses(component.Licenses)
 
 	for key, value := range core.UnmarshalProperties(component.Properties) {
 		switch key {
@@ -433,4 +430,31 @@ func packageName(typ, pkgNameFromPurl string, component cdx.Component) string {
 		}
 	}
 	return component.Name
+}
+
+// parsePackageLicenses checks all supported license fields and returns a list of licenses.
+// https://cyclonedx.org/docs/1.5/json/#components_items_licenses
+func parsePackageLicenses(l *cdx.Licenses) []string {
+	var licenses []string
+	for _, license := range lo.FromPtr(l) {
+		if license.License != nil {
+			// Trivy uses `Name` field to marshal licenses
+			if license.License.Name != "" {
+				licenses = append(licenses, license.License.Name)
+				continue
+			}
+
+			if license.License.ID != "" {
+				licenses = append(licenses, license.License.ID)
+				continue
+			}
+		}
+
+		if license.Expression != "" {
+			licenses = append(licenses, license.Expression)
+			continue
+		}
+
+	}
+	return licenses
 }
