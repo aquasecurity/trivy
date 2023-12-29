@@ -480,6 +480,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 									BOMRef: "pkg:composer/pear/log@1.13.1",
 								},
+								Licenses: []string{"MIT"},
 							},
 							{
 
