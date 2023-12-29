@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"maps"
 	"reflect"
 	"strings"
 
@@ -253,9 +254,13 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 
 // ToArtifact converts dependency to artifact.
 // It should be called after calling Resolve() so that variables can be evaluated.
-func (d pomDependency) ToArtifact(exclusions map[string]struct{}) artifact {
-	if exclusions == nil {
-		exclusions = map[string]struct{}{}
+func (d pomDependency) ToArtifact(ex map[string]struct{}) artifact {
+	// To avoid shadow adding exclusions to top pom's,
+	// we need to initialize a new map for each new artifact
+	// See `exclusions in child` test for more information
+	exclusions := map[string]struct{}{}
+	if ex != nil {
+		exclusions = maps.Clone(ex)
 	}
 	for _, e := range d.Exclusions.Exclusion {
 		exclusions[fmt.Sprintf("%s:%s", e.GroupID, e.ArtifactID)] = struct{}{}

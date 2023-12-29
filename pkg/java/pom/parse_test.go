@@ -642,6 +642,51 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "exclusions in child",
+			inputFile: filepath.Join("testdata", "exclusions-in-child", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				{
+					ID:      "com.example:example:1.0.0",
+					Name:    "com.example:example",
+					Version: "1.0.0",
+				},
+				{
+					ID:       "org.example:example-api:1.7.30",
+					Name:     "org.example:example-api",
+					Version:  "1.7.30",
+					Indirect: true,
+					License:  "The Apache Software License, Version 2.0",
+				},
+				{
+					ID:       "org.example:example-dependency:1.2.3",
+					Name:     "org.example:example-dependency",
+					Version:  "1.2.3",
+					Indirect: true,
+				},
+				{
+					ID:      "org.example:example-exclusions:4.0.0",
+					Name:    "org.example:example-exclusions",
+					Version: "4.0.0",
+				},
+			},
+			wantDeps: []types.Dependency{
+				{
+					ID: "com.example:example:1.0.0",
+					DependsOn: []string{
+						"org.example:example-exclusions:4.0.0",
+					},
+				},
+				{
+					ID: "org.example:example-exclusions:4.0.0",
+					DependsOn: []string{
+						"org.example:example-api:1.7.30",
+						"org.example:example-dependency:1.2.3",
+					},
+				},
+			},
+		},
+		{
 			name:      "exclusions with wildcards",
 			inputFile: filepath.Join("testdata", "wildcard-exclusions", "pom.xml"),
 			local:     true,
