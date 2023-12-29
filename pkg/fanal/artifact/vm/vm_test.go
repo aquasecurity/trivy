@@ -121,7 +121,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID:   "sha256:aeadb167e49ab2616738bc1d8b39f742968bef78baed984cf5801c678d6750ce",
+					BlobID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 					BlobInfo: expectedBlobInfo,
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -129,7 +129,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:aeadb167e49ab2616738bc1d8b39f742968bef78baed984cf5801c678d6750ce",
+						ArtifactID: "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -139,9 +139,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "rawdata.img",
 				Type: types.ArtifactVM,
-				ID:   "sha256:aeadb167e49ab2616738bc1d8b39f742968bef78baed984cf5801c678d6750ce",
+				ID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 				BlobIDs: []string{
-					"sha256:aeadb167e49ab2616738bc1d8b39f742968bef78baed984cf5801c678d6750ce",
+					"sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
 				},
 			},
 		},

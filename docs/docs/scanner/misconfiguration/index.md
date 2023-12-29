@@ -315,6 +315,15 @@ Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
+### Enabling a subset of misconfiguration scanners
+It's possible to only enable certain misconfiguration scanners if you prefer. You can do so by passing the `--misconfig-scanners` option.
+This flag takes a comma-separated list of configuration scanner types.
+```bash
+trivy config --misconfig-scanners=terraform,dockerfile .
+```
+
+Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
+
 ### Pass custom policies
 You can pass policy files or directories including your custom policies through `--policy` option.
 This can be repeated for specifying multiple files or directories.

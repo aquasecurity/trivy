@@ -59,8 +59,8 @@ func (r *Report) Failed() bool {
 }
 
 // Write writes the results in the give format
-func Write(rep *Report, opt flag.Options, fromCache bool) error {
-	output, cleanup, err := opt.OutputWriter()
+func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) error {
+	output, cleanup, err := opt.OutputWriter(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to create output file: %w", err)
 	}
@@ -71,8 +71,6 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	}
 
 	var filtered []types.Result
-
-	ctx := context.Background()
 
 	// filter results
 	for _, resultsAtTime := range rep.Results {
@@ -137,7 +135,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		return nil
 	default:
-		return pkgReport.Write(base, opt)
+		return pkgReport.Write(ctx, base, opt)
 	}
 }
 

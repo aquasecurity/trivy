@@ -193,7 +193,7 @@ type ArtifactCachePutBlobExpectation struct {
 	Returns ArtifactCachePutBlobReturns
 }
 
-func (_m *MockArtifactCache) ApplyPutBlobExpectation(e ArtifactCachePutBlobExpectation) {
+func (_m *MockArtifactCache) ApplyPutBlobExpectation(e ArtifactCachePutBlobExpectation) *mock.Call {
 	var args []interface{}
 	if e.Args.BlobIDAnything {
 		args = append(args, mock.Anything)
@@ -205,7 +205,8 @@ func (_m *MockArtifactCache) ApplyPutBlobExpectation(e ArtifactCachePutBlobExpec
 	} else {
 		args = append(args, e.Args.BlobInfo)
 	}
-	_m.On("PutBlob", args...).Return(e.Returns.Err)
+	return _m.On("PutBlob", args...).Return(e.Returns.Err)
+	//return _m.On("PutBlob", mock.AnythingOfType("string"), mock.Anything).Return(e.Returns.Err)
 }
 
 func (_m *MockArtifactCache) ApplyPutBlobExpectations(expectations []ArtifactCachePutBlobExpectation) {

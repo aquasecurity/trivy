@@ -202,7 +202,7 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 		}
 
 		// Skip unsupported package types
-		if pkgURL.Class() == types.ClassUnknown {
+		if purl.Class(pkgURL) == types.ClassUnknown {
 			continue
 		}
 		pkgs = append(pkgs, *pkg)
@@ -290,11 +290,11 @@ func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Applica
 			return nil, nil, xerrors.Errorf("failed to parse the component: %w", err)
 		}
 
-		switch pkgURL.Class() {
+		switch purl.Class(pkgURL) {
 		case types.ClassOSPkg:
 			osPkgMap[pkgURL.Type] = append(osPkgMap[pkgURL.Type], *pkg)
 		case types.ClassLangPkg:
-			langType := pkgURL.LangType()
+			langType := purl.LangType(pkgURL)
 			langPkgMap[langType] = append(langPkgMap[langType], *pkg)
 		}
 	}
@@ -337,7 +337,7 @@ func toApplication(component cdx.Component) *ftypes.Application {
 	}
 }
 
-func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, error) {
+func toPackage(component cdx.Component) (*ftypes.PackageURL, *ftypes.Package, error) {
 	if component.PackageURL == "" {
 		log.Logger.Warnf("Skip the component (BOM-Ref: %s) as the PURL is empty", component.BOMRef)
 		return nil, nil, ErrPURLEmpty
@@ -347,15 +347,11 @@ func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, erro
 		return nil, nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
 
-	pkg := p.Package()
+	pkg := purl.ToPackage(p)
 	// Trivy's marshall loses case-sensitivity in PURL used in SBOM for packages (Go, Npm, PyPI),
 	// so we have to use an original package name
-	pkg.Name = getPackageName(p.Type, pkg.Name, component)
-	pkg.Ref = component.BOMRef
-
-	for _, license := range lo.FromPtr(component.Licenses) {
-		pkg.Licenses = append(pkg.Licenses, license.Expression)
-	}
+	pkg.Name = packageName(p.Type, pkg.Name, component)
+	pkg.Licenses = parsePackageLicenses(component.Licenses)
 
 	for key, value := range core.UnmarshalProperties(component.Properties) {
 		switch key {
@@ -383,23 +379,35 @@ func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, erro
 		}
 	}
 
-	if p.Class() == types.ClassOSPkg {
-		// Fill source package information for components in third-party SBOMs .
-		if pkg.SrcName == "" {
-			pkg.SrcName = pkg.Name
-		}
-		if pkg.SrcVersion == "" {
-			pkg.SrcVersion = pkg.Version
-		}
-		if pkg.SrcRelease == "" {
-			pkg.SrcRelease = pkg.Release
-		}
-		if pkg.SrcEpoch == 0 {
-			pkg.SrcEpoch = pkg.Epoch
-		}
+	if pkg.FilePath != "" {
+		p.FilePath = pkg.FilePath
+	}
+	pkg.Identifier = ftypes.PkgIdentifier{
+		PURL:   p,
+		BOMRef: component.BOMRef,
+	}
+
+	if purl.Class(p) == types.ClassOSPkg {
+		fillSrcPkg(pkg)
 	}
 
 	return p, pkg, nil
+}
+
+func fillSrcPkg(pkg *ftypes.Package) {
+	// Fill source package information for components in third-party SBOMs .
+	if pkg.SrcName == "" {
+		pkg.SrcName = pkg.Name
+	}
+	if pkg.SrcVersion == "" {
+		pkg.SrcVersion = pkg.Version
+	}
+	if pkg.SrcRelease == "" {
+		pkg.SrcRelease = pkg.Release
+	}
+	if pkg.SrcEpoch == 0 {
+		pkg.SrcEpoch = pkg.Epoch
+	}
 }
 
 func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
@@ -413,7 +421,7 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 	}
 }
 
-func getPackageName(typ, pkgNameFromPurl string, component cdx.Component) string {
+func packageName(typ, pkgNameFromPurl string, component cdx.Component) string {
 	if typ == packageurl.TypeMaven {
 		// Jar uses `Group` field for `GroupID`
 		if component.Group != "" {
@@ -424,4 +432,31 @@ func getPackageName(typ, pkgNameFromPurl string, component cdx.Component) string
 		}
 	}
 	return component.Name
+}
+
+// parsePackageLicenses checks all supported license fields and returns a list of licenses.
+// https://cyclonedx.org/docs/1.5/json/#components_items_licenses
+func parsePackageLicenses(l *cdx.Licenses) []string {
+	var licenses []string
+	for _, license := range lo.FromPtr(l) {
+		if license.License != nil {
+			// Trivy uses `Name` field to marshal licenses
+			if license.License.Name != "" {
+				licenses = append(licenses, license.License.Name)
+				continue
+			}
+
+			if license.License.ID != "" {
+				licenses = append(licenses, license.License.ID)
+				continue
+			}
+		}
+
+		if license.Expression != "" {
+			licenses = append(licenses, license.Expression)
+			continue
+		}
+
+	}
+	return licenses
 }

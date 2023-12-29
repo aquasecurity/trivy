@@ -3,6 +3,7 @@ package flag
 import (
 	"strings"
 
+	"github.com/mattn/go-shellwords"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -86,6 +87,12 @@ var (
 		Default:    "",
 		Usage:      "output file name",
 	}
+	OutputPluginArgFlag = Flag{
+		Name:       "output-plugin-arg",
+		ConfigName: "output-plugin-arg",
+		Default:    "",
+		Usage:      "[EXPERIMENTAL] output plugin arguments",
+	}
 	SeverityFlag = Flag{
 		Name:       "severity",
 		ConfigName: "severity",
@@ -105,49 +112,52 @@ var (
 // ReportFlagGroup composes common printer flag structs
 // used for commands requiring reporting logic.
 type ReportFlagGroup struct {
-	Format         *Flag
-	ReportFormat   *Flag
-	Template       *Flag
-	DependencyTree *Flag
-	ListAllPkgs    *Flag
-	IgnoreFile     *Flag
-	IgnorePolicy   *Flag
-	ExitCode       *Flag
-	ExitOnEOL      *Flag
-	Output         *Flag
-	Severity       *Flag
-	Compliance     *Flag
+	Format          *Flag
+	ReportFormat    *Flag
+	Template        *Flag
+	DependencyTree  *Flag
+	ListAllPkgs     *Flag
+	IgnoreFile      *Flag
+	IgnorePolicy    *Flag
+	ExitCode        *Flag
+	ExitOnEOL       *Flag
+	Output          *Flag
+	OutputPluginArg *Flag
+	Severity        *Flag
+	Compliance      *Flag
 }
 
 type ReportOptions struct {
-	Format         types.Format
-	ReportFormat   string
-	Template       string
-	DependencyTree bool
-	ListAllPkgs    bool
-	IgnoreFile     string
-	ExitCode       int
-	ExitOnEOL      int
-	IgnorePolicy   string
-	Output         string
-	Severities     []dbTypes.Severity
-	Compliance     spec.ComplianceSpec
+	Format           types.Format
+	ReportFormat     string
+	Template         string
+	DependencyTree   bool
+	ListAllPkgs      bool
+	IgnoreFile       string
+	ExitCode         int
+	ExitOnEOL        int
+	IgnorePolicy     string
+	Output           string
+	OutputPluginArgs []string
+	Severities       []dbTypes.Severity
+	Compliance       spec.ComplianceSpec
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
 	return &ReportFlagGroup{
-		Format:         &FormatFlag,
-		ReportFormat:   &ReportFormatFlag,
-		Template:       &TemplateFlag,
-		DependencyTree: &DependencyTreeFlag,
-		ListAllPkgs:    &ListAllPkgsFlag,
-		IgnoreFile:     &IgnoreFileFlag,
-		IgnorePolicy:   &IgnorePolicyFlag,
-		ExitCode:       &ExitCodeFlag,
-		ExitOnEOL:      &ExitOnEOLFlag,
-		Output:         &OutputFlag,
-		Severity:       &SeverityFlag,
-		Compliance:     &ComplianceFlag,
+		Format:          &FormatFlag,
+		ReportFormat:    &ReportFormatFlag,
+		Template:        &TemplateFlag,
+		DependencyTree:  &DependencyTreeFlag,
+		ListAllPkgs:     &ListAllPkgsFlag,
+		IgnoreFile:      &IgnoreFileFlag,
+		IgnorePolicy:    &IgnorePolicyFlag,
+		ExitCode:        &ExitCodeFlag,
+		ExitOnEOL:       &ExitOnEOLFlag,
+		Output:          &OutputFlag,
+		OutputPluginArg: &OutputPluginArgFlag,
+		Severity:        &SeverityFlag,
+		Compliance:      &ComplianceFlag,
 	}
 }
 
@@ -167,6 +177,7 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.ExitCode,
 		f.ExitOnEOL,
 		f.Output,
+		f.OutputPluginArg,
 		f.Severity,
 		f.Compliance,
 	}
@@ -216,19 +227,28 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
 	}
 
+	var outputPluginArgs []string
+	if arg := getString(f.OutputPluginArg); arg != "" {
+		outputPluginArgs, err = shellwords.Parse(arg)
+		if err != nil {
+			return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
+		}
+	}
+
 	return ReportOptions{
-		Format:         format,
-		ReportFormat:   getString(f.ReportFormat),
-		Template:       template,
-		DependencyTree: dependencyTree,
-		ListAllPkgs:    listAllPkgs,
-		IgnoreFile:     getString(f.IgnoreFile),
-		ExitCode:       getInt(f.ExitCode),
-		ExitOnEOL:      getInt(f.ExitOnEOL),
-		IgnorePolicy:   getString(f.IgnorePolicy),
-		Output:         getString(f.Output),
-		Severities:     toSeverity(getStringSlice(f.Severity)),
-		Compliance:     cs,
+		Format:           format,
+		ReportFormat:     getString(f.ReportFormat),
+		Template:         template,
+		DependencyTree:   dependencyTree,
+		ListAllPkgs:      listAllPkgs,
+		IgnoreFile:       getString(f.IgnoreFile),
+		ExitCode:         getInt(f.ExitCode),
+		ExitOnEOL:        getInt(f.ExitOnEOL),
+		IgnorePolicy:     getString(f.IgnorePolicy),
+		Output:           getString(f.Output),
+		OutputPluginArgs: outputPluginArgs,
+		Severities:       toSeverity(getStringSlice(f.Severity)),
+		Compliance:       cs,
 	}, nil
 }
 

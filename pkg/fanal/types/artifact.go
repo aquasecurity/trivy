@@ -62,25 +62,24 @@ type Layer struct {
 }
 
 type Package struct {
-	ID         string   `json:",omitempty"`
-	Name       string   `json:",omitempty"`
-	Version    string   `json:",omitempty"`
-	Release    string   `json:",omitempty"`
-	Epoch      int      `json:",omitempty"`
-	Arch       string   `json:",omitempty"`
-	Dev        bool     `json:",omitempty"`
-	SrcName    string   `json:",omitempty"`
-	SrcVersion string   `json:",omitempty"`
-	SrcRelease string   `json:",omitempty"`
-	SrcEpoch   int      `json:",omitempty"`
-	Licenses   []string `json:",omitempty"`
-	Maintainer string   `json:",omitempty"`
+	ID         string        `json:",omitempty"`
+	Name       string        `json:",omitempty"`
+	Identifier PkgIdentifier `json:",omitempty"`
+	Version    string        `json:",omitempty"`
+	Release    string        `json:",omitempty"`
+	Epoch      int           `json:",omitempty"`
+	Arch       string        `json:",omitempty"`
+	Dev        bool          `json:",omitempty"`
+	SrcName    string        `json:",omitempty"`
+	SrcVersion string        `json:",omitempty"`
+	SrcRelease string        `json:",omitempty"`
+	SrcEpoch   int           `json:",omitempty"`
+	Licenses   []string      `json:",omitempty"`
+	Maintainer string        `json:",omitempty"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
-
-	Ref      string `json:",omitempty"` // identifier which can be used to reference the component elsewhere
-	Indirect bool   `json:",omitempty"` // this package is direct dependency of the project or not
+	Indirect        bool       `json:",omitempty"` // this package is direct dependency of the project or not
 
 	// Dependencies of this package
 	// Note:　it may have interdependencies, which may lead to infinite loops.
@@ -99,6 +98,26 @@ type Package struct {
 
 	// Files installed by the package
 	InstalledFiles []string `json:",omitempty"`
+}
+
+// PkgIdentifier represents a software identifiers in one of more of the supported formats.
+type PkgIdentifier struct {
+	PURL   *PackageURL `json:",omitempty"`
+	BOMRef string      `json:",omitempty"` // For CycloneDX
+}
+
+func (id *PkgIdentifier) Empty() bool {
+	return id.PURL == nil && id.BOMRef == ""
+}
+
+func (id *PkgIdentifier) Match(s string) bool {
+	switch {
+	case id.BOMRef == s:
+		return true
+	case id.PURL != nil && id.PURL.String() == s:
+		return true
+	}
+	return false
 }
 
 type Location struct {
