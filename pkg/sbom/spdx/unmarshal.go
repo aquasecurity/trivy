@@ -290,7 +290,6 @@ func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Pac
 			return nil, nil, xerrors.Errorf("failed to parse purl from string: %w", err)
 		}
 		pkg := purl.ToPackage(packageURL)
-		pkg.Ref = ref.Locator
 		pkg.Identifier = ftypes.PkgIdentifier{
 			PURL: packageURL,
 		}

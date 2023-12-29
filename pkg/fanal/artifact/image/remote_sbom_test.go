@@ -70,7 +70,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:754c66ef82bae2e07dc6e7a7bc42f078e1f48cbbc5b9124d18f1c18a48e1ad31",
+						BlobID: "sha256:5c9fad635c53ddafd1b5248fcd989b6c0f311c91a2fe2a206c7d67a715335fa1",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							OS: types.OS{
@@ -98,11 +98,11 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 														},
 													},
 												},
+												BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
 											},
 											SrcName:    "musl",
 											SrcVersion: "1.2.3-r0",
 											Licenses:   []string{"MIT"},
-											Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
 											Layer: types.Layer{
 												DiffID: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7",
 											},
@@ -121,9 +121,9 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:754c66ef82bae2e07dc6e7a7bc42f078e1f48cbbc5b9124d18f1c18a48e1ad31",
+				ID:   "sha256:5c9fad635c53ddafd1b5248fcd989b6c0f311c91a2fe2a206c7d67a715335fa1",
 				BlobIDs: []string{
-					"sha256:754c66ef82bae2e07dc6e7a7bc42f078e1f48cbbc5b9124d18f1c18a48e1ad31",
+					"sha256:5c9fad635c53ddafd1b5248fcd989b6c0f311c91a2fe2a206c7d67a715335fa1",
 				},
 			},
 		},
@@ -224,7 +224,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:c4e3bd56d4b5f9634c918d0953f7667928c2410e23bdacb299bfe5802217809a",
+						BlobID: "sha256:fb9379cfc2aeff911515f04ca04300a8c0609c8a2a19b4a3b05a984802fa44eb",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Applications: []types.Application{
@@ -243,8 +243,8 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 														Version:   "v1.0.0",
 													},
 												},
+												BOMRef: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
 											},
-											Ref: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
 										},
 										{
 											Name:    "golang.org/x/sync",
@@ -258,8 +258,8 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 														Version:   "v0.1.0",
 													},
 												},
+												BOMRef: "pkg:golang/golang.org/x/sync@v0.1.0",
 											},
-											Ref: "pkg:golang/golang.org/x/sync@v0.1.0",
 										},
 									},
 								},
@@ -271,9 +271,9 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: registry + "/test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:c4e3bd56d4b5f9634c918d0953f7667928c2410e23bdacb299bfe5802217809a",
+				ID:   "sha256:fb9379cfc2aeff911515f04ca04300a8c0609c8a2a19b4a3b05a984802fa44eb",
 				BlobIDs: []string{
-					"sha256:c4e3bd56d4b5f9634c918d0953f7667928c2410e23bdacb299bfe5802217809a",
+					"sha256:fb9379cfc2aeff911515f04ca04300a8c0609c8a2a19b4a3b05a984802fa44eb",
 				},
 			},
 		},

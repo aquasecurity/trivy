@@ -128,23 +128,13 @@ func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) b
 				zap.Int("version", link.Version()))
 			continue
 		}
-		if v.matchRef(vuln, link.Reference()) && (stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
+		if vuln.PkgIdentifier.Match(link.Reference()) && (stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
 			v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
 				zap.String("status", string(stmt.Status)), zap.String("justification", stmt.Justification))
 			return false
 		}
 	}
 	return true
-}
-
-func (v *CycloneDX) matchRef(vuln types.DetectedVulnerability, ref string) bool {
-	switch {
-	case vuln.PkgRef == ref: // BOM-Ref
-		return true
-	case vuln.PkgIdentifier.PURL != nil && vuln.PkgIdentifier.PURL.String() == ref: // PURL
-		return true
-	}
-	return false
 }
 
 func cdxStatus(s cdx.ImpactAnalysisState) Status {

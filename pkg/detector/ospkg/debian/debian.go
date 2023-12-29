@@ -103,7 +103,6 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				PkgName:          pkg.Name,
 				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     adv.FixedVersion,
-				PkgRef:           pkg.Ref,
 				PkgIdentifier:    pkg.Identifier,
 				Status:           adv.Status,
 				Layer:            pkg.Layer,

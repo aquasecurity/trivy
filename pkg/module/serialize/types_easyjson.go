@@ -1632,8 +1632,6 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 			out.SeveritySource = types2.SourceID(in.String())
 		case "PrimaryURL":
 			out.PrimaryURL = string(in.String())
-		case "PkgRef":
-			out.PkgRef = string(in.String())
 		case "DataSource":
 			if in.IsNull() {
 				in.Skip()
@@ -1906,16 +1904,6 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 			out.RawString(prefix)
 		}
 		out.String(string(in.PrimaryURL))
-	}
-	if in.PkgRef != "" {
-		const prefix string = ",\"PkgRef\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.PkgRef))
 	}
 	if in.DataSource != nil {
 		const prefix string = ",\"DataSource\":"
@@ -2258,6 +2246,8 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in *jlexer.L
 					in.AddError((*out.PURL).UnmarshalJSON(data))
 				}
 			}
+		case "BOMRef":
+			out.BOMRef = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -2277,6 +2267,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out *jwriter
 		first = false
 		out.RawString(prefix[1:])
 		out.Raw((*in.PURL).MarshalJSON())
+	}
+	if in.BOMRef != "" {
+		const prefix string = ",\"BOMRef\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.BOMRef))
 	}
 	out.RawByte('}')
 }
@@ -2362,8 +2362,6 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 			}
 		case "Indirect":
 			out.Indirect = bool(in.Bool())
-		case "Ref":
-			out.Ref = string(in.String())
 		case "DependsOn":
 			if in.IsNull() {
 				in.Skip()
@@ -2627,16 +2625,6 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 			out.RawString(prefix)
 		}
 		out.Bool(bool(in.Indirect))
-	}
-	if in.Ref != "" {
-		const prefix string = ",\"Ref\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Ref))
 	}
 	if len(in.DependsOn) != 0 {
 		const prefix string = ",\"DependsOn\":"

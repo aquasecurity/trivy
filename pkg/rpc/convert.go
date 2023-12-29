@@ -85,7 +85,8 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 		p = pkg.PURL.BOMRef() // Use BOMRef() instead of String() so that we won't lose file_path
 	}
 	return &common.PkgIdentifier{
-		Purl: p,
+		Purl:   p,
+		BomRef: pkg.BOMRef,
 	}
 }
 
@@ -217,16 +218,23 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 }
 
 func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier {
-	if pkg == nil || pkg.Purl == "" {
+	if pkg == nil {
 		return ftypes.PkgIdentifier{}
 	}
-	pu, err := purl.FromString(pkg.Purl)
-	if err != nil {
-		log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
+
+	pkgID := ftypes.PkgIdentifier{
+		BOMRef: pkg.BomRef,
 	}
-	return ftypes.PkgIdentifier{
-		PURL: pu,
+
+	if pkg.Purl != "" {
+		pu, err := purl.FromString(pkg.Purl)
+		if err != nil {
+			log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
+		}
+		pkgID.PURL = pu
 	}
+
+	return pkgID
 }
 
 // ConvertToRPCVulns returns common.Vulnerability

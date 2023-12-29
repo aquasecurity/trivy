@@ -81,14 +81,6 @@ type Package struct {
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
 	Indirect        bool       `json:",omitempty"` // this package is direct dependency of the project or not
 
-	// TO BE DEPRECATED - use Identifier instead
-	// Only used when scanning SBOM and contains the reference ID used in it.
-	// It could be PURL, UUID, etc.
-	// e.g.
-	//    - pkg:npm/acme/component@1.0.0
-	//    - b2a46a4b-8367-4bae-9820-95557cfe03a8
-	Ref string `json:",omitempty"`
-
 	// Dependencies of this package
 	// Note:　it may have interdependencies, which may lead to infinite loops.
 	DependsOn []string `json:",omitempty"`
@@ -110,12 +102,22 @@ type Package struct {
 
 // PkgIdentifier represents a software identifiers in one of more of the supported formats.
 type PkgIdentifier struct {
-	// PURL is a package URL
-	PURL *PackageURL `json:",omitempty"`
+	PURL   *PackageURL `json:",omitempty"`
+	BOMRef string      `json:",omitempty"` // For CycloneDX
 }
 
 func (id *PkgIdentifier) Empty() bool {
-	return id.PURL == nil
+	return id.PURL == nil && id.BOMRef == ""
+}
+
+func (id *PkgIdentifier) Match(s string) bool {
+	switch {
+	case id.BOMRef == s:
+		return true
+	case id.PURL != nil && id.PURL.String() == s:
+		return true
+	}
+	return false
 }
 
 type Location struct {
