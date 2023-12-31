@@ -83,7 +83,7 @@ require (
 	github.com/owenrumney/go-sarif/v2 v2.3.0
 	github.com/package-url/packageurl-go v0.1.2
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
-	github.com/samber/lo v1.38.1
+	github.com/samber/lo v1.39.0
 	github.com/saracen/walker v0.1.3
 	github.com/secure-systems-lab/go-securesystemslib v0.7.0
 	github.com/sigstore/rekor v1.2.2
