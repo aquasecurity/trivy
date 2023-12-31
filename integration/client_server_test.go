@@ -5,6 +5,7 @@ package integration
 import (
 	"context"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,17 +16,16 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	testcontainers "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 type csArgs struct {
 	Command           string
 	RemoteAddrOption  string
-	Format            string
+	Format            types.Format
 	TemplatePath      string
 	IgnoreUnfixed     bool
 	Severity          []string
@@ -266,19 +266,15 @@ func TestClientServer(t *testing.T) {
 
 	addr, cacheDir := setup(t, setupOptions{})
 
-	for _, c := range tests {
-		t.Run(c.name, func(t *testing.T) {
-			osArgs, outputFile := setupClient(t, c.args, addr, cacheDir, c.golden)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
-			if c.args.secretConfig != "" {
-				osArgs = append(osArgs, "--secret-config", c.args.secretConfig)
+			if tt.args.secretConfig != "" {
+				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
 			}
 
-			//
-			err := execute(osArgs)
-			require.NoError(t, err)
-
-			compareReports(t, c.golden, outputFile, nil)
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{})
 		})
 	}
 }
@@ -392,19 +388,9 @@ func TestClientServerWithFormat(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("AWS_REGION", "test-region")
 			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
-			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, tt.golden)
+			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
-			// Run Trivy client
-			err := execute(osArgs)
-			require.NoError(t, err)
-
-			want, err := os.ReadFile(tt.golden)
-			require.NoError(t, err)
-
-			got, err := os.ReadFile(outputFile)
-			require.NoError(t, err)
-
-			assert.EqualValues(t, string(want), string(got))
+			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{})
 		})
 	}
 }
@@ -428,22 +414,18 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 	addr, cacheDir := setup(t, setupOptions{})
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
-			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, tt.golden)
-
-			// Run Trivy client
-			err := execute(osArgs)
-			require.NoError(t, err)
-
-			compareCycloneDX(t, tt.golden, outputFile)
+			runTest(t, osArgs, tt.golden, "", types.FormatCycloneDX, runOptions{
+				fakeTime: time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+			})
 		})
 	}
 }
 
 func TestClientServerWithToken(t *testing.T) {
-	cases := []struct {
+	tests := []struct {
 		name    string
 		args    csArgs
 		golden  string
@@ -485,20 +467,11 @@ func TestClientServerWithToken(t *testing.T) {
 		tokenHeader: serverTokenHeader,
 	})
 
-	for _, c := range cases {
-		t.Run(c.name, func(t *testing.T) {
-			osArgs, outputFile := setupClient(t, c.args, addr, cacheDir, c.golden)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
-			// Run Trivy client
-			err := execute(osArgs)
-			if c.wantErr != "" {
-				require.Error(t, err, c.name)
-				assert.Contains(t, err.Error(), c.wantErr, c.name)
-				return
-			}
-
-			require.NoError(t, err, c.name)
-			compareReports(t, c.golden, outputFile, nil)
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{wantErr: tt.wantErr})
 		})
 	}
 }
@@ -521,25 +494,22 @@ func TestClientServerWithRedis(t *testing.T) {
 	golden := "testdata/alpine-39.json.golden"
 
 	t.Run("alpine 3.9", func(t *testing.T) {
-		osArgs, outputFile := setupClient(t, testArgs, addr, cacheDir, golden)
+		osArgs := setupClient(t, testArgs, addr, cacheDir, golden)
 
 		// Run Trivy client
-		err := execute(osArgs)
-		require.NoError(t, err)
-
-		compareReports(t, golden, outputFile, nil)
+		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{})
 	})
 
 	// Terminate the Redis container
 	require.NoError(t, redisC.Terminate(ctx))
 
 	t.Run("sad path", func(t *testing.T) {
-		osArgs, _ := setupClient(t, testArgs, addr, cacheDir, golden)
+		osArgs := setupClient(t, testArgs, addr, cacheDir, golden)
 
 		// Run Trivy client
-		err := execute(osArgs)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "unable to store cache")
+		runTest(t, osArgs, "", "", types.FormatJSON, runOptions{
+			wantErr: "unable to store cache",
+		})
 	})
 }
 
@@ -599,7 +569,7 @@ func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []stri
 	return osArgs
 }
 
-func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden string) ([]string, string) {
+func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden string) []string {
 	if c.Command == "" {
 		c.Command = "image"
 	}
@@ -616,7 +586,7 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 	}
 
 	if c.Format != "" {
-		osArgs = append(osArgs, "--format", c.Format)
+		osArgs = append(osArgs, "--format", string(c.Format))
 		if c.TemplatePath != "" {
 			osArgs = append(osArgs, "--template", c.TemplatePath)
 		}
@@ -646,19 +616,11 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 		osArgs = append(osArgs, "--input", c.Input)
 	}
 
-	// Set up the output file
-	outputFile := filepath.Join(t.TempDir(), "output.json")
-	if *update {
-		outputFile = golden
-	}
-
-	osArgs = append(osArgs, "--output", outputFile)
-
 	if c.Target != "" {
 		osArgs = append(osArgs, c.Target)
 	}
 
-	return osArgs, outputFile
+	return osArgs
 }
 
 func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, string) {
