@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strconv"
@@ -60,10 +61,10 @@ func NewCycloneDX(version string) *CycloneDX {
 	}
 }
 
-func (c *CycloneDX) Marshal(root *Component) *cdx.BOM {
+func (c *CycloneDX) Marshal(ctx context.Context, root *Component) *cdx.BOM {
 	bom := cdx.NewBOM()
 	bom.SerialNumber = uuid.New().URN()
-	bom.Metadata = c.Metadata()
+	bom.Metadata = c.Metadata(ctx)
 
 	components := make(map[string]*cdx.Component)
 	dependencies := make(map[string]*[]string)
@@ -180,9 +181,9 @@ func (c *CycloneDX) BOMRef(component *Component) string {
 	return component.PackageURL.BOMRef()
 }
 
-func (c *CycloneDX) Metadata() *cdx.Metadata {
+func (c *CycloneDX) Metadata(ctx context.Context) *cdx.Metadata {
 	return &cdx.Metadata{
-		Timestamp: clock.Now().UTC().Format(timeLayout),
+		Timestamp: clock.Now(ctx).UTC().Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
 				Vendor:  ToolVendor,

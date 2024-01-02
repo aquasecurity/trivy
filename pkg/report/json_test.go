@@ -85,7 +85,7 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			}
 
-			err := jw.Write(inputResults)
+			err := jw.Write(nil, inputResults)
 			assert.NoError(t, err)
 
 			var got types.Report

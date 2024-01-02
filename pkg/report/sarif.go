@@ -1,6 +1,7 @@
 package report
 
 import (
+	"context"
 	"fmt"
 	"html"
 	"io"
@@ -121,7 +122,7 @@ func getRuleIndex(id string, indexes map[string]int) int {
 	}
 }
 
-func (sw *SarifWriter) Write(report types.Report) error {
+func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
