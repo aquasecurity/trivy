@@ -113,7 +113,30 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		// Apply OS packages
 		for _, pkgInfo := range layer.PackageInfos {
 			key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
-			nestedMap.SetByString(key, sep, pkgInfo)
+			value, err := nestedMap.GetByString(key, sep)
+			if err != nil && err == nested.ErrNoSuchKey {
+				nestedMap.SetByString(key, sep, pkgInfo)
+				continue
+			}
+
+			if existPpkgInfo, ok := value.(ftypes.PackageInfo); ok {
+				mapPkgs := lo.KeyBy(existPpkgInfo.Packages, func(pkg ftypes.Package) string {
+					return pkg.ID
+				})
+
+				updatedPackages := make(ftypes.Packages, 0)
+				lo.ForEach(pkgInfo.Packages, func(pkg ftypes.Package, _ int) {
+					if mPkg, ok := mapPkgs[pkg.ID]; ok {
+						pkg.InstalledFiles = lo.Uniq(append(pkg.InstalledFiles, mPkg.InstalledFiles...))
+					}
+					updatedPackages = append(updatedPackages, pkg)
+				})
+
+				nestedMap.SetByString(key, sep, ftypes.PackageInfo{
+					FilePath: pkgInfo.FilePath,
+					Packages: updatedPackages,
+				})
+			}
 		}
 
 		// Apply language-specific packages
