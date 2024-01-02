@@ -106,6 +106,9 @@ type Package struct {
 
 	// Node dedupe match found
 	NodeDedupeMatchFound bool `json:"-"`
+
+	// Build ID
+	BuildID string `json:",omitempty"`
 }
 
 type Location struct {
