@@ -45,20 +45,6 @@ func newCycloneDX(cdxSBOM *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
 	}
 }
 
-func cdxStatus(s cdx.ImpactAnalysisState) Status {
-	switch s {
-	case cdx.IASResolved, cdx.IASResolvedWithPedigree:
-		return StatusFixed
-	case cdx.IASExploitable:
-		return StatusAffected
-	case cdx.IASInTriage:
-		return StatusUnderInvestigation
-	case cdx.IASFalsePositive, cdx.IASNotAffected:
-		return StatusNotAffected
-	}
-	return StatusUnknown
-}
-
 func (v *CycloneDX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulnerability {
 	return lo.Filter(vulns, func(vuln types.DetectedVulnerability, _ int) bool {
 		stmt, ok := lo.Find(v.statements, func(item Statement) bool {
@@ -84,12 +70,25 @@ func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) b
 				zap.Int("version", link.Version()))
 			continue
 		}
-		if vuln.PkgRef == link.Reference() &&
-			(stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
+		if vuln.PkgIdentifier.Match(link.Reference()) && (stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
 			v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
 				zap.String("status", string(stmt.Status)), zap.String("justification", stmt.Justification))
 			return false
 		}
 	}
 	return true
+}
+
+func cdxStatus(s cdx.ImpactAnalysisState) Status {
+	switch s {
+	case cdx.IASResolved, cdx.IASResolvedWithPedigree:
+		return StatusFixed
+	case cdx.IASExploitable:
+		return StatusAffected
+	case cdx.IASInTriage:
+		return StatusUnderInvestigation
+	case cdx.IASFalsePositive, cdx.IASNotAffected:
+		return StatusNotAffected
+	}
+	return StatusUnknown
 }

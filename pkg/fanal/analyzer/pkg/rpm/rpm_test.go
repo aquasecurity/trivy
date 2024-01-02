@@ -3,14 +3,15 @@ package rpm
 import (
 	"context"
 	"errors"
+	"os"
+	"strings"
+	"testing"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
-	"os"
-	"strings"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 )

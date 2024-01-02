@@ -394,7 +394,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 				}
 				ver := sanitizedVersion(c.Version)
 
-				imagePURL, err := purl.NewPackageURL(purl.TypeOCI, types.Metadata{
+				imagePURL, err := purl.New(purl.TypeOCI, types.Metadata{
 					RepoDigests: []string{
 						fmt.Sprintf("%s@%s", name, cDigest),
 					},
@@ -577,7 +577,7 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 								Namespace: k8sCoreComponentNamespace,
 							},
 						},
-						PackageURL: &purl.PackageURL{
+						PackageURL: &ftypes.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
 						},
 					},
@@ -601,7 +601,7 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 	return properties
 }
 
-func generatePURL(name, ver, nodeName string) *purl.PackageURL {
+func generatePURL(name, ver, nodeName string) *ftypes.PackageURL {
 
 	var namespace string
 	// Identify k8s distribution. An empty namespace means upstream.
@@ -611,7 +611,7 @@ func generatePURL(name, ver, nodeName string) *purl.PackageURL {
 		namespace = ""
 	}
 
-	return &purl.PackageURL{
+	return &ftypes.PackageURL{
 		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, ver, nil, ""),
 	}
 }

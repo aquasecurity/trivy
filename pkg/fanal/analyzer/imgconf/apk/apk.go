@@ -13,6 +13,7 @@ import (
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -56,11 +57,11 @@ type archive struct {
 }
 
 type provide struct {
-	SO      map[string]pkg // package which provides the shared object
-	Package map[string]pkg // package which provides the package
+	SO      map[string]apk // package which provides the shared object
+	Package map[string]apk // package which provides the package
 }
 
-type pkg struct {
+type apk struct {
 	Package  string
 	Versions version
 }
@@ -135,11 +136,8 @@ func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config *v1.Con
 			uniqPkgs[result.Name] = result
 		}
 	}
-	for _, pkg := range uniqPkgs {
-		packages = append(packages, pkg)
-	}
 
-	return packages
+	return maps.Values(uniqPkgs)
 }
 
 func (a alpineCmdAnalyzer) parseCommand(command string, envs map[string]string) (pkgs []string) {

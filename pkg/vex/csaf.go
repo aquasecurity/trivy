@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -32,16 +33,20 @@ func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulne
 			return true
 		}
 
-		return v.affected(found, vuln.PkgRef)
+		return v.affected(found, vuln.PkgIdentifier.PURL)
 	})
 }
 
-func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgRef string) bool {
+func (v *CSAF) affected(vuln *csaf.Vulnerability, purl *ftypes.PackageURL) bool {
+	if purl == nil {
+		return true
+	}
+
 	if vuln.ProductStatus != nil {
 		if vuln.ProductStatus.KnownNotAffected != nil {
 			for _, product := range *vuln.ProductStatus.KnownNotAffected {
 				notAffectedPURLs := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
-				if len(notAffectedPURLs) > 0 && slices.Contains(notAffectedPURLs, pkgRef) {
+				if len(notAffectedPURLs) > 0 && slices.Contains(notAffectedPURLs, purl.String()) {
 					v.logger.Infow(
 						"Filtered out the detected vulnerability",
 						zap.String("vulnerability-id", string(*vuln.CVE)),
@@ -55,7 +60,7 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgRef string) bool {
 		if vuln.ProductStatus.Fixed != nil {
 			for _, product := range *vuln.ProductStatus.Fixed {
 				fixedPURLS := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
-				if len(fixedPURLS) > 0 && slices.Contains(fixedPURLS, pkgRef) {
+				if len(fixedPURLS) > 0 && slices.Contains(fixedPURLS, purl.String()) {
 					v.logger.Infow(
 						"Filtered out the detected vulnerability",
 						zap.String("vulnerability-id", string(*vuln.CVE)),

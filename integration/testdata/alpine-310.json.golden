@@ -58,6 +58,9 @@
           "VulnerabilityID": "CVE-2019-1549",
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
           "Status": "fixed",
@@ -127,6 +130,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libcrypto1.1@1.1.1c-r0",
           "PkgName": "libcrypto1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
           "Status": "fixed",
@@ -206,6 +212,9 @@
           "VulnerabilityID": "CVE-2019-1549",
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
           "Status": "fixed",
@@ -275,6 +284,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libssl1.1@1.1.1c-r0",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+          },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
           "Status": "fixed",

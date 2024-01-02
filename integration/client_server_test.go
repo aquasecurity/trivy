@@ -539,7 +539,7 @@ func TestClientServerWithRedis(t *testing.T) {
 		// Run Trivy client
 		err := execute(osArgs)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "connect: connection refused")
+		assert.Contains(t, err.Error(), "unable to store cache")
 	})
 }
 
