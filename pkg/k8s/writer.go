@@ -38,7 +38,7 @@ func Write(ctx context.Context, k8sreport report.Report, option report.Option) e
 				ColumnHeading: report.ColumnHeading(option.Scanners, option.Components, r.Columns),
 			}
 
-			if err := writer.Write(r.Report); err != nil {
+			if err := writer.Write(ctx, r.Report); err != nil {
 				return err
 			}
 		}

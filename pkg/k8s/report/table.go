@@ -1,6 +1,7 @@
 package report
 
 import (
+	"context"
 	"io"
 	"sync"
 
@@ -43,7 +44,7 @@ func InfraColumns() []string {
 	return []string{InfraAssessmentColumn}
 }
 
-func (tw TableWriter) Write(report Report) error {
+func (tw TableWriter) Write(ctx context.Context, report Report) error {
 	switch tw.Report {
 	case AllReport:
 		t := pkgReport.Writer{
@@ -53,7 +54,7 @@ func (tw TableWriter) Write(report Report) error {
 		}
 		for _, r := range report.Resources {
 			if r.Report.Results.Failed() {
-				err := t.Write(nil, r.Report)
+				err := t.Write(ctx, r.Report)
 				if err != nil {
 					return err
 				}
