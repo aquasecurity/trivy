@@ -328,7 +328,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "@types/jsonstream@0.8.33",
+								ID:       "foo-json@0.8.33",
 								Name:     "@types/jsonstream",
 								Version:  "0.8.33",
 								Indirect: false,
@@ -360,7 +360,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "@types/uuid@9.0.7",
+								ID:       "foo-uuid@9.0.7",
 								Name:     "@types/uuid",
 								Version:  "9.0.7",
 								Indirect: false,
@@ -373,7 +373,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "debug@4.3.4",
+								ID:       "foo-debug@4.3.4",
 								Name:     "debug",
 								Version:  "4.3.4",
 								Indirect: false,
@@ -400,7 +400,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "ms@2.1.3",
+								ID:       "foo-ms@2.1.3",
 								Name:     "ms",
 								Version:  "2.1.3",
 								Indirect: false,
