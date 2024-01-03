@@ -1,6 +1,7 @@
 package report
 
 import (
+	"context"
 	"io"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -25,7 +26,7 @@ func NewCycloneDXWriter(output io.Writer, format cdx.BOMFileFormat, appVersion s
 	}
 }
 
-func (w CycloneDXWriter) Write(component *core.Component) error {
-	bom := w.marshaler.Marshal(component)
+func (w CycloneDXWriter) Write(ctx context.Context, component *core.Component) error {
+	bom := w.marshaler.Marshal(ctx, component)
 	return w.encoder.Encode(bom)
 }

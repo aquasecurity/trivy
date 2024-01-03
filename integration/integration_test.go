@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"io"
 	"net"
 	"os"
@@ -27,7 +28,6 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -43,8 +43,6 @@ func initDB(t *testing.T) string {
 	fixtureDir := filepath.Join("testdata", "fixtures", "db")
 	entries, err := os.ReadDir(fixtureDir)
 	require.NoError(t, err)
-
-	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 
 	var fixtures []string
 	for _, entry := range entries {
@@ -193,13 +191,16 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 }
 
 func execute(osArgs []string) error {
+	// Set a fake time
+	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+
 	// Setup CLI App
 	app := commands.NewApp()
 	app.SetOut(io.Discard)
+	app.SetArgs(osArgs)
 
 	// Run Trivy
-	app.SetArgs(osArgs)
-	return app.Execute()
+	return app.ExecuteContext(ctx)
 }
 
 func compareReports(t *testing.T, wantFile, gotFile string, override func(*types.Report)) {

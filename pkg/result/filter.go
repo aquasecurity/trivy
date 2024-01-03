@@ -40,7 +40,7 @@ func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
 		return xerrors.Errorf("VEX error: %w", err)
 	}
 
-	ignoreConf, err := getIgnoredFindings(opt.IgnoreFile)
+	ignoreConf, err := getIgnoredFindings(ctx, opt.IgnoreFile)
 	if err != nil {
 		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
 	}

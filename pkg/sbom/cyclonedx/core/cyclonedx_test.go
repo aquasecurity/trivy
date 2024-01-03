@@ -1,6 +1,7 @@
 package core_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -365,11 +366,11 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			marshaler := core.NewCycloneDX("dev")
-			got := marshaler.Marshal(tt.rootComponent)
+			got := marshaler.Marshal(ctx, tt.rootComponent)
 			assert.Equal(t, tt.want, got)
 		})
 	}
