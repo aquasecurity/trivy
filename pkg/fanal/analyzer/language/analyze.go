@@ -123,6 +123,7 @@ func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 			Locations: locs,
 			Digest:    d,
 			Warnings:  lib.Warnings,
+			BuildID:   lib.BuildID,
 		})
 	}
 
