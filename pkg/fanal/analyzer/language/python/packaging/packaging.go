@@ -146,7 +146,7 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application
 	return nil
 }
 
-func classifyLicense(dir string, licPath string, classifierConfidenceLevel float64, fsys fs.FS) (types.LicenseFindings, error) {
+func classifyLicense(dir, licPath string, classifierConfidenceLevel float64, fsys fs.FS) (types.LicenseFindings, error) {
 	// Note that fs.FS is always slashed regardless of the platform,
 	// and path.Join should be used rather than filepath.Join.
 	f, err := fsys.Open(path.Join(path.Dir(dir), licPath))
@@ -167,8 +167,8 @@ func classifyLicense(dir string, licPath string, classifierConfidenceLevel float
 	return l.Findings, nil
 }
 
-func (a packagingAnalyzer) parse(path string, r dio.ReadSeekerAt, checksum bool) (*types.Application, error) {
-	return language.ParsePackage(types.PythonPkg, path, r, a.pkgParser, checksum)
+func (a packagingAnalyzer) parse(filePath string, r dio.ReadSeekerAt, checksum bool) (*types.Application, error) {
+	return language.ParsePackage(types.PythonPkg, filePath, r, a.pkgParser, checksum)
 }
 
 func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSeekerAt, error) {
