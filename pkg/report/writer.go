@@ -39,7 +39,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 
 	// Compliance report
 	if option.Compliance.Spec.ID != "" {
-		return complianceWrite(report, option, output)
+		return complianceWrite(ctx, report, option, output)
 	}
 
 	var writer Writer
@@ -97,19 +97,19 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
 
-	if err = writer.Write(report); err != nil {
+	if err = writer.Write(ctx, report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 
 	return nil
 }
 
-func complianceWrite(report types.Report, opt flag.Options, output io.Writer) error {
+func complianceWrite(ctx context.Context, report types.Report, opt flag.Options, output io.Writer) error {
 	complianceReport, err := cr.BuildComplianceReport([]types.Results{report.Results}, opt.Compliance)
 	if err != nil {
 		return xerrors.Errorf("compliance report build error: %w", err)
 	}
-	return cr.Write(complianceReport, cr.Option{
+	return cr.Write(ctx, complianceReport, cr.Option{
 		Format:     opt.Format,
 		Report:     opt.ReportFormat,
 		Output:     output,
@@ -119,5 +119,5 @@ func complianceWrite(report types.Report, opt flag.Options, output io.Writer) er
 
 // Writer defines the result write operation
 type Writer interface {
-	Write(types.Report) error
+	Write(context.Context, types.Report) error
 }

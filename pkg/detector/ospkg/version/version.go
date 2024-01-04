@@ -1,11 +1,11 @@
 package version
 
 import (
+	"context"
 	"strings"
 	"time"
 
-	"k8s.io/utils/clock"
-
+	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -28,11 +28,11 @@ func Minor(osVer string) string {
 	return major + "." + minor
 }
 
-func Supported(c clock.Clock, eolDates map[string]time.Time, osFamily ftypes.OSType, osVer string) bool {
+func Supported(ctx context.Context, eolDates map[string]time.Time, osFamily ftypes.OSType, osVer string) bool {
 	eol, ok := eolDates[osVer]
 	if !ok {
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
 		return true // can be the latest version
 	}
-	return c.Now().Before(eol)
+	return clock.Now(ctx).Before(eol)
 }

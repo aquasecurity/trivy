@@ -354,7 +354,7 @@ package-lock.json
 					dbTypes.SeverityMedium,
 				},
 			}
-			err := writer.Write(types.Report{Results: tc.results})
+			err := writer.Write(nil, types.Report{Results: tc.results})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})

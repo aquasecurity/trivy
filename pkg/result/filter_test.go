@@ -1072,9 +1072,9 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
-			clock.SetFakeTime(t, fakeTime)
+			ctx := clock.With(context.Background(), fakeTime)
 
-			err := result.Filter(context.Background(), tt.args.report, result.FilterOption{
+			err := result.Filter(ctx, tt.args.report, result.FilterOption{
 				Severities:     tt.args.severities,
 				VEXPath:        tt.args.vexPath,
 				IgnoreStatuses: tt.args.ignoreStatuses,

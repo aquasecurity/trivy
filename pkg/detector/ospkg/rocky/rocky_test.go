@@ -1,12 +1,10 @@
 package rocky_test
 
 import (
+	"context"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -15,6 +13,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestScanner_Detect(t *testing.T) {
@@ -175,8 +175,9 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := rocky.NewScanner(rocky.WithClock(fake.NewFakeClock(tt.now)))
-			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			ctx := clock.With(context.Background(), tt.now)
+			s := rocky.NewScanner()
+			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}
