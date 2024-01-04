@@ -67,12 +67,19 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 		return filepath.Base(path) == "METADATA" || isEggFile(path)
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
+		rsa, ok := r.(dio.ReadSeekerAt)
+		if !ok {
+			return xerrors.New("invalid reader")
+		}
 
 		// .egg file is zip format and PKG-INFO needs to be extracted from the zip file.
 		if strings.HasSuffix(path, ".egg") {
-			info, _ := d.Info()
-			pkginfoInZip, err := a.analyzeEggZip(r, info.Size())
+			info, err := d.Info()
+			if err != nil {
+				return xerrors.Errorf("egg file error: %w", err)
+			}
+			pkginfoInZip, err := a.analyzeEggZip(rsa, info.Size())
 			if err != nil {
 				return xerrors.Errorf("egg analysis error: %w", err)
 			}
@@ -81,10 +88,10 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 			if pkginfoInZip == nil {
 				return nil
 			}
-
-			r = pkginfoInZip
+			rsa = pkginfoInZip
 		}
-		app, err := a.parse(path, r, input.Options.FileChecksum)
+
+		app, err := a.parse(path, rsa, input.Options.FileChecksum)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -108,10 +115,9 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 }
 
 func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application) error {
-
-	if len(app.Libraries) > 0 {
+	for i, lib := range app.Libraries {
 		var licenses []string
-		for _, lic := range app.Libraries[0].Licenses {
+		for _, lic := range lib.Licenses {
 			// Parser adds `file://` prefix to filepath from `License-File` field
 			// We need to read this file to find licenses
 			// Otherwise, this is the name of the license
@@ -119,23 +125,24 @@ func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application
 				licenses = append(licenses, lic)
 				continue
 			}
-			licenseFilePath := filepath.Base(strings.TrimPrefix(lic, "file://"))
+			licenseFilePath := path.Base(strings.TrimPrefix(lic, "file://"))
 
 			findings, err := classifyLicense(app.FilePath, licenseFilePath, a.licenseClassifierConfidenceLevel, fsys)
 			if err != nil {
 				return err
+			} else if len(findings) == 0 {
+				continue
 			}
-			// License found
-			if len(findings) > 0 {
-				foundLicenses := lo.Map(findings, func(finding types.LicenseFinding, _ int) string {
-					return finding.Name
-				})
-				licenses = append(licenses, foundLicenses...)
-			}
-		}
 
-		app.Libraries[0].Licenses = licenses
+			// License found
+			foundLicenses := lo.Map(findings, func(finding types.LicenseFinding, _ int) string {
+				return finding.Name
+			})
+			licenses = append(licenses, foundLicenses...)
+		}
+		app.Libraries[i].Licenses = licenses
 	}
+
 	return nil
 }
 
@@ -153,9 +160,7 @@ func classifyLicense(dir string, licPath string, classifierConfidenceLevel float
 	l, err := licensing.Classify(licPath, f, classifierConfidenceLevel)
 	if err != nil {
 		return nil, xerrors.Errorf("license classify error: %w", err)
-	}
-
-	if l == nil {
+	} else if l == nil {
 		return nil, nil
 	}
 
@@ -172,15 +177,16 @@ func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSee
 		return nil, xerrors.Errorf("zip reader error: %w", err)
 	}
 
-	finded, ok := lo.Find(zr.File, func(f *zip.File) bool {
+	found, ok := lo.Find(zr.File, func(f *zip.File) bool {
 		return isEggFile(f.Name)
 	})
-	if ok {
-		return a.open(finded)
+	if !ok {
+		return nil, nil
 	}
-	return nil, nil
+	return a.open(found)
 }
 
+// open reads the file content in the zip archive to make it seekable.
 func (a packagingAnalyzer) open(file *zip.File) (dio.ReadSeekerAt, error) {
 	f, err := file.Open()
 	if err != nil {
