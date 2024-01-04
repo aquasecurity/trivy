@@ -1068,8 +1068,11 @@ Summary Report for compliance: my-custom-spec
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
 			cacheContent: "testdata/s3andcloudtrailcache.json",
-			allServices:  []string{"s3", "cloudtrail"},
-			want:         expectedS3AndCloudTrailResult,
+			allServices: []string{
+				"s3",
+				"cloudtrail",
+			},
+			want: expectedS3AndCloudTrailResult,
 		},
 		{
 			name: "skip certain services and include specific services",
@@ -1087,7 +1090,10 @@ Summary Report for compliance: my-custom-spec
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
 			cacheContent: "testdata/s3andcloudtrailcache.json",
-			allServices:  []string{"s3", "cloudtrail"},
+			allServices: []string{
+				"s3",
+				"cloudtrail",
+			},
 			// we skip cloudtrail but still expect results from it as it is cached
 			want: expectedS3AndCloudTrailResult,
 		},
@@ -1096,16 +1102,23 @@ Summary Report for compliance: my-custom-spec
 			options: flag.Options{
 				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
-					Region:       "us-east-1",
-					SkipServices: []string{"cloudtrail", "iam"},
-					Account:      "12345678",
+					Region: "us-east-1",
+					SkipServices: []string{
+						"cloudtrail",
+						"iam",
+					},
+					Account: "12345678",
 				},
 				CloudOptions: flag.CloudOptions{
 					MaxCacheAge: time.Hour * 24 * 365 * 100,
 				},
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
-			allServices:  []string{"s3", "cloudtrail", "iam"},
+			allServices: []string{
+				"s3",
+				"cloudtrail",
+				"iam",
+			},
 			cacheContent: "testdata/s3onlycache.json",
 			want:         expectedS3ScanResult,
 		},
@@ -1129,7 +1142,7 @@ Summary Report for compliance: my-custom-spec
 		},
 	}
 
-	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			if test.allServices != nil {
@@ -1179,7 +1192,7 @@ Summary Report for compliance: my-custom-spec
 				require.NoError(t, os.WriteFile(cacheFile, cacheData, 0600))
 			}
 
-			err := Run(context.Background(), test.options)
+			err := Run(ctx, test.options)
 			if test.expectErr {
 				assert.Error(t, err)
 				return

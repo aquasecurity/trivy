@@ -1,6 +1,7 @@
 package spdx
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strconv"
@@ -106,7 +107,7 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 	return m
 }
 
-func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
+func (m *Marshaler) Marshal(ctx context.Context, r types.Report) (*spdx.Document, error) {
 	var relationShips []*spdx.Relationship
 	packages := make(map[spdx.ElementID]*spdx.Package)
 	pkgDownloadLocation := getPackageDownloadLocation(r.ArtifactType, r.ArtifactName)
@@ -186,7 +187,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 					CreatorType: "Tool",
 				},
 			},
-			Created: clock.Now().UTC().Format(time.RFC3339),
+			Created: clock.Now(ctx).UTC().Format(time.RFC3339),
 		},
 		Packages:      toPackages(packages),
 		Relationships: relationShips,

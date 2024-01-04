@@ -3,13 +3,13 @@ package scanner
 import (
 	"context"
 	"errors"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -19,7 +19,6 @@ func TestScanner_ScanArtifact(t *testing.T) {
 	type args struct {
 		options types.ScanOptions
 	}
-	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	tests := []struct {
 		name               string
 		args               args
@@ -192,6 +191,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 		t.Run(tt.name, func(t *testing.T) {
 			d := new(MockDriver)
 			d.ApplyScanExpectation(tt.scanExpectation)
@@ -200,7 +200,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			mockArtifact.ApplyInspectExpectation(tt.inspectExpectation)
 
 			s := NewScanner(d, mockArtifact)
-			got, err := s.ScanArtifact(context.Background(), tt.args.options)
+			got, err := s.ScanArtifact(ctx, tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
