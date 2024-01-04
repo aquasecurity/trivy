@@ -14,7 +14,6 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
@@ -58,7 +57,7 @@ func TestScanner_Scan(t *testing.T) {
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
 						OS: ftypes.OS{
-							Family: fos.Alpine,
+							Family: ftypes.Alpine,
 							Name:   "3.11",
 						},
 						Packages: []ftypes.Package{
@@ -94,13 +93,14 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-9999",
 							PkgName:          "musl",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
 							},
@@ -123,6 +123,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 							},
@@ -214,7 +215,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Packages: []ftypes.Package{
 						{
 							Name:       "ausl",
@@ -242,6 +243,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "musl",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
 							},
@@ -274,6 +276,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 							},
@@ -364,7 +367,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 					Packages: []ftypes.Package{
 						{
 							Name:       "ausl",
@@ -470,6 +473,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -550,6 +554,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2014-0081",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "xss",
@@ -580,6 +585,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "laravel/framework",
 							InstalledVersion: "6.0.0",
 							FixedVersion:     "8.22.1, 7.30.3, 6.20.12",
+							Status:           dbTypes.StatusFixed,
 						},
 					},
 				},
@@ -632,7 +638,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  types.ClassOSPkg,
-					Type:   fos.Alpine,
+					Type:   ftypes.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -644,6 +650,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 							},
@@ -721,6 +728,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -839,6 +847,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "4.0.2",
 							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
 							},
@@ -866,6 +875,7 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "laravel/framework",
 							InstalledVersion: "6.0.0",
 							FixedVersion:     "8.22.1, 7.30.3, 6.20.12",
+							Status:           dbTypes.StatusFixed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -1100,6 +1110,132 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			wantErr: "failed to scan application libraries",
+		},
+		{
+			name: "scan image history",
+			args: args{
+				target:   "alpine:latest",
+				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				options: types.ScanOptions{
+					ImageConfigScanners: types.Scanners{types.MisconfigScanner},
+				},
+			},
+			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				},
+				Returns: ApplierApplyLayersReturns{
+					Detail: ftypes.ArtifactDetail{
+						OS: ftypes.OS{
+							Family: ftypes.Alpine,
+							Name:   "3.11",
+						},
+						Misconfigurations: []ftypes.Misconfiguration{
+							{
+								FileType: ftypes.Dockerfile,
+								FilePath: "Dockerfile",
+								Successes: ftypes.MisconfResults{
+									{
+										Namespace: "builtin.dockerfile.DS001",
+										Query:     "data.builtin.dockerfile.DS001.deny",
+										Message:   "",
+										PolicyMetadata: ftypes.PolicyMetadata{
+											ID:                 "DS001",
+											AVDID:              "AVD-DS-0001",
+											Type:               "Dockerfile Security Check",
+											Title:              "':latest' tag used",
+											Description:        "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
+											Severity:           "MEDIUM",
+											RecommendedActions: "Add a tag to the image in the 'FROM' statement",
+										},
+										CauseMetadata: ftypes.CauseMetadata{
+											Provider: "Dockerfile",
+											Service:  "general",
+											Code:     ftypes.Code{},
+										},
+									},
+								},
+								Failures: ftypes.MisconfResults{
+									{
+										Namespace: "builtin.dockerfile.DS002",
+										Query:     "data.builtin.dockerfile.DS002.deny",
+										Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
+										PolicyMetadata: ftypes.PolicyMetadata{
+											ID:                 "DS002",
+											AVDID:              "AVD-DS-0002",
+											Type:               "Dockerfile Security Check",
+											Title:              "Image user should not be 'root'",
+											Description:        "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
+											Severity:           "HIGH",
+											RecommendedActions: "Add 'USER <non root user name>' line to the Dockerfile",
+										},
+										CauseMetadata: ftypes.CauseMetadata{
+											Provider: "Dockerfile",
+											Service:  "general",
+											Code:     ftypes.Code{},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantResults: types.Results{
+				{
+					Target: "Dockerfile",
+					Class:  types.ClassConfig,
+					Type:   ftypes.Dockerfile,
+					Misconfigurations: []types.DetectedMisconfiguration{
+						{
+							Namespace:   "builtin.dockerfile.DS002",
+							Query:       "data.builtin.dockerfile.DS002.deny",
+							Message:     "Specify at least 1 USER command in Dockerfile with non-root user as argument",
+							Type:        "Dockerfile Security Check",
+							ID:          "DS002",
+							AVDID:       "AVD-DS-0002",
+							Title:       "Image user should not be 'root'",
+							Description: "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
+							Severity:    "HIGH",
+							Resolution:  "Add 'USER <non root user name>' line to the Dockerfile",
+							Status:      types.StatusFailure,
+							PrimaryURL:  "https://avd.aquasec.com/misconfig/ds002",
+							References:  []string{"https://avd.aquasec.com/misconfig/ds002"},
+							CauseMetadata: ftypes.CauseMetadata{
+								Provider: "Dockerfile",
+								Service:  "general",
+								Code:     ftypes.Code{},
+							},
+						},
+						{
+							Namespace:   "builtin.dockerfile.DS001",
+							Query:       "data.builtin.dockerfile.DS001.deny",
+							Message:     "No issues found",
+							Type:        "Dockerfile Security Check",
+							ID:          "DS001",
+							AVDID:       "AVD-DS-0001",
+							Title:       "':latest' tag used",
+							Description: "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
+							Severity:    "MEDIUM",
+							Resolution:  "Add a tag to the image in the 'FROM' statement",
+							Status:      types.StatusPassed,
+							CauseMetadata: ftypes.CauseMetadata{
+								Provider: "Dockerfile",
+								Service:  "general",
+								Code:     ftypes.Code{},
+							},
+							PrimaryURL: "https://avd.aquasec.com/misconfig/ds001",
+							References: []string{"https://avd.aquasec.com/misconfig/ds001"},
+						},
+					},
+				},
+			},
+			wantOS: ftypes.OS{
+				Family: "alpine",
+				Name:   "3.11",
+				Eosl:   false,
+			},
 		},
 	}
 

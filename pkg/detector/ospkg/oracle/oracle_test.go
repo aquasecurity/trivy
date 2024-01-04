@@ -21,7 +21,7 @@ import (
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	vectors := map[string]struct {
 		clock     clock.Clock
-		osFamily  string
+		osFamily  ftypes.OSType
 		osVersion string
 		expected  bool
 	}{
@@ -73,11 +73,11 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			osVersion: "8",
 			expected:  false,
 		},
-		"unknown": {
+		"latest": {
 			clock:     clocktesting.NewFakeClock(time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC)),
 			osFamily:  "oracle",
-			osVersion: "unknown",
-			expected:  false,
+			osVersion: "latest",
+			expected:  true,
 		},
 	}
 
@@ -109,8 +109,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "detected",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "detected",
+			fixtures: []string{
+				"testdata/fixtures/oracle7.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -140,8 +143,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "without ksplice",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "without ksplice",
+			fixtures: []string{
+				"testdata/fixtures/oracle7.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -159,8 +165,11 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "the installed version has ksplice2",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "the installed version has ksplice2",
+			fixtures: []string{
+				"testdata/fixtures/oracle7.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -180,8 +189,11 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "with ksplice",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "with ksplice",
+			fixtures: []string{
+				"testdata/fixtures/oracle7.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -213,8 +225,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "malformed",
-			fixtures: []string{"testdata/fixtures/invalid-type.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "malformed",
+			fixtures: []string{
+				"testdata/fixtures/invalid-type.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{

@@ -9,6 +9,7 @@ import (
 	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alma"
+	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -30,9 +31,9 @@ type options struct {
 
 type option func(*options)
 
-func WithClock(clock clock.Clock) option {
+func WithClock(c clock.Clock) option {
 	return func(opts *options) {
-		opts.clock = clock
+		opts.clock = c
 	}
 }
 
@@ -60,9 +61,8 @@ func NewScanner(opts ...option) *Scanner {
 // Detect vulnerabilities in package using AlmaLinux scanner
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting AlmaLinux vulnerabilities...")
-	if strings.Count(osVer, ".") > 0 {
-		osVer = osVer[:strings.Index(osVer, ".")]
-	}
+
+	osVer = osver.Major(osVer)
 	log.Logger.Debugf("AlmaLinux: os version: %s", osVer)
 	log.Logger.Debugf("AlmaLinux: the number of packages: %d", len(pkgs))
 
@@ -81,7 +81,6 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
-
 		for _, adv := range advisories {
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 			if installedVersion.LessThan(fixedVersion) {
@@ -91,7 +90,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
 					FixedVersion:     fixedVersion.String(),
-					PkgRef:           pkg.Ref,
+					PkgIdentifier:    pkg.Identifier,
 					Layer:            pkg.Layer,
 					DataSource:       adv.DataSource,
 					Custom:           adv.Custom,
@@ -107,19 +106,9 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	return vulns, nil
 }
 
-// IsSupportedVersion checks the OSFamily can be scanned using AlmaLinux scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	if strings.Count(osVer, ".") > 0 {
-		osVer = osVer[:strings.Index(osVer, ".")]
-	}
-
-	eol, ok := eolDates[osVer]
-	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
-	}
-
-	return s.clock.Now().Before(eol)
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(s.clock, eolDates, osFamily, osver.Major(osVer))
 }
 
 func addModularNamespace(name, label string) string {

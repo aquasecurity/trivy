@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/tml"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -58,12 +59,12 @@ func (r *Report) Failed() bool {
 }
 
 // Write writes the results in the give format
-func Write(rep *Report, opt flag.Options, fromCache bool) error {
-	output, err := opt.OutputWriter()
+func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) error {
+	output, cleanup, err := opt.OutputWriter(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to create output file: %w", err)
 	}
-	defer output.Close()
+	defer cleanup()
 
 	if opt.Compliance.Spec.ID != "" {
 		return writeCompliance(rep, opt, output)
@@ -71,13 +72,11 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 	var filtered []types.Result
 
-	ctx := context.Background()
-
 	// filter results
 	for _, resultsAtTime := range rep.Results {
 		for _, res := range resultsAtTime.Results {
 			resCopy := res
-			if err := result.FilterResult(ctx, &resCopy, result.FilterOption{
+			if err := result.FilterResult(ctx, &resCopy, result.IgnoreConfig{}, result.FilterOption{
 				Severities:         opt.Severities,
 				IncludeNonFailures: opt.IncludeNonFailures,
 			}); err != nil {
@@ -94,6 +93,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	})
 
 	base := types.Report{
+		CreatedAt:    clock.Now(),
 		ArtifactName: rep.AccountID,
 		ArtifactType: ftypes.ArtifactAWSAccount,
 		Results:      filtered,
@@ -104,7 +104,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		// ensure color/formatting is disabled for pipes/non-pty
 		var useANSI bool
-		if opt.Output == "" {
+		if output == os.Stdout {
 			if o, err := os.Stdout.Stat(); err == nil {
 				useANSI = (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 			}
@@ -135,7 +135,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		return nil
 	default:
-		return pkgReport.Write(base, opt)
+		return pkgReport.Write(ctx, base, opt)
 	}
 }
 

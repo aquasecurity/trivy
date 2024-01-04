@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
@@ -20,7 +22,7 @@ import (
 )
 
 // NewDriver returns a driver according to the library type
-func NewDriver(libType string) (Driver, bool) {
+func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	var ecosystem dbTypes.Ecosystem
 	var comparer compare.Comparer
 
@@ -43,7 +45,7 @@ func NewDriver(libType string) (Driver, bool) {
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
 		ecosystem = vulnerability.Npm
 		comparer = npm.Comparer{}
-	case ftypes.NuGet, ftypes.DotNetCore:
+	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
 		ecosystem = vulnerability.NuGet
 		comparer = compare.GenericComparer{}
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
@@ -60,12 +62,25 @@ func NewDriver(libType string) (Driver, bool) {
 		// Only semver can be used for version ranges
 		// https://docs.conan.io/en/latest/versioning/version_ranges.html
 		comparer = compare.GenericComparer{}
+	case ftypes.Swift:
+		// Swift uses semver
+		// https://www.swift.org/package-manager/#importing-dependencies
+		ecosystem = vulnerability.Swift
+		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
-		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
-		return Driver{}, false
+		// CocoaPods uses RubyGems version specifiers
+		// https://guides.cocoapods.org/making/making-a-cocoapod.html#cocoapods-versioning-specifics
+		ecosystem = vulnerability.Cocoapods
+		comparer = rubygems.Comparer{}
 	case ftypes.CondaPkg:
 		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, false
+	case ftypes.Bitnami:
+		ecosystem = vulnerability.Bitnami
+		comparer = bitnami.Comparer{}
+	case ftypes.K8sUpstream:
+		ecosystem = vulnerability.Kubernetes
+		comparer = compare.GenericComparer{}
 	default:
 		log.Logger.Warnf("The %q library type is not supported for vulnerability scanning", libType)
 		return Driver{}, false
@@ -123,7 +138,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 
 func createFixedVersions(advisory dbTypes.Advisory) string {
 	if len(advisory.PatchedVersions) != 0 {
-		return strings.Join(advisory.PatchedVersions, ", ")
+		return joinFixedVersions(advisory.PatchedVersions)
 	}
 
 	var fixedVersions []string
@@ -136,5 +151,9 @@ func createFixedVersions(advisory dbTypes.Advisory) string {
 			}
 		}
 	}
-	return strings.Join(fixedVersions, ", ")
+	return joinFixedVersions(fixedVersions)
+}
+
+func joinFixedVersions(fixedVersions []string) string {
+	return strings.Join(lo.Uniq(fixedVersions), ", ")
 }

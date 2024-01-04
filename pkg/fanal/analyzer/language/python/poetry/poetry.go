@@ -3,13 +3,13 @@ package poetry
 import (
 	"context"
 	"errors"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/python/poetry"
 	"github.com/aquasecurity/go-dep-parser/pkg/python/pyproject"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -45,7 +45,7 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return filepath.Base(path) == types.PoetryLock
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		// Parse poetry.lock
 		app, err := a.parsePoetryLock(path, r)
 		if err != nil {
@@ -84,7 +84,7 @@ func (a poetryAnalyzer) Version() int {
 	return version
 }
 
-func (a poetryAnalyzer) parsePoetryLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
+func (a poetryAnalyzer) parsePoetryLock(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Poetry, path, r, a.lockParser)
 }
 

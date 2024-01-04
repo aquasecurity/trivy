@@ -112,8 +112,9 @@ scan:
   # Default depends on subcommand
   scanners:
     - vuln
-    - config
+    - misconfig
     - secret
+    - license
 ```
 
 ## Cache Options
@@ -265,6 +266,12 @@ misconfiguration:
   # Same as '--include-non-failures'
   # Default is false
   include-non-failures: false
+  
+  # Same as '--miconfig-scanners'
+  # Default is all scanners
+  scanners:
+    - dockerfile
+    - terraform
 
   # helm value override configurations
   # set individual values

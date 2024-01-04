@@ -8,9 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_pomAnalyzer_Analyze(t *testing.T) {
@@ -31,6 +30,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy/pom.xml",
 						Libraries: types.Packages{
 							{
+								ID:       "com.example:example:1.0.0",
 								Name:     "com.example:example",
 								Version:  "1.0.0",
 								Licenses: []string{"Apache-2.0"},
@@ -51,6 +51,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "pom.xml",
 						Libraries: types.Packages{
 							{
+								ID:       "com.example:example:1.0.0",
 								Name:     "com.example:example",
 								Version:  "1.0.0",
 								Licenses: []string{"Apache-2.0"},
@@ -70,6 +71,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/requirements/pom.xml",
 						Libraries: types.Packages{
 							{
+								ID:       "com.example:example:2.0.0",
 								Name:     "com.example:example",
 								Version:  "2.0.0",
 								Licenses: []string{"Apache-2.0"},

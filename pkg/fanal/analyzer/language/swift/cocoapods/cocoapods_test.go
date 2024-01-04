@@ -5,10 +5,11 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
@@ -27,37 +28,37 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy.lock",
 						Libraries: types.Packages{
 							{
-								ID:      "AppCenter/4.2.0",
+								ID:      "AppCenter@4.2.0",
 								Name:    "AppCenter",
 								Version: "4.2.0",
 								DependsOn: []string{
-									"AppCenter/Analytics/4.2.0",
-									"AppCenter/Crashes/4.2.0",
+									"AppCenter/Analytics@4.2.0",
+									"AppCenter/Crashes@4.2.0",
 								},
 							},
 							{
-								ID:      "AppCenter/Analytics/4.2.0",
+								ID:      "AppCenter/Analytics@4.2.0",
 								Name:    "AppCenter/Analytics",
 								Version: "4.2.0",
 								DependsOn: []string{
-									"AppCenter/Core/4.2.0",
+									"AppCenter/Core@4.2.0",
 								},
 							},
 							{
-								ID:      "AppCenter/Core/4.2.0",
+								ID:      "AppCenter/Core@4.2.0",
 								Name:    "AppCenter/Core",
 								Version: "4.2.0",
 							},
 							{
-								ID:      "AppCenter/Crashes/4.2.0",
+								ID:      "AppCenter/Crashes@4.2.0",
 								Name:    "AppCenter/Crashes",
 								Version: "4.2.0",
 								DependsOn: []string{
-									"AppCenter/Core/4.2.0",
+									"AppCenter/Core@4.2.0",
 								},
 							},
 							{
-								ID:      "KeychainAccess/4.2.1",
+								ID:      "KeychainAccess@4.2.1",
 								Name:    "KeychainAccess",
 								Version: "4.2.1",
 							},

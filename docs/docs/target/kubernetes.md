@@ -3,21 +3,117 @@
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-## CLI
-The Trivy K8s CLI allows you to scan your Kubernetes cluster for 
+Trivy can connect to your Kubernetes cluster and scan it for security issues using the `trivy k8s` command. This page covers the technical capabilities of Trivy Kubernetes scanning.
+Trivy can also be installed *inside* your cluster as a Kubernetes Operator, and continuously scan it. For more about this, please see the [Trivy Operator](https://aquasecurity.github.io/trivy-operator/) project.
+
+When scanning a Kubernetes cluster, Trivy differentiates between the following:
+
+1. Cluster infrastructure (e.g api-server, kubelet, addons)
+1. Cluster configuration (e.g Roles, ClusterRoles). 
+1. Application workloads (e.g nginx, postgresql).
+
+When scanning any of the above, the container image is scanned separately to the Kubernetes resource definition (the YAML manifest) that defines the resource.
+
+Container image is scanned for:
 
 - Vulnerabilities
 - Misconfigurations
-- Secrets
- 
-You can either run the CLI locally or integrate it into your CI/CD pipeline.
-The difference to the Trivy CLI is that the Trivy K8s CLI allows you to scan running workloads directly within your cluster.
+- Exposed secrets
 
-If you are looking for continuous cluster audit scanning, have a look at the Trivy K8s operator below.
+Kubernetes resource definition is scanned for:
 
-Trivy uses your local kubectl configuration to access the API server to list artifacts.
+- Vulnerabilities (Open Source Libraries, Control Plane and Node Components)
+- Misconfigurations
+- Exposed secrets
 
-### Commands
+## Kubernetes target configurations
+
+Trivy follows the behavior of the `kubectl` tool as much as possible.
+
+### Scope
+
+The command expects an argument that selects the scope of the scan (similarly to how `kubectl` expects an argument after `kubectl get`). This argument can be:
+1. A Kubernetes Kind. e.g `pod`, `deployment`, etc. 
+2. A Kubernetes Resource. e.g `pods/mypod`, etc.
+3. `all`. Scan common workload kinds, as listed [here](https://github.com/aquasecurity/trivy-kubernetes/blob/bf8cc2a00d9772e0aa271f06d375b936152b54b1/pkg/k8s/k8s.go#L296:L314)
+4. `cluster` scan the entire cluster including all namespaced resources and cluster level resources.
+
+Examples:
+
+```
+trivy k8s all
+trivy k8s pods
+trivy k8s deploy myapp
+trivy k8s pod/mypod
+trivy k8s pods,deploy
+trivy k8s cluster
+```
+
+Note that the scope argument must appear last in the command line, after any other flag.
+
+### Cluster
+
+By default Trivy will look for a [`kubeconfig` configuration file in the default location](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), and use the default cluster that is specified.  
+You can also specify a `kubeconfig` using the `--kubeconfig` flag:
+
+```
+trivy k8s --kubeconfig ~/.kube/config2
+```
+
+### Namespace
+
+By default Trivy will scan all namespaces (following `kubectl` behavior). To specify a namespace use the `--namespace` flag:
+
+```
+trivy k8s --kubeconfig ~/.kube/config2 --namespace default
+```
+### Node
+
+You can exclude specific nodes from the scan using the `--exclude-nodes` flag, which takes a label in the format `label-name:label-value` and excludes all matching nodes:
+
+```
+trivy k8s cluster --report summary --exclude-nodes kubernetes.io/arch:arm6
+```
+
+## Control Plane and Node Components Vulnerability Scanning
+
+Trivy is capable of discovering Kubernetes control plane (apiserver, controller-manager and etc) and node components(kubelet, kube-proxy and etc), matching them against the [official Kubernetes vulnerability database feed](https://github.com/aquasecurity/vuln-list-k8s), and reporting any vulnerabilities it finds
+
+
+```
+trivy k8s cluster --scanners vuln  --report all
+
+NodeComponents/kind-control-plane (kubernetes)
+
+Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 2, CRITICAL: 0)
+
+┌────────────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────────┬───────────────────────────────────────────────────┐
+│    Library     │ Vulnerability  │ Severity │ Status │ Installed Version │          Fixed Version           │                       Title                       │
+├────────────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────────┼───────────────────────────────────────────────────┤
+│ k8s.io/kubelet │ CVE-2023-2431  │ LOW      │ fixed  │ 1.21.1            │ 1.24.14, 1.25.10, 1.26.5, 1.27.2 │ Bypass of seccomp profile enforcement             │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2023-2431         │
+│                ├────────────────┼──────────┤        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
+│                │ CVE-2021-25741 │ HIGH     │        │                   │ 1.19.16, 1.20.11, 1.21.5, 1.22.1 │ Symlink exchange can allow host filesystem access │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25741        │
+│                ├────────────────┤          │        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
+│                │ CVE-2021-25749 │          │        │                   │ 1.22.14, 1.23.11, 1.24.5         │ runAsNonRoot logic bypass for Windows containers  │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25749        │
+└────────────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┘
+```
+
+
+### Components types
+
+You can control what kinds of components are discovered using the `--components` flag:
+- `--components infra` will discover only cluster infrastructure components.
+- `--components workloads` will discover only application workloads.
+- If the flag is omitted: infra, workloads, and RBAC are discovered.
+
+## Reporting and filtering
+
+Since scanning an entire cluster for any security issue can be overwhelming, By default Trivy summarizes the results in a simple "summary" view.
+By scoping the scan on a specific resource, you can see the detailed report.
+You can always choose the report granularity using the `--report summary`/`--report all` flag.
 
 Scan a full cluster and generate a simple summary report:
 
@@ -27,60 +123,24 @@ $ trivy k8s --report=summary cluster
 
 ![k8s Summary Report](../../imgs/trivy-k8s.png)
 
-The summary report is the default. To get all of the detail the output contains, use `--report all`.
-
 Filter by severity:
 
 ```
-$ trivy k8s --severity=CRITICAL --report=all cluster
+trivy k8s --severity=CRITICAL --report=all cluster
 ```
 
 Filter by scanners (Vulnerabilities, Secrets or Misconfigurations):
 
 ```
-$ trivy k8s --scanners=secret --report=summary cluster
+trivy k8s --scanners=secret --report=summary cluster
 # or
-$ trivy k8s --scanners=config --report=summary cluster
+trivy k8s --scanners=misconfig --report=summary cluster
 ```
 
-Scan a specific namespace:
+The supported output formats are `table`, which is the default, and `json`.
 
 ```
-$ trivy k8s -n kube-system --report=summary all
-```
-
-Use a specific kubeconfig file:
-
-```
-$ trivy k8s --kubeconfig ~/.kube/config2 -n kube-system --report=summary all
-```
-
-Scan a specific resource and get all the output:
-
-```
-$ trivy k8s deployment appname
-```
-
-Scan all deploys, or deploys and configmaps:
-
-```
-$ trivy k8s --report=summary deployment
-$ trivy k8s --report=summary deployment,configmaps
-```
-
-If you want to pass in flags before scanning specific workloads, you will have to do it before the resource name.
-For example, scanning a deployment in the app namespace of your Kubernetes cluster for critical vulnerabilities would be done through the following command:
-
-```
-$ trivy k8s -n app --severity=CRITICAL deployment/appname
-```
-This is specific to all Trivy CLI commands.
-
-The supported formats are `table`, which is the default, and `json`.
-To get a JSON output on a full cluster scan:
-
-```
-$ trivy k8s --format json -o results.json cluster
+trivy k8s --format json -o results.json cluster
 ```
 
 <details>
@@ -239,61 +299,9 @@ $ trivy k8s --format json -o results.json cluster
 
 </details>
 
-
-
-### Infra checks
-
-Trivy by default scans kubernetes infra components (apiserver, controller-manager, scheduler and etcd)
-if they exist under the `kube-system` namespace. For example, if you run a full cluster scan, or scan all
-components under `kube-system` with commands:
-
-```
-$ trivy k8s cluster --report summary # full cluster scan
-$ trivy k8s all -n kube-system --report summary # scan all components under kube-system
-```
-
-A table will be printed about misconfigurations found on kubernetes core components:
-
-```
-Summary Report for minikube
-┌─────────────┬──────────────────────────────────────┬─────────────────────────────┐
-│  Namespace  │               Resource               │ Kubernetes Infra Assessment │
-│             │                                      ├────┬────┬────┬─────┬────────┤
-│             │                                      │ C  │ H  │ M  │ L   │   U    │
-├─────────────┼──────────────────────────────────────┼────┼────┼────┼─────┼────────┤
-│ kube-system │ Pod/kube-apiserver-minikube          │    │    │ 1  │ 10  │        │
-│ kube-system │ Pod/kube-controller-manager-minikube │    │    │    │ 3   │        │
-│ kube-system │ Pod/kube-scheduler-minikube          │    │    │    │ 1   │        │
-└─────────────┴──────────────────────────────────────┴────┴────┴────┴─────┴────────┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
-```
-
-The infra checks are based on CIS Benchmarks recommendations for kubernetes.
-
-
-If you want filter only for the infra checks, you can use the flag `--components` along with the `--scanners=config`
-
-```
-$ trivy k8s cluster --report summary --components=infra --scanners=config # scan only infra
-```
-
-Or, to filter for all other checks besides the infra checks, you can:
-
-```
-$ trivy k8s cluster --report summary --components=workload --scanners=config # scan all components besides infra
-```
-
-If you wish to exclude nodes from being scanned, you can use the flag `--exclude-nodes` with the node labels
-
-```
-trivy k8s cluster --report summary --exclude-nodes kubernetes.io/arch:arm6
-```
-
-### Compliance
+## Compliance
 This section describes Kubernetes specific compliance reports.
 For an overview of Trivy's Compliance feature, including working with custom compliance, check out the [Compliance documentation](../compliance/compliance.md).
-
-#### Built in reports
 
 The following reports are available out of the box:
 
@@ -304,55 +312,90 @@ The following reports are available out of the box:
 | Pod Security Standards, Baseline             | `k8s-pss-baseline`   | [Link](https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline)                               |
 | Pod  Security Standards, Restricted          | `k8s-pss-restricted` | [Link](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted)                             |
 
-#### Examples
+Examples:
 
-Scan a full cluster and generate a compliance summary report:
-
-```
-$ trivy k8s cluster --compliance=<compliance_id> --report summary
-```
-
-***Note*** : The `Issues` column represent the total number of failed checks for this control.
-
-
-Get all of the detailed output for checks:
+Scan the cluster for Kubernetes Pod Security Standards Baseline compliance:
 
 ```
-trivy k8s cluster --compliance=<compliance_id> --report all
-```
 
-Report result in JSON format:
+$ trivy k8s cluster --compliance=k8s-pss-baseline --report summary
 
 ```
-trivy k8s cluster --compliance=<compliance_id> --report summary --format json
-```
+
+Get the detailed report for checks:
 
 ```
-trivy k8s cluster --compliance=<compliance_id> --report all --format json
+
+$ trivy k8s cluster --compliance=k8s-cis --report all
+
 ```
 
-## Operator
-Trivy has a native [Kubernetes Operator][operator] which continuously scans your Kubernetes cluster for security issues, and generates security reports as Kubernetes [Custom Resources][crd]. It does it by watching Kubernetes for state changes and automatically triggering scans in response to changes, for example initiating a vulnerability scan when a new Pod is created.
+Get summary report in JSON format:
 
-> Kubernetes-native security toolkit. ([Documentation][trivy-operator]).
+```
 
-<figure>
-  <figcaption>Workload reconcilers discover K8s controllers, manage scan jobs, and create VulnerabilityReport and ConfigAuditReport objects.</figcaption>
-</figure>
+$ trivy k8s cluster --compliance=k8s-cis --report summary --format json
 
-[operator]: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/
-[crd]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
-[trivy-operator]: https://aquasecurity.github.io/trivy-operator/latest
+```
 
-## SBOM
+Get detailed report in JSON format:
 
-Trivy supports the generation of Kubernetes Bill of Materials (KBOM) for kubernetes cluster control plane components, node components and addons.
+```
+
+$ trivy k8s cluster --compliance=k8s-cis --report all --format json
+
+```
 
 ## KBOM
 
-KBOM, Kubernetes Bill of Materials, is a manifest of all the important components that make up your Kubernetes cluster – Control plane components, Node Components, and Addons, including their versions and images. Which “api-server” version are you currently running? Which flavor of “kubelet” is running on each node? What kind of etcd or storage are you currently using? And most importantly – are there any vulnerabilities known to affect these components? These are all questions that KBOM can help you answer.
+KBOM, Kubernetes Bill of Materials, is a manifest of all the important components that make up your Kubernetes cluster – Control plane components, Node Components, and Addons, including their versions and images. Which “api-server” version are you currently running? Which flavor of "kubelet" is running on each node? What kind of etcd or storage are you currently using? And most importantly – are there any vulnerabilities known to affect these components? These are all questions that KBOM can help you answer.  
+For more background on KBOM, see [here](https://blog.aquasec.com/introducing-kbom-kubernetes-bill-of-materials).
+
 Trivy can generate KBOM in CycloneDX format:
 
 ```sh
-trivy k8s cluster --format cyclonedx
+
+$ trivy k8s cluster --format cyclonedx --output mykbom.cdx.json
+
 ```
+
+Trivy can also scan that generated KBOM (or any SBOM) for vulnerabilities:
+
+```sh
+
+$ trivy sbom mykbom.cdx.json
+
+```
+
+<details>
+<summary>Result</summary>
+
+```sh
+
+2023-09-28T22:52:25.707+0300    INFO    Vulnerability scanning is enabled
+ 2023-09-28T22:52:25.707+0300    INFO    Detected SBOM format: cyclonedx-json
+ 2023-09-28T22:52:25.717+0300    WARN    No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.
+ 2023-09-28T22:52:25.717+0300    WARN    e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"
+ 2023-09-28T22:52:25.717+0300    INFO    Detected OS: debian gnu/linux
+ 2023-09-28T22:52:25.717+0300    WARN    unsupported os : debian gnu/linux
+ 2023-09-28T22:52:25.717+0300    INFO    Number of language-specific files: 3
+ 2023-09-28T22:52:25.717+0300    INFO    Detecting kubernetes vulnerabilities...
+ 2023-09-28T22:52:25.718+0300    INFO    Detecting gobinary vulnerabilities...
+ Kubernetes (kubernetes)
+ Total: 2 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+ ┌────────────────┬────────────────┬──────────┬────────┬───────────────────┬─────────────────────────────────┬──────────────────────────────────────────────────┐
+ │    Library     │ Vulnerability  │ Severity │ Status │ Installed Version │          Fixed Version          │                      Title                       │
+ ├────────────────┼────────────────┼──────────┼────────┼───────────────────┼─────────────────────────────────┼──────────────────────────────────────────────────┤
+ │ k8s.io/kubelet │ CVE-2021-25749 │ HIGH     │ fixed  │ 1.24.0            │ 1.22.14, 1.23.11, 1.24.5        │ runAsNonRoot logic bypass for Windows containers │
+ │                │                │          │        │                   │                                 │ https://avd.aquasec.com/nvd/cve-2021-25749       │
+ │                ├────────────────┼──────────┤        │                   ├─────────────────────────────────┼──────────────────────────────────────────────────┤
+ │                │ CVE-2023-2431  │ LOW      │        │                   │ 1.24.14, 1.25.9, 1.26.4, 1.27.1 │ Bypass of seccomp profile enforcement            │
+ │                │                │          │        │                   │                                 │ https://avd.aquasec.com/nvd/cve-2023-2431        │
+ └────────────────┴────────────────┴──────────┴────────┴───────────────────┴─────────────────────────────────┴──────────────────────────────────────────────────┘
+```
+
+</details>
+
+Find more in the [documentation for SBOM scanning](./sbom.md).
+
+Currently KBOM vulnerability matching works for plain Kubernetes distributions and does not work well for vendor variants, including some cloud managed distributions.

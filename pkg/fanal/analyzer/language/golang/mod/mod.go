@@ -30,7 +30,7 @@ import (
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(types.GoMod, newGoModAnalyzer)
+	analyzer.RegisterPostAnalyzer(analyzer.TypeGoMod, newGoModAnalyzer)
 }
 
 const version = 2
@@ -70,7 +70,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return filepath.Base(path) == types.GoMod
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, _ io.Reader) error {
 		// Parse go.mod
 		gomod, err := parse(input.FS, path, a.modParser)
 		if err != nil {
@@ -132,7 +132,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 		return nil
 	}
 
-	licenses := map[string][]string{}
+	licenses := make(map[string][]string)
 	for i, app := range apps {
 		// Actually used dependencies
 		usedLibs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
@@ -180,7 +180,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	return nil
 }
 
-func (a *gomodAnalyzer) collectDeps(modDir string, pkgID string) (godeptypes.Dependency, error) {
+func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (godeptypes.Dependency, error) {
 	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/go.mod
 	modPath := filepath.Join(modDir, "go.mod")
 	f, err := os.Open(modPath)
@@ -239,7 +239,7 @@ func mergeGoSum(gomod, gosum *types.Application) {
 	if gomod == nil || gosum == nil {
 		return
 	}
-	uniq := map[string]types.Package{}
+	uniq := make(map[string]types.Package)
 	for _, lib := range gomod.Libraries {
 		// It will be used for merging go.sum.
 		uniq[lib.Name] = lib
@@ -289,18 +289,18 @@ func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error
 		}
 		return nil
 	})
+
+	switch {
 	// The module path may not exist
-	if errors.Is(err, os.ErrNotExist) {
+	case errors.Is(err, os.ErrNotExist):
 		return nil, nil
-	} else if err != nil && !errors.Is(err, io.EOF) {
+	case err != nil && !errors.Is(err, io.EOF):
 		return nil, fmt.Errorf("finding a known open source license: %w", err)
-	} else if license == nil || len(license.Findings) == 0 {
+	case license == nil || len(license.Findings) == 0:
 		return nil, nil
 	}
 
-	return lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
-		return finding.Name
-	}), nil
+	return license.Findings.Names(), nil
 }
 
 // normalizeModName escapes upper characters

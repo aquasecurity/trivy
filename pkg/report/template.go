@@ -18,7 +18,7 @@ import (
 )
 
 // CustomTemplateFuncMap is used to overwrite existing functions for testing.
-var CustomTemplateFuncMap = map[string]interface{}{}
+var CustomTemplateFuncMap = make(map[string]interface{})
 
 // TemplateWriter write result in custom format defined by user's template
 type TemplateWriter struct {
@@ -27,7 +27,7 @@ type TemplateWriter struct {
 }
 
 // NewTemplateWriter is the factory method to return TemplateWriter object
-func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter, error) {
+func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*TemplateWriter, error) {
 	if strings.HasPrefix(outputTemplate, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
 		if err != nil {
@@ -50,11 +50,12 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		}
 		return input
 	}
-	templateFuncMap["escapeString"] = func(input string) string {
-		return html.EscapeString(input)
-	}
+	templateFuncMap["escapeString"] = html.EscapeString
 	templateFuncMap["sourceID"] = func(input string) dbTypes.SourceID {
 		return dbTypes.SourceID(input)
+	}
+	templateFuncMap["appVersion"] = func() string {
+		return appVersion
 	}
 
 	// Overwrite functions
@@ -66,7 +67,10 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 	if err != nil {
 		return nil, xerrors.Errorf("error parsing template: %w", err)
 	}
-	return &TemplateWriter{Output: output, Template: tmpl}, nil
+	return &TemplateWriter{
+		Output:   output,
+		Template: tmpl,
+	}, nil
 }
 
 // Write writes result

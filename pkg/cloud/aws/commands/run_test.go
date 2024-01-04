@@ -1,22 +1,25 @@
 package commands
 
 import (
+	"bytes"
 	"context"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
+	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
 const expectedS3ScanResult = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "12345678",
   "ArtifactType": "aws_account",
   "Metadata": {
@@ -38,7 +41,7 @@ const expectedS3ScanResult = `{
       "Type": "cloud",
       "MisconfSummary": {
         "Successes": 1,
-        "Failures": 9,
+        "Failures": 8,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -102,30 +105,6 @@ const expectedS3ScanResult = `{
           "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0088",
           "References": [
             "https://avd.aquasec.com/misconfig/avd-aws-0088"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
-          "ID": "AVD-AWS-0089",
-          "AVDID": "AVD-AWS-0089",
-          "Title": "S3 Bucket does not have logging enabled.",
-          "Description": "Buckets should have logging enabled so that access can be audited.",
-          "Message": "Bucket does not have logging enabled",
-          "Resolution": "Add a logging block to the resource to enable access logging",
-          "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0089",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0089"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -288,6 +267,7 @@ const expectedS3ScanResult = `{
 `
 
 const expectedCustomScanResult = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "12345678",
   "ArtifactType": "aws_account",
   "Metadata": {
@@ -342,7 +322,7 @@ const expectedCustomScanResult = `{
       "Type": "cloud",
       "MisconfSummary": {
         "Successes": 1,
-        "Failures": 9,
+        "Failures": 8,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -406,30 +386,6 @@ const expectedCustomScanResult = `{
           "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0088",
           "References": [
             "https://avd.aquasec.com/misconfig/avd-aws-0088"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
-          "ID": "AVD-AWS-0089",
-          "AVDID": "AVD-AWS-0089",
-          "Title": "S3 Bucket does not have logging enabled.",
-          "Description": "Buckets should have logging enabled so that access can be audited.",
-          "Message": "Bucket does not have logging enabled",
-          "Resolution": "Add a logging block to the resource to enable access logging",
-          "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0089",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0089"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -592,6 +548,7 @@ const expectedCustomScanResult = `{
 `
 
 const expectedS3AndCloudTrailResult = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "123456789",
   "ArtifactType": "aws_account",
   "Metadata": {
@@ -720,7 +677,7 @@ const expectedS3AndCloudTrailResult = `{
       "Type": "cloud",
       "MisconfSummary": {
         "Successes": 1,
-        "Failures": 9,
+        "Failures": 8,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -784,30 +741,6 @@ const expectedS3AndCloudTrailResult = `{
           "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0088",
           "References": [
             "https://avd.aquasec.com/misconfig/avd-aws-0088"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
-          "ID": "AVD-AWS-0089",
-          "AVDID": "AVD-AWS-0089",
-          "Title": "S3 Bucket does not have logging enabled.",
-          "Description": "Buckets should have logging enabled so that access can be audited.",
-          "Message": "Bucket does not have logging enabled",
-          "Resolution": "Add a logging block to the resource to enable access logging",
-          "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0089",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0089"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -982,41 +915,6 @@ func Test_Run(t *testing.T) {
 		allServices  []string
 		inputData    string
 	}{
-		{
-			name: "fail without region",
-			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
-			},
-			want:      "",
-			expectErr: true,
-		},
-		{
-			name: "fail without creds",
-			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
-				AWSOptions: flag.AWSOptions{
-					Region: "us-east-1",
-				},
-			},
-			want:      "",
-			expectErr: true,
-		},
-		{
-			name: "try to call aws if cache is expired",
-			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
-				AWSOptions: flag.AWSOptions{
-					Region:   "us-east-1",
-					Services: []string{"s3"},
-					Account:  "12345678",
-				},
-				CloudOptions: flag.CloudOptions{
-					MaxCacheAge: time.Minute,
-				},
-			},
-			cacheContent: "testdata/s3onlycache.json",
-			expectErr:    true,
-		},
 		{
 			name: "succeed with cached infra",
 			options: flag.Options{
@@ -1230,6 +1128,8 @@ Summary Report for compliance: my-custom-spec
 			expectErr:    true,
 		},
 	}
+
+	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			if test.allServices != nil {
@@ -1242,8 +1142,8 @@ Summary Report for compliance: my-custom-spec
 				}()
 			}
 
-			output := filepath.Join(t.TempDir(), "output")
-			test.options.Output = output
+			output := bytes.NewBuffer(nil)
+			test.options.SetOutputWriter(output)
 			test.options.Debug = true
 			test.options.GlobalOptions.Timeout = time.Minute
 			if test.options.Format == "" {
@@ -1285,10 +1185,7 @@ Summary Report for compliance: my-custom-spec
 				return
 			}
 			assert.NoError(t, err)
-
-			b, err := os.ReadFile(output)
-			require.NoError(t, err)
-			assert.Equal(t, test.want, string(b))
+			assert.Equal(t, test.want, output.String())
 		})
 	}
 }

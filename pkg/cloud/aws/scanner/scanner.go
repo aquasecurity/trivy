@@ -4,15 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
-	"strings"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/state"
+	aws "github.com/aquasecurity/trivy-aws/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -44,11 +43,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	if option.Debug {
-		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&defsecLogger{}))
+		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "aws"}))
 	}
 
 	if option.Trace {
-		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&defsecLogger{}))
+		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&log.PrefixedLogger{Name: "aws"}))
 	}
 
 	if option.Region != "" {
@@ -68,7 +67,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	var policyPaths []string
 	var downloadedPolicyPaths []string
 	var err error
-	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate)
+	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate, option.MisconfOptions.PolicyBundleRepository)
 	if err != nil {
 		if !option.SkipPolicyUpdate {
 			log.Logger.Errorf("Falling back to embedded policies: %s", err)
@@ -87,15 +86,19 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		return nil, false, xerrors.Errorf("unable to create policyfs: %w", err)
 	}
 
-	scannerOpts = append(scannerOpts, options.ScannerWithPolicyFilesystem(policyFS))
-	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
+	scannerOpts = append(scannerOpts,
+		options.ScannerWithPolicyFilesystem(policyFS),
+		options.ScannerWithPolicyDirs(policyPaths...),
+	)
 
 	dataFS, dataPaths, err := misconf.CreateDataFS(option.RegoOptions.DataPaths)
 	if err != nil {
 		log.Logger.Errorf("Could not load config data: %s", err)
 	}
-	scannerOpts = append(scannerOpts, options.ScannerWithDataDirs(dataPaths...))
-	scannerOpts = append(scannerOpts, options.ScannerWithDataFilesystem(dataFS))
+	scannerOpts = append(scannerOpts,
+		options.ScannerWithDataDirs(dataPaths...),
+		options.ScannerWithDataFilesystem(dataFS),
+	)
 
 	scannerOpts = addPolicyNamespaces(option.RegoOptions.PolicyNamespaces, scannerOpts)
 
@@ -156,13 +159,6 @@ func createState(freshState *state.State, awsCache *cache.Cache) (*state.State, 
 	return fullState, nil
 }
 
-type defsecLogger struct {
-}
-
-func (d *defsecLogger) Write(p []byte) (n int, err error) {
-	log.Logger.Debug("[defsec] " + strings.TrimSpace(string(p)))
-	return len(p), nil
-}
 func addPolicyNamespaces(namespaces []string, scannerOpts []options.ScannerOption) []options.ScannerOption {
 	if len(namespaces) > 0 {
 		scannerOpts = append(

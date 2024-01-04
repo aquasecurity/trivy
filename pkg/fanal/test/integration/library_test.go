@@ -362,6 +362,14 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 
 func checkPackageFromCommands(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	if tc.wantPkgsFromCmds != "" {
+		if *update {
+			sort.Sort(types.Packages(detail.ImageConfig.Packages))
+			b, err := json.MarshalIndent(detail.ImageConfig.Packages, "", "  ")
+			require.NoError(t, err)
+			err = os.WriteFile(tc.wantPkgsFromCmds, b, 0666)
+			require.NoError(t, err)
+			return
+		}
 		data, _ := os.ReadFile(tc.wantPkgsFromCmds)
 		var expectedPkgsFromCmds []types.Package
 

@@ -49,25 +49,12 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("handler init error: %w", err)
 	}
 
-	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-		Group:                opt.AnalyzerGroup,
-		Slow:                 opt.Slow,
-		FilePatterns:         opt.FilePatterns,
-		DisabledAnalyzers:    opt.DisabledAnalyzers,
-		MisconfScannerOption: opt.MisconfScannerOption,
-		SecretScannerOption:  opt.SecretScannerOption,
-		LicenseScannerOption: opt.LicenseScannerOption,
-	})
+	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerOptions())
 	if err != nil {
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
-	ca, err := analyzer.NewConfigAnalyzerGroup(analyzer.ConfigAnalyzerOptions{
-		FilePatterns:         opt.FilePatterns,
-		DisabledAnalyzers:    opt.DisabledAnalyzers,
-		MisconfScannerOption: opt.MisconfScannerOption,
-		SecretScannerOption:  opt.SecretScannerOption,
-	})
+	ca, err := analyzer.NewConfigAnalyzerGroup(opt.ConfigAnalyzerOptions())
 	if err != nil {
 		return nil, xerrors.Errorf("config analyzer group error: %w", err)
 	}
@@ -75,7 +62,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	return Artifact{
 		image:          img,
 		cache:          c,
-		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs, opt.Slow),
+		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs),
 		analyzer:       a,
 		configAnalyzer: ca,
 		handlerManager: handlerManager,
@@ -194,7 +181,7 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	// TODO: our current logic may not detect empty layers correctly in rare cases.
 	validCreatedBy := len(diffIDs) == len(createdBy)
 
-	layerKeyMap := map[string]LayerInfo{}
+	layerKeyMap := make(map[string]LayerInfo)
 	for i, diffID := range diffIDs {
 
 		c := ""
@@ -215,8 +202,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
 
 	var osFound types.OS
-	workers := lo.Ternary(a.artifactOption.Slow, 1, 5)
-	p := parallel.NewPipeline(workers, false, layerKeys, func(ctx context.Context, layerKey string) (any, error) {
+	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context, layerKey string) (any, error) {
 		layer := layerKeyMap[layerKey]
 
 		// If it is a base layer, secret scanning should not be performed.
@@ -268,7 +254,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		FileChecksum: a.artifactOption.FileChecksum,
 	}
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.New(a.artifactOption.Slow)
+	limit := semaphore.New(a.artifactOption.Parallel)
 
 	// Prepare filesystem for post analysis
 	composite, err := a.analyzer.PostAnalyzerFS()

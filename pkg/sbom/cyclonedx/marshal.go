@@ -50,9 +50,9 @@ type Marshaler struct {
 	core *core.CycloneDX
 }
 
-func NewMarshaler(version string, opts ...core.Option) *Marshaler {
+func NewMarshaler(version string) *Marshaler {
 	return &Marshaler{
-		core: core.NewCycloneDX(version, opts...),
+		core: core.NewCycloneDX(version),
 	}
 }
 
@@ -166,7 +166,7 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 		}
 
 		// Recursive packages from direct dependencies
-		if component, err := e.marshalPackage(pkg, pkgs, map[string]*core.Component{}); err != nil {
+		if component, err := e.marshalPackage(pkg, pkgs, make(map[string]*core.Component)); err != nil {
 			return nil, nil
 		} else if component != nil {
 			directComponents = append(directComponents, component)
@@ -178,7 +178,7 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 
 type Package struct {
 	ftypes.Package
-	Type            string
+	Type            ftypes.TargetType
 	Metadata        types.Metadata
 	Vulnerabilities []types.DetectedVulnerability
 }
@@ -192,6 +192,11 @@ func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, compone
 	component, err := pkgComponent(pkg)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse pkg: %w", err)
+	}
+
+	// Skip component that can't be converted from `Package`
+	if component == nil {
+		return nil, nil
 	}
 	components[pkg.ID] = component
 
@@ -217,7 +222,10 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 	}
 
 	props := []core.Property{
-		{Name: PropertySchemaVersion, Value: strconv.Itoa(r.SchemaVersion)},
+		{
+			Name:  PropertySchemaVersion,
+			Value: strconv.Itoa(r.SchemaVersion),
+		},
 	}
 
 	switch r.ArtifactType {
@@ -228,16 +236,17 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 			Value: r.Metadata.ImageID,
 		})
 
-		p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{})
+		p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
-		} else if p.Type != "" {
-			root.PackageURL = &p
+		}
+		if p != nil {
+			root.PackageURL = p
 		}
 
 	case ftypes.ArtifactVM:
 		root.Type = cdx.ComponentTypeContainer
-	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
+	case ftypes.ArtifactFilesystem, ftypes.ArtifactRepository:
 		root.Type = cdx.ComponentTypeApplication
 	}
 
@@ -276,8 +285,14 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 	component := &core.Component{
 		Name: r.Target,
 		Properties: []core.Property{
-			{Name: PropertyType, Value: r.Type},
-			{Name: PropertyClass, Value: string(r.Class)},
+			{
+				Name:  PropertyType,
+				Value: string(r.Type),
+			},
+			{
+				Name:  PropertyClass,
+				Value: string(r.Class),
+			},
 		},
 	}
 
@@ -286,7 +301,7 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 		// UUID needs to be generated since Operating System Component cannot generate PURL.
 		// https://cyclonedx.org/use-cases/#known-vulnerabilities
 		if osFound != nil {
-			component.Name = osFound.Family
+			component.Name = string(osFound.Family)
 			component.Version = osFound.Name
 		}
 		component.Type = cdx.ComponentTypeOS
@@ -300,38 +315,69 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 }
 
 func pkgComponent(pkg Package) (*core.Component, error) {
-	pu, err := purl.NewPackageURL(pkg.Type, pkg.Metadata, pkg.Package)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to new package purl: %w", err)
-	}
-
 	name := pkg.Name
+	version := pkg.Version
 	var group string
-	// use `group` field for GroupID and `name` for ArtifactID for jar files
-	if pkg.Type == ftypes.Jar {
-		name = pu.Name
-		group = pu.Namespace
+	// there are cases when we can't build purl
+	// e.g. local Go packages
+	if pu := pkg.Identifier.PURL; pu != nil {
+		version = pu.Version
+		// use `group` field for GroupID and `name` for ArtifactID for jar files
+		if pkg.Type == ftypes.Jar {
+			name = pu.Name
+			group = pu.Namespace
+		}
 	}
 
 	properties := []core.Property{
-		{Name: PropertyPkgID, Value: pkg.ID},
-		{Name: PropertyPkgType, Value: pkg.Type},
-		{Name: PropertyFilePath, Value: pkg.FilePath},
-		{Name: PropertySrcName, Value: pkg.SrcName},
-		{Name: PropertySrcVersion, Value: pkg.SrcVersion},
-		{Name: PropertySrcRelease, Value: pkg.SrcRelease},
-		{Name: PropertySrcEpoch, Value: strconv.Itoa(pkg.SrcEpoch)},
-		{Name: PropertyModularitylabel, Value: pkg.Modularitylabel},
-		{Name: PropertyLayerDigest, Value: pkg.Layer.Digest},
-		{Name: PropertyLayerDiffID, Value: pkg.Layer.DiffID},
+		{
+			Name:  PropertyPkgID,
+			Value: pkg.ID,
+		},
+		{
+			Name:  PropertyPkgType,
+			Value: string(pkg.Type),
+		},
+		{
+			Name:  PropertyFilePath,
+			Value: pkg.FilePath,
+		},
+		{
+			Name:  PropertySrcName,
+			Value: pkg.SrcName,
+		},
+		{
+			Name:  PropertySrcVersion,
+			Value: pkg.SrcVersion,
+		},
+		{
+			Name:  PropertySrcRelease,
+			Value: pkg.SrcRelease,
+		},
+		{
+			Name:  PropertySrcEpoch,
+			Value: strconv.Itoa(pkg.SrcEpoch),
+		},
+		{
+			Name:  PropertyModularitylabel,
+			Value: pkg.Modularitylabel,
+		},
+		{
+			Name:  PropertyLayerDigest,
+			Value: pkg.Layer.Digest,
+		},
+		{
+			Name:  PropertyLayerDiffID,
+			Value: pkg.Layer.DiffID,
+		},
 	}
 
 	return &core.Component{
 		Type:            cdx.ComponentTypeLibrary,
 		Name:            name,
 		Group:           group,
-		Version:         pu.Version,
-		PackageURL:      &pu,
+		Version:         version,
+		PackageURL:      pkg.Identifier.PURL,
 		Supplier:        pkg.Maintainer,
 		Licenses:        pkg.Licenses,
 		Hashes:          lo.Ternary(pkg.Digest == "", nil, []digest.Digest{pkg.Digest}),

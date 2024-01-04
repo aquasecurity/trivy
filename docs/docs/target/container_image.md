@@ -22,7 +22,7 @@ By default, vulnerability and secret scanning are enabled, and you can configure
 It is enabled by default.
 You can simply specify your image name (and a tag).
 It detects known vulnerabilities in your container image.
-See [here](../scanner/vulnerability/index.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ```
 $ trivy image [YOUR_IMAGE_NAME]
@@ -64,10 +64,10 @@ $ trivy image --scanners vuln [YOUR_IMAGE_NAME]
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
 As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
-If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners config`.
+If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners misconfig`.
 
 ```
-$ trivy image --scanners config [YOUR_IMAGE_NAME]
+$ trivy image --scanners misconfig [YOUR_IMAGE_NAME]
 ```
 
 ### Secrets
@@ -111,13 +111,6 @@ You can enable it with `--image-config-scanners config`.
 
 ```
 $ trivy image --image-config-scanners config [YOUR_IMAGE_NAME]
-```
-
-If you just want to scan the image config, you can disable scanners with `--scanners none`.
-For example:
-
-```
-$ trivy image --scanners none --image-config-scanners config alpine:3.17.0
 ```
 
 <details>
@@ -169,13 +162,6 @@ See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy image --image-config-scanners secret [YOUR_IMAGE_NAME]
-```
-
-If you just want to scan the image config, you can disable scanners with `--scanners none`.
-For example:
-
-```shell
-$ trivy image --scanners none --image-config-scanners secret vuln-image
 ```
 
 <details>

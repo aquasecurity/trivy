@@ -53,7 +53,7 @@ func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 
 	f, err := os.CreateTemp("", "fanal-*")
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("failed to create a temporary file")
+		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}
 
 	cleanup = func() {

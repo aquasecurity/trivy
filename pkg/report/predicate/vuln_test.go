@@ -10,7 +10,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/predicate"
@@ -65,6 +64,9 @@ func TestWriter_Write(t *testing.T) {
 											Title:       "foobar",
 											Description: "baz",
 											Severity:    "HIGH",
+											VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+												vulnerability.NVD: dbTypes.SeverityHigh,
+											},
 										},
 									},
 								},

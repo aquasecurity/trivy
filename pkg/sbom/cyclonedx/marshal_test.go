@@ -1,28 +1,24 @@
 package cyclonedx_test
 
 import (
-	"fmt"
+	"github.com/package-url/packageurl-go"
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
-
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/uuid"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 func TestMarshaler_Marshal(t *testing.T) {
@@ -40,7 +36,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: fos.CentOS,
+						Family: ftypes.CentOS,
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
@@ -56,15 +52,35 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "rails:latest (centos 8.3.2011)",
 						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								ID:              "binutils@2.30-93.el8",
-								Name:            "binutils",
-								Version:         "2.30",
-								Release:         "93.el8",
-								Epoch:           0,
-								Arch:            "aarch64",
+								ID:      "binutils@2.30-93.el8",
+								Name:    "binutils",
+								Version: "2.30",
+								Release: "93.el8",
+								Epoch:   0,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeRPM,
+											Namespace: "centos",
+											Name:      "binutils",
+											Version:   "2.30-93.el8",
+											Qualifiers: packageurl.Qualifiers{
+												{
+													Key:   "arch",
+													Value: "aarch64",
+												},
+												{
+													Key:   "distro",
+													Value: "centos-8.3.2011",
+												},
+											},
+										},
+									},
+								},
 								SrcName:         "binutils",
 								SrcVersion:      "2.30",
 								SrcRelease:      "93.el8",
@@ -112,10 +128,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 											V3Score:  5.3,
 										},
 									},
-									References: []string{
-										"http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
-										"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
-									},
 									PublishedDate:    lo.ToPtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
 									LastModifiedDate: lo.ToPtr(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
 								},
@@ -128,15 +140,33 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
-								ID:       "actionpack@7.0.0",
-								Name:     "actionpack",
-								Version:  "7.0.0",
+								ID:      "actionpack@7.0.0",
+								Name:    "actionpack",
+								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.0",
+										},
+									},
+								},
 								Indirect: false,
 							},
 							{
-								ID:       "actioncontroller@7.0.0",
-								Name:     "actioncontroller",
-								Version:  "7.0.0",
+								ID:      "actioncontroller@7.0.0",
+								Name:    "actioncontroller",
+								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actioncontroller",
+											Version: "7.0.0",
+										},
+									},
+								},
 								Indirect: false,
 								DependsOn: []string{
 									"actionpack@7.0.0",
@@ -153,6 +183,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.0",
+										},
+									},
+								},
 							},
 						},
 					},
@@ -165,6 +204,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "Newtonsoft.Json@9.0.1",
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeNuget,
+											Name:    "Newtonsoft.Json",
+											Version: "9.0.1",
+										},
+									},
+								},
 							},
 						},
 					},
@@ -176,6 +224,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.0-20210421170649-83a5a9bb288b",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeGolang,
+											Namespace: "golang.org/x",
+											Name:      "crypto",
+											Version:   "v0.0.0-20210421170649-83a5a9bb288b",
+										},
+									},
+								},
+							},
+							// dependency has been replaced with local directory
+							{
+								Name:    "./api",
+								Version: "(devel)",
 							},
 						},
 					},
@@ -199,8 +262,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					Component: &cdx.Component{
 						Type:       cdx.ComponentTypeContainer,
-						BOMRef:     "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
-						PackageURL: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
+						BOMRef:     "pkg:oci/rails@sha256%3Aa27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
+						PackageURL: "pkg:oci/rails@sha256%3Aa27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
 						Name:       "rails:latest",
 						Properties: &[]cdx.Property{
 							{
@@ -312,6 +375,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						// Use UUID for local Go packages
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000007",
+						Type:    cdx.ComponentTypeLibrary,
+						Name:    "./api",
+						Version: "(devel)",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "gobinary",
+							},
+						},
+					},
+					{
 						BOMRef:     "pkg:gem/actioncontroller@7.0.0",
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actioncontroller",
@@ -381,7 +457,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:    "binutils",
 						Version: "2.30-93.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv3+"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "GPLv3+",
+								},
+							},
 						},
 						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 						Supplier: &cdx.OrganizationalEntity{
@@ -446,8 +526,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
 						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000007",
 							"pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
 						},
+					},
+					{
+						Ref:          "3ff14136-e09f-4df9-80ea-000000000007",
+						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
 						Ref: "pkg:gem/actioncontroller@7.0.0",
@@ -468,7 +553,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
+						Ref: "pkg:oci/rails@sha256%3Aa27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000002",
 							"3ff14136-e09f-4df9-80ea-000000000003",
@@ -525,16 +610,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 							416,
 						},
 						Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
+						Published:   "2018-12-31T19:29:00+00:00",
+						Updated:     "2019-10-31T01:15:00+00:00",
 						Advisories: &[]cdx.Advisory{
 							{
-								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
-							},
-							{
-								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
+								URL: "https://avd.aquasec.com/nvd/cve-2018-20623",
 							},
 						},
-						Published: "2018-12-31T19:29:00+00:00",
-						Updated:   "2019-10-31T01:15:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
 								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
@@ -559,7 +641,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: fos.CentOS,
+						Family: ftypes.CentOS,
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
@@ -574,15 +656,39 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "centos:latest (centos 8.3.2011)",
 						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								ID:              "acl@2.2.53-1.el8",
-								Name:            "acl",
-								Version:         "2.2.53",
-								Release:         "1.el8",
-								Epoch:           1,
-								Arch:            "aarch64",
+								ID:      "acl@2.2.53-1.el8",
+								Name:    "acl",
+								Version: "2.2.53",
+								Release: "1.el8",
+								Epoch:   1,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeRPM,
+											Namespace: "centos",
+											Name:      "acl",
+											Version:   "2.2.53-1.el8",
+											Qualifiers: packageurl.Qualifiers{
+												{
+													Key:   "arch",
+													Value: "aarch64",
+												},
+												{
+													Key:   "distro",
+													Value: "centos-8.3.2011",
+												},
+												{
+													Key:   "epoch",
+													Value: "1",
+												},
+											},
+										},
+									},
+								},
 								SrcName:         "acl",
 								SrcVersion:      "2.2.53",
 								SrcRelease:      "1.el8",
@@ -595,12 +701,32 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Digest: "md5:483792b8b5f9eb8be7dc4407733118d0",
 							},
 							{
-								ID:              "glibc@2.28-151.el8",
-								Name:            "glibc",
-								Version:         "2.28",
-								Release:         "151.el8",
-								Epoch:           0,
-								Arch:            "aarch64",
+								ID:      "glibc@2.28-151.el8",
+								Name:    "glibc",
+								Version: "2.28",
+								Release: "151.el8",
+								Epoch:   0,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeRPM,
+											Namespace: "centos",
+											Name:      "glibc",
+											Version:   "2.28-151.el8",
+											Qualifiers: packageurl.Qualifiers{
+												{
+													Key:   "arch",
+													Value: "aarch64",
+												},
+												{
+													Key:   "distro",
+													Value: "centos-8.3.2011",
+												},
+											},
+										},
+									},
+								},
 								SrcName:         "glibc",
 								SrcVersion:      "2.28",
 								SrcRelease:      "151.el8",
@@ -620,6 +746,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.0",
+										},
+										FilePath: "tools/project-john/specifications/actionpack.gemspec",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -629,6 +765,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actionpack@7.0.1",
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.1",
+										},
+										FilePath: "tools/project-doe/specifications/actionpack.gemspec",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -637,10 +783,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								VulnerabilityID:  "CVE-2022-23633",
-								PkgID:            "actionpack@7.0.0",
-								PkgName:          "actionpack",
-								PkgPath:          "tools/project-john/specifications/actionpack.gemspec",
+								VulnerabilityID: "CVE-2022-23633",
+								PkgID:           "actionpack@7.0.0",
+								PkgName:         "actionpack",
+								PkgPath:         "tools/project-john/specifications/actionpack.gemspec",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.0",
+										},
+									},
+								},
 								InstalledVersion: "7.0.0",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 								SeveritySource:   vulnerability.RubySec,
@@ -680,10 +835,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								VulnerabilityID:  "CVE-2022-23633",
-								PkgID:            "actionpack@7.0.1",
-								PkgName:          "actionpack",
-								PkgPath:          "tools/project-doe/specifications/actionpack.gemspec",
+								VulnerabilityID: "CVE-2022-23633",
+								PkgID:           "actionpack@7.0.1",
+								PkgName:         "actionpack",
+								PkgPath:         "tools/project-doe/specifications/actionpack.gemspec",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actionpack",
+											Version: "7.0.1",
+										},
+									},
+								},
 								InstalledVersion: "7.0.1",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 								SeveritySource:   vulnerability.RubySec,
@@ -771,7 +935,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
 						Type:    cdx.ComponentTypeOS,
-						Name:    fos.CentOS,
+						Name:    string(ftypes.CentOS),
 						Version: "8.3.2011",
 						Properties: &[]cdx.Property{
 							{
@@ -835,14 +999,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "acl",
 						Version: "2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv2+"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "GPLv2+",
+								},
+							},
 						},
-						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgID",
@@ -882,7 +1050,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Name:    "glibc",
 						Version: "2.28-151.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv2+"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "GPLv2+",
+								},
+							},
 						},
 						PackageURL: "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
@@ -927,7 +1099,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]string{
-							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
 							// Trivy is unable to identify the direct OS packages as of today.
 							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
@@ -941,7 +1113,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+						Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
 						Dependencies: &[]string{
 							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
@@ -997,6 +1169,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
 						Advisories: &[]cdx.Advisory{
 							{
+								URL: "https://avd.aquasec.com/nvd/cve-2022-23633",
+							},
+							{
 								URL: "http://www.openwall.com/lists/oss-security/2022/02/11/5",
 							},
 							{
@@ -1044,6 +1219,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actioncable",
 								Version: "6.1.4.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeGem,
+											Name:    "actioncable",
+											Version: "6.1.4.1",
+										},
+									},
+								},
 							},
 						},
 					},
@@ -1053,8 +1237,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Jar,
 						Packages: []ftypes.Package{
 							{
-								Name:     "org.springframework:spring-web",
-								Version:  "5.3.22",
+								Name:    "org.springframework:spring-web",
+								Version: "5.3.22",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeMaven,
+											Namespace: "org.springframework",
+											Name:      "spring-web",
+											Version:   "5.3.22",
+										},
+										FilePath: "spring-web-5.3.22.jar",
+									},
+								},
 								FilePath: "spring-web-5.3.22.jar",
 							},
 						},
@@ -1176,21 +1371,53 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Jar,
 						Packages: []ftypes.Package{
 							{
-								Name:     "org.apache.nifi:nifi-dbcp-base",
-								Version:  "1.20.0",
+								Name:    "org.apache.nifi:nifi-dbcp-base",
+								Version: "1.20.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeMaven,
+											Namespace: "org.apache.nifi",
+											Name:      "nifi-dbcp-base",
+											Version:   "1.20.0",
+										},
+										FilePath: "nifi-dbcp-base-1.20.0.jar",
+									},
+								},
 								FilePath: "nifi-dbcp-base-1.20.0.jar",
 							},
 							{
-								Name:     "org.apache.nifi:nifi-hikari-dbcp-service",
-								Version:  "1.20.0",
+								Name:    "org.apache.nifi:nifi-hikari-dbcp-service",
+								Version: "1.20.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeMaven,
+											Namespace: "org.apache.nifi",
+											Name:      "nifi-hikari-dbcp-service",
+											Version:   "1.20.0",
+										},
+										FilePath: "nifi-hikari-dbcp-service-1.20.0.jar",
+									},
+								},
 								FilePath: "nifi-hikari-dbcp-service-1.20.0.jar",
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								VulnerabilityID:  "CVE-2023-34468",
-								PkgName:          "org.apache.nifi:nifi-dbcp-base",
-								PkgPath:          "nifi-dbcp-base-1.20.0.jar",
+								VulnerabilityID: "CVE-2023-34468",
+								PkgName:         "org.apache.nifi:nifi-dbcp-base",
+								PkgPath:         "nifi-dbcp-base-1.20.0.jar",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeMaven,
+											Namespace: "org.apache.nifi",
+											Name:      "nifi-dbcp-base",
+											Version:   "1.20.0",
+										},
+									},
+								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
 								SeveritySource:   vulnerability.GHSA,
@@ -1230,9 +1457,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								VulnerabilityID:  "CVE-2023-34468",
-								PkgName:          "org.apache.nifi:nifi-hikari-dbcp-service",
-								PkgPath:          "nifi-hikari-dbcp-service-1.20.0.jar",
+								VulnerabilityID: "CVE-2023-34468",
+								PkgName:         "org.apache.nifi:nifi-hikari-dbcp-service",
+								PkgPath:         "nifi-hikari-dbcp-service-1.20.0.jar",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:      packageurl.TypeMaven,
+											Namespace: "org.apache.nifi",
+											Name:      "nifi-hikari-dbcp-service",
+											Version:   "1.20.0",
+										},
+									},
+								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
 								SeveritySource:   vulnerability.GHSA,
@@ -1390,6 +1627,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Description: "The DBCPConnectionPool and HikariCPConnectionPool Controller Services in Apache NiFi 0.0.2 through 1.21.0...",
 						Advisories: &[]cdx.Advisory{
 							{
+								URL: "https://avd.aquasec.com/nvd/cve-2023-34468",
+							},
+							{
 								URL: "http://www.openwall.com/lists/oss-security/2023/06/12/3",
 							},
 							{
@@ -1427,7 +1667,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "test-aggregate",
-				ArtifactType:  ftypes.ArtifactRemoteRepository,
+				ArtifactType:  ftypes.ArtifactRepository,
 				Results: types.Results{
 					{
 						Target: "Node.js",
@@ -1435,9 +1675,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.NodePkg,
 						Packages: []ftypes.Package{
 							{
-								ID:       "ruby-typeprof@0.20.1",
-								Name:     "ruby-typeprof",
-								Version:  "0.20.1",
+								ID:      "ruby-typeprof@0.20.1",
+								Name:    "ruby-typeprof",
+								Version: "0.20.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &ftypes.PackageURL{
+										PackageURL: packageurl.PackageURL{
+											Type:    packageurl.TypeNPM,
+											Name:    "ruby-typeprof",
+											Version: "0.20.1",
+										},
+										FilePath: "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
+									},
+								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
@@ -1484,7 +1734,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Version:    "0.20.1",
 						PackageURL: "pkg:npm/ruby-typeprof@0.20.1",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "MIT"},
+							cdx.LicenseChoice{
+								License: &cdx.License{
+									Name: "MIT",
+								},
+							},
 						},
 						Properties: &[]cdx.Property{
 							{
@@ -1569,17 +1823,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 		},
 	}
 
-	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var count int
-			newUUID := func() uuid.UUID {
-				count++
-				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
-			}
+			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			marshaler := cyclonedx.NewMarshaler("dev", core.WithClock(clock), core.WithNewUUID(newUUID))
+			marshaler := cyclonedx.NewMarshaler("dev")
 			got, err := marshaler.Marshal(tt.inputReport)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)

@@ -10,85 +10,46 @@ import (
 	packageurl "github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
-	TypeAPK  = "apk" // not defined in github.com/package-url/packageurl-go
-	TypeOCI  = "oci"
-	TypeDart = "dart"
+	TypeOCI = "oci"
+
+	// TypeK8s is a custom type for Kubernetes components in PURL.
+	//  - namespace: The service provider such as EKS or GKE. It is not case sensitive and must be lowercased.
+	//     Known namespaces:
+	//       - empty (upstream)
+	//       - eks (AWS)
+	//       - aks (GCP)
+	//       - gke (Azure)
+	//       - rke (Rancher)
+	//  - name: The k8s component name and is case sensitive.
+	//  - version: The combined version and release of a component.
+	//
+	//  Examples:
+	//    - pkg:k8s/upstream/k8s.io%2Fapiserver@1.24.1
+	//    - pkg:k8s/eks/k8s.io%2Fkube-proxy@1.26.2-eksbuild.1
+	TypeK8s = "k8s"
+
+	NamespaceEKS = "eks"
+	NamespaceAKS = "aks"
+	NamespaceGKE = "gke"
+	NamespaceRKE = "rke"
+	NamespaceOCP = "ocp"
+
+	TypeUnknown = "unknown"
 )
 
-type PackageURL struct {
-	packageurl.PackageURL
-	FilePath string
+func FromString(s string) (*ftypes.PackageURL, error) {
+	return ftypes.NewPackageURL(s)
 }
 
-func FromString(purl string) (*PackageURL, error) {
-	p, err := packageurl.FromString(purl)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to parse purl(%s): %w", purl, err)
-	}
-
-	return &PackageURL{
-		PackageURL: p,
-	}, nil
-}
-
-func (p *PackageURL) Package() *ftypes.Package {
-	pkg := &ftypes.Package{
-		Name:    p.Name,
-		Version: p.Version,
-	}
-	for _, q := range p.Qualifiers {
-		switch q.Key {
-		case "arch":
-			pkg.Arch = q.Value
-		case "modularitylabel":
-			pkg.Modularitylabel = q.Value
-		case "epoch":
-			epoch, err := strconv.Atoi(q.Value)
-			if err == nil {
-				pkg.Epoch = epoch
-			}
-		}
-	}
-
-	if p.Type == packageurl.TypeRPM {
-		rpmVer := version.NewVersion(p.Version)
-		pkg.Release = rpmVer.Release()
-		pkg.Version = rpmVer.Version()
-	}
-
-	// Return packages without namespace.
-	// OS packages are not supposed to have namespace.
-	if p.Namespace == "" || p.IsOSPkg() {
-		return pkg
-	}
-
-	// TODO: replace with packageurl.TypeGradle once they add it.
-	if p.Type == packageurl.TypeMaven || p.Type == ftypes.Gradle {
-		// Maven and Gradle packages separate ":"
-		// e.g. org.springframework:spring-core
-		pkg.Name = strings.Join([]string{
-			p.Namespace,
-			p.Name,
-		}, ":")
-	} else {
-		pkg.Name = strings.Join([]string{
-			p.Namespace,
-			p.Name,
-		}, "/")
-	}
-
-	return pkg
-}
-
-// PackageType returns an application type in Trivy
-func (p *PackageURL) PackageType() string {
+// LangType returns an application type in Trivy
+// nolint: gocyclo
+func LangType(p *ftypes.PackageURL) ftypes.LangType {
 	switch p.Type {
 	case packageurl.TypeComposer:
 		return ftypes.Composer
@@ -109,65 +70,128 @@ func (p *PackageURL) PackageType() string {
 	case packageurl.TypeNuget:
 		return ftypes.NuGet
 	case packageurl.TypeSwift:
+		return ftypes.Swift
+	case packageurl.TypeCocoapods:
 		return ftypes.Cocoapods
 	case packageurl.TypeHex:
 		return ftypes.Hex
-	case TypeDart: // TODO: replace with packageurl.TypeDart once they add it.
+	case packageurl.TypeConan:
+		return ftypes.Conan
+	case packageurl.TypePub:
 		return ftypes.Pub
+	case packageurl.TypeBitnami:
+		return ftypes.Bitnami
+	case TypeK8s:
+		switch p.Namespace {
+		case NamespaceEKS:
+			return ftypes.EKS
+		case NamespaceGKE:
+			return ftypes.GKE
+		case NamespaceAKS:
+			return ftypes.AKS
+		case NamespaceRKE:
+			return ftypes.RKE
+		case NamespaceOCP:
+			return ftypes.OCP
+		case "":
+			return ftypes.K8sUpstream
+		}
+		return TypeUnknown
+	default:
+		return TypeUnknown
 	}
-	return p.Type
 }
 
-func (p *PackageURL) IsOSPkg() bool {
-	return p.Type == TypeAPK || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
+func Class(p *ftypes.PackageURL) types.ResultClass {
+	switch p.Type {
+	case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM:
+		// OS packages
+		return types.ClassOSPkg
+	default:
+		if LangType(p) == TypeUnknown {
+			return types.ClassUnknown
+		}
+		// Language-specific packages
+		return types.ClassLangPkg
+	}
 }
 
-func (p *PackageURL) BOMRef() string {
-	// 'bom-ref' must be unique within BOM, but PURLs may conflict
-	// when the same packages are installed in an artifact.
-	// In that case, we prefer to make PURLs unique by adding file paths,
-	// rather than using UUIDs, even if it is not PURL technically.
-	// ref. https://cyclonedx.org/use-cases/#dependency-graph
-	purl := p.PackageURL // so that it will not override the qualifiers below
-	if p.FilePath != "" {
-		purl.Qualifiers = append(purl.Qualifiers,
-			packageurl.Qualifier{
-				Key:   "file_path",
-				Value: p.FilePath,
-			},
-		)
+func ToPackage(p *ftypes.PackageURL) *ftypes.Package {
+	pkg := &ftypes.Package{
+		Name:    p.Name,
+		Version: p.Version,
 	}
-	return purl.String()
+	for _, q := range p.Qualifiers {
+		switch q.Key {
+		case "arch":
+			pkg.Arch = q.Value
+		case "modularitylabel":
+			pkg.Modularitylabel = q.Value
+		case "epoch":
+			epoch, err := strconv.Atoi(q.Value)
+			if err == nil {
+				pkg.Epoch = epoch
+			}
+		}
+	}
+
+	// CocoaPods purl has no namespace, but has subpath
+	// https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#cocoapods
+	if p.Type == packageurl.TypeCocoapods && p.Subpath != "" {
+		// CocoaPods uses <moduleName>/<submoduleName> format for package name
+		// e.g. `pkg:cocoapods/GoogleUtilities@7.5.2#NSData+zlib` => `GoogleUtilities/NSData+zlib`
+		pkg.Name = p.Name + "/" + p.Subpath
+	}
+
+	if p.Type == packageurl.TypeRPM {
+		rpmVer := version.NewVersion(p.Version)
+		pkg.Release = rpmVer.Release()
+		pkg.Version = rpmVer.Version()
+	}
+
+	// Return packages without namespace.
+	// OS packages are not supposed to have namespace.
+	if p.Namespace == "" || Class(p) == types.ClassOSPkg {
+		return pkg
+	}
+
+	// TODO: replace with packageurl.TypeGradle once they add it.
+	if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
+		// Maven and Gradle packages separate ":"
+		// e.g. org.springframework:spring-core
+		pkg.Name = p.Namespace + ":" + p.Name
+	} else {
+		pkg.Name = p.Namespace + "/" + p.Name
+	}
+
+	return pkg
 }
 
 // nolint: gocyclo
-func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (PackageURL, error) {
-	var qualifiers packageurl.Qualifiers
-	if metadata.OS != nil {
-		qualifiers = parseQualifier(pkg)
-		pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
-	}
+func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*ftypes.PackageURL, error) {
+	qualifiers := parseQualifier(pkg)
+	pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
 
 	ptype := purlType(t)
 	name := pkg.Name
 	ver := utils.FormatVersion(pkg)
 	namespace := ""
+	subpath := ""
 
 	switch ptype {
 	case packageurl.TypeRPM:
 		ns, qs := parseRPM(metadata.OS, pkg.Modularitylabel)
-		namespace = ns
+		namespace = string(ns)
 		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeDebian:
 		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
 		if metadata.OS != nil {
-			namespace = metadata.OS.Family
+			namespace = string(metadata.OS.Family)
 		}
-	case TypeAPK: // TODO: replace with packageurl.TypeApk once they add it.
-		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
-		if metadata.OS != nil {
-			namespace = metadata.OS.Family
-		}
+	case packageurl.TypeApk:
+		var qs packageurl.Qualifiers
+		name, namespace, qs = parseApk(name, metadata.OS)
+		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
@@ -176,18 +200,28 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		namespace, name = parseComposer(name)
 	case packageurl.TypeGolang:
 		namespace, name = parseGolang(name)
+		if name == "" {
+			return nil, nil
+		}
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
+	case packageurl.TypeSwift:
+		namespace, name = parseSwift(name)
+	case packageurl.TypeCocoapods:
+		name, subpath = parseCocoapods(name)
 	case packageurl.TypeOCI:
 		purl, err := parseOCI(metadata)
 		if err != nil {
-			return PackageURL{}, err
+			return nil, err
 		}
-		return PackageURL{PackageURL: purl}, nil
+		if purl.Type == "" {
+			return nil, nil
+		}
+		return &ftypes.PackageURL{PackageURL: purl}, nil
 	}
 
-	return PackageURL{
-		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, ""),
+	return &ftypes.PackageURL{
+		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, subpath),
 		FilePath:   pkg.FilePath,
 	}, nil
 }
@@ -208,31 +242,43 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	if index != -1 {
 		name = name[index+1:]
 	}
-	qualifiers := packageurl.Qualifiers{
-		packageurl.Qualifier{
+
+	var qualifiers packageurl.Qualifiers
+	if repoURL := digest.Repository.Name(); repoURL != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "repository_url",
-			Value: digest.Repository.Name(),
-		},
-		packageurl.Qualifier{
+			Value: repoURL,
+		})
+	}
+	if arch := metadata.ImageConfig.Architecture; arch != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "arch",
 			Value: metadata.ImageConfig.Architecture,
-		},
+		})
 	}
 
 	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 }
 
-func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
+// ref. https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#apk
+func parseApk(pkgName string, fos *ftypes.OS) (string, string, packageurl.Qualifiers) {
+	// the name must be lowercase
+	pkgName = strings.ToLower(pkgName)
+
 	if fos == nil {
-		return packageurl.Qualifiers{}
+		return pkgName, "", nil
 	}
 
-	return packageurl.Qualifiers{
+	// the namespace must be lowercase
+	ns := strings.ToLower(string(fos.Family))
+	qs := packageurl.Qualifiers{
 		{
 			Key:   "distro",
 			Value: fos.Name,
 		},
 	}
+
+	return pkgName, ns, qs
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#deb
@@ -252,14 +298,14 @@ func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#rpm
-func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualifiers) {
+func parseRPM(fos *ftypes.OS, modularityLabel string) (ftypes.OSType, packageurl.Qualifiers) {
 	if fos == nil {
 		return "", packageurl.Qualifiers{}
 	}
 
 	// SLES string has whitespace
 	family := fos.Family
-	if fos.Family == os.SLES {
+	if fos.Family == ftypes.SLES {
 		family = "sles"
 	}
 
@@ -288,6 +334,10 @@ func parseMaven(pkgName string) (string, string) {
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#golang
 func parseGolang(pkgName string) (string, string) {
+	// The PURL will be skipped when the package name is a local path, since it can't identify a software package.
+	if strings.HasPrefix(pkgName, "./") || strings.HasPrefix(pkgName, "../") {
+		return "", ""
+	}
 	name := strings.ToLower(pkgName)
 	return parsePkgName(name)
 }
@@ -304,6 +354,18 @@ func parseComposer(pkgName string) (string, string) {
 	return parsePkgName(pkgName)
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#swift
+func parseSwift(pkgName string) (string, string) {
+	return parsePkgName(pkgName)
+}
+
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#cocoapods
+func parseCocoapods(pkgName string) (string, string) {
+	var subpath string
+	pkgName, subpath, _ = strings.Cut(pkgName, "/")
+	return pkgName, subpath
+}
+
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#npm
 func parseNpm(pkgName string) (string, string) {
 	// the name must be lowercased
@@ -311,13 +373,13 @@ func parseNpm(pkgName string) (string, string) {
 	return parsePkgName(name)
 }
 
-func purlType(t string) string {
+func purlType(t ftypes.TargetType) string {
 	switch t {
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
 		return packageurl.TypeMaven
 	case ftypes.Bundler, ftypes.GemSpec:
 		return packageurl.TypeGem
-	case ftypes.NuGet, ftypes.DotNetCore:
+	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
 		return packageurl.TypeNuget
 	case ftypes.CondaPkg:
 		return packageurl.TypeConda
@@ -328,27 +390,33 @@ func purlType(t string) string {
 	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm:
 		return packageurl.TypeNPM
 	case ftypes.Cocoapods:
+		return packageurl.TypeCocoapods
+	case ftypes.Swift:
 		return packageurl.TypeSwift
 	case ftypes.Hex:
 		return packageurl.TypeHex
+	case ftypes.Conan:
+		return packageurl.TypeConan
 	case ftypes.Pub:
-		return TypeDart // TODO: replace with packageurl.TypeDart once they add it.
-	case os.Alpine:
-		return TypeAPK
-	case os.Debian, os.Ubuntu:
+		return packageurl.TypePub
+	case ftypes.RustBinary, ftypes.Cargo:
+		return packageurl.TypeCargo
+	case ftypes.Alpine:
+		return packageurl.TypeApk
+	case ftypes.Debian, ftypes.Ubuntu:
 		return packageurl.TypeDebian
-	case os.RedHat, os.CentOS, os.Rocky, os.Alma,
-		os.Amazon, os.Fedora, os.Oracle, os.OpenSUSE,
-		os.OpenSUSELeap, os.OpenSUSETumbleweed, os.SLES, os.Photon:
+	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
+		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
+		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.Photon:
 		return packageurl.TypeRPM
 	case TypeOCI:
 		return packageurl.TypeOCI
 	}
-	return t
+	return string(t)
 }
 
 func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
-	qualifiers := packageurl.Qualifiers{}
+	var qualifiers packageurl.Qualifiers
 	if pkg.Arch != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "arch",
@@ -361,6 +429,7 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 			Value: strconv.Itoa(pkg.Epoch),
 		})
 	}
+
 	return qualifiers
 }
 

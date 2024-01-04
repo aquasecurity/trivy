@@ -1,22 +1,20 @@
 package report
 
 import (
-	"os"
-	"path/filepath"
+	"bytes"
+	"context"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"testing"
-
-	"github.com/aquasecurity/trivy-db/pkg/types"
-
-	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/flag"
-
-	"github.com/stretchr/testify/assert"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
 func Test_ServiceReport(t *testing.T) {
@@ -151,6 +149,7 @@ Scan Overview for AWS Account
 			},
 			fromCache: false,
 			expected: `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactType": "aws_account",
   "Metadata": {
     "ImageConfig": {
@@ -311,6 +310,7 @@ Scan Overview for AWS Account
 }`,
 		},
 	}
+	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			report := New(
@@ -321,22 +321,20 @@ Scan Overview for AWS Account
 				tt.options.AWSOptions.Services,
 			)
 
-			output := filepath.Join(t.TempDir(), "output")
-			tt.options.Output = output
-			require.NoError(t, Write(report, tt.options, tt.fromCache))
+			output := bytes.NewBuffer(nil)
+			tt.options.SetOutputWriter(output)
+			require.NoError(t, Write(context.Background(), report, tt.options, tt.fromCache))
 
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)
 			assert.Equal(t, tt.options.AWSOptions.Region, report.Region)
 			assert.ElementsMatch(t, tt.options.AWSOptions.Services, report.ServicesInScope)
 
-			b, err := os.ReadFile(output)
-			require.NoError(t, err)
 			if tt.options.Format == "json" {
 				// json output can be formatted/ordered differently - we just care that the data matches
-				assert.JSONEq(t, tt.expected, string(b))
+				assert.JSONEq(t, tt.expected, output.String())
 			} else {
-				assert.Equal(t, tt.expected, string(b))
+				assert.Equal(t, tt.expected, output.String())
 			}
 		})
 	}

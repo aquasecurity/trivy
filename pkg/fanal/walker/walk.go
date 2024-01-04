@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/bmatcuk/doublestar"
+	"github.com/bmatcuk/doublestar/v4"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
@@ -15,23 +15,23 @@ import (
 var (
 	// These variables are exported so that a tool importing Trivy as a library can override these values.
 	AppDirs    = []string{".git"}
-	SystemDirs = []string{"proc", "sys", "dev"}
+	SystemDirs = []string{
+		"proc",
+		"sys",
+		"dev",
+	}
 )
 
-const (
-	defaultSizeThreshold = int64(200) << 20 // 200MB
-	slowSizeThreshold    = int64(100) << 10 // 10KB
-)
+const defaultSizeThreshold = int64(200) << 20 // 200MB
 
 type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) error
 
 type walker struct {
 	skipFiles []string
 	skipDirs  []string
-	slow      bool
 }
 
-func newWalker(skipFiles, skipDirs []string, slow bool) walker {
+func newWalker(skipFiles, skipDirs []string) walker {
 	var cleanSkipFiles, cleanSkipDirs []string
 	for _, skipFile := range skipFiles {
 		skipFile = filepath.ToSlash(filepath.Clean(skipFile))
@@ -48,7 +48,6 @@ func newWalker(skipFiles, skipDirs []string, slow bool) walker {
 	return walker{
 		skipFiles: cleanSkipFiles,
 		skipDirs:  cleanSkipDirs,
-		slow:      slow,
 	}
 }
 

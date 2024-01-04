@@ -4,11 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -179,7 +178,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 			},
 		},
 		{
-			name:   "distoless",
+			name:   "distroless",
 			result: &analyzer.AnalysisResult{},
 			blob: &types.BlobInfo{
 				Applications: []types.Application{

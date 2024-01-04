@@ -29,10 +29,10 @@ func Test_showVersion(t *testing.T) {
 			name: "happy path, table output",
 			args: args{
 				outputFormat: "table",
-				version:      "v1.2.3",
+				version:      "dev",
 				cacheDir:     "testdata",
 			},
-			want: `Version: v1.2.3
+			want: `Version: dev
 Vulnerability DB:
   Version: 2
   UpdatedAt: 2022-03-02 06:07:07.99504083 +0000 UTC
@@ -52,17 +52,17 @@ Policy Bundle:
 			name: "sad path, bogus cache dir",
 			args: args{
 				outputFormat: "json",
-				version:      "1.2.3",
+				version:      "dev",
 				cacheDir:     "/foo/bar/bogus",
 			},
-			want: `{"Version":"1.2.3"}
+			want: `{"Version":"dev"}
 `,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := new(bytes.Buffer)
-			showVersion(tt.args.cacheDir, tt.args.outputFormat, tt.args.version, got)
+			showVersion(tt.args.cacheDir, tt.args.outputFormat, got)
 			assert.Equal(t, tt.want, got.String(), tt.name)
 		})
 	}
@@ -70,7 +70,7 @@ Policy Bundle:
 
 // Check flag and command for print version
 func TestPrintVersion(t *testing.T) {
-	tableOutput := `Version: test
+	tableOutput := `Version: dev
 Vulnerability DB:
   Version: 2
   UpdatedAt: 2022-03-02 06:07:07.99504083 +0000 UTC
@@ -85,7 +85,7 @@ Policy Bundle:
   Digest: sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd
   DownloadedAt: 2023-03-02 01:06:08.191725 +0000 UTC
 `
-	jsonOutput := `{"Version":"test","VulnerabilityDB":{"Version":2,"NextUpdate":"2022-03-02T12:07:07.99504023Z","UpdatedAt":"2022-03-02T06:07:07.99504083Z","DownloadedAt":"2022-03-02T10:03:38.383312Z"},"JavaDB":{"Version":1,"NextUpdate":"2023-03-17T00:47:02.774253254Z","UpdatedAt":"2023-03-14T00:47:02.774253754Z","DownloadedAt":"2023-03-14T03:04:55.058541039Z"},"PolicyBundle":{"Digest":"sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd","DownloadedAt":"2023-03-01T17:06:08.191725-08:00"}}
+	jsonOutput := `{"Version":"dev","VulnerabilityDB":{"Version":2,"NextUpdate":"2022-03-02T12:07:07.99504023Z","UpdatedAt":"2022-03-02T06:07:07.99504083Z","DownloadedAt":"2022-03-02T10:03:38.383312Z"},"JavaDB":{"Version":1,"NextUpdate":"2023-03-17T00:47:02.774253254Z","UpdatedAt":"2023-03-14T00:47:02.774253754Z","DownloadedAt":"2023-03-14T03:04:55.058541039Z"},"PolicyBundle":{"Digest":"sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd","DownloadedAt":"2023-03-02T01:06:08.191725Z"}}
 `
 	tests := []struct {
 		name      string
@@ -157,7 +157,7 @@ Policy Bundle:
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			got := new(bytes.Buffer)
-			app := NewApp("test")
+			app := NewApp()
 			app.SetOut(got)
 			app.SetArgs(test.arguments)
 
@@ -257,7 +257,7 @@ func TestFlags(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			globalFlags := flag.NewGlobalFlagGroup()
-			rootCmd := NewRootCommand("dev", globalFlags)
+			rootCmd := NewRootCommand(globalFlags)
 			rootCmd.SetErr(io.Discard)
 			rootCmd.SetOut(io.Discard)
 
@@ -270,7 +270,7 @@ func TestFlags(t *testing.T) {
 					// Bind
 					require.NoError(t, flags.Bind(cmd))
 
-					options, err := flags.ToOptions("dev", args, globalFlags)
+					options, err := flags.ToOptions(args, globalFlags)
 					require.NoError(t, err)
 
 					assert.Equal(t, tt.want.format, options.Format)

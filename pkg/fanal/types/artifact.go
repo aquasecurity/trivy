@@ -7,11 +7,10 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 )
 
 type OS struct {
-	Family string
+	Family OSType
 	Name   string
 	Eosl   bool `json:"EOSL,omitempty"`
 
@@ -24,8 +23,8 @@ func (o *OS) Detected() bool {
 }
 
 // Merge merges OS version and enhanced security maintenance programs
-func (o *OS) Merge(new OS) {
-	if lo.IsEmpty(new) {
+func (o *OS) Merge(newOS OS) {
+	if lo.IsEmpty(newOS) {
 		return
 	}
 
@@ -33,26 +32,26 @@ func (o *OS) Merge(new OS) {
 	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
-	case o.Family == aos.RedHat, o.Family == aos.Debian:
-		*o = new
+	case o.Family == RedHat, o.Family == Debian:
+		*o = newOS
 	default:
 		if o.Family == "" {
-			o.Family = new.Family
+			o.Family = newOS.Family
 		}
 		if o.Name == "" {
-			o.Name = new.Name
+			o.Name = newOS.Name
 		}
 		// Ubuntu has ESM program: https://ubuntu.com/security/esm
 		// OS version and esm status are stored in different files.
 		// We have to merge OS version after parsing these files.
-		if o.Extended || new.Extended {
+		if o.Extended || newOS.Extended {
 			o.Extended = true
 		}
 	}
 }
 
 type Repository struct {
-	Family  string `json:",omitempty"`
+	Family  OSType `json:",omitempty"`
 	Release string `json:",omitempty"`
 }
 
@@ -63,25 +62,24 @@ type Layer struct {
 }
 
 type Package struct {
-	ID         string   `json:",omitempty"`
-	Name       string   `json:",omitempty"`
-	Version    string   `json:",omitempty"`
-	Release    string   `json:",omitempty"`
-	Epoch      int      `json:",omitempty"`
-	Arch       string   `json:",omitempty"`
-	Dev        bool     `json:",omitempty"`
-	SrcName    string   `json:",omitempty"`
-	SrcVersion string   `json:",omitempty"`
-	SrcRelease string   `json:",omitempty"`
-	SrcEpoch   int      `json:",omitempty"`
-	Licenses   []string `json:",omitempty"`
-	Maintainer string   `json:",omitempty"`
+	ID         string        `json:",omitempty"`
+	Name       string        `json:",omitempty"`
+	Identifier PkgIdentifier `json:",omitempty"`
+	Version    string        `json:",omitempty"`
+	Release    string        `json:",omitempty"`
+	Epoch      int           `json:",omitempty"`
+	Arch       string        `json:",omitempty"`
+	Dev        bool          `json:",omitempty"`
+	SrcName    string        `json:",omitempty"`
+	SrcVersion string        `json:",omitempty"`
+	SrcRelease string        `json:",omitempty"`
+	SrcEpoch   int           `json:",omitempty"`
+	Licenses   []string      `json:",omitempty"`
+	Maintainer string        `json:",omitempty"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
-
-	Ref      string `json:",omitempty"` // identifier which can be used to reference the component elsewhere
-	Indirect bool   `json:",omitempty"` // this package is direct dependency of the project or not
+	Indirect        bool       `json:",omitempty"` // this package is direct dependency of the project or not
 
 	// Dependencies of this package
 	// Note:　it may have interdependencies, which may lead to infinite loops.
@@ -97,6 +95,29 @@ type Package struct {
 
 	// lines from the lock file where the dependency is written
 	Locations []Location `json:",omitempty"`
+
+	// Files installed by the package
+	InstalledFiles []string `json:",omitempty"`
+}
+
+// PkgIdentifier represents a software identifiers in one of more of the supported formats.
+type PkgIdentifier struct {
+	PURL   *PackageURL `json:",omitempty"`
+	BOMRef string      `json:",omitempty"` // For CycloneDX
+}
+
+func (id *PkgIdentifier) Empty() bool {
+	return id.PURL == nil && id.BOMRef == ""
+}
+
+func (id *PkgIdentifier) Match(s string) bool {
+	switch {
+	case id.BOMRef == s:
+		return true
+	case id.PURL != nil && id.PURL.String() == s:
+		return true
+	}
+	return false
 }
 
 type Location struct {
@@ -166,7 +187,7 @@ type PackageInfo struct {
 
 type Application struct {
 	// e.g. bundler and pipenv
-	Type string
+	Type LangType
 
 	// Lock files have the file path here, while each package metadata do not have
 	FilePath string `json:",omitempty"`
@@ -185,13 +206,13 @@ type File struct {
 type ArtifactType string
 
 const (
-	ArtifactContainerImage   ArtifactType = "container_image"
-	ArtifactFilesystem       ArtifactType = "filesystem"
-	ArtifactRemoteRepository ArtifactType = "repository"
-	ArtifactCycloneDX        ArtifactType = "cyclonedx"
-	ArtifactSPDX             ArtifactType = "spdx"
-	ArtifactAWSAccount       ArtifactType = "aws_account"
-	ArtifactVM               ArtifactType = "vm"
+	ArtifactContainerImage ArtifactType = "container_image"
+	ArtifactFilesystem     ArtifactType = "filesystem"
+	ArtifactRepository     ArtifactType = "repository"
+	ArtifactCycloneDX      ArtifactType = "cyclonedx"
+	ArtifactSPDX           ArtifactType = "spdx"
+	ArtifactAWSAccount     ArtifactType = "aws_account"
+	ArtifactVM             ArtifactType = "vm"
 )
 
 // ArtifactReference represents a reference of container image, local filesystem and repository
@@ -262,7 +283,7 @@ type BlobInfo struct {
 	CustomResources []CustomResource `json:",omitempty"`
 }
 
-// ArtifactDetail is generated by applying blobs
+// ArtifactDetail represents the analysis result.
 type ArtifactDetail struct {
 	OS                OS                 `json:",omitempty"`
 	Repository        *Repository        `json:",omitempty"`

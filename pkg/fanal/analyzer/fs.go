@@ -87,8 +87,8 @@ func (c *CompositeFS) CreateLink(analyzerTypes []Type, rootDir, virtualPath, rea
 }
 
 // Set sets the fs.FS for the specified post-analyzer
-func (c *CompositeFS) Set(t Type, fs *mapfs.FS) {
-	c.files.Store(t, fs)
+func (c *CompositeFS) Set(t Type, mfs *mapfs.FS) {
+	c.files.Store(t, mfs)
 }
 
 // Get returns the fs.FS for the specified post-analyzer

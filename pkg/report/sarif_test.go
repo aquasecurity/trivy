@@ -89,7 +89,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -118,8 +118,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											"security-severity": "7.5",
 										},
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
-											Markdown: lo.ToPtr("**Vulnerability CVE-2020-0001**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|foo|3.4.5|[CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)|\n\nbaz"),
+											Text:     lo.ToPtr("Vulnerability CVE-2020-0001\\nSeverity: HIGH\\nPackage: foo\\nFixed Version: 3.4.5\\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\\nbaz"),
+											Markdown: lo.ToPtr("**Vulnerability CVE-2020-0001**\\n| Severity | Package | Fixed Version | Link |\\n| --- | --- | --- | --- |\\n|HIGH|foo|3.4.5|[CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)|\\n\\nbaz"),
 										},
 									},
 								},
@@ -130,7 +130,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("CVE-2020-0001"),
 								RuleIndex: lo.ToPtr[uint](0),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
+								Message:   sarif.Message{Text: lo.ToPtr("Package: foo\\nInstalled Version: 1.2.3\\nVulnerability CVE-2020-0001\\nSeverity: HIGH\\nFixed Version: 3.4.5\\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
 								Locations: []*sarif.Location{
 									{
 										Message: &sarif.Message{Text: lo.ToPtr("library/test: foo@1.2.3")},
@@ -214,7 +214,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -243,8 +243,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											"security-severity": "8.0",
 										},
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Misconfiguration KSV001\nType: Kubernetes Security Check\nSeverity: HIGH\nCheck: Image tag ':latest' used\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)\n"),
-											Markdown: lo.ToPtr("**Misconfiguration KSV001**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|HIGH|Image tag ':latest' used|Message|[KSV001](https://avd.aquasec.com/appshield/ksv001)|\n\n"),
+											Text:     lo.ToPtr("Misconfiguration KSV001\\nType: Kubernetes Security Check\\nSeverity: HIGH\\nCheck: Image tag ':latest' used\\nMessage: Message\\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)\\n"),
+											Markdown: lo.ToPtr("**Misconfiguration KSV001**\\n| Type | Severity | Check | Message | Link |\\n| --- | --- | --- | --- | --- |\\n|Kubernetes Security Check|HIGH|Image tag ':latest' used|Message|[KSV001](https://avd.aquasec.com/appshield/ksv001)|\\n\\n"),
 										},
 									},
 									{
@@ -266,8 +266,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											"security-severity": "9.5",
 										},
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Misconfiguration KSV002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\n"),
-											Markdown: lo.ToPtr("**Misconfiguration KSV002**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|CRITICAL|SYS_ADMIN capability added|Message|[KSV002](https://avd.aquasec.com/appshield/ksv002)|\n\n"),
+											Text:     lo.ToPtr("Misconfiguration KSV002\\nType: Kubernetes Security Check\\nSeverity: CRITICAL\\nCheck: SYS_ADMIN capability added\\nMessage: Message\\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\\n"),
+											Markdown: lo.ToPtr("**Misconfiguration KSV002**\\n| Type | Severity | Check | Message | Link |\\n| --- | --- | --- | --- | --- |\\n|Kubernetes Security Check|CRITICAL|SYS_ADMIN capability added|Message|[KSV002](https://avd.aquasec.com/appshield/ksv002)|\\n\\n"),
 										},
 									},
 								},
@@ -278,7 +278,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("KSV001"),
 								RuleIndex: lo.ToPtr[uint](0),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test\\nType: \\nVulnerability KSV001\\nSeverity: HIGH\\nMessage: Message\\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
 								Locations: []*sarif.Location{
 									{
 										Message: &sarif.Message{Text: lo.ToPtr("library/test")},
@@ -301,7 +301,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("KSV002"),
 								RuleIndex: lo.ToPtr[uint](1),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test\\nType: \\nVulnerability KSV002\\nSeverity: CRITICAL\\nMessage: Message\\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
 								Locations: []*sarif.Location{
 									{
 										Message: &sarif.Message{Text: lo.ToPtr("library/test")},
@@ -354,7 +354,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -383,8 +383,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 											"security-severity": "9.5",
 										},
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Secret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\""),
-											Markdown: lo.ToPtr("**Secret AWS Secret Access Key**\n| Severity | Match |\n| --- | --- |\n|CRITICAL|'AWS_secret_KEY'=\"****************************************\"|"),
+											Text:     lo.ToPtr("Secret AWS Secret Access Key\\nSeverity: CRITICAL\\nMatch: 'AWS_secret_KEY'=\"****************************************\""),
+											Markdown: lo.ToPtr("**Secret AWS Secret Access Key**\\n| Severity | Match |\\n| --- | --- |\\n|CRITICAL|'AWS_secret_KEY'=\"****************************************\"|"),
 										},
 									},
 								},
@@ -395,7 +395,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleID:    lo.ToPtr("aws-secret-access-key"),
 								RuleIndex: lo.ToPtr[uint](0),
 								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test\nType: \nSecret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\"")},
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: library/test\\nType: \\nSecret AWS Secret Access Key\\nSeverity: CRITICAL\\nMatch: 'AWS_secret_KEY'=\"****************************************\"")},
 								Locations: []*sarif.Location{
 									{
 										Message: &sarif.Message{Text: lo.ToPtr("library/test")},
@@ -426,10 +426,99 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
+			name: "report with licenses",
+			input: types.Report{
+				Results: types.Results{
+					{
+						Target: "OS Packages",
+						Class:  "license",
+						Licenses: []types.DetectedLicense{
+							{
+								Severity:   "HIGH",
+								Category:   "restricted",
+								PkgName:    "alpine-base",
+								FilePath:   "",
+								Name:       "GPL-3.0",
+								Confidence: 1,
+								Link:       "",
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       lo.ToPtr("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        lo.ToPtr(""),
+								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
+								Rules: []*sarif.ReportingDescriptor{
+									{
+										ID:                   "alpine-base:GPL-3.0",
+										Name:                 lo.ToPtr("License"),
+										ShortDescription:     sarif.NewMultiformatMessageString("GPL-3.0 in alpine-base"),
+										FullDescription:      sarif.NewMultiformatMessageString("GPL-3.0 in alpine-base"),
+										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error"),
+										Help: sarif.NewMultiformatMessageString("License GPL-3.0\\nClassification: restricted\\nPkgName: alpine-base\\nPath: ").
+											WithMarkdown("**License GPL-3.0**\\n| PkgName | Classification | Path |\\n| --- | --- | --- |\\n|alpine-base|restricted||"),
+										Properties: map[string]interface{}{
+											"tags": []interface{}{
+												"license",
+												"security",
+												"HIGH",
+											},
+											"precision":         "very-high",
+											"security-severity": "8.0",
+										},
+									},
+								},
+							},
+						},
+						Results: []*sarif.Result{
+							{
+								RuleID:    lo.ToPtr("alpine-base:GPL-3.0"),
+								RuleIndex: lo.ToPtr(uint(0)),
+								Level:     lo.ToPtr("error"),
+								Message:   sarif.Message{Text: lo.ToPtr("Artifact: OS Packages\\nLicense GPL-3.0\\nPkgName: restricted\\n Classification: alpine-base\\n Path: ")},
+								Locations: []*sarif.Location{
+									{
+										Message: sarif.NewTextMessage(""),
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       lo.ToPtr("OS Packages"),
+												URIBaseId: lo.ToPtr("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   lo.ToPtr(1),
+												EndLine:     lo.ToPtr(1),
+												StartColumn: lo.ToPtr(1),
+												EndColumn:   lo.ToPtr(1),
+											},
+										},
+									},
+								},
+							},
+						},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: lo.ToPtr("file:///"),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "no vulns",
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{

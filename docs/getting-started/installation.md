@@ -59,15 +59,15 @@ brew install trivy
 
 ### Arch Linux (Community)
 
-Arch Community Package Manager.
+Arch Linux Package Repository.
 
 ```bash
 pacman -S trivy
 ```
 
 References: 
-- <https://archlinux.org/packages/community/x86_64/trivy/>
-- <https://github.com/archlinux/svntogit-community/blob/packages/trivy/trunk/PKGBUILD>
+- <https://archlinux.org/packages/extra/x86_64/trivy/>
+- <https://gitlab.archlinux.org/archlinux/packaging/packages/trivy/-/blob/main/PKGBUILD>
 
 
 ### MacPorts (Community)
@@ -149,10 +149,11 @@ Example:
 docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image python:3.4-alpine
 ```
 
-Registry | Repository | Link | Supportability
-Docker Hub | `docker.io/aquasec/trivy` | https://hub.docker.com/r/aquasec/trivy | Official
-GitHub Container Registry (GHCR) | `ghcr.io/aquasecurity/trivy` | https://github.com/orgs/aquasecurity/packages/container/package/trivy | Official
-AWS Elastic Container Registry (ECR) | `public.ecr.aws/aquasecurity/trivy` | https://gallery.ecr.aws/aquasecurity/trivy | Official
+| Registry                             | Repository                          | Link                                                                  | Supportability |
+|--------------------------------------|-------------------------------------|-----------------------------------------------------------------------|----------------|
+| Docker Hub                           | `docker.io/aquasec/trivy`           | https://hub.docker.com/r/aquasec/trivy                                | Official       |
+| GitHub Container Registry (GHCR)     | `ghcr.io/aquasecurity/trivy`        | https://github.com/orgs/aquasecurity/packages/container/package/trivy | Official       |
+| AWS Elastic Container Registry (ECR) | `public.ecr.aws/aquasecurity/trivy` | https://gallery.ecr.aws/aquasecurity/trivy                            | Official       |
 
 ## Other Tools to use and deploy Trivy
 

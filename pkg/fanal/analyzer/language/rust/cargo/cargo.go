@@ -4,19 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
 
+	"github.com/BurntSushi/toml"
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/BurntSushi/toml"
-	"github.com/samber/lo"
-
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/rust/cargo"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/go-version/pkg/semver"
@@ -59,7 +58,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		return filepath.Base(path) == types.CargoLock
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		// Parse Cargo.lock
 		app, err := a.parseCargoLock(path, r)
 		if err != nil {
@@ -99,7 +98,7 @@ func (a cargoAnalyzer) Version() int {
 	return version
 }
 
-func (a cargoAnalyzer) parseCargoLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
+func (a cargoAnalyzer) parseCargoLock(path string, r io.Reader) (*types.Application, error) {
 	return language.Parse(types.Cargo, path, r, a.lockParser)
 }
 
@@ -120,7 +119,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	})
 
 	// Identify direct dependencies
-	pkgs := map[string]types.Package{}
+	pkgs := make(map[string]types.Package)
 	for name, constraint := range directDeps {
 		for _, pkg := range app.Libraries {
 			if pkg.Name != name {
@@ -170,7 +169,7 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]strin
 	defer func() { _ = f.Close() }()
 
 	tomlFile := cargoToml{}
-	deps := map[string]string{}
+	deps := make(map[string]string)
 	_, err = toml.NewDecoder(f).Decode(&tomlFile)
 	if err != nil {
 		return nil, xerrors.Errorf("toml decode error: %w", err)
@@ -211,7 +210,7 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]strin
 	return deps, nil
 }
 
-func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[string]types.Package, deps map[string]types.Package) {
+func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {
 	for _, pkgID := range pkg.DependsOn {
 		if _, ok := deps[pkgID]; ok {
 			continue

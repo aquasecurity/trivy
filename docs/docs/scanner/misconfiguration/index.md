@@ -35,28 +35,28 @@ $ trivy config [YOUR_IaC_DIRECTORY]
     ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ```
 
-You can also enable misconfiguration detection in container image, filesystem and git repository scanning via `--scanners config`.
+You can also enable misconfiguration detection in container image, filesystem and git repository scanning via `--scanners misconfig`.
 
 ```bash
-$ trivy image --scanners config IMAGE_NAME
+$ trivy image --scanners misconfig IMAGE_NAME
 ```
 
 ```bash
-$ trivy fs --scanners config /path/to/dir
+$ trivy fs --scanners misconfig /path/to/dir
 ```
 
 !!! note
     Misconfiguration detection is not enabled by default in `image`, `fs` and `repo` subcommands.
 
 Unlike the `config` subcommand, `image`, `fs` and `repo` subcommands can also scan for vulnerabilities and secrets at the same time. 
-You can specify `--scanners vuln,config,secret` to enable vulnerability and secret detection as well as misconfiguration detection.
+You can specify `--scanners vuln,misconfig,secret` to enable vulnerability and secret detection as well as misconfiguration detection.
 
 
 !!! example
     ``` bash
     $ ls myapp/
     Dockerfile Pipfile.lock
-    $ trivy fs --scanners vuln,config,secret --severity HIGH,CRITICAL myapp/
+    $ trivy fs --scanners vuln,misconfig,secret --severity HIGH,CRITICAL myapp/
     2022-05-16T13:42:21.440+0100	INFO	Number of language-specific files: 1
     2022-05-16T13:42:21.440+0100	INFO	Detecting pipenv vulnerabilities...
     2022-05-16T13:42:21.440+0100	INFO	Detected config files: 1
@@ -315,6 +315,15 @@ Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
+### Enabling a subset of misconfiguration scanners
+It's possible to only enable certain misconfiguration scanners if you prefer. You can do so by passing the `--misconfig-scanners` option.
+This flag takes a comma-separated list of configuration scanner types.
+```bash
+trivy config --misconfig-scanners=terraform,dockerfile .
+```
+
+Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
+
 ### Pass custom policies
 You can pass policy files or directories including your custom policies through `--policy` option.
 This can be repeated for specifying multiple files or directories.
@@ -347,57 +356,6 @@ This can be repeated for specifying multiple packages.
 
 ``` bash
 trivy conf --policy ./policy --namespaces main --namespaces user ./configs
-```
-
-### Terraform value overrides
-You can pass `tf-vars` files to Trivy to override default values found in the Terraform HCL code.
-
-```bash
-trivy conf --tf-vars dev.terraform.tfvars ./infrastructure/tf
-```
-
-### Exclude downloaded Terraform modules
-You can remove results for downloaded modules in `.terraform` folder.
-```bash
-trivy conf --tf-exclude-downloaded-modules ./configs
-```
-
-### Helm value overrides
-There are a number of options for overriding values in Helm charts. When override values are passed to the Helm scanner, the values will be used during the Manifest rendering process and will become part of the scanned artifact.
-
-#### Setting inline value overrides
-Overrides can be set inline on the command line
-
-```bash
-trivy conf --helm-set securityContext.runAsUser=0 ./charts/mySql
-```
-
-#### Setting value file overrides
-Overrides can be in a file that has the key=value set.
-
-```yaml
-# Example override file (overrides.yaml)
-
-securityContext:
-  runAsUser: 0
-```
-
-```bash
-trivy conf --helm-values overrides.yaml ./charts/mySql
-``` 
-
-#### Setting value as explicit string
-the `--helm-set-string` is the same as `--helm-set` but explicitly retains the value as a string
-
-```bash
-trivy config --helm-set-string name=false ./infrastructure/tf
-```
-
-#### Setting specific values from files
-Specific override values can come from specific files
-
-```bash
-trivy conf --helm-set-file environment=dev.values.yaml ./charts/mySql
 ```
 
 [custom]: custom/index.md

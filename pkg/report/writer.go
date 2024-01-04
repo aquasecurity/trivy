@@ -1,6 +1,8 @@
 package report
 
 import (
+	"context"
+	"errors"
 	"io"
 	"strings"
 	"sync"
@@ -8,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
@@ -23,12 +26,16 @@ const (
 )
 
 // Write writes the result to output, format as passed in argument
-func Write(report types.Report, option flag.Options) error {
-	output, err := option.OutputWriter()
+func Write(ctx context.Context, report types.Report, option flag.Options) (err error) {
+	output, cleanup, err := option.OutputWriter(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to create a file: %w", err)
 	}
-	defer output.Close()
+	defer func() {
+		if cerr := cleanup(); cerr != nil {
+			err = errors.Join(err, cerr)
+		}
+	}()
 
 	// Compliance report
 	if option.Compliance.Spec.ID != "" {
@@ -71,13 +78,18 @@ func Write(report types.Report, option flag.Options) error {
 			break
 		}
 		var err error
-		if writer, err = NewTemplateWriter(output, option.Template); err != nil {
+		if writer, err = NewTemplateWriter(output, option.Template, option.AppVersion); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	case types.FormatSarif:
+		target := ""
+		if report.ArtifactType == ftypes.ArtifactFilesystem {
+			target = option.Target
+		}
 		writer = &SarifWriter{
 			Output:  output,
 			Version: option.AppVersion,
+			Target:  target,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)
@@ -85,9 +97,10 @@ func Write(report types.Report, option flag.Options) error {
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
 
-	if err := writer.Write(report); err != nil {
+	if err = writer.Write(report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
+
 	return nil
 }
 
