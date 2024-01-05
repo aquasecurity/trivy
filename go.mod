@@ -29,14 +29,14 @@ require (
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.5.9-0.20231203080602-50a069120091
 	github.com/aquasecurity/trivy-policies v0.6.1-0.20231120231532-f6f2330bf842
-	github.com/aws/aws-sdk-go-v2 v1.23.5
+	github.com/aws/aws-sdk-go-v2 v1.24.1
 	github.com/aws/aws-sdk-go-v2/config v1.25.11
 	github.com/aws/aws-sdk-go-v2/credentials v1.16.9
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.90
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.134.0
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.24.1
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.40.2
-	github.com/aws/aws-sdk-go-v2/service/sts v1.26.2
+	github.com/aws/aws-sdk-go-v2/service/sts v1.26.7
 	github.com/bmatcuk/doublestar/v4 v4.6.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.4
@@ -158,8 +158,8 @@ require (
 	github.com/aws/aws-sdk-go v1.48.4 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.14 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.9 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.8 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.8 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.10 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.10 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.7.1 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.1.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/accessanalyzer v1.21.1 // indirect
@@ -182,10 +182,10 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/elasticsearchservice v1.20.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/emr v1.28.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/iam v1.22.5 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.10.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.10.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.38 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.35 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.10.8 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.10.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.15.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kafka v1.22.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kinesis v1.18.5 // indirect
@@ -201,7 +201,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.18.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.21.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/workspaces v1.31.1 // indirect
-	github.com/aws/smithy-go v1.18.1 // indirect
+	github.com/aws/smithy-go v1.19.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/briandowns/spinner v1.23.0 // indirect
