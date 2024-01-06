@@ -7,8 +7,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/uuid"
-	"github.com/spf13/viper"
 	"io"
 	"net"
 	"os"
@@ -23,6 +21,7 @@ import (
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdxlib"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/xeipuuv/gojsonschema"
@@ -33,6 +32,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 
 	_ "modernc.org/sqlite"
 )
@@ -45,8 +45,6 @@ func initDB(t *testing.T) string {
 	fixtureDir := filepath.Join("testdata", "fixtures", "db")
 	entries, err := os.ReadDir(fixtureDir)
 	require.NoError(t, err)
-
-	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 
 	var fixtures []string
 	for _, entry := range entries {
@@ -197,17 +195,13 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 type runOptions struct {
 	wantErr  string
 	override func(want, got *types.Report)
-	fakeTime time.Time
 	fakeUUID string
 }
 
 // runTest runs Trivy with the given args and compares the output with the golden file.
-// If output is empty, the output file is created in a temporary directory.
+// If outputFile is empty, the output file is created in a temporary directory.
 // If update is true, the golden file is updated.
 func runTest(t *testing.T, osArgs []string, wantFile, outputFile string, format types.Format, opts runOptions) {
-	if !opts.fakeTime.IsZero() {
-		clock.SetFakeTime(t, opts.fakeTime)
-	}
 	if opts.fakeUUID != "" {
 		uuid.SetFakeUUID(t, opts.fakeUUID)
 	}
@@ -248,13 +242,16 @@ func execute(osArgs []string) error {
 	// viper.XXX() (e.g. viper.ReadInConfig()) affects the global state, so we need to reset it after each test.
 	defer viper.Reset()
 
+	// Set a fake time
+	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+
 	// Setup CLI App
 	app := commands.NewApp()
 	app.SetOut(io.Discard)
+	app.SetArgs(osArgs)
 
 	// Run Trivy
-	app.SetArgs(osArgs)
-	return app.Execute()
+	return app.ExecuteContext(ctx)
 }
 
 func compareRawFiles(t *testing.T, wantFile, gotFile string) {

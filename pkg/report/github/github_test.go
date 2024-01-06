@@ -2,6 +2,7 @@ package github_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"testing"
 
@@ -174,7 +175,7 @@ func TestWriter_Write(t *testing.T) {
 
 			inputResults := tt.report
 
-			err := w.Write(inputResults)
+			err := w.Write(context.Background(), inputResults)
 			assert.NoError(t, err)
 
 			var got github.DependencySnapshot

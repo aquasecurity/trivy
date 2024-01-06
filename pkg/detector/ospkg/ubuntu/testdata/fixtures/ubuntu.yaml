@@ -1,3 +1,10 @@
+- bucket: ubuntu 19.04
+  pairs:
+    - bucket: wpa
+      pairs:
+        - key: CVE-2019-9243
+          value:
+            FixedVersion: ""
 - bucket: ubuntu 20.04
   pairs:
     - bucket: wpa

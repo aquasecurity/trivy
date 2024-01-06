@@ -7,12 +7,10 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/uuid"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // TestConfiguration tests the configuration of the CLI flags, environmental variables, and config file
@@ -149,22 +147,6 @@ severity:
 	// Set a temp dir so that modules will not be loaded
 	t.Setenv("XDG_DATA_HOME", cacheDir)
 
-	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
-	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-
-	runTest := func(t *testing.T, tt test, osArgs []string, outputFile string) {
-		// Run "trivy repo"
-		err := execute(osArgs)
-		if tt.wantErr != "" {
-			require.ErrorContains(t, err, tt.wantErr)
-			return
-		}
-		require.NoError(t, err)
-
-		// Compare want and got
-		compareReports(t, tt.golden, outputFile, nil)
-	}
-
 	for _, tt := range tests {
 		command := "repo"
 
@@ -187,7 +169,9 @@ severity:
 			outputFile := filepath.Join(t.TempDir(), "output.json")
 			osArgs = append(osArgs, "--output", outputFile)
 
-			runTest(t, tt, osArgs, outputFile)
+			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
+				wantErr: tt.wantErr,
+			})
 		})
 
 		t.Run(tt.name+" with environmental variables", func(t *testing.T) {
@@ -208,7 +192,9 @@ severity:
 				tt.args.input,
 			}
 
-			runTest(t, tt, osArgs, outputFile)
+			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
+				wantErr: tt.wantErr,
+			})
 		})
 
 		t.Run(tt.name+" with config file", func(t *testing.T) {
@@ -236,7 +222,9 @@ db:
 				tt.args.input,
 			}
 
-			runTest(t, tt, osArgs, outputFile)
+			runTest(t, osArgs, tt.golden, outputFile, types.FormatJSON, runOptions{
+				wantErr: tt.wantErr,
+			})
 		})
 	}
 }

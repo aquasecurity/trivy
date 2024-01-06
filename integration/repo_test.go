@@ -4,14 +4,13 @@ package integration
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
-	"time"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/assert"
 )
 
 // TestRepository tests `trivy repo` with the local code repositories
@@ -489,7 +488,6 @@ func TestRepository(t *testing.T) {
 			}
 
 			runTest(t, osArgs, tt.golden, "", format, runOptions{
-				fakeTime: time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: tt.override,
 			})

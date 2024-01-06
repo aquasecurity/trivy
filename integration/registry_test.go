@@ -1,5 +1,4 @@
 //go:build integration
-// +build integration
 
 package integration
 
@@ -62,7 +61,10 @@ func setupRegistry(ctx context.Context, baseDir string, authURL *url.URL) (testc
 		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
 			hostConfig.AutoRemove = true
 		},
-		WaitingFor: wait.ForLog("listening on [::]:5443"),
+		WaitingFor: wait.ForHTTP("v2").WithTLS(true).WithAllowInsecure(true).
+			WithStatusCodeMatcher(func(status int) bool {
+				return status == http.StatusUnauthorized
+			}),
 	}
 
 	registryC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
