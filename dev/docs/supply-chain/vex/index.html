@@ -2461,6 +2461,40 @@ You're not viewing the latest version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#csaf" class="md-nav__link">
+    CSAF
+  </a>
+  
+    <nav class="md-nav" aria-label="CSAF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generating-the-sbom_2" class="md-nav__link">
+    Generating the SBOM
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-the-csaf-document" class="md-nav__link">
+    Create the CSAF document
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-sbom-with-csaf-document" class="md-nav__link">
+    Scan SBOM with CSAF document
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3671,6 +3705,40 @@ You're not viewing the latest version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#csaf" class="md-nav__link">
+    CSAF
+  </a>
+  
+    <nav class="md-nav" aria-label="CSAF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generating-the-sbom_2" class="md-nav__link">
+    Generating the SBOM
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-the-csaf-document" class="md-nav__link">
+    Create the CSAF document
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-sbom-with-csaf-document" class="md-nav__link">
+    Scan SBOM with CSAF document
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3696,10 +3764,11 @@ You're not viewing the latest version.
 </div>
 <p>Trivy supports filtering detected vulnerabilities using <a href="https://www.ntia.gov/files/ntia/publications/vex_one-page_summary.pdf">the Vulnerability Exploitability Exchange (VEX)</a>, a standardized format for sharing and exchanging information about vulnerabilities.
 By providing VEX alongside the Software Bill of Materials (SBOM) during scanning, it is possible to filter vulnerabilities based on their status.
-Currently, Trivy supports the following two formats:</p>
+Currently, Trivy supports the following three formats:</p>
 <ul>
 <li><a href="https://cyclonedx.org/capabilities/vex/">CycloneDX</a></li>
 <li><a href="https://github.com/openvex/spec">OpenVEX</a></li>
+<li><a href="https://oasis-open.github.io/csaf-documentation/specification.html">CSAF</a></li>
 </ul>
 <p>This is still an experimental implementation, with only minimal functionality added.</p>
 <h2 id="cyclonedx">CycloneDX</h2>
@@ -3844,6 +3913,128 @@ debian11.spdx.json (debian 11.6)
 Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
 </code></pre></div>
 <p>CVE-2019-8457 is no longer shown as it is filtered out according to the given OpenVEX document.</p>
+<h2 id="csaf">CSAF</h2>
+<p>Trivy also supports <a href="https://oasis-open.github.io/csaf-documentation/specification.html">CSAF</a> format for VEX.
+Since CSAF aims to be SBOM format agnostic, both CycloneDX and SPDX formats are available for use as input SBOMs in Trivy.</p>
+<p>The following steps are required:</p>
+<ol>
+<li>Generate a SBOM (CycloneDX or SPDX)</li>
+<li>Create a CSAF document based on the SBOM generated in step 1</li>
+<li>Provide the CSAF document when scanning the SBOM</li>
+</ol>
+<h3 id="generating-the-sbom_2">Generating the SBOM</h3>
+<p>You can generate a CycloneDX or SPDX SBOM with Trivy as follows:</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --format spdx-json --output debian11.spdx.json debian:11
+</code></pre></div>
+<h3 id="create-the-csaf-document">Create the CSAF document</h3>
+<p>Create a CSAF document in JSON format as follows:</p>
+<div class="highlight"><pre><span></span><code>$ cat &lt;&lt;EOF &gt; debian11.vex.csaf
+{
+  &quot;document&quot;: {
+    &quot;category&quot;: &quot;csaf_vex&quot;,
+    &quot;csaf_version&quot;: &quot;2.0&quot;,
+    &quot;notes&quot;: [
+      {
+        &quot;category&quot;: &quot;summary&quot;,
+        &quot;text&quot;: &quot;Example Company VEX document. Unofficial content for demonstration purposes only.&quot;,
+        &quot;title&quot;: &quot;Author comment&quot;
+      }
+    ],
+    &quot;publisher&quot;: {
+      &quot;category&quot;: &quot;vendor&quot;,
+      &quot;name&quot;: &quot;Example Company ProductCERT&quot;,
+      &quot;namespace&quot;: &quot;https://psirt.example.com&quot;
+    },
+    &quot;title&quot;: &quot;AquaSecurity example VEX document&quot;,
+    &quot;tracking&quot;: {
+      &quot;current_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,
+      &quot;generator&quot;: {
+        &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,
+        &quot;engine&quot;: {
+          &quot;name&quot;: &quot;Secvisogram&quot;,
+          &quot;version&quot;: &quot;1.11.0&quot;
+        }
+      },
+      &quot;id&quot;: &quot;2024-EVD-UC-01-A-001&quot;,
+      &quot;initial_release_date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,
+      &quot;revision_history&quot;: [
+        {
+          &quot;date&quot;: &quot;2024-01-01T11:00:00.000Z&quot;,
+          &quot;number&quot;: &quot;1&quot;,
+          &quot;summary&quot;: &quot;Initial version.&quot;
+        }
+      ],
+      &quot;status&quot;: &quot;final&quot;,
+      &quot;version&quot;: &quot;1&quot;
+    }
+  },
+  &quot;product_tree&quot;: {
+    &quot;branches&quot;: [
+      {
+        &quot;branches&quot;: [
+          {
+            &quot;branches&quot;: [
+              {
+                &quot;category&quot;: &quot;product_version&quot;,
+                &quot;name&quot;: &quot;5.3&quot;,
+                &quot;product&quot;: {
+                  &quot;name&quot;: &quot;Database Libraries 5.3&quot;,
+                  &quot;product_id&quot;: &quot;LIBDB-5328&quot;,
+                  &quot;product_identification_helper&quot;: {
+                    &quot;purl&quot;: &quot;pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.8?arch=amd64\u0026distro=debian-11.8&quot;
+                  }
+                }
+              }
+            ],
+            &quot;category&quot;: &quot;product_name&quot;,
+            &quot;name&quot;: &quot;Database Libraries&quot;
+          }
+        ],
+        &quot;category&quot;: &quot;vendor&quot;,
+        &quot;name&quot;: &quot;Debian&quot;
+      }
+    ]
+  },
+  &quot;vulnerabilities&quot;: [
+    {
+      &quot;cve&quot;: &quot;CVE-2019-8457&quot;,
+      &quot;notes&quot;: [
+        {
+          &quot;category&quot;: &quot;description&quot;,
+          &quot;text&quot;: &quot;SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.&quot;,
+          &quot;title&quot;: &quot;CVE description&quot;
+        }
+      ],
+      &quot;product_status&quot;: {
+        &quot;known_not_affected&quot;: [
+          &quot;LIBDB-5328&quot;
+        ]
+      },
+      &quot;threats&quot;: [
+        {
+          &quot;category&quot;: &quot;impact&quot;,
+          &quot;details&quot;: &quot;Vulnerable code not in execute path.&quot;,
+          &quot;product_ids&quot;: [
+            &quot;LIBDB-5328&quot;
+          ]
+        }
+      ]
+    }
+  ]
+}
+EOF
+</code></pre></div>
+<h3 id="scan-sbom-with-csaf-document">Scan SBOM with CSAF document</h3>
+<p>Provide the CSAF document when scanning the SBOM.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>trivy sbom debian11.spdx.json --vex debian11.vex.csaf
+<span class="go">...</span>
+<span class="go">2024-01-02T10:28:26.704+0100    INFO    Filtered out the detected vulnerability {&quot;VEX format&quot;: &quot;CSAF&quot;, &quot;vulnerability-id&quot;: &quot;CVE-2019-8457&quot;, &quot;status&quot;: &quot;not_affected&quot;}</span>
+
+<span class="go">debian11.spdx.json (debian 11.6)</span>
+<span class="go">================================</span>
+<span class="go">Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)</span>
+</code></pre></div>
+<p>CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.</p>
 
               
             </article>
