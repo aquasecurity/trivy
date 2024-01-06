@@ -41,7 +41,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/containerd/containerd v1.7.11
-	github.com/csaf-poc/csaf_distribution/v3 v3.0.0-rc.1.0.20231201143125-9073a8a282a4
+	github.com/csaf-poc/csaf_distribution/v3 v3.0.0
 	github.com/docker/docker v24.0.7+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.15.0
