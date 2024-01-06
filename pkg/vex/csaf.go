@@ -28,7 +28,6 @@ func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulne
 		found, ok := lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
 			return string(*item.CVE) == vuln.VulnerabilityID
 		})
-
 		if !ok {
 			return true
 		}
@@ -38,49 +37,42 @@ func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulne
 }
 
 func (v *CSAF) affected(vuln *csaf.Vulnerability, purl *ftypes.PackageURL) bool {
-	if purl == nil {
+	if purl == nil || vuln.ProductStatus == nil {
 		return true
 	}
 
-	if vuln.ProductStatus != nil {
-		if vuln.ProductStatus.KnownNotAffected != nil {
-			for _, product := range *vuln.ProductStatus.KnownNotAffected {
-				notAffectedPURLs := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
-				if len(notAffectedPURLs) > 0 && slices.Contains(notAffectedPURLs, purl.String()) {
-					v.logger.Infow(
-						"Filtered out the detected vulnerability",
-						zap.String("vulnerability-id", string(*vuln.CVE)),
-						zap.String("status", string(StatusNotAffected)),
-					)
-					return false
-				}
-			}
-		}
+	var status Status
+	switch {
+	case v.matchPURL(purl, vuln.ProductStatus.KnownNotAffected):
+		status = StatusNotAffected
+	case v.matchPURL(purl, vuln.ProductStatus.Fixed):
+		status = StatusFixed
+	}
 
-		if vuln.ProductStatus.Fixed != nil {
-			for _, product := range *vuln.ProductStatus.Fixed {
-				fixedPURLS := pURLsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(*product))
-				if len(fixedPURLS) > 0 && slices.Contains(fixedPURLS, purl.String()) {
-					v.logger.Infow(
-						"Filtered out the detected vulnerability",
-						zap.String("vulnerability-id", string(*vuln.CVE)),
-						zap.String("status", string(StatusFixed)),
-					)
-					return false
-				}
-			}
-		}
+	if status != "" {
+		v.logger.Infow("Filtered out the detected vulnerability",
+			zap.String("vulnerability-id", string(*vuln.CVE)),
+			zap.String("status", string(status)))
+		return false
 	}
 
 	return true
 }
 
-func pURLsFromProductIdentificationHelpers(helpers []*csaf.ProductIdentificationHelper) []string {
-	pURLs := make([]string, 0, len(helpers))
-	for _, helper := range helpers {
-		if helper != nil && helper.PURL != nil {
-			pURLs = append(pURLs, string(*helper.PURL))
+// matchPURL returns true if the given PackageURL is found in the ProductTree.
+func (v *CSAF) matchPURL(purl *ftypes.PackageURL, products *csaf.Products) bool {
+	for _, product := range lo.FromPtr(products) {
+		helpers := v.advisory.ProductTree.CollectProductIdentificationHelpers(lo.FromPtr(product))
+		purls := lo.FilterMap(helpers, func(helper *csaf.ProductIdentificationHelper, _ int) (string, bool) {
+			if helper == nil || helper.PURL == nil {
+				return "", false
+			}
+			return string(*helper.PURL), true
+		})
+		if slices.Contains(purls, purl.String()) {
+			return true
 		}
 	}
-	return pURLs
+
+	return false
 }

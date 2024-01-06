@@ -26,9 +26,7 @@ func (v *OpenVEX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVu
 		var stmts []openvex.Statement
 		if vuln.PkgIdentifier.PURL != nil {
 			matchedStmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgIdentifier.PURL.String(), nil)
-			if len(matchedStmts) > 0 {
-				stmts = append(stmts, matchedStmts...)
-			}
+			stmts = append(stmts, matchedStmts...)
 		}
 		if len(stmts) == 0 {
 			return true
