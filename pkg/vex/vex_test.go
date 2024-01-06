@@ -29,10 +29,11 @@ func TestVEX_Filter(t *testing.T) {
 		vulns []types.DetectedVulnerability
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   []types.DetectedVulnerability
+		name    string
+		fields  fields
+		args    args
+		want    []types.DetectedVulnerability
+		wantErr string
 	}{
 		{
 			name: "OpenVEX",
@@ -296,11 +297,23 @@ func TestVEX_Filter(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "unknown format",
+			fields: fields{
+				filePath: "testdata/unknown.json",
+			},
+			args:    args{},
+			wantErr: "unable to load VEX",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			v, err := vex.New(tt.fields.filePath, tt.fields.report)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, v.Filter(tt.args.vulns))
 		})

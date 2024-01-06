@@ -51,7 +51,7 @@ func New(filePath string, report types.Report) (VEX, error) {
 	// Try CSAF
 	if v, err := decodeCSAF(f); err != nil {
 		errs = multierror.Append(errs, err)
-	} else {
+	} else if v != nil {
 		return v, nil
 	}
 
