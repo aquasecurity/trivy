@@ -2,10 +2,8 @@ package terraform
 
 import (
 	"os"
-	"path/filepath"
 
-	"golang.org/x/exp/slices"
-
+	"github.com/aquasecurity/trivy-iac/pkg/detection"
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer/config"
 	"github.com/deepfactor-io/trivy/pkg/misconf"
@@ -15,11 +13,6 @@ const (
 	analyzerType = analyzer.TypeTerraform
 	version      = 1
 )
-
-var requiredExts = []string{
-	".tf",
-	".tf.json",
-}
 
 func init() {
 	analyzer.RegisterPostAnalyzer(analyzerType, newTerraformConfigAnalyzer)
@@ -41,5 +34,5 @@ func newTerraformConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAna
 
 // Required overrides config.Analyzer.Required() and checks if the given file is a Terraform file.
 func (*terraformConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return slices.Contains(requiredExts, filepath.Ext(filePath))
+	return detection.IsTerraformFile(filePath)
 }

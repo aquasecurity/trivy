@@ -29,7 +29,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+					BlobID: "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -38,11 +38,14 @@ func TestArtifact_Inspect(t *testing.T) {
 						},
 						PackageInfos: []types.PackageInfo{
 							{
-								Packages: []types.Package{
+								Packages: types.Packages{
 									{
-										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0",
-										Licenses: []string{"MIT"},
-										Ref:      "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+										Name:       "musl",
+										Version:    "1.2.3-r0",
+										SrcName:    "musl",
+										SrcVersion: "1.2.3-r0",
+										Licenses:   []string{"MIT"},
+										Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
@@ -54,7 +57,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "app/composer/composer.lock",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "pear/log",
 										Version: "1.13.1",
@@ -77,7 +80,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "gobinary",
 								FilePath: "app/gobinary/gobinary",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
@@ -91,7 +94,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "jar",
 								FilePath: "",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "org.codehaus.mojo:child-project",
 										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
@@ -99,13 +102,14 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
+										FilePath: "app/maven/target/child-project-1.0.jar",
 									},
 								},
 							},
 							{
 								Type:     "node-pkg",
 								FilePath: "",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:     "bootstrap",
 										Version:  "5.0.2",
@@ -114,6 +118,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
+										FilePath: "app/app/package.json",
 									},
 								},
 							},
@@ -125,9 +130,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+				ID:   "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 				BlobIDs: []string{
-					"sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+					"sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 				},
 			},
 		},
@@ -136,7 +141,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+					BlobID: "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -145,11 +150,14 @@ func TestArtifact_Inspect(t *testing.T) {
 						},
 						PackageInfos: []types.PackageInfo{
 							{
-								Packages: []types.Package{
+								Packages: types.Packages{
 									{
-										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0",
-										Licenses: []string{"MIT"},
-										Ref:      "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+										Name:       "musl",
+										Version:    "1.2.3-r0",
+										SrcName:    "musl",
+										SrcVersion: "1.2.3-r0",
+										Licenses:   []string{"MIT"},
+										Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
@@ -161,7 +169,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "app/composer/composer.lock",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "pear/log",
 										Version: "1.13.1",
@@ -184,7 +192,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "gobinary",
 								FilePath: "app/gobinary/gobinary",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
@@ -198,7 +206,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Type:     "jar",
 								FilePath: "",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:    "org.codehaus.mojo:child-project",
 										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
@@ -206,13 +214,14 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
+										FilePath: "app/maven/target/child-project-1.0.jar",
 									},
 								},
 							},
 							{
 								Type:     "node-pkg",
 								FilePath: "",
-								Libraries: []types.Package{
+								Libraries: types.Packages{
 									{
 										Name:     "bootstrap",
 										Version:  "5.0.2",
@@ -221,6 +230,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
+										FilePath: "app/app/package.json",
 									},
 								},
 							},
@@ -232,16 +242,19 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+				ID:   "sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 				BlobIDs: []string{
-					"sha256:f02a38a70e35a84032402711b68c75c6aafa1f77a01506a8e974cefd40e9038b",
+					"sha256:3dca5f9082ac4e9669b5e461ae54ffe70db4ea275a09506014b17e012687e855",
 				},
 			},
 		},
 		{
 			name:     "sad path with no such directory",
 			filePath: filepath.Join("testdata", "unknown.json"),
-			wantErr:  []string{"no such file or directory", "The system cannot find the file specified"},
+			wantErr: []string{
+				"no such file or directory",
+				"The system cannot find the file specified",
+			},
 		},
 		{
 			name:     "sad path PutBlob returns an error",

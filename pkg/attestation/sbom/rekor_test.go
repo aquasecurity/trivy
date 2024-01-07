@@ -22,7 +22,7 @@ func TestRekor_RetrieveSBOM(t *testing.T) {
 		{
 			name:   "happy path",
 			digest: "sha256:5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03",
-			want:   `{"bomFormat":"CycloneDX","specVersion":"1.4","version":2}`,
+			want:   `{"bomFormat":"CycloneDX","specVersion":"1.5","version":2}`,
 		},
 		{
 			name:    "404",

@@ -41,9 +41,9 @@ func InfraColumns() []string {
 
 func (tw TableWriter) Write(report Report) error {
 	switch tw.Report {
-	case allReport:
+	case AllReport:
 		t := pkgReport.Writer{Output: tw.Output, Severities: tw.Severities, ShowMessageOnce: &sync.Once{}}
-		for _, r := range report.Vulnerabilities {
+		for _, r := range report.Resources {
 			if r.Report.Results.Failed() {
 				err := t.Write(r.Report)
 				if err != nil {
@@ -51,15 +51,7 @@ func (tw TableWriter) Write(report Report) error {
 				}
 			}
 		}
-		for _, r := range report.Misconfigurations {
-			if r.Report.Results.Failed() {
-				err := t.Write(r.Report)
-				if err != nil {
-					return err
-				}
-			}
-		}
-	case summaryReport:
+	case SummaryReport:
 		writer := NewSummaryWriter(tw.Output, tw.Severities, tw.ColumnHeading)
 		return writer.Write(report)
 	default:

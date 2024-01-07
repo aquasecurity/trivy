@@ -3,6 +3,8 @@ package apk
 import (
 	"bufio"
 	"context"
+	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path"
@@ -13,6 +15,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 
+	"github.com/deepfactor-io/trivy/pkg/digest"
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/licensing"
@@ -51,7 +54,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		version        string
 		dir            string
 		installedFiles []string
-		provides       = map[string]string{} // for dependency graph
+		provides       = make(map[string]string) // for dependency graph
 	)
 
 	for scanner.Scan() {
@@ -86,11 +89,20 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		case "F:":
 			dir = line[2:]
 		case "R:":
-			installedFiles = append(installedFiles, path.Join(dir, line[2:]))
+			absPath := path.Join(dir, line[2:])
+			pkg.InstalledFiles = append(pkg.InstalledFiles, absPath)
+			installedFiles = append(installedFiles, absPath)
 		case "p:": // provides (corresponds to provides in PKGINFO, concatenated by spaces into a single line)
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
 			pkg.DependsOn = a.parseDependencies(line)
+		case "A:":
+			pkg.Arch = line[2:]
+		case "C:":
+			d := decodeChecksumLine(line)
+			if d != "" {
+				pkg.Digest = d
+			}
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {
@@ -134,11 +146,12 @@ func (a alpinePkgAnalyzer) parseLicense(line string) []string {
 	// e.g. MPL 2.0 GPL2+ => {"MPL2.0", "GPL2+"}
 	for i, s := range strings.Fields(line) {
 		s = strings.Trim(s, "()")
-		if s == "AND" || s == "OR" {
+		switch {
+		case s == "AND" || s == "OR":
 			continue
-		} else if i > 0 && (s == "1.0" || s == "2.0" || s == "3.0") {
+		case i > 0 && (s == "1.0" || s == "2.0" || s == "3.0"):
 			licenses[i-1] = licensing.Normalize(licenses[i-1] + s)
-		} else {
+		default:
 			licenses = append(licenses, licensing.Normalize(s))
 		}
 	}
@@ -184,7 +197,7 @@ func (a alpinePkgAnalyzer) consolidateDependencies(pkgs []types.Package, provide
 }
 
 func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Package) {
-	uniq := map[string]struct{}{}
+	uniq := make(map[string]struct{})
 	for _, pkg := range pkgs {
 		if _, ok := uniq[pkg.Name]; ok {
 			continue
@@ -205,4 +218,28 @@ func (a alpinePkgAnalyzer) Type() analyzer.Type {
 
 func (a alpinePkgAnalyzer) Version() int {
 	return analyzerVersion
+}
+
+// decodeChecksumLine decodes checksum line
+func decodeChecksumLine(line string) digest.Digest {
+	if len(line) < 2 {
+		log.Logger.Debugf("Unable to decode checksum line of apk package: %s", line)
+		return ""
+	}
+	// https://wiki.alpinelinux.org/wiki/Apk_spec#Package_Checksum_Field
+	// https://stackoverflow.com/a/71712569
+	alg := digest.MD5
+	d := line[2:]
+	if strings.HasPrefix(d, "Q1") {
+		alg = digest.SHA1
+		d = d[2:] // remove `Q1` prefix
+	}
+
+	decodedDigestString, err := base64.StdEncoding.DecodeString(d)
+	if err != nil {
+		log.Logger.Debugf("unable to decode digest: %s", err)
+		return ""
+	}
+	h := hex.EncodeToString(decodedDigestString)
+	return digest.NewDigestFromString(alg, h)
 }

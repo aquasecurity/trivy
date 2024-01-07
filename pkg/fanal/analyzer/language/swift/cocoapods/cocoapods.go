@@ -4,12 +4,12 @@ import (
 	"context"
 	"os"
 
+	"golang.org/x/xerrors"
+
 	"github.com/deepfactor-io/go-dep-parser/pkg/swift/cocoapods"
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
-
-	"golang.org/x/xerrors"
 )
 
 func init() {

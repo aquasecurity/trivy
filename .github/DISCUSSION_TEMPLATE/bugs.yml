@@ -1,0 +1,124 @@
+labels: ["kind/bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        #### Note
+        Feel free to raise a bug report if something doesn't work as expected.
+        Please ensure that you're not creating a duplicate report by searching the [issues](https://github.com/aquasecurity/trivy/issues)/[discussions](https://github.com/aquasecurity/trivy/discussions) beforehand.
+        If you see any false positives or false negatives, please file a ticket [here](https://github.com/aquasecurity/trivy/discussions/new?category=false-detection).
+        
+        **Do not open a GitHub issue, please.** Maintainers triage discussions and then create issues.
+        
+        Please also check [our contribution guidelines](https://aquasecurity.github.io/trivy/latest/community/contribute/discussion/).
+  - type: textarea
+    attributes:
+      label: Description
+      description: Briefly describe the problem you are having in a few paragraphs.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Desired Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Actual Behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction Steps
+      description: How do you trigger this bug? Please walk us through it step by step.
+      value: |
+        1.
+        2.
+        3.
+        ...
+      render: bash
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Target
+      description: Which target are you scanning? It is equal to which subcommand you are using.
+      options:
+        - Container Image
+        - Filesystem
+        - Git Repository
+        - Virtual Machine Image
+        - Kubernetes
+        - AWS
+        - SBOM
+    validations:
+      required: false
+  - type: dropdown
+    attributes:
+      label: Scanner
+      description: Which scanner are you using?
+      options:
+        - Vulnerability
+        - Misconfiguration
+        - Secret
+        - License
+    validations:
+      required: false
+  - type: dropdown
+    attributes:
+      label: Output Format
+      description: Which output format are you using?
+      options:
+        - Table
+        - JSON
+        - Template
+        - SARIF
+        - CycloneDX
+        - SPDX
+    validations:
+      required: false
+  - type: dropdown
+    attributes:
+      label: Mode
+      description: Which mode are you using? Specify "Standalone" if you are not using `trivy server`.
+      options:
+        - Standalone
+        - Client/Server
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Debug Output
+      description: Output of run with `--debug`
+      placeholder: "$ trivy <target> <subject> --debug"
+      render: bash
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Operating System
+      description: On what operating system are you running Trivy?
+      placeholder: "e.g. macOS Big Sur"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Version
+      description: Output of `trivy --version`
+      placeholder: "$ trivy --version"
+      render: bash
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Have you tried the following?
+      options:
+        - label: Run `trivy image --reset`
+        - label: Read [the troubleshooting](https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/)
+  - type: markdown
+    attributes:
+      value: |
+        We would be happy if you could share how you are using Trivy [here](https://github.com/aquasecurity/trivy/discussions/new?category=adopters).

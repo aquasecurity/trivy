@@ -10,6 +10,7 @@ import (
 	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
 	r "github.com/deepfactor-io/trivy/pkg/rpc"
 	"github.com/deepfactor-io/trivy/pkg/types"
+	xstrings "github.com/deepfactor-io/trivy/pkg/x/strings"
 	rpc "github.com/deepfactor-io/trivy/rpc/scanner"
 )
 
@@ -68,7 +69,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	// Convert to the rpc struct
-	licenseCategories := map[string]*rpc.Licenses{}
+	licenseCategories := make(map[string]*rpc.Licenses)
 	for category, names := range opts.LicenseCategories {
 		licenseCategories[string(category)] = &rpc.Licenses{Names: names}
 	}
@@ -82,9 +83,10 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
 				VulnType:          opts.VulnType,
-				Scanners:          opts.Scanners.StringSlice(),
+				Scanners:          xstrings.ToStringSlice(opts.Scanners),
 				ListAllPackages:   opts.ListAllPackages,
 				LicenseCategories: licenseCategories,
+				IncludeDevDeps:    opts.IncludeDevDeps,
 			},
 		})
 		return err

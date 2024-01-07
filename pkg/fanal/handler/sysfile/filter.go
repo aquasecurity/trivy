@@ -4,12 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"github.com/deepfactor-io/trivy/pkg/fanal/artifact"
-
 	"golang.org/x/exp/slices"
 
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
-
+	"github.com/deepfactor-io/trivy/pkg/fanal/artifact"
 	"github.com/deepfactor-io/trivy/pkg/fanal/handler"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
@@ -29,7 +27,7 @@ var (
 		"/usr/lib/python2.7/wsgiref.egg-info",
 	}
 
-	affectedTypes = []string{
+	affectedTypes = []types.LangType{
 		// ruby
 		types.GemSpec,
 

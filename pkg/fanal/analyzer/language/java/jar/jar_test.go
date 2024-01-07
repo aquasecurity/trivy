@@ -6,11 +6,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/javadb"
 	"github.com/deepfactor-io/trivy/pkg/mapfs"
-	"github.com/stretchr/testify/assert"
 
 	_ "modernc.org/sqlite"
 )
@@ -34,7 +35,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.war",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "org.glassfish:javax.el",
 								FilePath: "testdata/test.war/WEB-INF/lib/javax.el-3.0.0.jar",
@@ -89,7 +90,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.par",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par/lib/jackson-core-2.9.10.jar",
@@ -109,7 +110,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.jar",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
 								FilePath: "testdata/test.jar",
@@ -129,9 +130,9 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// init java-trivy-db with skip update
-			javadb.Init("testdata", defaultJavaDBRepository, true, false, false)
+			javadb.Init("testdata", defaultJavaDBRepository, true, false, types.RegistryOptions{Insecure: false})
 
-			a := javaLibraryAnalyzer{slow: true}
+			a := javaLibraryAnalyzer{}
 			ctx := context.Background()
 
 			mfs := mapfs.New()

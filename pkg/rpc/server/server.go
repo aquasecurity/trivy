@@ -50,6 +50,7 @@ func (s *ScanServer) Scan(ctx context.Context, in *rpcScanner.ScanRequest) (*rpc
 		VulnType:        in.Options.VulnType,
 		Scanners:        scanners,
 		ListAllPackages: in.Options.ListAllPackages,
+		IncludeDevDeps:  in.Options.IncludeDevDeps,
 	}
 	results, os, err := s.localScanner.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {

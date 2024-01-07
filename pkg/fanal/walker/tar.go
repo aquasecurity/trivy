@@ -25,14 +25,10 @@ type LayerTar struct {
 	threshold int64
 }
 
-func NewLayerTar(skipFiles, skipDirs []string, slow bool) LayerTar {
+func NewLayerTar(skipFiles, skipDirs []string) LayerTar {
 	threshold := defaultSizeThreshold
-	if slow {
-		threshold = slowSizeThreshold
-	}
-
 	return LayerTar{
-		walker:    newWalker(skipFiles, skipDirs, slow),
+		walker:    newWalker(skipFiles, skipDirs),
 		threshold: threshold,
 	}
 }
@@ -85,7 +81,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 			continue
 		}
 
-		// A symbolic/hard link or regular file will reach here.
+		// A regular file will reach here.
 		if err = w.processFile(filePath, tr, hdr.FileInfo(), analyzeFn); err != nil {
 			return nil, nil, xerrors.Errorf("failed to process the file: %w", err)
 		}

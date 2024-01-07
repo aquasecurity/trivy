@@ -1,0 +1,28 @@
+labels: ["kind/documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        #### Note
+        Feel free to create a docs report if something doesn't work as expected or is unclear in the documentation.
+        Please ensure that you're not creating a duplicate report by searching the [issues](https://github.com/aquasecurity/trivy/issues)/[discussions](https://github.com/aquasecurity/trivy/discussions) beforehand.
+        
+        Please also check [our contribution guidelines](https://aquasecurity.github.io/trivy/latest/community/contribute/discussion/).
+  - type: textarea
+    attributes:
+      label: Description
+      description: Briefly describe the what has been unclear in the existing documentation
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Link
+      description: Please provide a link to the current documentation or where you thought to find the information you were looking for
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Suggestions
+      description: What would you like to have added or changed in the documentation?
+    validations:
+      required: true

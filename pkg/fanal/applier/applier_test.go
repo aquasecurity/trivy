@@ -56,7 +56,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											Name:       "tzdata",
 											Version:    "2019a-0+deb9u1",
@@ -81,7 +81,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/libc6",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											Name:       "libc6",
 											Version:    "2.24-11+deb9u4",
@@ -110,7 +110,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: []types.Package{
+									Libraries: types.Packages{
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
@@ -143,7 +143,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					Family: "debian",
 					Name:   "9.9",
 				},
-				Packages: []types.Package{
+				Packages: types.Packages{
 					{
 						Name:       "libc6",
 						Version:    "2.24-11+deb9u4",
@@ -169,7 +169,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "guzzlehttp/guzzle",
 								Version: "6.2.0",
@@ -216,7 +216,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "lib/apk/db/installed",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											Name:    "musl",
 											Version: "1.1.22-r3",
@@ -252,7 +252,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					Returns: cache.LocalArtifactCacheGetArtifactReturns{
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: 1,
-							HistoryPackages: []types.Package{
+							HistoryPackages: types.Packages{
 								{
 									Name:    "musl",
 									Version: "1.1.23",
@@ -295,7 +295,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					Family: "alpine",
 					Name:   "3.10.4",
 				},
-				Packages: []types.Package{
+				Packages: types.Packages{
 					{
 						Name:    "busybox",
 						Version: "1.30.1-r3",
@@ -338,7 +338,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 				ImageConfig: types.ImageConfigDetail{
-					Packages: []types.Package{
+					Packages: types.Packages{
 						{
 							Name:    "musl",
 							Version: "1.1.23",
@@ -444,7 +444,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											Name:       "tzdata",
 											Version:    "2019a-0+deb9u1",
@@ -469,7 +469,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/libc6",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											Name:       "libc6",
 											Version:    "2.24-11+deb9u4",
@@ -498,7 +498,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: []types.Package{
+									Libraries: types.Packages{
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
@@ -515,7 +515,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				Packages: []types.Package{
+				Packages: types.Packages{
 					{
 						Name:       "libc6",
 						Version:    "2.24-11+deb9u4",
@@ -541,7 +541,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "guzzlehttp/guzzle",
 								Version: "6.2.0",
@@ -642,7 +642,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Packages: []types.Package{
+									Packages: types.Packages{
 										{
 											Name:       "tzdata",
 											Version:    "2019a-0+deb9u1",
@@ -684,7 +684,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: []types.Package{
+									Libraries: types.Packages{
 										{
 											Name:    "guzzlehttp/guzzle",
 											Version: "6.2.0",
@@ -717,7 +717,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				Packages: []types.Package{
+				Packages: types.Packages{
 					{
 						Name:       "tzdata",
 						Version:    "2019a-0+deb9u1",
@@ -733,7 +733,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "guzzlehttp/guzzle",
 								Version: "6.2.0",
@@ -810,9 +810,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 
 			sort.Sort(got.Packages)
 			for _, app := range got.Applications {
-				sort.Slice(app.Libraries, func(i, j int) bool {
-					return app.Libraries[i].Name < app.Libraries[j].Name
-				})
+				sort.Sort(app.Libraries)
 			}
 
 			sort.Slice(got.CustomResources, func(i, j int) bool {

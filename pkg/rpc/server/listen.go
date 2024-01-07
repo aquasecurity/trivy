@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"os"
 	"sync"
@@ -13,12 +14,12 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	dbFile "github.com/deepfactor-io/trivy/pkg/db"
 	dbc "github.com/deepfactor-io/trivy/pkg/db"
 	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/log"
 	"github.com/deepfactor-io/trivy/pkg/utils/fsutils"
+	"github.com/deepfactor-io/trivy/pkg/version"
 	rpcCache "github.com/deepfactor-io/trivy/rpc/cache"
 	rpcScanner "github.com/deepfactor-io/trivy/rpc/scanner"
 )
@@ -67,13 +68,14 @@ func (s Server) ListenAndServe(serverCache cache.Cache, skipDBUpdate bool) error
 		}
 	}()
 
-	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader)
+	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.cacheDir)
 	log.Logger.Infof("Listening %s...", s.addr)
 
 	return http.ListenAndServe(s.addr, mux)
 }
 
-func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader string) *http.ServeMux {
+func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
+	token, tokenHeader, cacheDir string) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Stop processing requests during DB update
@@ -104,6 +106,14 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 		}
 	})
 
+	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
+		if err := json.NewEncoder(w).Encode(version.NewVersionInfo(cacheDir)); err != nil {
+			log.Logger.Errorf("get version error: %s", err)
+		}
+	})
+
 	return mux
 }
 
@@ -118,10 +128,10 @@ func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 }
 
 type dbWorker struct {
-	dbClient dbFile.Operation
+	dbClient dbc.Operation
 }
 
-func newDBWorker(dbClient dbFile.Operation) dbWorker {
+func newDBWorker(dbClient dbc.Operation) dbWorker {
 	return dbWorker{dbClient: dbClient}
 }
 

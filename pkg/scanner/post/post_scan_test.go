@@ -6,13 +6,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	"github.com/stretchr/testify/require"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/deepfactor-io/trivy/pkg/scanner/post"
-
 	"github.com/deepfactor-io/trivy/pkg/types"
 )
 

@@ -6,7 +6,6 @@ import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -99,9 +98,6 @@ func (a packagingAnalyzer) open(file *zip.File) (dio.ReadSeekerAt, error) {
 }
 
 func (a packagingAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	// For Windows
-	filePath = filepath.ToSlash(filePath)
-
 	for _, r := range requiredFiles {
 		if strings.HasSuffix(filePath, r) {
 			return true

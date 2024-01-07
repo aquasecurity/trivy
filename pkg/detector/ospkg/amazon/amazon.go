@@ -4,13 +4,12 @@ import (
 	"strings"
 	"time"
 
+	version "github.com/knqyf263/go-deb-version"
+	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	version "github.com/knqyf263/go-deb-version"
-	"go.uber.org/zap"
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
+	osver "github.com/deepfactor-io/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/log"
 	"github.com/deepfactor-io/trivy/pkg/scanner/utils"
@@ -19,7 +18,8 @@ import (
 
 var (
 	eolDates = map[string]time.Time{
-		"1": time.Date(2023, 6, 30, 23, 59, 59, 0, time.UTC),
+		// https://aws.amazon.com/jp/blogs/aws/update-on-amazon-linux-ami-end-of-life/
+		"1": time.Date(2023, 12, 31, 23, 59, 59, 0, time.UTC),
 		// https://aws.amazon.com/amazon-linux-2/faqs/?nc1=h_ls
 		"2": time.Date(2025, 6, 30, 23, 59, 59, 0, time.UTC),
 		// Amazon Linux 2022 was renamed to 2023. AL2022 is not currently supported.
@@ -29,14 +29,13 @@ var (
 
 type options struct {
 	clock clock.Clock
-	l     *zap.SugaredLogger
 }
 
 type option func(*options)
 
-func WithClock(clock clock.Clock) option {
+func WithClock(c clock.Clock) option {
 	return func(opts *options) {
-		opts.clock = clock
+		opts.clock = c
 	}
 }
 
@@ -49,7 +48,6 @@ type Scanner struct {
 // NewScanner is the factory method to return Amazon scanner
 func NewScanner(opts ...option) *Scanner {
 	o := &options{
-		l:     log.Logger,
 		clock: clock.RealClock{},
 	}
 
@@ -117,17 +115,12 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	return vulns, nil
 }
 
-// IsSupportedVersion checks if os can be scanned using amazon scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
 	osVer = strings.Fields(osVer)[0]
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
 	}
-	eol, ok := eolDates[osVer]
-	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
-	}
 
-	return s.clock.Now().Before(eol)
+	return osver.Supported(s.clock, eolDates, osFamily, osVer)
 }

@@ -1,0 +1,96 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        #### Note
+        Feel free to raise a bug report if something doesn't work as expected.
+        Please ensure that you're not creating a duplicate report by searching the [issues](https://github.com/aquasecurity/trivy/issues)/[discussions](https://github.com/aquasecurity/trivy/discussions) beforehand.
+        
+        **Do not open a GitHub issue, please.** Maintainers triage discussions and then create issues.
+        
+        Please also check [our contribution guidelines](https://aquasecurity.github.io/trivy/latest/community/contribute/discussion/).
+  - type: input
+    attributes:
+      label: IDs
+      description: List the IDs of vulnerabilities, misconfigurations, secrets, or licenses that are either not detected or mistakenly detected.
+      placeholder: "e.g. CVE-2021-44228, CVE-2022-22965"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Description
+      description: Describe the false detection.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction Steps
+      description: How do you trigger this bug? Please walk us through it step by step.
+      value: |
+        1.
+        2.
+        3.
+        ...
+      render: bash
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Target
+      description: Which target are you scanning? It is equal to which subcommand you are using.
+      options:
+        - Container Image
+        - Filesystem
+        - Git Repository
+        - Virtual Machine Image
+        - Kubernetes
+        - AWS
+        - SBOM
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Scanner
+      description: Which scanner are you using?
+      options:
+        - Vulnerability
+        - Misconfiguration
+        - Secret
+        - License
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Target OS
+      description: What operating system are you scanning? Fill in this field if the scanning target is an operating system.
+      placeholder: "Example: Ubuntu 22.04"
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Debug Output
+      description: Output of run with `--debug`
+      placeholder: "$ trivy <target> <subject> --debug"
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Version
+      description: Output of `trivy --version`
+      placeholder: "$ trivy --version"
+      render: bash
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: Read [the documentation regarding wrong detection](https://aquasecurity.github.io/trivy/dev/community/contribute/discussion/#false-detection)
+        - label: Ran Trivy with `-f json` that shows data sources and confirmed that the security advisory in data sources was correct
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        We would be happy if you could share how you are using Trivy [here](https://github.com/aquasecurity/trivy/discussions/new?category=adopters).

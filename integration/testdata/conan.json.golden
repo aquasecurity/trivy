@@ -1,7 +1,20 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/conan",
-  "ArtifactType": "filesystem",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/conan",
+  "ArtifactType": "repository",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
   "Results": [
     {
       "Target": "conan.lock",
@@ -12,19 +25,40 @@
           "ID": "bzip2/1.0.8",
           "Name": "bzip2",
           "Version": "1.0.8",
-          "Indirect": true
+          "Indirect": true,
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 37,
+              "EndLine": 43
+            }
+          ]
         },
         {
           "ID": "expat/2.4.8",
           "Name": "expat",
           "Version": "2.4.8",
-          "Indirect": true
+          "Indirect": true,
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 51,
+              "EndLine": 57
+            }
+          ]
         },
         {
           "ID": "openssl/1.1.1q",
           "Name": "openssl",
           "Version": "1.1.1q",
-          "Indirect": true
+          "Indirect": true,
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 65,
+              "EndLine": 71
+            }
+          ]
         },
         {
           "ID": "pcre/8.43",
@@ -34,6 +68,13 @@
           "DependsOn": [
             "bzip2/1.0.8",
             "zlib/1.2.12"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 26,
+              "EndLine": 36
+            }
           ]
         },
         {
@@ -46,19 +87,40 @@
             "expat/2.4.8",
             "sqlite3/3.39.2",
             "openssl/1.1.1q"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 25
+            }
           ]
         },
         {
           "ID": "sqlite3/3.39.2",
           "Name": "sqlite3",
           "Version": "3.39.2",
-          "Indirect": true
+          "Indirect": true,
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 58,
+              "EndLine": 64
+            }
+          ]
         },
         {
           "ID": "zlib/1.2.12",
           "Name": "zlib",
           "Version": "1.2.12",
-          "Indirect": true
+          "Indirect": true,
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 44,
+              "EndLine": 50
+            }
+          ]
         }
       ],
       "Vulnerabilities": [
@@ -68,6 +130,8 @@
           "PkgName": "pcre",
           "InstalledVersion": "8.43",
           "FixedVersion": "8.45",
+          "Status": "fixed",
+          "Layer": {},
           "Severity": "UNKNOWN"
         }
       ]

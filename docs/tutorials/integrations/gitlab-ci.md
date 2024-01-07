@@ -74,8 +74,8 @@ container_scanning:
     name: docker.io/aquasec/trivy:latest
     entrypoint: [""]
   variables:
-    # No need to clone the repo, we exclusively work on artifacts.  See
-    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    # No need to clone the repo, we exclusively work on artifacts. See
+    # https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-strategy
     GIT_STRATEGY: none
     TRIVY_USERNAME: "$CI_REGISTRY_USER"
     TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
@@ -150,7 +150,7 @@ trivy:
     # Image report
     - ./trivy image --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate-image.json $IMAGE
     # Filesystem report
-    - ./trivy filesystem --scanners config,vuln --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate-fs.json .
+    - ./trivy filesystem --scanners misconfig,vuln --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate-fs.json .
     # Combine report
     - apk update && apk add jq
     - jq -s 'add' gl-codeclimate-image.json gl-codeclimate-fs.json > gl-codeclimate.json

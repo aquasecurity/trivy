@@ -1,11 +1,13 @@
-# SBOM generation
+# SBOM
+
+## Generating
 
 Trivy can generate the following SBOM formats.
 
 - [CycloneDX](#cyclonedx)
 - [SPDX](#spdx)
 
-## CLI commands
+### CLI commands
 To generate SBOM, you can use the `--format` option for each subcommand such as `image`, `fs` and `vm`.
 
 ```
@@ -177,27 +179,15 @@ $ trivy fs --format cyclonedx --output result.json /app/myproject
 
 </details>
 
-## Supported packages
+### Supported packages
 Trivy supports the following packages.
 
 - [OS packages][os_packages]
 - [Language-specific packages][language_packages]
 
-In addition to the above packages, Trivy also supports the following packages for generating SBOM.
 
-!!! note
-    These packages are not supported for vulnerability scanning.
-
-| Language | File              | Dependency location[^1] |
-|----------|-------------------|:-----------------------:|
-| Python   | conda package[^2] |            -            |
-| Swift    | Podfile.lock      |            -            |
-
-[^1]: Use `startline == 1 and endline == 1` for unsupported file types
-[^2]: `envs/*/conda-meta/*.json`
-
-## Formats
-### CycloneDX
+### Formats
+#### CycloneDX
 Trivy can generate SBOM in the [CycloneDX][cyclonedx] format.
 Note that XML format is not supported at the moment.
 
@@ -222,7 +212,7 @@ $ trivy image --format cyclonedx --output result.json alpine:3.15
 $ cat result.json | jq .
 {
   "bomFormat": "CycloneDX",
-  "specVersion": "1.4",
+  "specVersion": "1.5",
   "serialNumber": "urn:uuid:2be5773d-7cd3-4b4b-90a5-e165474ddace",
   "version": 1,
   "metadata": {
@@ -442,7 +432,7 @@ If you want to include vulnerabilities, you can enable vulnerability scanning vi
 $ trivy image --scanners vuln --format cyclonedx --output result.json alpine:3.15
 ```
 
-### SPDX
+#### SPDX
 Trivy can generate SBOM in the [SPDX][spdx] format.
 
 You can use the regular subcommands (like `image`, `fs` and `rootfs`) and specify `spdx` with the `--format` option.
@@ -737,6 +727,31 @@ $ cat result.spdx.json | jq .
 
 </details>
 
+## Scanning
+Trivy can take SBOM documents as input for scanning.
+See [here](../target/sbom.md) for more details.
+
+Also, Trivy searches for SBOM files in container images.
+
+```bash
+$ trivy image bitnami/elasticsearch:8.7.1
+```
+
+For example, [Bitnami images](https://github.com/bitnami/containers) contain SBOM files in `/opt/bitnami` directory.
+Trivy automatically detects the SBOM files and uses them for scanning.
+It is enabled in the following targets.
+
+|     Target      | Enabled |
+| :-------------: | :-----: |
+| Container Image |    ✓    |
+|   Filesystem    |         |
+|     Rootfs      |    ✓    |
+| Git Repository  |         |
+|    VM Image     |    ✓    |
+|   Kubernetes    |         |
+|       AWS       |         |
+|      SBOM       |         |
+
 
 [spdx]: https://spdx.dev/wp-content/uploads/sites/41/2020/08/SPDX-specification-2-2.pdf
 
@@ -744,5 +759,5 @@ $ cat result.spdx.json | jq .
 [sbom]: https://cyclonedx.org/capabilities/sbom/
 [bov]: https://cyclonedx.org/capabilities/bov/
 
-[os_packages]: ../scanner/vulnerability/os.md
-[language_packages]: ../scanner/vulnerability/language/index.md
+[os_packages]: ../scanner/vulnerability.md#os-packages
+[language_packages]: ../scanner/vulnerability.md#language-specific-packages

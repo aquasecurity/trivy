@@ -22,7 +22,7 @@ By default, vulnerability and secret scanning are enabled, and you can configure
 It is enabled by default.
 You can simply specify your image name (and a tag).
 It detects known vulnerabilities in your container image.
-See [here](../scanner/vulnerability/index.md) for the detail.
+See [here](../scanner/vulnerability.md) for the detail.
 
 ```
 $ trivy image [YOUR_IMAGE_NAME]
@@ -64,10 +64,10 @@ $ trivy image --scanners vuln [YOUR_IMAGE_NAME]
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
 As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
-If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners config`.
+If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners misconfig`.
 
 ```
-$ trivy image --scanners config [YOUR_IMAGE_NAME]
+$ trivy image --scanners misconfig [YOUR_IMAGE_NAME]
 ```
 
 ### Secrets
@@ -111,13 +111,6 @@ You can enable it with `--image-config-scanners config`.
 
 ```
 $ trivy image --image-config-scanners config [YOUR_IMAGE_NAME]
-```
-
-If you just want to scan the image config, you can disable scanners with `--scanners none`.
-For example:
-
-```
-$ trivy image --scanners none --image-config-scanners config alpine:3.17.0
 ```
 
 <details>
@@ -171,13 +164,6 @@ See [here](../scanner/secret.md) for the detail.
 $ trivy image --image-config-scanners secret [YOUR_IMAGE_NAME]
 ```
 
-If you just want to scan the image config, you can disable scanners with `--scanners none`.
-For example:
-
-```shell
-$ trivy image --scanners none --image-config-scanners secret vuln-image
-```
-
 <details>
 <summary>Result</summary>
 
@@ -224,6 +210,23 @@ GitHub Personal Access Token
     You can see environment variables with `docker inspect`.
 
 ## Supported
+
+Trivy will look for the specified image in a series of locations. By default, it
+will first look in the local Docker Engine, then Containerd, Podman, and
+finally container registry.
+
+This behavior can be modified with the `--image-src` flag. For example, the
+command
+
+```bash
+trivy image --image-src podman,containerd alpine:3.7.3
+```
+
+Will first search in Podman. If the image is found there, it will be scanned
+and the results returned. If the image is not found in Podman, then Trivy will
+search in Containerd. If the image is not found there either, the scan will
+fail and no more image sources will be searched.
+
 ### Docker Engine
 Trivy tries to looks for the specified image in your local Docker Engine.
 It will be skipped if Docker Engine is not running locally.
@@ -373,6 +376,15 @@ Skopeo:
 ```
 $ skopeo copy docker-daemon:alpine:3.11 oci:/path/to/alpine
 $ trivy image --input /path/to/alpine
+```
+
+Referencing specific images can be done by their tag or by their manifest digest:
+```
+# Referenced by tag
+$ trivy image --input /path/to/alpine:3.15
+
+# Referenced by digest
+$ trivy image --input /path/to/alpine@sha256:82389ea44e50c696aba18393b168a833929506f5b29b9d75eb817acceb6d54ba
 ```
 
 ## SBOM

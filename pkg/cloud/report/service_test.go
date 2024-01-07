@@ -2,20 +2,20 @@ package report
 
 import (
 	"bytes"
+	"context"
 	"testing"
+	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/types"
-
-	"github.com/stretchr/testify/require"
-
-	"github.com/deepfactor-io/trivy/pkg/flag"
-
-	"github.com/stretchr/testify/assert"
+	"github.com/deepfactor-io/trivy/pkg/clock"
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/flag"
 )
 
 func Test_ServiceReport(t *testing.T) {
@@ -150,6 +150,7 @@ Scan Overview for AWS Account
 			},
 			fromCache: false,
 			expected: `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactType": "aws_account",
   "Metadata": {
     "ImageConfig": {
@@ -310,6 +311,7 @@ Scan Overview for AWS Account
 }`,
 		},
 	}
+	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			report := New(
@@ -320,19 +322,20 @@ Scan Overview for AWS Account
 				tt.options.AWSOptions.Services,
 			)
 
-			buffer := bytes.NewBuffer([]byte{})
-			tt.options.Output = buffer
-			require.NoError(t, Write(report, tt.options, tt.fromCache))
+			output := bytes.NewBuffer(nil)
+			tt.options.SetOutputWriter(output)
+			require.NoError(t, Write(context.Background(), report, tt.options, tt.fromCache))
 
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)
 			assert.Equal(t, tt.options.AWSOptions.Region, report.Region)
 			assert.ElementsMatch(t, tt.options.AWSOptions.Services, report.ServicesInScope)
+
 			if tt.options.Format == "json" {
 				// json output can be formatted/ordered differently - we just care that the data matches
-				assert.JSONEq(t, tt.expected, buffer.String())
+				assert.JSONEq(t, tt.expected, output.String())
 			} else {
-				assert.Equal(t, tt.expected, buffer.String())
+				assert.Equal(t, tt.expected, output.String())
 			}
 		})
 	}

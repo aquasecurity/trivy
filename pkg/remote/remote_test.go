@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/name"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -127,9 +128,37 @@ func TestGet(t *testing.T) {
 						},
 					},
 					Insecure: true,
-					Platform: "*/amd64",
+					Platform: types.Platform{
+						Platform: &v1.Platform{
+							OS:           "",
+							Architecture: "amd64",
+						},
+					},
 				},
 			},
+		},
+		{
+			name: "force platform",
+			args: args{
+				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.RegistryOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					Insecure: true,
+					Platform: types.Platform{
+						Force: true,
+						Platform: &v1.Platform{
+							OS:           "windows",
+							Architecture: "amd64",
+						},
+					},
+				},
+			},
+			wantErr: "the specified platform not found",
 		},
 		{
 			name: "bad credential",

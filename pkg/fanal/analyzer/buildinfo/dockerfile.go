@@ -119,7 +119,7 @@ func parseVersion(nvr string) string {
 
 // https://github.com/moby/buildkit/blob/b33357bcd2e3319b0323037c900c13b45a228df1/frontend/dockerfile/dockerfile2llb/convert.go#L474-L482
 func metaArgsToMap(metaArgs []instructions.KeyValuePairOptional) map[string]string {
-	m := map[string]string{}
+	m := make(map[string]string)
 
 	for _, arg := range metaArgs {
 		m[arg.Key] = arg.ValueString()

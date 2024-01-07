@@ -7,9 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/aquasecurity/tml"
-
 	"github.com/aquasecurity/table"
+	"github.com/aquasecurity/tml"
 	pkgReport "github.com/deepfactor-io/trivy/pkg/report/table"
 	"github.com/deepfactor-io/trivy/pkg/types"
 )

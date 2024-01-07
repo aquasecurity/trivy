@@ -112,8 +112,9 @@ scan:
   # Default depends on subcommand
   scanners:
     - vuln
-    - config
+    - misconfig
     - secret
+    - license
 ```
 
 ## Cache Options
@@ -243,6 +244,7 @@ rego
   policy:
     - policy/repository
     - policy/custom
+    - policy/some-policy.rego
 
   # Same as '--config-data'
   # Default is empty
@@ -264,6 +266,12 @@ misconfiguration:
   # Same as '--include-non-failures'
   # Default is false
   include-non-failures: false
+  
+  # Same as '--miconfig-scanners'
+  # Default is all scanners
+  scanners:
+    - dockerfile
+    - terraform
 
   # helm value override configurations
   # set individual values
@@ -291,6 +299,11 @@ misconfiguration:
     vars:
       - dev-terraform.tfvars
       - common-terraform.tfvars
+  
+  # Same as '--tf-exclude-downloaded-modules'
+  # Default is false
+  terraform:
+    exclude-downloaded-modules: false
 ```
 
 ## Kubernetes Options

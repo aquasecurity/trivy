@@ -5,12 +5,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/deepfactor-io/trivy/pkg/fanal/types"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {

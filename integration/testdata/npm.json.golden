@@ -1,7 +1,8 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/npm",
-  "ArtifactType": "filesystem",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/npm",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -37,11 +38,11 @@
           "ID": "jquery@3.3.9",
           "Name": "jquery",
           "Version": "3.3.9",
-          "Indirect": true,
-          "Layer": {},
           "Licenses": [
             "MIT"
           ],
+          "Indirect": true,
+          "Layer": {},
           "Locations": [
             {
               "StartLine": 11,
@@ -95,14 +96,14 @@
           "ID": "promise@8.0.3",
           "Name": "promise",
           "Version": "8.0.3",
+          "Licenses": [
+            "MIT"
+          ],
           "Indirect": true,
           "DependsOn": [
             "asap@2.0.6"
           ],
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 34,
@@ -132,6 +133,9 @@
           "ID": "react@16.8.6",
           "Name": "react",
           "Version": "16.8.6",
+          "Licenses": [
+            "MIT"
+          ],
           "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
@@ -140,9 +144,6 @@
             "scheduler@0.13.6"
           ],
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 52,
@@ -154,11 +155,11 @@
           "ID": "react-is@16.8.6",
           "Name": "react-is",
           "Version": "16.8.6",
-          "Indirect": true,
-          "Layer": {},
           "Licenses": [
             "MIT"
           ],
+          "Indirect": true,
+          "Layer": {},
           "Locations": [
             {
               "StartLine": 63,
@@ -170,15 +171,15 @@
           "ID": "redux@4.0.1",
           "Name": "redux",
           "Version": "4.0.1",
+          "Licenses": [
+            "MIT"
+          ],
           "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "symbol-observable@1.2.0"
           ],
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 68,
@@ -224,6 +225,7 @@
           "PkgName": "jquery",
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
@@ -238,6 +240,18 @@
           "CweIDs": [
             "CWE-79"
           ],
+          "VendorSeverity": {
+            "alma": 2,
+            "amazon": 2,
+            "arch-linux": 2,
+            "ghsa": 2,
+            "nodejs-security-wg": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "redhat": 2,
+            "ruby-advisory-db": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",

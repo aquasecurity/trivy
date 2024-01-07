@@ -73,6 +73,8 @@ jobs:
             c\+\+
             elixir
             dart
+            swift
+            bitnami
 
             os
             lang
@@ -93,6 +95,7 @@ jobs:
             cyclonedx
             spdx
             purl
+            vex
 
             helm
             report

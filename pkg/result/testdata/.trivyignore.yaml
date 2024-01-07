@@ -1,0 +1,36 @@
+vulnerabilities:
+  - id: CVE-2019-0001
+    paths:
+      - "**/*-lock.json"
+  - id: CVE-2019-0002
+    paths:
+      - "bar/package.json"
+  - id: CVE-2019-0003
+  - id: CVE-2019-0004
+    paths:
+      - "bar/package.json"
+  - id: CVE-2019-0005
+    expired_at: 2023-01-01
+  - id: CVE-2019-0006
+    expired_at: 2020-01-01
+
+misconfigurations:
+  - id: ID100
+  - id: ID200
+    paths:
+      - "app/Dockerfile"
+  - id: ID300
+    paths:
+      - "docs/Dockerfile"
+secrets:
+  - id: generic-unwanted-rule
+  - id: generic-unwanted-rule2
+    paths:
+      - "**/config.yaml"
+  - id: generic-wanted-rule
+    paths:
+      - "foo/secret.txt"
+licenses:
+  - id: GPL-3.0
+    paths:
+      - "usr/share/gcc/python/libstdcxx/v6/__init__.py"

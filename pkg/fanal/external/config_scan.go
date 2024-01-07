@@ -42,10 +42,11 @@ func NewConfigScanner(cacheDir string, policyPaths, dataPaths, namespaces []stri
 func (s ConfigScanner) Scan(dir string) ([]types.Misconfiguration, error) {
 	art, err := local.NewArtifact(dir, s.cache, artifact.Option{
 		MisconfScannerOption: misconf.ScannerOption{
-			PolicyPaths:             s.policyPaths,
-			DataPaths:               s.dataPaths,
-			Namespaces:              s.namespaces,
-			DisableEmbeddedPolicies: !s.allowEmbedded,
+			PolicyPaths:              s.policyPaths,
+			DataPaths:                s.dataPaths,
+			Namespaces:               s.namespaces,
+			DisableEmbeddedPolicies:  !s.allowEmbedded,
+			DisableEmbeddedLibraries: !s.allowEmbedded,
 		},
 	})
 	if err != nil {

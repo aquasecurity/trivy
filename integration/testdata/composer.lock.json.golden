@@ -1,7 +1,8 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/composer",
-  "ArtifactType": "filesystem",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/composer",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -24,14 +25,13 @@
           "ID": "guzzlehttp/guzzle@7.4.4",
           "Name": "guzzlehttp/guzzle",
           "Version": "7.4.4",
-          "Indirect": false,
-          "Layer": {},
           "Licenses": [
             "MIT"
           ],
           "DependsOn": [
             "guzzlehttp/psr7@1.8.3"
           ],
+          "Layer": {},
           "Locations": [
             {
               "StartLine": 9,
@@ -43,11 +43,11 @@
           "ID": "guzzlehttp/psr7@1.8.3",
           "Name": "guzzlehttp/psr7",
           "Version": "1.8.3",
-          "Indirect": true,
-          "Layer": {},
           "Licenses": [
             "MIT"
           ],
+          "Indirect": true,
+          "Layer": {},
           "Locations": [
             {
               "StartLine": 130,
@@ -63,6 +63,7 @@
           "PkgName": "guzzlehttp/psr7",
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
@@ -77,6 +78,9 @@
           "CweIDs": [
             "CWE-20"
           ],
+          "VendorSeverity": {
+            "ghsa": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",

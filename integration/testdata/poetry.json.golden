@@ -1,7 +1,8 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/poetry",
-  "ArtifactType": "filesystem",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/poetry",
+  "ArtifactType": "repository",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",
@@ -50,6 +51,7 @@
           "PkgName": "werkzeug",
           "InstalledVersion": "0.14",
           "FixedVersion": "0.15.3",
+          "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
@@ -64,6 +66,12 @@
           "CweIDs": [
             "CWE-331"
           ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3,
+            "redhat": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",

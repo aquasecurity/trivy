@@ -1,5 +1,6 @@
 # Reporting
 
+## Format
 Trivy supports the following formats:
 
 - Table
@@ -7,8 +8,9 @@ Trivy supports the following formats:
 - [SARIF](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning)
 - Template
 - SBOM
+- GitHub dependency snapshot
 
-## Table (Default)
+### Table (Default)
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -21,7 +23,7 @@ Trivy supports the following formats:
 $ trivy image -f table golang:1.12-alpine
 ```
 
-### Show origins of vulnerable dependencies
+#### Show origins of vulnerable dependencies
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -39,30 +41,31 @@ In some cases, vulnerable dependencies are not linked directly, and it requires 
 To make this task simpler Trivy can show a dependency origin tree with the `--dependency-tree` flag.
 This flag is only available with the `--format table` flag.
 
-The following packages/languages are currently supported:
+The following OS package managers are currently supported:
 
-- OS packages 
-    - apk
-    - dpkg
-    - rpm
-- Node.js 
-    - npm: package-lock.json
-    - pnpm: pnpm-lock.yaml
-    - yarn: yarn.lock
-- .NET
-    - NuGet: packages.lock.json
-- Python 
-    - Poetry: poetry.lock
-- Ruby
-    - Bundler: Gemfile.lock
-- Rust
-    - Binaries built with [cargo-auditable][cargo-auditable]
-- Go
-    - Modules: go.mod
-- PHP
-    - Composer
+| OS Package Managers |
+|---------------------|
+| apk                 |
+| dpkg                |
+| rpm                 |
 
-This tree is the reverse of the npm list command.
+The following languages are currently supported:
+
+| Language | File                                       |
+|----------|--------------------------------------------|
+| Node.js  | [package-lock.json][nodejs-package-lock]   |
+|          | [pnpm-lock.yaml][pnpm-lock]                |
+|          | [yarn.lock][yarn-lock]                     |
+| .NET     | [packages.lock.json][dotnet-packages-lock] |
+| Python   | [poetry.lock][poetry-lock]                 |
+| Ruby     | [Gemfile.lock][gemfile-lock]               |
+| Rust     | [cargo-auditable binaries][cargo-binaries] |
+| Go       | [go.mod][go-mod]                           |
+| PHP      | [composer.lock][composer-lock]             |
+| Java     | [pom.xml][pom-xml]                         |
+| Dart     | [pubspec.lock][pubspec-lock]               |
+
+This tree is the reverse of the dependency graph.
 However, if you want to resolve a vulnerability in a particular indirect dependency, the reversed tree is useful to know where that dependency comes from and identify which package you actually need to update.
 
 In table output, it looks like:
@@ -105,7 +108,7 @@ Also, **glob-parent@3.1.0** with some vulnerabilities is included through chain 
 
 Then, you can try to update **axios@0.21.4** and **cra-append-sw@2.7.0** to resolve vulnerabilities in **follow-redirects@1.14.6** and **glob-parent@3.1.0**.
 
-## JSON
+### JSON
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -239,13 +242,13 @@ $ trivy image -f json -o results.json golang:1.12-alpine
 
 `VulnerabilityID`, `PkgName`, `InstalledVersion`, and `Severity` in `Vulnerabilities` are always filled with values, but other fields might be empty.
 
-## SARIF
+### SARIF
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
-|     License      |           |
+|     License      |     ✓     |
 
 [SARIF][sarif] can be generated with the `--format sarif` flag.
 
@@ -255,7 +258,21 @@ $ trivy image --format sarif -o report.sarif  golang:1.12-alpine
 
 This SARIF file can be uploaded to GitHub code scanning results, and there is a [Trivy GitHub Action][action] for automating this process.
 
-## Template
+### GitHub dependency snapshot
+Trivy supports the following packages.
+
+- [OS packages][os_packages]
+- [Language-specific packages][language_packages]
+
+[GitHub dependency snapshots][github-sbom] can be generated with the `--format github` flag.
+
+```
+$ trivy image --format github -o report.gsbom alpine
+```
+
+This snapshot file can be [submitted][github-sbom-submit] to your GitHub repository.
+
+### Template
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -264,7 +281,7 @@ This SARIF file can be uploaded to GitHub code scanning results, and there is a 
 |      Secret      |     ✓     |
 |     License      |     ✓     |
 
-### Custom Template
+#### Custom Template
 
 {% raw %}
 ```
@@ -301,18 +318,18 @@ Critical: 0, High: 2
 
 For other features of sprig, see the official [sprig][sprig] documentation.
 
-### Load templates from a file
+#### Load templates from a file
 You can load templates from a file prefixing the template path with an @.
 
 ```
 $ trivy image --format template --template "@/path/to/template" golang:1.12-alpine
 ```
 
-### Default Templates
+#### Default Templates
 
 If Trivy is installed using rpm then default templates can be found at `/usr/local/share/trivy/templates`.
 
-#### JUnit
+##### JUnit
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -325,7 +342,7 @@ In the following example using the template `junit.tpl` XML can be generated.
 $ trivy image --format template --template "@contrib/junit.tpl" -o junit-report.xml  golang:1.12-alpine
 ```
 
-#### ASFF
+##### ASFF
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -335,7 +352,7 @@ $ trivy image --format template --template "@contrib/junit.tpl" -o junit-report.
 
 Trivy also supports an [ASFF template for reporting findings to AWS Security Hub][asff]
 
-#### HTML
+##### HTML
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
@@ -353,11 +370,80 @@ The following example shows use of default HTML template when Trivy is installed
 $ trivy image --format template --template "@/usr/local/share/trivy/templates/html.tpl" -o report.html golang:1.12-alpine
 ```
 
-## SBOM
+### SBOM
 See [here](../supply-chain/sbom.md) for details.
+
+## Output
+Trivy supports the following output destinations:
+
+- File
+- Plugin
+
+### File
+By specifying `--output <file_path>`, you can output the results to a file.
+Here is an example:
+
+```
+$ trivy image --format json --output result.json debian:12
+```
+
+### Plugin
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
+Plugins capable of receiving Trivy's results via standard input, called "output plugin", can be seamlessly invoked using the `--output` flag.
+
+```
+$ trivy <target> [--format <format>] --output plugin=<plugin_name> [--output-plugin-arg <plugin_flags>] <target_name>
+```
+
+This is useful for cases where you want to convert the output into a custom format, or when you want to send the output somewhere.
+For more details, please check [here](../advanced/plugins.md#output-plugins).
+
+## Converting
+To generate multiple reports, you can generate the JSON report first and convert it to other formats with the `convert` subcommand.
+
+```shell
+$ trivy image --format json -o result.json --list-all-pkgs debian:11
+$ trivy convert --format cyclonedx --output result.cdx result.json
+```
+
+!!! note
+    Please note that if you want to convert to a format that requires a list of packages, 
+    such as SBOM, you need to add the `--list-all-pkgs` flag when outputting in JSON.
+
+[Filtering options](./filtering.md) such as `--severity` are also available with `convert`.
+
+```shell
+# Output all severities in JSON
+$ trivy image --format json -o result.json --list-all-pkgs debian:11
+
+# Output only critical issues in table format
+$ trivy convert --format table --severity CRITICAL result.json
+```
+
+!!! note
+    JSON reports from "trivy aws" and "trivy k8s" are not yet supported.
 
 [cargo-auditable]: https://github.com/rust-secure-code/cargo-auditable/
 [action]: https://github.com/aquasecurity/trivy-action
 [asff]: ../../tutorials/integrations/aws-security-hub.md
 [sarif]: https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/managing-results-from-code-scanning
 [sprig]: http://masterminds.github.io/sprig/
+[github-sbom]: https://docs.github.com/en/rest/dependency-graph/dependency-submission?apiVersion=2022-11-28#about-dependency-submissions
+[github-sbom-submit]: https://docs.github.com/en/rest/dependency-graph/dependency-submission?apiVersion=2022-11-28#create-a-snapshot-of-dependencies-for-a-repository
+
+[os_packages]: ../scanner/vulnerability.md#os-packages
+[language_packages]: ../scanner/vulnerability.md#language-specific-packages
+
+[nodejs-package-lock]: ../coverage/language/nodejs.md#npm
+[pnpm-lock]: ../coverage/language/nodejs.md#pnpm
+[yarn-lock]: ../coverage/language/nodejs.md#yarn
+[dotnet-packages-lock]: ../coverage/language/dotnet.md#packageslockjson
+[poetry-lock]: ../coverage/language/python.md#poetry
+[gemfile-lock]: ../coverage/language/ruby.md#bundler
+[go-mod]: ../coverage/language/golang.md#go-modules
+[composer-lock]: ../coverage/language/php.md#composer
+[pom-xml]: ../coverage/language/java.md#pomxml
+[pubspec-lock]: ../coverage/language/dart.md#dart
+[cargo-binaries]: ../coverage/language/rust.md#binaries

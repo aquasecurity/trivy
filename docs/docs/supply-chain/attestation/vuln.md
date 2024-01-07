@@ -30,6 +30,7 @@ $ trivy image --format cosign-vuln --output vuln.json alpine:3.10
     },
     "result": {
       "SchemaVersion": 2,
+      "CreatedAt": 1629894030,
       "ArtifactName": "alpine:3.10",
       "ArtifactType": "container_image",
       "Metadata": {
