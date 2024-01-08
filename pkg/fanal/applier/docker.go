@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/knqyf263/nested"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -249,12 +250,12 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	return mergedLayer
 }
 
-func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *ftypes.PackageURL {
+func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *packageurl.PackageURL {
 	p, err := purl.New(pkgType, metadata, pkg)
 	if err != nil {
 		log.Logger.Errorf("Failed to create PackageURL: %s", err)
 	}
-	return p
+	return p.Unwrap()
 }
 
 // aggregate merges all packages installed by pip/gem/npm/jar/conda into each application

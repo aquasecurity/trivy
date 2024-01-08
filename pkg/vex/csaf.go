@@ -6,8 +6,8 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -32,20 +32,20 @@ func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulne
 			return true
 		}
 
-		return v.affected(found, vuln.PkgIdentifier.PURL)
+		return v.affected(found, purl.WithPath(vuln.PkgIdentifier.PURL, vuln.PkgPath))
 	})
 }
 
-func (v *CSAF) affected(vuln *csaf.Vulnerability, purl *ftypes.PackageURL) bool {
-	if purl == nil || vuln.ProductStatus == nil {
+func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgURL *purl.PackageURL) bool {
+	if pkgURL == nil || vuln.ProductStatus == nil {
 		return true
 	}
 
 	var status Status
 	switch {
-	case v.matchPURL(purl, vuln.ProductStatus.KnownNotAffected):
+	case v.matchPURL(vuln.ProductStatus.KnownNotAffected, pkgURL):
 		status = StatusNotAffected
-	case v.matchPURL(purl, vuln.ProductStatus.Fixed):
+	case v.matchPURL(vuln.ProductStatus.Fixed, pkgURL):
 		status = StatusFixed
 	}
 
@@ -60,7 +60,7 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, purl *ftypes.PackageURL) bool 
 }
 
 // matchPURL returns true if the given PackageURL is found in the ProductTree.
-func (v *CSAF) matchPURL(purl *ftypes.PackageURL, products *csaf.Products) bool {
+func (v *CSAF) matchPURL(products *csaf.Products, pkgURL *purl.PackageURL) bool {
 	for _, product := range lo.FromPtr(products) {
 		helpers := v.advisory.ProductTree.CollectProductIdentificationHelpers(lo.FromPtr(product))
 		purls := lo.FilterMap(helpers, func(helper *csaf.ProductIdentificationHelper, _ int) (string, bool) {
@@ -69,7 +69,7 @@ func (v *CSAF) matchPURL(purl *ftypes.PackageURL, products *csaf.Products) bool 
 			}
 			return string(*helper.PURL), true
 		})
-		if slices.Contains(purls, purl.String()) {
+		if slices.Contains(purls, pkgURL.String()) {
 			return true
 		}
 	}

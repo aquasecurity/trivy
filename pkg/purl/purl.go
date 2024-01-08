@@ -43,13 +43,133 @@ const (
 	TypeUnknown = "unknown"
 )
 
-func FromString(s string) (*ftypes.PackageURL, error) {
-	return ftypes.NewPackageURL(s)
+type PackageURL struct {
+	packageurl.PackageURL
+	FilePath string
+}
+
+func FromString(s string) (*PackageURL, error) {
+	p, err := packageurl.FromString(s)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse purl(%s): %w", s, err)
+	}
+
+	// Take out and delete the file path from qualifiers
+	var filePath string
+	for i, q := range p.Qualifiers {
+		if q.Key != "file_path" {
+			continue
+		}
+		filePath = q.Value
+		p.Qualifiers = append(p.Qualifiers[:i], p.Qualifiers[i+1:]...)
+		break
+	}
+
+	if len(p.Qualifiers) == 0 {
+		p.Qualifiers = nil
+	}
+
+	return &PackageURL{
+		PackageURL: p,
+		FilePath:   filePath,
+	}, nil
+}
+
+// nolint: gocyclo
+func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*PackageURL, error) {
+	qualifiers := parseQualifier(pkg)
+	pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
+
+	ptype := purlType(t)
+	name := pkg.Name
+	ver := utils.FormatVersion(pkg)
+	namespace := ""
+	subpath := ""
+
+	switch ptype {
+	case packageurl.TypeRPM:
+		ns, qs := parseRPM(metadata.OS, pkg.Modularitylabel)
+		namespace = string(ns)
+		qualifiers = append(qualifiers, qs...)
+	case packageurl.TypeDebian:
+		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
+		if metadata.OS != nil {
+			namespace = string(metadata.OS.Family)
+		}
+	case packageurl.TypeApk:
+		var qs packageurl.Qualifiers
+		name, namespace, qs = parseApk(name, metadata.OS)
+		qualifiers = append(qualifiers, qs...)
+	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
+		namespace, name = parseMaven(name)
+	case packageurl.TypePyPi:
+		name = parsePyPI(name)
+	case packageurl.TypeComposer:
+		namespace, name = parseComposer(name)
+	case packageurl.TypeGolang:
+		namespace, name = parseGolang(name)
+		if name == "" {
+			return nil, nil
+		}
+	case packageurl.TypeNPM:
+		namespace, name = parseNpm(name)
+	case packageurl.TypeSwift:
+		namespace, name = parseSwift(name)
+	case packageurl.TypeCocoapods:
+		name, subpath = parseCocoapods(name)
+	case packageurl.TypeOCI:
+		purl, err := parseOCI(metadata)
+		if err != nil {
+			return nil, err
+		}
+		if purl.Type == "" {
+			return nil, nil
+		}
+		return &PackageURL{PackageURL: purl}, nil
+	}
+
+	return &PackageURL{
+		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, subpath),
+		FilePath:   pkg.FilePath,
+	}, nil
+}
+
+// WithPath wraps packageurl.PackageURL with the given file path
+func WithPath(purl *packageurl.PackageURL, filePath string) *PackageURL {
+	if purl == nil {
+		return nil
+	}
+	return &PackageURL{
+		PackageURL: *purl,
+		FilePath:   filePath,
+	}
+}
+
+func (p *PackageURL) BOMRef() string {
+	// 'bom-ref' must be unique within BOM, but PURLs may conflict
+	// when the same packages are installed in an artifact.
+	// In that case, we prefer to make PURLs unique by adding file paths,
+	// rather than using UUIDs, even if it is not PURL technically.
+	// ref. https://cyclonedx.org/use-cases/#dependency-graph
+	purl := p.PackageURL // so that it will not override the qualifiers below
+	if p.FilePath != "" {
+		purl.Qualifiers = append(purl.Qualifiers,
+			packageurl.Qualifier{
+				Key:   "file_path",
+				Value: p.FilePath,
+			},
+		)
+	}
+	return purl.String()
+}
+
+func (p *PackageURL) Unwrap() *packageurl.PackageURL {
+	return &p.PackageURL
 }
 
 // LangType returns an application type in Trivy
 // nolint: gocyclo
-func LangType(p *ftypes.PackageURL) ftypes.LangType {
+func (p *PackageURL) LangType() ftypes.LangType {
 	switch p.Type {
 	case packageurl.TypeComposer:
 		return ftypes.Composer
@@ -102,13 +222,13 @@ func LangType(p *ftypes.PackageURL) ftypes.LangType {
 	}
 }
 
-func Class(p *ftypes.PackageURL) types.ResultClass {
+func (p *PackageURL) Class() types.ResultClass {
 	switch p.Type {
 	case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM:
 		// OS packages
 		return types.ClassOSPkg
 	default:
-		if LangType(p) == TypeUnknown {
+		if p.LangType() == TypeUnknown {
 			return types.ClassUnknown
 		}
 		// Language-specific packages
@@ -116,10 +236,13 @@ func Class(p *ftypes.PackageURL) types.ResultClass {
 	}
 }
 
-func ToPackage(p *ftypes.PackageURL) *ftypes.Package {
+func (p *PackageURL) Package() *ftypes.Package {
 	pkg := &ftypes.Package{
 		Name:    p.Name,
 		Version: p.Version,
+		Identifier: ftypes.PkgIdentifier{
+			PURL: p.Unwrap(),
+		},
 	}
 	for _, q := range p.Qualifiers {
 		switch q.Key {
@@ -151,11 +274,10 @@ func ToPackage(p *ftypes.PackageURL) *ftypes.Package {
 
 	// Return packages without namespace.
 	// OS packages are not supposed to have namespace.
-	if p.Namespace == "" || Class(p) == types.ClassOSPkg {
+	if p.Namespace == "" || p.Class() == types.ClassOSPkg {
 		return pkg
 	}
 
-	// TODO: replace with packageurl.TypeGradle once they add it.
 	if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
 		// Maven and Gradle packages separate ":"
 		// e.g. org.springframework:spring-core
@@ -165,65 +287,6 @@ func ToPackage(p *ftypes.PackageURL) *ftypes.Package {
 	}
 
 	return pkg
-}
-
-// nolint: gocyclo
-func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*ftypes.PackageURL, error) {
-	qualifiers := parseQualifier(pkg)
-	pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
-
-	ptype := purlType(t)
-	name := pkg.Name
-	ver := utils.FormatVersion(pkg)
-	namespace := ""
-	subpath := ""
-
-	switch ptype {
-	case packageurl.TypeRPM:
-		ns, qs := parseRPM(metadata.OS, pkg.Modularitylabel)
-		namespace = string(ns)
-		qualifiers = append(qualifiers, qs...)
-	case packageurl.TypeDebian:
-		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
-		if metadata.OS != nil {
-			namespace = string(metadata.OS.Family)
-		}
-	case packageurl.TypeApk:
-		var qs packageurl.Qualifiers
-		name, namespace, qs = parseApk(name, metadata.OS)
-		qualifiers = append(qualifiers, qs...)
-	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
-		namespace, name = parseMaven(name)
-	case packageurl.TypePyPi:
-		name = parsePyPI(name)
-	case packageurl.TypeComposer:
-		namespace, name = parseComposer(name)
-	case packageurl.TypeGolang:
-		namespace, name = parseGolang(name)
-		if name == "" {
-			return nil, nil
-		}
-	case packageurl.TypeNPM:
-		namespace, name = parseNpm(name)
-	case packageurl.TypeSwift:
-		namespace, name = parseSwift(name)
-	case packageurl.TypeCocoapods:
-		name, subpath = parseCocoapods(name)
-	case packageurl.TypeOCI:
-		purl, err := parseOCI(metadata)
-		if err != nil {
-			return nil, err
-		}
-		if purl.Type == "" {
-			return nil, nil
-		}
-		return &ftypes.PackageURL{PackageURL: purl}, nil
-	}
-
-	return &ftypes.PackageURL{
-		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, subpath),
-		FilePath:   pkg.FilePath,
-	}, nil
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#oci

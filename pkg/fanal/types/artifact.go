@@ -1,9 +1,11 @@
 package types
 
 import (
+	"encoding/json"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
@@ -102,8 +104,49 @@ type Package struct {
 
 // PkgIdentifier represents a software identifiers in one of more of the supported formats.
 type PkgIdentifier struct {
-	PURL   *PackageURL `json:",omitempty"`
-	BOMRef string      `json:",omitempty"` // For CycloneDX
+	PURL   *packageurl.PackageURL `json:"-"`
+	BOMRef string                 `json:",omitempty"` // For CycloneDX
+}
+
+// MarshalJSON customizes the JSON encoding of PkgIdentifier.
+func (id *PkgIdentifier) MarshalJSON() ([]byte, error) {
+	var p string
+	if id.PURL != nil {
+		p = id.PURL.String()
+	}
+
+	type Alias PkgIdentifier
+	return json.Marshal(&struct {
+		PURL string `json:",omitempty"`
+		*Alias
+	}{
+		PURL:  p,
+		Alias: (*Alias)(id),
+	})
+}
+
+// UnmarshalJSON customizes the JSON decoding of PkgIdentifier.
+func (id *PkgIdentifier) UnmarshalJSON(data []byte) error {
+	type Alias PkgIdentifier
+	aux := &struct {
+		PURL string `json:",omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(id),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if aux.PURL != "" {
+		p, err := packageurl.FromString(aux.PURL)
+		if err != nil {
+			return err
+		}
+		id.PURL = &p
+	}
+
+	return nil
 }
 
 func (id *PkgIdentifier) Empty() bool {

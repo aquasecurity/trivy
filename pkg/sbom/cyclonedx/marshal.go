@@ -378,7 +378,7 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		Name:            name,
 		Group:           group,
 		Version:         version,
-		PackageURL:      pkg.Identifier.PURL,
+		PackageURL:      purl.WithPath(pkg.Identifier.PURL, pkg.FilePath),
 		Supplier:        pkg.Maintainer,
 		Licenses:        pkg.Licenses,
 		Hashes:          lo.Ternary(pkg.Digest == "", nil, []digest.Digest{pkg.Digest}),

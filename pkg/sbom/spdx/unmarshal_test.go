@@ -40,17 +40,15 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcVersion: "1.2.3-r0",
 								Licenses:   []string{"MIT"},
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeApk,
-											Namespace: "alpine",
-											Name:      "musl",
-											Version:   "1.2.3-r0",
-											Qualifiers: packageurl.Qualifiers{
-												{
-													Key:   "distro",
-													Value: "3.16.0",
-												},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeApk,
+										Namespace: "alpine",
+										Name:      "musl",
+										Version:   "1.2.3-r0",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "distro",
+												Value: "3.16.0",
 											},
 										},
 									},
@@ -71,13 +69,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "pear",
-											Name:      "log",
-											Version:   "1.13.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "pear",
+										Name:      "log",
+										Version:   "1.13.1",
 									},
 								},
 								Layer: ftypes.Layer{
@@ -89,13 +85,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "pear",
-											Name:      "pear_exception",
-											Version:   "v1.0.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "pear",
+										Name:      "pear_exception",
+										Version:   "v1.0.0",
 									},
 								},
 								Layer: ftypes.Layer{
@@ -112,13 +106,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "github.com/package-url/packageurl-go",
 								Version: "v0.1.1-0.20220203205134-d70459300c8a",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeGolang,
-											Namespace: "github.com/package-url",
-											Name:      "packageurl-go",
-											Version:   "v0.1.1-0.20220203205134-d70459300c8a",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/package-url",
+										Name:      "packageurl-go",
+										Version:   "v0.1.1-0.20220203205134-d70459300c8a",
 									},
 								},
 								Layer: ftypes.Layer{
@@ -133,13 +125,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 							{
 								Name: "org.codehaus.mojo:child-project",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "org.codehaus.mojo",
-											Name:      "child-project",
-											Version:   "1.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.codehaus.mojo",
+										Name:      "child-project",
+										Version:   "1.0",
 									},
 								},
 								Version: "1.0",
@@ -156,12 +146,10 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "bootstrap",
 								Version: "5.0.2",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeNPM,
-											Name:    "bootstrap",
-											Version: "5.0.2",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "bootstrap",
+										Version: "5.0.2",
 									},
 								},
 								Licenses: []string{"MIT"},
@@ -188,12 +176,10 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:  "21.1.1",
 								Licenses: []string{"ISC"},
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeNPM,
-											Name:    "yargs-parser",
-											Version: "21.1.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "yargs-parser",
+										Version: "21.1.1",
 									},
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
@@ -217,12 +203,10 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:  "21.1.1",
 								Licenses: []string{"ISC"},
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeNPM,
-											Name:    "yargs-parser",
-											Version: "21.1.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "yargs-parser",
+										Version: "21.1.1",
 									},
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
@@ -245,13 +229,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "pear",
-											Name:      "log",
-											Version:   "1.13.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "pear",
+										Name:      "log",
+										Version:   "1.13.1",
 									},
 								},
 							},
@@ -260,13 +242,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "pear",
-											Name:      "pear_exception",
-											Version:   "v1.0.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "pear",
+										Name:      "pear_exception",
+										Version:   "v1.0.0",
 									},
 								},
 							},
@@ -288,13 +268,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "co.elastic.apm",
-											Name:      "apm-agent",
-											Version:   "1.36.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent",
+										Version:   "1.36.0",
 									},
 								},
 							},
@@ -303,13 +281,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "co.elastic.apm",
-											Name:      "apm-agent-cached-lookup-key",
-											Version:   "1.36.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent-cached-lookup-key",
+										Version:   "1.36.0",
 									},
 								},
 							},

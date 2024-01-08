@@ -63,21 +63,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Epoch:   0,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeRPM,
-											Namespace: "centos",
-											Name:      "binutils",
-											Version:   "2.30-93.el8",
-											Qualifiers: packageurl.Qualifiers{
-												{
-													Key:   "arch",
-													Value: "aarch64",
-												},
-												{
-													Key:   "distro",
-													Value: "centos-8.3.2011",
-												},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "binutils",
+										Version:   "2.30-93.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
 											},
 										},
 									},
@@ -145,12 +143,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.0",
 									},
 								},
 								Indirect: false,
@@ -160,12 +156,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actioncontroller",
 								Version: "7.0.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actioncontroller",
-											Version: "7.0.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actioncontroller",
+										Version: "7.0.0",
 									},
 								},
 								Indirect: false,
@@ -185,12 +179,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.0",
 									},
 								},
 							},
@@ -206,12 +198,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeNuget,
-											Name:    "Newtonsoft.Json",
-											Version: "9.0.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNuget,
+										Name:    "Newtonsoft.Json",
+										Version: "9.0.1",
 									},
 								},
 							},
@@ -226,13 +216,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.0-20210421170649-83a5a9bb288b",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeGolang,
-											Namespace: "golang.org/x",
-											Name:      "crypto",
-											Version:   "v0.0.0-20210421170649-83a5a9bb288b",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "golang.org/x",
+										Name:      "crypto",
+										Version:   "v0.0.0-20210421170649-83a5a9bb288b",
 									},
 								},
 							},
@@ -667,25 +655,23 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Epoch:   1,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeRPM,
-											Namespace: "centos",
-											Name:      "acl",
-											Version:   "2.2.53-1.el8",
-											Qualifiers: packageurl.Qualifiers{
-												{
-													Key:   "arch",
-													Value: "aarch64",
-												},
-												{
-													Key:   "distro",
-													Value: "centos-8.3.2011",
-												},
-												{
-													Key:   "epoch",
-													Value: "1",
-												},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "acl",
+										Version:   "2.2.53-1.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
+											},
+											{
+												Key:   "epoch",
+												Value: "1",
 											},
 										},
 									},
@@ -709,21 +695,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Epoch:   0,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeRPM,
-											Namespace: "centos",
-											Name:      "glibc",
-											Version:   "2.28-151.el8",
-											Qualifiers: packageurl.Qualifiers{
-												{
-													Key:   "arch",
-													Value: "aarch64",
-												},
-												{
-													Key:   "distro",
-													Value: "centos-8.3.2011",
-												},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "glibc",
+										Version:   "2.28-151.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
 											},
 										},
 									},
@@ -748,13 +732,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.0",
-										},
-										FilePath: "tools/project-john/specifications/actionpack.gemspec",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.0",
 									},
 								},
 								Layer: ftypes.Layer{
@@ -767,13 +748,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.1",
-										},
-										FilePath: "tools/project-doe/specifications/actionpack.gemspec",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
 									},
 								},
 								Layer: ftypes.Layer{
@@ -789,12 +767,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "actionpack",
 								PkgPath:         "tools/project-john/specifications/actionpack.gemspec",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.0",
 									},
 								},
 								InstalledVersion: "7.0.0",
@@ -841,12 +817,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "actionpack",
 								PkgPath:         "tools/project-doe/specifications/actionpack.gemspec",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
 									},
 								},
 								InstalledVersion: "7.0.1",
@@ -1221,12 +1195,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actioncable",
 								Version: "6.1.4.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actioncable",
-											Version: "6.1.4.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actioncable",
+										Version: "6.1.4.1",
 									},
 								},
 							},
@@ -1241,14 +1213,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "org.springframework:spring-web",
 								Version: "5.3.22",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "org.springframework",
-											Name:      "spring-web",
-											Version:   "5.3.22",
-										},
-										FilePath: "spring-web-5.3.22.jar",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.springframework",
+										Name:      "spring-web",
+										Version:   "5.3.22",
 									},
 								},
 								FilePath: "spring-web-5.3.22.jar",
@@ -1375,14 +1344,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "org.apache.nifi:nifi-dbcp-base",
 								Version: "1.20.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "org.apache.nifi",
-											Name:      "nifi-dbcp-base",
-											Version:   "1.20.0",
-										},
-										FilePath: "nifi-dbcp-base-1.20.0.jar",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.nifi",
+										Name:      "nifi-dbcp-base",
+										Version:   "1.20.0",
 									},
 								},
 								FilePath: "nifi-dbcp-base-1.20.0.jar",
@@ -1391,14 +1357,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "org.apache.nifi:nifi-hikari-dbcp-service",
 								Version: "1.20.0",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "org.apache.nifi",
-											Name:      "nifi-hikari-dbcp-service",
-											Version:   "1.20.0",
-										},
-										FilePath: "nifi-hikari-dbcp-service-1.20.0.jar",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.nifi",
+										Name:      "nifi-hikari-dbcp-service",
+										Version:   "1.20.0",
 									},
 								},
 								FilePath: "nifi-hikari-dbcp-service-1.20.0.jar",
@@ -1410,13 +1373,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "org.apache.nifi:nifi-dbcp-base",
 								PkgPath:         "nifi-dbcp-base-1.20.0.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "org.apache.nifi",
-											Name:      "nifi-dbcp-base",
-											Version:   "1.20.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.nifi",
+										Name:      "nifi-dbcp-base",
+										Version:   "1.20.0",
 									},
 								},
 								InstalledVersion: "1.20.0",
@@ -1462,13 +1423,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 								PkgName:         "org.apache.nifi:nifi-hikari-dbcp-service",
 								PkgPath:         "nifi-hikari-dbcp-service-1.20.0.jar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "org.apache.nifi",
-											Name:      "nifi-hikari-dbcp-service",
-											Version:   "1.20.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.nifi",
+										Name:      "nifi-hikari-dbcp-service",
+										Version:   "1.20.0",
 									},
 								},
 								InstalledVersion: "1.20.0",
@@ -1680,13 +1639,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "ruby-typeprof",
 								Version: "0.20.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeNPM,
-											Name:    "ruby-typeprof",
-											Version: "0.20.1",
-										},
-										FilePath: "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "ruby-typeprof",
+										Version: "0.20.1",
 									},
 								},
 								Licenses: []string{"MIT"},
