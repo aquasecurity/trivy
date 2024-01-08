@@ -585,7 +585,7 @@ func TestFromString(t *testing.T) {
 	}
 }
 
-func TestToPackage(t *testing.T) {
+func TestPackageURL_Package(t *testing.T) {
 	tests := []struct {
 		name    string
 		pkgURL  *purl.PackageURL
@@ -769,7 +769,7 @@ func TestToPackage(t *testing.T) {
 	}
 }
 
-func TestLangType(t *testing.T) {
+func TestPackageURL_LangType(t *testing.T) {
 	tests := []struct {
 		name string
 		purl packageurl.PackageURL
@@ -809,6 +809,75 @@ func TestLangType(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &purl.PackageURL{PackageURL: tt.purl}
 			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
+		})
+	}
+}
+
+func TestPackageURL_Match(t *testing.T) {
+	tests := []struct {
+		name       string
+		constraint string
+		target     string
+		want       bool
+	}{
+		{
+			name:       "same purl",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			want:       true,
+		},
+		{
+			name:       "different type",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			target:     "pkg:maven/github.com/aquasecurity/trivy@0.49.0",
+			want:       false,
+		},
+		{
+			name:       "different namespace",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity2/trivy@0.49.0",
+			want:       false,
+		},
+		{
+			name:       "different name",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity/tracee@0.49.0",
+			want:       false,
+		},
+		{
+			name:       "different version",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy@0.49.0",
+			target:     "pkg:golang/github.com/aquasecurity/trivy@0.49.1",
+			want:       false,
+		},
+		{
+			name:       "version wildcard",
+			constraint: "pkg:golang/github.com/aquasecurity/trivy",
+			target:     "pkg:golang/github.com/aquasecurity/trivy@0.50.0",
+			want:       true,
+		},
+		{
+			name:       "different qualifier",
+			constraint: "pkg:bitnami/wordpress@6.2.0?arch=arm64&distro=debian-12",
+			target:     "pkg:bitnami/wordpress@6.2.0?arch=arm64&distro=debian-13",
+			want:       false,
+		},
+		{
+			name:       "target more qualifiers",
+			constraint: "pkg:bitnami/wordpress@6.2.0?arch=arm64",
+			target:     "pkg:bitnami/wordpress@6.2.0?arch=arm64&distro=debian-13",
+			want:       true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c, err := purl.FromString(tt.constraint)
+			require.NoError(t, err)
+
+			p, err := purl.FromString(tt.target)
+			require.NoError(t, err)
+
+			assert.Equalf(t, tt.want, c.Match(p.Unwrap()), "Match()")
 		})
 	}
 }

@@ -289,6 +289,36 @@ func (p *PackageURL) Package() *ftypes.Package {
 	return pkg
 }
 
+// Match returns true if the given PURL "target" satisfies the constraint PURL "p".
+// - If the constraint does not have a version, it will match any version in the target.
+// - If the constraint has qualifiers, the target must have the same set of qualifiers to match.
+func (p *PackageURL) Match(target *packageurl.PackageURL) bool {
+	if target == nil {
+		return false
+	}
+	switch {
+	case p.Type != target.Type:
+		return false
+	case p.Namespace != target.Namespace:
+		return false
+	case p.Name != target.Name:
+		return false
+	case p.Version != "" && p.Version != target.Version:
+		return false
+	case p.Subpath != "" && p.Subpath != target.Subpath:
+		return false
+	}
+
+	// All qualifiers in the constraint must be in the target to match
+	q := target.Qualifiers.Map()
+	for k, v1 := range p.Qualifiers.Map() {
+		if v2, ok := q[k]; !ok || v1 != v2 {
+			return false
+		}
+	}
+	return true
+}
+
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#oci
 func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	if len(metadata.RepoDigests) == 0 {
