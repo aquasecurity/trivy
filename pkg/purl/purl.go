@@ -121,8 +121,7 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 		purl, err := parseOCI(metadata)
 		if err != nil {
 			return nil, err
-		}
-		if purl.Type == "" {
+		} else if purl.Type == "" {
 			return nil, nil
 		}
 		return &PackageURL{PackageURL: purl}, nil
@@ -164,6 +163,9 @@ func (p *PackageURL) BOMRef() string {
 }
 
 func (p *PackageURL) Unwrap() *packageurl.PackageURL {
+	if p == nil {
+		return nil
+	}
 	return &p.PackageURL
 }
 

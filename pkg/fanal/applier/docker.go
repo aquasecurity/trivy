@@ -254,6 +254,7 @@ func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Pack
 	p, err := purl.New(pkgType, metadata, pkg)
 	if err != nil {
 		log.Logger.Errorf("Failed to create PackageURL: %s", err)
+		return nil
 	}
 	return p.Unwrap()
 }
