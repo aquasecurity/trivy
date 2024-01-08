@@ -2,6 +2,7 @@ package log
 
 import (
 	"os"
+	"strings"
 
 	xlog "github.com/masahiro331/go-xfs-filesystem/log"
 	"go.uber.org/zap"
@@ -114,4 +115,20 @@ func Fatal(err error) {
 		Logger.Fatalf("%+v", err)
 	}
 	Logger.Fatal(err)
+}
+
+func String(key, val string) zap.Field {
+	if key == "" || val == "" {
+		return zap.Skip()
+	}
+	return zap.String(key, val)
+}
+
+type PrefixedLogger struct {
+	Name string
+}
+
+func (d *PrefixedLogger) Write(p []byte) (n int, err error) {
+	Logger.Debugf("[%s] %s", d.Name, strings.TrimSpace(string(p)))
+	return len(p), nil
 }

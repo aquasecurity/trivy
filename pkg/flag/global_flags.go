@@ -14,7 +14,7 @@ var (
 		Name:       "config",
 		ConfigName: "config",
 		Shorthand:  "c",
-		Value:      "trivy.yaml",
+		Default:    "trivy.yaml",
 		Usage:      "config path",
 		Persistent: true,
 	}
@@ -22,7 +22,7 @@ var (
 		Name:       "version",
 		ConfigName: "version",
 		Shorthand:  "v",
-		Value:      false,
+		Default:    false,
 		Usage:      "show version",
 		Persistent: true,
 	}
@@ -30,7 +30,7 @@ var (
 		Name:       "quiet",
 		ConfigName: "quiet",
 		Shorthand:  "q",
-		Value:      false,
+		Default:    false,
 		Usage:      "suppress progress bar and log output",
 		Persistent: true,
 	}
@@ -38,35 +38,35 @@ var (
 		Name:       "debug",
 		ConfigName: "debug",
 		Shorthand:  "d",
-		Value:      false,
+		Default:    false,
 		Usage:      "debug mode",
 		Persistent: true,
 	}
 	InsecureFlag = Flag{
 		Name:       "insecure",
 		ConfigName: "insecure",
-		Value:      false,
+		Default:    false,
 		Usage:      "allow insecure server connections",
 		Persistent: true,
 	}
 	TimeoutFlag = Flag{
 		Name:       "timeout",
 		ConfigName: "timeout",
-		Value:      time.Second * 300, // 5 mins
+		Default:    time.Second * 300, // 5 mins
 		Usage:      "timeout",
 		Persistent: true,
 	}
 	CacheDirFlag = Flag{
 		Name:       "cache-dir",
 		ConfigName: "cache.dir",
-		Value:      fsutils.CacheDir(),
+		Default:    fsutils.CacheDir(),
 		Usage:      "cache directory",
 		Persistent: true,
 	}
 	GenerateDefaultConfigFlag = Flag{
 		Name:       "generate-default-config",
 		ConfigName: "generate-default-config",
-		Value:      false,
+		Default:    false,
 		Usage:      "write the default config to trivy-default.yaml",
 		Persistent: true,
 	}

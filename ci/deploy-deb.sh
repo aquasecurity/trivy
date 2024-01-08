@@ -14,8 +14,8 @@ done
 
 for release in ${DEBIAN_RELEASES[@]} ${UBUNTU_RELEASES[@]}; do
   echo "Adding deb package to $release"
-  reprepro includedeb $release ../../dist/*Linux-64bit.deb
   reprepro includedeb $release ../../dist/*Linux-32bit.deb
+  reprepro includedeb $release ../../dist/*Linux-64bit.deb
   reprepro includedeb $release ../../dist/*Linux-ARM64.deb
 done
 

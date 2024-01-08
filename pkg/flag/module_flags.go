@@ -14,14 +14,14 @@ var (
 	ModuleDirFlag = Flag{
 		Name:       "module-dir",
 		ConfigName: "module.dir",
-		Value:      module.DefaultDir,
+		Default:    module.DefaultDir,
 		Usage:      "specify directory to the wasm modules that will be loaded",
 		Persistent: true,
 	}
 	EnableModulesFlag = Flag{
 		Name:       "enable-modules",
 		ConfigName: "module.enable-modules",
-		Value:      []string{},
+		Default:    []string{},
 		Usage:      "[EXPERIMENTAL] module names to enable",
 		Persistent: true,
 	}

@@ -3,6 +3,7 @@ package plugin
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -57,20 +58,54 @@ type Selector struct {
 	Arch string
 }
 
-// Run runs the plugin
-func (p Plugin) Run(ctx context.Context, args []string) error {
+type RunOptions struct {
+	Args  []string
+	Stdin io.Reader
+}
+
+func (p Plugin) Cmd(ctx context.Context, opts RunOptions) (*exec.Cmd, error) {
 	platform, err := p.selectPlatform()
 	if err != nil {
-		return xerrors.Errorf("platform selection error: %w", err)
+		return nil, xerrors.Errorf("platform selection error: %w", err)
 	}
 
 	execFile := filepath.Join(dir(), p.Name, platform.Bin)
 
-	cmd := exec.CommandContext(ctx, execFile, args...)
+	cmd := exec.CommandContext(ctx, execFile, opts.Args...)
 	cmd.Stdin = os.Stdin
+	if opts.Stdin != nil {
+		cmd.Stdin = opts.Stdin
+	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = os.Environ()
+
+	return cmd, nil
+}
+
+type Wait func() error
+
+// Start starts the plugin
+//
+// After a successful call to Start the Wait method must be called.
+func (p Plugin) Start(ctx context.Context, opts RunOptions) (Wait, error) {
+	cmd, err := p.Cmd(ctx, opts)
+	if err != nil {
+		return nil, xerrors.Errorf("cmd: %w", err)
+	}
+
+	if err = cmd.Start(); err != nil {
+		return nil, xerrors.Errorf("plugin start: %w", err)
+	}
+	return cmd.Wait, nil
+}
+
+// Run runs the plugin
+func (p Plugin) Run(ctx context.Context, opts RunOptions) error {
+	cmd, err := p.Cmd(ctx, opts)
+	if err != nil {
+		return xerrors.Errorf("cmd: %w", err)
+	}
 
 	// If an error is found during the execution of the plugin, figure
 	// out if the error was from not being able to execute the plugin or
@@ -79,10 +114,8 @@ func (p Plugin) Run(ctx context.Context, args []string) error {
 		if _, ok := err.(*exec.ExitError); !ok {
 			return xerrors.Errorf("exit: %w", err)
 		}
-
 		return xerrors.Errorf("plugin exec: %w", err)
 	}
-
 	return nil
 }
 
@@ -186,18 +219,9 @@ func Uninstall(name string) error {
 
 // Information gets the information about an installed plugin
 func Information(name string) (string, error) {
-	pluginDir := filepath.Join(dir(), name)
-
-	if _, err := os.Stat(pluginDir); err != nil {
-		if os.IsNotExist(err) {
-			return "", xerrors.Errorf("could not find a plugin called '%s', did you install it?", name)
-		}
-		return "", xerrors.Errorf("stat error: %w", err)
-	}
-
-	plugin, err := loadMetadata(pluginDir)
+	plugin, err := load(name)
 	if err != nil {
-		return "", xerrors.Errorf("unable to load metadata: %w", err)
+		return "", xerrors.Errorf("plugin load error: %w", err)
 	}
 
 	return fmt.Sprintf(`
@@ -230,19 +254,11 @@ func List() (string, error) {
 
 // Update updates an existing plugin
 func Update(name string) error {
-	pluginDir := filepath.Join(dir(), name)
-
-	if _, err := os.Stat(pluginDir); err != nil {
-		if os.IsNotExist(err) {
-			return xerrors.Errorf("could not find a plugin called '%s' to update: %w", name, err)
-		}
-		return err
-	}
-
-	plugin, err := loadMetadata(pluginDir)
+	plugin, err := load(name)
 	if err != nil {
-		return err
+		return xerrors.Errorf("plugin load error: %w", err)
 	}
+
 	log.Logger.Infof("Updating plugin '%s'", name)
 	updated, err := Install(nil, plugin.Repository, true)
 	if err != nil {
@@ -280,15 +296,29 @@ func LoadAll() ([]Plugin, error) {
 	return plugins, nil
 }
 
-// RunWithArgs runs the plugin with arguments
-func RunWithArgs(ctx context.Context, url string, args []string) error {
-	pl, err := Install(ctx, url, false)
+// Start starts the plugin
+func Start(ctx context.Context, name string, opts RunOptions) (Wait, error) {
+	plugin, err := load(name)
+	if err != nil {
+		return nil, xerrors.Errorf("plugin load error: %w", err)
+	}
+
+	wait, err := plugin.Start(ctx, opts)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to run %s plugin: %w", plugin.Name, err)
+	}
+	return wait, nil
+}
+
+// RunWithURL runs the plugin with URL
+func RunWithURL(ctx context.Context, url string, opts RunOptions) error {
+	plugin, err := Install(ctx, url, false)
 	if err != nil {
 		return xerrors.Errorf("plugin install error: %w", err)
 	}
 
-	if err = pl.Run(ctx, args); err != nil {
-		return xerrors.Errorf("unable to run %s plugin: %w", pl.Name, err)
+	if err = plugin.Run(ctx, opts); err != nil {
+		return xerrors.Errorf("unable to run %s plugin: %w", plugin.Name, err)
 	}
 	return nil
 }
@@ -296,6 +326,23 @@ func RunWithArgs(ctx context.Context, url string, args []string) error {
 func IsPredefined(name string) bool {
 	_, ok := officialPlugins[name]
 	return ok
+}
+
+func load(name string) (Plugin, error) {
+	pluginDir := filepath.Join(dir(), name)
+	if _, err := os.Stat(pluginDir); err != nil {
+		if os.IsNotExist(err) {
+			return Plugin{}, xerrors.Errorf("could not find a plugin called '%s', did you install it?", name)
+		}
+		return Plugin{}, xerrors.Errorf("plugin stat error: %w", err)
+	}
+
+	plugin, err := loadMetadata(pluginDir)
+	if err != nil {
+		return Plugin{}, xerrors.Errorf("unable to load plugin metadata: %w", err)
+	}
+
+	return plugin, nil
 }
 
 func loadMetadata(dir string) (Plugin, error) {

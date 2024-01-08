@@ -10,6 +10,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
+	osver "github.com/deepfactor-io/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/log"
 	"github.com/deepfactor-io/trivy/pkg/scanner/utils"
@@ -44,6 +45,7 @@ var (
 		"3.15": time.Date(2023, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.16": time.Date(2024, 5, 23, 23, 59, 59, 0, time.UTC),
 		"3.17": time.Date(2024, 11, 22, 23, 59, 59, 0, time.UTC),
+		"3.18": time.Date(2025, 5, 9, 23, 59, 59, 0, time.UTC),
 		"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 )
@@ -54,9 +56,9 @@ type options struct {
 
 type option func(*options)
 
-func WithClock(clock clock.Clock) option {
+func WithClock(c clock.Clock) option {
 	return func(opts *options) {
-		opts.clock = clock
+		opts.clock = c
 	}
 }
 
@@ -84,9 +86,7 @@ func NewScanner(opts ...option) *Scanner {
 // Detect vulnerabilities in package using Alpine scanner
 func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Alpine vulnerabilities...")
-	if strings.Count(osVer, ".") > 1 {
-		osVer = osVer[:strings.LastIndex(osVer, ".")]
-	}
+	osVer = osver.Minor(osVer)
 	repoRelease := s.repoRelease(repo)
 
 	log.Logger.Debugf("alpine: os version: %s", osVer)
@@ -172,19 +172,9 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 	return installedVersion.LessThan(fixedVersion)
 }
 
-// IsSupportedVersion checks the OSFamily can be scanned using Alpine scanner
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	if strings.Count(osVer, ".") > 1 {
-		osVer = osVer[:strings.LastIndex(osVer, ".")]
-	}
-
-	eol, ok := eolDates[osVer]
-	if !ok {
-		log.Logger.Infof("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return true // may be the latest version
-	}
-
-	return s.clock.Now().Before(eol)
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(s.clock, eolDates, osFamily, osver.Minor(osVer))
 }
 
 func (s *Scanner) repoRelease(repo *ftypes.Repository) string {

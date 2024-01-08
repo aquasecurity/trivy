@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	postHandlerInits = map[types.HandlerType]postHandlerInit{}
+	postHandlerInits = make(map[types.HandlerType]postHandlerInit)
 )
 
 type postHandlerInit func(artifact.Option) (PostHandler, error)
@@ -62,7 +62,7 @@ func NewManager(artifactOpt artifact.Option) (Manager, error) {
 }
 
 func (m Manager) Versions() map[string]int {
-	versions := map[string]int{}
+	versions := make(map[string]int)
 	for _, h := range m.postHandlers {
 		versions[string(h.Type())] = h.Version()
 	}

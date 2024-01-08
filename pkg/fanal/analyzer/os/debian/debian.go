@@ -8,8 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
-	aos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
-
+	fos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/fanal/utils"
 )
@@ -29,10 +28,13 @@ func (a debianOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 	for scanner.Scan() {
 		line := scanner.Text()
 		return &analyzer.AnalysisResult{
-			OS: types.OS{Family: aos.Debian, Name: line},
+			OS: types.OS{
+				Family: types.Debian,
+				Name:   line,
+			},
 		}, nil
 	}
-	return nil, xerrors.Errorf("debian: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("debian: %w", fos.AnalyzeOSError)
 }
 
 func (a debianOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

@@ -40,7 +40,7 @@ func Test_unpackagedHook_Handle(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "github.com/spf13/cobra",
 								Version: "1.5.0",

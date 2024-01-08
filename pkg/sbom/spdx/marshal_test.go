@@ -1,25 +1,23 @@
 package spdx_test
 
 import (
-	"fmt"
 	"hash/fnv"
 	"testing"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
-	fos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
+	"github.com/deepfactor-io/trivy/pkg/clock"
 	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/report"
 	tspdx "github.com/deepfactor-io/trivy/pkg/sbom/spdx"
 	"github.com/deepfactor-io/trivy/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/uuid"
 )
 
 func TestMarshaler_Marshal(t *testing.T) {
@@ -37,7 +35,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: fos.CentOS,
+						Family: ftypes.CentOS,
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
@@ -53,7 +51,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "rails:latest (centos 8.3.2011)",
 						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
 								Name:            "binutils",
@@ -68,6 +66,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv3+"},
 								Maintainer:      "CentOS",
+								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
 							},
 						},
 					},
@@ -112,7 +111,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -173,6 +172,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PackageSourceInfo:     "built package from: binutils 2.30-93.el8",
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageChecksums: []common.Checksum{
+							{
+								Algorithm: common.MD5,
+								Value:     "7459cec61bb4d1b0ca8107e25e0dd005",
+							},
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-73c871d73f3c8248"),
@@ -203,7 +208,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
+								Locator:  "pkg:oci/rails@sha256%3Aa27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
 							},
 						},
 						PackageAttributionTexts: []string{
@@ -273,7 +278,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: fos.CentOS,
+						Family: ftypes.CentOS,
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
@@ -288,7 +293,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "centos:latest (centos 8.3.2011)",
 						Class:  types.ClassOSPkg,
-						Type:   fos.CentOS,
+						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
 								Name:            "acl",
@@ -302,6 +307,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        1,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv2+"},
+								Digest:          "md5:483792b8b5f9eb8be7dc4407733118d0",
 							},
 						},
 					},
@@ -345,7 +351,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -363,12 +369,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+								Locator:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
 							},
 						},
 						PackageSourceInfo:     "built package from: acl 1:2.2.53-1.el8",
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						PackageChecksums: []common.Checksum{
+							{
+								Algorithm: common.MD5,
+								Value:     "483792b8b5f9eb8be7dc4407733118d0",
+							},
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),
@@ -387,20 +399,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 						},
-						Files: []*spdx.File{
-							{
-								FileSPDXIdentifier: "File-fa42187221d0d0a8",
-								FileName:           "tools/project-doe/specifications/actionpack.gemspec",
-								Checksums: []spdx.Checksum{
-									{
-										Algorithm: spdx.SHA1,
-										Value:     "413f98442c83808042b5d1d2611a346b999bdca5",
-									},
-								},
-							},
-						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:         true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "688d98e7e5660b879fd1fc548af8c0df3b7d785a",
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d5443dbcbba0dbd4"),
@@ -419,20 +423,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 						},
-						Files: []*spdx.File{
-							{
-								FileSPDXIdentifier: "File-6a540784b0dc6d55",
-								FileName:           "tools/project-john/specifications/actionpack.gemspec",
-								Checksums: []spdx.Checksum{
-									{
-										Algorithm: spdx.SHA1,
-										Value:     "d2f9f9aed5161f6e4116a3f9573f41cd832f137c",
-									},
-								},
-							},
-						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:         true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "c7526b18eaaeb410e82cb0da9288dd02b38ea171",
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
@@ -459,6 +455,28 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageName:             "gemspec",
 						PackageSourceInfo:       "Ruby",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+					},
+				},
+				Files: []*spdx.File{
+					{
+						FileSPDXIdentifier: "File-6a540784b0dc6d55",
+						FileName:           "tools/project-john/specifications/actionpack.gemspec",
+						Checksums: []spdx.Checksum{
+							{
+								Algorithm: spdx.SHA1,
+								Value:     "d2f9f9aed5161f6e4116a3f9573f41cd832f137c",
+							},
+						},
+					},
+					{
+						FileSPDXIdentifier: "File-fa42187221d0d0a8",
+						FileName:           "tools/project-doe/specifications/actionpack.gemspec",
+						Checksums: []spdx.Checksum{
+							{
+								Algorithm: spdx.SHA1,
+								Value:     "413f98442c83808042b5d1d2611a346b999bdca5",
+							},
+						},
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -488,8 +506,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Relationship: "CONTAINS",
 					},
 					{
+						RefA:         spdx.DocElementID{ElementRefID: "Package-d5443dbcbba0dbd4"},
+						RefB:         spdx.DocElementID{ElementRefID: "File-6a540784b0dc6d55"},
+						Relationship: "CONTAINS",
+					},
+					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-13fe667a0805e6b7"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Package-13fe667a0805e6b7"},
+						RefB:         spdx.DocElementID{ElementRefID: "File-fa42187221d0d0a8"},
 						Relationship: "CONTAINS",
 					},
 				},
@@ -532,7 +560,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -597,7 +625,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "http://test-aggregate",
-				ArtifactType:  ftypes.ArtifactRemoteRepository,
+				ArtifactType:  ftypes.ArtifactRepository,
 				Results: types.Results{
 					{
 						Target: "Node.js",
@@ -630,7 +658,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -670,14 +698,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"LayerDiffID: sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 						},
-						Files: []*spdx.File{
-							{
-								FileName:           "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
-								FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
-							},
-						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:         true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+						},
+					},
+				},
+				Files: []*spdx.File{
+					{
+						FileName:           "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
+						FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -694,6 +726,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-24f8a80152e2c0fc"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-daedb173cfd43058"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Package-daedb173cfd43058"},
+						RefB:         spdx.DocElementID{ElementRefID: "File-a52825a3e5bc6dfe"},
 						Relationship: "CONTAINS",
 					},
 				},
@@ -721,7 +758,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							CreatorType: "Organization",
 						},
 						{
-							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							Creator:     "trivy-0.38.1",
 							CreatorType: "Tool",
 						},
 					},
@@ -747,18 +784,185 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 		},
-	}
+		{
+			name: "happy path secret",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "secret",
+				ArtifactType:  ftypes.ArtifactFilesystem,
+				Results: types.Results{
+					{
+						Target: "key.pem",
+						Class:  types.ClassSecret,
+						Secrets: []ftypes.SecretFinding{
+							{
+								RuleID:    "private-key",
+								Category:  "AsymmetricPrivateKey",
+								Severity:  "HIGH",
+								Title:     "Asymmetric Private Key",
+								StartLine: 1,
+								EndLine:   1,
+							},
+						},
+					},
+				},
+			},
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "secret",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/secret-3ff14136-e09f-4df9-80ea-000000000001",
 
-	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     "trivy-0.38.1",
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
+				},
+				Packages: []*spdx.Package{
+					{
+						PackageName:             "secret",
+						PackageSPDXIdentifier:   "Filesystem-5c08d34162a2c5d3",
+						PackageDownloadLocation: "NONE",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+					},
+				},
+				Relationships: []*spdx.Relationship{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-5c08d34162a2c5d3"},
+						Relationship: "DESCRIBES",
+					},
+				},
+			},
+		},
+		{
+			name: "go library local",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "go-artifact",
+				ArtifactType:  ftypes.ArtifactFilesystem,
+				Results: types.Results{
+					{
+						Target: "artifact",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.GoBinary,
+						Packages: []ftypes.Package{
+							{
+								Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
+								Version: "(devel)",
+							},
+							{
+								Name:    "golang.org/x/crypto",
+								Version: "v0.0.1",
+							},
+						},
+					},
+				},
+			},
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "go-artifact",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/go-artifact-3ff14136-e09f-4df9-80ea-000000000001",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     "trivy-0.38.1",
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
+				},
+				Packages: []*spdx.Package{
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Package-9164ae38c5cdf815"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "./private_repos/cnrm.googlesource.com/cnrm/",
+						PackageVersion:          "(devel)",
+						PackageLicenseConcluded: "NONE",
+						PackageLicenseDeclared:  "NONE",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
+						PackageSupplier:         &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+					},
+					{
+						PackageName:             "go-artifact",
+						PackageSPDXIdentifier:   "Filesystem-e340f27468b382be",
+						PackageDownloadLocation: "NONE",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Application-6666b83a5d554671"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "gobinary",
+						PackageSourceInfo:       "artifact",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Package-8451f2bc8e1f45aa"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "golang.org/x/crypto",
+						PackageVersion:          "v0.0.1",
+						PackageLicenseConcluded: "NONE",
+						PackageLicenseDeclared:  "NONE",
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:golang/golang.org/x/crypto@v0.0.1",
+							},
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+					},
+				},
+				Relationships: []*spdx.Relationship{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-e340f27468b382be"},
+						Relationship: "DESCRIBES",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Filesystem-e340f27468b382be"},
+						RefB:         spdx.DocElementID{ElementRefID: "Application-6666b83a5d554671"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-6666b83a5d554671"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-9164ae38c5cdf815"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-6666b83a5d554671"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-8451f2bc8e1f45aa"},
+						Relationship: "CONTAINS",
+					},
+				},
+			},
+		},
+	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			var count int
-			newUUID := func() uuid.UUID {
-				count++
-				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
-			}
-
 			// Fake function calculating the hash value
 			h := fnv.New64()
 			hasher := func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error) {
@@ -783,7 +987,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 				return h.Sum64(), nil
 			}
 
-			marshaler := tspdx.NewMarshaler("0.38.1", tspdx.WithClock(clock), tspdx.WithNewUUID(newUUID), tspdx.WithHasher(hasher))
+			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+			marshaler := tspdx.NewMarshaler("0.38.1", tspdx.WithHasher(hasher))
 			spdxDoc, err := marshaler.Marshal(tc.inputReport)
 			require.NoError(t, err)
 

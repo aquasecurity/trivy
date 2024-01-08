@@ -6,10 +6,11 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
+	"github.com/deepfactor-io/trivy/pkg/clock"
 	"github.com/deepfactor-io/trivy/pkg/fanal/artifact"
 	aimage "github.com/deepfactor-io/trivy/pkg/fanal/artifact/image"
 	flocal "github.com/deepfactor-io/trivy/pkg/fanal/artifact/local"
-	"github.com/deepfactor-io/trivy/pkg/fanal/artifact/remote"
+	"github.com/deepfactor-io/trivy/pkg/fanal/artifact/repo"
 	"github.com/deepfactor-io/trivy/pkg/fanal/artifact/sbom"
 	"github.com/deepfactor-io/trivy/pkg/fanal/artifact/vm"
 	"github.com/deepfactor-io/trivy/pkg/fanal/image"
@@ -34,7 +35,6 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
-	wire.Value([]image.Option(nil)), // optional functions
 	image.NewContainerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
@@ -55,7 +55,7 @@ var StandaloneFilesystemSet = wire.NewSet(
 
 // StandaloneRepositorySet binds repository dependencies
 var StandaloneRepositorySet = wire.NewSet(
-	remote.NewArtifact,
+	repo.NewArtifact,
 	StandaloneSuperSet,
 )
 
@@ -91,7 +91,7 @@ var RemoteFilesystemSet = wire.NewSet(
 
 // RemoteRepositorySet binds repository dependencies for client/server mode
 var RemoteRepositorySet = wire.NewSet(
-	remote.NewArtifact,
+	repo.NewArtifact,
 	RemoteSuperSet,
 )
 
@@ -110,7 +110,6 @@ var RemoteVMSet = wire.NewSet(
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	aimage.NewArtifact,
-	wire.Value([]image.Option(nil)), // optional functions
 	image.NewContainerImage,
 	RemoteSuperSet,
 )
@@ -136,7 +135,10 @@ type Driver interface {
 
 // NewScanner is the factory method of Scanner
 func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
-	return Scanner{driver: driver, artifact: ar}
+	return Scanner{
+		driver:   driver,
+		artifact: ar,
+	}
 }
 
 // ScanArtifact scans the artifacts and returns results
@@ -191,6 +193,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	return types.Report{
 		SchemaVersion: report.SchemaVersion,
+		CreatedAt:     clock.Now(),
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{

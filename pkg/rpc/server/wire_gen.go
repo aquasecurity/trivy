@@ -8,10 +8,11 @@ package server
 
 import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/deepfactor-io/trivy/pkg/detector/ospkg"
 	"github.com/deepfactor-io/trivy/pkg/fanal/applier"
 	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	"github.com/deepfactor-io/trivy/pkg/scanner/langpkg"
 	"github.com/deepfactor-io/trivy/pkg/scanner/local"
+	"github.com/deepfactor-io/trivy/pkg/scanner/ospkg"
 	"github.com/deepfactor-io/trivy/pkg/vulnerability"
 )
 
@@ -19,10 +20,11 @@ import (
 
 func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
 	applierApplier := applier.NewApplier(localArtifactCache)
-	detector := ospkg.Detector{}
+	scanner := ospkg.NewScanner()
+	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	scanner := local.NewScanner(applierApplier, detector, client)
-	scanServer := NewScanServer(scanner)
+	localScanner := local.NewScanner(applierApplier, scanner, langpkgScanner, client)
+	scanServer := NewScanServer(localScanner)
 	return scanServer
 }

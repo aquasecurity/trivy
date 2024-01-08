@@ -27,7 +27,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.CondaPkg,
 						FilePath: "testdata/pip-22.2.2-py38h06a4308_0.json",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:     "pip",
 								Version:  "22.2.2",

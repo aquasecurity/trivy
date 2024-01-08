@@ -4,9 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
-	"io/fs"
 	"os"
-	"path/filepath"
 	"reflect"
 	"strings"
 	"sync"
@@ -20,12 +18,12 @@ import (
 	"github.com/deepfactor-io/trivy/pkg/fanal/artifact"
 	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
 	"github.com/deepfactor-io/trivy/pkg/fanal/handler"
+	"github.com/deepfactor-io/trivy/pkg/fanal/image"
 	"github.com/deepfactor-io/trivy/pkg/fanal/log"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/fanal/walker"
-	"github.com/deepfactor-io/trivy/pkg/mapfs"
+	"github.com/deepfactor-io/trivy/pkg/parallel"
 	"github.com/deepfactor-io/trivy/pkg/semaphore"
-	"github.com/deepfactor-io/trivy/pkg/syncx"
 )
 
 type Artifact struct {
@@ -51,24 +49,12 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("handler init error: %w", err)
 	}
 
-	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-		Group:                opt.AnalyzerGroup,
-		Slow:                 opt.Slow,
-		FilePatterns:         opt.FilePatterns,
-		DisabledAnalyzers:    opt.DisabledAnalyzers,
-		MisconfScannerOption: opt.MisconfScannerOption,
-		SecretScannerOption:  opt.SecretScannerOption,
-		LicenseScannerOption: opt.LicenseScannerOption,
-	})
+	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerOptions())
 	if err != nil {
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
-	ca, err := analyzer.NewConfigAnalyzerGroup(analyzer.ConfigAnalyzerOptions{
-		FilePatterns:         opt.FilePatterns,
-		DisabledAnalyzers:    opt.DisabledAnalyzers,
-		MisconfScannerOption: opt.MisconfScannerOption,
-	})
+	ca, err := analyzer.NewConfigAnalyzerGroup(opt.ConfigAnalyzerOptions())
 	if err != nil {
 		return nil, xerrors.Errorf("config analyzer group error: %w", err)
 	}
@@ -76,7 +62,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	return Artifact{
 		image:          img,
 		cache:          c,
-		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs, opt.Slow),
+		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs),
 		analyzer:       a,
 		configAnalyzer: ca,
 		handlerManager: handlerManager,
@@ -209,7 +195,7 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	// TODO: our current logic may not detect empty layers correctly in rare cases.
 	validCreatedBy := len(diffIDs) == len(createdBy)
 
-	layerKeyMap := map[string]LayerInfo{}
+	layerKeyMap := make(map[string]LayerInfo)
 	for i, diffID := range diffIDs {
 
 		c := ""
@@ -228,53 +214,33 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
-	done := make(chan struct{})
-	errCh := make(chan error)
-	limit := semaphore.New(a.artifactOption.Slow)
 
 	var osFound types.OS
-	for _, k := range layerKeys {
-		if err := limit.Acquire(ctx, 1); err != nil {
-			return xerrors.Errorf("semaphore acquire: %w", err)
+	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context, layerKey string) (any, error) {
+		layer := layerKeyMap[layerKey]
+
+		// If it is a base layer, secret scanning should not be performed.
+		var disabledAnalyzers []analyzer.Type
+		if slices.Contains(baseDiffIDs, layer.DiffID) {
+			disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeSecret)
 		}
 
-		go func(ctx context.Context, layerKey string) {
-			defer func() {
-				limit.Release(1)
-				done <- struct{}{}
-			}()
-
-			layer := layerKeyMap[layerKey]
-
-			// If it is a base layer, secret scanning should not be performed.
-			var disabledAnalyers []analyzer.Type
-			if slices.Contains(baseDiffIDs, layer.DiffID) {
-				disabledAnalyers = append(disabledAnalyers, analyzer.TypeSecret)
-			}
-
-			layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyers)
-			if err != nil {
-				errCh <- xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
-				return
-			}
-			if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
-				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
-				return
-			}
-			if lo.IsNotEmpty(layerInfo.OS) {
-				osFound = layerInfo.OS
-			}
-		}(ctx, k)
-	}
-
-	for range layerKeys {
-		select {
-		case <-done:
-		case err := <-errCh:
-			return err
-		case <-ctx.Done():
-			return xerrors.Errorf("timeout: %w", ctx.Err())
+		layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyzers)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 		}
+		if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
+			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
+		}
+		if lo.IsNotEmpty(layerInfo.OS) {
+			osFound = layerInfo.OS
+		}
+		return nil, nil
+
+	}, nil)
+
+	if err := p.Do(ctx); err != nil {
+		return xerrors.Errorf("pipeline error: %w", err)
 	}
 
 	if missingImage != "" {
@@ -284,7 +250,6 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	}
 
 	return nil
-
 }
 
 func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
@@ -305,15 +270,14 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		FileChecksum: a.artifactOption.FileChecksum,
 	}
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.New(a.artifactOption.Slow)
+	limit := semaphore.New(a.artifactOption.Parallel)
 
 	// Prepare filesystem for post analysis
-	files := new(syncx.Map[analyzer.Type, *mapfs.FS])
-	tmpDir, err := os.MkdirTemp("", "layers-*")
+	composite, err := a.analyzer.PostAnalyzerFS()
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("mkdir temp error: %w", err)
+		return types.BlobInfo{}, xerrors.Errorf("unable to get post analysis filesystem: %w", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer composite.Cleanup()
 
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
@@ -321,9 +285,19 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 
+		// Skip post analysis if the file is not required
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
+		if len(analyzerTypes) == 0 {
+			return nil
+		}
+
 		// Build filesystem for post analysis
-		if err = a.buildFS(tmpDir, filePath, info, opener, files); err != nil {
-			return xerrors.Errorf("failed to build filesystem: %w", err)
+		tmpFilePath, err := composite.CopyFileToTemp(opener, info)
+		if err != nil {
+			return xerrors.Errorf("failed to copy file to temp: %w", err)
+		}
+		if err = composite.CreateLink(analyzerTypes, "", filePath, tmpFilePath); err != nil {
+			return xerrors.Errorf("failed to write a file: %w", err)
 		}
 
 		return nil
@@ -340,7 +314,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	}
 
 	// Post-analysis
-	if err = a.analyzer.PostAnalyze(ctx, files, result, opts); err != nil {
+	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
 	}
 
@@ -373,55 +347,6 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	}
 
 	return blobInfo, nil
-}
-
-// buildFS creates filesystem for post analysis
-func (a Artifact) buildFS(tmpDir, filePath string, info os.FileInfo, opener analyzer.Opener,
-	files *syncx.Map[analyzer.Type, *mapfs.FS]) error {
-	// Get all post-analyzers that want to analyze the file
-	atypes := a.analyzer.RequiredPostAnalyzers(filePath, info)
-	if len(atypes) == 0 {
-		return nil
-	}
-
-	// Create a temporary file to which the file in the layer will be copied
-	// so that all the files will not be loaded into memory
-	f, err := os.CreateTemp(tmpDir, "layer-file-*")
-	if err != nil {
-		return xerrors.Errorf("create temp error: %w", err)
-	}
-	defer f.Close()
-
-	// Open a file in the layer
-	r, err := opener()
-	if err != nil {
-		return xerrors.Errorf("file open error: %w", err)
-	}
-	defer r.Close()
-
-	// Copy file content into the temporary file
-	if _, err = io.Copy(f, r); err != nil {
-		return xerrors.Errorf("copy error: %w", err)
-	}
-
-	if err = os.Chmod(f.Name(), info.Mode()); err != nil {
-		return xerrors.Errorf("chmod error: %w", err)
-	}
-
-	// Create fs.FS for each post-analyzer that wants to analyze the current file
-	for _, at := range atypes {
-		fsys, _ := files.LoadOrStore(at, mapfs.New())
-		if dir := filepath.Dir(filePath); dir != "." {
-			if err := fsys.MkdirAll(dir, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
-				return xerrors.Errorf("mapfs mkdir error: %w", err)
-			}
-		}
-		err = fsys.WriteFile(filePath, f.Name())
-		if err != nil {
-			return xerrors.Errorf("mapfs write error: %w", err)
-		}
-	}
-	return nil
 }
 
 func (a Artifact) diffIDs(configFile *v1.ConfigFile) []string {
@@ -523,47 +448,7 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) (
 		return nil, -1
 	}
 
-	var entrypointIndexFound bool
-	baseImageIndex := -1
-	var foundNonEmpty bool
-	for i := len(configFile.History) - 1; i >= 0; i-- {
-		h := configFile.History[i]
-
-		// Skip the last CMD, ENTRYPOINT, etc.
-		if !foundNonEmpty {
-			if h.EmptyLayer {
-				continue
-			}
-			foundNonEmpty = true
-		}
-
-		if !h.EmptyLayer {
-			continue
-		}
-
-		// Assumptions:
-		// 1. Most base image have a CMD instruction
-		// 2. In case  ENTRYPOINT instruction is encountered then check if next instruction is CMD. If yes, then CMD is the last base image layer, else ENTRYPOINT
-
-		// Detect CMD instruction in base image
-		if strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)  CMD") ||
-			strings.HasPrefix(h.CreatedBy, "CMD") { // BuildKit
-			baseImageIndex = i
-			break
-		}
-
-		// if entry point exists but command is missing  then assume entrypoint as base image index
-		if entrypointIndexFound {
-			break
-		}
-
-		// if entry point exsists then update entrypointIndex and baseImageIndex
-		if strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)  ENTRYPOINT") ||
-			strings.HasPrefix(h.CreatedBy, "ENTRYPOINT") { // BuildKit
-			entrypointIndexFound = true
-			baseImageIndex = i
-		}
-	}
+	baseImageIndex := image.GuessBaseImageIndex(configFile.History)
 
 	// Diff IDs don't include empty layers, so the index is different from histories
 	var diffIDIndex int

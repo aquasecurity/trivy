@@ -1,6 +1,7 @@
 package mapfs
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -11,7 +12,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/deepfactor-io/trivy/pkg/syncx"
+	xsync "github.com/deepfactor-io/trivy/pkg/x/sync"
 )
 
 type allFS interface {
@@ -28,11 +29,26 @@ var _ allFS = &FS{}
 // FS is an in-memory filesystem
 type FS struct {
 	root *file
+
+	// When the underlyingRoot has a value, it allows access to the local filesystem outside of this in-memory filesystem.
+	// The set path is used as the starting point when accessing the local filesystem.
+	// In other words, although mapfs.Open("../foo") would normally result in an error, if this option is enabled,
+	// it will be executed as os.Open(filepath.Join(underlyingRoot, "../foo")).
+	underlyingRoot string
+}
+
+type Option func(*FS)
+
+// WithUnderlyingRoot returns an option to set the underlying root path for the in-memory filesystem.
+func WithUnderlyingRoot(root string) Option {
+	return func(fsys *FS) {
+		fsys.underlyingRoot = root
+	}
 }
 
 // New creates a new filesystem
-func New() *FS {
-	return &FS{
+func New(opts ...Option) *FS {
+	fsys := &FS{
 		root: &file{
 			stat: fileStat{
 				name:    ".",
@@ -40,9 +56,13 @@ func New() *FS {
 				modTime: time.Now(),
 				mode:    0o0700 | fs.ModeDir,
 			},
-			files: syncx.Map[string, *file]{},
+			files: xsync.Map[string, *file]{},
 		},
 	}
+	for _, opt := range opts {
+		opt(fsys)
+	}
+	return fsys
 }
 
 // Filter removes the specified skippedFiles and returns a new FS
@@ -57,7 +77,7 @@ func (m *FS) Filter(skippedFiles []string) (*FS, error) {
 }
 
 func (m *FS) FilterFunc(fn func(path string, d fs.DirEntry) (bool, error)) (*FS, error) {
-	newFS := New()
+	newFS := New(WithUnderlyingRoot(m.underlyingRoot))
 	err := fs.WalkDir(m, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -84,7 +104,7 @@ func (m *FS) FilterFunc(fn func(path string, d fs.DirEntry) (bool, error)) (*FS,
 		return newFS.WriteFile(path, f.underlyingPath)
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("walk error", err)
+		return nil, xerrors.Errorf("walk error %w", err)
 	}
 
 	return newFS, nil
@@ -103,6 +123,10 @@ func (m *FS) CopyFilesUnder(dir string) error {
 
 // Stat returns a FileInfo describing the file.
 func (m *FS) Stat(name string) (fs.FileInfo, error) {
+	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+		return os.Stat(filepath.Join(m.underlyingRoot, name))
+	}
+
 	name = cleanPath(name)
 	f, err := m.root.getFile(name)
 	if err != nil {
@@ -121,11 +145,17 @@ func (m *FS) Stat(name string) (fs.FileInfo, error) {
 // ReadDir reads the named directory
 // and returns a list of directory entries sorted by filename.
 func (m *FS) ReadDir(name string) ([]fs.DirEntry, error) {
+	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+		return os.ReadDir(filepath.Join(m.underlyingRoot, name))
+	}
 	return m.root.ReadDir(cleanPath(name))
 }
 
 // Open opens the named file for reading.
 func (m *FS) Open(name string) (fs.File, error) {
+	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+		return os.Open(filepath.Join(m.underlyingRoot, name))
+	}
 	return m.root.Open(cleanPath(name))
 }
 
@@ -158,6 +188,10 @@ func (m *FS) MkdirAll(path string, perm fs.FileMode) error {
 // The caller is permitted to modify the returned byte slice.
 // This method should return a copy of the underlying data.
 func (m *FS) ReadFile(name string) ([]byte, error) {
+	if strings.HasPrefix(name, "../") && m.underlyingRoot != "" {
+		return os.ReadFile(filepath.Join(m.underlyingRoot, name))
+	}
+
 	f, err := m.root.Open(cleanPath(name))
 	if err != nil {
 		return nil, err
@@ -200,11 +234,11 @@ func (m *FS) RemoveAll(path string) error {
 }
 
 func cleanPath(path string) string {
-	// Return if the file path is a volume name only.
-	// Otherwise, `filepath.Clean` changes "C:" to "C:." and
-	// it will no longer match the pathname held by mapfs.
-	if path == filepath.VolumeName(path) {
-		return path
+	// Convert the volume name like 'C:' into dir like 'C\'
+	if vol := filepath.VolumeName(path); len(vol) > 0 {
+		newVol := strings.TrimSuffix(vol, ":")
+		newVol = fmt.Sprintf("%s%c", newVol, filepath.Separator)
+		path = strings.Replace(path, vol, newVol, 1)
 	}
 	path = filepath.Clean(path)
 	path = filepath.ToSlash(path)

@@ -55,6 +55,9 @@ func TestReportWriter_JSON(t *testing.T) {
 									Title:       "foobar",
 									Description: "baz",
 									Severity:    "HIGH",
+									VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+										vulnerability.NVD: dbTypes.SeverityHigh,
+									},
 								},
 							},
 						},
@@ -66,9 +69,10 @@ func TestReportWriter_JSON(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			jw := report.JSONWriter{}
-			jsonWritten := bytes.Buffer{}
-			jw.Output = &jsonWritten
+			jsonWritten := bytes.NewBuffer(nil)
+			jw := report.JSONWriter{
+				Output: jsonWritten,
+			}
 
 			inputResults := types.Report{
 				SchemaVersion: 2,
@@ -81,10 +85,7 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			}
 
-			err := report.Write(inputResults, report.Option{
-				Format: "json",
-				Output: &jsonWritten,
-			})
+			err := jw.Write(inputResults)
 			assert.NoError(t, err)
 
 			var got types.Report

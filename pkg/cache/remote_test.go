@@ -8,8 +8,6 @@ import (
 	"testing"
 	"time"
 
-	rpcScanner "github.com/deepfactor-io/trivy/rpc/scanner"
-
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,6 +18,7 @@ import (
 	fcache "github.com/deepfactor-io/trivy/pkg/fanal/cache"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 	rpcCache "github.com/deepfactor-io/trivy/rpc/cache"
+	rpcScanner "github.com/deepfactor-io/trivy/rpc/scanner"
 )
 
 type mockCacheServer struct {

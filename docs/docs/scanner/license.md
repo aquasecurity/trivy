@@ -17,6 +17,8 @@ License are classified using the [Google License Classification][google-license-
     As those licenses may be in violation, it is recommended to check those unknown licenses as well.    
 
 By default, Trivy scans licenses for packages installed by `apk`, `apt-get`, `dnf`, `npm`, `pip`, `gem`, etc.
+Check out [the coverage document][coverage] for details.
+
 To enable extended license scanning, you can use `--license-full`.
 In addition to package licenses, Trivy scans source code files, Markdown documents, text files and `LICENSE` documents to identify license usage within the image or filesystem.
 
@@ -29,14 +31,14 @@ To configure the confidence level, you can use `--license-confidence-level`. Thi
 Currently, the standard license scanning doesn't support filesystem and repository scanning.
 
 |   License scanning    | Image | Rootfs | Filesystem | Repository |
-|:---------------------:|:-----:|:------:|:----------:|:----------:|
+| :-------------------: | :---: | :----: | :--------: | :--------: |
 |       Standard        |   ✅   |   ✅    |     -      |     -      |
 | Full (--license-full) |   ✅   |   ✅    |     ✅      |     ✅      |
 
 License checking classifies the identified licenses and map the classification to severity.
 
 | Classification | Severity |
-|----------------|----------|
+| -------------- | -------- |
 | Forbidden      | CRITICAL |
 | Restricted     | HIGH     |
 | Reciprocal     | MEDIUM   |
@@ -143,7 +145,7 @@ Trivy has number of configuration flags for use with license scanning;
 Trivy license scanning can ignore licenses that are identified to explicitly remove them from the results using the `--ignored-licenses` flag;
 
 ```shell
-$ trivy image --scanners license --ignored-licenses MPL-2.0,MIT --severity LOW grafana/grafana:latest
+$ trivy image --scanners license --ignored-licenses MPL-2.0,MIT --severity HIGH grafana/grafana:latest
 2022-07-13T18:15:28.605Z        INFO    License scanning is enabled
 
 OS Packages (license)
@@ -343,4 +345,5 @@ license:
 ```
 
 
+[coverage]: ../coverage/index.md
 [google-license-classification]: https://opensource.google/documentation/reference/thirdparty/licenses

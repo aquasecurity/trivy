@@ -19,9 +19,9 @@ type options struct {
 
 type option func(*options)
 
-func WithClock(clock clock.Clock) option {
+func WithClock(c clock.Clock) option {
 	return func(opts *options) {
-		opts.clock = clock
+		opts.clock = c
 	}
 }
 
@@ -102,8 +102,8 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 	return installedVersion.LessThan(fixedVersion)
 }
 
-// IsSupportedVersion checks the OSFamily can be scanned using Wolfi scanner
-func (s *Scanner) IsSupportedVersion(_, _ string) bool {
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(_ ftypes.OSType, _ string) bool {
 	// Wolfi doesn't have versions, so there is no case where a given input yields a
 	// result of an unsupported Wolfi version.
 

@@ -2,6 +2,7 @@ package report
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -109,15 +110,15 @@ No problems detected.
 				tt.options.AWSOptions.Services,
 			)
 
-			buffer := bytes.NewBuffer([]byte{})
-			tt.options.Output = buffer
-			require.NoError(t, Write(report, tt.options, tt.fromCache))
+			output := bytes.NewBuffer(nil)
+			tt.options.SetOutputWriter(output)
+			require.NoError(t, Write(context.Background(), report, tt.options, tt.fromCache))
 
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)
 			assert.Equal(t, tt.options.AWSOptions.Region, report.Region)
 			assert.ElementsMatch(t, tt.options.AWSOptions.Services, report.ServicesInScope)
-			assert.Equal(t, tt.expected, buffer.String())
+			assert.Equal(t, tt.expected, output.String())
 		})
 	}
 }

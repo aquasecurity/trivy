@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -27,11 +28,12 @@ const (
 var updater *Updater
 
 type Updater struct {
-	repo     string
-	dbDir    string
-	skip     bool
-	quiet    bool
-	insecure bool
+	repo           string
+	dbDir          string
+	skip           bool
+	quiet          bool
+	registryOption ftypes.RegistryOptions
+	once           sync.Once // we need to update java-db once per run
 }
 
 func (u *Updater) Update() error {
@@ -58,7 +60,7 @@ func (u *Updater) Update() error {
 
 		// TODO: support remote options
 		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo, u.quiet, ftypes.RegistryOptions{Insecure: u.insecure}); err != nil {
+		if a, err = oci.NewArtifact(u.repo, u.quiet, u.registryOption); err != nil {
 			return xerrors.Errorf("oci error: %w", err)
 		}
 		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
@@ -85,13 +87,13 @@ func (u *Updater) Update() error {
 	return nil
 }
 
-func Init(cacheDir string, javaDBRepository string, skip, quiet, insecure bool) {
+func Init(cacheDir, javaDBRepository string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
 	updater = &Updater{
-		repo:     fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
-		dbDir:    filepath.Join(cacheDir, "java-db"),
-		skip:     skip,
-		quiet:    quiet,
-		insecure: insecure,
+		repo:           fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
+		dbDir:          filepath.Join(cacheDir, "java-db"),
+		skip:           skip,
+		quiet:          quiet,
+		registryOption: registryOption,
 	}
 }
 
@@ -99,10 +101,12 @@ func Update() error {
 	if updater == nil {
 		return xerrors.New("Java DB client not initialized")
 	}
-	if err := updater.Update(); err != nil {
-		return xerrors.Errorf("Java DB update error: %w", err)
-	}
-	return nil
+
+	var err error
+	updater.once.Do(func() {
+		err = updater.Update()
+	})
+	return err
 }
 
 type DB struct {
@@ -123,7 +127,7 @@ func NewClient() (*DB, error) {
 }
 
 func (d *DB) Exists(groupID, artifactID string) (bool, error) {
-	index, err := d.driver.SelectIndexByArtifactIDAndGroupID(groupID, artifactID)
+	index, err := d.driver.SelectIndexByArtifactIDAndGroupID(artifactID, groupID)
 	if err != nil {
 		return false, err
 	}
@@ -179,7 +183,7 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 
 	// Some artifacts might have the same artifactId.
 	// e.g. "javax.servlet:jstl" and "jstl:jstl"
-	groupIDs := map[string]int{}
+	groupIDs := make(map[string]int)
 	for _, index := range indexes {
 		if i, ok := groupIDs[index.GroupID]; ok {
 			groupIDs[index.GroupID] = i + 1
@@ -197,4 +201,11 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 	}
 
 	return groupID, nil
+}
+
+func (d *DB) Close() error {
+	if d == nil {
+		return nil
+	}
+	return d.driver.Close()
 }

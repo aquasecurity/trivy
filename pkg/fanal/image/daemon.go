@@ -9,8 +9,8 @@ import (
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
-func tryDockerDaemon(imageName string, ref name.Reference, opt types.DockerOptions) (types.Image, func(), error) {
-	img, cleanup, err := daemon.DockerImage(ref, opt.Host)
+func tryDockerDaemon(_ context.Context, imageName string, ref name.Reference, opt types.ImageOptions) (types.Image, func(), error) {
+	img, cleanup, err := daemon.DockerImage(ref, opt.DockerOptions.Host)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -21,19 +21,19 @@ func tryDockerDaemon(imageName string, ref name.Reference, opt types.DockerOptio
 
 }
 
-func tryPodmanDaemon(ref string) (types.Image, func(), error) {
-	img, cleanup, err := daemon.PodmanImage(ref)
+func tryPodmanDaemon(_ context.Context, imageName string, _ name.Reference, _ types.ImageOptions) (types.Image, func(), error) {
+	img, cleanup, err := daemon.PodmanImage(imageName)
 	if err != nil {
 		return nil, nil, err
 	}
 	return daemonImage{
 		Image: img,
-		name:  ref,
+		name:  imageName,
 	}, cleanup, nil
 }
 
-func tryContainerdDaemon(ctx context.Context, imageName string) (types.Image, func(), error) {
-	img, cleanup, err := daemon.ContainerdImage(ctx, imageName)
+func tryContainerdDaemon(ctx context.Context, imageName string, _ name.Reference, opts types.ImageOptions) (types.Image, func(), error) {
+	img, cleanup, err := daemon.ContainerdImage(ctx, imageName, opts)
 	if err != nil {
 		return nil, cleanup, err
 	}

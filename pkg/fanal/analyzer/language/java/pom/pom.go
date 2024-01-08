@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/deepfactor-io/go-dep-parser/pkg/java/pom"
-
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"

@@ -15,12 +15,12 @@ type StringSlice []string
 //easyjson:json
 type AnalysisResult struct {
 	// TODO: support other fields as well
-	//OS                   *types.OS
-	//Repository           *types.Repository
-	//PackageInfos         []types.PackageInfo
-	//Applications         []types.Application
-	//Secrets              []types.Secret
-	//SystemInstalledFiles []string // A list of files installed by OS package manager
+	// OS                   *types.OS
+	// Repository           *types.Repository
+	// PackageInfos         []types.PackageInfo
+	// Applications         []types.Application
+	// Secrets              []types.Secret
+	// SystemInstalledFiles []string // A list of files installed by OS package manager
 
 	// Currently it supports custom resources only
 	CustomResources []CustomResource

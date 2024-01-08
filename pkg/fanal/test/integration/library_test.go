@@ -151,8 +151,9 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			})
 
 			// Enable only registry scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.ImageOptions{},
-				image.DisableDockerd(), image.DisablePodman(), image.DisableContainerd())
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.ImageOptions{
+				ImageSources: types.ImageSources{types.RemoteImageSource},
+			})
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -179,6 +180,11 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 }
 
 func TestFanal_Library_DockerMode(t *testing.T) {
+	// Disable updating golden files because local images don't have compressed layer digests,
+	// and updating golden files in this function results in incomplete files.
+	if *update {
+		t.Skipf("This test creates wrong golden file")
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
@@ -200,8 +206,9 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err, tt.name)
 
 			// Enable only dockerd scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.ImageOptions{},
-				image.DisablePodman(), image.DisableContainerd(), image.DisableRemote())
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.ImageOptions{
+				ImageSources: types.ImageSources{types.DockerImageSource},
+			})
 			require.NoError(t, err, tt.name)
 			defer cleanup()
 
@@ -320,9 +327,7 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 		})
 
 		for _, app := range detail.Applications {
-			sort.Slice(app.Libraries, func(i, j int) bool {
-				return app.Libraries[i].FilePath < app.Libraries[j].FilePath
-			})
+			sort.Sort(app.Libraries)
 			for i := range app.Libraries {
 				sort.Strings(app.Libraries[i].DependsOn)
 			}

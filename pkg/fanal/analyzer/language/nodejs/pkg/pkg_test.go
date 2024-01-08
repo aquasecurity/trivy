@@ -28,7 +28,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.NodePkg,
 						FilePath: "testdata/package.json",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "lodash@5.0.0",
 								Name:     "lodash",
@@ -50,7 +50,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.NodePkg,
 						FilePath: "testdata/package.json",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:       "lodash@5.0.0",
 								Name:     "lodash",
@@ -65,9 +65,13 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "sad path",
+			name:      "happy path without name",
 			inputFile: "testdata/noname.json",
-			wantErr:   "unable to parse",
+		},
+		{
+			name:      "sad path",
+			inputFile: "testdata/sad.json",
+			wantErr:   "JSON decode error",
 		},
 	}
 	for _, tt := range tests {

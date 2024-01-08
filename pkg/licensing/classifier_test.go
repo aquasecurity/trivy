@@ -4,12 +4,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/deepfactor-io/trivy/pkg/licensing"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/licensing"
 )
 
 func TestClassifier_FullClassify(t *testing.T) {

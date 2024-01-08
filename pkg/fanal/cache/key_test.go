@@ -21,6 +21,7 @@ func TestCalcKey(t *testing.T) {
 		patterns         []string
 		policy           []string
 		data             []string
+		secretConfigPath string
 	}
 	tests := []struct {
 		name    string
@@ -146,6 +147,20 @@ func TestCalcKey(t *testing.T) {
 			want: "sha256:9602d5ef5af086112cc9fae8310390ed3fb79f4b309d8881b9807e379c8dfa57",
 		},
 		{
+			name: "with policy file",
+			args: args{
+				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
+				},
+				policy: []string{"testdata/policy/test.rego"},
+			},
+			want: "sha256:9602d5ef5af086112cc9fae8310390ed3fb79f4b309d8881b9807e379c8dfa57",
+		},
+		{
 			name: "skip files and dirs",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
@@ -162,6 +177,42 @@ func TestCalcKey(t *testing.T) {
 			want: "sha256:363f70f4ee795f250873caea11c2fc94ef12945444327e7e2f8a99e3884695e0",
 		},
 		{
+
+			name: "secret config",
+			args: args{
+				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
+				},
+				hookVersions: map[string]int{
+					"python-pkg": 1,
+				},
+				secretConfigPath: "testdata/trivy-secret.yaml",
+			},
+			want: "sha256:d3fb9503f2851ae9bdb250b7ef55c00c0bfa1250b19d4d398a9219c2c0e20958",
+		},
+		{
+
+			name: "secret config file doesn't exist",
+			args: args{
+				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
+				},
+				hookVersions: map[string]int{
+					"python-pkg": 1,
+				},
+				secretConfigPath: "trivy-secret.yaml",
+			},
+			want: "sha256:c720b502991465ea11929cfefc71cf4b5aeaa9a8c0ae59fdaf597f957f5cdb18",
+		},
+		{
 			name: "with policy/non-existent dir",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
@@ -173,7 +224,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				policy: []string{"policydir"},
 			},
-			wantErr: "hash dir error",
+			wantErr: "file \"policydir\" stat error",
 		},
 	}
 	for _, tt := range tests {
@@ -186,6 +237,10 @@ func TestCalcKey(t *testing.T) {
 				MisconfScannerOption: misconf.ScannerOption{
 					PolicyPaths: tt.args.policy,
 					DataPaths:   tt.args.data,
+				},
+
+				SecretScannerOption: analyzer.SecretScannerOption{
+					ConfigPath: tt.args.secretConfigPath,
 				},
 			}
 			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)

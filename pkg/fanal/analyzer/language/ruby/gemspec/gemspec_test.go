@@ -28,7 +28,7 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GemSpec,
 						FilePath: "testdata/multiple_licenses.gemspec",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "test-unit",
 								Version: "3.3.7",
@@ -53,7 +53,7 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GemSpec,
 						FilePath: "testdata/multiple_licenses.gemspec",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								Name:    "test-unit",
 								Version: "3.3.7",

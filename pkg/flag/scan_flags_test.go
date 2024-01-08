@@ -38,23 +38,13 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			name: "happy path for configs",
 			args: []string{"alpine:latest"},
 			fields: fields{
-				scanners: "config",
+				scanners: "misconfig",
 			},
 			want: flag.ScanOptions{
 				Target:   "alpine:latest",
 				Scanners: types.Scanners{types.MisconfigScanner},
 			},
 			assertion: require.NoError,
-		},
-		{
-			name: "with wrong scanner",
-			fields: fields{
-				scanners: "vuln,WRONG-CHECK",
-			},
-			want: flag.ScanOptions{},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
-				require.ErrorContains(t, err, "unknown scanner: WRONG-CHECK")
-			},
 		},
 		{
 			name:      "without target (args)",

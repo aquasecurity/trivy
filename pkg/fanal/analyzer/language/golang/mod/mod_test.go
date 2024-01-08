@@ -3,11 +3,11 @@ package mod
 import (
 	"context"
 	"path/filepath"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
 
 	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
@@ -31,7 +31,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
 								Name:    "github.com/aquasecurity/go-dep-parser",
@@ -64,7 +64,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "github.com/sad/sad@v0.0.1",
 								Name:    "github.com/sad/sad",
@@ -86,7 +86,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:      "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
 								Name:    "github.com/aquasecurity/go-dep-parser",
@@ -119,7 +119,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: []types.Package{
+						Libraries: types.Packages{
 							{
 								ID:        "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
 								Name:      "github.com/aquasecurity/go-dep-parser",
@@ -162,12 +162,8 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			assert.NoError(t, err)
 
 			if len(got.Applications) > 0 {
-				slices.SortFunc(got.Applications[0].Libraries, func(a, b types.Package) bool {
-					return a.Name < b.Name
-				})
-				slices.SortFunc(tt.want.Applications[0].Libraries, func(a, b types.Package) bool {
-					return a.Name < b.Name
-				})
+				sort.Sort(got.Applications[0].Libraries)
+				sort.Sort(tt.want.Applications[0].Libraries)
 			}
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)

@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
@@ -58,8 +59,9 @@ func setupRegistry(ctx context.Context, baseDir string, authURL *url.URL) (testc
 		Mounts: testcontainers.Mounts(
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "certs"), "/certs"),
 		),
-		SkipReaper: true,
-		AutoRemove: true,
+		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+			hostConfig.AutoRemove = true
+		},
 		WaitingFor: wait.ForLog("listening on [::]:5443"),
 	}
 
@@ -79,9 +81,10 @@ func setupAuthServer(ctx context.Context, baseDir string) (testcontainers.Contai
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "auth_config"), "/config"),
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "certs"), "/certs"),
 		),
-		SkipReaper: true,
-		AutoRemove: true,
-		Cmd:        []string{"/config/config.yml"},
+		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+			hostConfig.AutoRemove = true
+		},
+		Cmd: []string{"/config/config.yml"},
 	}
 
 	authC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -118,6 +121,9 @@ func TestRegistry(t *testing.T) {
 
 	baseDir, err := filepath.Abs(".")
 	require.NoError(t, err)
+
+	// disable Reaper for auth server and registry containers
+	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 
 	// set up auth server
 	authC, err := setupAuthServer(ctx, baseDir)

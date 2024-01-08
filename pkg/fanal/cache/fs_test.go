@@ -177,7 +177,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 					PackageInfos: []types.PackageInfo{
 						{
 							FilePath: "lib/apk/db/installed",
-							Packages: []types.Package{
+							Packages: types.Packages{
 								{
 									Name:    "musl",
 									Version: "1.1.22-r3",
@@ -189,7 +189,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "php-app/composer.lock",
-							Libraries: []types.Package{
+							Libraries: types.Packages{
 								{
 									Name:    "guzzlehttp/guzzle",
 									Version: "6.2.0",
@@ -322,7 +322,7 @@ func TestFSCache_PutArtifact(t *testing.T) {
 					Created:       time.Date(2020, 1, 2, 3, 4, 5, 0, time.UTC),
 					DockerVersion: "18.06.1-ce",
 					OS:            "linux",
-					HistoryPackages: []types.Package{
+					HistoryPackages: types.Packages{
 						{
 							Name:    "musl",
 							Version: "1.2.3",

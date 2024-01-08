@@ -75,7 +75,7 @@ type Writer struct {
 func (w Writer) Write(report types.Report) error {
 	snapshot := &DependencySnapshot{}
 
-	//use now() method that can be overwritten while integration tests run
+	// use now() method that can be overwritten while integration tests run
 	snapshot.Scanned = clock.Now().Format(time.RFC3339)
 	snapshot.Detector = Detector{
 		Name:    "dfctl",
@@ -102,7 +102,7 @@ func (w Writer) Write(report types.Report) error {
 		}
 
 		manifest := Manifest{}
-		manifest.Name = result.Type
+		manifest.Name = string(result.Type)
 		// show path for language-specific packages only
 		if result.Class == types.ClassLangPkg {
 			manifest.File = &File{
@@ -118,7 +118,7 @@ func (w Writer) Write(report types.Report) error {
 			githubPkg.Scope = RuntimeScope
 			githubPkg.Relationship = getPkgRelationshipType(pkg)
 			githubPkg.Dependencies = pkg.DependsOn // TODO: replace with PURL
-			githubPkg.PackageUrl, err = buildPurl(result.Type, pkg)
+			githubPkg.PackageUrl, err = buildPurl(result.Type, report.Metadata, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl for %s: %w", pkg.Name, err)
 			}
@@ -161,10 +161,13 @@ func getPkgRelationshipType(pkg ftypes.Package) string {
 	return DirectRelationship
 }
 
-func buildPurl(t string, pkg ftypes.Package) (string, error) {
-	packageUrl, err := purl.NewPackageURL(t, types.Metadata{}, pkg)
+func buildPurl(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (string, error) {
+	packageUrl, err := purl.NewPackageURL(t, metadata, pkg)
 	if err != nil {
 		return "", xerrors.Errorf("purl error: %w", err)
+	}
+	if packageUrl == nil {
+		return "", nil
 	}
 	return packageUrl.ToString(), nil
 }

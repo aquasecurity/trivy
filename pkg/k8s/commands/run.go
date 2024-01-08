@@ -7,11 +7,13 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/deepfactor-io/trivy/pkg/commands/artifact"
+	"github.com/deepfactor-io/trivy/pkg/commands/operation"
 	cr "github.com/deepfactor-io/trivy/pkg/compliance/report"
 	"github.com/deepfactor-io/trivy/pkg/flag"
+	k8sRep "github.com/deepfactor-io/trivy/pkg/k8s"
 	"github.com/deepfactor-io/trivy/pkg/k8s/report"
 	"github.com/deepfactor-io/trivy/pkg/k8s/scanner"
 	"github.com/deepfactor-io/trivy/pkg/log"
@@ -36,17 +38,23 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	defer cancel()
 
 	defer func() {
-		if xerrors.Is(err, context.DeadlineExceeded) {
+		if errors.Is(err, context.DeadlineExceeded) {
 			log.Logger.Warn("Increase --timeout value")
 		}
 	}()
-
+	opts.K8sVersion = cluster.GetClusterVersion()
 	switch args[0] {
 	case clusterArtifact:
 		return clusterRun(ctx, opts, cluster)
 	case allArtifact:
+		if opts.Format == types.FormatCycloneDX {
+			return xerrors.Errorf("KBOM with CycloneDX format is not supported for all namespace scans")
+		}
 		return namespaceRun(ctx, opts, cluster)
 	default: // resourceArtifact
+		if opts.Format == types.FormatCycloneDX {
+			return xerrors.Errorf("KBOM with CycloneDX format is not supported for resource scans")
+		}
 		return resourceRun(ctx, args, opts, cluster)
 	}
 }
@@ -63,7 +71,7 @@ func newRunner(flagOpts flag.Options, cluster string) *runner {
 	}
 }
 
-func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error {
+func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) error {
 	runner, err := cmd.NewRunner(ctx, r.flagOpts)
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {
@@ -87,18 +95,21 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		}
 		r.flagOpts.ScanOptions.Scanners = scanners
 	}
-
-	rpt, err := s.Scan(ctx, artifacts)
+	var rpt report.Report
+	rpt, err = s.Scan(ctx, artifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
+	output, cleanup, err := r.flagOpts.OutputWriter(ctx)
+	if err != nil {
+		return xerrors.Errorf("failed to create output file: %w", err)
+	}
+	defer cleanup()
+
 	if r.flagOpts.Compliance.Spec.ID != "" {
 		var scanResults []types.Results
-		for _, rss := range rpt.Vulnerabilities {
-			scanResults = append(scanResults, rss.Results)
-		}
-		for _, rss := range rpt.Misconfigurations {
+		for _, rss := range rpt.Resources {
 			scanResults = append(scanResults, rss.Results)
 		}
 		complianceReport, err := cr.BuildComplianceReport(scanResults, r.flagOpts.Compliance)
@@ -108,22 +119,23 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return cr.Write(complianceReport, cr.Option{
 			Format: r.flagOpts.Format,
 			Report: r.flagOpts.ReportFormat,
-			Output: r.flagOpts.Output,
+			Output: output,
 		})
 	}
 
-	if err := report.Write(rpt, report.Option{
+	if err := k8sRep.Write(rpt, report.Option{
 		Format:     r.flagOpts.Format,
 		Report:     r.flagOpts.ReportFormat,
-		Output:     r.flagOpts.Output,
+		Output:     output,
 		Severities: r.flagOpts.Severities,
 		Components: r.flagOpts.Components,
 		Scanners:   r.flagOpts.ScanOptions.Scanners,
+		APIVersion: r.flagOpts.AppVersion,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	cmd.Exit(r.flagOpts, rpt.Failed())
+	operation.Exit(r.flagOpts, rpt.Failed())
 
 	return nil
 }

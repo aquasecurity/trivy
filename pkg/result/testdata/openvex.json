@@ -1,14 +1,14 @@
 {
-  "@context": "https://openvex.dev/ns",
+  "@context": "https://openvex.dev/ns/v0.2.0",
   "author": "Aqua Security",
   "role": "Project Release Bot",
   "timestamp": "2023-01-16T19:07:16.853479631-06:00",
-  "version": "1",
+  "version": 1,
   "statements": [
     {
-      "vulnerability": "CVE-2019-0001",
+      "vulnerability": {"name": "CVE-2019-0001"},
       "products": [
-        "pkg:golang/github.com/aquasecurity/foo@1.2.3"
+        {"@id": "pkg:golang/github.com/aquasecurity/foo@1.2.3"}
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_in_execute_path"

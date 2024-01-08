@@ -134,9 +134,12 @@ func TestTar(t *testing.T) {
 			name: "alpine 3.9 with high and critical severity",
 			testArgs: args{
 				IgnoreUnfixed: true,
-				Severity:      []string{"HIGH", "CRITICAL"},
-				Format:        "json",
-				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+				Severity: []string{
+					"HIGH",
+					"CRITICAL",
+				},
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39-high-critical.json.golden",
 		},
@@ -144,9 +147,12 @@ func TestTar(t *testing.T) {
 			name: "alpine 3.9 with .trivyignore",
 			testArgs: args{
 				IgnoreUnfixed: false,
-				IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-14697"},
-				Format:        "json",
-				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+				IgnoreIDs: []string{
+					"CVE-2019-1549",
+					"CVE-2019-14697",
+				},
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39-ignore-cveids.json.golden",
 		},
@@ -358,7 +364,15 @@ func TestTar(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := []string{"--cache-dir", cacheDir, "image", "-q", "--format", tt.testArgs.Format, "--skip-update"}
+			osArgs := []string{
+				"--cache-dir",
+				cacheDir,
+				"image",
+				"-q",
+				"--format",
+				tt.testArgs.Format,
+				"--skip-update",
+			}
 
 			if tt.testArgs.IgnoreUnfixed {
 				osArgs = append(osArgs, "--ignore-unfixed")
@@ -394,14 +408,187 @@ func TestTar(t *testing.T) {
 				outputFile = tt.golden
 			}
 
-			osArgs = append(osArgs, []string{"--output", outputFile}...)
+			osArgs = append(osArgs, []string{
+				"--output",
+				outputFile,
+			}...)
 
 			// Run Trivy
 			err := execute(osArgs)
 			require.NoError(t, err)
 
 			// Compare want and got
-			compareReports(t, tt.golden, outputFile)
+			compareReports(t, tt.golden, outputFile, nil)
+		})
+	}
+}
+
+func TestTarWithEnv(t *testing.T) {
+	type args struct {
+		IgnoreUnfixed bool
+		Severity      []string
+		Format        string
+		Input         string
+		SkipDirs      []string
+	}
+	tests := []struct {
+		name     string
+		testArgs args
+		golden   string
+	}{
+		{
+			name: "alpine 3.9 with skip dirs",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
+				SkipDirs: []string{
+					"/etc",
+				},
+			},
+			golden: "testdata/alpine-39-skip.json.golden",
+		},
+		{
+			name: "alpine 3.9 with high and critical severity",
+			testArgs: args{
+				IgnoreUnfixed: true,
+				Severity: []string{
+					"HIGH",
+					"CRITICAL",
+				},
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
+			},
+			golden: "testdata/alpine-39-high-critical.json.golden",
+		},
+		{
+			name: "debian buster/10 with --ignore-unfixed option",
+			testArgs: args{
+				IgnoreUnfixed: true,
+				Format:        "json",
+				Input:         "testdata/fixtures/images/debian-buster.tar.gz",
+			},
+			golden: "testdata/debian-buster-ignore-unfixed.json.golden",
+		},
+	}
+
+	// Set up testing DB
+	cacheDir := initDB(t)
+
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			osArgs := []string{"image"}
+
+			t.Setenv("TRIVY_FORMAT", tt.testArgs.Format)
+			t.Setenv("TRIVY_CACHE_DIR", cacheDir)
+			t.Setenv("TRIVY_QUIET", "true")
+			t.Setenv("TRIVY_SKIP_UPDATE", "true")
+
+			if tt.testArgs.IgnoreUnfixed {
+				t.Setenv("TRIVY_IGNORE_UNFIXED", "true")
+			}
+			if len(tt.testArgs.Severity) != 0 {
+				t.Setenv("TRIVY_SEVERITY", strings.Join(tt.testArgs.Severity, ","))
+			}
+			if tt.testArgs.Input != "" {
+				osArgs = append(osArgs, "--input", tt.testArgs.Input)
+			}
+
+			if len(tt.testArgs.SkipDirs) != 0 {
+				t.Setenv("TRIVY_SKIP_DIRS", strings.Join(tt.testArgs.SkipDirs, ","))
+			}
+
+			// Set up the output file
+			outputFile := filepath.Join(t.TempDir(), "output.json")
+
+			osArgs = append(osArgs, []string{
+				"--output",
+				outputFile,
+			}...)
+
+			// Run Trivy
+			err := execute(osArgs)
+			require.NoError(t, err)
+
+			// Compare want and got
+			compareReports(t, tt.golden, outputFile, nil)
+		})
+	}
+}
+
+func TestTarWithConfigFile(t *testing.T) {
+	tests := []struct {
+		name       string
+		input      string
+		configFile string
+		golden     string
+	}{
+		{
+			name:  "alpine 3.9 with high and critical severity",
+			input: "testdata/fixtures/images/alpine-39.tar.gz",
+			configFile: `quiet: true
+format: json
+severity:
+  - HIGH
+  - CRITICAL
+vulnerability:
+  type:
+    - os
+cache:
+  dir: /should/be/overwritten
+`,
+			golden: "testdata/alpine-39-high-critical.json.golden",
+		},
+		{
+			name:  "debian buster/10 with --ignore-unfixed option",
+			input: "testdata/fixtures/images/debian-buster.tar.gz",
+			configFile: `quiet: true
+format: json
+vulnerability:
+  ignore-unfixed: true
+cache:
+  dir: /should/be/overwritten
+`,
+			golden: "testdata/debian-buster-ignore-unfixed.json.golden",
+		},
+	}
+
+	// Set up testing DB
+	cacheDir := initDB(t)
+
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			outputFile := filepath.Join(tmpDir, "output.json")
+			configPath := filepath.Join(tmpDir, "trivy.yaml")
+
+			err := os.WriteFile(configPath, []byte(tt.configFile), 0600)
+			require.NoError(t, err)
+
+			osArgs := []string{
+				"--cache-dir",
+				cacheDir,
+				"image",
+				"--skip-db-update",
+				"--config",
+				configPath,
+				"--input",
+				tt.input,
+				"--output",
+				outputFile,
+			}
+
+			// Run Trivy
+			err = execute(osArgs)
+			require.NoError(t, err)
+
+			// Compare want and got
+			compareReports(t, tt.golden, outputFile, nil)
 		})
 	}
 }

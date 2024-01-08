@@ -2,10 +2,11 @@ package misconf
 
 import (
 	"context"
-	_ "embed"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -13,45 +14,53 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/defsec/pkg/detection"
 	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners"
-	"github.com/aquasecurity/defsec/pkg/scanners/azure/arm"
-	cfscanner "github.com/aquasecurity/defsec/pkg/scanners/cloudformation"
-	cfparser "github.com/aquasecurity/defsec/pkg/scanners/cloudformation/parser"
-	dfscanner "github.com/aquasecurity/defsec/pkg/scanners/dockerfile"
-	"github.com/aquasecurity/defsec/pkg/scanners/helm"
-	k8sscanner "github.com/aquasecurity/defsec/pkg/scanners/kubernetes"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	tfscanner "github.com/aquasecurity/defsec/pkg/scanners/terraform"
+	"github.com/aquasecurity/trivy-iac/pkg/detection"
+	"github.com/aquasecurity/trivy-iac/pkg/scanners"
+	"github.com/aquasecurity/trivy-iac/pkg/scanners/azure/arm"
+	cfscanner "github.com/aquasecurity/trivy-iac/pkg/scanners/cloudformation"
+	cfparser "github.com/aquasecurity/trivy-iac/pkg/scanners/cloudformation/parser"
+	dfscanner "github.com/aquasecurity/trivy-iac/pkg/scanners/dockerfile"
+	"github.com/aquasecurity/trivy-iac/pkg/scanners/helm"
+	k8sscanner "github.com/aquasecurity/trivy-iac/pkg/scanners/kubernetes"
+	tfscanner "github.com/aquasecurity/trivy-iac/pkg/scanners/terraform"
+	tfpscanner "github.com/aquasecurity/trivy-iac/pkg/scanners/terraformplan"
 	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 	"github.com/deepfactor-io/trivy/pkg/log"
 	"github.com/deepfactor-io/trivy/pkg/mapfs"
+
+	_ "embed"
 )
 
-var enabledDefsecTypes = map[detection.FileType]string{
+var enabledDefsecTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeAzureARM:       types.AzureARM,
 	detection.FileTypeCloudFormation: types.CloudFormation,
 	detection.FileTypeTerraform:      types.Terraform,
 	detection.FileTypeDockerfile:     types.Dockerfile,
 	detection.FileTypeKubernetes:     types.Kubernetes,
 	detection.FileTypeHelm:           types.Helm,
+	detection.FileTypeTerraformPlan:  types.TerraformPlan,
 }
 
 type ScannerOption struct {
-	Trace                   bool
-	RegoOnly                bool
-	Namespaces              []string
-	PolicyPaths             []string
-	DataPaths               []string
-	DisableEmbeddedPolicies bool
+	Debug                    bool
+	Trace                    bool
+	RegoOnly                 bool
+	Namespaces               []string
+	PolicyPaths              []string
+	DataPaths                []string
+	DisableEmbeddedPolicies  bool
+	DisableEmbeddedLibraries bool
 
-	HelmValues       []string
-	HelmValueFiles   []string
-	HelmFileValues   []string
-	HelmStringValues []string
-	TerraformTFVars  []string
-	K8sVersion       string
+	HelmValues              []string
+	HelmValueFiles          []string
+	HelmFileValues          []string
+	HelmStringValues        []string
+	TerraformTFVars         []string
+	CloudFormationParamVars []string
+	TfExcludeDownloaded     bool
+	K8sVersion              string
 }
 
 func (o *ScannerOption) Sort() {
@@ -90,6 +99,10 @@ func NewTerraformScanner(filePatterns []string, opt ScannerOption) (*Scanner, er
 	return newScanner(detection.FileTypeTerraform, filePatterns, opt)
 }
 
+func NewTerraformPlanScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
+	return newScanner(detection.FileTypeTerraformPlan, filePatterns, opt)
+}
+
 func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) (*Scanner, error) {
 	opts, err := scannerOptions(t, opt)
 	if err != nil {
@@ -110,6 +123,8 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = k8sscanner.NewScanner(opts...)
 	case detection.FileTypeTerraform:
 		scanner = tfscanner.New(opts...)
+	case detection.FileTypeTerraformPlan:
+		scanner = tfpscanner.New(opts...)
 	}
 
 	return &Scanner{
@@ -131,7 +146,8 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 	log.Logger.Debugf("Scanning %s files for misconfigurations...", s.scanner.Name())
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
-		if _, ok := err.(*cfparser.InvalidContentError); ok {
+		var invalidContentError *cfparser.InvalidContentError
+		if errors.As(err, &invalidContentError) {
 			log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", s.scanner.Name(), err)
 			return nil, nil
 		}
@@ -190,9 +206,10 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	opts := []options.ScannerOption{
 		options.ScannerWithSkipRequiredCheck(true),
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
+		options.ScannerWithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
 	}
 
-	policyFS, policyPaths, err := createPolicyFS(opt.PolicyPaths)
+	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
 	if err != nil {
 		return nil, err
 	}
@@ -200,12 +217,18 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		opts = append(opts, options.ScannerWithPolicyFilesystem(policyFS))
 	}
 
-	dataFS, dataPaths, err := createDataFS(opt.DataPaths, opt.K8sVersion)
+	dataFS, dataPaths, err := CreateDataFS(opt.DataPaths, opt.K8sVersion)
 	if err != nil {
 		return nil, err
 	}
-	opts = append(opts, options.ScannerWithDataDirs(dataPaths...))
-	opts = append(opts, options.ScannerWithDataFilesystem(dataFS))
+	opts = append(opts,
+		options.ScannerWithDataDirs(dataPaths...),
+		options.ScannerWithDataFilesystem(dataFS),
+	)
+
+	if opt.Debug {
+		opts = append(opts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "misconf"}))
+	}
 
 	if opt.Trace {
 		opts = append(opts, options.ScannerWithPerResultTracing(true))
@@ -231,7 +254,9 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	case detection.FileTypeHelm:
 		return addHelmOpts(opts, opt), nil
 	case detection.FileTypeTerraform:
-		return addTFOpts(opts, opt), nil
+		return addTFOpts(opts, opt)
+	case detection.FileTypeCloudFormation:
+		return addCFOpts(opts, opt)
 	default:
 		return opts, nil
 	}
@@ -246,12 +271,40 @@ func hasFilePattern(t detection.FileType, filePatterns []string) bool {
 	return false
 }
 
-func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) []options.ScannerOption {
+func addTFOpts(opts []options.ScannerOption, scannerOption ScannerOption) ([]options.ScannerOption, error) {
 	if len(scannerOption.TerraformTFVars) > 0 {
-		opts = append(opts, tfscanner.ScannerWithTFVarsPaths(scannerOption.TerraformTFVars...))
+		configFS, err := createConfigFS(scannerOption.TerraformTFVars)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to create Terraform config FS: %w", err)
+		}
+		opts = append(
+			opts,
+			tfscanner.ScannerWithTFVarsPaths(scannerOption.TerraformTFVars...),
+			tfscanner.ScannerWithConfigsFileSystem(configFS),
+		)
 	}
 
-	return opts
+	opts = append(opts,
+		tfscanner.ScannerWithAllDirectories(true),
+		tfscanner.ScannerWithSkipDownloaded(scannerOption.TfExcludeDownloaded),
+	)
+
+	return opts, nil
+}
+
+func addCFOpts(opts []options.ScannerOption, scannerOption ScannerOption) ([]options.ScannerOption, error) {
+	if len(scannerOption.CloudFormationParamVars) > 0 {
+		configFS, err := createConfigFS(scannerOption.CloudFormationParamVars)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to create CloudFormation config FS: %w", err)
+		}
+		opts = append(
+			opts,
+			cfscanner.WithParameterFiles(scannerOption.CloudFormationParamVars...),
+			cfscanner.WithConfigsFS(configFS),
+		)
+	}
+	return opts, nil
 }
 
 func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []options.ScannerOption {
@@ -274,7 +327,20 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []op
 	return opts
 }
 
-func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
+func createConfigFS(paths []string) (fs.FS, error) {
+	mfs := mapfs.New()
+	for _, path := range paths {
+		if err := mfs.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
+			return nil, xerrors.Errorf("create dir error: %w", err)
+		}
+		if err := mfs.WriteFile(path, path); err != nil {
+			return nil, xerrors.Errorf("write file error: %w", err)
+		}
+	}
+	return mfs, nil
+}
+
+func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	if len(policyPaths) == 0 {
 		return nil, nil, nil
 	}
@@ -285,8 +351,24 @@ func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
 		if err != nil {
 			return nil, nil, xerrors.Errorf("failed to derive absolute path from '%s': %w", p, err)
 		}
-		if err = mfs.CopyFilesUnder(abs); err != nil {
-			return nil, nil, xerrors.Errorf("mapfs file copy error: %w", err)
+		fi, err := os.Stat(abs)
+		if errors.Is(err, os.ErrNotExist) {
+			return nil, nil, xerrors.Errorf("policy file %q not found", abs)
+		} else if err != nil {
+			return nil, nil, xerrors.Errorf("file %q stat error: %w", abs, err)
+		}
+
+		if fi.IsDir() {
+			if err = mfs.CopyFilesUnder(abs); err != nil {
+				return nil, nil, xerrors.Errorf("mapfs file copy error: %w", err)
+			}
+		} else {
+			if err := mfs.MkdirAll(filepath.Dir(abs), os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
+				return nil, nil, xerrors.Errorf("mapfs mkdir error: %w", err)
+			}
+			if err := mfs.WriteFile(abs, abs); err != nil {
+				return nil, nil, xerrors.Errorf("mapfs write error: %w", err)
+			}
 		}
 	}
 
@@ -296,34 +378,36 @@ func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	return mfs, policyPaths, nil
 }
 
-func createDataFS(dataPaths []string, k8sVersion string) (fs.FS, []string, error) {
+func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {
 	fsys := mapfs.New()
 
-	// Create a virtual file for Kubernetes scanning
-	if k8sVersion != "" {
+	// Check if k8sVersion is provided
+	if len(opts) > 0 {
+		k8sVersion := opts[0]
 		if err := fsys.MkdirAll("system", 0700); err != nil {
 			return nil, nil, err
 		}
-		data := []byte(fmt.Sprintf(`{"k8s": {"version": "%s"}}`, k8sVersion))
+		data := []byte(fmt.Sprintf(`{"k8s": {"version": %q}}`, k8sVersion))
 		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0600); err != nil {
 			return nil, nil, err
 		}
 	}
+
 	for _, path := range dataPaths {
 		if err := fsys.CopyFilesUnder(path); err != nil {
 			return nil, nil, err
 		}
 	}
 
-	// data paths are no longer needed as fs.FS contains only needed files now.
+	// dataPaths are no longer needed as fs.FS contains only needed files now.
 	dataPaths = []string{"."}
 
 	return fsys, dataPaths, nil
 }
 
 // ResultsToMisconf is exported for trivy-plugin-aqua purposes only
-func ResultsToMisconf(configType string, scannerName string, results scan.Results) []types.Misconfiguration {
-	misconfs := map[string]types.Misconfiguration{}
+func ResultsToMisconf(configType types.ConfigType, scannerName string, results scan.Results) []types.Misconfiguration {
+	misconfs := make(map[string]types.Misconfiguration)
 
 	for _, result := range results {
 		flattened := result.Flatten()
@@ -360,7 +444,7 @@ func ResultsToMisconf(configType string, scannerName string, results scan.Result
 		if !ok {
 			misconf = types.Misconfiguration{
 				FileType: configType,
-				FilePath: filePath,
+				FilePath: filepath.ToSlash(filePath), // defsec return OS-aware path
 			}
 		}
 
@@ -390,6 +474,16 @@ func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
 		Service:   flat.RuleService,
 		StartLine: flat.Location.StartLine,
 		EndLine:   flat.Location.EndLine,
+	}
+	for _, o := range flat.Occurrences {
+		cause.Occurrences = append(cause.Occurrences, types.Occurrence{
+			Resource: o.Resource,
+			Filename: o.Filename,
+			Location: types.Location{
+				StartLine: o.StartLine,
+				EndLine:   o.EndLine,
+			},
+		})
 	}
 	if code, err := underlying.GetCode(); err == nil {
 		cause.Code = types.Code{

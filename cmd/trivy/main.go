@@ -13,10 +13,6 @@ import (
 	_ "modernc.org/sqlite" // sqlite driver for RPM DB and Java DB
 )
 
-var (
-	version = "dev"
-)
-
 func main() {
 	if err := run(); err != nil {
 		log.Fatal(err)
@@ -29,13 +25,13 @@ func run() error {
 		if !plugin.IsPredefined(runAsPlugin) {
 			return xerrors.Errorf("unknown plugin: %s", runAsPlugin)
 		}
-		if err := plugin.RunWithArgs(context.Background(), runAsPlugin, os.Args[1:]); err != nil {
+		if err := plugin.RunWithURL(context.Background(), runAsPlugin, plugin.RunOptions{Args: os.Args[1:]}); err != nil {
 			return xerrors.Errorf("plugin error: %w", err)
 		}
 		return nil
 	}
 
-	app := commands.NewApp(version)
+	app := commands.NewApp()
 	if err := app.Execute(); err != nil {
 		return err
 	}

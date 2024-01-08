@@ -29,13 +29,10 @@ func TestPlugin_Run(t *testing.T) {
 		GOOS        string
 		GOARCH      string
 	}
-	type args struct {
-		args []string
-	}
 	tests := []struct {
 		name    string
 		fields  fields
-		args    args
+		opts    plugin.RunOptions
 		wantErr string
 	}{
 		{
@@ -162,7 +159,7 @@ func TestPlugin_Run(t *testing.T) {
 				GOARCH:      tt.fields.GOARCH,
 			}
 
-			err := p.Run(context.Background(), tt.args.args)
+			err := p.Run(context.Background(), tt.opts)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -338,7 +335,7 @@ description: A simple test plugin`
 	// Get Information for unknown plugin
 	info, err = plugin.Information("unknown")
 	require.Error(t, err)
-	assert.Equal(t, "could not find a plugin called 'unknown', did you install it?", err.Error())
+	assert.ErrorContains(t, err, "could not find a plugin called 'unknown', did you install it?")
 }
 
 func TestLoadAll1(t *testing.T) {

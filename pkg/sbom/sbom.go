@@ -187,14 +187,14 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 
 	switch format {
 	case FormatCycloneDXJSON:
-		v = &cyclonedx.CycloneDX{SBOM: &bom}
+		v = &cyclonedx.BOM{SBOM: &bom}
 		decoder = json.NewDecoder(f)
 	case FormatAttestCycloneDXJSON:
 		// dsse envelope
 		//   => in-toto attestation
 		//     => CycloneDX JSON
 		v = &attestation.Statement{
-			Predicate: &cyclonedx.CycloneDX{SBOM: &bom},
+			Predicate: &cyclonedx.BOM{SBOM: &bom},
 		}
 		decoder = json.NewDecoder(f)
 	case FormatLegacyCosignAttestCycloneDXJSON:
@@ -204,7 +204,7 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 		//       => CycloneDX JSON
 		v = &attestation.Statement{
 			Predicate: &attestation.CosignPredicate{
-				Data: &cyclonedx.CycloneDX{SBOM: &bom},
+				Data: &cyclonedx.BOM{SBOM: &bom},
 			},
 		}
 		decoder = json.NewDecoder(f)

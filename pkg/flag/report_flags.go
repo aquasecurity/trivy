@@ -1,19 +1,19 @@
 package flag
 
 import (
-	"io"
-	"os"
 	"strings"
 
+	"github.com/mattn/go-shellwords"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/deepfactor-io/trivy/pkg/compliance/spec"
 	"github.com/deepfactor-io/trivy/pkg/log"
-	"github.com/deepfactor-io/trivy/pkg/report"
 	"github.com/deepfactor-io/trivy/pkg/result"
 	"github.com/deepfactor-io/trivy/pkg/types"
+	xstrings "github.com/deepfactor-io/trivy/pkg/x/strings"
 )
 
 // e.g. config yaml:
@@ -26,76 +26,85 @@ var (
 		Name:       "format",
 		ConfigName: "format",
 		Shorthand:  "f",
-		Value:      report.FormatTable,
-		Usage:      "format (" + strings.Join(report.SupportedFormats, ", ") + ")",
+		Default:    string(types.FormatTable),
+		Values:     xstrings.ToStringSlice(types.SupportedFormats),
+		Usage:      "format",
 	}
 	ReportFormatFlag = Flag{
 		Name:       "report",
 		ConfigName: "report",
-		Value:      "all",
-		Usage:      "specify a report format for the output. (all,summary)",
+		Default:    "all",
+		Values:     []string{"all", "summary"},
+		Usage:      "specify a report format for the output",
 	}
 	TemplateFlag = Flag{
 		Name:       "template",
 		ConfigName: "template",
 		Shorthand:  "t",
-		Value:      "",
+		Default:    "",
 		Usage:      "output template",
 	}
 	DependencyTreeFlag = Flag{
 		Name:       "dependency-tree",
 		ConfigName: "dependency-tree",
-		Value:      false,
+		Default:    false,
 		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
 	}
 	ListAllPkgsFlag = Flag{
 		Name:       "list-all-pkgs",
 		ConfigName: "list-all-pkgs",
-		Value:      false,
+		Default:    false,
 		Usage:      "enabling the option will output all packages regardless of vulnerability",
 	}
 	IgnoreFileFlag = Flag{
 		Name:       "ignorefile",
 		ConfigName: "ignorefile",
-		Value:      result.DefaultIgnoreFile,
+		Default:    result.DefaultIgnoreFile,
 		Usage:      "specify .trivyignore file",
 	}
 	IgnorePolicyFlag = Flag{
 		Name:       "ignore-policy",
 		ConfigName: "ignore-policy",
-		Value:      "",
+		Default:    "",
 		Usage:      "specify the Rego file path to evaluate each vulnerability",
 	}
 	ExitCodeFlag = Flag{
 		Name:       "exit-code",
 		ConfigName: "exit-code",
-		Value:      0,
+		Default:    0,
 		Usage:      "specify exit code when any security issues are found",
 	}
 	ExitOnEOLFlag = Flag{
 		Name:       "exit-on-eol",
 		ConfigName: "exit-on-eol",
-		Value:      0,
+		Default:    0,
 		Usage:      "exit with the specified code when the OS reaches end of service/life",
 	}
 	OutputFlag = Flag{
 		Name:       "output",
 		ConfigName: "output",
 		Shorthand:  "o",
-		Value:      "",
+		Default:    "",
 		Usage:      "output file name",
+	}
+	OutputPluginArgFlag = Flag{
+		Name:       "output-plugin-arg",
+		ConfigName: "output-plugin-arg",
+		Default:    "",
+		Usage:      "[EXPERIMENTAL] output plugin arguments",
 	}
 	SeverityFlag = Flag{
 		Name:       "severity",
 		ConfigName: "severity",
 		Shorthand:  "s",
-		Value:      strings.Join(dbTypes.SeverityNames, ","),
-		Usage:      "severities of security issues to be displayed (comma separated)",
+		Default:    dbTypes.SeverityNames,
+		Values:     dbTypes.SeverityNames,
+		Usage:      "severities of security issues to be displayed",
 	}
 	ComplianceFlag = Flag{
 		Name:       "compliance",
 		ConfigName: "scan.compliance",
-		Value:      "",
+		Default:    "",
 		Usage:      "compliance report to generate",
 	}
 )
@@ -103,49 +112,52 @@ var (
 // ReportFlagGroup composes common printer flag structs
 // used for commands requiring reporting logic.
 type ReportFlagGroup struct {
-	Format         *Flag
-	ReportFormat   *Flag
-	Template       *Flag
-	DependencyTree *Flag
-	ListAllPkgs    *Flag
-	IgnoreFile     *Flag
-	IgnorePolicy   *Flag
-	ExitCode       *Flag
-	ExitOnEOL      *Flag
-	Output         *Flag
-	Severity       *Flag
-	Compliance     *Flag
+	Format          *Flag
+	ReportFormat    *Flag
+	Template        *Flag
+	DependencyTree  *Flag
+	ListAllPkgs     *Flag
+	IgnoreFile      *Flag
+	IgnorePolicy    *Flag
+	ExitCode        *Flag
+	ExitOnEOL       *Flag
+	Output          *Flag
+	OutputPluginArg *Flag
+	Severity        *Flag
+	Compliance      *Flag
 }
 
 type ReportOptions struct {
-	Format         string
-	ReportFormat   string
-	Template       string
-	DependencyTree bool
-	ListAllPkgs    bool
-	IgnoreFile     string
-	ExitCode       int
-	ExitOnEOL      int
-	IgnorePolicy   string
-	Output         io.Writer
-	Severities     []dbTypes.Severity
-	Compliance     spec.ComplianceSpec
+	Format           types.Format
+	ReportFormat     string
+	Template         string
+	DependencyTree   bool
+	ListAllPkgs      bool
+	IgnoreFile       string
+	ExitCode         int
+	ExitOnEOL        int
+	IgnorePolicy     string
+	Output           string
+	OutputPluginArgs []string
+	Severities       []dbTypes.Severity
+	Compliance       spec.ComplianceSpec
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
 	return &ReportFlagGroup{
-		Format:         &FormatFlag,
-		ReportFormat:   &ReportFormatFlag,
-		Template:       &TemplateFlag,
-		DependencyTree: &DependencyTreeFlag,
-		ListAllPkgs:    &ListAllPkgsFlag,
-		IgnoreFile:     &IgnoreFileFlag,
-		IgnorePolicy:   &IgnorePolicyFlag,
-		ExitCode:       &ExitCodeFlag,
-		ExitOnEOL:      &ExitOnEOLFlag,
-		Output:         &OutputFlag,
-		Severity:       &SeverityFlag,
-		Compliance:     &ComplianceFlag,
+		Format:          &FormatFlag,
+		ReportFormat:    &ReportFormatFlag,
+		Template:        &TemplateFlag,
+		DependencyTree:  &DependencyTreeFlag,
+		ListAllPkgs:     &ListAllPkgsFlag,
+		IgnoreFile:      &IgnoreFileFlag,
+		IgnorePolicy:    &IgnorePolicyFlag,
+		ExitCode:        &ExitCodeFlag,
+		ExitOnEOL:       &ExitOnEOLFlag,
+		Output:          &OutputFlag,
+		OutputPluginArg: &OutputPluginArgFlag,
+		Severity:        &SeverityFlag,
+		Compliance:      &ComplianceFlag,
 	}
 }
 
@@ -165,21 +177,17 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.ExitCode,
 		f.ExitOnEOL,
 		f.Output,
+		f.OutputPluginArg,
 		f.Severity,
 		f.Compliance,
 	}
 }
 
-func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
-	format := getString(f.Format)
+func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
+	format := getUnderlyingString[types.Format](f.Format)
 	template := getString(f.Template)
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
-	output := getString(f.Output)
-
-	if format != "" && !slices.Contains(report.SupportedFormats, format) {
-		return ReportOptions{}, xerrors.Errorf("unknown format: %v", format)
-	}
 
 	if template != "" {
 		if format == "" {
@@ -188,14 +196,14 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 			log.Logger.Warnf("'--template' is ignored because '--format %s' is specified. Use '--template' option with '--format template' option.", format)
 		}
 	} else {
-		if format == report.FormatTemplate {
+		if format == types.FormatTemplate {
 			log.Logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
 		}
 	}
 
 	// "--list-all-pkgs" option is unavailable with "--format table".
 	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
-	if listAllPkgs && format == report.FormatTable {
+	if listAllPkgs && format == types.FormatTable {
 		log.Logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
 	}
 
@@ -204,7 +212,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		log.Logger.Infof(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
 			`Note that it is the reverse of the usual dependency tree, which shows the packages that depend on the vulnerable package. ` +
 			`It supports limited package managers. Please see the document for the detail.`)
-		if format != report.FormatTable {
+		if format != types.FormatTable {
 			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
 	}
@@ -214,36 +222,38 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		listAllPkgs = true
 	}
 
-	if output != "" {
-		var err error
-		if out, err = os.Create(output); err != nil {
-			return ReportOptions{}, xerrors.Errorf("failed to create an output file: %w", err)
-		}
-	}
-
 	cs, err := loadComplianceTypes(getString(f.Compliance))
 	if err != nil {
 		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
 	}
 
+	var outputPluginArgs []string
+	if arg := getString(f.OutputPluginArg); arg != "" {
+		outputPluginArgs, err = shellwords.Parse(arg)
+		if err != nil {
+			return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
+		}
+	}
+
 	return ReportOptions{
-		Format:         format,
-		ReportFormat:   getString(f.ReportFormat),
-		Template:       template,
-		DependencyTree: dependencyTree,
-		ListAllPkgs:    listAllPkgs,
-		IgnoreFile:     getString(f.IgnoreFile),
-		ExitCode:       getInt(f.ExitCode),
-		ExitOnEOL:      getInt(f.ExitOnEOL),
-		IgnorePolicy:   getString(f.IgnorePolicy),
-		Output:         out,
-		Severities:     splitSeverity(getStringSlice(f.Severity)),
-		Compliance:     cs,
+		Format:           format,
+		ReportFormat:     getString(f.ReportFormat),
+		Template:         template,
+		DependencyTree:   dependencyTree,
+		ListAllPkgs:      listAllPkgs,
+		IgnoreFile:       getString(f.IgnoreFile),
+		ExitCode:         getInt(f.ExitCode),
+		ExitOnEOL:        getInt(f.ExitOnEOL),
+		IgnorePolicy:     getString(f.IgnorePolicy),
+		Output:           getString(f.Output),
+		OutputPluginArgs: outputPluginArgs,
+		Severities:       toSeverity(getStringSlice(f.Severity)),
+		Compliance:       cs,
 	}, nil
 }
 
 func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
-	if len(compliance) > 0 && !slices.Contains(types.Compliances, compliance) && !strings.HasPrefix(compliance, "@") {
+	if len(compliance) > 0 && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
 		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
 	}
 
@@ -255,13 +265,13 @@ func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 	return cs, nil
 }
 
-func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {
-	if slices.Contains(report.SupportedSBOMFormats, format) && !listAllPkgs {
-		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", report.SupportedSBOMFormats)
+func (f *ReportFlagGroup) forceListAllPkgs(format types.Format, listAllPkgs, dependencyTree bool) bool {
+	if slices.Contains(types.SupportedSBOMFormats, format) && !listAllPkgs {
+		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", types.SupportedSBOMFormats)
 		return true
 	}
 	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
-	if format == report.FormatSarif && !listAllPkgs {
+	if format == types.FormatSarif && !listAllPkgs {
 		log.Logger.Debugf("Sarif format automatically enables '--list-all-pkgs' to get locations")
 		return true
 	}
@@ -272,23 +282,16 @@ func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependenc
 	return false
 }
 
-func splitSeverity(severity []string) []dbTypes.Severity {
-	switch {
-	case len(severity) == 0:
+func toSeverity(severity []string) []dbTypes.Severity {
+	if len(severity) == 0 {
 		return nil
-	case len(severity) == 1 && strings.Contains(severity[0], ","): // get severities from flag
-		severity = strings.Split(severity[0], ",")
 	}
-
-	var severities []dbTypes.Severity
-	for _, s := range severity {
-		sev, err := dbTypes.NewSeverity(strings.ToUpper(s))
-		if err != nil {
-			log.Logger.Warnf("unknown severity option: %s", err)
-			continue
-		}
-		severities = append(severities, sev)
-	}
+	severities := lo.Map(severity, func(s string, _ int) dbTypes.Severity {
+		// Note that there is no need to check the error here
+		// since the severity value is already validated in the flag parser.
+		sev, _ := dbTypes.NewSeverity(s)
+		return sev
+	})
 	log.Logger.Debugf("Severities: %q", severities)
 	return severities
 }

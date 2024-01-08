@@ -2,10 +2,10 @@
 
 ## Overview
 You can write custom policies in [Rego][rego].
-Once you finish writing custom policies, you can pass the directory where those policies are stored with `--policy` option.
+Once you finish writing custom policies, you can pass the policy files or the directory where those policies are stored with `--policy` option.
 
 ``` bash
-trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
+trivy conf --policy /path/to/policy.rego --policy /path/to/custom_policies --namespaces user /path/to/config_dir
 ```
 
 As for `--namespaces` option, the detail is described as below.
@@ -131,8 +131,8 @@ correct and do not reference incorrect properties/values.
 | schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) | :material-close: | :material-close: |
 | custom.id                  | Any characters                                                    |             N/A              | :material-check: | :material-check: |
 | custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            | :material-check: | :material-check: |
-| custom.recommended_actions | Any characters                                                    |                              | :material-close: | :material-check: | 
-| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              | :material-close: | :material-check: | 
+| custom.recommended_actions | Any characters                                                    |                              | :material-close: | :material-check: |
+| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              | :material-close: | :material-check: |
 | url                        | Any characters                                                    |                              | :material-close: | :material-check: |
 
 
@@ -178,6 +178,7 @@ You can specify input format via the `custom.input` annotation.
     Even if a Dockerfile exists in the specified directory, it will not be passed to the policy as input.
 
     Possible values for input types are:
+
     - `dockerfile` (Dockerfile)
     - `kubernetes` (Kubernetes YAML/JSON)
     - `rbac` (Kubernetes RBAC YAML/JSON)
@@ -200,4 +201,4 @@ See [here](schema.md) for the detail.
 
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [package]: https://www.openpolicyagent.org/docs/latest/policy-language/#packages
-[source-types]: https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go)
+[source-types]: https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go
