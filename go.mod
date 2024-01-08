@@ -22,7 +22,6 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
-	github.com/deepfactor-io/go-dep-parser v0.0.0-20231220063210-abffffa9ba5f
 	github.com/aquasecurity/trivy-aws v0.5.0
 	github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d
 	github.com/aquasecurity/trivy-iac v0.7.1
@@ -41,6 +40,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/containerd/containerd v1.7.7
+	github.com/deepfactor-io/go-dep-parser v0.0.0-20240108052341-1ac8a71c8098
 	github.com/docker/docker v24.0.7+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.15.0
@@ -112,11 +112,14 @@ require (
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.28.4
-	k8s.io/utils v0.0.0-20230406110748-d93618cff8a2
-	modernc.org/sqlite v1.23.1
+	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
+	modernc.org/sqlite v1.25.0
 )
 
-require github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
+require (
+	github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
+	github.com/deepfactor-io/javadb v0.0.0-20231205070807-51b1ba56dfa1
+)
 
 require (
 	cloud.google.com/go v0.110.7 // indirect
@@ -397,7 +400,7 @@ require (
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
 	modernc.org/ccgo/v3 v3.16.13 // indirect
-	modernc.org/libc v1.22.5 // indirect
+	modernc.org/libc v1.24.1 // indirect
 	modernc.org/mathutil v1.5.0 // indirect
 	modernc.org/memory v1.6.0 // indirect
 	modernc.org/opt v0.1.3 // indirect

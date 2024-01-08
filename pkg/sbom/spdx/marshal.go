@@ -195,6 +195,14 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 		})
 	}
 
+	if len(spdxFiles) > 1 {
+		sort.Slice(spdxFiles, func(i, j int) bool {
+			s1 := spdxFiles[i].FileName
+			s2 := spdxFiles[j].FileName
+			return s1 < s2
+		})
+	}
+
 	// Augment SPDX data
 	for _, val := range packages {
 		augmentSpdxData(val)

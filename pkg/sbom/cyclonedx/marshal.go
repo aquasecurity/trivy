@@ -2,6 +2,7 @@ package cyclonedx
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -77,6 +78,11 @@ func (e *Marshaler) MarshalReport(r types.Report) (*core.Component, error) {
 		return nil, err
 	}
 
+	// sort for consistent report
+	sort.Slice(r.Results, func(i, j int) bool {
+		return r.Results[i].Target < r.Results[j].Target
+	})
+
 	for _, result := range r.Results {
 		components, err := e.marshalResult(r.Metadata, result)
 		if err != nil {
@@ -142,6 +148,14 @@ func (e *Marshaler) marshalResult(metadata types.Metadata, result types.Result) 
 }
 
 func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result) ([]*core.Component, error) {
+
+	// sort for consistent report
+	sort.Slice(result.Packages, func(i, j int) bool {
+		s1 := result.Packages[i].Name + "/" + result.Packages[i].FilePath
+		s2 := result.Packages[j].Name + "/" + result.Packages[j].FilePath
+		return s1 < s2
+	})
+
 	// Get dependency parents first
 	parents := ftypes.Packages(result.Packages).ParentDeps()
 
@@ -153,11 +167,19 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 	// Create package map
 	pkgs := lo.SliceToMap(result.Packages, func(pkg ftypes.Package) (string, Package) {
 		pkgID := lo.Ternary(pkg.ID == "", fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)), pkg.ID)
+
+		v := vulns[pkgID]
+		if len(v) == 0 && pkg.ID != "" {
+			// vulns might have stored in different key
+			// fetch with pkg.Name and version as key
+			v = vulns[fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg))]
+		}
+
 		return pkgID, Package{
 			Type:            result.Type,
 			Metadata:        metadata,
 			Package:         pkg,
-			Vulnerabilities: vulns[pkgID],
+			Vulnerabilities: v,
 		}
 	})
 
@@ -245,12 +267,18 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 		}
 		if p != nil {
 			root.PackageURL = p
+		} else {
+			// trivy uses pkgURL as bomref, if not present use custom logic
+			root.BOMRef = bomRef(string(r.ArtifactType), r.ArtifactName, r.Metadata.ImageID)
 		}
 
 	case ftypes.ArtifactVM:
 		root.Type = cdx.ComponentTypeContainer
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRepository:
 		root.Type = cdx.ComponentTypeApplication
+
+		// custom logic for consistent report
+		root.BOMRef = bomRef(string(r.ArtifactType), r.ArtifactName)
 	}
 
 	if r.Metadata.Size != 0 {
@@ -261,18 +289,33 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 	}
 
 	if len(r.Metadata.RepoDigests) > 0 {
+		// sort for consistent report
+		sort.Slice(r.Metadata.RepoDigests, func(i, j int) bool {
+			return r.Metadata.RepoDigests[i] < r.Metadata.RepoDigests[j]
+		})
+
 		props = append(props, core.Property{
 			Name:  PropertyRepoDigest,
 			Value: strings.Join(r.Metadata.RepoDigests, ","),
 		})
 	}
 	if len(r.Metadata.DiffIDs) > 0 {
+		// sort for consistent report
+		sort.Slice(r.Metadata.DiffIDs, func(i, j int) bool {
+			return r.Metadata.DiffIDs[i] < r.Metadata.DiffIDs[j]
+		})
+
 		props = append(props, core.Property{
 			Name:  PropertyDiffID,
 			Value: strings.Join(r.Metadata.DiffIDs, ","),
 		})
 	}
 	if len(r.Metadata.RepoTags) > 0 {
+		// sort for consistent report
+		sort.Slice(r.Metadata.RepoTags, func(i, j int) bool {
+			return r.Metadata.RepoTags[i] < r.Metadata.RepoTags[j]
+		})
+
 		props = append(props, core.Property{
 			Name:  PropertyRepoTag,
 			Value: strings.Join(r.Metadata.RepoTags, ","),
@@ -280,6 +323,7 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 	}
 
 	root.Properties = filterProperties(props)
+	root.DfScanMeta = r.DfScanMeta
 
 	return root, nil
 }
@@ -303,14 +347,23 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 	case types.ClassOSPkg:
 		// UUID needs to be generated since Operating System Component cannot generate PURL.
 		// https://cyclonedx.org/use-cases/#known-vulnerabilities
+
+		// custom logic instead of UUID for consistent report
+		component.BOMRef = bomRef(string(r.Class))
+
 		if osFound != nil {
 			component.Name = string(osFound.Family)
 			component.Version = osFound.Name
 		}
 		component.Type = cdx.ComponentTypeOS
+
 	case types.ClassLangPkg:
 		// UUID needs to be generated since Application Component cannot generate PURL.
 		// https://cyclonedx.org/use-cases/#known-vulnerabilities
+
+		// custom logic instead of UUID for consistent report
+		component.BOMRef = bomRef(string(r.Class), r.Target)
+
 		component.Type = cdx.ComponentTypeApplication
 	}
 

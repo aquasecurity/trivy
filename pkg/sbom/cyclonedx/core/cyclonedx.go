@@ -12,12 +12,10 @@ import (
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/deepfactor-io/trivy/pkg/clock"
 	"github.com/deepfactor-io/trivy/pkg/digest"
 	"github.com/deepfactor-io/trivy/pkg/log"
 	"github.com/deepfactor-io/trivy/pkg/purl"
 	"github.com/deepfactor-io/trivy/pkg/types"
-	"github.com/deepfactor-io/trivy/pkg/uuid"
 )
 
 const (
@@ -46,6 +44,9 @@ type Component struct {
 
 	Components      []*Component
 	Vulnerabilities []types.DetectedVulnerability
+
+	DfScanMeta types.DfScanMeta
+	BOMRef     string
 }
 
 type Property struct {
@@ -62,8 +63,8 @@ func NewCycloneDX(version string) *CycloneDX {
 
 func (c *CycloneDX) Marshal(root *Component) *cdx.BOM {
 	bom := cdx.NewBOM()
-	bom.SerialNumber = uuid.New().URN()
-	bom.Metadata = c.Metadata()
+	bom.SerialNumber = root.DfScanMeta.ScanID.URN()
+	bom.Metadata = c.Metadata(root.DfScanMeta)
 
 	components := make(map[string]*cdx.Component)
 	dependencies := make(map[string]*[]string)
@@ -160,10 +161,12 @@ func (c *CycloneDX) marshalVulnerability(bomRef string, vuln types.DetectedVulne
 	if vuln.FixedVersion != "" {
 		v.Recommendation = fmt.Sprintf("Upgrade %s to version %s", vuln.PkgName, vuln.FixedVersion)
 	}
-	if vuln.PublishedDate != nil {
+	// check for zero value
+	// zero value stored in db is the unix time 0 (i.e 1970-01-01)
+	if vuln.PublishedDate != nil && vuln.PublishedDate.Unix() != 0 {
 		v.Published = vuln.PublishedDate.Format(timeLayout)
 	}
-	if vuln.LastModifiedDate != nil {
+	if vuln.LastModifiedDate != nil && vuln.LastModifiedDate.Unix() != 0 {
 		v.Updated = vuln.LastModifiedDate.Format(timeLayout)
 	}
 
@@ -175,14 +178,16 @@ func (c *CycloneDX) marshalVulnerability(bomRef string, vuln types.DetectedVulne
 func (c *CycloneDX) BOMRef(component *Component) string {
 	// PURL takes precedence over UUID
 	if component.PackageURL == nil {
-		return uuid.New().String()
+		// return uuid.New().String()
+		// use BOMRef calculated while marshalling for consistent report
+		return component.BOMRef
 	}
 	return component.PackageURL.BOMRef()
 }
 
-func (c *CycloneDX) Metadata() *cdx.Metadata {
+func (c *CycloneDX) Metadata(dfMeta types.DfScanMeta) *cdx.Metadata {
 	return &cdx.Metadata{
-		Timestamp: clock.Now().UTC().Format(timeLayout),
+		Timestamp: dfMeta.Created.Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
 				Vendor:  ToolVendor,
@@ -226,8 +231,9 @@ func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.V
 		return *value
 	})
 	sort.Slice(vulns, func(i, j int) bool {
-		return vulns[i].BOMRef < vulns[j].BOMRef
+		return vulns[i].ID < vulns[j].ID
 	})
+
 	return &vulns
 }
 
@@ -359,7 +365,7 @@ func cdxAdvisories(refs []string) *[]cdx.Advisory {
 func cwes(cweIDs []string) *[]int {
 	// to skip cdx.Vulnerability.CWEs when generating json
 	// we should return 'clear' nil without 'type' interface part
-	if cweIDs == nil {
+	if len(cweIDs) == 0 {
 		return nil
 	}
 	var ret []int
