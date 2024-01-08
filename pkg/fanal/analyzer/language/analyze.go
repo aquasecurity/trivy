@@ -128,6 +128,7 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.
 			Locations: locs,
 			Digest:    d,
 			Warnings:  lib.Warnings,
+			BuildID:   lib.BuildID,
 		})
 	}
 

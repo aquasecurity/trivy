@@ -108,6 +108,9 @@ type Package struct {
 
 	// Files installed by the package
 	InstalledFiles []string `json:",omitempty"`
+
+	// Build ID
+	BuildID string `json:",omitempty"`
 }
 
 type Location struct {
