@@ -1,13 +1,14 @@
 package vex
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/aquasecurity/trivy/pkg/types"
 	csaf "github.com/csaf-poc/csaf_distribution/v3/csaf"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
+
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type CSAF struct {
@@ -68,7 +69,7 @@ func (v *CSAF) matchPURL(products *csaf.Products, pkgURL *packageurl.PackageURL)
 			}
 			p, err := purl.FromString(string(*helper.PURL))
 			if err != nil {
-				log.Logger.Errorw("Invalid PURL", zap.String("purl", string(*helper.PURL)), zap.Error(err))
+				v.logger.Errorw("Invalid PURL", zap.String("purl", string(*helper.PURL)), zap.Error(err))
 				return nil, false
 			}
 			return p, true
