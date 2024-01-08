@@ -142,6 +142,8 @@ func (id *PkgIdentifier) UnmarshalJSON(data []byte) error {
 		p, err := packageurl.FromString(aux.PURL)
 		if err != nil {
 			return err
+		} else if len(p.Qualifiers) == 0 {
+			p.Qualifiers = nil
 		}
 		id.PURL = &p
 	}
