@@ -78,7 +78,7 @@ const (
 	startSecret = `(^|\s+)`
 	endSecret   = `(\s+|$)`
 
-	aws = `(aws)?_?`
+	aws = `aws_?`
 )
 
 // This function is exported for trivy-plugin-aqua purposes only
