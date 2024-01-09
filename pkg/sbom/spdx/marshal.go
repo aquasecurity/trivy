@@ -50,6 +50,8 @@ const (
 	PropertyPkgID       = "PkgID"
 	PropertyLayerDiffID = "LayerDiffID"
 	PropertyLayerDigest = "LayerDigest"
+	PropertyPkgIsDev    = "PkgIsDev"
+
 	// Package Purpose fields
 	PackagePurposeOS          = "OPERATING-SYSTEM"
 	PackagePurposeContainer   = "CONTAINER"
@@ -430,6 +432,10 @@ func (m *Marshaler) pkgToSpdxPackage(t ftypes.TargetType, pkgDownloadLocation st
 	attrTexts = appendAttributionText(attrTexts, PropertyPkgID, pkg.ID)
 	attrTexts = appendAttributionText(attrTexts, PropertyLayerDigest, pkg.Layer.Digest)
 	attrTexts = appendAttributionText(attrTexts, PropertyLayerDiffID, pkg.Layer.DiffID)
+
+	if pkg.Dev {
+		attrTexts = appendAttributionText(attrTexts, PropertyPkgIsDev, "true")
+	}
 
 	supplier := &spdx.Supplier{Supplier: PackageSupplierNoAssertion}
 	if pkg.Maintainer != "" {
