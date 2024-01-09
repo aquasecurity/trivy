@@ -1,11 +1,11 @@
 package debian
 
 import (
+	"context"
 	"time"
 
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
@@ -41,36 +41,15 @@ var (
 	}
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(c clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = c
-	}
-}
-
 // Scanner implements the Debian scanner
 type Scanner struct {
 	vs debian.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method to return Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      debian.NewVulnSrc(),
-		options: o,
+		vs: debian.NewVulnSrc(),
 	}
 }
 
@@ -103,7 +82,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				PkgName:          pkg.Name,
 				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     adv.FixedVersion,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Status:           adv.Status,
 				Layer:            pkg.Layer,
 				Custom:           adv.Custom,
@@ -140,6 +119,6 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if the version is supported.
-func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
-	return osver.Supported(s.clock, eolDates, osFamily, osver.Major(osVer))
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(ctx, eolDates, osFamily, osver.Major(osVer))
 }

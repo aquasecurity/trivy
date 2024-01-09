@@ -64,10 +64,10 @@ $ trivy image --scanners vuln [YOUR_IMAGE_NAME]
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
 As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
-If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners config`.
+If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners misconfig`.
 
 ```
-$ trivy image --scanners config [YOUR_IMAGE_NAME]
+$ trivy image --scanners misconfig [YOUR_IMAGE_NAME]
 ```
 
 ### Secrets

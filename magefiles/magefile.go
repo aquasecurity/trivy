@@ -108,7 +108,7 @@ func (Tool) Mockery() error {
 // Wire generates the wire_gen.go file for each package
 func Wire() error {
 	mg.Deps(Tool{}.Wire)
-	return sh.RunV("wire", "gen", "./pkg/commands/...", "./pkg/rpc/...")
+	return sh.RunV("wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
 }
 
 // Mock generates mocks
@@ -266,6 +266,12 @@ func (t Test) Module() error {
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=module_integration", "./integration/...")
 }
 
+// UpdateModuleGolden updates golden files for Wasm integration tests
+func (t Test) UpdateModuleGolden() error {
+	mg.Deps(t.FixtureContainerImages, t.GenerateExampleModules)
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=module_integration", "./integration/...", "-update")
+}
+
 // VM runs VM integration tests
 func (t Test) VM() error {
 	mg.Deps(t.FixtureVMImages)
@@ -273,7 +279,8 @@ func (t Test) VM() error {
 }
 
 // UpdateVMGolden updates golden files for integration tests
-func (Test) UpdateVMGolden() error {
+func (t Test) UpdateVMGolden() error {
+	mg.Deps(t.FixtureVMImages)
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
 }
 

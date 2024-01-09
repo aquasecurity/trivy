@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/mixlock",
   "ArtifactType": "repository",
   "Metadata": {
@@ -23,6 +24,9 @@
         {
           "ID": "castore@0.1.18",
           "Name": "castore",
+          "Identifier": {
+            "PURL": "pkg:hex/castore@0.1.18"
+          },
           "Version": "0.1.18",
           "Layer": {},
           "Locations": [
@@ -35,6 +39,9 @@
         {
           "ID": "jason@1.4.0",
           "Name": "jason",
+          "Identifier": {
+            "PURL": "pkg:hex/jason@1.4.0"
+          },
           "Version": "1.4.0",
           "Layer": {},
           "Locations": [
@@ -47,6 +54,9 @@
         {
           "ID": "phoenix@1.6.13",
           "Name": "phoenix",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix@1.6.13"
+          },
           "Version": "1.6.13",
           "Layer": {},
           "Locations": [
@@ -59,6 +69,9 @@
         {
           "ID": "phoenix_html@3.2.0",
           "Name": "phoenix_html",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix_html@3.2.0"
+          },
           "Version": "3.2.0",
           "Layer": {},
           "Locations": [
@@ -71,6 +84,9 @@
         {
           "ID": "phoenix_pubsub@2.1.1",
           "Name": "phoenix_pubsub",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix_pubsub@2.1.1"
+          },
           "Version": "2.1.1",
           "Layer": {},
           "Locations": [
@@ -83,6 +99,9 @@
         {
           "ID": "phoenix_template@1.0.0",
           "Name": "phoenix_template",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix_template@1.0.0"
+          },
           "Version": "1.0.0",
           "Layer": {},
           "Locations": [
@@ -95,6 +114,9 @@
         {
           "ID": "phoenix_view@2.0.1",
           "Name": "phoenix_view",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix_view@2.0.1"
+          },
           "Version": "2.0.1",
           "Layer": {},
           "Locations": [
@@ -107,6 +129,9 @@
         {
           "ID": "plug@1.14.0",
           "Name": "plug",
+          "Identifier": {
+            "PURL": "pkg:hex/plug@1.14.0"
+          },
           "Version": "1.14.0",
           "Layer": {},
           "Locations": [
@@ -119,6 +144,9 @@
         {
           "ID": "plug_crypto@1.2.3",
           "Name": "plug_crypto",
+          "Identifier": {
+            "PURL": "pkg:hex/plug_crypto@1.2.3"
+          },
           "Version": "1.2.3",
           "Layer": {},
           "Locations": [
@@ -131,6 +159,9 @@
         {
           "ID": "telemetry@1.1.0",
           "Name": "telemetry",
+          "Identifier": {
+            "PURL": "pkg:hex/telemetry@1.1.0"
+          },
           "Version": "1.1.0",
           "Layer": {},
           "Locations": [
@@ -146,6 +177,9 @@
           "VulnerabilityID": "CVE-2022-42975",
           "PkgID": "phoenix@1.6.13",
           "PkgName": "phoenix",
+          "PkgIdentifier": {
+            "PURL": "pkg:hex/phoenix@1.6.13"
+          },
           "InstalledVersion": "1.6.13",
           "FixedVersion": "1.6.14",
           "Status": "fixed",
@@ -160,6 +194,9 @@
           "Title": "Phoenix before 1.6.14 mishandles check_origin wildcarding",
           "Description": "socket/transport.ex in Phoenix before 1.6.14 mishandles check_origin wildcarding. NOTE: LiveView applications are unaffected by default because of the presence of a LiveView CSRF token.",
           "Severity": "HIGH",
+          "VendorSeverity": {
+            "ghsa": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",

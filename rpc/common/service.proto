@@ -33,12 +33,13 @@ message Application {
 message Package {
   // binary package
   // e.g. bind-utils
-  string id      = 13;
-  string name    = 1;
-  string version = 2;
-  string release = 3;
-  int32  epoch   = 4;
-  string arch    = 5;
+  string        id         = 13;
+  string        name       = 1;
+  string        version    = 2;
+  string        release    = 3;
+  int32         epoch      = 4;
+  PkgIdentifier identifier = 19;
+  string        arch       = 5;
   // src package containing some binary packages
   // e.g. bind
   string          src_name    = 6;
@@ -52,6 +53,11 @@ message Package {
   string          digest      = 16;
   bool            dev         = 17;
   bool            indirect    = 18;
+}
+
+message PkgIdentifier {
+  string purl    = 1;
+  string bom_ref = 2;
 }
 
 message Misconfiguration {
@@ -110,6 +116,7 @@ message Vulnerability {
   string                    description          = 6;
   Severity                  severity             = 7;
   repeated string           references           = 8;
+  PkgIdentifier             pkg_identifier       = 25;
   Layer                     layer                = 10;
   string                    severity_source      = 11;
   map<string, CVSS>         cvss                 = 12;
@@ -205,15 +212,35 @@ message Secret {
 }
 
 message DetectedLicense {
-  Severity        severity   = 1;
-  LicenseCategory category   = 2;
-  string          pkg_name   = 3;
-  string          file_path  = 4;
-  string          name       = 5;
-  float           confidence = 6;
-  string          link       = 7;
+  Severity             severity   = 1;
+  LicenseCategory.Enum category   = 2;
+  string               pkg_name   = 3;
+  string               file_path  = 4;
+  string               name       = 5;
+  float                confidence = 6;
+  string               link       = 7;
+}
 
-  enum LicenseCategory {
+message LicenseFile {
+  LicenseType.Enum        license_type = 1;
+  string                  file_path    = 2;
+  string                  pkg_name     = 3;
+  repeated LicenseFinding fingings     = 4;
+  Layer                   layer        = 5;
+}
+
+message LicenseFinding {
+  LicenseCategory.Enum category   = 1;
+  string               name       = 2;
+  float                confidence = 3;
+  string               link       = 4;
+}
+
+// Enumerations are wrapped with a message to improve the readability of
+// enumerations in generated code and avoid name conflicts.
+// https://github.com/golang/protobuf/issues/513
+message LicenseCategory {
+  enum Enum {
     UNSPECIFIED  = 0;
     FORBIDDEN    = 1;
     RESTRICTED   = 2;
@@ -222,5 +249,14 @@ message DetectedLicense {
     PERMISSIVE   = 5;
     UNENCUMBERED = 6;
     UNKNOWN      = 7;
+  }
+}
+
+message LicenseType {
+  enum Enum {
+    UNSPECIFIED  = 0;
+    DPKG         = 1;
+    HEADER       = 2;
+    LICENSE_FILE = 3;
   }
 }

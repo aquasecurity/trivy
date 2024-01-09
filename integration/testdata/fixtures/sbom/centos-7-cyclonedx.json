@@ -40,7 +40,9 @@
       "version": "4.2.46-31.el7",
       "licenses": [
         {
-          "expression": "GPLv3+"
+          "license": {
+            "name": "GPLv3+"
+          }
         }
       ],
       "purl": "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
@@ -78,7 +80,9 @@
       "version": "1.0.2k-16.el7",
       "licenses": [
         {
-          "expression": "OpenSSL"
+          "license": {
+            "name": "OpenSSL+"
+          }
         }
       ],
       "purl": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",

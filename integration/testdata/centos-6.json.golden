@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/centos-6.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -78,6 +79,9 @@
           "VulnerabilityID": "CVE-2020-29573",
           "PkgID": "glibc@2.12-1.212.el6.x86_64",
           "PkgName": "glibc",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/centos/glibc@2.12-1.212.el6?arch=x86_64\u0026distro=centos-6.10"
+          },
           "InstalledVersion": "2.12-1.212.el6",
           "Status": "end_of_life",
           "Layer": {
@@ -92,6 +96,14 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 2,
+            "nvd": 3,
+            "oracle-oval": 2,
+            "photon": 3,
+            "redhat": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -123,6 +135,9 @@
           ],
           "PkgID": "openssl@1.0.1e-57.el6.x86_64",
           "PkgName": "openssl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/centos/openssl@1.0.1e-57.el6?arch=x86_64\u0026distro=centos-6.10"
+          },
           "InstalledVersion": "1.0.1e-57.el6",
           "FixedVersion": "1.0.1e-58.el6_10",
           "Status": "fixed",
@@ -138,6 +153,14 @@
           "CweIDs": [
             "CWE-203"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",

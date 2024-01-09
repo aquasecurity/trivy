@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/ubi-7.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -79,6 +80,9 @@
           "VulnerabilityID": "CVE-2019-18276",
           "PkgID": "bash@4.2.46-33.el7.x86_64",
           "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/redhat/bash@4.2.46-33.el7?arch=x86_64\u0026distro=redhat-7.7"
+          },
           "InstalledVersion": "4.2.46-33.el7",
           "Status": "will_not_fix",
           "Layer": {
@@ -93,6 +97,14 @@
           "CweIDs": [
             "CWE-273"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "nvd": 3,
+            "oracle-oval": 1,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",

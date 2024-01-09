@@ -6,7 +6,7 @@ You can enable/disable scanners with the `--scanners` flag.
 Supported values:
 
 - vuln
-- config
+- misconfig
 - secret
 - license
  

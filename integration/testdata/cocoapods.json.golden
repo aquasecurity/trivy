@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/cocoapods",
   "ArtifactType": "repository",
   "Metadata": {
@@ -23,6 +24,9 @@
         {
           "ID": "_NIODataStructures@2.41.0",
           "Name": "_NIODataStructures",
+          "Identifier": {
+            "PURL": "pkg:cocoapods/_NIODataStructures@2.41.0"
+          },
           "Version": "2.41.0",
           "Layer": {}
         }
@@ -32,6 +36,9 @@
           "VulnerabilityID": "CVE-2022-3215",
           "PkgID": "_NIODataStructures@2.41.0",
           "PkgName": "_NIODataStructures",
+          "PkgIdentifier": {
+            "PURL": "pkg:cocoapods/_NIODataStructures@2.41.0"
+          },
           "InstalledVersion": "2.41.0",
           "FixedVersion": "2.29.1, 2.39.1, 2.42.0",
           "Status": "fixed",
@@ -40,6 +47,9 @@
           "Title": "SwiftNIO vulnerable to Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Response Splitting')",
           "Description": "`NIOHTTP1` and projects using it for generating HTTP responses, including SwiftNIO, can be subject to a HTTP Response Injection attack...",
           "Severity": "MEDIUM",
+          "VendorSeverity": {
+            "ghsa": 2
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",

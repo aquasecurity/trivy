@@ -1,12 +1,12 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/sbom/minikube-kbom.json",
   "ArtifactType": "cyclonedx",
   "Metadata": {
     "OS": {
       "Family": "ubuntu",
-      "Name": "22.04.2",
-      "EOSL": false
+      "Name": "22.04.2"
     },
     "ImageConfig": {
       "architecture": "",
@@ -33,13 +33,16 @@
         {
           "VulnerabilityID": "CVE-2023-2431",
           "PkgName": "k8s.io/kubelet",
+          "PkgIdentifier": {
+            "PURL": "pkg:k8s/k8s.io%2Fkubelet@1.27.0",
+            "BOMRef": "pkg:k8s/k8s.io%2Fkubelet@1.27.0"
+          },
           "InstalledVersion": "1.27.0",
           "FixedVersion": "1.24.14, 1.25.9, 1.26.4, 1.27.1",
           "Status": "fixed",
           "Layer": {},
           "SeveritySource": "k8s",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-2431",
-          "PkgRef": "pkg:k8s/k8s.io%2Fkubelet@1.27.0",
           "DataSource": {
             "ID": "k8s",
             "Name": "Official Kubernetes CVE Feed",
@@ -48,6 +51,9 @@
           "Title": "Bypass of seccomp profile enforcement ",
           "Description": "A security issue was discovered in Kubelet that allows pods to bypass the seccomp profile enforcement...",
           "Severity": "LOW",
+          "VendorSeverity": {
+            "k8s": 1
+          },
           "CVSS": {
             "k8s": {
               "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:N",

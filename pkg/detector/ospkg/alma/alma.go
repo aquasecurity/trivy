@@ -1,12 +1,12 @@
 package alma
 
 import (
+	"context"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alma"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -25,36 +25,15 @@ var (
 	}
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(c clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = c
-	}
-}
-
 // Scanner implements the AlmaLinux scanner
 type Scanner struct {
 	vs *alma.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      alma.NewVulnSrc(),
-		options: o,
+		vs: alma.NewVulnSrc(),
 	}
 }
 
@@ -81,7 +60,6 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
-
 		for _, adv := range advisories {
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 			if installedVersion.LessThan(fixedVersion) {
@@ -91,7 +69,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
 					FixedVersion:     fixedVersion.String(),
-					PkgRef:           pkg.Ref,
+					PkgIdentifier:    pkg.Identifier,
 					Layer:            pkg.Layer,
 					DataSource:       adv.DataSource,
 					Custom:           adv.Custom,
@@ -108,8 +86,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if the version is supported.
-func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
-	return osver.Supported(s.clock, eolDates, osFamily, osver.Major(osVer))
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(ctx, eolDates, osFamily, osver.Major(osVer))
 }
 
 func addModularNamespace(name, label string) string {

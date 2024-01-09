@@ -9,7 +9,7 @@ We have been consolidating all of our scanning-related efforts in one place, and
 
 ## Trivy Config Command 
 
-Terraform configuration scanning is available as part of the `trivy config` command. This command scans all configuration files for misconfiguration issues. You can find the details within [misconfiguration scans in the Trivy documentation.](https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/scanning/) 
+Terraform configuration scanning is available as part of the `trivy config` command. This command scans all configuration files for misconfiguration issues. You can find the details within [misconfiguration scans in the Trivy documentation.](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/) 
 
 Command structure: 
 ``` 
@@ -83,21 +83,21 @@ trivy config --severity CRITICAL, MEDIUM terraform-infra
 
 ### Passing tf.tfvars files into `trivy config` scans 
 
-You can pass terraform values to Trivy to override default values found in the Terraform HCL code. More information are provided [in the documentation.](https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/options/values/) 
+You can pass terraform values to Trivy to override default values found in the Terraform HCL code. More information are provided [in the documentation.](https://aquasecurity.github.io/trivy/latest/docs/coverage/iac/terraform/#value-overrides) 
 
 ``` 
 trivy conf --tf-vars terraform.tfvars ./
 ``` 
 ### Custom Checks 
 
-We have lots of examples in the [documentation](https://aquasecurity.github.io/trivy/latest/docs/misconfiguration/custom/) on how you can write and pass custom Rego policies into terraform misconfiguration scans. 
+We have lots of examples in the [documentation](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/) on how you can write and pass custom Rego policies into terraform misconfiguration scans. 
 
 ## Secret and vulnerability scans
 
 The `trivy config` command does not perform secrete and vulnerability checks out of the box. However, you can specify as part of your `trivy fs` scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: 
 
 ```
-trivy fs --scanners secret,config ./
+trivy fs --scanners secret,misconfig ./
 ```
 
 The `trivy config` command is a sub-command of the `trivy fs` command. You can learn more about this command in the [documentation.](https://aquasecurity.github.io/trivy/latest/docs/target/filesystem/) 

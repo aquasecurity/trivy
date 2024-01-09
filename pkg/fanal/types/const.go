@@ -51,6 +51,7 @@ const (
 	Npm               LangType = "npm"
 	NuGet             LangType = "nuget"
 	DotNetCore        LangType = "dotnet-core"
+	PackagesProps     LangType = "packages-props"
 	Pip               LangType = "pip"
 	Pipenv            LangType = "pipenv"
 	Poetry            LangType = "poetry"

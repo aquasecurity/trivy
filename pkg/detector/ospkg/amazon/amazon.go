@@ -1,13 +1,12 @@
 package amazon
 
 import (
+	"context"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-deb-version"
-	"go.uber.org/zap"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -28,38 +27,15 @@ var (
 	}
 )
 
-type options struct {
-	clock clock.Clock
-	l     *zap.SugaredLogger
-}
-
-type option func(*options)
-
-func WithClock(c clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = c
-	}
-}
-
 // Scanner to scan amazon vulnerabilities
 type Scanner struct {
 	ac amazon.VulnSrc
-	options
 }
 
 // NewScanner is the factory method to return Amazon scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		l:     log.Logger,
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		ac:      amazon.NewVulnSrc(),
-		options: *o,
+		ac: amazon.NewVulnSrc(),
 	}
 }
 
@@ -106,7 +82,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
 					FixedVersion:     adv.FixedVersion,
-					PkgRef:           pkg.Ref,
+					PkgIdentifier:    pkg.Identifier,
 					Layer:            pkg.Layer,
 					Custom:           adv.Custom,
 					DataSource:       adv.DataSource,
@@ -119,11 +95,11 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if the version is supported.
-func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
 	osVer = strings.Fields(osVer)[0]
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
 	}
 
-	return osver.Supported(s.clock, eolDates, osFamily, osVer)
+	return osver.Supported(ctx, eolDates, osFamily, osVer)
 }

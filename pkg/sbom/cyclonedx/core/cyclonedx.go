@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strconv"
@@ -14,8 +15,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -38,7 +39,7 @@ type Component struct {
 	Name       string
 	Group      string
 	Version    string
-	PackageURL *purl.PackageURL
+	PackageURL *ftypes.PackageURL
 	Licenses   []string
 	Hashes     []digest.Digest
 	Supplier   string
@@ -60,10 +61,10 @@ func NewCycloneDX(version string) *CycloneDX {
 	}
 }
 
-func (c *CycloneDX) Marshal(root *Component) *cdx.BOM {
+func (c *CycloneDX) Marshal(ctx context.Context, root *Component) *cdx.BOM {
 	bom := cdx.NewBOM()
 	bom.SerialNumber = uuid.New().URN()
-	bom.Metadata = c.Metadata()
+	bom.Metadata = c.Metadata(ctx)
 
 	components := make(map[string]*cdx.Component)
 	dependencies := make(map[string]*[]string)
@@ -180,9 +181,9 @@ func (c *CycloneDX) BOMRef(component *Component) string {
 	return component.PackageURL.BOMRef()
 }
 
-func (c *CycloneDX) Metadata() *cdx.Metadata {
+func (c *CycloneDX) Metadata(ctx context.Context) *cdx.Metadata {
 	return &cdx.Metadata{
-		Timestamp: clock.Now().UTC().Format(timeLayout),
+		Timestamp: clock.Now(ctx).UTC().Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
 				Vendor:  ToolVendor,
@@ -231,7 +232,7 @@ func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.V
 	return &vulns
 }
 
-func (c *CycloneDX) PackageURL(p *purl.PackageURL) string {
+func (c *CycloneDX) PackageURL(p *ftypes.PackageURL) string {
 	if p == nil {
 		return ""
 	}

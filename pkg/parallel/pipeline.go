@@ -7,6 +7,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+const defaultWorkers = 5
+
 // Pipeline represents a structure for performing parallel processing.
 // T represents the input element type and U represents the output element type.
 type Pipeline[T, U any] struct {
@@ -28,6 +30,9 @@ func NewPipeline[T, U any](numWorkers int, progress bool, items []T,
 	if fn2 == nil {
 		// In case where there is no need to process the return values
 		fn2 = func(_ U) error { return nil }
+	}
+	if numWorkers == 0 {
+		numWorkers = defaultWorkers
 	}
 	return Pipeline[T, U]{
 		numWorkers: numWorkers,

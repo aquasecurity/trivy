@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -17,10 +18,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version"
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -41,6 +42,10 @@ type Flag struct {
 	// Values is a list of allowed values.
 	// It currently supports string flags and string slice flags only.
 	Values []string
+
+	// ValueNormalize is a function to normalize the value.
+	// It can be used for aliases, etc.
+	ValueNormalize func(string) string
 
 	// Usage explains how to use the flag.
 	Usage string
@@ -114,6 +119,10 @@ type Options struct {
 
 	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
+
+	// outputWriter is not initialized via the CLI.
+	// It is mainly used for testing purposes or by tools that use Trivy as a library.
+	outputWriter io.Writer
 }
 
 // Align takes consistency of options
@@ -159,17 +168,53 @@ func (o *Options) FilterOpts() result.FilterOption {
 	}
 }
 
+// SetOutputWriter sets an output writer.
+func (o *Options) SetOutputWriter(w io.Writer) {
+	o.outputWriter = w
+}
+
 // OutputWriter returns an output writer.
 // If the output file is not specified, it returns os.Stdout.
-func (o *Options) OutputWriter() (io.WriteCloser, error) {
-	if o.Output != "" {
-		f, err := os.Create(o.Output)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to create output file: %w", err)
-		}
-		return f, nil
+func (o *Options) OutputWriter(ctx context.Context) (io.Writer, func() error, error) {
+	cleanup := func() error { return nil }
+	switch {
+	case o.outputWriter != nil:
+		return o.outputWriter, cleanup, nil
+	case o.Output == "":
+		return os.Stdout, cleanup, nil
+	case strings.HasPrefix(o.Output, "plugin="):
+		return o.outputPluginWriter(ctx)
 	}
-	return xio.NopCloser(os.Stdout), nil
+
+	f, err := os.Create(o.Output)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("failed to create output file: %w", err)
+	}
+	return f, f.Close, nil
+}
+
+func (o *Options) outputPluginWriter(ctx context.Context) (io.Writer, func() error, error) {
+	pluginName := strings.TrimPrefix(o.Output, "plugin=")
+
+	pr, pw := io.Pipe()
+	wait, err := plugin.Start(ctx, pluginName, plugin.RunOptions{
+		Args:  o.OutputPluginArgs,
+		Stdin: pr,
+	})
+	if err != nil {
+		return nil, nil, xerrors.Errorf("plugin start: %w", err)
+	}
+
+	cleanup := func() error {
+		if err = pw.Close(); err != nil {
+			return xerrors.Errorf("failed to close pipe: %w", err)
+		}
+		if err = wait(); err != nil {
+			return xerrors.Errorf("plugin error: %w", err)
+		}
+		return nil
+	}
+	return pw, cleanup, nil
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {
@@ -191,13 +236,13 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 		if len(flag.Values) > 0 {
 			usage += fmt.Sprintf(" (%s)", strings.Join(flag.Values, ","))
 		}
-		flags.VarP(newCustomStringValue(v, flag.Values), flag.Name, flag.Shorthand, usage)
+		flags.VarP(newCustomStringValue(v, flag.Values, flag.ValueNormalize), flag.Name, flag.Shorthand, usage)
 	case []string:
 		usage := flag.Usage
 		if len(flag.Values) > 0 {
 			usage += fmt.Sprintf(" (%s)", strings.Join(flag.Values, ","))
 		}
-		flags.VarP(newCustomStringSliceValue(v, flag.Values), flag.Name, flag.Shorthand, usage)
+		flags.VarP(newCustomStringSliceValue(v, flag.Values, flag.ValueNormalize), flag.Name, flag.Shorthand, usage)
 	case bool:
 		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:

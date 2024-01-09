@@ -23,7 +23,7 @@ type Option struct {
 	AppDirs           []string
 	SBOMSources       []string
 	RekorURL          string
-	Slow              bool // Lower CPU and memory
+	Parallel          int
 	AWSRegion         string
 	AWSEndpoint       string
 	FileChecksum      bool // For SPDX
@@ -48,6 +48,27 @@ type Option struct {
 // This option is only available when using Trivy as an imported library and not through CLI flags.
 type WalkOption struct {
 	ErrorCallback walker.ErrorCallback
+}
+
+func (o *Option) AnalyzerOptions() analyzer.AnalyzerOptions {
+	return analyzer.AnalyzerOptions{
+		Group:                o.AnalyzerGroup,
+		FilePatterns:         o.FilePatterns,
+		Parallel:             o.Parallel,
+		DisabledAnalyzers:    o.DisabledAnalyzers,
+		MisconfScannerOption: o.MisconfScannerOption,
+		SecretScannerOption:  o.SecretScannerOption,
+		LicenseScannerOption: o.LicenseScannerOption,
+	}
+}
+
+func (o *Option) ConfigAnalyzerOptions() analyzer.ConfigAnalyzerOptions {
+	return analyzer.ConfigAnalyzerOptions{
+		FilePatterns:         o.FilePatterns,
+		DisabledAnalyzers:    o.DisabledAnalyzers,
+		MisconfScannerOption: o.MisconfScannerOption,
+		SecretScannerOption:  o.SecretScannerOption,
+	}
 }
 
 func (o *Option) Sort() {

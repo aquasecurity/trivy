@@ -9,6 +9,5 @@ const (
 	// SystemFileFilteringPostHandlerPriority should be higher than other handlers.
 	// Otherwise, other handlers need to process unnecessary files.
 	SystemFileFilteringPostHandlerPriority = 100
-
-	UnpackagedPostHandlerPriority = 50
+	UnpackagedPostHandlerPriority          = 50
 )

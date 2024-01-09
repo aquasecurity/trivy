@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
@@ -43,6 +44,7 @@ func TestTLSRegistry(t *testing.T) {
 	baseDir, err := filepath.Abs(".")
 	require.NoError(t, err)
 
+	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	req := testcontainers.ContainerRequest{
 		Name:         "registry",
 		Image:        registryImage,
@@ -59,6 +61,9 @@ func TestTLSRegistry(t *testing.T) {
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "registry", "certs"), "/certs"),
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "registry", "auth"), "/auth"),
 		),
+		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+			hostConfig.AutoRemove = true
+		},
 		WaitingFor: wait.ForLog("listening on [::]:5443"),
 	}
 

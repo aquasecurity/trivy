@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pip",
   "ArtifactType": "repository",
   "Metadata": {
@@ -22,36 +23,57 @@
       "Packages": [
         {
           "Name": "Flask",
+          "Identifier": {
+            "PURL": "pkg:pypi/flask@2.0.0"
+          },
           "Version": "2.0.0",
           "Layer": {}
         },
         {
           "Name": "Jinja2",
+          "Identifier": {
+            "PURL": "pkg:pypi/jinja2@3.0.0"
+          },
           "Version": "3.0.0",
           "Layer": {}
         },
         {
           "Name": "Werkzeug",
+          "Identifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11"
+          },
           "Version": "0.11",
           "Layer": {}
         },
         {
           "Name": "click",
+          "Identifier": {
+            "PURL": "pkg:pypi/click@8.0.0"
+          },
           "Version": "8.0.0",
           "Layer": {}
         },
         {
           "Name": "itsdangerous",
+          "Identifier": {
+            "PURL": "pkg:pypi/itsdangerous@2.0.0"
+          },
           "Version": "2.0.0",
           "Layer": {}
         },
         {
           "Name": "oauth2-client",
+          "Identifier": {
+            "PURL": "pkg:pypi/oauth2-client@4.0.0"
+          },
           "Version": "4.0.0",
           "Layer": {}
         },
         {
           "Name": "python-gitlab",
+          "Identifier": {
+            "PURL": "pkg:pypi/python-gitlab@2.0.0"
+          },
           "Version": "2.0.0",
           "Layer": {}
         }
@@ -60,6 +82,9 @@
         {
           "VulnerabilityID": "CVE-2019-14806",
           "PkgName": "Werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11"
+          },
           "InstalledVersion": "0.11",
           "FixedVersion": "0.15.3",
           "Status": "fixed",
@@ -77,6 +102,12 @@
           "CweIDs": [
             "CWE-331"
           ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3,
+            "redhat": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -107,6 +138,9 @@
         {
           "VulnerabilityID": "CVE-2020-28724",
           "PkgName": "Werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11"
+          },
           "InstalledVersion": "0.11",
           "FixedVersion": "0.11.6",
           "Status": "fixed",
@@ -124,6 +158,12 @@
           "CweIDs": [
             "CWE-601"
           ],
+          "VendorSeverity": {
+            "ghsa": 2,
+            "nvd": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",

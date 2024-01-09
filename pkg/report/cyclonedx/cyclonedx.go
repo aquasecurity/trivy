@@ -1,6 +1,7 @@
 package cyclonedx
 
 import (
+	"context"
 	"io"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -26,14 +27,15 @@ func NewWriter(output io.Writer, appVersion string) Writer {
 }
 
 // Write writes the results in CycloneDX format
-func (w Writer) Write(report types.Report) error {
-	bom, err := w.marshaler.Marshal(report)
+func (w Writer) Write(ctx context.Context, report types.Report) error {
+	bom, err := w.marshaler.Marshal(ctx, report)
 	if err != nil {
 		return xerrors.Errorf("CycloneDX marshal error: %w", err)
 	}
 
 	encoder := cdx.NewBOMEncoder(w.output, w.format)
 	encoder.SetPretty(true)
+	encoder.SetEscapeHTML(false)
 	if err = encoder.Encode(bom); err != nil {
 		return xerrors.Errorf("failed to encode bom: %w", err)
 	}

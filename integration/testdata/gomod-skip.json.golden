@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/gomod",
   "ArtifactType": "repository",
   "Metadata": {
@@ -24,6 +25,9 @@
           "VulnerabilityID": "GMS-2022-20",
           "PkgID": "github.com/docker/distribution@v2.7.1+incompatible",
           "PkgName": "github.com/docker/distribution",
+          "PkgIdentifier": {
+            "PURL": "pkg:golang/github.com/docker/distribution@2.7.1%2Bincompatible"
+          },
           "InstalledVersion": "2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
           "Status": "fixed",
@@ -47,6 +51,9 @@
           "VulnerabilityID": "CVE-2022-23628",
           "PkgID": "github.com/open-policy-agent/opa@v0.35.0",
           "PkgName": "github.com/open-policy-agent/opa",
+          "PkgIdentifier": {
+            "PURL": "pkg:golang/github.com/open-policy-agent/opa@0.35.0"
+          },
           "InstalledVersion": "0.35.0",
           "FixedVersion": "0.37.0",
           "Status": "fixed",
@@ -64,6 +71,9 @@
           "CweIDs": [
             "CWE-682"
           ],
+          "VendorSeverity": {
+            "nvd": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -87,6 +97,9 @@
           "VulnerabilityID": "CVE-2021-38561",
           "PkgID": "golang.org/x/text@v0.3.6",
           "PkgName": "golang.org/x/text",
+          "PkgIdentifier": {
+            "PURL": "pkg:golang/golang.org/x/text@0.3.6"
+          },
           "InstalledVersion": "0.3.6",
           "FixedVersion": "0.3.7",
           "Status": "fixed",
@@ -116,6 +129,9 @@
           "VulnerabilityID": "GMS-2022-20",
           "PkgID": "github.com/docker/distribution@v2.7.1+incompatible",
           "PkgName": "github.com/docker/distribution",
+          "PkgIdentifier": {
+            "PURL": "pkg:golang/github.com/docker/distribution@2.7.1%2Bincompatible"
+          },
           "InstalledVersion": "2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
           "Status": "fixed",

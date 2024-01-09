@@ -1,12 +1,12 @@
 package alpine
 
 import (
+	"context"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-apk-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
@@ -50,36 +50,15 @@ var (
 	}
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(c clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = c
-	}
-}
-
 // Scanner implements the Alpine scanner
 type Scanner struct {
 	vs alpine.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      alpine.NewVulnSrc(),
-		options: o,
+		vs: alpine.NewVulnSrc(),
 	}
 }
 
@@ -130,7 +109,7 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
 			})
@@ -173,8 +152,8 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 }
 
 // IsSupportedVersion checks if the version is supported.
-func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
-	return osver.Supported(s.clock, eolDates, osFamily, osver.Minor(osVer))
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(ctx, eolDates, osFamily, osver.Minor(osVer))
 }
 
 func (s *Scanner) repoRelease(repo *ftypes.Repository) string {

@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
+	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	testcontainers "github.com/testcontainers/testcontainers-go"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -344,6 +344,15 @@ func TestClientServerWithFormat(t *testing.T) {
 			golden: "testdata/alpine-310.html.golden",
 		},
 		{
+			name: "alpine 3.10 with junit template",
+			args: csArgs{
+				Format:       "template",
+				TemplatePath: "@../contrib/junit.tpl",
+				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.junit.golden",
+		},
+		{
 			name: "alpine 3.10 with github dependency snapshots format",
 			args: csArgs{
 				Format: "github",
@@ -353,9 +362,7 @@ func TestClientServerWithFormat(t *testing.T) {
 		},
 	}
 
-	fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
-	clock.SetFakeTime(t, fakeTime)
-
+	fakeTime := time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC)
 	report.CustomTemplateFuncMap = map[string]interface{}{
 		"now": func() time.Time {
 			return fakeTime
@@ -418,7 +425,6 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 	addr, cacheDir := setup(t, setupOptions{})
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			clock.SetFakeTime(t, time.Date(2020, 9, 10, 14, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, tt.golden)
@@ -496,6 +502,8 @@ func TestClientServerWithToken(t *testing.T) {
 func TestClientServerWithRedis(t *testing.T) {
 	// Set up a Redis container
 	ctx := context.Background()
+	// This test includes 2 checks
+	// redisC container will terminate after first check
 	redisC, addr := setupRedis(t, ctx)
 
 	// Set up Trivy server
@@ -527,7 +535,7 @@ func TestClientServerWithRedis(t *testing.T) {
 		// Run Trivy client
 		err := execute(osArgs)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "connect: connection refused")
+		assert.Contains(t, err.Error(), "unable to store cache")
 	})
 }
 
@@ -650,6 +658,7 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 }
 
 func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, string) {
+	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	t.Helper()
 	imageName := "redis:5.0"
 	port := "6379/tcp"
@@ -657,8 +666,9 @@ func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, st
 		Name:         "redis",
 		Image:        imageName,
 		ExposedPorts: []string{port},
-		SkipReaper:   true,
-		AutoRemove:   true,
+		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+			hostConfig.AutoRemove = true
+		},
 	}
 
 	redis, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{

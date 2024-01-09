@@ -4,7 +4,7 @@
     This feature might change without preserving backwards compatibility.
 
 Trivy can connect to your Kubernetes cluster and scan it for security issues using the `trivy k8s` command. This page covers the technical capabilities of Trivy Kubernetes scanning.
-Trivy can also be installed *inside* your cluster as a Kubernetes Operator, and continuously scan it. For more about this, please see the [Trivy Operator][https://aquasecurity.github.io/trivy-operator/] project.
+Trivy can also be installed *inside* your cluster as a Kubernetes Operator, and continuously scan it. For more about this, please see the [Trivy Operator](https://aquasecurity.github.io/trivy-operator/) project.
 
 When scanning a Kubernetes cluster, Trivy differentiates between the following:
 
@@ -15,12 +15,14 @@ When scanning a Kubernetes cluster, Trivy differentiates between the following:
 When scanning any of the above, the container image is scanned separately to the Kubernetes resource definition (the YAML manifest) that defines the resource.
 
 Container image is scanned for:
+
 - Vulnerabilities
 - Misconfigurations
 - Exposed secrets
 
 Kubernetes resource definition is scanned for:
-- Vulnerabilities - partially supported through [KBOM scanning](#KBOM)
+
+- Vulnerabilities (Open Source Libraries, Control Plane and Node Components)
 - Misconfigurations
 - Exposed secrets
 
@@ -73,6 +75,33 @@ You can exclude specific nodes from the scan using the `--exclude-nodes` flag, w
 trivy k8s cluster --report summary --exclude-nodes kubernetes.io/arch:arm6
 ```
 
+## Control Plane and Node Components Vulnerability Scanning
+
+Trivy is capable of discovering Kubernetes control plane (apiserver, controller-manager and etc) and node components(kubelet, kube-proxy and etc), matching them against the [official Kubernetes vulnerability database feed](https://github.com/aquasecurity/vuln-list-k8s), and reporting any vulnerabilities it finds
+
+
+```
+trivy k8s cluster --scanners vuln  --report all
+
+NodeComponents/kind-control-plane (kubernetes)
+
+Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 2, CRITICAL: 0)
+
+┌────────────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────────┬───────────────────────────────────────────────────┐
+│    Library     │ Vulnerability  │ Severity │ Status │ Installed Version │          Fixed Version           │                       Title                       │
+├────────────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────────┼───────────────────────────────────────────────────┤
+│ k8s.io/kubelet │ CVE-2023-2431  │ LOW      │ fixed  │ 1.21.1            │ 1.24.14, 1.25.10, 1.26.5, 1.27.2 │ Bypass of seccomp profile enforcement             │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2023-2431         │
+│                ├────────────────┼──────────┤        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
+│                │ CVE-2021-25741 │ HIGH     │        │                   │ 1.19.16, 1.20.11, 1.21.5, 1.22.1 │ Symlink exchange can allow host filesystem access │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25741        │
+│                ├────────────────┤          │        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
+│                │ CVE-2021-25749 │          │        │                   │ 1.22.14, 1.23.11, 1.24.5         │ runAsNonRoot logic bypass for Windows containers  │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25749        │
+└────────────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┘
+```
+
+
 ### Components types
 
 You can control what kinds of components are discovered using the `--components` flag:
@@ -105,7 +134,7 @@ Filter by scanners (Vulnerabilities, Secrets or Misconfigurations):
 ```
 trivy k8s --scanners=secret --report=summary cluster
 # or
-trivy k8s --scanners=config --report=summary cluster
+trivy k8s --scanners=misconfig --report=summary cluster
 ```
 
 The supported output formats are `table`, which is the default, and `json`.
@@ -288,25 +317,33 @@ Examples:
 Scan the cluster for Kubernetes Pod Security Standards Baseline compliance:
 
 ```
-trivy k8s cluster --compliance=k8s-pss-baseline --report summary
+
+$ trivy k8s cluster --compliance=k8s-pss-baseline --report summary
+
 ```
 
 Get the detailed report for checks:
 
 ```
-trivy k8s cluster --compliance=k8s-cis --report all
+
+$ trivy k8s cluster --compliance=k8s-cis --report all
+
 ```
 
 Get summary report in JSON format:
 
 ```
-trivy k8s cluster --compliance=k8s-cis --report summary --format json
+
+$ trivy k8s cluster --compliance=k8s-cis --report summary --format json
+
 ```
 
 Get detailed report in JSON format:
 
 ```
-trivy k8s cluster --compliance=k8s-cis --report all --format json
+
+$ trivy k8s cluster --compliance=k8s-cis --report all --format json
+
 ```
 
 ## KBOM
@@ -317,19 +354,24 @@ For more background on KBOM, see [here](https://blog.aquasec.com/introducing-kbo
 Trivy can generate KBOM in CycloneDX format:
 
 ```sh
-trivy k8s cluster --format cyclonedx --output mykbom.cdx.json
+
+$ trivy k8s cluster --format cyclonedx --output mykbom.cdx.json
+
 ```
 
 Trivy can also scan that generated KBOM (or any SBOM) for vulnerabilities:
 
 ```sh
-trivy sbom mykbom.cdx.json
+
+$ trivy sbom mykbom.cdx.json
+
 ```
 
 <details>
 <summary>Result</summary>
 
-```
+```sh
+
 2023-09-28T22:52:25.707+0300    INFO    Vulnerability scanning is enabled
  2023-09-28T22:52:25.707+0300    INFO    Detected SBOM format: cyclonedx-json
  2023-09-28T22:52:25.717+0300    WARN    No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.

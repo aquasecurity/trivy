@@ -222,9 +222,22 @@ func infraResource(misConfig Resource) bool {
 }
 
 func CreateResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
-	results := make([]types.Result, 0, len(report.Results))
+	r := createK8sResource(artifact, report.Results)
+
+	r.Metadata = report.Metadata
+	r.Report = report
+	// if there was any error during the scan
+	if err != nil {
+		r.Error = err.Error()
+	}
+
+	return r
+}
+
+func createK8sResource(artifact *artifacts.Artifact, scanResults types.Results) Resource {
+	results := make([]types.Result, 0, len(scanResults))
 	// fix target name
-	for _, result := range report.Results {
+	for _, result := range scanResults {
 		// if resource is a kubernetes file fix the target name,
 		// to avoid showing the temp file that was removed.
 		if result.Type == ftypes.Kubernetes {
@@ -237,14 +250,12 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 		Namespace: artifact.Namespace,
 		Kind:      artifact.Kind,
 		Name:      artifact.Name,
-		Metadata:  report.Metadata,
+		Metadata:  types.Metadata{},
 		Results:   results,
-		Report:    report,
-	}
-
-	// if there was any error during the scan
-	if err != nil {
-		r.Error = err.Error()
+		Report: types.Report{
+			Results:      results,
+			ArtifactName: artifact.Name,
+		},
 	}
 
 	return r

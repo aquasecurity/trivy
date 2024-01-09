@@ -4,15 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
-	"strings"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/state"
+	aws "github.com/aquasecurity/trivy-aws/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -44,11 +43,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	if option.Debug {
-		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&defsecLogger{}))
+		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "aws"}))
 	}
 
 	if option.Trace {
-		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&defsecLogger{}))
+		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&log.PrefixedLogger{Name: "aws"}))
 	}
 
 	if option.Region != "" {
@@ -160,13 +159,6 @@ func createState(freshState *state.State, awsCache *cache.Cache) (*state.State, 
 	return fullState, nil
 }
 
-type defsecLogger struct {
-}
-
-func (d *defsecLogger) Write(p []byte) (n int, err error) {
-	log.Logger.Debug("[defsec] " + strings.TrimSpace(string(p)))
-	return len(p), nil
-}
 func addPolicyNamespaces(namespaces []string, scannerOpts []options.ScannerOption) []options.ScannerOption {
 	if len(namespaces) > 0 {
 		scannerOpts = append(

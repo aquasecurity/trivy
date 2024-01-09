@@ -1,12 +1,12 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/debian-stretch.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
       "Family": "debian",
-      "Name": "9.9",
-      "EOSL": true
+      "Name": "9.9"
     },
     "ImageID": "sha256:f26939cc87ef44a6fc554eedd0a976ab30b5bc2769d65d2e986b6c5f1fd4053d",
     "DiffIDs": [
@@ -57,6 +57,9 @@
           "VulnerabilityID": "CVE-2019-18276",
           "PkgID": "bash@4.4-5",
           "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/bash@4.4-5?arch=amd64\u0026distro=debian-9.9"
+          },
           "InstalledVersion": "4.4-5",
           "Status": "end_of_life",
           "Layer": {
@@ -76,6 +79,15 @@
           "CweIDs": [
             "CWE-273"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "debian": 1,
+            "nvd": 3,
+            "oracle-oval": 1,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -111,6 +123,9 @@
           ],
           "PkgID": "e2fslibs@1.43.4-2",
           "PkgName": "e2fslibs",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/e2fslibs@1.43.4-2?arch=amd64\u0026distro=debian-9.9"
+          },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
           "Status": "fixed",
@@ -131,6 +146,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -172,6 +196,9 @@
           ],
           "PkgID": "e2fsprogs@1.43.4-2",
           "PkgName": "e2fsprogs",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/e2fsprogs@1.43.4-2?arch=amd64\u0026distro=debian-9.9"
+          },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
           "Status": "fixed",
@@ -192,6 +219,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -233,6 +269,9 @@
           ],
           "PkgID": "libcomerr2@1.43.4-2",
           "PkgName": "libcomerr2",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libcomerr2@1.43.4-2?arch=amd64\u0026distro=debian-9.9"
+          },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
           "Status": "fixed",
@@ -253,6 +292,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -294,6 +342,9 @@
           ],
           "PkgID": "libss2@1.43.4-2",
           "PkgName": "libss2",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libss2@1.43.4-2?arch=amd64\u0026distro=debian-9.9"
+          },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
           "Status": "fixed",
@@ -314,6 +365,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",

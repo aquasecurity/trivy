@@ -9,8 +9,8 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/defsec/pkg/errs"
-	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
+	"github.com/aquasecurity/trivy-aws/pkg/errs"
+	awsScanner "github.com/aquasecurity/trivy-aws/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/scanner"
@@ -129,7 +129,6 @@ func filterServices(opt *flag.Options) error {
 }
 
 func Run(ctx context.Context, opt flag.Options) error {
-
 	ctx, cancel := context.WithTimeout(ctx, opt.GlobalOptions.Timeout)
 	defer cancel()
 
@@ -168,7 +167,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, res, opt.Services)
-	if err := report.Write(r, opt, cached); err != nil {
+	if err := report.Write(ctx, r, opt, cached); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

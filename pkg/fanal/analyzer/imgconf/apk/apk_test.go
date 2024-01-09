@@ -1070,11 +1070,11 @@ func TestAnalyze(t *testing.T) {
 			args: args{
 				targetOS: types.OS{
 					Family: "alpine",
-					Name:   "",
+					Name:   "3.9.1",
 				},
 				config: alpineConfig,
 			},
-			apkIndexArchivePath: testServer.URL + "%v",
+			apkIndexArchivePath: testServer.URL + "/%v",
 			want:                wantPkgs,
 		},
 	}

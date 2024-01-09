@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/nuget",
   "ArtifactType": "repository",
   "Metadata": {
@@ -23,6 +24,9 @@
         {
           "ID": "Newtonsoft.Json@12.0.3",
           "Name": "Newtonsoft.Json",
+          "Identifier": {
+            "PURL": "pkg:nuget/Newtonsoft.Json@12.0.3"
+          },
           "Version": "12.0.3",
           "Layer": {},
           "Locations": [
@@ -35,6 +39,9 @@
         {
           "ID": "NuGet.Frameworks@5.7.0",
           "Name": "NuGet.Frameworks",
+          "Identifier": {
+            "PURL": "pkg:nuget/NuGet.Frameworks@5.7.0"
+          },
           "Version": "5.7.0",
           "DependsOn": [
             "Newtonsoft.Json@12.0.3"
@@ -53,6 +60,9 @@
           "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
           "PkgID": "Newtonsoft.Json@12.0.3",
           "PkgName": "Newtonsoft.Json",
+          "PkgIdentifier": {
+            "PURL": "pkg:nuget/Newtonsoft.Json@12.0.3"
+          },
           "InstalledVersion": "12.0.3",
           "FixedVersion": "13.0.1",
           "Status": "fixed",
@@ -70,6 +80,9 @@
           "CweIDs": [
             "CWE-755"
           ],
+          "VendorSeverity": {
+            "ghsa": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
