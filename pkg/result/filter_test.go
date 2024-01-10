@@ -154,13 +154,11 @@ func TestFilter(t *testing.T) {
 									VulnerabilityID: "CVE-2019-0001",
 									PkgName:         "foo",
 									PkgIdentifier: ftypes.PkgIdentifier{
-										PURL: &ftypes.PackageURL{
-											PackageURL: packageurl.PackageURL{
-												Type:      packageurl.TypeGolang,
-												Namespace: "github.com/aquasecurity",
-												Name:      "foo",
-												Version:   "1.2.3",
-											},
+										PURL: &packageurl.PackageURL{
+											Type:      packageurl.TypeGolang,
+											Namespace: "github.com/aquasecurity",
+											Name:      "foo",
+											Version:   "1.2.3",
 										},
 									},
 									InstalledVersion: "1.2.3",
@@ -173,13 +171,11 @@ func TestFilter(t *testing.T) {
 									VulnerabilityID: "CVE-2019-0001",
 									PkgName:         "bar",
 									PkgIdentifier: ftypes.PkgIdentifier{
-										PURL: &ftypes.PackageURL{
-											PackageURL: packageurl.PackageURL{
-												Type:      packageurl.TypeGolang,
-												Namespace: "github.com/aquasecurity",
-												Name:      "bar",
-												Version:   "4.5.6",
-											},
+										PURL: &packageurl.PackageURL{
+											Type:      packageurl.TypeGolang,
+											Namespace: "github.com/aquasecurity",
+											Name:      "bar",
+											Version:   "4.5.6",
 										},
 									},
 									InstalledVersion: "4.5.6",
@@ -209,13 +205,11 @@ func TestFilter(t *testing.T) {
 								VulnerabilityID: "CVE-2019-0001",
 								PkgName:         "bar",
 								PkgIdentifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeGolang,
-											Namespace: "github.com/aquasecurity",
-											Name:      "bar",
-											Version:   "4.5.6",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/aquasecurity",
+										Name:      "bar",
+										Version:   "4.5.6",
 									},
 								},
 								InstalledVersion: "4.5.6",
@@ -1072,9 +1066,9 @@ func TestFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
-			clock.SetFakeTime(t, fakeTime)
+			ctx := clock.With(context.Background(), fakeTime)
 
-			err := result.Filter(context.Background(), tt.args.report, result.FilterOption{
+			err := result.Filter(ctx, tt.args.report, result.FilterOption{
 				Severities:     tt.args.severities,
 				VEXPath:        tt.args.vexPath,
 				IgnoreStatuses: tt.args.ignoreStatuses,

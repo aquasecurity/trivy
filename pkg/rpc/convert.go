@@ -3,6 +3,7 @@ package rpc
 import (
 	"time"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -11,7 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -82,10 +82,11 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 
 	var p string
 	if pkg.PURL != nil {
-		p = pkg.PURL.BOMRef() // Use BOMRef() instead of String() so that we won't lose file_path
+		p = pkg.PURL.String()
 	}
 	return &common.PkgIdentifier{
-		Purl: p,
+		Purl:   p,
+		BomRef: pkg.BOMRef,
 	}
 }
 
@@ -217,16 +218,23 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 }
 
 func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier {
-	if pkg == nil || pkg.Purl == "" {
+	if pkg == nil {
 		return ftypes.PkgIdentifier{}
 	}
-	pu, err := purl.FromString(pkg.Purl)
-	if err != nil {
-		log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
+
+	pkgID := ftypes.PkgIdentifier{
+		BOMRef: pkg.BomRef,
 	}
-	return ftypes.PkgIdentifier{
-		PURL: pu,
+
+	if pkg.Purl != "" {
+		pu, err := packageurl.FromString(pkg.Purl)
+		if err != nil {
+			log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
+		}
+		pkgID.PURL = &pu
 	}
+
+	return pkgID
 }
 
 // ConvertToRPCVulns returns common.Vulnerability

@@ -1,23 +1,33 @@
 package clock
 
 import (
-	"testing"
+	"context"
 	"time"
 
 	"k8s.io/utils/clock"
 	clocktesting "k8s.io/utils/clock/testing"
 )
 
-var c clock.Clock = clock.RealClock{}
+// clockKey is the context key for clock. It is unexported to prevent collisions with context keys defined in
+// other packages.
+type clockKey struct{}
 
-// SetFakeTime sets a fake time for testing.
-func SetFakeTime(t *testing.T, fakeTime time.Time) {
-	c = clocktesting.NewFakeClock(fakeTime)
-	t.Cleanup(func() {
-		c = clock.RealClock{}
-	})
+// With returns a new context with the given time.
+func With(ctx context.Context, t time.Time) context.Context {
+	c := clocktesting.NewFakeClock(t)
+	return context.WithValue(ctx, clockKey{}, c)
 }
 
-func Now() time.Time {
-	return c.Now()
+// Now returns the current time.
+func Now(ctx context.Context) time.Time {
+	return Clock(ctx).Now()
+}
+
+// Clock returns the clock from the context.
+func Clock(ctx context.Context) clock.Clock {
+	t, ok := ctx.Value(clockKey{}).(clock.Clock)
+	if !ok {
+		return clock.RealClock{}
+	}
+	return t
 }

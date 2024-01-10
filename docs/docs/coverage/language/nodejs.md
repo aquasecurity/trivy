@@ -42,7 +42,10 @@ By default, Trivy doesn't report development dependencies. Use the `--include-de
 
 ### Yarn
 Trivy parses `yarn.lock`, which doesn't contain information about development dependencies.
-To exclude devDependencies, `package.json` also needs to be present next to `yarn.lock`. 
+Trivy also uses `package.json` file to handle [aliases](https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias).
+
+To exclude devDependencies and allow aliases, `package.json` also needs to be present next to `yarn.lock`.
+
 Trivy analyzes `.yarn` (Yarn 2+) or `node_modules` (Yarn Classic) folder next to the yarn.lock file to detect licenses.
 
 By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.

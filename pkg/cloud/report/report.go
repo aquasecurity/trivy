@@ -67,7 +67,7 @@ func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) e
 	defer cleanup()
 
 	if opt.Compliance.Spec.ID != "" {
-		return writeCompliance(rep, opt, output)
+		return writeCompliance(ctx, rep, opt, output)
 	}
 
 	var filtered []types.Result
@@ -93,7 +93,7 @@ func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) e
 	})
 
 	base := types.Report{
-		CreatedAt:    clock.Now(),
+		CreatedAt:    clock.Now(ctx),
 		ArtifactName: rep.AccountID,
 		ArtifactType: ftypes.ArtifactAWSAccount,
 		Results:      filtered,
@@ -139,7 +139,7 @@ func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) e
 	}
 }
 
-func writeCompliance(rep *Report, opt flag.Options, output io.Writer) error {
+func writeCompliance(ctx context.Context, rep *Report, opt flag.Options, output io.Writer) error {
 	var crr []types.Results
 	for _, r := range rep.Results {
 		crr = append(crr, r.Results)
@@ -150,7 +150,7 @@ func writeCompliance(rep *Report, opt flag.Options, output io.Writer) error {
 		return xerrors.Errorf("compliance report build error: %w", err)
 	}
 
-	return cr.Write(complianceReport, cr.Option{
+	return cr.Write(ctx, complianceReport, cr.Option{
 		Format: opt.Format,
 		Report: opt.ReportFormat,
 		Output: output,

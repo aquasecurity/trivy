@@ -126,7 +126,9 @@
       "version": "6.0.2.1",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:gem/activesupport@6.0.2.1",

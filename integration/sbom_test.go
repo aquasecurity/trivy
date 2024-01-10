@@ -42,13 +42,19 @@ func TestSBOM(t *testing.T) {
 						Target: "testdata/fixtures/sbom/centos-7-cyclonedx.json (centos 7.6.1810)",
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
+								},
 							},
 							{
-								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
+								},
 							},
 							{
-								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
+								},
 							},
 						},
 					},
@@ -89,13 +95,19 @@ func TestSBOM(t *testing.T) {
 						Target: "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl (centos 7.6.1810)",
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
+								},
 							},
 							{
-								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
+								},
 							},
 							{
-								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
+								},
 							},
 						},
 					},
@@ -116,17 +128,6 @@ func TestSBOM(t *testing.T) {
 				Results: types.Results{
 					{
 						Target: "testdata/fixtures/sbom/centos-7-spdx.txt (centos 7.6.1810)",
-						Vulnerabilities: []types.DetectedVulnerability{
-							{
-								PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
-							},
-							{
-								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-							},
-							{
-								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-							},
-						},
 					},
 				},
 			},
@@ -145,17 +146,6 @@ func TestSBOM(t *testing.T) {
 				Results: types.Results{
 					{
 						Target: "testdata/fixtures/sbom/centos-7-spdx.json (centos 7.6.1810)",
-						Vulnerabilities: []types.DetectedVulnerability{
-							{
-								PkgRef: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
-							},
-							{
-								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-							},
-							{
-								PkgRef: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
-							},
-						},
 					},
 				},
 			},
@@ -223,12 +213,11 @@ func compareSBOMReports(t *testing.T, wantFile, gotFile string, overrideWant typ
 	for i, result := range overrideWant.Results {
 		want.Results[i].Target = result.Target
 		for j, vuln := range result.Vulnerabilities {
-			want.Results[i].Vulnerabilities[j].PkgRef = vuln.PkgRef
-			if vuln.PkgIdentifier.Empty() {
-				continue
+			if vuln.PkgIdentifier.PURL != nil {
+				want.Results[i].Vulnerabilities[j].PkgIdentifier.PURL = vuln.PkgIdentifier.PURL
 			}
-			want.Results[i].Vulnerabilities[j].PkgIdentifier = ftypes.PkgIdentifier{
-				PURL: vuln.PkgIdentifier.PURL,
+			if vuln.PkgIdentifier.BOMRef != "" {
+				want.Results[i].Vulnerabilities[j].PkgIdentifier.BOMRef = vuln.PkgIdentifier.BOMRef
 			}
 		}
 	}

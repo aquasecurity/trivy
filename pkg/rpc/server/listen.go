@@ -53,13 +53,12 @@ func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository stri
 }
 
 // ListenAndServe starts Trivy server
-func (s Server) ListenAndServe(serverCache cache.Cache, skipDBUpdate bool) error {
+func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, skipDBUpdate bool) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
 		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, dbc.WithDBRepository(s.dbRepository)))
-		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)
 			if err := worker.update(ctx, s.appVersion, s.cacheDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {
@@ -68,13 +67,13 @@ func (s Server) ListenAndServe(serverCache cache.Cache, skipDBUpdate bool) error
 		}
 	}()
 
-	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.cacheDir)
+	mux := newServeMux(ctx, serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.cacheDir)
 	log.Logger.Infof("Listening %s...", s.addr)
 
 	return http.ListenAndServe(s.addr, mux)
 }
 
-func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
+func newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 	token, tokenHeader, cacheDir string) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -85,7 +84,7 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 			requestWg.Add(1)
 			defer requestWg.Done()
 
-			base.ServeHTTP(w, r)
+			base.ServeHTTP(w, r.WithContext(ctx))
 
 		})
 	}

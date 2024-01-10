@@ -49,13 +49,19 @@
       "version": "2.35-0ubuntu3.1",
       "licenses": [
         {
-          "expression": "LGPL-2.1"
+          "license": {
+            "name": "LGPL-2.1"
+          }
         },
         {
-          "expression": "GPL-2.0"
+          "license": {
+            "name": "GPL-2.0"
+          }
         },
         {
-          "expression": "GFDL-1.3"
+          "license": {
+            "name": "GFDL-1.3"
+          }
         }
       ],
       "purl": "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",

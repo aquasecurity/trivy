@@ -151,17 +151,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						SrcName:    "glibc",
 						SrcVersion: "2.24-11+deb9u4",
 						Identifier: types.PkgIdentifier{
-							PURL: &types.PackageURL{
-								PackageURL: packageurl.PackageURL{
-									Type:      packageurl.TypeDebian,
-									Namespace: "debian",
-									Name:      "libc6",
-									Version:   "2.24-11+deb9u4",
-									Qualifiers: packageurl.Qualifiers{
-										{
-											Key:   "distro",
-											Value: "debian-9.9",
-										},
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeDebian,
+								Namespace: "debian",
+								Name:      "libc6",
+								Version:   "2.24-11+deb9u4",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "debian-9.9",
 									},
 								},
 							},
@@ -177,17 +175,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						SrcName:    "tzdata",
 						SrcVersion: "2019a-0+deb9u1",
 						Identifier: types.PkgIdentifier{
-							PURL: &types.PackageURL{
-								PackageURL: packageurl.PackageURL{
-									Type:      packageurl.TypeDebian,
-									Namespace: "debian",
-									Name:      "tzdata",
-									Version:   "2019a-0+deb9u1",
-									Qualifiers: packageurl.Qualifiers{
-										{
-											Key:   "distro",
-											Value: "debian-9.9",
-										},
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeDebian,
+								Namespace: "debian",
+								Name:      "tzdata",
+								Version:   "2019a-0+deb9u1",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "debian-9.9",
 									},
 								},
 							},
@@ -211,13 +207,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 								},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "guzzlehttp",
-											Name:      "guzzle",
-											Version:   "6.2.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "guzzlehttp",
+										Name:      "guzzle",
+										Version:   "6.2.0",
 									},
 								},
 							},
@@ -229,13 +223,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 								},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "symfony",
-											Name:      "process",
-											Version:   "v4.2.7",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "symfony",
+										Name:      "process",
+										Version:   "v4.2.7",
 									},
 								},
 							},
@@ -353,17 +345,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Name:    "busybox",
 						Version: "1.30.1-r3",
 						Identifier: types.PkgIdentifier{
-							PURL: &types.PackageURL{
-								PackageURL: packageurl.PackageURL{
-									Type:      packageurl.TypeApk,
-									Namespace: "alpine",
-									Name:      "busybox",
-									Version:   "1.30.1-r3",
-									Qualifiers: packageurl.Qualifiers{
-										{
-											Key:   "distro",
-											Value: "3.10.4",
-										},
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "busybox",
+								Version:   "1.30.1-r3",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
 									},
 								},
 							},
@@ -377,17 +367,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Name:    "libcrypto1.1",
 						Version: "1.1.1d-r2",
 						Identifier: types.PkgIdentifier{
-							PURL: &types.PackageURL{
-								PackageURL: packageurl.PackageURL{
-									Type:      packageurl.TypeApk,
-									Namespace: "alpine",
-									Name:      "libcrypto1.1",
-									Version:   "1.1.1d-r2",
-									Qualifiers: packageurl.Qualifiers{
-										{
-											Key:   "distro",
-											Value: "3.10.4",
-										},
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "libcrypto1.1",
+								Version:   "1.1.1d-r2",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
 									},
 								},
 							},
@@ -401,17 +389,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Name:    "libssl1.1",
 						Version: "1.1.1d-r2",
 						Identifier: types.PkgIdentifier{
-							PURL: &types.PackageURL{
-								PackageURL: packageurl.PackageURL{
-									Type:      packageurl.TypeApk,
-									Namespace: "alpine",
-									Name:      "libssl1.1",
-									Version:   "1.1.1d-r2",
-									Qualifiers: packageurl.Qualifiers{
-										{
-											Key:   "distro",
-											Value: "3.10.4",
-										},
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "libssl1.1",
+								Version:   "1.1.1d-r2",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
 									},
 								},
 							},
@@ -425,17 +411,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Name:    "musl",
 						Version: "1.1.22-r3",
 						Identifier: types.PkgIdentifier{
-							PURL: &types.PackageURL{
-								PackageURL: packageurl.PackageURL{
-									Type:      packageurl.TypeApk,
-									Namespace: "alpine",
-									Name:      "musl",
-									Version:   "1.1.22-r3",
-									Qualifiers: packageurl.Qualifiers{
-										{
-											Key:   "distro",
-											Value: "3.10.4",
-										},
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "musl",
+								Version:   "1.1.22-r3",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
 									},
 								},
 							},
@@ -450,17 +434,15 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						Version: "1.1.1d-r2",
 						Identifier: types.PkgIdentifier{
 							//PURL: "pkg:apk/alpine/openssl@1.1.1d-r2?distro=3.10.4",
-							PURL: &types.PackageURL{
-								PackageURL: packageurl.PackageURL{
-									Type:      packageurl.TypeApk,
-									Namespace: "alpine",
-									Name:      "openssl",
-									Version:   "1.1.1d-r2",
-									Qualifiers: packageurl.Qualifiers{
-										{
-											Key:   "distro",
-											Value: "3.10.4",
-										},
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeApk,
+								Namespace: "alpine",
+								Name:      "openssl",
+								Version:   "1.1.1d-r2",
+								Qualifiers: packageurl.Qualifiers{
+									{
+										Key:   "distro",
+										Value: "3.10.4",
 									},
 								},
 							},
@@ -684,13 +666,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 								},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "guzzlehttp",
-											Name:      "guzzle",
-											Version:   "6.2.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "guzzlehttp",
+										Name:      "guzzle",
+										Version:   "6.2.0",
 									},
 								},
 							},
@@ -702,13 +682,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 								},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "symfony",
-											Name:      "process",
-											Version:   "v4.2.7",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "symfony",
+										Name:      "process",
+										Version:   "v4.2.7",
 									},
 								},
 							},
@@ -896,13 +874,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 								},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "guzzlehttp",
-											Name:      "guzzle",
-											Version:   "6.2.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "guzzlehttp",
+										Name:      "guzzle",
+										Version:   "6.2.0",
 									},
 								},
 							},
@@ -914,13 +890,11 @@ func TestApplier_ApplyLayers(t *testing.T) {
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 								},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeComposer,
-											Namespace: "symfony",
-											Name:      "process",
-											Version:   "v4.2.7",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "symfony",
+										Name:      "process",
+										Version:   "v4.2.7",
 									},
 								},
 							},

@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -35,6 +36,10 @@ func init() {
 }
 
 const version = 2
+
+// Taken from Yarn
+// cf. https://github.com/yarnpkg/yarn/blob/328fd596de935acc6c3e134741748fcc62ec3739/src/resolvers/exotics/registry-resolver.js#L12
+var fragmentRegexp = regexp.MustCompile(`(\S+):(@?.*?)(@(.*?)|)$`)
 
 type yarnAnalyzer struct {
 	packageJsonParser *packagejson.Parser
@@ -193,17 +198,30 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 	// Identify direct dependencies
 	pkgs := make(map[string]types.Package)
 	for _, pkg := range libs {
-		if constraint, ok := directDeps[pkg.Name]; ok {
-			// npm has own comparer to compare versions
-			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
-			} else if match {
-				// Mark as a direct dependency
-				pkg.Indirect = false
-				pkg.Dev = dev
-				pkgs[pkg.ID] = pkg
-			}
+		constraint, ok := directDeps[pkg.Name]
+		if !ok {
+			continue
 		}
+
+		// Handle aliases
+		// cf. https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias
+		if m := fragmentRegexp.FindStringSubmatch(constraint); len(m) == 5 {
+			pkg.Name = m[2] // original name
+			constraint = m[4]
+		}
+
+		// npm has own comparer to compare versions
+		if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
+			return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
+		} else if !match {
+			continue
+		}
+
+		// Mark as a direct dependency
+		pkg.Indirect = false
+		pkg.Dev = dev
+		pkgs[pkg.ID] = pkg
+
 	}
 
 	// Walk indirect dependencies
