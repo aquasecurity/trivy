@@ -35,7 +35,14 @@
       "type": "library",
       "name": "pear/log",
       "version": "1.13.1",
-      "purl": "pkg:composer/pear/log@1.13.1"
+      "purl": "pkg:composer/pear/log@1.13.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
     },
     {
       "bom-ref": "pkg:composer/pear/pear_exception@v1.0.0",

@@ -33,13 +33,13 @@ message Application {
 message Package {
   // binary package
   // e.g. bind-utils
-  string          id      = 13;
-  string          name    = 1;
-  string          version = 2;
-  string          release = 3;
-  int32           epoch   = 4;
-  PkgIdentifier   identifier = 19;
-  string          arch    = 5;
+  string        id         = 13;
+  string        name       = 1;
+  string        version    = 2;
+  string        release    = 3;
+  int32         epoch      = 4;
+  PkgIdentifier identifier = 19;
+  string        arch       = 5;
   // src package containing some binary packages
   // e.g. bind
   string          src_name    = 6;
@@ -56,8 +56,8 @@ message Package {
 }
 
 message PkgIdentifier {
-  string purl = 1;
-  string cpe = 2;
+  string purl    = 1;
+  string bom_ref = 2;
 }
 
 message Misconfiguration {
@@ -236,8 +236,8 @@ message LicenseFinding {
   string               link       = 4;
 }
 
-// Enumerations are wrapped with a message to improve the readability of enumerations 
-// in generated code and avoid name conflicts.
+// Enumerations are wrapped with a message to improve the readability of
+// enumerations in generated code and avoid name conflicts.
 // https://github.com/golang/protobuf/issues/513
 message LicenseCategory {
   enum Enum {

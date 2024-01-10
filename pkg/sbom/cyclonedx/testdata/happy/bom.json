@@ -48,7 +48,9 @@
       "version": "1.2.3-r0",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
@@ -125,7 +127,9 @@
       "version": "5.0.2",
       "licenses": [
         {
-          "expression": "MIT"
+          "license": {
+            "name": "MIT"
+          }
         }
       ],
       "purl": "pkg:npm/bootstrap@5.0.2",

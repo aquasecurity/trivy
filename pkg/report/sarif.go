@@ -1,6 +1,7 @@
 package report
 
 import (
+	"context"
 	"fmt"
 	"html"
 	"io"
@@ -121,7 +122,7 @@ func getRuleIndex(id string, indexes map[string]int) int {
 	}
 }
 
-func (sw *SarifWriter) Write(report types.Report) error {
+func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -168,11 +169,11 @@ func (sw *SarifWriter) Write(report types.Report) error {
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				shortDescription: html.EscapeString(vuln.Title),
 				fullDescription:  html.EscapeString(fullDescription),
-				helpText: fmt.Sprintf(`Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v`,
+				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
 					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
-				helpMarkdown: fmt.Sprintf(`**Vulnerability %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n\n%v`,
+				helpMarkdown: fmt.Sprintf("**Vulnerability %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n\n%v",
 					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
-				message: fmt.Sprintf(`Package: %v\nInstalled Version: %v\nVulnerability %v\nSeverity: %v\nFixed Version: %v\nLink: [%v](%v)`,
+				message: fmt.Sprintf("Package: %v\nInstalled Version: %v\nVulnerability %v\nSeverity: %v\nFixed Version: %v\nLink: [%v](%v)",
 					vuln.PkgName, vuln.InstalledVersion, vuln.VulnerabilityID, vuln.Severity, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL),
 			})
 		}
@@ -195,11 +196,11 @@ func (sw *SarifWriter) Write(report types.Report) error {
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
 				shortDescription: html.EscapeString(misconf.Title),
 				fullDescription:  html.EscapeString(misconf.Description),
-				helpText: fmt.Sprintf(`Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s`,
+				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
 					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
-				helpMarkdown: fmt.Sprintf(`**Misconfiguration %v**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%s|[%v](%v)|\n\n%v`,
+				helpMarkdown: fmt.Sprintf("**Misconfiguration %v**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%s|[%v](%v)|\n\n%v",
 					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
-				message: fmt.Sprintf(`Artifact: %v\nType: %v\nVulnerability %v\nSeverity: %v\nMessage: %v\nLink: [%v](%v)`,
+				message: fmt.Sprintf("Artifact: %v\nType: %v\nVulnerability %v\nSeverity: %v\nMessage: %v\nLink: [%v](%v)",
 					res.Target, res.Type, misconf.ID, misconf.Severity, misconf.Message, misconf.ID, misconf.PrimaryURL),
 			})
 		}
@@ -222,11 +223,11 @@ func (sw *SarifWriter) Write(report types.Report) error {
 				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
 				shortDescription: html.EscapeString(secret.Title),
 				fullDescription:  html.EscapeString(secret.Match),
-				helpText: fmt.Sprintf(`Secret %v\nSeverity: %v\nMatch: %s`,
+				helpText: fmt.Sprintf("Secret %v\nSeverity: %v\nMatch: %s",
 					secret.Title, secret.Severity, secret.Match),
-				helpMarkdown: fmt.Sprintf(`**Secret %v**\n| Severity | Match |\n| --- | --- |\n|%v|%v|`,
+				helpMarkdown: fmt.Sprintf("**Secret %v**\n| Severity | Match |\n| --- | --- |\n|%v|%v|",
 					secret.Title, secret.Severity, secret.Match),
-				message: fmt.Sprintf(`Artifact: %v\nType: %v\nSecret %v\nSeverity: %v\nMatch: %v`,
+				message: fmt.Sprintf("Artifact: %v\nType: %v\nSecret %v\nSeverity: %v\nMatch: %v",
 					res.Target, res.Type, secret.Title, secret.Severity, secret.Match),
 			})
 		}
@@ -244,11 +245,11 @@ func (sw *SarifWriter) Write(report types.Report) error {
 				resultIndex:      getRuleIndex(id, ruleIndexes),
 				shortDescription: desc,
 				fullDescription:  desc,
-				helpText: fmt.Sprintf(`License %s\nClassification: %s\nPkgName: %s\nPath: %s`,
+				helpText: fmt.Sprintf("License %s\nClassification: %s\nPkgName: %s\nPath: %s",
 					license.Name, license.Category, license.PkgName, license.FilePath),
-				helpMarkdown: fmt.Sprintf(`**License %s**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|%s|%s|%s|`,
+				helpMarkdown: fmt.Sprintf("**License %s**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|%s|%s|%s|",
 					license.Name, license.PkgName, license.Category, license.FilePath),
-				message: fmt.Sprintf(`Artifact: %s\nLicense %s\nPkgName: %s\n Classification: %s\n Path: %s`,
+				message: fmt.Sprintf("Artifact: %s\nLicense %s\nPkgName: %s\n Classification: %s\n Path: %s",
 					res.Target, license.Name, license.Category, license.PkgName, license.FilePath),
 			})
 		}

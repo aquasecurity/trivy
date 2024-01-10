@@ -1,6 +1,7 @@
 package report
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -16,7 +17,7 @@ type JSONWriter struct {
 }
 
 // Write writes the results in JSON format
-func (jw JSONWriter) Write(report types.Report) error {
+func (jw JSONWriter) Write(ctx context.Context, report types.Report) error {
 	output, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)

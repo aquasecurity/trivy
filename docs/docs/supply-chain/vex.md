@@ -5,10 +5,11 @@
 
 Trivy supports filtering detected vulnerabilities using [the Vulnerability Exploitability Exchange (VEX)](https://www.ntia.gov/files/ntia/publications/vex_one-page_summary.pdf), a standardized format for sharing and exchanging information about vulnerabilities.
 By providing VEX alongside the Software Bill of Materials (SBOM) during scanning, it is possible to filter vulnerabilities based on their status.
-Currently, Trivy supports the following two formats:
+Currently, Trivy supports the following three formats:
 
 - [CycloneDX](https://cyclonedx.org/capabilities/vex/)
 - [OpenVEX](https://github.com/openvex/spec)
+- [CSAF](https://oasis-open.github.io/csaf-documentation/specification.html)
 
 This is still an experimental implementation, with only minimal functionality added.
 
@@ -183,3 +184,138 @@ CVE-2019-8457 is no longer shown as it is filtered out according to the given Op
 
 [openvex]: https://github.com/openvex/spec
 [purl]: https://github.com/package-url/purl-spec
+
+## CSAF
+Trivy also supports [CSAF][csaf] format for VEX.
+Since CSAF aims to be SBOM format agnostic, both CycloneDX and SPDX formats are available for use as input SBOMs in Trivy.
+
+The following steps are required:
+
+1. Generate a SBOM (CycloneDX or SPDX)
+2. Create a CSAF document based on the SBOM generated in step 1
+3. Provide the CSAF document when scanning the SBOM
+
+### Generating the SBOM
+You can generate a CycloneDX or SPDX SBOM with Trivy as follows:
+
+```shell
+$ trivy image --format spdx-json --output debian11.spdx.json debian:11
+```
+
+### Create the CSAF document
+Create a CSAF document in JSON format as follows:
+
+```
+$ cat <<EOF > debian11.vex.csaf
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "notes": [
+      {
+        "category": "summary",
+        "text": "Example Company VEX document. Unofficial content for demonstration purposes only.",
+        "title": "Author comment"
+      }
+    ],
+    "publisher": {
+      "category": "vendor",
+      "name": "Example Company ProductCERT",
+      "namespace": "https://psirt.example.com"
+    },
+    "title": "AquaSecurity example VEX document",
+    "tracking": {
+      "current_release_date": "2024-01-01T11:00:00.000Z",
+      "generator": {
+        "date": "2024-01-01T11:00:00.000Z",
+        "engine": {
+          "name": "Secvisogram",
+          "version": "1.11.0"
+        }
+      },
+      "id": "2024-EVD-UC-01-A-001",
+      "initial_release_date": "2024-01-01T11:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2024-01-01T11:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "5.3",
+                "product": {
+                  "name": "Database Libraries 5.3",
+                  "product_id": "LIBDB-5328",
+                  "product_identification_helper": {
+                    "purl": "pkg:deb/debian/libdb5.3@5.3.28%2Bdfsg1-0.8?arch=amd64\u0026distro=debian-11.8"
+                  }
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "Database Libraries"
+          }
+        ],
+        "category": "vendor",
+        "name": "Debian"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2019-8457",
+      "notes": [
+        {
+          "category": "description",
+          "text": "SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.",
+          "title": "CVE description"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "LIBDB-5328"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "details": "Vulnerable code not in execute path.",
+          "product_ids": [
+            "LIBDB-5328"
+          ]
+        }
+      ]
+    }
+  ]
+}
+EOF
+```
+
+### Scan SBOM with CSAF document
+Provide the CSAF document when scanning the SBOM.
+
+```console
+$ trivy sbom debian11.spdx.json --vex debian11.vex.csaf
+...
+2024-01-02T10:28:26.704+0100	INFO	Filtered out the detected vulnerability	{"VEX format": "CSAF", "vulnerability-id": "CVE-2019-8457", "status": "not_affected"}
+
+debian11.spdx.json (debian 11.6)
+================================
+Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
+```
+
+CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.
+
+[csaf]: https://oasis-open.github.io/csaf-documentation/specification.html

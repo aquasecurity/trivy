@@ -173,7 +173,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	return types.Report{
 		SchemaVersion: report.SchemaVersion,
-		CreatedAt:     clock.Now(),
+		CreatedAt:     clock.Now(ctx),
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{
