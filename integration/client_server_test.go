@@ -17,7 +17,6 @@ import (
 	"github.com/stretchr/testify/require"
 	testcontainers "github.com/testcontainers/testcontainers-go"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -364,8 +363,6 @@ func TestClientServerWithFormat(t *testing.T) {
 	}
 
 	fakeTime := time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC)
-	clock.SetFakeTime(t, fakeTime)
-
 	report.CustomTemplateFuncMap = map[string]interface{}{
 		"now": func() time.Time {
 			return fakeTime
@@ -428,7 +425,6 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 	addr, cacheDir := setup(t, setupOptions{})
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, tt.golden)

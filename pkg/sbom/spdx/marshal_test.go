@@ -1,6 +1,7 @@
 package spdx_test
 
 import (
+	"context"
 	"github.com/package-url/packageurl-go"
 	"hash/fnv"
 	"testing"
@@ -1105,11 +1106,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 				return h.Sum64(), nil
 			}
 
-			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			marshaler := tspdx.NewMarshaler("0.38.1", tspdx.WithHasher(hasher))
-			spdxDoc, err := marshaler.Marshal(tc.inputReport)
+			spdxDoc, err := marshaler.Marshal(ctx, tc.inputReport)
 			require.NoError(t, err)
 
 			assert.Equal(t, tc.wantSBOM, spdxDoc)

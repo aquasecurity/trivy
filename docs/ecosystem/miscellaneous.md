@@ -1,4 +1,4 @@
-# Security Management
+# Miscellaneous
 
 ## SonarQube (Community)
 A Trivy plugin that converts JSON report to SonarQube [generic issues format](https://docs.sonarqube.org/9.6/analyzing-source-code/importing-external-issues/generic-issue-import-format/).
@@ -9,3 +9,8 @@ A Trivy plugin that converts JSON report to SonarQube [generic issues format](ht
 DefectDojo can parse Trivy JSON reports. The parser supports deduplication and auto-close features.
 
 👉 Get it at: <https://github.com/DefectDojo/django-DefectDojo>
+
+## Scan2html (Community)
+A Trivy plugin that scans and outputs the results to an interactive html file.
+
+👉 Get it at: <https://github.com/fatihtokus/scan2html>

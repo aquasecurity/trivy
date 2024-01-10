@@ -1,6 +1,7 @@
 package report
 
 import (
+	"context"
 	"io"
 
 	"golang.org/x/xerrors"
@@ -63,8 +64,8 @@ type Writer interface {
 	Write(ComplianceReport) error
 }
 
-// Write writes the results in the give format
-func Write(report *ComplianceReport, option Option) error {
+// Write writes the results in the given format
+func Write(ctx context.Context, report *ComplianceReport, option Option) error {
 	switch option.Format {
 	case types.FormatJSON:
 		jwriter := JSONWriter{
@@ -79,7 +80,7 @@ func Write(report *ComplianceReport, option Option) error {
 				Report:     option.Report,
 				Severities: option.Severities,
 			}
-			err := complianceWriter.Write(report)
+			err := complianceWriter.Write(ctx, report)
 			if err != nil {
 				return err
 			}

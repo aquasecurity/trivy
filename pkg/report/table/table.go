@@ -1,6 +1,7 @@
 package table
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -52,7 +53,7 @@ type Renderer interface {
 }
 
 // Write writes the result on standard output
-func (tw Writer) Write(report types.Report) error {
+func (tw Writer) Write(_ context.Context, report types.Report) error {
 	for _, result := range report.Results {
 		// Not display a table of custom resources
 		if result.Class == types.ClassCustom {

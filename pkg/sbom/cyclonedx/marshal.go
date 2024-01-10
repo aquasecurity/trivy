@@ -1,6 +1,7 @@
 package cyclonedx
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -57,14 +58,14 @@ func NewMarshaler(version string) *Marshaler {
 }
 
 // Marshal converts the Trivy report to the CycloneDX format
-func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
+func (e *Marshaler) Marshal(ctx context.Context, report types.Report) (*cdx.BOM, error) {
 	// Convert
 	root, err := e.MarshalReport(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
 
-	return e.core.Marshal(root), nil
+	return e.core.Marshal(ctx, root), nil
 }
 
 func (e *Marshaler) MarshalReport(r types.Report) (*core.Component, error) {
