@@ -14,3 +14,8 @@ DefectDojo can parse Trivy JSON reports. The parser supports deduplication and a
 A Trivy plugin that scans and outputs the results to an interactive html file.
 
 👉 Get it at: <https://github.com/fatihtokus/scan2html>
+
+## Trivy-Streamlit (Community)
+Trivy-Streamlit is a Streamlit application that allows you to quickly parse the results from a Trivy JSON report.
+
+👉 Get it at: <https://github.com/mfreeman451/trivy-streamlit>
