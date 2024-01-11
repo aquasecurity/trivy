@@ -298,6 +298,32 @@ func TestVEX_Filter(t *testing.T) {
 			},
 		},
 		{
+			name: "CSAF (not affected vuln) with sub components",
+			fields: fields{
+				filePath: "testdata/csaf-not-affected-sub-components.json",
+			},
+			args: args{
+				vulns: []types.DetectedVulnerability{
+					{
+						VulnerabilityID:  "CVE-2023-2727",
+						PkgName:          "kubernetes",
+						InstalledVersion: "v1.24.2",
+						PkgIdentifier: ftypes.PkgIdentifier{
+							PURL: &ftypes.PackageURL{
+								PackageURL: packageurl.PackageURL{
+									Type:      packageurl.TypeGolang,
+									Namespace: "k8s.io",
+									Name:      "kubernetes",
+									Version:   "v1.24.2",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{},
+		},
+		{
 			name: "unknown format",
 			fields: fields{
 				filePath: "testdata/unknown.json",

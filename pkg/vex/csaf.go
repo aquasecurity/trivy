@@ -43,9 +43,9 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, purl *ftypes.PackageURL) bool 
 
 	var status Status
 	switch {
-	case v.matchPURL(purl, vuln.ProductStatus.KnownNotAffected):
+	case v.affectedByStatus(purl, vuln.ProductStatus.KnownNotAffected):
 		status = StatusNotAffected
-	case v.matchPURL(purl, vuln.ProductStatus.Fixed):
+	case v.affectedByStatus(purl, vuln.ProductStatus.Fixed):
 		status = StatusFixed
 	}
 
@@ -59,10 +59,11 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, purl *ftypes.PackageURL) bool 
 	return true
 }
 
-// matchPURL returns true if the given PackageURL is found in the ProductTree.
-func (v *CSAF) matchPURL(purl *ftypes.PackageURL, products *csaf.Products) bool {
-	for _, product := range lo.FromPtr(products) {
-		helpers := v.advisory.ProductTree.CollectProductIdentificationHelpers(lo.FromPtr(product))
+// affectedByStatus returns true if a package (identified by a given PackageURL) belongs to certain status
+// (e.g. KnownNotAffected, Fixed, etc.) which products are provided.
+func (v *CSAF) affectedByStatus(purl *ftypes.PackageURL, statusProducts *csaf.Products) bool {
+	for _, product := range lo.FromPtr(statusProducts) {
+		helpers := v.collectProductIdentificationHelpers(lo.FromPtr(product))
 		purls := lo.FilterMap(helpers, func(helper *csaf.ProductIdentificationHelper, _ int) (string, bool) {
 			if helper == nil || helper.PURL == nil {
 				return "", false
@@ -75,4 +76,31 @@ func (v *CSAF) matchPURL(purl *ftypes.PackageURL, products *csaf.Products) bool 
 	}
 
 	return false
+}
+
+// collectProductIdentificationHelpers collects ProductIdentificationHelpers from the given CSAF product.
+func (v *CSAF) collectProductIdentificationHelpers(product csaf.ProductID) []*csaf.ProductIdentificationHelper {
+	helpers := v.advisory.ProductTree.CollectProductIdentificationHelpers(product)
+	// Iterate over relationships looking for sub-products that might be part of the original product.
+	var subProducts csaf.Products
+	if rels := v.advisory.ProductTree.RelationShips; rels != nil {
+		for _, rel := range lo.FromPtr(rels) {
+			if rel != nil {
+				switch lo.FromPtr(rel.Category) {
+				case csaf.CSAFRelationshipCategoryDefaultComponentOf,
+					csaf.CSAFRelationshipCategoryInstalledOn,
+					csaf.CSAFRelationshipCategoryInstalledWith:
+					if fpn := rel.FullProductName; fpn != nil && fpn.ProductID != nil &&
+						lo.FromPtr(fpn.ProductID) == product {
+						subProducts = append(subProducts, rel.ProductReference)
+					}
+				}
+			}
+		}
+	}
+	for _, subProduct := range subProducts {
+		helpers = append(helpers, v.advisory.ProductTree.CollectProductIdentificationHelpers(lo.FromPtr(subProduct))...)
+	}
+
+	return helpers
 }
