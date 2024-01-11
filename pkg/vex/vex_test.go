@@ -285,13 +285,11 @@ func TestVEX_Filter(t *testing.T) {
 						PkgName:          "kubernetes",
 						InstalledVersion: "v1.24.2",
 						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: &ftypes.PackageURL{
-								PackageURL: packageurl.PackageURL{
-									Type:      packageurl.TypeGolang,
-									Namespace: "k8s.io",
-									Name:      "kubernetes",
-									Version:   "v1.24.2",
-								},
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeGolang,
+								Namespace: "k8s.io",
+								Name:      "kubernetes",
+								Version:   "v1.24.2",
 							},
 						},
 					},
