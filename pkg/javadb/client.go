@@ -142,8 +142,8 @@ func (d *DB) SearchBySHA1(sha1 string) (jar.Properties, error) {
 	}, nil
 }
 
-func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
-	indexes, err := d.driver.SelectIndexesByArtifactIDAndFileType(artifactID, types.JarType)
+func (d *DB) SearchByArtifactID(artifactID, version string) (string, error) {
+	indexes, err := d.driver.SelectIndexesByArtifactIDAndFileType(artifactID, version, types.JarType)
 	if err != nil {
 		return "", xerrors.Errorf("select error: %w", err)
 	} else if len(indexes) == 0 {

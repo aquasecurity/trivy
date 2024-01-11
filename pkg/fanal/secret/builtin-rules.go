@@ -76,9 +76,9 @@ const (
 	quote       = `["']?`
 	connect     = `\s*(:|=>|=)?\s*`
 	startSecret = `(^|\s+)`
-	endSecret   = `(\s+|$)`
+	endSecret   = `[.,]?(\s+|$)`
 
-	aws = `(aws)?_?`
+	aws = `aws_?`
 )
 
 // This function is exported for trivy-plugin-aqua purposes only

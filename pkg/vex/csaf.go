@@ -2,12 +2,12 @@ package vex
 
 import (
 	csaf "github.com/csaf-poc/csaf_distribution/v3/csaf"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
-	"golang.org/x/exp/slices"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -36,16 +36,16 @@ func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulne
 	})
 }
 
-func (v *CSAF) affected(vuln *csaf.Vulnerability, purl *ftypes.PackageURL) bool {
-	if purl == nil || vuln.ProductStatus == nil {
+func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL) bool {
+	if pkgURL == nil || vuln.ProductStatus == nil {
 		return true
 	}
 
 	var status Status
 	switch {
-	case v.affectedByStatus(purl, vuln.ProductStatus.KnownNotAffected):
+	case v.affectedByStatus(vuln.ProductStatus.KnownNotAffected, pkgURL):
 		status = StatusNotAffected
-	case v.affectedByStatus(purl, vuln.ProductStatus.Fixed):
+	case v.affectedByStatus(vuln.ProductStatus.Fixed, pkgURL):
 		status = StatusFixed
 	}
 
@@ -61,17 +61,24 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, purl *ftypes.PackageURL) bool 
 
 // affectedByStatus returns true if a package (identified by a given PackageURL) belongs to certain status
 // (e.g. KnownNotAffected, Fixed, etc.) which products are provided.
-func (v *CSAF) affectedByStatus(purl *ftypes.PackageURL, statusProducts *csaf.Products) bool {
+func (v *CSAF) affectedByStatus(statusProducts *csaf.Products, pkgURL *packageurl.PackageURL) bool {
 	for _, product := range lo.FromPtr(statusProducts) {
 		helpers := v.collectProductIdentificationHelpers(lo.FromPtr(product))
-		purls := lo.FilterMap(helpers, func(helper *csaf.ProductIdentificationHelper, _ int) (string, bool) {
+		purls := lo.FilterMap(helpers, func(helper *csaf.ProductIdentificationHelper, _ int) (*purl.PackageURL, bool) {
 			if helper == nil || helper.PURL == nil {
-				return "", false
+				return nil, false
 			}
-			return string(*helper.PURL), true
+			p, err := purl.FromString(string(*helper.PURL))
+			if err != nil {
+				v.logger.Errorw("Invalid PURL", zap.String("purl", string(*helper.PURL)), zap.Error(err))
+				return nil, false
+			}
+			return p, true
 		})
-		if slices.Contains(purls, purl.String()) {
-			return true
+		for _, p := range purls {
+			if p.Match(pkgURL) {
+				return true
+			}
 		}
 	}
 

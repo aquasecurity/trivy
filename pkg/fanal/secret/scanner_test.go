@@ -429,7 +429,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 5,
 		EndLine:   5,
-		Match:     `aws_sec_key "****************************************"`,
+		Match:     `  "created_by": "ENV aws_sec_key "****************************************",`,
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -444,8 +444,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      5,
-					Content:     "aws_sec_key \"****************************************\"",
-					Highlighted: "aws_sec_key \"****************************************\"",
+					Content:     "  \"created_by\": \"ENV aws_sec_key \"****************************************\",",
+					Highlighted: "  \"created_by\": \"ENV aws_sec_key \"****************************************\",",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -662,7 +662,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "aws-secrets.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "aws-secrets.txt"),
-				Findings: []types.SecretFinding{wantFinding5, wantFinding9, wantFinding10},
+				Findings: []types.SecretFinding{wantFinding5, wantFinding10, wantFinding9},
 			},
 		},
 		{
