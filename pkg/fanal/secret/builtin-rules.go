@@ -76,7 +76,7 @@ const (
 	quote       = `["']?`
 	connect     = `\s*(:|=>|=)?\s*`
 	startSecret = `(^|\s+)`
-	endSecret   = `(\s+|$)`
+	endSecret   = `[.,]?(\s+|$)`
 
 	aws = `aws_?`
 )
