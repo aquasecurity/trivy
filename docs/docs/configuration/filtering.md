@@ -496,12 +496,22 @@ Some configuration file formats (e.g. Terraform) support inline comments.
 
 In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned).
 
-The format for these comments is `trivy:ignore:<Vulnerability ID>` immediately following the format-specific line-comment token.
+The format for these comments is `trivy:ignore:<Vulnerability ID>` immediately following the format-specific line-comment token. You can add multiple ignores on the same comment line.
 
 For example, to filter a Vulnerability ID "AVD-GCP-0051" in a Terraform HCL file:
 
 ```terraform
 #trivy:ignore:AVD-GCP-0051
+resource "google_container_cluster" "one_off_test" {
+  name     = var.cluster_name
+  location = var.region
+}
+```
+
+For example, to filter vulnerabilities "AVD-GCP-0051" and "AVD-GCP-0053" in a Terraform HCL file:
+
+```terraform
+#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053
 resource "google_container_cluster" "one_off_test" {
   name     = var.cluster_name
   location = var.region
