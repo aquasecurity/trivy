@@ -4312,9 +4312,16 @@ More info about the helper functions are in the library <a href="https://github.
 </table>
 <p>Some configuration file formats (e.g. Terraform) support inline comments.</p>
 <p>In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned).</p>
-<p>The format for these comments is <code>trivy:ignore:&lt;Vulnerability ID&gt;</code> immediately following the format-specific line-comment token.</p>
+<p>The format for these comments is <code>trivy:ignore:&lt;Vulnerability ID&gt;</code> immediately following the format-specific line-comment token. You can add multiple ignores on the same comment line.</p>
 <p>For example, to filter a Vulnerability ID "AVD-GCP-0051" in a Terraform HCL file:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;one_off_test&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
+<span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>For example, to filter vulnerabilities "AVD-GCP-0051" and "AVD-GCP-0053" in a Terraform HCL file:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053</span>
 <span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;one_off_test&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
 <span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
