@@ -68,7 +68,7 @@ require (
 	github.com/magefile/mage v1.15.0
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
-	github.com/masahiro331/go-ebs-file v0.0.0-20230228042409-005c81d4ae43
+	github.com/masahiro331/go-ebs-file v0.0.0-20240112135404-d5fbb1d46323
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20231208112839-4339555a0cd4
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd
@@ -176,7 +176,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/codebuild v1.26.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/docdb v1.29.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.26.8 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ebs v1.18.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ebs v1.21.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ecs v1.35.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/efs v1.26.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/eks v1.37.0 // indirect
