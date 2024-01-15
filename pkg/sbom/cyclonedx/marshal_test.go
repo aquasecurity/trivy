@@ -1224,6 +1224,26 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "yarn.lock",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.Yarn,
+						Packages: []ftypes.Package{
+							{
+								ID:      "@babel/helper-string-parser@7.23.4",
+								Name:    "@babel/helper-string-parser",
+								Version: "7.23.4",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeNPM,
+										Namespace: "@babel",
+										Name:      "helper-string-parser",
+										Version:   "7.23.4",
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 			want: &cdx.BOM{
@@ -1271,6 +1291,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000004",
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "yarn.lock",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "yarn",
+							},
+						},
+					},
+					{
 						BOMRef:     "pkg:gem/actioncable@6.1.4.1",
 						Type:       "library",
 						Name:       "actioncable",
@@ -1301,6 +1336,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						BOMRef:     "pkg:npm/%40babel/helper-string-parser@7.23.4",
+						Type:       "library",
+						Name:       "helper-string-parser",
+						Group:      "@babel",
+						Version:    "7.23.4",
+						PackageURL: "pkg:npm/%40babel/helper-string-parser@7.23.4",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "@babel/helper-string-parser@7.23.4",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "yarn",
+							},
+						},
+					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
@@ -1308,6 +1361,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
+							"3ff14136-e09f-4df9-80ea-000000000004",
 							"pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						},
 					},
@@ -1318,11 +1372,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
+						Dependencies: &[]string{
+							"pkg:npm/%40babel/helper-string-parser@7.23.4",
+						},
+					},
+					{
 						Ref:          "pkg:gem/actioncable@6.1.4.1",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
 						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+						Dependencies: lo.ToPtr([]string{}),
+					},
+					{
+						Ref:          "pkg:npm/%40babel/helper-string-parser@7.23.4",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},

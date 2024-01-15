@@ -44,7 +44,8 @@
     {
       "bom-ref": "pkg:maven/com.example/log4shell@1.0-SNAPSHOT",
       "type": "library",
-      "name": "com.example:log4shell",
+      "group": "com.example",
+      "name": "log4shell",
       "version": "1.0-SNAPSHOT",
       "purl": "pkg:maven/com.example/log4shell@1.0-SNAPSHOT",
       "properties": [
@@ -61,7 +62,8 @@
     {
       "bom-ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
       "type": "library",
-      "name": "com.fasterxml.jackson.core:jackson-databind",
+      "group": "com.fasterxml.jackson.core",
+      "name": "jackson-databind",
       "version": "2.9.1",
       "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
       "properties": [
