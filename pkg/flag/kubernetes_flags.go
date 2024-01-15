@@ -88,6 +88,18 @@ var (
 		Default:    "ghcr.io/aquasecurity/node-collector:0.0.9",
 		Usage:      "indicate the image reference for the node-collector scan job",
 	}
+	QPS = Flag{
+		Name:       "qps",
+		ConfigName: "kubernetes.qps",
+		Default:    5.0,
+		Usage:      "specify the maximum QPS to the master from this client",
+	}
+	Burst = Flag{
+		Name:       "burst",
+		ConfigName: "kubernetes.burst",
+		Default:    10,
+		Usage:      "specify the maximum burst for throttle",
+	}
 )
 
 type K8sFlagGroup struct {
@@ -102,6 +114,8 @@ type K8sFlagGroup struct {
 	NodeCollectorNamespace *Flag
 	ExcludeOwned           *Flag
 	ExcludeNodes           *Flag
+	QPS                    *Flag
+	Burst                  *Flag
 }
 
 type K8sOptions struct {
@@ -116,6 +130,8 @@ type K8sOptions struct {
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
 	ExcludeNodes           map[string]string
+	QPS                    float32
+	Burst                  int
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
@@ -131,6 +147,8 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		ExcludeOwned:           &ExcludeOwned,
 		ExcludeNodes:           &ExcludeNodes,
 		NodeCollectorImageRef:  &NodeCollectorImageRef,
+		QPS:                    &QPS,
+		Burst:                  &Burst,
 	}
 }
 
@@ -151,6 +169,8 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.ExcludeOwned,
 		f.ExcludeNodes,
 		f.NodeCollectorImageRef,
+		f.QPS,
+		f.Burst,
 	}
 }
 
