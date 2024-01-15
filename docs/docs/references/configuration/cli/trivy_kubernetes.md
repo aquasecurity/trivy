@@ -28,6 +28,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
 
 ```
   -A, --all-namespaces                    fetch resources from all cluster namespaces
+      --burst int                         specify the maximum burst for throttle (default 10)
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --clear-cache                       clear image caches without scanning
@@ -72,6 +73,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
+      --qps float                         specify the maximum QPS to the master from this client (default 5)
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
