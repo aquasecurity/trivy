@@ -20,41 +20,41 @@ vuln-attestation.yaml
 {% raw %}
 
 ```bash
-apiVersion: kyverno.io/v1 
-kind: ClusterPolicy 
-metadata: 
-  name: check-vulnerabilities 
-spec: 
-  validationFailureAction: Enforce 
-  background: false 
-  webhookTimeoutSeconds: 30 
-  failurePolicy: Fail 
-  rules: 
-    - name: checking-vulnerability-scan-not-older-than-one-hour 
-      match: 
-        any: 
-        - resources: 
-            kinds: 
-              - Pod 
-      verifyImages: 
-      - imageReferences: 
-        - "*" 
-        attestations: 
-        - type: https://cosign.sigstore.dev/attestation/vuln/v1 
-          conditions: 
-          - all: 
-            - key: "{{ time_since('','{{ metadata.scanFinishedOn }}', '') }}" 
-              operator: LessThanOrEquals 
-              value: "1h" 
-          attestors: 
-          - count: 1 
-            entries: 
-            - keys: 
-                publicKeys: |- 
-                  -----BEGIN PUBLIC KEY----- 
-                  abc 
-                  xyz 
-                  -----END PUBLIC KEY----- 
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-vulnerabilities
+spec:
+  validationFailureAction: Enforce
+  background: false
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail
+  rules:
+    - name: checking-vulnerability-scan-not-older-than-one-hour
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      verifyImages:
+      - imageReferences:
+        - "*"
+        attestations:
+        - type: https://cosign.sigstore.dev/attestation/vuln/v1
+          conditions:
+          - all:
+            - key: "{{ time_since('','{{ metadata.scanFinishedOn }}', '') }}"
+              operator: LessThanOrEquals
+              value: "1h"
+          attestors:
+          - count: 1
+            entries:
+            - keys:
+                publicKeys: |-
+                  -----BEGIN PUBLIC KEY-----
+                  abc
+                  xyz
+                  -----END PUBLIC KEY-----
 ```
 
 {% endraw %}
@@ -68,7 +68,7 @@ Next, apply the above policy:
 kubectl apply -f vuln-attestation.yaml
 ```
 
-To ensure that the policy worked, we can deploye an example deployment file with our container image:
+To ensure that the policy worked, we can deploy an example Kubernetes Pod with our container image:
 
 ```
 kubectl run app-signed --image= docker.io/anaisurlichs/signed-example@sha256:c5911ac313e0be82a740bd726dc290e655800a9588424ba4e0558c705d1287fd 
