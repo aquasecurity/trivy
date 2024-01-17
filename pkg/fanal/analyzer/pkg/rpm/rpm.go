@@ -133,7 +133,7 @@ func (a rpmPkgAnalyzer) listPkgs(db RPMDB) (types.Packages, []string, error) {
 		// Check if the package is vendor-provided.
 		// If the package is not provided by vendor, the installed files should not be skipped.
 		var files []string
-		if packageProvidedByVendor(pkg.Vendor, srcRel) {
+		if packageProvidedByVendor(pkg) {
 			files, err = pkg.InstalledFileNames()
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
@@ -235,17 +235,20 @@ func splitFileName(filename string) (name, ver, rel string, err error) {
 	return name, ver, rel, nil
 }
 
-func packageProvidedByVendor(pkgVendor, srcRelease string) bool {
-	if pkgVendor != "" {
-		for _, vendor := range osVendors {
-			if strings.HasPrefix(pkgVendor, vendor) {
-				return true
-			}
+func packageProvidedByVendor(pkg *rpmdb.PackageInfo) bool {
+	if pkg.Vendor == "" {
+		// Official Amazon packages may not contain `Vendor` field:
+		// https://github.com/aquasecurity/trivy/issues/5887
+		return strings.Contains(pkg.Release, "amzn")
+	}
+
+	for _, vendor := range osVendors {
+		if strings.HasPrefix(pkg.Vendor, vendor) {
+			return true
 		}
 	}
-	// Official Amazon packages may not contain `Vendor` field:
-	// https://github.com/aquasecurity/trivy/issues/5887
-	return strings.Contains(srcRelease, "amzn")
+
+	return false
 }
 
 func writeToTempFile(rc io.Reader) (string, error) {
