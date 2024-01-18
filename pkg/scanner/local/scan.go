@@ -22,6 +22,7 @@ import (
 	"github.com/deepfactor-io/trivy/pkg/scanner/ospkg"
 	"github.com/deepfactor-io/trivy/pkg/scanner/post"
 	"github.com/deepfactor-io/trivy/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/utils"
 	"github.com/deepfactor-io/trivy/pkg/vulnerability"
 
 	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/all"
@@ -90,7 +91,7 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		OS:                detail.OS,
 		Repository:        detail.Repository,
 		Packages:          mergePkgs(detail.Packages, detail.ImageConfig.Packages, options),
-		Applications:      detail.Applications,
+		Applications:      postProcessApplications(detail.Applications, options),
 		Misconfigurations: mergeMisconfigurations(targetName, detail),
 		Secrets:           mergeSecrets(targetName, detail),
 		Licenses:          detail.Licenses,
@@ -98,6 +99,87 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 	}
 
 	return s.ScanTarget(ctx, target, options)
+}
+
+// post process applications to
+// 1. Add root dependency info
+// 2. Split package which is both direct and indirect to two entries
+// 3. Dedupe node packages (image scan): get transitive info from lock files and copy it to node installed packages
+// 4. Dedupe composer packages (image scan): get isDev info from composer.json and copy it to composer installed packages
+func postProcessApplications(apps []ftypes.Application, options types.ScanOptions) []ftypes.Application {
+	// Map to store nodejs lock file packages
+	nodeLockFilePackages := map[string]ftypes.Package{}
+	reqPHPPackages := make(map[string]struct{})
+	reqDevPHPPackages := make(map[string]struct{})
+
+	for i, app := range apps {
+		if len(app.Libraries) == 0 {
+			continue
+		}
+
+		isPkgSplitRequired := utils.IsPkgSplitRequired(app.Type)
+
+		// Get parents map for current target
+		parents := ftypes.Packages(app.Libraries).ParentDeps()
+
+		// get node application directory info from the filepath
+		// required for deduplication
+		nodeAppDirInfo := utils.NodeAppDirInfo(app.FilePath)
+
+		for i, pkg := range app.Libraries {
+
+			// calculate rootDep
+			if len(parents) != 0 && (pkg.Indirect || isPkgSplitRequired) {
+				pkg.RootDependencies = utils.FindAncestor(pkg.ID, parents, map[string]struct{}{})
+				app.Libraries[i] = pkg
+
+				// if a pkg which is direct and has atleast one root dependency we will consisder it as both direct and indirect
+				// so we split the entry into two and move root deps to the new entry (i.e the indirect entry).
+				// note: for image scans, node installed package won't have transitive info at this point of time, so we handle that in dedupe process.
+				// since vulnerability detect function operates on app.Libraries, we will get two vulnerability (of same ID)
+				// one for pkgA-direct and one for pkgA-indirect, this is required because we need to highlight them separately in the final report
+				if isPkgSplitRequired && !pkg.Indirect && len(pkg.RootDependencies) > 0 {
+					indirectPkg := pkg
+					indirectPkg.Indirect = true
+					app.Libraries = append(app.Libraries, indirectPkg)
+
+					// remove rootdeps from direct dep
+					app.Libraries[i].RootDependencies = []string{}
+				}
+			}
+
+			// store node lockfile (npm, yarn, pnpm) package info (ignore lock files which are present in locations other than App Directory eg: node_modules/pkg/{lockfile})
+			// will be utilzed for node dedupe (tansitive & rootDep info)
+			if nodeAppDirInfo.IsNodeLockFile && nodeAppDirInfo.IsFileinAppDir {
+				nodeLockFilePackages[nodeAppDirInfo.GetPackageKey(pkg)] = pkg
+			}
+
+			// store PHP dev package info
+			// will be utilized for PHP deduping (isDev info)
+			if app.Type == ftypes.ComposerJSON {
+				if pkg.Dev {
+					reqDevPHPPackages[pkg.Name] = struct{}{}
+				} else {
+					reqPHPPackages[pkg.Name] = struct{}{}
+				}
+			}
+		}
+
+		// update apps
+		apps[i] = app
+	}
+
+	// dedupe data for image scans
+	// combining data from lock files to the installed packages for node and composer
+	if options.ArtifactType == ftypes.ArtifactContainerImage {
+		apps = utils.DedupePackages(utils.DedupeFilter{
+			NodeLockFilePackages: nodeLockFilePackages,
+			ReqDevPHPPackages:    reqDevPHPPackages,
+			ReqPHPPackages:       reqPHPPackages,
+		}, apps)
+	}
+
+	return apps
 }
 
 func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {

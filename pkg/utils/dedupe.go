@@ -6,13 +6,12 @@ import (
 	"strings"
 
 	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
-	"github.com/deepfactor-io/trivy/pkg/types"
 
 	"github.com/samber/lo"
 )
 
-func dedupeNodePackages(result types.Result, lockFilePackages map[string]ftypes.Package) types.Result {
-	for j, pkg := range result.Packages {
+func dedupeNodePackages(app ftypes.Application, lockFilePackages map[string]ftypes.Package) ftypes.Application {
+	for j, pkg := range app.Libraries {
 		if pkg.ID == "" || pkg.FilePath == "" {
 			continue
 		}
@@ -29,15 +28,29 @@ func dedupeNodePackages(result types.Result, lockFilePackages map[string]ftypes.
 			pkg.DependsOn = lPkg.DependsOn
 			pkg.NodeDedupeMatchFound = true
 
-			result.Packages[j] = pkg
+			// handle splitting of indirect & direct package
+			// as we have the transitive info from the lockFilePackages
+			if !pkg.Indirect && len(pkg.RootDependencies) > 0 {
+				indirectPkg := pkg
+				indirectPkg.Indirect = true
+				indirectPkg.RootDependencies = pkg.RootDependencies
+
+				app.Libraries = append(app.Libraries, indirectPkg)
+
+				// remove rootdeps from direct dep
+				pkg.RootDependencies = []string{}
+			}
+
+			// update app
+			app.Libraries[j] = pkg
 		}
 
 	}
-	return result
+	return app
 }
 
-func dedupePHPPackages(result types.Result, reqDevPHPPackages, reqPHPPackages map[string]struct{}) types.Result {
-	for j, pkg := range result.Packages {
+func dedupePHPPackages(app ftypes.Application, reqDevPHPPackages, reqPHPPackages map[string]struct{}) ftypes.Application {
+	for j, pkg := range app.Libraries {
 		if pkg.Dev {
 			if _, ok := reqDevPHPPackages[pkg.Name]; !ok {
 				pkg.Indirect = true
@@ -48,10 +61,10 @@ func dedupePHPPackages(result types.Result, reqDevPHPPackages, reqPHPPackages ma
 			}
 		}
 
-		result.Packages[j] = pkg
+		app.Libraries[j] = pkg
 	}
 
-	return result
+	return app
 }
 
 type DedupeFilter struct {
@@ -60,32 +73,32 @@ type DedupeFilter struct {
 	ReqPHPPackages       map[string]struct{}
 }
 
-func DedupePackages(filter DedupeFilter, results []types.Result) []types.Result {
+func DedupePackages(filter DedupeFilter, apps []ftypes.Application) []ftypes.Application {
 	isFilterRequired := false
 
 	// Resource deduplication for Node.js
-	for i, result := range results {
-		if result.Target == "Node.js" && len(filter.NodeLockFilePackages) > 0 {
+	for i, app := range apps {
+		if app.Type == ftypes.NodePkg && len(filter.NodeLockFilePackages) > 0 {
 			isFilterRequired = true
-			results[i] = dedupeNodePackages(result, filter.NodeLockFilePackages)
+			apps[i] = dedupeNodePackages(app, filter.NodeLockFilePackages)
 		}
 
-		if result.Type == ftypes.ComposerInstalled {
+		if app.Type == ftypes.ComposerInstalled {
 			if len(filter.ReqDevPHPPackages) > 0 || len(filter.ReqPHPPackages) > 0 {
 				isFilterRequired = true
-				results[i] = dedupePHPPackages(result, filter.ReqDevPHPPackages, filter.ReqPHPPackages)
+				apps[i] = dedupePHPPackages(app, filter.ReqDevPHPPackages, filter.ReqPHPPackages)
 			}
 		}
 	}
 
-	// Filter results
+	// Filter apps
 	if isFilterRequired {
-		results = lo.Filter(results, func(r types.Result, i int) bool {
+		apps = lo.Filter(apps, func(r ftypes.Application, i int) bool {
 			return lo.IndexOf(ftypes.DedupeFilterTypes, r.Type) == -1
 		})
 	}
 
-	return results
+	return apps
 }
 
 type nodeAppDirInfo struct {
