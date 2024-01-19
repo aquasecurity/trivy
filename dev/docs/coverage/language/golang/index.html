@@ -3719,7 +3719,7 @@ Trivy traverses <code>$GOPATH/pkg/mod</code> and collects those extra informatio
 <p>Trivy scans binaries built by Go.
 If there is a Go binary in your container image, Trivy automatically finds and scans it.</p>
 <p>Also, you can scan your local binaries.</p>
-<div class="highlight"><pre><span></span><code>$ trivy fs ./your_binary
+<div class="highlight"><pre><span></span><code>$ trivy rootfs ./your_binary
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
