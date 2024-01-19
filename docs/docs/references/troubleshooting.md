@@ -12,6 +12,22 @@
 
 Your scan may time out. Java takes a particularly long time to scan. Try increasing the value of the ---timeout option such as `--timeout 15m`.
 
+### Unable to inspect the image
+
+!!! error
+    ```bash
+    $ trivy image ...
+    ...
+    2024-01-19T08:15:33.288Z	FATAL	image scan error: scan error: unable to initialize a scanner: unable to initialize an image scanner: 4 errors occurred:
+	* docker error: unable to inspect the image (ContainerImageName): Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+	* containerd error: containerd socket not found: /run/containerd/containerd.sock
+	* podman error: unable to initialize Podman client: no podman socket found: stat podman/podman.sock: no such file or directory
+	* remote error: GET https://index.docker.io/v2/ContainerImageName: MANIFEST_UNKNOWN: manifest unknown; unknown tag=0.1
+    ```
+
+Trivy is unable to access the container image on the remote registry. If you did not specify a registry, Trivy will use the Docker Container Registry.
+The container image will likely have to be pushed first to the registry. Then, try to pull the same container image from the registry. 
+
 ### Certification
 
 !!! error
