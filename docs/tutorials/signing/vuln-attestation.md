@@ -119,7 +119,7 @@ cosign verify-attestation --type vuln --certificate-identity urlichsanais@gmail.
 
 ### Option 2 -- Separate key pair
 
-If you have used a new cosign key pair, the attestation can be verified through the following comamnd:
+If you have used a new cosign key pair, the attestation can be verified through the following command:
 ```
 cosign verify-attestation --key cosign.pub --type vuln anaisurlichs/signed-example@sha256:c5911ac313e0be82a740bd726dc290e655800a9588424ba4e0558c705d1287fd 
 ```
