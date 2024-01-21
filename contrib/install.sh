@@ -11,6 +11,7 @@ $this: download go binaries for aquasecurity/trivy
 Usage: $this [-b] bindir [-d] [tag]
   -b sets bindir or installation directory, Defaults to ./bin
   -d turns on debug logging
+  -v verify checksum signature. Require cosign binary to be installed.
    [tag] is a tag from
    https://github.com/aquasecurity/trivy/releases
    If tag is missing, then the latest will be used.
@@ -27,10 +28,11 @@ parse_args() {
   # over-ridden by flag below
 
   BINDIR=${BINDIR:-./bin}
-  while getopts "b:dh?x" arg; do
+  while getopts "b:dvh?x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
       d) log_set_priority 10 ;;
+      v) VERIFY_SIGN=true;;
       h | \?) usage "$0" ;;
       x) set -x ;;
     esac
@@ -45,8 +47,13 @@ parse_args() {
 execute() {
   tmpdir=$(mktemp -d)
   log_debug "downloading files into ${tmpdir}"
-  http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}"
   http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
+  if [ "$VERIFY_SIGN" = true ]; then
+    http_download "${tmpdir}/${CHECKSUM}.${CERT_FORMAT}" "${CHECKSUM_URL}.${CERT_FORMAT}"
+    http_download "${tmpdir}/${CHECKSUM}.${SIG_FORMAT}" "${CHECKSUM_URL}.${SIG_FORMAT}"
+    verify_sign "${tmpdir}/${CHECKSUM}" "${tmpdir}/${CHECKSUM}.${CERT_FORMAT}" "${tmpdir}/${CHECKSUM}.${SIG_FORMAT}"
+  fi
+  http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}"
   hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
   srcdir="${tmpdir}"
   (cd "${tmpdir}" && untar "${TARBALL}")
@@ -373,6 +380,25 @@ hash_sha256_verify() {
     return 1
   fi
 }
+
+check_cosign_bin() {
+  if [ "$VERIFY_SIGN" = true ]; then
+    if [ ! -x "$(command -v "$COSIGN_BINARY")" ]; then
+      log_err "Signature verification is requested but ${COSIGN_BINARY} binary is not installed. Follow steps from https://docs.sigstore.dev/system_config/installation/ to install it."
+      return 1
+    fi
+  fi
+}
+
+verify_sign() {
+  log_debug "Verifying artifact $1"
+  ${COSIGN_BINARY} verify-blob "$1" \
+  --certificate "$2" \
+  --signature "$3" \
+  --certificate-identity-regexp "https://github\.com/${OWNER}/${REPO}/\.github/workflows/.+" \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
+}
+
 cat /dev/null <<EOF
 ------------------------------------------------------------------------
 End of functions from https://github.com/client9/shlib
@@ -394,11 +420,17 @@ log_prefix() {
 }
 PLATFORM="${OS}/${ARCH}"
 GITHUB_DOWNLOAD=https://github.com/${OWNER}/${REPO}/releases/download
+COSIGN_BINARY=cosign
+VERIFY_SIGN=false
+CERT_FORMAT=pem
+SIG_FORMAT=sig
 
 uname_os_check "$OS"
 uname_arch_check "$ARCH"
 
 parse_args "$@"
+
+check_cosign_bin
 
 get_binaries
 

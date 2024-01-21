@@ -129,6 +129,11 @@ The process above can be automated by the following script:
 curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin {{ git.tag }}
 ```
 
+To run signature verfication, pass `-v` command line flag.
+```bash
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin -v {{ git.tag }}
+```
+
 ### Install from source
 
 ```bash
