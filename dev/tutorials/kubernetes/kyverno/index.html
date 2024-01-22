@@ -3603,8 +3603,9 @@ You're not viewing the latest version.
 </ul>
 <h3 id="prerequisites">Prerequisites</h3>
 <ol>
-<li><a href="../../signing/vuln-attestation/">Attestation of the vulnerability scan uploaded</a></li>
 <li>A running Kubernetes cluster that kubectl is connected to</li>
+<li>A Container image signed with Cosign and an attestation generated for a Trivy Vulnerability scan.
+  <a href="../../signing/vuln-attestation/">Follow this tutorial for more information.</a></li>
 </ol>
 <h3 id="kyverno-policy-to-check-attestation">Kyverno Policy to check attestation</h3>
 <p>The following policy ensures that the attestation is no older than 168h:</p>
@@ -3614,11 +3615,12 @@ kind: ClusterPolicy
 metadata:
   name: check-vulnerabilities
 spec:
-  validationFailureAction: enforce
-  webhookTimeoutSeconds: <span class="m">10</span>
+  validationFailureAction: Enforce
+  background: <span class="nb">false</span>
+  webhookTimeoutSeconds: <span class="m">30</span>
   failurePolicy: Fail
   rules:
-    - name: not-older-than-one-week
+    - name: checking-vulnerability-scan-not-older-than-one-hour
       match:
         any:
         - resources:
@@ -3626,56 +3628,39 @@ spec:
               - Pod
       verifyImages:
       - imageReferences:
-        - <span class="s2">&quot;CONTAINER-REGISTRY/*:*&quot;</span>
+        - <span class="s2">&quot;*&quot;</span>
         attestations:
-        - predicateType: cosign.sigstore.dev/attestation/vuln/v1
+        - type: https://cosign.sigstore.dev/attestation/vuln/v1
           conditions:
           - all:
-            - key: <span class="s2">&quot;{{ time_since(&#39;&#39;,&#39;{{metadata.scanFinishedOn}}&#39;,&#39;&#39;) }}&quot;</span>
+            - key: <span class="s2">&quot;{{ time_since(&#39;&#39;,&#39;{{ metadata.scanFinishedOn }}&#39;, &#39;&#39;) }}&quot;</span>
               operator: LessThanOrEquals
-              value: <span class="s2">&quot;168h&quot;</span>
+              value: <span class="s2">&quot;1h&quot;</span>
+          attestors:
+          - count: <span class="m">1</span>
+            entries:
+            - keys:
+                publicKeys: <span class="p">|</span>-
+                  -----BEGIN PUBLIC KEY-----
+                  abc
+                  xyz
+                  -----END PUBLIC KEY-----
 </code></pre></div>
 <h3 id="apply-the-policy-to-your-kubernetes-cluster">Apply the policy to your Kubernetes cluster</h3>
 <p>Ensure that you have Kyverno already deployed and running on your cluster -- for instance through he Kyverno Helm Chart.</p>
 <p>Next, apply the above policy:
 <div class="highlight"><pre><span></span><code>kubectl apply -f vuln-attestation.yaml
 </code></pre></div></p>
-<p>To ensure that the policy worked, we can deploye an example deployment file with our container image:</p>
-<p>deployment.yaml
-<div class="highlight"><pre><span></span><code>apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cns-website
-  namespace: app
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      run: cns-website
-  template:
-    metadata:
-      labels:
-        run: cns-website
-    spec:
-      containers:
-      - name: cns-website
-        image: docker.io/anaisurlichs/cns-website:0.0.6
-        ports:
-          - containerPort: 80
-        imagePullPolicy: Always
-        resources:
-          limits:
-            memory: 512Mi
-            cpu: 200m
-        securityContext:
-          allowPrivilegeEscalation: false
-</code></pre></div></p>
+<p>To ensure that the policy worked, we can deploy an example Kubernetes Pod with our container image:</p>
+<p><div class="highlight"><pre><span></span><code>kubectl run app-signed --image= docker.io/anaisurlichs/signed-example@sha256:c5911ac313e0be82a740bd726dc290e655800a9588424ba4e0558c705d1287fd 
+</code></pre></div>
+Note that the image is based on the <a href="../../signing/vuln-attestation/">signing tutorial.</a></p>
 <p>Once we apply the deployment, it should pass since our attestation is available:
 <div class="highlight"><pre><span></span><code>kubectl apply -f deployment.yaml -n app
 deployment.apps/cns-website created
 </code></pre></div></p>
 <p>However, if we try to deploy any other container image, our deployment will fail. We can verify this by replacing the image referenced in the deployment with <code>docker.io/anaisurlichs/cns-website:0.0.5</code> and applying the deployment:
-<div class="highlight"><pre><span></span><code>kubectl apply -f deployment-two.yaml
+<div class="highlight"><pre><span></span><code>kubectl run app-unsigned --image=docker.io/anaisurlichs/cns-website:0.1.1 
 
 Resource: &quot;apps/v1, Resource=deployments&quot;, GroupVersionKind: &quot;apps/v1, Kind=Deployment&quot;
 Name: &quot;cns-website&quot;, Namespace: &quot;app&quot;

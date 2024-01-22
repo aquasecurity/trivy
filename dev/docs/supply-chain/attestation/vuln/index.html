@@ -3781,11 +3781,12 @@ $ cosign attest --key /path/to/cosign.key --type vuln --predicate vuln.json &lt;
 </code></pre></div>
 <h3 id="keyless-signing">Keyless signing</h3>
 <p>You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format cosign-vuln -o vuln.json &lt;IMAGE&gt;
-$ COSIGN_EXPERIMENTAL=1 cosign attest --type vuln --predicate vuln.json &lt;IMAGE&gt;
+<p><div class="highlight"><pre><span></span><code>$ trivy image --format cosign-vuln -o vuln.json &lt;IMAGE&gt;
+$ cosign attest --type vuln --predicate vuln.json &lt;IMAGE&gt;
 </code></pre></div>
-<p>You can verify attestations.</p>
-<div class="highlight"><pre><span></span><code>$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type vuln &lt;IMAGE&gt;
+This will provide a certificate in the output section.</p>
+<p>You can verify attestations:</p>
+<div class="highlight"><pre><span></span><code>$ cosign verify-attestation --certificate=path-to-the-certificate --type vuln --certificate-identity Email-used-to-sign  --certificate-oidc-issuer=&#39;the-issuer-used&#39; &lt;IMAGE&gt;
 </code></pre></div>
 
               
