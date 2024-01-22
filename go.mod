@@ -27,7 +27,7 @@ require (
 	github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d
 	github.com/aquasecurity/trivy-iac v0.7.1
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
-	github.com/aquasecurity/trivy-kubernetes v0.6.1
+	github.com/aquasecurity/trivy-kubernetes v0.6.3-0.20240118072219-c433b06f98e1
 	github.com/aquasecurity/trivy-policies v0.6.1-0.20231120231532-f6f2330bf842
 	github.com/aws/aws-sdk-go-v2 v1.24.1
 	github.com/aws/aws-sdk-go-v2/config v1.26.3
@@ -158,7 +158,7 @@ require (
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
-	github.com/aws/aws-sdk-go v1.49.16 // indirect
+	github.com/aws/aws-sdk-go v1.49.21 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.5.4 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.11 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.10 // indirect
@@ -245,7 +245,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.5.0 // indirect
 	github.com/go-gorp/gorp/v3 v3.1.0 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
-	github.com/go-logr/logr v1.3.0 // indirect
+	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/analysis v0.21.4 // indirect
 	github.com/go-openapi/errors v0.20.4 // indirect
@@ -405,7 +405,7 @@ require (
 	k8s.io/cli-runtime v0.29.0 // indirect
 	k8s.io/client-go v0.29.0 // indirect
 	k8s.io/component-base v0.29.0 // indirect
-	k8s.io/klog/v2 v2.110.1 // indirect
+	k8s.io/klog/v2 v2.120.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
 	k8s.io/kubectl v0.29.0 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
