@@ -184,11 +184,14 @@ func (c *CycloneDX) BOMRef(component *Component) string {
 func (c *CycloneDX) Metadata(ctx context.Context) *cdx.Metadata {
 	return &cdx.Metadata{
 		Timestamp: clock.Now(ctx).UTC().Format(timeLayout),
-		Tools: &[]cdx.Tool{
-			{
-				Vendor:  ToolVendor,
-				Name:    ToolName,
-				Version: c.appVersion,
+		Tools: &cdx.ToolsChoice{
+			Components: &[]cdx.Component{
+				{
+					Type:    cdx.ComponentTypeApplication,
+					Group:   ToolVendor,
+					Name:    ToolName,
+					Version: c.appVersion,
+				},
 			},
 		},
 	}
@@ -313,11 +316,25 @@ func IsTrivySBOM(c *cdx.BOM) bool {
 		return false
 	}
 
-	for _, tool := range *c.Metadata.Tools {
-		if tool.Vendor == ToolVendor && tool.Name == ToolName {
-			return true
+	if c.Metadata.Tools.Components != nil {
+		for _, component := range *c.Metadata.Tools.Components {
+			if component.Group == ToolVendor && component.Name == ToolName {
+				return true
+			}
 		}
 	}
+
+	// Metadata.Tools array is Deprecated - https://github.com/CycloneDX/cyclonedx-go/blob/b9654ae9b4705645152d20eb9872b5f3d73eac49/cyclonedx.go#L988
+	// But we check this to save back compatibility
+	if c.Metadata.Tools.Tools != nil {
+		for _, tool := range *c.Metadata.Tools.Tools {
+			if tool.Vendor == ToolVendor && tool.Name == ToolName {
+				log.Logger.Warnf("The `Metadata.Tools` field was marked as deprecated in CycloneDX 1.5. Update Trivy to get the latest CycloneDX format.")
+				return true
+			}
+		}
+	}
+
 	return false
 }
 

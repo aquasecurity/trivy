@@ -6,13 +6,16 @@
   "version": 1,
   "metadata": {
     "timestamp": "2021-08-25T12:20:30+00:00",
-    "tools": [
-      {
-        "vendor": "aquasecurity",
-        "name": "trivy",
-        "version": "dev"
-      }
-    ],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
     "component": {
       "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "type": "application",
