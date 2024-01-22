@@ -419,16 +419,25 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 }
 
 func packageName(typ, pkgNameFromPurl string, component cdx.Component) string {
-	if typ == packageurl.TypeMaven {
-		// Jar uses `Group` field for `GroupID`
+	if typ == packageurl.TypeMaven || typ == packageurl.TypeNPM {
+		// Maven uses `Group` field for `GroupID`
+		// Npm uses `Group` field for `Scope`
 		if component.Group != "" {
-			return fmt.Sprintf("%s:%s", component.Group, component.Name)
+			return fmt.Sprintf("%s%s%s", component.Group, packageNameSeparator(typ), component.Name)
 		} else {
 			// use name derived from purl if `Group` doesn't exist
 			return pkgNameFromPurl
 		}
 	}
 	return component.Name
+}
+
+// packageNameSeparator selects separator to join `group` and `name` fields of the component
+func packageNameSeparator(typ string) string {
+	if typ == packageurl.TypeMaven {
+		return ":"
+	}
+	return "/"
 }
 
 // parsePackageLicenses checks all supported license fields and returns a list of licenses.

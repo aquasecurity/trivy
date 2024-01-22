@@ -172,15 +172,16 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "",
 						Libraries: ftypes.Packages{
 							{
-								Name:    "bootstrap",
+								Name:    "@example/bootstrap",
 								Version: "5.0.2",
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypeNPM,
-										Name:    "bootstrap",
-										Version: "5.0.2",
+										Type:      packageurl.TypeNPM,
+										Namespace: "@example",
+										Name:      "bootstrap",
+										Version:   "5.0.2",
 									},
-									BOMRef: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
+									BOMRef: "pkg:npm/@example/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
