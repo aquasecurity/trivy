@@ -24,9 +24,15 @@ Your scan may time out. Java takes a particularly long time to scan. Try increas
 	* podman error: unable to initialize Podman client: no podman socket found: stat podman/podman.sock: no such file or directory
 	* remote error: GET https://index.docker.io/v2/ContainerImageName: MANIFEST_UNKNOWN: manifest unknown; unknown tag=0.1
     ```
+    
+It means Trivy is unable to find the container image in the following places:
 
-Trivy is unable to access the container image on the remote registry. If you did not specify a registry, Trivy will use the Docker Container Registry.
-The container image will likely have to be pushed first to the registry. Then, try to pull the same container image from the registry. 
+* Docker Daemon
+* ContainerD
+* Podman
+* A remote registry
+
+If your local daemon is not located in the default path, you must either specify the path as part of your trivy cli command `--docker-host` or an environment variable `DOCKER_HOST`. 
 
 ### Certification
 
