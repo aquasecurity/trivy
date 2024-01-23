@@ -166,6 +166,12 @@ func updateInstalledFiles(app *types.Application, installedFiles []string) {
 func (a packagingAnalyzer) fillInstalledFiles(filePath string, data io.Reader) []string {
 	packagesLocation := "site-packages"
 	installedFiles := []string{}
+	filePathParts := strings.Split(strings.ToLower(filePath), strings.ToLower("/lib/python"))
+	var pVersion string
+	if len(filePathParts) > 1 {
+		pVersionParts := strings.Split(filePathParts[1], "/")
+		pVersion = strings.ReplaceAll(pVersionParts[0], ".", "")
+	}
 	index := strings.Index(filePath, "site-packages/")
 	if index == -1 {
 		index = strings.Index(filePath, "dist-packages/")
@@ -195,7 +201,7 @@ func (a packagingAnalyzer) fillInstalledFiles(filePath string, data io.Reader) [
 					re := regexp.MustCompile("[0-9]+")
 					parts := re.FindAllString(fullPath[index:], -1)
 					if len(parts) > 0 {
-						fullPath = strings.ReplaceAll(fullPath, parts[0], "311")
+						fullPath = strings.ReplaceAll(fullPath, parts[0], pVersion)
 					}
 				}
 				installedFiles = append(installedFiles, fullPath)
