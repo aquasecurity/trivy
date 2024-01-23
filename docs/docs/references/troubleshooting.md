@@ -12,7 +12,7 @@
 
 Your scan may time out. Java takes a particularly long time to scan. Try increasing the value of the ---timeout option such as `--timeout 15m`.
 
-### Unable to inspect the image
+### Unable to initialize an image scanner
 
 !!! error
     ```bash
@@ -27,12 +27,45 @@ Your scan may time out. Java takes a particularly long time to scan. Try increas
     
 It means Trivy is unable to find the container image in the following places:
 
-* Docker Daemon
-* ContainerD
+* Docker Engine
+* containerd
 * Podman
 * A remote registry
 
-If your local daemon is not located in the default path, you must either specify the path as part of your trivy cli command `--docker-host` or an environment variable `DOCKER_HOST`. 
+Please see error messages for details of each error.
+
+Common mistakes include the following, depending on where you are pulling images from:
+
+#### Common
+- Typos in the image name
+    - Common mistake :)
+- Forgetting to specify the registry
+    - By default, it is considered to be Docker Hub ( `index.docker.io` ).
+
+#### Docker Engine
+- Incorrect Docker host
+    - If the Docker daemon's socket path is not `/var/run/docker.sock`, you need to specify the `--docker-host` flag or the `DOCKER_HOST` environment variable.
+      The same applies when using TCP; you must specify the correct host address.
+
+#### containerd
+- Incorrect containerd address
+    - If you are using a non-default path, you need to specify the `CONTAINERD_ADDRESS` environment variable.
+      Please refer to [this documentation](../target/container_image.md#containerd).
+- Incorrect namespace
+    - If you are using a non-default namespace, you need to specify the `CONTAINERD_NAMESPACE` environment variable.
+      Please refer to [this documentation](../target/container_image.md#containerd).
+    - 
+#### Podman
+- Podman socket configuration
+    - You need to enable the Podman socket. Please refer to [this documentation](../target/container_image.md#podman).
+
+#### Container Registry
+- Unauthenticated
+    - If you are using a private container registry, you need to authenticate. Please refer to [this documentation](../advanced/private-registries/index.md).
+- Using a proxy
+    - If you are using a proxy within your network, you need to correctly set the `HTTP_PROXY`, `HTTPS_PROXY`, etc., environment variables.
+- Use of a self-signed certificate in the registry
+    - Because certificate verification will fail, you need to either trust that certificate or use the `--insecure` flag (not recommended in production).
 
 ### Certification
 
