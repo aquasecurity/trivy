@@ -316,22 +316,17 @@ func IsTrivySBOM(c *cdx.BOM) bool {
 		return false
 	}
 
-	if c.Metadata.Tools.Components != nil {
-		for _, component := range *c.Metadata.Tools.Components {
-			if component.Group == ToolVendor && component.Name == ToolName {
-				return true
-			}
+	for _, component := range lo.FromPtr(c.Metadata.Tools.Components) {
+		if component.Group == ToolVendor && component.Name == ToolName {
+			return true
 		}
 	}
 
-	// Metadata.Tools array is Deprecated - https://github.com/CycloneDX/cyclonedx-go/blob/b9654ae9b4705645152d20eb9872b5f3d73eac49/cyclonedx.go#L988
-	// But we check this to save back compatibility
-	if c.Metadata.Tools.Tools != nil {
-		for _, tool := range *c.Metadata.Tools.Tools {
-			if tool.Vendor == ToolVendor && tool.Name == ToolName {
-				log.Logger.Warnf("The `Metadata.Tools` field was marked as deprecated in CycloneDX 1.5. Update Trivy to get the latest CycloneDX format.")
-				return true
-			}
+	// Metadata.Tools array is deprecated (as of CycloneDX v1.5). We check this field for backward compatibility.
+	// cf. https://github.com/CycloneDX/cyclonedx-go/blob/b9654ae9b4705645152d20eb9872b5f3d73eac49/cyclonedx.go#L988
+	for _, tool := range lo.FromPtr(c.Metadata.Tools.Tools) {
+		if tool.Vendor == ToolVendor && tool.Name == ToolName {
+			return true
 		}
 	}
 
