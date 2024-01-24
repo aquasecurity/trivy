@@ -105,8 +105,17 @@ func (w Writer) Write(ctx context.Context, report types.Report) error {
 		manifest.Name = string(result.Type)
 		// show path for language-specific packages only
 		if result.Class == types.ClassLangPkg {
-			manifest.File = &File{
-				SrcLocation: result.Target,
+			if report.ArtifactType == "container_image" {
+				// Replacing `source_location` by the image name and tag
+				image_reference := strings.Join(report.Metadata.RepoTags, ", ")
+				manifest.File = &File{
+					SrcLocation: image_reference,
+				}
+
+			} else {
+				manifest.File = &File{
+					SrcLocation: result.Target,
+				}
 			}
 		}
 
