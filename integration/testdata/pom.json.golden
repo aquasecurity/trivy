@@ -20,35 +20,6 @@
       "Target": "pom.xml",
       "Class": "lang-pkgs",
       "Type": "pom",
-      "Packages": [
-        {
-          "ID": "com.example:log4shell:1.0-SNAPSHOT",
-          "Name": "com.example:log4shell",
-          "Identifier": {
-            "PURL": "pkg:maven/com.example/log4shell@1.0-SNAPSHOT"
-          },
-          "Version": "1.0-SNAPSHOT",
-          "DependsOn": [
-            "com.fasterxml.jackson.core:jackson-databind:2.9.1"
-          ],
-          "Layer": {}
-        },
-        {
-          "ID": "com.fasterxml.jackson.core:jackson-databind:2.9.1",
-          "Name": "com.fasterxml.jackson.core:jackson-databind",
-          "Identifier": {
-            "PURL": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1"
-          },
-          "Version": "2.9.1",
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 41,
-              "EndLine": 45
-            }
-          ]
-        }
-      ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2020-9548",
