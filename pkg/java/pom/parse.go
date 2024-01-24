@@ -92,7 +92,7 @@ func (p *parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	// Analyze root POM
-	result, err := p.analyze(root, analysisOptions{})
+	result, err := p.analyze(root, analysisOptions{lineNumber: true})
 	if err != nil {
 		return nil, nil, xerrors.Errorf("analyze error (%s): %w", p.rootPath, err)
 	}
@@ -131,6 +131,7 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 			if err != nil {
 				return nil, nil, err
 			}
+
 			libs = append(libs, moduleLibs...)
 			if moduleDeps != nil {
 				deps = append(deps, moduleDeps...)
@@ -147,6 +148,10 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 			// take a look `hard requirement for the specified version` test
 			if uniqueArt.Direct {
 				art.Direct = true
+			}
+			// We don't need to overwrite dependency location for hard links
+			if uniqueArt.Locations != nil {
+				art.Locations = uniqueArt.Locations
 			}
 		}
 
@@ -185,9 +190,11 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		if !art.IsEmpty() {
 			// Override the version
 			uniqArtifacts[art.Name()] = artifact{
-				Version:  art.Version,
-				Licenses: result.artifact.Licenses,
-				Direct:   art.Direct,
+				Version:   art.Version,
+				Licenses:  result.artifact.Licenses,
+				Direct:    art.Direct,
+				Root:      art.Root,
+				Locations: art.Locations,
 			}
 
 			// save only dependency names
@@ -202,11 +209,12 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 	// Convert to []types.Library and []types.Dependency
 	for name, art := range uniqArtifacts {
 		lib := types.Library{
-			ID:       packageID(name, art.Version.String()),
-			Name:     name,
-			Version:  art.Version.String(),
-			License:  art.JoinLicenses(),
-			Indirect: !art.Direct,
+			ID:        packageID(name, art.Version.String()),
+			Name:      name,
+			Version:   art.Version.String(),
+			License:   art.JoinLicenses(),
+			Indirect:  !art.Direct,
+			Locations: art.Locations,
 		}
 		libs = append(libs, lib)
 
@@ -294,6 +302,7 @@ type analysisResult struct {
 type analysisOptions struct {
 	exclusions    map[string]struct{}
 	depManagement []pomDependency // from the root POM
+	lineNumber    bool            // Save line numbers
 }
 
 func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -324,7 +333,7 @@ func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 
 	// Merge dependencies. Child dependencies must be preferred than parent dependencies.
 	// Parents don't have to resolve dependencies.
-	deps := p.parseDependencies(pom.content.Dependencies.Dependency, props, depManagement, opts.depManagement, opts.exclusions)
+	deps := p.parseDependencies(pom.content.Dependencies.Dependency, props, depManagement, opts)
 	deps = p.mergeDependencies(parent.dependencies, deps, opts.exclusions)
 
 	return analysisResult{
@@ -353,8 +362,8 @@ func (p *parser) mergeDependencyManagements(depManagements ...[]pomDependency) [
 	return depManagement
 }
 
-func (p *parser) parseDependencies(deps []pomDependency, props map[string]string, depManagement, rootDepManagement []pomDependency,
-	exclusions map[string]struct{}) []artifact {
+func (p *parser) parseDependencies(deps []pomDependency, props map[string]string, depManagement []pomDependency,
+	opts analysisOptions) []artifact {
 	// Imported POMs often have no dependencies, so dependencyManagement resolution can be skipped.
 	if len(deps) == 0 {
 		return nil
@@ -363,6 +372,7 @@ func (p *parser) parseDependencies(deps []pomDependency, props map[string]string
 	// Resolve dependencyManagement
 	depManagement = p.resolveDepManagement(props, depManagement)
 
+	rootDepManagement := opts.depManagement
 	var dependencies []artifact
 	for _, d := range deps {
 		// Resolve dependencies
@@ -371,7 +381,8 @@ func (p *parser) parseDependencies(deps []pomDependency, props map[string]string
 		if (d.Scope != "" && d.Scope != "compile") || d.Optional {
 			continue
 		}
-		dependencies = append(dependencies, d.ToArtifact(exclusions))
+
+		dependencies = append(dependencies, d.ToArtifact(opts))
 	}
 	return dependencies
 }
@@ -409,7 +420,7 @@ func (p *parser) mergeDependencies(parent, child []artifact, exclusions map[stri
 	var deps []artifact
 	unique := map[string]struct{}{}
 
-	for _, d := range append(parent, child...) {
+	for _, d := range append(child, parent...) {
 		if excludeDep(exclusions, d) {
 			continue
 		}

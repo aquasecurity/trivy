@@ -40,6 +40,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 32,
+							EndLine:   36,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -67,6 +73,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 32,
+							EndLine:   36,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -88,6 +100,12 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-offline:2.3.4",
 					Name:    "org.example:example-offline",
 					Version: "2.3.4",
+					Locations: types.Locations{
+						{
+							StartLine: 17,
+							EndLine:   21,
+						},
+					},
 				},
 			},
 		},
@@ -107,6 +125,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 33,
+							EndLine:   37,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -133,6 +157,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "2.0.0",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 18,
+							EndLine:   22,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -159,6 +189,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "2.0.0",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 18,
+							EndLine:   21,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -190,6 +226,12 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-dependency:1.2.3",
 					Name:    "org.example:example-dependency",
 					Version: "1.2.3",
+					Locations: types.Locations{
+						{
+							StartLine: 22,
+							EndLine:   26,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -250,6 +292,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 26,
+							EndLine:   29,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -284,6 +332,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-child",
 					Version: "2.0.0",
 					License: "Apache 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 28,
+							EndLine:   32,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -317,6 +371,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 26,
+							EndLine:   30,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -342,6 +402,12 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-api:1.1.1",
 					Name:    "org.example:example-api",
 					Version: "1.1.1",
+					Locations: types.Locations{
+						{
+							StartLine: 19,
+							EndLine:   22,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -369,6 +435,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 25,
+							EndLine:   29,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -401,11 +473,23 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 32,
+							EndLine:   36,
+						},
+					},
 				},
 				{
 					ID:      "org.example:example-dependency:1.2.3",
 					Name:    "org.example:example-dependency",
 					Version: "1.2.3",
+					Locations: types.Locations{
+						{
+							StartLine: 37,
+							EndLine:   41,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -451,11 +535,23 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-dependency2:2.3.4",
 					Name:    "org.example:example-dependency2",
 					Version: "2.3.4",
+					Locations: types.Locations{
+						{
+							StartLine: 18,
+							EndLine:   22,
+						},
+					},
 				},
 				{
 					ID:      "org.example:example-dependency:1.2.3",
 					Name:    "org.example:example-dependency",
 					Version: "1.2.3",
+					Locations: types.Locations{
+						{
+							StartLine: 13,
+							EndLine:   17,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -508,11 +604,23 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-dependency:1.2.3",
 					Name:    "org.example:example-dependency",
 					Version: "1.2.3",
+					Locations: types.Locations{
+						{
+							StartLine: 33,
+							EndLine:   37,
+						},
+					},
 				},
 				{
 					ID:      "org.example:example-nested:3.3.4",
 					Name:    "org.example:example-nested",
 					Version: "3.3.4",
+					Locations: types.Locations{
+						{
+							StartLine: 28,
+							EndLine:   32,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -566,6 +674,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 34,
+							EndLine:   37,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -593,6 +707,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 42,
+							EndLine:   45,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -624,6 +744,12 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-nested:3.3.3",
 					Name:    "org.example:example-nested",
 					Version: "3.3.3",
+					Locations: types.Locations{
+						{
+							StartLine: 14,
+							EndLine:   28,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -668,6 +794,12 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-exclusions:4.0.0",
 					Name:    "org.example:example-exclusions",
 					Version: "4.0.0",
+					Locations: types.Locations{
+						{
+							StartLine: 10,
+							EndLine:   14,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -700,16 +832,34 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-dependency2:2.3.4",
 					Name:    "org.example:example-dependency2",
 					Version: "2.3.4",
+					Locations: types.Locations{
+						{
+							StartLine: 25,
+							EndLine:   35,
+						},
+					},
 				},
 				{
 					ID:      "org.example:example-dependency:1.2.3",
 					Name:    "org.example:example-dependency",
 					Version: "1.2.3",
+					Locations: types.Locations{
+						{
+							StartLine: 14,
+							EndLine:   24,
+						},
+					},
 				},
 				{
 					ID:      "org.example:example-nested:3.3.3",
 					Name:    "org.example:example-nested",
 					Version: "3.3.3",
+					Locations: types.Locations{
+						{
+							StartLine: 36,
+							EndLine:   46,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -862,6 +1012,12 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-nested:3.3.3",
 					Name:    "org.example:example-nested",
 					Version: "3.3.3",
+					Locations: types.Locations{
+						{
+							StartLine: 20,
+							EndLine:   24,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -887,7 +1043,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "transitive dependencyManagement should not be inherited",
-			inputFile: "testdata/transitive-dependency-management/pom.xml",
+			inputFile: filepath.Join("testdata", "transitive-dependency-management", "pom.xml"),
 			local:     true,
 			want: []types.Library{
 				// Managed dependencies (org.example:example-api:1.7.30) in org.example:example-dependency-management3
@@ -903,6 +1059,12 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-dependency-management3:1.1.1",
 					Name:    "org.example:example-dependency-management3",
 					Version: "1.1.1",
+					Locations: types.Locations{
+						{
+							StartLine: 14,
+							EndLine:   18,
+						},
+					},
 				},
 				{
 					ID:       "org.example:example-dependency:1.2.3",
@@ -953,6 +1115,12 @@ func TestPom_Parse(t *testing.T) {
 					Name:    "org.example:example-api",
 					Version: "1.7.30",
 					License: "The Apache Software License, Version 2.0",
+					Locations: types.Locations{
+						{
+							StartLine: 27,
+							EndLine:   31,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -979,6 +1147,12 @@ func TestPom_Parse(t *testing.T) {
 					ID:      "org.example:example-not-found:999",
 					Name:    "org.example:example-not-found",
 					Version: "999",
+					Locations: types.Locations{
+						{
+							StartLine: 21,
+							EndLine:   25,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{

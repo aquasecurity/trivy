@@ -41,7 +41,7 @@
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>example-api</artifactId>
-            <version>${api.version}</version>
+            <version>2.2.2</version>
         </dependency>
     </dependencies>
 

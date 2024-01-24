@@ -6,9 +6,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/log"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/log"
+	"github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 var (
@@ -26,6 +28,8 @@ type artifact struct {
 	Module bool
 	Root   bool
 	Direct bool
+
+	Locations types.Locations
 }
 
 func newArtifact(groupID, artifactID, version string, licenses []string, props map[string]string) artifact {
@@ -50,9 +54,11 @@ func (a artifact) JoinLicenses() string {
 }
 
 func (a artifact) ToPOMLicenses() pomLicenses {
-	return pomLicenses{License: lo.Map(a.Licenses, func(lic string, _ int) pomLicense {
-		return pomLicense{Name: lic}
-	})}
+	return pomLicenses{
+		License: lo.Map(a.Licenses, func(lic string, _ int) pomLicense {
+			return pomLicense{Name: lic}
+		}),
+	}
 }
 
 func (a artifact) Inherit(parent artifact) artifact {
