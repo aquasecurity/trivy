@@ -21,29 +21,20 @@ var (
 		Usage:      "deprecated",
 		Deprecated: true,
 	}
-	VEXFlag = Flag{
-		Name:       "vex",
-		ConfigName: "sbom.vex",
-		Default:    "",
-		Usage:      "[EXPERIMENTAL] file path to VEX",
-	}
 )
 
 type SBOMFlagGroup struct {
 	ArtifactType *Flag // deprecated
 	SBOMFormat   *Flag // deprecated
-	VEXPath      *Flag
 }
 
 type SBOMOptions struct {
-	VEXPath string
 }
 
 func NewSBOMFlagGroup() *SBOMFlagGroup {
 	return &SBOMFlagGroup{
 		ArtifactType: &ArtifactTypeFlag,
 		SBOMFormat:   &SBOMFormatFlag,
-		VEXPath:      &VEXFlag,
 	}
 }
 
@@ -55,7 +46,6 @@ func (f *SBOMFlagGroup) Flags() []*Flag {
 	return []*Flag{
 		f.ArtifactType,
 		f.SBOMFormat,
-		f.VEXPath,
 	}
 }
 
@@ -69,7 +59,5 @@ func (f *SBOMFlagGroup) ToOptions() (SBOMOptions, error) {
 		return SBOMOptions{}, xerrors.New("'--artifact-type' and '--sbom-format' are no longer available")
 	}
 
-	return SBOMOptions{
-		VEXPath: getString(f.VEXPath),
-	}, nil
+	return SBOMOptions{}, nil
 }
