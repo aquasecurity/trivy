@@ -1,0 +1,3 @@
+FROM node:12
+USER mike
+RUN apt-get -fmy install apt-utils && apt-get clean

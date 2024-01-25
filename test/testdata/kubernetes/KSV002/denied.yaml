@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/hello: custom
+  name: hello-apparmor
+spec:
+  containers:
+    - command:
+        - sh
+        - "-c"
+        - echo 'Hello AppArmor!' && sleep 1h
+      image: busybox
+      name: hello

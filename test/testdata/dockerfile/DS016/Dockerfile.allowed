@@ -1,0 +1,5 @@
+FROM golang:1.7.3
+USER mike
+CMD ./apps
+FROM alpine:3.13
+CMD ./app

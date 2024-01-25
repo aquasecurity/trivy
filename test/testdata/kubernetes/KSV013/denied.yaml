@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-tag
+spec:
+  containers:
+    - command:
+        - sh
+        - "-c"
+        - echo 'Hello' && sleep 1h
+      image: busybox:latest
+      name: hello
