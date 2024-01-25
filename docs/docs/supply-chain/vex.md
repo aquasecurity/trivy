@@ -327,6 +327,51 @@ Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
 
 CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.
 
+## Appendix
+### PURL matching
+In the context of VEX, Package URLs (PURLs) are utilized to identify specific software packages and their versions.
+The PURL matching specification outlines how PURLs are interpreted for vulnerability exception processing, ensuring precise identification and broad coverage of software packages.
+
+!!! note
+    The following PURL matching rules are not formally defined within the current official PURL specification.
+    Instead, they represent [a community consensus][purl-matching] on how to interpret PURLs.
+
+Below are the key aspects of the PURL matching rules:
+
+#### Matching Without Version
+A PURL without a specified version (e.g., `pkg:maven/com.google.guava/guava`) matches all versions of that package.
+This rule simplifies the application of vulnerability exceptions to all versions of a package.
+
+**Example**: `pkg:maven/com.google.guava/guava` matches:
+
+- All versions of `guava`, such as `com.google.guava:guava:24.1.1`, `com.google.guava:guava:30.0`.
+ 
+#### Matching Without Qualifiers
+A PURL without any qualifiers (e.g., `pkg:maven/com.google.guava/guava@24.1.1`) matches any variation of that package, irrespective of qualifiers.
+This approach ensures broad matching capabilities, covering all architectural or platform-specific variations of a package version.
+
+**Example**: `pkg:maven/com.google.guava/guava@24.1.1` matches:
+
+- `pkg:maven/com.google.guava/guava@24.1.1?classifier=x86`
+- `pkg:maven/com.google.guava/guava@24.1.1?type=pom`
+
+#### Matching With Specific Qualifiers
+A PURL that includes specific qualifiers (e.g., `pkg:maven/com.google.guava/guava@24.1.1?classifier=x86`) matches only those package versions that include the same qualifiers.
+
+**Example**: `pkg:maven/com.google.guava/guava@24.1.1?classifier=x86` matches:
+
+- `pkg:maven/com.google.guava/guava@24.1.1?classifier=x86&type=dll`
+    - Extra qualifiers (e.g., `type=dll`) are ignored.
+
+does not match:
+
+- `pkg:maven/com.google.guava/guava@24.1.1`
+    - `classifier=x86` is missing.
+- `pkg:maven/com.google.guava/guava@24.1.1?classifier=sources`
+    - `classifier` must have the same value.
+
+
 [csaf]: https://oasis-open.github.io/csaf-documentation/specification.html
 [openvex]: https://github.com/openvex/spec
 [purl]: https://github.com/package-url/purl-spec
+[purl-matching]: https://github.com/openvex/spec/issues/27
