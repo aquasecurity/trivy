@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 
@@ -58,9 +59,9 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		return filepath.Base(path) == types.CargoLock
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		// Parse Cargo.lock
-		app, err := a.parseCargoLock(path, r)
+		app, err := a.parseCargoLock(filePath, r)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -68,8 +69,8 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		}
 
 		// Parse Cargo.toml alongside Cargo.lock to identify the direct dependencies
-		if err = a.removeDevDependencies(input.FS, filepath.Dir(path), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.CargoToml), err)
+		if err = a.removeDevDependencies(input.FS, path.Dir(filePath), app); err != nil {
+			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", path.Join(path.Dir(filePath), types.CargoToml), err)
 		}
 		sort.Sort(app.Libraries)
 		apps = append(apps, *app)
@@ -103,7 +104,7 @@ func (a cargoAnalyzer) parseCargoLock(path string, r io.Reader) (*types.Applicat
 }
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
-	cargoTOMLPath := filepath.Join(dir, types.CargoToml)
+	cargoTOMLPath := path.Join(dir, types.CargoToml)
 	directDeps, err := a.parseCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		log.Logger.Debugf("Cargo: %s not found", cargoTOMLPath)
@@ -196,23 +197,23 @@ func tomlDependencies(fsys fs.FS, path string) (Dependencies, []string, error) {
 	return dependencies, tomlFile.Workspace.Members, nil
 }
 
-func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]string, error) {
+func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, cargoTOMLPath string) (map[string]string, error) {
 	deps := make(map[string]string)
 
-	dependencies, members, err := tomlDependencies(fsys, path)
+	dependencies, members, err := tomlDependencies(fsys, cargoTOMLPath)
 	if err != nil {
 		return nil, err
 	}
 	// According to Cargo workspace RFC, workspaces can't be nested:
 	// https://github.com/nox/rust-rfcs/blob/master/text/1525-cargo-workspace.md#validating-a-workspace
-	for _, value := range members {
-		newToml := filepath.Join(filepath.Join(filepath.Dir(path), value), types.CargoToml)
-		tomlDeps, _, err := tomlDependencies(fsys, newToml)
+	for _, member := range members {
+		memberPath := path.Join(path.Join(path.Dir(cargoTOMLPath), member), types.CargoToml)
+		memberDeps, _, err := tomlDependencies(fsys, memberPath)
 		if err != nil {
-			log.Logger.Warnf("Unable to parse %q: %s", newToml, err)
+			log.Logger.Warnf("Unable to parse %q: %s", memberPath, err)
 			continue
 		}
-		maps.Copy(dependencies, tomlDeps)
+		maps.Copy(dependencies, memberDeps)
 	}
 
 	for name, value := range dependencies {
