@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -112,6 +113,9 @@
           ],
           "PkgID": "libidn2-0@2.0.5-1",
           "PkgName": "libidn2-0",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libidn2-0@2.0.5-1?arch=amd64\u0026distro=debian-10.2"
+          },
           "InstalledVersion": "2.0.5-1",
           "FixedVersion": "2.0.5-1+deb10u1",
           "Status": "fixed",
@@ -132,6 +136,12 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -174,6 +184,9 @@
           "VulnerabilityID": "CVE-2020-8165",
           "PkgName": "activesupport",
           "PkgPath": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
+          "PkgIdentifier": {
+            "PURL": "pkg:gem/activesupport@6.0.2.1"
+          },
           "InstalledVersion": "6.0.2.1",
           "FixedVersion": "6.0.3.1, 5.2.4.3",
           "Status": "fixed",
@@ -194,6 +207,11 @@
           "CweIDs": [
             "CWE-502"
           ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 4,
+            "redhat": 3
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",

@@ -35,28 +35,28 @@ $ trivy config [YOUR_IaC_DIRECTORY]
     ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ```
 
-You can also enable misconfiguration detection in container image, filesystem and git repository scanning via `--scanners config`.
+You can also enable misconfiguration detection in container image, filesystem and git repository scanning via `--scanners misconfig`.
 
 ```bash
-$ trivy image --scanners config IMAGE_NAME
+$ trivy image --scanners misconfig IMAGE_NAME
 ```
 
 ```bash
-$ trivy fs --scanners config /path/to/dir
+$ trivy fs --scanners misconfig /path/to/dir
 ```
 
 !!! note
     Misconfiguration detection is not enabled by default in `image`, `fs` and `repo` subcommands.
 
 Unlike the `config` subcommand, `image`, `fs` and `repo` subcommands can also scan for vulnerabilities and secrets at the same time. 
-You can specify `--scanners vuln,config,secret` to enable vulnerability and secret detection as well as misconfiguration detection.
+You can specify `--scanners vuln,misconfig,secret` to enable vulnerability and secret detection as well as misconfiguration detection.
 
 
 !!! example
     ``` bash
     $ ls myapp/
     Dockerfile Pipfile.lock
-    $ trivy fs --scanners vuln,config,secret --severity HIGH,CRITICAL myapp/
+    $ trivy fs --scanners vuln,misconfig,secret --severity HIGH,CRITICAL myapp/
     2022-05-16T13:42:21.440+0100	INFO	Number of language-specific files: 1
     2022-05-16T13:42:21.440+0100	INFO	Detecting pipenv vulnerabilities...
     2022-05-16T13:42:21.440+0100	INFO	Detected config files: 1
@@ -314,6 +314,15 @@ Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 ## Configuration
 This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
+
+### Enabling a subset of misconfiguration scanners
+It's possible to only enable certain misconfiguration scanners if you prefer. You can do so by passing the `--misconfig-scanners` option.
+This flag takes a comma-separated list of configuration scanner types.
+```bash
+trivy config --misconfig-scanners=terraform,dockerfile .
+```
+
+Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
 
 ### Pass custom policies
 You can pass policy files or directories including your custom policies through `--policy` option.

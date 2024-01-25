@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"io"
 	"net"
 	"os"
@@ -190,13 +191,16 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 }
 
 func execute(osArgs []string) error {
+	// Set a fake time
+	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+
 	// Setup CLI App
 	app := commands.NewApp()
 	app.SetOut(io.Discard)
+	app.SetArgs(osArgs)
 
 	// Run Trivy
-	app.SetArgs(osArgs)
-	return app.Execute()
+	return app.ExecuteContext(ctx)
 }
 
 func compareReports(t *testing.T, wantFile, gotFile string, override func(*types.Report)) {

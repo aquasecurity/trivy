@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"bytes"
 	"context"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"os"
 	"path/filepath"
 	"testing"
@@ -17,6 +19,7 @@ import (
 )
 
 const expectedS3ScanResult = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "12345678",
   "ArtifactType": "aws_account",
   "Metadata": {
@@ -264,6 +267,7 @@ const expectedS3ScanResult = `{
 `
 
 const expectedCustomScanResult = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "12345678",
   "ArtifactType": "aws_account",
   "Metadata": {
@@ -544,6 +548,7 @@ const expectedCustomScanResult = `{
 `
 
 const expectedS3AndCloudTrailResult = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "123456789",
   "ArtifactType": "aws_account",
   "Metadata": {
@@ -1063,8 +1068,11 @@ Summary Report for compliance: my-custom-spec
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
 			cacheContent: "testdata/s3andcloudtrailcache.json",
-			allServices:  []string{"s3", "cloudtrail"},
-			want:         expectedS3AndCloudTrailResult,
+			allServices: []string{
+				"s3",
+				"cloudtrail",
+			},
+			want: expectedS3AndCloudTrailResult,
 		},
 		{
 			name: "skip certain services and include specific services",
@@ -1082,7 +1090,10 @@ Summary Report for compliance: my-custom-spec
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
 			cacheContent: "testdata/s3andcloudtrailcache.json",
-			allServices:  []string{"s3", "cloudtrail"},
+			allServices: []string{
+				"s3",
+				"cloudtrail",
+			},
 			// we skip cloudtrail but still expect results from it as it is cached
 			want: expectedS3AndCloudTrailResult,
 		},
@@ -1091,16 +1102,23 @@ Summary Report for compliance: my-custom-spec
 			options: flag.Options{
 				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
-					Region:       "us-east-1",
-					SkipServices: []string{"cloudtrail", "iam"},
-					Account:      "12345678",
+					Region: "us-east-1",
+					SkipServices: []string{
+						"cloudtrail",
+						"iam",
+					},
+					Account: "12345678",
 				},
 				CloudOptions: flag.CloudOptions{
 					MaxCacheAge: time.Hour * 24 * 365 * 100,
 				},
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
-			allServices:  []string{"s3", "cloudtrail", "iam"},
+			allServices: []string{
+				"s3",
+				"cloudtrail",
+				"iam",
+			},
 			cacheContent: "testdata/s3onlycache.json",
 			want:         expectedS3ScanResult,
 		},
@@ -1123,6 +1141,8 @@ Summary Report for compliance: my-custom-spec
 			expectErr:    true,
 		},
 	}
+
+	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			if test.allServices != nil {
@@ -1135,8 +1155,8 @@ Summary Report for compliance: my-custom-spec
 				}()
 			}
 
-			output := filepath.Join(t.TempDir(), "output")
-			test.options.Output = output
+			output := bytes.NewBuffer(nil)
+			test.options.SetOutputWriter(output)
 			test.options.Debug = true
 			test.options.GlobalOptions.Timeout = time.Minute
 			if test.options.Format == "" {
@@ -1172,16 +1192,13 @@ Summary Report for compliance: my-custom-spec
 				require.NoError(t, os.WriteFile(cacheFile, cacheData, 0600))
 			}
 
-			err := Run(context.Background(), test.options)
+			err := Run(ctx, test.options)
 			if test.expectErr {
 				assert.Error(t, err)
 				return
 			}
 			assert.NoError(t, err)
-
-			b, err := os.ReadFile(output)
-			require.NoError(t, err)
-			assert.Equal(t, test.want, string(b))
+			assert.Equal(t, test.want, output.String())
 		})
 	}
 }

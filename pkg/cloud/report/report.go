@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/tml"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -58,20 +59,18 @@ func (r *Report) Failed() bool {
 }
 
 // Write writes the results in the give format
-func Write(rep *Report, opt flag.Options, fromCache bool) error {
-	output, err := opt.OutputWriter()
+func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) error {
+	output, cleanup, err := opt.OutputWriter(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to create output file: %w", err)
 	}
-	defer output.Close()
+	defer cleanup()
 
 	if opt.Compliance.Spec.ID != "" {
-		return writeCompliance(rep, opt, output)
+		return writeCompliance(ctx, rep, opt, output)
 	}
 
 	var filtered []types.Result
-
-	ctx := context.Background()
 
 	// filter results
 	for _, resultsAtTime := range rep.Results {
@@ -94,6 +93,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	})
 
 	base := types.Report{
+		CreatedAt:    clock.Now(ctx),
 		ArtifactName: rep.AccountID,
 		ArtifactType: ftypes.ArtifactAWSAccount,
 		Results:      filtered,
@@ -104,7 +104,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		// ensure color/formatting is disabled for pipes/non-pty
 		var useANSI bool
-		if opt.Output == "" {
+		if output == os.Stdout {
 			if o, err := os.Stdout.Stat(); err == nil {
 				useANSI = (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 			}
@@ -135,11 +135,11 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 		return nil
 	default:
-		return pkgReport.Write(base, opt)
+		return pkgReport.Write(ctx, base, opt)
 	}
 }
 
-func writeCompliance(rep *Report, opt flag.Options, output io.Writer) error {
+func writeCompliance(ctx context.Context, rep *Report, opt flag.Options, output io.Writer) error {
 	var crr []types.Results
 	for _, r := range rep.Results {
 		crr = append(crr, r.Results)
@@ -150,7 +150,7 @@ func writeCompliance(rep *Report, opt flag.Options, output io.Writer) error {
 		return xerrors.Errorf("compliance report build error: %w", err)
 	}
 
-	return cr.Write(complianceReport, cr.Option{
+	return cr.Write(ctx, complianceReport, cr.Option{
 		Format: opt.Format,
 		Report: opt.ReportFormat,
 		Output: output,

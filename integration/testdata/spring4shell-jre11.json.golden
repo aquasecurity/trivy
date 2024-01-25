@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/spring4shell-jre11.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -197,6 +198,9 @@
           "VulnerabilityID": "CVE-2022-22965",
           "PkgName": "org.springframework:spring-beans",
           "PkgPath": "usr/local/tomcat/webapps/helloworld.war/WEB-INF/lib/spring-beans-5.3.15.jar",
+          "PkgIdentifier": {
+            "PURL": "pkg:maven/org.springframework/spring-beans@5.3.15"
+          },
           "InstalledVersion": "5.3.15",
           "FixedVersion": "5.3.18",
           "Status": "fixed",
@@ -217,6 +221,11 @@
           "CweIDs": [
             "CWE-94"
           ],
+          "VendorSeverity": {
+            "ghsa": 4,
+            "nvd": 4,
+            "redhat": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",

@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pipenv",
   "ArtifactType": "repository",
   "Metadata": {
@@ -22,6 +23,9 @@
       "Packages": [
         {
           "Name": "werkzeug",
+          "Identifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1"
+          },
           "Version": "0.11.1",
           "Layer": {},
           "Locations": [
@@ -36,6 +40,9 @@
         {
           "VulnerabilityID": "CVE-2019-14806",
           "PkgName": "werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1"
+          },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
           "Status": "fixed",
@@ -53,6 +60,12 @@
           "CweIDs": [
             "CWE-331"
           ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3,
+            "redhat": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -83,6 +96,9 @@
         {
           "VulnerabilityID": "CVE-2020-28724",
           "PkgName": "werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1"
+          },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",
           "Status": "fixed",
@@ -100,6 +116,12 @@
           "CweIDs": [
             "CWE-601"
           ],
+          "VendorSeverity": {
+            "ghsa": 2,
+            "nvd": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",

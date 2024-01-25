@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/go-multierror"
+	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -90,7 +91,7 @@ type Runner interface {
 	// Filter filter a report
 	Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error)
 	// Report a writes a report
-	Report(opts flag.Options, report types.Report) error
+	Report(ctx context.Context, opts flag.Options, report types.Report) error
 	// Close closes runner
 	Close(ctx context.Context) error
 }
@@ -279,8 +280,8 @@ func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Rep
 	return report, nil
 }
 
-func (r *runner) Report(opts flag.Options, report types.Report) error {
-	if err := pkgReport.Write(report, opts); err != nil {
+func (r *runner) Report(ctx context.Context, opts flag.Options, report types.Report) error {
+	if err := pkgReport.Write(ctx, report, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -450,7 +451,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return xerrors.Errorf("filter error: %w", err)
 	}
 
-	if err = r.Report(opts, report); err != nil {
+	if err = r.Report(ctx, opts, report); err != nil {
 		return xerrors.Errorf("report error: %w", err)
 	}
 
@@ -478,6 +479,14 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// Do not perform secret scanning when it is not specified.
 	if !opts.Scanners.Enabled(types.SecretScanner) {
 		analyzers = append(analyzers, analyzer.TypeSecret)
+	}
+
+	// Filter only enabled misconfiguration scanners
+	ma, err := filterMisconfigAnalyzers(opts.MisconfigScanners, analyzer.TypeConfigFiles)
+	if err != nil {
+		log.Logger.Errorf("Invalid misconfig scanners specified: %s defaulting to use all misconfig scanners", opts.MisconfigScanners)
+	} else {
+		analyzers = append(analyzers, ma...)
 	}
 
 	// Do not perform misconfiguration scanning when it is not specified.
@@ -510,6 +519,16 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	return analyzers
+}
+
+func filterMisconfigAnalyzers(included, all []analyzer.Type) ([]analyzer.Type, error) {
+	_, missing := lo.Difference(all, included)
+	if len(missing) > 0 {
+		return nil, xerrors.Errorf("invalid misconfiguration scanner specified %s valid scanners: %s", missing, all)
+	}
+
+	log.Logger.Debugf("Enabling misconfiguration scanners: %s", included)
+	return lo.Without(all, included...), nil
 }
 
 func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
@@ -574,6 +593,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			disableEmbedded = true
 		}
 		configScannerOptions = misconf.ScannerOption{
+			Debug:                    opts.Debug,
 			Trace:                    opts.Trace,
 			Namespaces:               append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
@@ -583,6 +603,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			HelmFileValues:           opts.HelmFileValues,
 			HelmStringValues:         opts.HelmStringValues,
 			TerraformTFVars:          opts.TerraformTFVars,
+			CloudFormationParamVars:  opts.CloudFormationParamVars,
 			K8sVersion:               opts.K8sVersion,
 			DisableEmbeddedPolicies:  disableEmbedded,
 			DisableEmbeddedLibraries: disableEmbedded,
@@ -637,7 +658,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
 			//Platform:          opts.Platform,
-			Slow:         opts.Slow,
+			Parallel:     opts.Parallel,
 			AWSRegion:    opts.Region,
 			AWSEndpoint:  opts.Endpoint,
 			FileChecksum: fileChecksum,

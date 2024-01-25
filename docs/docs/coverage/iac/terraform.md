@@ -2,14 +2,14 @@
 Trivy supports the scanners listed in the table below.
 
 |     Scanner      | Supported |
-| :--------------: | :-------: |
+|:----------------:|:---------:|
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 
 It supports the following formats:
 
 |  Format   | Supported |
-| :-------: | :-------: |
+|:---------:|:---------:|
 |   JSON    |     ✓     |
 |    HCL    |     ✓     |
 | Plan JSON |     ✓     |

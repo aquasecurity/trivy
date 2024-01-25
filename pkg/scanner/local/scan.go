@@ -120,7 +120,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	// Scan packages for vulnerabilities
 	if options.Scanners.Enabled(types.VulnerabilityScanner) {
 		var vulnResults types.Results
-		vulnResults, eosl, err = s.scanVulnerabilities(target, options)
+		vulnResults, eosl, err = s.scanVulnerabilities(ctx, target, options)
 		if err != nil {
 			return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
@@ -166,13 +166,13 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	return results, target.OS, nil
 }
 
-func (s Scanner) scanVulnerabilities(target types.ScanTarget, options types.ScanOptions) (
+func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
 	types.Results, bool, error) {
 	var eosl bool
 	var results types.Results
 
 	if slices.Contains(options.VulnType, types.VulnTypeOS) {
-		vuln, detectedEOSL, err := s.osPkgScanner.Scan(target, options)
+		vuln, detectedEOSL, err := s.osPkgScanner.Scan(ctx, target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
 		} else if vuln.Target != "" {
@@ -211,7 +211,8 @@ func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Re
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
-	if !ShouldScanMisconfigOrRbac(options.Scanners) {
+	if !ShouldScanMisconfigOrRbac(options.Scanners) &&
+		!options.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		return nil
 	}
 

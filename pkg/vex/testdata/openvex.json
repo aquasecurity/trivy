@@ -10,7 +10,9 @@
         "name": "CVE-2021-44228"
       },
       "products": [
-        {"@id": "pkg:maven/org.springframework.boot/spring-boot@2.6.0"}
+        {
+          "@id": "pkg:maven/org.springframework.boot/spring-boot@2.6.0"
+        }
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_in_execute_path"

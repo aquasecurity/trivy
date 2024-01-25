@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/helm_testchart",
   "ArtifactType": "repository",
   "Metadata": {
@@ -20,8 +21,8 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 149,
-        "Failures": 7,
+        "Successes": 133,
+        "Failures": 6,
         "Exceptions": 0
       },
       "Misconfigurations": [
@@ -56,6 +57,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mname\u001b[0m: testchart",
                   "FirstCause": true,
                   "LastCause": false
                 },
@@ -65,6 +67,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -74,6 +77,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -83,6 +87,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -92,6 +97,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              - ALL",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -101,6 +107,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -110,6 +117,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -119,6 +127,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -128,6 +137,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m0",
                   "FirstCause": false,
                   "LastCause": true
                 },
@@ -175,6 +185,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mname\u001b[0m: testchart",
                   "FirstCause": true,
                   "LastCause": false
                 },
@@ -184,6 +195,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -193,6 +205,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -202,6 +215,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -211,6 +225,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              - ALL",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -220,6 +235,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -229,6 +245,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -238,6 +255,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -247,6 +265,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m0",
                   "FirstCause": false,
                   "LastCause": true
                 },
@@ -294,6 +313,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mname\u001b[0m: testchart",
                   "FirstCause": true,
                   "LastCause": false
                 },
@@ -303,6 +323,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -312,6 +333,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -321,6 +343,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -330,6 +353,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              - ALL",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -339,6 +363,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -348,6 +373,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -357,6 +383,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -366,6 +393,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m0",
                   "FirstCause": false,
                   "LastCause": true
                 },
@@ -439,6 +467,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
                   "FirstCause": true,
                   "LastCause": false
                 },
@@ -448,6 +477,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -457,6 +487,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "              - ALL",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -466,6 +497,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "            \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -475,6 +507,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsGroup\u001b[0m: \u001b[38;5;37m10001",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -484,6 +517,7 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsNonRoot\u001b[0m: \u001b[38;5;166mtrue",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -493,36 +527,11 @@
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
+                  "Highlighted": "\u001b[0m            \u001b[38;5;33mrunAsUser\u001b[0m: \u001b[38;5;37m0",
                   "FirstCause": false,
                   "LastCause": true
                 }
               ]
-            }
-          }
-        },
-        {
-          "Type": "Helm Security Check",
-          "ID": "KSV116",
-          "AVDID": "AVD-KSV-0116",
-          "Title": "Runs with a root primary or supplementary GID",
-          "Description": "According to pod security standard 'Non-root groups', containers should be forbidden from running with a root primary or supplementary GID.",
-          "Message": "deployment testchart in default namespace should set spec.securityContext.runAsGroup, spec.securityContext.supplementalGroups[*] and spec.securityContext.fsGroup to integer greater than 0",
-          "Namespace": "builtin.kubernetes.KSV116",
-          "Query": "data.builtin.kubernetes.KSV116.deny",
-          "Resolution": "Set 'containers[].securityContext.runAsGroup' to a non-zero integer or leave undefined.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv116",
-          "References": [
-            "https://kubesec.io/basics/containers-securitycontext-runasuser/",
-            "https://avd.aquasec.com/misconfig/ksv116"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "Code": {
-              "Lines": null
             }
           }
         },
@@ -559,76 +568,20 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 155,
-        "Failures": 1,
+        "Successes": 106,
+        "Failures": 0,
         "Exceptions": 0
-      },
-      "Misconfigurations": [
-        {
-          "Type": "Helm Security Check",
-          "ID": "KSV116",
-          "AVDID": "AVD-KSV-0116",
-          "Title": "Runs with a root primary or supplementary GID",
-          "Description": "According to pod security standard 'Non-root groups', containers should be forbidden from running with a root primary or supplementary GID.",
-          "Message": "service testchart in default namespace should set spec.securityContext.runAsGroup, spec.securityContext.supplementalGroups[*] and spec.securityContext.fsGroup to integer greater than 0",
-          "Namespace": "builtin.kubernetes.KSV116",
-          "Query": "data.builtin.kubernetes.KSV116.deny",
-          "Resolution": "Set 'containers[].securityContext.runAsGroup' to a non-zero integer or leave undefined.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv116",
-          "References": [
-            "https://kubesec.io/basics/containers-securitycontext-runasuser/",
-            "https://avd.aquasec.com/misconfig/ksv116"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "Code": {
-              "Lines": null
-            }
-          }
-        }
-      ]
+      }
     },
     {
       "Target": "templates/serviceaccount.yaml",
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 155,
-        "Failures": 1,
+        "Successes": 105,
+        "Failures": 0,
         "Exceptions": 0
-      },
-      "Misconfigurations": [
-        {
-          "Type": "Helm Security Check",
-          "ID": "KSV116",
-          "AVDID": "AVD-KSV-0116",
-          "Title": "Runs with a root primary or supplementary GID",
-          "Description": "According to pod security standard 'Non-root groups', containers should be forbidden from running with a root primary or supplementary GID.",
-          "Message": "serviceaccount testchart in default namespace should set spec.securityContext.runAsGroup, spec.securityContext.supplementalGroups[*] and spec.securityContext.fsGroup to integer greater than 0",
-          "Namespace": "builtin.kubernetes.KSV116",
-          "Query": "data.builtin.kubernetes.KSV116.deny",
-          "Resolution": "Set 'containers[].securityContext.runAsGroup' to a non-zero integer or leave undefined.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv116",
-          "References": [
-            "https://kubesec.io/basics/containers-securitycontext-runasuser/",
-            "https://avd.aquasec.com/misconfig/ksv116"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "Code": {
-              "Lines": null
-            }
-          }
-        }
-      ]
+      }
     }
   ]
 }

@@ -1,6 +1,7 @@
 package redhat
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -10,7 +11,6 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
@@ -64,36 +64,15 @@ var (
 	}
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(c clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = c
-	}
-}
-
 // Scanner implements the RedHat scanner
 type Scanner struct {
 	vs redhat.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      redhat.NewVulnSrc(),
-		options: o,
+		vs: redhat.NewVulnSrc(),
 	}
 }
 
@@ -157,7 +136,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			PkgID:            pkg.ID,
 			PkgName:          pkg.Name,
 			InstalledVersion: utils.FormatVersion(pkg),
-			PkgRef:           pkg.Ref,
+			PkgIdentifier:    pkg.Identifier,
 			Status:           adv.Status,
 			Layer:            pkg.Layer,
 			SeveritySource:   vulnerability.RedHat,
@@ -208,13 +187,13 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 }
 
 // IsSupportedVersion checks is OSFamily can be scanned with Redhat scanner
-func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
 	osVer = osver.Major(osVer)
 	if osFamily == ftypes.CentOS {
-		return osver.Supported(s.clock, centosEOLDates, osFamily, osVer)
+		return osver.Supported(ctx, centosEOLDates, osFamily, osVer)
 	}
 
-	return osver.Supported(s.clock, redhatEOLDates, osFamily, osVer)
+	return osver.Supported(ctx, redhatEOLDates, osFamily, osVer)
 }
 
 func isFromSupportedVendor(pkg ftypes.Package) bool {

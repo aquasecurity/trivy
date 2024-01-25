@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/yarn",
   "ArtifactType": "repository",
   "Metadata": {
@@ -23,6 +24,9 @@
         {
           "ID": "jquery@3.2.1",
           "Name": "jquery",
+          "Identifier": {
+            "PURL": "pkg:npm/jquery@3.2.1"
+          },
           "Version": "3.2.1",
           "Licenses": [
             "MIT"
@@ -41,6 +45,9 @@
           "VulnerabilityID": "CVE-2019-11358",
           "PkgID": "jquery@3.2.1",
           "PkgName": "jquery",
+          "PkgIdentifier": {
+            "PURL": "pkg:npm/jquery@3.2.1"
+          },
           "InstalledVersion": "3.2.1",
           "FixedVersion": "3.4.0",
           "Status": "fixed",
@@ -58,6 +65,18 @@
           "CweIDs": [
             "CWE-79"
           ],
+          "VendorSeverity": {
+            "alma": 2,
+            "amazon": 2,
+            "arch-linux": 2,
+            "ghsa": 2,
+            "nodejs-security-wg": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "redhat": 2,
+            "ruby-advisory-db": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",

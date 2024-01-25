@@ -549,7 +549,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			w := report.SarifWriter{
 				Output: sarifWritten,
 			}
-			err := w.Write(tt.input)
+			err := w.Write(nil, tt.input)
 			assert.NoError(t, err)
 
 			result := &sarif.Report{}

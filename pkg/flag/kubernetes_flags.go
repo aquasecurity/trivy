@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/xerrors"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -52,12 +51,6 @@ var (
 		Default:    "",
 		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
 	}
-	ParallelFlag = Flag{
-		Name:       "parallel",
-		ConfigName: "kubernetes.parallel",
-		Default:    5,
-		Usage:      "number (between 1-20) of goroutines enabled for parallel scanning",
-	}
 	TolerationsFlag = Flag{
 		Name:       "tolerations",
 		ConfigName: "kubernetes.tolerations",
@@ -89,6 +82,24 @@ var (
 		Default:    []string{},
 		Usage:      "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)",
 	}
+	NodeCollectorImageRef = Flag{
+		Name:       "node-collector-imageref",
+		ConfigName: "node.collector.imageref",
+		Default:    "ghcr.io/aquasecurity/node-collector:0.0.9",
+		Usage:      "indicate the image reference for the node-collector scan job",
+	}
+	QPS = Flag{
+		Name:       "qps",
+		ConfigName: "kubernetes.qps",
+		Default:    5.0,
+		Usage:      "specify the maximum QPS to the master from this client",
+	}
+	Burst = Flag{
+		Name:       "burst",
+		ConfigName: "kubernetes.burst",
+		Default:    10,
+		Usage:      "specify the maximum burst for throttle",
+	}
 )
 
 type K8sFlagGroup struct {
@@ -97,12 +108,14 @@ type K8sFlagGroup struct {
 	KubeConfig             *Flag
 	Components             *Flag
 	K8sVersion             *Flag
-	Parallel               *Flag
 	Tolerations            *Flag
+	NodeCollectorImageRef  *Flag
 	AllNamespaces          *Flag
 	NodeCollectorNamespace *Flag
 	ExcludeOwned           *Flag
 	ExcludeNodes           *Flag
+	QPS                    *Flag
+	Burst                  *Flag
 }
 
 type K8sOptions struct {
@@ -111,12 +124,14 @@ type K8sOptions struct {
 	KubeConfig             string
 	Components             []string
 	K8sVersion             string
-	Parallel               int
 	Tolerations            []corev1.Toleration
+	NodeCollectorImageRef  string
 	AllNamespaces          bool
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
 	ExcludeNodes           map[string]string
+	QPS                    float32
+	Burst                  int
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
@@ -126,12 +141,14 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		KubeConfig:             &KubeConfigFlag,
 		Components:             &ComponentsFlag,
 		K8sVersion:             &K8sVersionFlag,
-		Parallel:               &ParallelFlag,
 		Tolerations:            &TolerationsFlag,
 		AllNamespaces:          &AllNamespaces,
 		NodeCollectorNamespace: &NodeCollectorNamespace,
 		ExcludeOwned:           &ExcludeOwned,
 		ExcludeNodes:           &ExcludeNodes,
+		NodeCollectorImageRef:  &NodeCollectorImageRef,
+		QPS:                    &QPS,
+		Burst:                  &Burst,
 	}
 }
 
@@ -146,12 +163,14 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.KubeConfig,
 		f.Components,
 		f.K8sVersion,
-		f.Parallel,
 		f.Tolerations,
 		f.AllNamespaces,
 		f.NodeCollectorNamespace,
 		f.ExcludeOwned,
 		f.ExcludeNodes,
+		f.NodeCollectorImageRef,
+		f.QPS,
+		f.Burst,
 	}
 }
 
@@ -160,14 +179,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 	if err != nil {
 		return K8sOptions{}, err
 	}
-	var parallel int
-	if f.Parallel != nil {
-		parallel = getInt(f.Parallel)
-		// check parallel flag is a valid number between 1-20
-		if parallel < 1 || parallel > 20 {
-			return K8sOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
-		}
-	}
+
 	exludeNodeLabels := make(map[string]string)
 	exludeNodes := getStringSlice(f.ExcludeNodes)
 	for _, exludeNodeValue := range exludeNodes {
@@ -184,12 +196,12 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		KubeConfig:             getString(f.KubeConfig),
 		Components:             getStringSlice(f.Components),
 		K8sVersion:             getString(f.K8sVersion),
-		Parallel:               parallel,
 		Tolerations:            tolerations,
 		AllNamespaces:          getBool(f.AllNamespaces),
 		NodeCollectorNamespace: getString(f.NodeCollectorNamespace),
 		ExcludeOwned:           getBool(f.ExcludeOwned),
 		ExcludeNodes:           exludeNodeLabels,
+		NodeCollectorImageRef:  getString(f.NodeCollectorImageRef),
 	}, nil
 }
 
@@ -223,8 +235,8 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 			if err != nil {
 				return nil, fmt.Errorf("TolerationSeconds must must be a number")
 			}
+			toleration.TolerationSeconds = lo.ToPtr(int64(tolerationSec))
 		}
-		toleration.TolerationSeconds = lo.ToPtr(int64(tolerationSec))
 		tolerations = append(tolerations, toleration)
 	}
 	return tolerations, nil

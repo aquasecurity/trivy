@@ -1,12 +1,12 @@
 package ubuntu
 
 import (
+	"context"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ubuntu"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -63,36 +63,15 @@ var (
 	}
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(c clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = c
-	}
-}
-
 // Scanner implements the Ubuntu scanner
 type Scanner struct {
 	vs ubuntu.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      ubuntu.NewVulnSrc(),
-		options: o,
+		vs: ubuntu.NewVulnSrc(),
 	}
 }
 
@@ -123,7 +102,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				PkgName:          pkg.Name,
 				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     adv.FixedVersion,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Layer:            pkg.Layer,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
@@ -149,8 +128,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks is OSFamily can be scanned using Ubuntu scanner
-func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
-	return osver.Supported(s.clock, eolDates, osFamily, osVer)
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(ctx, eolDates, osFamily, osVer)
 }
 
 // versionFromEolDates checks if actual (not ESM) version is not outdated
@@ -165,7 +144,7 @@ func (s *Scanner) versionFromEolDates(osVer string) string {
 	// then we need to get vulnerabilities for `18.04`
 	// if `18.04` is outdated - we need to use `18.04-ESM` (we will return error until we add `18.04-ESM` to eolDates)
 	ver := strings.TrimRight(osVer, "-ESM")
-	if eol, ok := eolDates[ver]; ok && s.clock.Now().Before(eol) {
+	if eol, ok := eolDates[ver]; ok && time.Now().Before(eol) { // TODO: time.Now() should be replaced with clock.Now()
 		return ver
 	}
 	return osVer

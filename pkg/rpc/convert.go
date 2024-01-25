@@ -3,6 +3,7 @@ package rpc
 import (
 	"time"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -57,6 +58,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			Release:    pkg.Release,
 			Epoch:      int32(pkg.Epoch),
 			Arch:       pkg.Arch,
+			Identifier: ConvertToRPCPkgIdentifier(pkg.Identifier),
 			Dev:        pkg.Dev,
 			SrcName:    pkg.SrcName,
 			SrcVersion: pkg.SrcVersion,
@@ -71,6 +73,21 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 		})
 	}
 	return rpcPkgs
+}
+
+func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
+	if pkg.Empty() {
+		return nil
+	}
+
+	var p string
+	if pkg.PURL != nil {
+		p = pkg.PURL.String()
+	}
+	return &common.PkgIdentifier{
+		Purl:   p,
+		BomRef: pkg.BOMRef,
+	}
 }
 
 func ConvertToRPCCustomResources(resources []ftypes.CustomResource) []*common.CustomResource {
@@ -183,6 +200,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Release:    pkg.Release,
 			Epoch:      int(pkg.Epoch),
 			Arch:       pkg.Arch,
+			Identifier: ConvertFromRPCPkgIdentifier(pkg.Identifier),
 			Dev:        pkg.Dev,
 			SrcName:    pkg.SrcName,
 			SrcVersion: pkg.SrcVersion,
@@ -197,6 +215,26 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 		})
 	}
 	return pkgs
+}
+
+func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier {
+	if pkg == nil {
+		return ftypes.PkgIdentifier{}
+	}
+
+	pkgID := ftypes.PkgIdentifier{
+		BOMRef: pkg.BomRef,
+	}
+
+	if pkg.Purl != "" {
+		pu, err := packageurl.FromString(pkg.Purl)
+		if err != nil {
+			log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
+		}
+		pkgID.PURL = &pu
+	}
+
+	return pkgID
 }
 
 // ConvertToRPCVulns returns common.Vulnerability
@@ -246,6 +284,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			PkgPath:            vuln.PkgPath,
 			InstalledVersion:   vuln.InstalledVersion,
 			FixedVersion:       vuln.FixedVersion,
+			PkgIdentifier:      ConvertToRPCPkgIdentifier(vuln.PkgIdentifier),
 			Status:             int32(vuln.Status),
 			Title:              vuln.Title,
 			Description:        vuln.Description,
@@ -521,6 +560,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			PkgPath:          vuln.PkgPath,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
+			PkgIdentifier:    ConvertFromRPCPkgIdentifier(vuln.PkgIdentifier),
 			Status:           dbTypes.Status(vuln.Status),
 			Vulnerability: dbTypes.Vulnerability{
 				Title:            vuln.Title,

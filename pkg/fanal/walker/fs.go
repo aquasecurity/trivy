@@ -16,10 +16,11 @@ type ErrorCallback func(pathname string, err error) error
 
 type FS struct {
 	walker
+	parallel    int
 	errCallback ErrorCallback
 }
 
-func NewFS(skipFiles, skipDirs []string, slow bool, errCallback ErrorCallback) FS {
+func NewFS(skipFiles, skipDirs []string, parallel int, errCallback ErrorCallback) FS {
 	if errCallback == nil {
 		errCallback = func(pathname string, err error) error {
 			// ignore permission errors
@@ -32,7 +33,8 @@ func NewFS(skipFiles, skipDirs []string, slow bool, errCallback ErrorCallback) F
 	}
 
 	return FS{
-		walker:      newWalker(skipFiles, skipDirs, slow),
+		walker:      newWalker(skipFiles, skipDirs),
+		parallel:    parallel,
 		errCallback: errCallback,
 	}
 }
@@ -69,7 +71,7 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 		return nil
 	}
 
-	if w.slow {
+	if w.parallel <= 1 {
 		// In series: fast, with higher CPU/memory
 		return w.walkSlow(root, walkFn)
 	}

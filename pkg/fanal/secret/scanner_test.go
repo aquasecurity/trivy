@@ -297,6 +297,27 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingGitHubPAT := types.SecretFinding{
+		RuleID:    "github-fine-grained-pat",
+		Category:  secret.CategoryGitHub,
+		Title:     "GitHub Fine-grained personal access tokens",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "GITHUB_TOKEN=*********************************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GITHUB_TOKEN=*********************************************************************************************",
+					Highlighted: "GITHUB_TOKEN=*********************************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
 	wantFindingGHButDisableAWS := types.SecretFinding{
 		RuleID:    "github-pat",
 		Category:  secret.CategoryGitHub,
@@ -401,6 +422,37 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFinding10 := types.SecretFinding{
+		RuleID:    "aws-secret-access-key",
+		Category:  secret.CategoryAWS,
+		Title:     "AWS Secret Access Key",
+		Severity:  "CRITICAL",
+		StartLine: 5,
+		EndLine:   5,
+		Match:     `  "created_by": "ENV aws_sec_key "****************************************",`,
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      3,
+					Content:     "\"aws_account_ID\":'1234-5678-9123'",
+					Highlighted: "\"aws_account_ID\":'1234-5678-9123'",
+				},
+				{
+					Number:      4,
+					Content:     "AWS_example=AKIAIOSFODNN7EXAMPLE",
+					Highlighted: "AWS_example=AKIAIOSFODNN7EXAMPLE",
+				},
+				{
+					Number:      5,
+					Content:     "  \"created_by\": \"ENV aws_sec_key \"****************************************\",",
+					Highlighted: "  \"created_by\": \"ENV aws_sec_key \"****************************************\",",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
 	wantFindingAsymmetricPrivateKeyJson := types.SecretFinding{
 		RuleID:    "private-key",
 		Category:  secret.CategoryAsymmetricPrivateKey,
@@ -495,6 +547,68 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingDockerKey1 := types.SecretFinding{
+		RuleID:    "dockerconfig-secret",
+		Category:  secret.CategoryDocker,
+		Title:     "Dockerconfig secret exposed",
+		Severity:  "HIGH",
+		StartLine: 4,
+		EndLine:   4,
+		Match:     "  .dockercfg: ************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      2,
+					Content:     "  .dockerconfigjson: ************",
+					Highlighted: "  .dockerconfigjson: ************",
+				},
+				{
+					Number:      3,
+					Content:     "data2:",
+					Highlighted: "data2:",
+				},
+				{
+					Number:      4,
+					Content:     "  .dockercfg: ************",
+					Highlighted: "  .dockercfg: ************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
+	wantFindingDockerKey2 := types.SecretFinding{
+		RuleID:    "dockerconfig-secret",
+		Category:  secret.CategoryDocker,
+		Title:     "Dockerconfig secret exposed",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "  .dockerconfigjson: ************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "data1:",
+					Highlighted: "data1:",
+				},
+				{
+					Number:      2,
+					Content:     "  .dockerconfigjson: ************",
+					Highlighted: "  .dockerconfigjson: ************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "data2:",
+					Highlighted: "data2:",
+				},
+			},
+		},
+	}
 	wantMultiLine := types.SecretFinding{
 		RuleID:    "multi-line-secret",
 		Category:  "general",
@@ -548,7 +662,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "aws-secrets.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "aws-secrets.txt"),
-				Findings: []types.SecretFinding{wantFinding5, wantFinding9},
+				Findings: []types.SecretFinding{wantFinding5, wantFinding10, wantFinding9},
 			},
 		},
 		{
@@ -576,6 +690,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
 				Findings: []types.SecretFinding{wantFindingAsymmetricPrivateKeyJson},
+			},
+		},
+		{
+			name:          "find Docker registry credentials",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "docker-secrets.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "docker-secrets.txt"),
+				Findings: []types.SecretFinding{wantFindingDockerKey1, wantFindingDockerKey2},
 			},
 		},
 		{
@@ -617,6 +740,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 				Findings: []types.SecretFinding{wantFinding5a, wantFinding6},
+			},
+		},
+		{
+			name:          "should find GitHub Personal Access Token (classic)",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: "testdata/github-token.txt",
+			want: types.Secret{
+				FilePath: "testdata/github-token.txt",
+				Findings: []types.SecretFinding{wantFindingGitHubPAT},
 			},
 		},
 		{

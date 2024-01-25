@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strconv"
@@ -60,10 +61,10 @@ func NewCycloneDX(version string) *CycloneDX {
 	}
 }
 
-func (c *CycloneDX) Marshal(root *Component) *cdx.BOM {
+func (c *CycloneDX) Marshal(ctx context.Context, root *Component) *cdx.BOM {
 	bom := cdx.NewBOM()
 	bom.SerialNumber = uuid.New().URN()
-	bom.Metadata = c.Metadata()
+	bom.Metadata = c.Metadata(ctx)
 
 	components := make(map[string]*cdx.Component)
 	dependencies := make(map[string]*[]string)
@@ -180,14 +181,17 @@ func (c *CycloneDX) BOMRef(component *Component) string {
 	return component.PackageURL.BOMRef()
 }
 
-func (c *CycloneDX) Metadata() *cdx.Metadata {
+func (c *CycloneDX) Metadata(ctx context.Context) *cdx.Metadata {
 	return &cdx.Metadata{
-		Timestamp: clock.Now().UTC().Format(timeLayout),
-		Tools: &[]cdx.Tool{
-			{
-				Vendor:  ToolVendor,
-				Name:    ToolName,
-				Version: c.appVersion,
+		Timestamp: clock.Now(ctx).UTC().Format(timeLayout),
+		Tools: &cdx.ToolsChoice{
+			Components: &[]cdx.Component{
+				{
+					Type:    cdx.ComponentTypeApplication,
+					Group:   ToolVendor,
+					Name:    ToolName,
+					Version: c.appVersion,
+				},
 			},
 		},
 	}
@@ -312,11 +316,20 @@ func IsTrivySBOM(c *cdx.BOM) bool {
 		return false
 	}
 
-	for _, tool := range *c.Metadata.Tools {
+	for _, component := range lo.FromPtr(c.Metadata.Tools.Components) {
+		if component.Group == ToolVendor && component.Name == ToolName {
+			return true
+		}
+	}
+
+	// Metadata.Tools array is deprecated (as of CycloneDX v1.5). We check this field for backward compatibility.
+	// cf. https://github.com/CycloneDX/cyclonedx-go/blob/b9654ae9b4705645152d20eb9872b5f3d73eac49/cyclonedx.go#L988
+	for _, tool := range lo.FromPtr(c.Metadata.Tools.Tools) {
 		if tool.Vendor == ToolVendor && tool.Name == ToolName {
 			return true
 		}
 	}
+
 	return false
 }
 

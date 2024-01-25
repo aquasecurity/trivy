@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pnpm",
   "ArtifactType": "repository",
   "Metadata": {
@@ -24,6 +25,9 @@
           "VulnerabilityID": "CVE-2019-11358",
           "PkgID": "jquery@3.3.9",
           "PkgName": "jquery",
+          "PkgIdentifier": {
+            "PURL": "pkg:npm/jquery@3.3.9"
+          },
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
           "Status": "fixed",
@@ -41,6 +45,18 @@
           "CweIDs": [
             "CWE-79"
           ],
+          "VendorSeverity": {
+            "alma": 2,
+            "amazon": 2,
+            "arch-linux": 2,
+            "ghsa": 2,
+            "nodejs-security-wg": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "redhat": 2,
+            "ruby-advisory-db": 2,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -141,6 +157,9 @@
           "VulnerabilityID": "CVE-2019-10744",
           "PkgID": "lodash@4.17.4",
           "PkgName": "lodash",
+          "PkgIdentifier": {
+            "PURL": "pkg:npm/lodash@4.17.4"
+          },
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",
           "Status": "fixed",
@@ -155,6 +174,11 @@
           "Title": "nodejs-lodash: prototype pollution in defaultsDeep function leading to modifying properties",
           "Description": "Versions of lodash lower than 4.17.12 are vulnerable to Prototype Pollution. The function defaultsDeep could be tricked into adding or modifying properties of Object.prototype using a constructor payload.",
           "Severity": "CRITICAL",
+          "VendorSeverity": {
+            "ghsa": 4,
+            "nvd": 4,
+            "redhat": 3
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",

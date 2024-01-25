@@ -3,6 +3,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/spf13/cobra/doc"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
@@ -15,6 +17,9 @@ func main() {
 	// Set a dummy path for the documents
 	flag.CacheDirFlag.Default = "/path/to/cache"
 	flag.ModuleDirFlag.Default = "$HOME/.trivy/modules"
+
+	// Set a dummy path not to load plugins
+	os.Setenv("XDG_DATA_HOME", os.TempDir())
 
 	cmd := commands.NewApp()
 	cmd.DisableAutoGenTag = true

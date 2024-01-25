@@ -6,9 +6,13 @@ import (
 	"time"
 
 	"github.com/knqyf263/nested"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Config struct {
@@ -25,7 +29,7 @@ type History struct {
 	CreatedBy string `json:"created_by"`
 }
 
-func containsPackage(e types.Package, s []types.Package) bool {
+func containsPackage(e ftypes.Package, s []ftypes.Package) bool {
 	for _, a := range s {
 		if a.Name == e.Name && a.Version == e.Version && a.Release == e.Release {
 			return true
@@ -34,7 +38,7 @@ func containsPackage(e types.Package, s []types.Package) bool {
 	return false
 }
 
-func lookupOriginLayerForPkg(pkg types.Package, layers []types.BlobInfo) (string, string, *types.BuildInfo) {
+func lookupOriginLayerForPkg(pkg ftypes.Package, layers []ftypes.BlobInfo) (string, string, *ftypes.BuildInfo) {
 	for i, layer := range layers {
 		for _, info := range layer.PackageInfos {
 			if containsPackage(pkg, info.Packages) {
@@ -46,7 +50,7 @@ func lookupOriginLayerForPkg(pkg types.Package, layers []types.BlobInfo) (string
 }
 
 // lookupBuildInfo looks up Red Hat content sets from all layers
-func lookupBuildInfo(index int, layers []types.BlobInfo) *types.BuildInfo {
+func lookupBuildInfo(index int, layers []ftypes.BlobInfo) *ftypes.BuildInfo {
 	if layers[index].BuildInfo != nil {
 		return layers[index].BuildInfo
 	}
@@ -70,7 +74,7 @@ func lookupBuildInfo(index int, layers []types.BlobInfo) *types.BuildInfo {
 	return nil
 }
 
-func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.BlobInfo) (string, string) {
+func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftypes.BlobInfo) (string, string) {
 	for _, layer := range layers {
 		for _, layerApp := range layer.Applications {
 			if filePath != layerApp.FilePath {
@@ -86,11 +90,11 @@ func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.
 
 // ApplyLayers returns the merged layer
 // nolint: gocyclo
-func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
+func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
-	secretsMap := make(map[string]types.Secret)
-	var mergedLayer types.ArtifactDetail
+	secretsMap := make(map[string]ftypes.Secret)
+	var mergedLayer ftypes.ArtifactDetail
 
 	for _, layer := range layers {
 		for _, opqDir := range layer.OpaqueDirs {
@@ -121,7 +125,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 		// Apply misconfigurations
 		for _, config := range layer.Misconfigurations {
-			config.Layer = types.Layer{
+			config.Layer = ftypes.Layer{
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
 			}
@@ -131,7 +135,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 		// Apply secrets
 		for _, secret := range layer.Secrets {
-			l := types.Layer{
+			l := ftypes.Layer{
 				Digest:    layer.Digest,
 				DiffID:    layer.DiffID,
 				CreatedBy: layer.CreatedBy,
@@ -141,7 +145,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 		// Apply license files
 		for _, license := range layer.Licenses {
-			license.Layer = types.Layer{
+			license.Layer = ftypes.Layer{
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
 			}
@@ -152,7 +156,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		// Apply custom resources
 		for _, customResource := range layer.CustomResources {
 			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
-			customResource.Layer = types.Layer{
+			customResource.Layer = ftypes.Layer{
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
 			}
@@ -163,15 +167,15 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	// nolint
 	_ = nestedMap.Walk(func(keys []string, value interface{}) error {
 		switch v := value.(type) {
-		case types.PackageInfo:
+		case ftypes.PackageInfo:
 			mergedLayer.Packages = append(mergedLayer.Packages, v.Packages...)
-		case types.Application:
+		case ftypes.Application:
 			mergedLayer.Applications = append(mergedLayer.Applications, v)
-		case types.Misconfiguration:
+		case ftypes.Misconfiguration:
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
-		case types.LicenseFile:
+		case ftypes.LicenseFile:
 			mergedLayer.Licenses = append(mergedLayer.Licenses, v)
-		case types.CustomResource:
+		case ftypes.CustomResource:
 			mergedLayer.CustomResources = append(mergedLayer.CustomResources, v)
 		}
 		return nil
@@ -185,14 +189,14 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	// The license information is not stored in the dpkg database and in a separate file,
 	// so we have to merge the license information into the package.
 	dpkgLicenses := make(map[string][]string)
-	mergedLayer.Licenses = lo.Reject(mergedLayer.Licenses, func(license types.LicenseFile, _ int) bool {
-		if license.Type != types.LicenseTypeDpkg {
+	mergedLayer.Licenses = lo.Reject(mergedLayer.Licenses, func(license ftypes.LicenseFile, _ int) bool {
+		if license.Type != ftypes.LicenseTypeDpkg {
 			return false
 		}
 		// e.g.
 		//	"adduser" => {"GPL-2"}
 		//  "openssl" => {"MIT", "BSD"}
-		dpkgLicenses[license.PkgName] = lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
+		dpkgLicenses[license.PkgName] = lo.Map(license.Findings, func(finding ftypes.LicenseFinding, _ int) string {
 			return finding.Name
 		})
 		// Remove this license in the merged result as it is merged into the package information.
@@ -208,11 +212,14 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			continue
 		}
 		originLayerDigest, originLayerDiffID, buildInfo := lookupOriginLayerForPkg(pkg, layers)
-		mergedLayer.Packages[i].Layer = types.Layer{
+		mergedLayer.Packages[i].Layer = ftypes.Layer{
 			Digest: originLayerDigest,
 			DiffID: originLayerDiffID,
 		}
 		mergedLayer.Packages[i].BuildInfo = buildInfo
+		if mergedLayer.OS.Family != "" {
+			mergedLayer.Packages[i].Identifier.PURL = newPURL(mergedLayer.OS.Family, types.Metadata{OS: &mergedLayer.OS}, pkg)
+		}
 
 		// Only debian packages
 		if licenses, ok := dpkgLicenses[pkg.Name]; ok {
@@ -227,9 +234,12 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 				continue
 			}
 			originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, lib, layers)
-			app.Libraries[i].Layer = types.Layer{
+			app.Libraries[i].Layer = ftypes.Layer{
 				Digest: originLayerDigest,
 				DiffID: originLayerDiffID,
+			}
+			if lib.Identifier.PURL == nil {
+				app.Libraries[i].Identifier.PURL = newPURL(app.Type, types.Metadata{}, lib)
 			}
 		}
 	}
@@ -240,16 +250,25 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	return mergedLayer
 }
 
-// aggregate merges all packages installed by pip/gem/npm/jar/conda into each application
-func aggregate(detail *types.ArtifactDetail) {
-	var apps []types.Application
+func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *packageurl.PackageURL {
+	p, err := purl.New(pkgType, metadata, pkg)
+	if err != nil {
+		log.Logger.Errorf("Failed to create PackageURL: %s", err)
+		return nil
+	}
+	return p.Unwrap()
+}
 
-	aggregatedApps := map[types.LangType]*types.Application{
-		types.PythonPkg: {Type: types.PythonPkg},
-		types.CondaPkg:  {Type: types.CondaPkg},
-		types.GemSpec:   {Type: types.GemSpec},
-		types.NodePkg:   {Type: types.NodePkg},
-		types.Jar:       {Type: types.Jar},
+// aggregate merges all packages installed by pip/gem/npm/jar/conda into each application
+func aggregate(detail *ftypes.ArtifactDetail) {
+	var apps []ftypes.Application
+
+	aggregatedApps := map[ftypes.LangType]*ftypes.Application{
+		ftypes.PythonPkg: {Type: ftypes.PythonPkg},
+		ftypes.CondaPkg:  {Type: ftypes.CondaPkg},
+		ftypes.GemSpec:   {Type: ftypes.GemSpec},
+		ftypes.NodePkg:   {Type: ftypes.NodePkg},
+		ftypes.Jar:       {Type: ftypes.Jar},
 	}
 
 	for _, app := range detail.Applications {
@@ -273,7 +292,7 @@ func aggregate(detail *types.ArtifactDetail) {
 
 // We must save secrets from all layers even though they are removed in the uppler layer.
 // If the secret was changed at the top level, we need to overwrite it.
-func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, layer types.Layer) map[string]types.Secret {
+func mergeSecrets(secretsMap map[string]ftypes.Secret, newSecret ftypes.Secret, layer ftypes.Layer) map[string]ftypes.Secret {
 	for i := range newSecret.Findings { // add layer to the Findings from the new secret
 		newSecret.Findings[i].Layer = layer
 	}
@@ -294,7 +313,7 @@ func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, la
 	return secretsMap
 }
 
-func secretFindingsContains(findings []types.SecretFinding, finding types.SecretFinding) bool {
+func secretFindingsContains(findings []ftypes.SecretFinding, finding ftypes.SecretFinding) bool {
 	for _, f := range findings {
 		if f.RuleID == finding.RuleID {
 			return true

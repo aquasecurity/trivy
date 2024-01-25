@@ -5,31 +5,33 @@
   "name": "testdata/fixtures/repo/conda",
   "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000001",
   "creationInfo": {
-    "licenseListVersion": "",
     "creators": [
       "Organization: aquasecurity",
       "Tool: trivy-dev"
     ],
-    "created": "2020-09-10T14:20:30Z"
+    "created": "2021-08-25T12:20:30Z"
   },
   "packages": [
     {
       "name": "conda-pkg",
       "SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
       "downloadLocation": "NONE",
+      "filesAnalyzed": false,
       "sourceInfo": "Conda",
-      "copyrightText": "",
       "primaryPackagePurpose": "APPLICATION"
     },
     {
       "name": "openssl",
-      "SPDXID": "SPDXRef-Package-c75d9dc75200186f",
+      "SPDXID": "SPDXRef-Package-20b95c21bfbf9fc4",
       "versionInfo": "1.1.1q",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "2a05c7ad4baa728c79bc1ee1adea9b837d0bf6c0"
+      },
       "licenseConcluded": "OpenSSL",
       "licenseDeclared": "OpenSSL",
-      "copyrightText": "",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -41,13 +43,16 @@
     },
     {
       "name": "pip",
-      "SPDXID": "SPDXRef-Package-195557cddf18e4a9",
+      "SPDXID": "SPDXRef-Package-11a429ec3bd01d80",
       "versionInfo": "22.2.2",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "8619446a1cd1118e82f1f984ce59116422a59151"
+      },
       "licenseConcluded": "MIT",
       "licenseDeclared": "MIT",
-      "copyrightText": "",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -61,7 +66,7 @@
       "name": "testdata/fixtures/repo/conda",
       "SPDXID": "SPDXRef-Filesystem-2e2426fd0f2580ef",
       "downloadLocation": "NONE",
-      "copyrightText": "",
+      "filesAnalyzed": false,
       "attributionTexts": [
         "SchemaVersion: 2"
       ],
@@ -105,21 +110,21 @@
     },
     {
       "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "relatedSpdxElement": "SPDXRef-Package-c75d9dc75200186f",
+      "relatedSpdxElement": "SPDXRef-Package-20b95c21bfbf9fc4",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-c75d9dc75200186f",
+      "spdxElementId": "SPDXRef-Package-20b95c21bfbf9fc4",
       "relatedSpdxElement": "SPDXRef-File-600e5e0110a84891",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "relatedSpdxElement": "SPDXRef-Package-195557cddf18e4a9",
+      "relatedSpdxElement": "SPDXRef-Package-11a429ec3bd01d80",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-195557cddf18e4a9",
+      "spdxElementId": "SPDXRef-Package-11a429ec3bd01d80",
       "relatedSpdxElement": "SPDXRef-File-7eb62e2a3edddc0a",
       "relationshipType": "CONTAINS"
     }

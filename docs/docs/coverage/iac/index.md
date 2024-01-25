@@ -9,7 +9,7 @@ Trivy scans Infrastructure as Code (IaC) files for
 ## Supported configurations
 
 | Config type                         | File patterns                 |
-| ----------------------------------- | ----------------------------- |
+|-------------------------------------|-------------------------------|
 | [Kubernetes](kubernetes.md)         | *.yml, *.yaml, *.json         |
 | [Docker](docker.md)                 | Dockerfile, Containerfile     |
 | [Terraform](terraform.md)           | *.tf, *.tf.json, *.tfvars,    |

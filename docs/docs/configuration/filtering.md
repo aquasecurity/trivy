@@ -408,7 +408,7 @@ Total: 7 (UNKNOWN: 0, LOW: 1, MEDIUM: 1, HIGH: 3, CRITICAL: 2)
 
 </details>
 
-## By Open Policy Agent
+## By Rego
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -420,75 +420,68 @@ Total: 7 (UNKNOWN: 0, LOW: 1, MEDIUM: 1, HIGH: 3, CRITICAL: 2)
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Trivy supports Open Policy Agent (OPA) to filter vulnerabilities.
-You can specify a Rego file with `--ignore-policy` option.
+[Rego](https://www.openpolicyagent.org/docs/latest/policy-language/) is a policy language that allows you to express decision logic in a concise syntax. 
+Rego is part of the popular [Open Policy Agent (OPA)](https://www.openpolicyagent.org) CNCF project.
+For advanced filtering, Trivy allows you to use Rego language to filter vulnerabilities.
 
-The Rego package name must be `trivy` and it must include a rule called `ignore` which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the `input` variable. The structure of each vulnerability input is the same as for the Trivy JSON output.  
-There is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`. For more info about the helper functions, look at the library [here][helper]
+Use the `--ignore-policy` flag which takes a path to a Rego file that defines the filtering policy.
+The Rego package name must be `trivy` and it must include a "rule" named `ignore` which determines if each individual scan result should be excluded (ignore=true) or not (ignore=false).
+The `input` for the evaluation is each [DetectedVulnerability](https://github.com/aquasecurity/trivy/blob/00f2059e5d7bc2ca2e3e8b1562bdfede1ed570e3/pkg/types/vulnerability.go#L9) and [DetectedMisconfiguration](https://github.com/aquasecurity/trivy/blob/00f2059e5d7bc2ca2e3e8b1562bdfede1ed570e3/pkg/types/misconfiguration.go#L6).
 
-To get started, see the [example policy][policy].
-
-```bash
-$ trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
-```
-
-<details>
-<summary>Result</summary>
+A practical way to observe the filtering policy input in your case, is to run a scan with the `--format json` option and look at the resulting structure:
 
 ```bash
-centos:7 (centos 7.9.2009)
-==========================
-Total: 9 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 4, CRITICAL: 5)
+trivy image -f json centos:7
 
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
-|   LIBRARY    | VULNERABILITY ID | SEVERITY | INSTALLED VERSION |   FIXED VERSION   |                  TITLE                  |
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
-| glib2        | CVE-2015-8385    | HIGH     | 2.56.1-7.el7      |                   | pcre: buffer overflow caused            |
-|              |                  |          |                   |                   | by named forward reference              |
-|              |                  |          |                   |                   | to duplicate group number...            |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2015-8385    |
-+              +------------------+          +                   +-------------------+-----------------------------------------+
-|              | CVE-2016-3191    |          |                   |                   | pcre: workspace overflow for            |
-|              |                  |          |                   |                   | (*ACCEPT) with deeply nested            |
-|              |                  |          |                   |                   | parentheses (8.39/13, 10.22/12)         |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2016-3191    |
-+              +------------------+          +                   +-------------------+-----------------------------------------+
-|              | CVE-2021-27219   |          |                   | 2.56.1-9.el7_9    | glib: integer overflow in               |
-|              |                  |          |                   |                   | g_bytes_new function on                 |
-|              |                  |          |                   |                   | 64-bit platforms due to an...           |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2021-27219   |
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
-| glibc        | CVE-2019-1010022 | CRITICAL | 2.17-317.el7      |                   | glibc: stack guard protection bypass    |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2019-1010022 |
-+--------------+                  +          +                   +-------------------+                                         +
-| glibc-common |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-+--------------+------------------+          +-------------------+-------------------+-----------------------------------------+
-| nss          | CVE-2021-43527   |          | 3.53.1-3.el7_9    | 3.67.0-4.el7_9    | nss: Memory corruption in               |
-|              |                  |          |                   |                   | decodeECorDsaSignature with             |
-|              |                  |          |                   |                   | DSA signatures (and RSA-PSS)            |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2021-43527   |
-+--------------+                  +          +                   +                   +                                         +
-| nss-sysinit  |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-+--------------+                  +          +                   +                   +                                         +
-| nss-tools    |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-|              |                  |          |                   |                   |                                         |
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
-| openssl-libs | CVE-2020-1971    | HIGH     | 1:1.0.2k-19.el7   | 1:1.0.2k-21.el7_9 | openssl: EDIPARTYNAME                   |
-|              |                  |          |                   |                   | NULL pointer de-reference               |
-|              |                  |          |                   |                   | -->avd.aquasec.com/nvd/cve-2020-1971    |
-+--------------+------------------+----------+-------------------+-------------------+-----------------------------------------+
+...
+  "Results": [
+    {
+      "Target": "centos:7 (centos 7.9.2009)",
+      "Class": "os-pkgs",
+      "Type": "centos",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2015-5186",
+          "PkgID": "audit-libs@2.8.5-4.el7.x86_64",
+          "PkgName": "audit-libs",
+          "InstalledVersion": "2.8.5-4.el7",
+          "Layer": {
+            "Digest": "sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc",
+            "DiffID": "sha256:174f5685490326fc0a1c0f5570b8663732189b327007e47ff13d2ca59673db02"
+          },
+          "SeveritySource": "redhat",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2015-5186",
+          "Title": "log terminal emulator escape sequences handling",
+          "Description": "Audit before 2.4.4 in Linux does not sanitize escape characters in filenames.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-20"
+          ],
+...
 ```
 
-</details>
+Each individual vulnerability (under `Results.Vulnerabilities`) or Misconfiguration (under `Results.Misconfigurations`) is evaluated for exclusion or inclusion by the `ignore` rule.
 
-[helper]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go
-[policy]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/contrib/example_policy
+The following is a Rego ignore policy that filters out every vulnerability with a specific CWE ID (as seen in the JSON example above):
+
+```rego
+package trivy
+
+default ignore = false
+
+ignore {
+	input.CweIDs[_] == "CWE-20"
+}
+```
+
+```bash
+trivy image --ignore-policy contrib/example_policy/basic.rego centos:7
+```
+
+For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`.
+More info about the helper functions are in the library [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go).
+
+You can find more example policies [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go)
 
 ## By Inline Comments
 
@@ -503,12 +496,22 @@ Some configuration file formats (e.g. Terraform) support inline comments.
 
 In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned).
 
-The format for these comments is `trivy:ignore:<Vulnerability ID>` immediately following the format-specific line-comment token.
+The format for these comments is `trivy:ignore:<Vulnerability ID>` immediately following the format-specific line-comment token. You can add multiple ignores on the same comment line.
 
 For example, to filter a Vulnerability ID "AVD-GCP-0051" in a Terraform HCL file:
 
 ```terraform
 #trivy:ignore:AVD-GCP-0051
+resource "google_container_cluster" "one_off_test" {
+  name     = var.cluster_name
+  location = var.region
+}
+```
+
+For example, to filter vulnerabilities "AVD-GCP-0051" and "AVD-GCP-0053" in a Terraform HCL file:
+
+```terraform
+#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053
 resource "google_container_cluster" "one_off_test" {
   name     = var.cluster_name
   location = var.region

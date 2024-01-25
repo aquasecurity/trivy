@@ -6,13 +6,16 @@
   "version": 1,
   "metadata": {
     "timestamp": "2023-09-29T06:25:00+00:00",
-    "tools": [
-      {
-        "vendor": "aquasecurity",
-        "name": "trivy",
-        "version": "0.45.1-15-g7bbd0d097"
-      }
-    ],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
     "component": {
       "bom-ref": "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
       "type": "platform",

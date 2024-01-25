@@ -2,6 +2,7 @@ package report
 
 import (
 	"bytes"
+	"context"
 	"encoding/xml"
 	"html"
 	"io"
@@ -27,7 +28,7 @@ type TemplateWriter struct {
 }
 
 // NewTemplateWriter is the factory method to return TemplateWriter object
-func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter, error) {
+func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*TemplateWriter, error) {
 	if strings.HasPrefix(outputTemplate, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
 		if err != nil {
@@ -54,6 +55,9 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 	templateFuncMap["sourceID"] = func(input string) dbTypes.SourceID {
 		return dbTypes.SourceID(input)
 	}
+	templateFuncMap["appVersion"] = func() string {
+		return appVersion
+	}
 
 	// Overwrite functions
 	for k, v := range CustomTemplateFuncMap {
@@ -71,7 +75,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 }
 
 // Write writes result
-func (tw TemplateWriter) Write(report types.Report) error {
+func (tw TemplateWriter) Write(ctx context.Context, report types.Report) error {
 	err := tw.Template.Execute(tw.Output, report.Results)
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)

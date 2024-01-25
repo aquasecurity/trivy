@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/mariner-1.0.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -40,6 +41,9 @@
         {
           "VulnerabilityID": "CVE-2022-0261",
           "PkgName": "vim",
+          "PkgIdentifier": {
+            "PURL": "pkg:cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64"
+          },
           "InstalledVersion": "8.2.4081-1.cm1",
           "Status": "affected",
           "Layer": {
@@ -59,6 +63,9 @@
           "CweIDs": [
             "CWE-122"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 3
+          },
           "References": [
             "https://github.com/vim/vim/commit/9f8c304c8a390ade133bac29963dc8e56ab14cbc",
             "https://huntr.dev/bounties/fa795954-8775-4f23-98c6-d4d4d3fe8a82",
@@ -70,6 +77,9 @@
         {
           "VulnerabilityID": "CVE-2022-0158",
           "PkgName": "vim",
+          "PkgIdentifier": {
+            "PURL": "pkg:cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64"
+          },
           "InstalledVersion": "8.2.4081-1.cm1",
           "FixedVersion": "8.2.4082-1.cm1",
           "Status": "fixed",
@@ -90,6 +100,11 @@
           "CweIDs": [
             "CWE-122"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 1,
+            "nvd": 1,
+            "redhat": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",

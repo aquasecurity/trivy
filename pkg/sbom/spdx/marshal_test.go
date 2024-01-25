@@ -1,6 +1,8 @@
 package spdx_test
 
 import (
+	"context"
+	"github.com/package-url/packageurl-go"
 	"hash/fnv"
 	"testing"
 	"time"
@@ -54,11 +56,29 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								Name:            "binutils",
-								Version:         "2.30",
-								Release:         "93.el8",
-								Epoch:           0,
-								Arch:            "aarch64",
+								Name:    "binutils",
+								Version: "2.30",
+								Release: "93.el8",
+								Epoch:   0,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "binutils",
+										Version:   "2.30-93.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
+											},
+										},
+									},
+								},
 								SrcName:         "binutils",
 								SrcVersion:      "2.30",
 								SrcRelease:      "93.el8",
@@ -78,10 +98,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
+									},
+								},
 							},
 							{
 								Name:    "actioncontroller",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actioncontroller",
+										Version: "7.0.1",
+									},
+								},
 							},
 						},
 					},
@@ -93,6 +127,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
+									},
+								},
 							},
 						},
 					},
@@ -296,11 +337,33 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								Name:            "acl",
-								Version:         "2.2.53",
-								Release:         "1.el8",
-								Epoch:           1,
-								Arch:            "aarch64",
+								Name:    "acl",
+								Version: "2.2.53",
+								Release: "1.el8",
+								Epoch:   1,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "acl",
+										Version:   "2.2.53-1.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
+											},
+											{
+												Key:   "epoch",
+												Value: "1",
+											},
+										},
+									},
+								},
 								SrcName:         "acl",
 								SrcVersion:      "2.2.53",
 								SrcRelease:      "1.el8",
@@ -319,6 +382,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -328,6 +398,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -401,6 +478,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:         true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "688d98e7e5660b879fd1fc548af8c0df3b7d785a",
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d5443dbcbba0dbd4"),
@@ -421,6 +502,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:         true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "c7526b18eaaeb410e82cb0da9288dd02b38ea171",
+						},
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
@@ -534,6 +619,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actioncable",
 								Version: "6.1.4.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actioncable",
+										Version: "6.1.4.1",
+									},
+								},
 							},
 						},
 					},
@@ -625,8 +717,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.NodePkg,
 						Packages: []ftypes.Package{
 							{
-								Name:     "ruby-typeprof",
-								Version:  "0.20.1",
+								Name:    "ruby-typeprof",
+								Version: "0.20.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "ruby-typeprof",
+										Version: "0.20.1",
+									},
+								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
@@ -692,6 +791,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						FilesAnalyzed:         true,
+						PackageVerificationCode: &spdx.PackageVerificationCode{
+							Value: "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+						},
 					},
 				},
 				Files: []*spdx.File{
@@ -854,6 +957,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "golang.org/x",
+										Name:      "crypto",
+										Version:   "v0.0.1",
+									},
+								},
 							},
 						},
 					},
@@ -975,11 +1086,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 				return h.Sum64(), nil
 			}
 
-			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			marshaler := tspdx.NewMarshaler("0.38.1", tspdx.WithHasher(hasher))
-			spdxDoc, err := marshaler.Marshal(tc.inputReport)
+			spdxDoc, err := marshaler.Marshal(ctx, tc.inputReport)
 			require.NoError(t, err)
 
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
