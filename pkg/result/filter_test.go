@@ -616,6 +616,80 @@ func TestFilter(t *testing.T) {
 			},
 		},
 		{
+			name: "ignore file for licenses and secrets",
+			args: args{
+				report: types.Report{
+					Results: types.Results{
+						{
+							Licenses: []types.DetectedLicense{
+								{
+									// this license is ignored
+									Name:       "GPL-3.0",
+									Severity:   dbTypes.SeverityLow.String(),
+									FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
+									Category:   "restricted",
+									Confidence: 1,
+								},
+								{
+									Name:       "GPL-3.0",
+									Severity:   dbTypes.SeverityLow.String(),
+									FilePath:   "usr/share/gcc/python/libstdcxx/v6/printers.py",
+									Category:   "restricted",
+									Confidence: 1,
+								},
+							},
+							Secrets: []ftypes.SecretFinding{
+								{
+									RuleID:    "generic-passed-rule",
+									Severity:  dbTypes.SeverityLow.String(),
+									Title:     "Secret should pass filter",
+									StartLine: 1,
+									EndLine:   2,
+									Match:     "*****",
+								},
+								{
+									RuleID:    "generic-ignored-rule",
+									Severity:  dbTypes.SeverityLow.String(),
+									Title:     "Secret should be ignored",
+									StartLine: 3,
+									EndLine:   4,
+									Match:     "*****",
+								},
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				policyFile: "./testdata/test-ignore-policy-licenses-and-secrets.rego",
+			},
+			want: types.Report{
+				Results: types.Results{
+					{
+						Licenses: []types.DetectedLicense{
+							{
+								// this license is ignored
+								Name:       "GPL-3.0",
+								Severity:   dbTypes.SeverityLow.String(),
+								FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
+								Category:   "restricted",
+								Confidence: 1,
+							},
+						},
+						Secrets: []ftypes.SecretFinding{
+							{
+								RuleID:    "generic-passed-rule",
+								Severity:  dbTypes.SeverityLow.String(),
+								Title:     "Secret should pass filter",
+								StartLine: 1,
+								EndLine:   2,
+								Match:     "*****",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with duplicates, one with empty fixed version",
 			args: args{
 				report: types.Report{
