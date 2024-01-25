@@ -99,8 +99,8 @@ func (a cargoAnalyzer) Version() int {
 	return version
 }
 
-func (a cargoAnalyzer) parseCargoLock(path string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Cargo, path, r, a.lockParser)
+func (a cargoAnalyzer) parseCargoLock(filePath string, r io.Reader) (*types.Application, error) {
+	return language.Parse(types.Cargo, filePath, r, a.lockParser)
 }
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
@@ -166,9 +166,9 @@ type cargoTomlWorkspace struct {
 
 type Dependencies map[string]interface{}
 
-func tomlDependencies(fsys fs.FS, path string) (Dependencies, []string, error) {
+func tomlDependencies(fsys fs.FS, filePath string) (Dependencies, []string, error) {
 	// Parse Cargo.toml
-	f, err := fsys.Open(path)
+	f, err := fsys.Open(filePath)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("file open error: %w", err)
 	}
@@ -197,17 +197,15 @@ func tomlDependencies(fsys fs.FS, path string) (Dependencies, []string, error) {
 	return dependencies, tomlFile.Workspace.Members, nil
 }
 
-func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, cargoTOMLPath string) (map[string]string, error) {
-	deps := make(map[string]string)
-
-	dependencies, members, err := tomlDependencies(fsys, cargoTOMLPath)
+func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath string) (map[string]string, error) {
+	dependencies, members, err := tomlDependencies(fsys, filePath)
 	if err != nil {
 		return nil, err
 	}
 	// According to Cargo workspace RFC, workspaces can't be nested:
 	// https://github.com/nox/rust-rfcs/blob/master/text/1525-cargo-workspace.md#validating-a-workspace
 	for _, member := range members {
-		memberPath := path.Join(path.Join(path.Dir(cargoTOMLPath), member), types.CargoToml)
+		memberPath := path.Join(path.Join(path.Dir(filePath), member), types.CargoToml)
 		memberDeps, _, err := tomlDependencies(fsys, memberPath)
 		if err != nil {
 			log.Logger.Warnf("Unable to parse %q: %s", memberPath, err)
@@ -216,6 +214,7 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, cargoTOMLPath string) (map[str
 		maps.Copy(dependencies, memberDeps)
 	}
 
+	deps := make(map[string]string)
 	for name, value := range dependencies {
 		switch ver := value.(type) {
 		case string:
