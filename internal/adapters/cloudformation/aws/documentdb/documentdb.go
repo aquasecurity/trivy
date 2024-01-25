@@ -1,7 +1,7 @@
 package documentdb
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/documentdb"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/documentdb"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

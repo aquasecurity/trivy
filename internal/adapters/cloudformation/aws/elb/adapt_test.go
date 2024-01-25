@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/elb"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/elb"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func TestAdapt(t *testing.T) {
@@ -48,9 +48,9 @@ Resources:
 			expected: elb.ELB{
 				LoadBalancers: []elb.LoadBalancer{
 					{
-						Metadata:                types.NewTestMetadata(),
-						Type:                    types.String("application", types.NewTestMetadata()),
-						DropInvalidHeaderFields: types.Bool(true, types.NewTestMetadata()),
+						Metadata:                types.NewTestMisconfigMetadata(),
+						Type:                    types.String("application", types.NewTestMisconfigMetadata()),
+						DropInvalidHeaderFields: types.Bool(true, types.NewTestMisconfigMetadata()),
 					},
 				},
 			},

@@ -1,7 +1,7 @@
 package keyvault
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/keyvault"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/keyvault"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
 )
 

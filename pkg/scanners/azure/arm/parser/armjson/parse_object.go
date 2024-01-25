@@ -1,10 +1,10 @@
 package armjson
 
 import (
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func (p *parser) parseObject(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseObject(parentMetadata *types.MisconfigMetadata) (Node, error) {
 
 	n, metadata := p.newNode(KindObject, parentMetadata)
 
@@ -33,7 +33,7 @@ func (p *parser) parseObject(parentMetadata *types.Metadata) (Node, error) {
 }
 
 // nolint: cyclop
-func (p *parser) iterateObject(nextComments []Node, metadata *types.Metadata, n *node) (Node, error) {
+func (p *parser) iterateObject(nextComments []Node, metadata *types.MisconfigMetadata, n *node) (Node, error) {
 	for {
 
 		if err := p.parseWhitespace(); err != nil {

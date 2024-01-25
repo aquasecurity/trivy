@@ -9,9 +9,9 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	sp "github.com/aquasecurity/trivy-policies/pkg/spec"
 	"github.com/aquasecurity/trivy/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Severity string

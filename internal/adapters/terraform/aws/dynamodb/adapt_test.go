@@ -3,13 +3,13 @@ package dynamodb
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/dynamodb"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/dynamodb"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,13 +30,13 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: dynamodb.DAXCluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				},
-				PointInTimeRecovery: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				PointInTimeRecovery: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}
@@ -73,13 +73,13 @@ func Test_adaptTable(t *testing.T) {
 			}
 `,
 			expected: dynamodb.Table{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("key-string", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("key-string", defsecTypes.NewTestMisconfigMetadata()),
 				},
-				PointInTimeRecovery: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				PointInTimeRecovery: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -92,13 +92,13 @@ func Test_adaptTable(t *testing.T) {
 			  }
 `,
 			expected: dynamodb.Table{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("alias/aws/dynamodb", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("alias/aws/dynamodb", defsecTypes.NewTestMisconfigMetadata()),
 				},
-				PointInTimeRecovery: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				PointInTimeRecovery: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -117,13 +117,13 @@ func Test_adaptTable(t *testing.T) {
 			  }
 `,
 			expected: dynamodb.Table{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				ServerSideEncryption: dynamodb.ServerSideEncryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("aws_kms_key.a", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("aws_kms_key.a", defsecTypes.NewTestMisconfigMetadata()),
 				},
-				PointInTimeRecovery: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				PointInTimeRecovery: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

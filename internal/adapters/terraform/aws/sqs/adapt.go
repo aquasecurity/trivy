@@ -1,11 +1,11 @@
 package sqs
 
 import (
-	iamp "github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	"github.com/aquasecurity/defsec/pkg/providers/aws/sqs"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/aws/iam"
+	iamp "github.com/aquasecurity/trivy/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/sqs"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/liamg/iamgo"
 
 	"github.com/google/uuid"
@@ -76,12 +76,12 @@ func (a *adapter) adaptQueues() []sqs.Queue {
 		}
 
 		a.queues[uuid.NewString()] = sqs.Queue{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
-			QueueURL: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
+			QueueURL: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			Encryption: sqs.Encryption{
-				Metadata:          defsecTypes.NewUnmanagedMetadata(),
-				ManagedEncryption: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				KMSKeyID:          defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata:          defsecTypes.NewUnmanagedMisconfigMetadata(),
+				ManagedEncryption: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				KMSKeyID:          defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			},
 			Policies: []iamp.Policy{policy},
 		}

@@ -6,18 +6,18 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/resolver"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
 )
 
-func createMetadata(targetFS fs.FS, filename string, start, end int, ref string, parent *types.Metadata) types.Metadata {
-	child := types.NewMetadata(types.NewRange(filename, start, end, "", targetFS), ref)
+func createMetadata(targetFS fs.FS, filename string, start, end int, ref string, parent *types.MisconfigMetadata) types.MisconfigMetadata {
+	child := types.NewMisconfigMetadata(types.NewRange(filename, start, end, "", targetFS), ref)
 	if parent != nil {
 		child.SetParentPtr(parent)
 	}

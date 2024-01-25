@@ -3,13 +3,13 @@ package compute
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/compute"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/compute"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -29,10 +29,10 @@ resource "azurerm_managed_disk" "example" {
 	}
 }`,
 			expected: compute.ManagedDisk{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Encryption: compute.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -42,10 +42,10 @@ resource "azurerm_managed_disk" "example" {
 resource "azurerm_managed_disk" "example" {
 }`,
 			expected: compute.ManagedDisk{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Encryption: compute.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -86,14 +86,14 @@ resource "azurerm_virtual_machine" "example" {
 }
 `,
 			expected: compute.LinuxVirtualMachine{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					CustomData: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+					CustomData: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      defsecTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:                      defsecTypes.NewTestMisconfigMetadata(),
+					DisablePasswordAuthentication: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -112,16 +112,16 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 	}
 }`,
 			expected: compute.LinuxVirtualMachine{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					CustomData: defsecTypes.String(
 						`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
-`, defsecTypes.NewTestMetadata()),
+`, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      defsecTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata:                      defsecTypes.NewTestMisconfigMetadata(),
+					DisablePasswordAuthentication: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -156,11 +156,11 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 	}
 }`,
 			expected: compute.WindowsVirtualMachine{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					CustomData: defsecTypes.String(`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
-`, defsecTypes.NewTestMetadata()),
+`, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -174,11 +174,11 @@ export GREETING="Hello there"
 	EOF
 	}`,
 			expected: compute.WindowsVirtualMachine{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					CustomData: defsecTypes.String(`export GREETING="Hello there"
-`, defsecTypes.NewTestMetadata()),
+`, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

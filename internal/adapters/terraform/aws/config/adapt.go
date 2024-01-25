@@ -1,9 +1,9 @@
 package config
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/config"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/config"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) config.Config {
@@ -14,8 +14,8 @@ func Adapt(modules terraform.Modules) config.Config {
 
 func adaptConfigurationAggregrator(modules terraform.Modules) config.ConfigurationAggregrator {
 	configurationAggregrator := config.ConfigurationAggregrator{
-		Metadata:         defsecTypes.NewUnmanagedMetadata(),
-		SourceAllRegions: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+		Metadata:         defsecTypes.NewUnmanagedMisconfigMetadata(),
+		SourceAllRegions: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 	}
 
 	for _, resource := range modules.GetResourcesByType("aws_config_configuration_aggregator") {

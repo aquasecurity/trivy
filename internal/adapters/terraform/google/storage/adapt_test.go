@@ -3,15 +3,15 @@ package storage
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
-	"github.com/aquasecurity/defsec/pkg/providers/google/storage"
+	"github.com/aquasecurity/trivy/pkg/providers/google/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/google/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -49,31 +49,31 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       defsecTypes.NewTestMetadata(),
-						Name:                           defsecTypes.String("image-store.com", defsecTypes.NewTestMetadata()),
-						Location:                       defsecTypes.String("EU", defsecTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:                       defsecTypes.NewTestMisconfigMetadata(),
+						Name:                           defsecTypes.String("image-store.com", defsecTypes.NewTestMisconfigMetadata()),
+						Location:                       defsecTypes.String("EU", defsecTypes.NewTestMisconfigMetadata()),
+						EnableUniformBucketLevelAccess: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						Bindings: []iam.Binding{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 								Members: []defsecTypes.StringValue{
-									defsecTypes.String("group:test@example.com", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("group:test@example.com", defsecTypes.NewTestMisconfigMetadata()),
 								},
-								Role:                          defsecTypes.String("roles/storage.admin #1", defsecTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Role:                          defsecTypes.String("roles/storage.admin #1", defsecTypes.NewTestMisconfigMetadata()),
+								IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 						Members: []iam.Member{
 							{
-								Metadata:              defsecTypes.NewTestMetadata(),
-								Member:                defsecTypes.String("serviceAccount:test@example.com", defsecTypes.NewTestMetadata()),
-								Role:                  defsecTypes.String("roles/storage.admin #2", defsecTypes.NewTestMetadata()),
-								DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Metadata:              defsecTypes.NewTestMisconfigMetadata(),
+								Member:                defsecTypes.String("serviceAccount:test@example.com", defsecTypes.NewTestMisconfigMetadata()),
+								Role:                  defsecTypes.String("roles/storage.admin #2", defsecTypes.NewTestMisconfigMetadata()),
+								DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 						Encryption: storage.BucketEncryption{
-							Metadata:          defsecTypes.NewTestMetadata(),
-							DefaultKMSKeyName: defsecTypes.String("default-kms-key-name", defsecTypes.NewTestMetadata()),
+							Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+							DefaultKMSKeyName: defsecTypes.String("default-kms-key-name", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -95,28 +95,28 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       defsecTypes.NewTestMetadata(),
-						Name:                           defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						Location:                       defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:                       defsecTypes.NewTestMisconfigMetadata(),
+						Name:                           defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+						Location:                       defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+						EnableUniformBucketLevelAccess: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						Bindings: []iam.Binding{
 							{
-								Metadata:                      defsecTypes.NewTestMetadata(),
-								Role:                          defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Metadata:                      defsecTypes.NewTestMisconfigMetadata(),
+								Role:                          defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+								IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 						Members: []iam.Member{
 							{
-								Metadata:              defsecTypes.NewTestMetadata(),
-								Member:                defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								Role:                  defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Metadata:              defsecTypes.NewTestMisconfigMetadata(),
+								Member:                defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+								Role:                  defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+								DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 						Encryption: storage.BucketEncryption{
-							Metadata:          defsecTypes.NewTestMetadata(),
-							DefaultKMSKeyName: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+							DefaultKMSKeyName: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},

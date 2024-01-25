@@ -1,9 +1,9 @@
 package rds
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/rds"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/rds"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) rds.RDS {
@@ -55,24 +55,24 @@ func getClusters(modules terraform.Modules) (clusters []rds.Cluster) {
 
 	if len(orphanResources) > 0 {
 		orphanage := rds.Cluster{
-			Metadata:                  defsecTypes.NewUnmanagedMetadata(),
-			BackupRetentionPeriodDays: defsecTypes.IntDefault(1, defsecTypes.NewUnmanagedMetadata()),
-			ReplicationSourceARN:      defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata:                  defsecTypes.NewUnmanagedMisconfigMetadata(),
+			BackupRetentionPeriodDays: defsecTypes.IntDefault(1, defsecTypes.NewUnmanagedMisconfigMetadata()),
+			ReplicationSourceARN:      defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			PerformanceInsights: rds.PerformanceInsights{
-				Metadata: defsecTypes.NewUnmanagedMetadata(),
-				Enabled:  defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				KMSKeyID: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
+				Enabled:  defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				KMSKeyID: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			},
 			Instances: nil,
 			Encryption: rds.Encryption{
-				Metadata:       defsecTypes.NewUnmanagedMetadata(),
-				EncryptStorage: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				KMSKeyID:       defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata:       defsecTypes.NewUnmanagedMisconfigMetadata(),
+				EncryptStorage: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				KMSKeyID:       defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			},
-			PublicAccess:         defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-			Engine:               defsecTypes.StringUnresolvable(defsecTypes.NewUnmanagedMetadata()),
-			LatestRestorableTime: defsecTypes.TimeUnresolvable(defsecTypes.NewUnmanagedMetadata()),
-			DeletionProtection:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			PublicAccess:         defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+			Engine:               defsecTypes.StringUnresolvable(defsecTypes.NewUnmanagedMisconfigMetadata()),
+			LatestRestorableTime: defsecTypes.TimeUnresolvable(defsecTypes.NewUnmanagedMisconfigMetadata()),
+			DeletionProtection:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 		}
 		for _, orphan := range orphanResources {
 			orphanage.Instances = append(orphanage.Instances, adaptClusterInstance(orphan, modules))

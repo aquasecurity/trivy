@@ -1,7 +1,7 @@
 package iam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/google/iam"
 )
 
 type parentedFolder struct {

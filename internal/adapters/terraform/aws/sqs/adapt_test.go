@@ -3,14 +3,14 @@ package sqs
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	"github.com/aquasecurity/defsec/pkg/providers/aws/sqs"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/sqs"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/liamg/iamgo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -41,12 +41,12 @@ func Test_Adapt(t *testing.T) {
 			expected: sqs.SQS{
 				Queues: []sqs.Queue{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						QueueURL: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						QueueURL: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						Encryption: sqs.Encryption{
-							Metadata:          defsecTypes.NewTestMetadata(),
-							ManagedEncryption: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-							KMSKeyID:          defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+							ManagedEncryption: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+							KMSKeyID:          defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Policies: func() []iam.Policy {
 							sb := iamgo.NewStatementBuilder()
@@ -60,13 +60,13 @@ func Test_Adapt(t *testing.T) {
 
 							return []iam.Policy{
 								{
-									Metadata: defsecTypes.NewTestMetadata(),
-									Name:     defsecTypes.StringDefault("", defsecTypes.NewTestMetadata()),
+									Metadata: defsecTypes.NewTestMisconfigMetadata(),
+									Name:     defsecTypes.StringDefault("", defsecTypes.NewTestMisconfigMetadata()),
 									Document: iam.Document{
-										Metadata: defsecTypes.NewTestMetadata(),
+										Metadata: defsecTypes.NewTestMisconfigMetadata(),
 										Parsed:   builder.Build(),
 									},
-									Builtin: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+									Builtin: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 								},
 							}
 						}(),
@@ -83,12 +83,12 @@ func Test_Adapt(t *testing.T) {
 			expected: sqs.SQS{
 				Queues: []sqs.Queue{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						QueueURL: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						QueueURL: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						Encryption: sqs.Encryption{
-							Metadata:          defsecTypes.NewTestMetadata(),
-							ManagedEncryption: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-							KMSKeyID:          defsecTypes.String("/blah", defsecTypes.NewTestMetadata()),
+							Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+							ManagedEncryption: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+							KMSKeyID:          defsecTypes.String("/blah", defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Policies: nil,
 					},

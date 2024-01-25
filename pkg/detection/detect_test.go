@@ -338,7 +338,7 @@ metadata:
     kubernetes.io/bootstrapping: rbac-defaults
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
   name: view
-rules:
+trules:
 - apiGroups:
   - networking.k8s.io
   resources:

@@ -3,14 +3,14 @@ package gke
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/gke"
+	"github.com/aquasecurity/trivy/pkg/providers/google/gke"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -103,75 +103,75 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 			expected: gke.GKE{
 				Clusters: []gke.Cluster{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						NodeConfig: gke.NodeConfig{
-							Metadata:  defsecTypes.NewTestMetadata(),
-							ImageType: defsecTypes.String("COS_CONTAINERD", defsecTypes.NewTestMetadata()),
+							Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+							ImageType: defsecTypes.String("COS_CONTAINERD", defsecTypes.NewTestMisconfigMetadata()),
 							WorkloadMetadataConfig: gke.WorkloadMetadataConfig{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								NodeMetadata: defsecTypes.String("GCE_METADATA", defsecTypes.NewTestMetadata()),
+								Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+								NodeMetadata: defsecTypes.String("GCE_METADATA", defsecTypes.NewTestMisconfigMetadata()),
 							},
-							ServiceAccount:        defsecTypes.String("", defsecTypes.NewTestMetadata()),
-							EnableLegacyEndpoints: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							ServiceAccount:        defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+							EnableLegacyEndpoints: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						NodePools: []gke.NodePool{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 								Management: gke.Management{
-									Metadata:          defsecTypes.NewTestMetadata(),
-									EnableAutoRepair:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-									EnableAutoUpgrade: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+									Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+									EnableAutoRepair:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+									EnableAutoUpgrade: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 								},
 								NodeConfig: gke.NodeConfig{
-									Metadata:  defsecTypes.NewTestMetadata(),
-									ImageType: defsecTypes.String("COS_CONTAINERD", defsecTypes.NewTestMetadata()),
+									Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+									ImageType: defsecTypes.String("COS_CONTAINERD", defsecTypes.NewTestMisconfigMetadata()),
 									WorkloadMetadataConfig: gke.WorkloadMetadataConfig{
-										Metadata:     defsecTypes.NewTestMetadata(),
-										NodeMetadata: defsecTypes.String("GCE_METADATA", defsecTypes.NewTestMetadata()),
+										Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+										NodeMetadata: defsecTypes.String("GCE_METADATA", defsecTypes.NewTestMisconfigMetadata()),
 									},
-									ServiceAccount:        defsecTypes.String("", defsecTypes.NewTestMetadata()),
-									EnableLegacyEndpoints: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+									ServiceAccount:        defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+									EnableLegacyEndpoints: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 								},
 							},
 						},
 						IPAllocationPolicy: gke.IPAllocationPolicy{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						MasterAuthorizedNetworks: gke.MasterAuthorizedNetworks{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 							CIDRs: []defsecTypes.StringValue{
-								defsecTypes.String("10.10.128.0/24", defsecTypes.NewTestMetadata()),
+								defsecTypes.String("10.10.128.0/24", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 						NetworkPolicy: gke.NetworkPolicy{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
-						DatapathProvider: defsecTypes.String("ADVANCED_DATAPATH", defsecTypes.NewTestMetadata()),
+						DatapathProvider: defsecTypes.String("ADVANCED_DATAPATH", defsecTypes.NewTestMisconfigMetadata()),
 						PrivateCluster: gke.PrivateCluster{
-							Metadata:           defsecTypes.NewTestMetadata(),
-							EnablePrivateNodes: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata:           defsecTypes.NewTestMisconfigMetadata(),
+							EnablePrivateNodes: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
-						LoggingService:    defsecTypes.String("logging.googleapis.com/kubernetes", defsecTypes.NewTestMetadata()),
-						MonitoringService: defsecTypes.String("monitoring.googleapis.com/kubernetes", defsecTypes.NewTestMetadata()),
+						LoggingService:    defsecTypes.String("logging.googleapis.com/kubernetes", defsecTypes.NewTestMisconfigMetadata()),
+						MonitoringService: defsecTypes.String("monitoring.googleapis.com/kubernetes", defsecTypes.NewTestMisconfigMetadata()),
 						MasterAuth: gke.MasterAuth{
-							Metadata: defsecTypes.NewTestMetadata(),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
 							ClientCertificate: gke.ClientCertificate{
-								Metadata:         defsecTypes.NewTestMetadata(),
-								IssueCertificate: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+								Metadata:         defsecTypes.NewTestMisconfigMetadata(),
+								IssueCertificate: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 							},
-							Username: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-							Password: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Username: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+							Password: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
-						EnableShieldedNodes: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						EnableLegacyABAC:    defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						EnableShieldedNodes: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+						EnableLegacyABAC:    defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						ResourceLabels: defsecTypes.Map(map[string]string{
 							"env": "staging",
-						}, defsecTypes.NewTestMetadata()),
-						RemoveDefaultNodePool: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						EnableAutpilot:        defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						}, defsecTypes.NewTestMisconfigMetadata()),
+						RemoveDefaultNodePool: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+						EnableAutpilot:        defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -195,51 +195,51 @@ resource "google_container_cluster" "example" {
 			expected: gke.GKE{
 				Clusters: []gke.Cluster{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						NodeConfig: gke.NodeConfig{
-							Metadata:  defsecTypes.NewTestMetadata(),
-							ImageType: defsecTypes.String("COS", defsecTypes.NewTestMetadata()),
+							Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+							ImageType: defsecTypes.String("COS", defsecTypes.NewTestMisconfigMetadata()),
 							WorkloadMetadataConfig: gke.WorkloadMetadataConfig{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								NodeMetadata: defsecTypes.String("GCE_METADATA", defsecTypes.NewTestMetadata()),
+								Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+								NodeMetadata: defsecTypes.String("GCE_METADATA", defsecTypes.NewTestMisconfigMetadata()),
 							},
-							ServiceAccount:        defsecTypes.String("service-account", defsecTypes.NewTestMetadata()),
-							EnableLegacyEndpoints: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							ServiceAccount:        defsecTypes.String("service-account", defsecTypes.NewTestMisconfigMetadata()),
+							EnableLegacyEndpoints: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
 
 						IPAllocationPolicy: gke.IPAllocationPolicy{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						MasterAuthorizedNetworks: gke.MasterAuthorizedNetworks{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 							CIDRs:    []defsecTypes.StringValue{},
 						},
 						NetworkPolicy: gke.NetworkPolicy{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
-						DatapathProvider: defsecTypes.StringDefault("DATAPATH_PROVIDER_UNSPECIFIED", defsecTypes.NewTestMetadata()),
+						DatapathProvider: defsecTypes.StringDefault("DATAPATH_PROVIDER_UNSPECIFIED", defsecTypes.NewTestMisconfigMetadata()),
 						PrivateCluster: gke.PrivateCluster{
-							Metadata:           defsecTypes.NewTestMetadata(),
-							EnablePrivateNodes: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata:           defsecTypes.NewTestMisconfigMetadata(),
+							EnablePrivateNodes: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
-						LoggingService:    defsecTypes.String("logging.googleapis.com/kubernetes", defsecTypes.NewTestMetadata()),
-						MonitoringService: defsecTypes.String("monitoring.googleapis.com/kubernetes", defsecTypes.NewTestMetadata()),
+						LoggingService:    defsecTypes.String("logging.googleapis.com/kubernetes", defsecTypes.NewTestMisconfigMetadata()),
+						MonitoringService: defsecTypes.String("monitoring.googleapis.com/kubernetes", defsecTypes.NewTestMisconfigMetadata()),
 						MasterAuth: gke.MasterAuth{
-							Metadata: defsecTypes.NewTestMetadata(),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
 							ClientCertificate: gke.ClientCertificate{
-								Metadata:         defsecTypes.NewTestMetadata(),
-								IssueCertificate: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Metadata:         defsecTypes.NewTestMisconfigMetadata(),
+								IssueCertificate: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 							},
-							Username: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-							Password: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Username: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+							Password: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
-						EnableShieldedNodes:   defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						EnableLegacyABAC:      defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						ResourceLabels:        defsecTypes.Map(map[string]string{}, defsecTypes.NewTestMetadata()),
-						RemoveDefaultNodePool: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						EnableShieldedNodes:   defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+						EnableLegacyABAC:      defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						ResourceLabels:        defsecTypes.Map(map[string]string{}, defsecTypes.NewTestMisconfigMetadata()),
+						RemoveDefaultNodePool: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},

@@ -3,12 +3,12 @@ package armjson
 import (
 	"fmt"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var nullRunes = []rune("null")
 
-func (p *parser) parseNull(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseNull(parentMetadata *types.MisconfigMetadata) (Node, error) {
 
 	n, _ := p.newNode(KindNull, parentMetadata)
 

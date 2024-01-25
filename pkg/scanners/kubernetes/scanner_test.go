@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/pkg/framework"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -28,7 +28,7 @@ spec:
     image: busybox
     name: hello
 `,
-		"/rules/lib.k8s.rego": `
+		"/trules/lib.k8s.rego": `
  package lib.kubernetes
 
  default is_gatekeeper = false
@@ -198,13 +198,13 @@ spec:
  	host_alias = pod.spec
  }
  `,
-		"/rules/lib.util.rego": `
+		"/trules/lib.util.rego": `
  package lib.utils
 
  has_key(x, k) {
  	_ = x[k]
  }`,
-		"/rules/rule.rego": `
+		"/trules/rule.rego": `
 package builtin.kubernetes.KSV011
 
 import data.lib.kubernetes
@@ -268,7 +268,7 @@ deny[res] {
 `,
 	})
 
-	scanner := NewScanner(options.ScannerWithPolicyDirs("rules"))
+	scanner := NewScanner(options.ScannerWithPolicyDirs("trules"))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)

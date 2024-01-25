@@ -9,7 +9,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/tml"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
@@ -17,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

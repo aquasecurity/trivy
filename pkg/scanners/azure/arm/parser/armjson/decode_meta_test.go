@@ -3,7 +3,7 @@ package armjson
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -32,7 +32,7 @@ func Test_DecodeWithMetadata(t *testing.T) {
 }
 `)
 	var parent TestParent
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, Unmarshal(example, &parent, &metadata))
 	assert.Equal(t, 3, parent.Child.Line)
 	assert.Equal(t, 12, parent.Child.Column)

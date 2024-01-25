@@ -1,7 +1,7 @@
 package cloudtrail
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/cloudtrail"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/cloudtrail"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

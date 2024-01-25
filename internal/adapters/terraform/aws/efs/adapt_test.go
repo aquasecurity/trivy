@@ -3,13 +3,13 @@ package efs
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/efs"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/efs"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,8 +30,8 @@ func Test_adaptFileSystem(t *testing.T) {
 			  }
 `,
 			expected: efs.FileSystem{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+				Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -41,8 +41,8 @@ func Test_adaptFileSystem(t *testing.T) {
 			  }
 `,
 			expected: efs.FileSystem{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				Encrypted: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+				Encrypted: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

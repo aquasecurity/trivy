@@ -8,13 +8,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/providers/dockerfile"
+	"github.com/aquasecurity/trivy/pkg/debug"
+	"github.com/aquasecurity/trivy/pkg/providers/dockerfile"
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/detection"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
 )
 
 var _ options.ConfigurableParser = (*Parser)(nil)

@@ -3,14 +3,14 @@ package ecr
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ecr"
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/ecr"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/liamg/iamgo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -77,21 +77,21 @@ func Test_adaptRepository(t *testing.T) {
 			  }
 `,
 			expected: ecr.Repository{
-				Metadata:           defsecTypes.NewTestMetadata(),
-				ImageTagsImmutable: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:           defsecTypes.NewTestMisconfigMetadata(),
+				ImageTagsImmutable: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				ImageScanning: ecr.ImageScanning{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					ScanOnPush: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+					ScanOnPush: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Encryption: ecr.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String("KMS", defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("aws_kms_key.ecr_kms", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Type:     defsecTypes.String("KMS", defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("aws_kms_key.ecr_kms", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Policies: []iam.Policy{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Name:     defsecTypes.StringDefault("", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Name:     defsecTypes.StringDefault("", defsecTypes.NewTestMisconfigMetadata()),
 						Document: func() iam.Document {
 
 							builder := iamgo.NewPolicyBuilder()
@@ -121,10 +121,10 @@ func Test_adaptRepository(t *testing.T) {
 
 							return iam.Document{
 								Parsed:   builder.Build(),
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 							}
 						}(),
-						Builtin: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Builtin: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -136,16 +136,16 @@ func Test_adaptRepository(t *testing.T) {
 			}
 `,
 			expected: ecr.Repository{
-				Metadata:           defsecTypes.NewTestMetadata(),
-				ImageTagsImmutable: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:           defsecTypes.NewTestMisconfigMetadata(),
+				ImageTagsImmutable: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				ImageScanning: ecr.ImageScanning{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					ScanOnPush: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+					ScanOnPush: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Encryption: ecr.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String("AES256", defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Type:     defsecTypes.String("AES256", defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

@@ -4,11 +4,11 @@ import (
 	"strconv"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/network"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/network"
 
 	"github.com/google/uuid"
 )
@@ -52,7 +52,7 @@ func (a *adapter) adaptSecurityGroups() []network.SecurityGroup {
 		}
 
 		a.groups[uuid.NewString()] = network.SecurityGroup{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Rules:    []network.SecurityGroupRule{rule},
 		}
 	}
@@ -168,7 +168,7 @@ func (a *adapter) adaptDestination(ruleBlock *terraform.Block, rule *network.Sec
 	}
 }
 
-func expandRange(r string, m defsecTypes.Metadata) network.PortRange {
+func expandRange(r string, m defsecTypes.MisconfigMetadata) network.PortRange {
 	start := 0
 	end := 65535
 	switch {

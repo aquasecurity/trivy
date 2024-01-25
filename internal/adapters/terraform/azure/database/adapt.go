@@ -1,9 +1,9 @@
 package database
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/database"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/database"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) database.Database {
@@ -67,12 +67,12 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 
 	if len(orphanResources) > 0 {
 		orphanage := database.MSSQLServer{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Server: database.Server{
-				Metadata:                  defsecTypes.NewUnmanagedMetadata(),
-				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				Metadata:                  defsecTypes.NewUnmanagedMisconfigMetadata(),
+				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 				FirewallRules:             nil,
 			},
 			ExtendedAuditingPolicies: nil,
@@ -89,12 +89,12 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 
 	if len(orphanResources) > 0 {
 		orphanage := database.MSSQLServer{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Server: database.Server{
-				Metadata:                  defsecTypes.NewUnmanagedMetadata(),
-				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				Metadata:                  defsecTypes.NewUnmanagedMisconfigMetadata(),
+				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 				FirewallRules:             nil,
 			},
 		}
@@ -109,7 +109,7 @@ func (a *mssqlAdapter) adaptMSSQLServers(modules terraform.Modules) []database.M
 
 	if len(orphanResources) > 0 {
 		orphanage := database.MSSQLServer{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 		}
 		for _, policy := range orphanResources {
 			orphanage.FirewallRules = append(orphanage.FirewallRules, adaptFirewallRule(policy))
@@ -132,12 +132,12 @@ func (a *mysqlAdapter) adaptMySQLServers(modules terraform.Modules) []database.M
 
 	if len(orphanResources) > 0 {
 		orphanage := database.MySQLServer{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Server: database.Server{
-				Metadata:                  defsecTypes.NewUnmanagedMetadata(),
-				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				Metadata:                  defsecTypes.NewUnmanagedMisconfigMetadata(),
+				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 				FirewallRules:             nil,
 			},
 		}
@@ -163,12 +163,12 @@ func (a *mariaDBAdapter) adaptMariaDBServers(modules terraform.Modules) []databa
 
 	if len(orphanResources) > 0 {
 		orphanage := database.MariaDBServer{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Server: database.Server{
-				Metadata:                  defsecTypes.NewUnmanagedMetadata(),
-				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				Metadata:                  defsecTypes.NewUnmanagedMisconfigMetadata(),
+				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 				FirewallRules:             nil,
 			},
 		}
@@ -194,19 +194,19 @@ func (a *postgresqlAdapter) adaptPostgreSQLServers(modules terraform.Modules) []
 
 	if len(orphanResources) > 0 {
 		orphanage := database.PostgreSQLServer{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Server: database.Server{
-				Metadata:                  defsecTypes.NewUnmanagedMetadata(),
-				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				Metadata:                  defsecTypes.NewUnmanagedMisconfigMetadata(),
+				EnableSSLEnforcement:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				MinimumTLSVersion:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+				EnablePublicNetworkAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 				FirewallRules:             nil,
 			},
 			Config: database.PostgresSQLConfig{
-				Metadata:             defsecTypes.NewUnmanagedMetadata(),
-				LogCheckpoints:       defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				ConnectionThrottling: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				LogConnections:       defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				Metadata:             defsecTypes.NewUnmanagedMisconfigMetadata(),
+				LogCheckpoints:       defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				ConnectionThrottling: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+				LogConnections:       defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 			},
 		}
 		for _, policy := range orphanResources {

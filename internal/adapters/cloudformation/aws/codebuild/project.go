@@ -1,9 +1,9 @@
 package codebuild
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/codebuild"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/codebuild"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func getProjects(ctx parser.FileContext) (projects []codebuild.Project) {

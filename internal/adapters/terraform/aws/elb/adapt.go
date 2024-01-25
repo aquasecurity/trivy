@@ -1,9 +1,9 @@
 package elb
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/elb"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/elb"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) elb.ELB {
@@ -36,10 +36,10 @@ func (a *adapter) adaptLoadBalancers(modules terraform.Modules) []elb.LoadBalanc
 	orphanResources := modules.GetResourceByIDs(a.listenerIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := elb.LoadBalancer{
-			Metadata:                defsecTypes.NewUnmanagedMetadata(),
-			Type:                    defsecTypes.StringDefault(elb.TypeApplication, defsecTypes.NewUnmanagedMetadata()),
-			DropInvalidHeaderFields: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-			Internal:                defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			Metadata:                defsecTypes.NewUnmanagedMisconfigMetadata(),
+			Type:                    defsecTypes.StringDefault(elb.TypeApplication, defsecTypes.NewUnmanagedMisconfigMetadata()),
+			DropInvalidHeaderFields: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+			Internal:                defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 			Listeners:               nil,
 		}
 		for _, listenerResource := range orphanResources {

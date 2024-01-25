@@ -1,7 +1,7 @@
 package codebuild
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/codebuild"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/codebuild"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

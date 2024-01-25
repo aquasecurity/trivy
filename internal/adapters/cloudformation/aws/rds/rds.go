@@ -1,7 +1,7 @@
 package rds
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/rds"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/rds"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

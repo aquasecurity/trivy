@@ -3,11 +3,11 @@ package azure
 import (
 	"os"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Deployment struct {
-	Metadata    types.Metadata
+	Metadata    types.MisconfigMetadata
 	TargetScope Scope
 	Parameters  []Parameter
 	Variables   []Variable
@@ -29,7 +29,7 @@ type Variable struct {
 type Output Variable
 
 type Resource struct {
-	Metadata   types.Metadata
+	Metadata   types.MisconfigMetadata
 	APIVersion Value
 	Type       Value
 	Kind       Value

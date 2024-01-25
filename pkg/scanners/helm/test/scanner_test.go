@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/scanners/helm"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -195,14 +195,14 @@ deny[res] {
 			t.Logf("Running test: %s", test.testName)
 
 			helmScanner := helm.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true),
-				options.ScannerWithPolicyDirs("rules"),
+				options.ScannerWithPolicyDirs("trules"),
 				options.ScannerWithPolicyNamespaces("user"))
 
 			testTemp := t.TempDir()
 			testFileName := filepath.Join(testTemp, test.archiveName)
 			require.NoError(t, copyArchive(test.path, testFileName))
 
-			policyDirName := filepath.Join(testTemp, "rules")
+			policyDirName := filepath.Join(testTemp, "trules")
 			require.NoError(t, os.Mkdir(policyDirName, 0o700))
 			require.NoError(t, os.WriteFile(filepath.Join(policyDirName, "rule.rego"), []byte(regoRule), 0o600))
 

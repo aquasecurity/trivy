@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/types"
 	types2 "github.com/aquasecurity/trivy/pkg/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/arm/parser/armjson"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -16,7 +16,7 @@ func Test_JSONUnmarshal(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join("testdata", "example.json"))
 	require.NoError(t, err)
 	var target Template
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, armjson.Unmarshal(data, &target, &metadata))
 	assert.Equal(t,
 		"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -40,21 +40,21 @@ func Test_JSONUnmarshal(t *testing.T) {
 	*/
 	assert.Equal(t, "string", prefix.Type.Raw())
 	assert.Equal(t, types2.KindString, prefix.Type.Kind)
-	assert.Equal(t, 8, prefix.Type.Metadata.Range().GetStartLine())
-	assert.Equal(t, 8, prefix.Type.Metadata.Range().GetEndLine())
+	assert.Equal(t, 8, prefix.Type.MisconfigMetadata.Range().GetStartLine())
+	assert.Equal(t, 8, prefix.Type.MisconfigMetadata.Range().GetEndLine())
 
 	assert.Equal(t, "x", prefix.DefaultValue.Raw())
 	assert.Equal(t, types2.KindString, prefix.DefaultValue.Kind)
-	assert.Equal(t, 9, prefix.DefaultValue.Metadata.Range().GetStartLine())
-	assert.Equal(t, 9, prefix.DefaultValue.Metadata.Range().GetEndLine())
+	assert.Equal(t, 9, prefix.DefaultValue.MisconfigMetadata.Range().GetStartLine())
+	assert.Equal(t, 9, prefix.DefaultValue.MisconfigMetadata.Range().GetEndLine())
 
 	assert.Equal(t, int64(11), prefix.MaxLength.Raw())
 	assert.Equal(t, types2.KindNumber, prefix.MaxLength.Kind)
-	assert.Equal(t, 10, prefix.MaxLength.Metadata.Range().GetStartLine())
-	assert.Equal(t, 10, prefix.MaxLength.Metadata.Range().GetEndLine())
+	assert.Equal(t, 10, prefix.MaxLength.MisconfigMetadata.Range().GetStartLine())
+	assert.Equal(t, 10, prefix.MaxLength.MisconfigMetadata.Range().GetEndLine())
 
 	assert.Equal(t, int64(3), prefix.MinLength.Raw())
 	assert.Equal(t, types2.KindNumber, prefix.MinLength.Kind)
-	assert.Equal(t, 11, prefix.MinLength.Metadata.Range().GetStartLine())
-	assert.Equal(t, 11, prefix.MinLength.Metadata.Range().GetEndLine())
+	assert.Equal(t, 11, prefix.MinLength.MisconfigMetadata.Range().GetStartLine())
+	assert.Equal(t, 11, prefix.MinLength.MisconfigMetadata.Range().GetEndLine())
 }

@@ -3,13 +3,13 @@ package authorization
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/authorization"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/authorization"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -37,17 +37,17 @@ func Test_adaptRoleDefinition(t *testing.T) {
 			}
 `,
 			expected: authorization.RoleDefinition{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Permissions: []authorization.Permission{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						Actions: []defsecTypes.StringValue{
-							defsecTypes.String("*", defsecTypes.NewTestMetadata()),
+							defsecTypes.String("*", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
 				AssignableScopes: []defsecTypes.StringValue{
-					defsecTypes.StringUnresolvable(defsecTypes.NewTestMetadata()),
+					defsecTypes.StringUnresolvable(defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -68,14 +68,14 @@ func Test_adaptRoleDefinition(t *testing.T) {
 			}
 `,
 			expected: authorization.RoleDefinition{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Permissions: []authorization.Permission{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					},
 				},
 				AssignableScopes: []defsecTypes.StringValue{
-					defsecTypes.String("/", defsecTypes.NewTestMetadata()),
+					defsecTypes.String("/", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

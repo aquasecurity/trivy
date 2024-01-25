@@ -3,11 +3,11 @@ package iam
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptUsers(t *testing.T) {
@@ -45,15 +45,15 @@ resource "aws_iam_user_policy" "policy" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					Name:       defsecTypes.String("loadbalancer", defsecTypes.NewTestMetadata()),
-					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+					Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+					Name:       defsecTypes.String("loadbalancer", defsecTypes.NewTestMisconfigMetadata()),
+					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMisconfigMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("test", defsecTypes.NewTestMisconfigMetadata()),
 							Document: defaultPolicyDocuemnt(false),
-							Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -90,15 +90,15 @@ resource "aws_iam_user_policy_attachment" "test-attach" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					Name:       defsecTypes.String("test-user", defsecTypes.NewTestMetadata()),
-					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+					Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+					Name:       defsecTypes.String("test-user", defsecTypes.NewTestMisconfigMetadata()),
+					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMisconfigMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-policy", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("test-policy", defsecTypes.NewTestMisconfigMetadata()),
 							Document: defaultPolicyDocuemnt(false),
-							Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -120,14 +120,14 @@ resource "aws_iam_user" "lb" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					Name:       defsecTypes.String("loadbalafncer", defsecTypes.NewTestMetadata()),
-					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+					Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+					Name:       defsecTypes.String("loadbalafncer", defsecTypes.NewTestMisconfigMetadata()),
+					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMisconfigMetadata()),
 					Policies:   nil,
 					AccessKeys: []iam.AccessKey{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Active:   defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Active:   defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -148,14 +148,14 @@ resource "aws_iam_user" "lb" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					Name:       defsecTypes.String("loadbalafncer", defsecTypes.NewTestMetadata()),
-					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+					Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+					Name:       defsecTypes.String("loadbalafncer", defsecTypes.NewTestMisconfigMetadata()),
+					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMisconfigMetadata()),
 					Policies:   nil,
 					AccessKeys: []iam.AccessKey{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Active:   defsecTypes.BoolDefault(true, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Active:   defsecTypes.BoolDefault(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},

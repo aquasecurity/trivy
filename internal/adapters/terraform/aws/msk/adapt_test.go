@@ -3,13 +3,13 @@ package msk
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/msk"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/msk"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -54,31 +54,31 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: msk.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				EncryptionInTransit: msk.EncryptionInTransit{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					ClientBroker: defsecTypes.String("TLS", defsecTypes.NewTestMetadata()),
+					Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+					ClientBroker: defsecTypes.String("TLS", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				EncryptionAtRest: msk.EncryptionAtRest{
-					Metadata:  defsecTypes.NewTestMetadata(),
-					KMSKeyARN: defsecTypes.String("foo-bar-key", defsecTypes.NewTestMetadata()),
-					Enabled:   defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+					KMSKeyARN: defsecTypes.String("foo-bar-key", defsecTypes.NewTestMisconfigMetadata()),
+					Enabled:   defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Logging: msk.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Broker: msk.BrokerLogging{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						S3: msk.S3Logging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Cloudwatch: msk.CloudwatchLogging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Firehose: msk.FirehoseLogging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -91,26 +91,26 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: msk.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				EncryptionInTransit: msk.EncryptionInTransit{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					ClientBroker: defsecTypes.String("TLS_PLAINTEXT", defsecTypes.NewTestMetadata()),
+					Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+					ClientBroker: defsecTypes.String("TLS_PLAINTEXT", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Logging: msk.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Broker: msk.BrokerLogging{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						S3: msk.S3Logging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Cloudwatch: msk.CloudwatchLogging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Firehose: msk.FirehoseLogging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},

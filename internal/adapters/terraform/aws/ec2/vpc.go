@@ -1,9 +1,9 @@
 package ec2
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 type naclAdapter struct {
@@ -63,12 +63,12 @@ func (a *sgAdapter) adaptSecurityGroups(modules terraform.Modules) []ec2.Securit
 	orphanResources := modules.GetResourceByIDs(a.sgRuleIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := ec2.SecurityGroup{
-			Metadata:     defsecTypes.NewUnmanagedMetadata(),
-			Description:  defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata:     defsecTypes.NewUnmanagedMisconfigMetadata(),
+			Description:  defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			IngressRules: nil,
 			EgressRules:  nil,
-			IsDefault:    defsecTypes.BoolUnresolvable(defsecTypes.NewUnmanagedMetadata()),
-			VPCID:        defsecTypes.StringUnresolvable(defsecTypes.NewUnmanagedMetadata()),
+			IsDefault:    defsecTypes.BoolUnresolvable(defsecTypes.NewUnmanagedMisconfigMetadata()),
+			VPCID:        defsecTypes.StringUnresolvable(defsecTypes.NewUnmanagedMisconfigMetadata()),
 		}
 		for _, sgRule := range orphanResources {
 			if sgRule.GetAttribute("type").Equals("ingress") {
@@ -94,9 +94,9 @@ func (a *naclAdapter) adaptNetworkACLs(modules terraform.Modules) []ec2.NetworkA
 	orphanResources := modules.GetResourceByIDs(a.naclRuleIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := ec2.NetworkACL{
-			Metadata:      defsecTypes.NewUnmanagedMetadata(),
+			Metadata:      defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Rules:         nil,
-			IsDefaultRule: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			IsDefaultRule: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 		}
 		for _, naclRule := range orphanResources {
 			orphanage.Rules = append(orphanage.Rules, adaptNetworkACLRule(naclRule))
@@ -139,7 +139,7 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 		Description:  descriptionVal,
 		IngressRules: ingressRules,
 		EgressRules:  egressRules,
-		IsDefault:    defsecTypes.Bool(false, defsecTypes.NewUnmanagedMetadata()),
+		IsDefault:    defsecTypes.Bool(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 		VPCID:        resource.GetAttribute("vpc_id").AsStringValueOrDefault("", resource),
 	}
 }

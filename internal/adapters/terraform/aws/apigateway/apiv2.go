@@ -1,9 +1,9 @@
 package apigateway
 
 import (
-	v2 "github.com/aquasecurity/defsec/pkg/providers/aws/apigateway/v2"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	v2 "github.com/aquasecurity/trivy/pkg/providers/aws/apigateway/v2"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func adaptAPIsV2(modules terraform.Modules) []v2.API {
@@ -35,9 +35,9 @@ func adaptAPIsV2(modules terraform.Modules) []v2.API {
 	orphanResources := modules.GetResourceByIDs(apiStageIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := v2.API{
-			Metadata:     defsecTypes.NewUnmanagedMetadata(),
-			Name:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-			ProtocolType: defsecTypes.StringUnresolvable(defsecTypes.NewUnmanagedMetadata()),
+			Metadata:     defsecTypes.NewUnmanagedMisconfigMetadata(),
+			Name:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+			ProtocolType: defsecTypes.StringUnresolvable(defsecTypes.NewUnmanagedMisconfigMetadata()),
 			Stages:       nil,
 		}
 		for _, stage := range orphanResources {

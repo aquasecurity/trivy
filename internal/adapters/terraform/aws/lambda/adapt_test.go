@@ -3,14 +3,14 @@ package lambda
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/lambda"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/lambda"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -44,16 +44,16 @@ func Test_Adapt(t *testing.T) {
 			expected: lambda.Lambda{
 				Functions: []lambda.Function{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						Tracing: lambda.Tracing{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Mode:     defsecTypes.String("Passthrough", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Mode:     defsecTypes.String("Passthrough", defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Permissions: []lambda.Permission{
 							{
-								Metadata:  defsecTypes.NewTestMetadata(),
-								Principal: defsecTypes.String("sns.amazonaws.com", defsecTypes.NewTestMetadata()),
-								SourceARN: defsecTypes.String("default", defsecTypes.NewTestMetadata()),
+								Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+								Principal: defsecTypes.String("sns.amazonaws.com", defsecTypes.NewTestMisconfigMetadata()),
+								SourceARN: defsecTypes.String("default", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
@@ -74,23 +74,23 @@ func Test_Adapt(t *testing.T) {
 			expected: lambda.Lambda{
 				Functions: []lambda.Function{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						Tracing: lambda.Tracing{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Mode:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Mode:     defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						Tracing: lambda.Tracing{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Mode:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Mode:     defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Permissions: []lambda.Permission{
 							{
-								Metadata:  defsecTypes.NewTestMetadata(),
-								Principal: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								SourceARN: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+								Principal: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+								SourceARN: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},

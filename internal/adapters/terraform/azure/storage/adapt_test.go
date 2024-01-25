@@ -3,14 +3,14 @@ package storage
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/storage"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -66,45 +66,45 @@ func Test_Adapt(t *testing.T) {
 				Accounts: []storage.Account{
 
 					{
-						Metadata:          defsecTypes.NewTestMetadata(),
-						EnforceHTTPS:      defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						MinimumTLSVersion: defsecTypes.String("TLS1_2", defsecTypes.NewTestMetadata()),
+						Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+						EnforceHTTPS:      defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+						MinimumTLSVersion: defsecTypes.String("TLS1_2", defsecTypes.NewTestMisconfigMetadata()),
 						NetworkRules: []storage.NetworkRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 								Bypass: []defsecTypes.StringValue{
-									defsecTypes.String("Metrics", defsecTypes.NewTestMetadata()),
-									defsecTypes.String("AzureServices", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("Metrics", defsecTypes.NewTestMisconfigMetadata()),
+									defsecTypes.String("AzureServices", defsecTypes.NewTestMisconfigMetadata()),
 								},
-								AllowByDefault: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								AllowByDefault: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 							},
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 								Bypass: []defsecTypes.StringValue{
-									defsecTypes.String("Metrics", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("Metrics", defsecTypes.NewTestMisconfigMetadata()),
 								},
-								AllowByDefault: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+								AllowByDefault: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 						QueueProperties: storage.QueueProperties{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							EnableLogging: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+							EnableLogging: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Containers: []storage.Container{
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								PublicAccess: defsecTypes.String("blob", defsecTypes.NewTestMetadata()),
+								Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+								PublicAccess: defsecTypes.String("blob", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
 					{
-						Metadata:     defsecTypes.NewUnmanagedMetadata(),
-						EnforceHTTPS: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+						Metadata:     defsecTypes.NewUnmanagedMisconfigMetadata(),
+						EnforceHTTPS: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 						QueueProperties: storage.QueueProperties{
-							Metadata:      defsecTypes.NewUnmanagedMetadata(),
-							EnableLogging: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+							Metadata:      defsecTypes.NewUnmanagedMisconfigMetadata(),
+							EnableLogging: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 						},
-						MinimumTLSVersion: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+						MinimumTLSVersion: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 					},
 				},
 			},
@@ -124,26 +124,26 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Accounts: []storage.Account{
 					{
-						Metadata:     defsecTypes.NewUnmanagedMetadata(),
-						EnforceHTTPS: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+						Metadata:     defsecTypes.NewUnmanagedMisconfigMetadata(),
+						EnforceHTTPS: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 						NetworkRules: []storage.NetworkRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 								Bypass: []defsecTypes.StringValue{
-									defsecTypes.String("Metrics", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("Metrics", defsecTypes.NewTestMisconfigMetadata()),
 								},
-								AllowByDefault: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+								AllowByDefault: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 						QueueProperties: storage.QueueProperties{
-							Metadata:      defsecTypes.NewUnmanagedMetadata(),
-							EnableLogging: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+							Metadata:      defsecTypes.NewUnmanagedMisconfigMetadata(),
+							EnableLogging: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 						},
-						MinimumTLSVersion: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+						MinimumTLSVersion: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 						Containers: []storage.Container{
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								PublicAccess: defsecTypes.String("blob", defsecTypes.NewTestMetadata()),
+								Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+								PublicAccess: defsecTypes.String("blob", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},

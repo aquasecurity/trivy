@@ -8,18 +8,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/debug"
+	"github.com/aquasecurity/trivy/pkg/framework"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/liamg/memoryfs"
 
-	"github.com/aquasecurity/defsec/pkg/rego"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/detection"
+	"github.com/aquasecurity/trivy/pkg/rego"
 	"github.com/aquasecurity/trivy/pkg/scanners"
 	"github.com/aquasecurity/trivy/pkg/scanners/helm/parser"
 	kparser "github.com/aquasecurity/trivy/pkg/scanners/kubernetes/parser"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)

@@ -9,8 +9,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/arm/parser/armjson"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type FileType string
@@ -133,7 +133,7 @@ func init() {
 			Parameters  map[string]interface{} `json:"parameters"`
 			Resources   []interface{}          `json:"resources"`
 		}{}
-		metadata := types.NewUnmanagedMetadata()
+		metadata := types.NewUnmanagedMisconfigMetadata()
 		if err := armjson.UnmarshalFromReader(r, &sniff, &metadata); err != nil {
 			return false
 		}

@@ -4,7 +4,7 @@ import (
 	"io/fs"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
@@ -81,8 +81,8 @@ func (r *Resource) SourceFormat() SourceFormat {
 	return r.ctx.SourceFormat
 }
 
-func (r *Resource) Metadata() defsecTypes.Metadata {
-	return defsecTypes.NewMetadata(r.Range(), NewCFReference(r.id, r.rng).String())
+func (r *Resource) Metadata() defsecTypes.MisconfigMetadata {
+	return defsecTypes.NewMisconfigMetadata(r.Range(), NewCFReference(r.id, r.rng).String())
 }
 
 func (r *Resource) properties() map[string]*Property {

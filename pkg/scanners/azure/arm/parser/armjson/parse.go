@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type parser struct {
@@ -20,7 +20,7 @@ func newParser(p *PeekReader, pos Position) *parser {
 	}
 }
 
-func (p *parser) parse(rootMetadata *types.Metadata) (Node, error) {
+func (p *parser) parse(rootMetadata *types.MisconfigMetadata) (Node, error) {
 	root, err := p.parseElement(rootMetadata)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (p *parser) parse(rootMetadata *types.Metadata) (Node, error) {
 	return root, nil
 }
 
-func (p *parser) parseElement(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseElement(parentMetadata *types.MisconfigMetadata) (Node, error) {
 	if err := p.parseWhitespace(); err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (p *parser) parseElement(parentMetadata *types.Metadata) (Node, error) {
 	return n, nil
 }
 
-func (p *parser) parseValue(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseValue(parentMetadata *types.MisconfigMetadata) (Node, error) {
 	c, err := p.peeker.Peek()
 	if err != nil {
 		return nil, err
@@ -98,12 +98,12 @@ func (p *parser) makeError(format string, args ...interface{}) error {
 	)
 }
 
-func (p *parser) newNode(k Kind, parentMetadata *types.Metadata) (*node, *types.Metadata) {
+func (p *parser) newNode(k Kind, parentMetadata *types.MisconfigMetadata) (*node, *types.MisconfigMetadata) {
 	n := &node{
 		start: p.position,
 		kind:  k,
 	}
-	metadata := types.NewMetadata(
+	metadata := types.NewMisconfigMetadata(
 		types.NewRange(parentMetadata.Range().GetFilename(), n.start.Line, n.end.Line, "", parentMetadata.Range().GetFS()),
 		n.ref,
 	)
@@ -124,11 +124,11 @@ func (n *node) updateMetadata(prefix string) {
 		full = n.ref
 	}
 
-	n.metadata.SetRange(types.NewRange(n.metadata.Range().GetFilename(),
+	n.metadata.SetRange(types.NewRange(n.Metadata().Range().GetFilename(),
 		n.start.Line,
 		n.end.Line,
 		"",
-		n.metadata.Range().GetFS()))
+		n.Metadata().Range().GetFS()))
 
 	n.metadata.SetReference(full)
 

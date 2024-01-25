@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -54,7 +54,7 @@ import (
 //	entries, err := os.ReadDir("./testdata/dockerfile")
 //	require.NoError(t, err)
 //
-//	policiesPath, err := filepath.Abs("../rules")
+//	policiesPath, err := filepath.Abs("../trules")
 //	require.NoError(t, err)
 //	scanner := dockerfile.NewScanner(
 //		options.ScannerWithPolicyDirs(filepath.Base(policiesPath)),

@@ -4,16 +4,16 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers"
-	"github.com/aquasecurity/defsec/pkg/rules"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/severity"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/providers"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/severity"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/trules"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 var panicRule = scan.Rule{
@@ -37,8 +37,8 @@ var panicRule = scan.Rule{
 
 func Test_PanicInCheckNotAllowed(t *testing.T) {
 
-	reg := rules.Register(panicRule)
-	defer rules.Deregister(reg)
+	reg := trules.Register(panicRule)
+	defer trules.Deregister(reg)
 
 	fs := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
@@ -59,8 +59,8 @@ resource "problem" "this" {
 
 func Test_PanicInCheckAllowed(t *testing.T) {
 
-	reg := rules.Register(panicRule)
-	defer rules.Deregister(reg)
+	reg := trules.Register(panicRule)
+	defer trules.Deregister(reg)
 
 	fs := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
@@ -81,8 +81,8 @@ resource "problem" "this" {
 
 func Test_PanicNotInCheckNotIncludePassed(t *testing.T) {
 
-	reg := rules.Register(panicRule)
-	defer rules.Deregister(reg)
+	reg := trules.Register(panicRule)
+	defer trules.Deregister(reg)
 
 	fs := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `
@@ -103,8 +103,8 @@ resource "problem" "this" {
 
 func Test_PanicNotInCheckNotIncludePassedStopOnError(t *testing.T) {
 
-	reg := rules.Register(panicRule)
-	defer rules.Deregister(reg)
+	reg := trules.Register(panicRule)
+	defer trules.Deregister(reg)
 
 	fs := testutil.CreateFS(t, map[string]string{
 		"project/main.tf": `

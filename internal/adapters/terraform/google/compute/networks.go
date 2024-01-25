@@ -4,10 +4,10 @@ import (
 	"strconv"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/compute"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/providers/google/compute"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 )
 
 const (
@@ -53,7 +53,7 @@ func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
 		}
 
 		placeholder := compute.Network{
-			Metadata:    defsecTypes.NewUnmanagedMetadata(),
+			Metadata:    defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Firewall:    nil,
 			Subnetworks: nil,
 		}
@@ -91,7 +91,7 @@ func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
 		}
 
 		placeholder := compute.Network{
-			Metadata:    defsecTypes.NewUnmanagedMetadata(),
+			Metadata:    defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Firewall:    nil,
 			Subnetworks: nil,
 		}

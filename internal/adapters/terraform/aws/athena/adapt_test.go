@@ -3,13 +3,13 @@ package athena
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/athena"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/athena"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -32,11 +32,11 @@ func Test_adaptDatabase(t *testing.T) {
 			}
 `,
 			expected: athena.Database{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("database_name", defsecTypes.NewTestMetadata()),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
+				Name:     defsecTypes.String("database_name", defsecTypes.NewTestMisconfigMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeSSEKMS, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Type:     defsecTypes.String(athena.EncryptionTypeSSEKMS, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -75,13 +75,13 @@ func Test_adaptWorkgroup(t *testing.T) {
 			  }
 `,
 			expected: athena.Workgroup{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("example", defsecTypes.NewTestMetadata()),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
+				Name:     defsecTypes.String("example", defsecTypes.NewTestMisconfigMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeSSEKMS, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Type:     defsecTypes.String(athena.EncryptionTypeSSEKMS, defsecTypes.NewTestMisconfigMetadata()),
 				},
-				EnforceConfiguration: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				EnforceConfiguration: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -102,13 +102,13 @@ func Test_adaptWorkgroup(t *testing.T) {
 			}
 `,
 			expected: athena.Workgroup{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("example", defsecTypes.NewTestMetadata()),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
+				Name:     defsecTypes.String("example", defsecTypes.NewTestMisconfigMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeSSEKMS, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Type:     defsecTypes.String(athena.EncryptionTypeSSEKMS, defsecTypes.NewTestMisconfigMetadata()),
 				},
-				EnforceConfiguration: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				EnforceConfiguration: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -127,13 +127,13 @@ func Test_adaptWorkgroup(t *testing.T) {
 			}
 `,
 			expected: athena.Workgroup{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("example", defsecTypes.NewTestMetadata()),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
+				Name:     defsecTypes.String("example", defsecTypes.NewTestMisconfigMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeNone, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Type:     defsecTypes.String(athena.EncryptionTypeNone, defsecTypes.NewTestMisconfigMetadata()),
 				},
-				EnforceConfiguration: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				EnforceConfiguration: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -144,13 +144,13 @@ func Test_adaptWorkgroup(t *testing.T) {
 			}
 `,
 			expected: athena.Workgroup{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("example", defsecTypes.NewTestMetadata()),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
+				Name:     defsecTypes.String("example", defsecTypes.NewTestMisconfigMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeNone, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Type:     defsecTypes.String(athena.EncryptionTypeNone, defsecTypes.NewTestMisconfigMetadata()),
 				},
-				EnforceConfiguration: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				EnforceConfiguration: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

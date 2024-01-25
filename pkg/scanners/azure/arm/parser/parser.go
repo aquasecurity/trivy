@@ -8,13 +8,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/debug"
+	"github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/resolver"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
 )
 
 type Parser struct {
@@ -90,7 +90,7 @@ func (p *Parser) Required(path string) bool {
 		return false
 	}
 	var template Template
-	root := types.NewMetadata(
+	root := types.NewMisconfigMetadata(
 		types.NewRange(filepath.Base(path), 0, 0, "", p.targetFS),
 		"",
 	)
@@ -112,7 +112,7 @@ func (p *Parser) parseFile(r io.Reader, filename string) (*azure.Deployment, err
 	if err != nil {
 		return nil, err
 	}
-	root := types.NewMetadata(
+	root := types.NewMisconfigMetadata(
 		types.NewRange(filename, 0, 0, "", p.targetFS),
 		"",
 	).WithInternal(resolver.NewResolver())

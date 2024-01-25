@@ -3,11 +3,11 @@ package executor
 import (
 	"io"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/rego"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/debug"
+	"github.com/aquasecurity/trivy/pkg/framework"
+	"github.com/aquasecurity/trivy/pkg/rego"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/state"
 )
 
 type Option func(s *Executor)

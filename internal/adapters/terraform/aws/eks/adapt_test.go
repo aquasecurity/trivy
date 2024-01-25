@@ -3,13 +3,13 @@ package eks
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/eks"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/eks"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -42,23 +42,23 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: eks.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Logging: eks.Logging{
-					Metadata:          defsecTypes.NewTestMetadata(),
-					API:               defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Authenticator:     defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Audit:             defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Scheduler:         defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					ControllerManager: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+					API:               defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					Authenticator:     defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					Audit:             defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					Scheduler:         defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					ControllerManager: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Encryption: eks.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Secrets:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("key-arn", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Secrets:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("key-arn", defsecTypes.NewTestMisconfigMetadata()),
 				},
-				PublicAccessEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				PublicAccessEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				PublicAccessCIDRs: []defsecTypes.StringValue{
-					defsecTypes.String("10.2.0.0/8", defsecTypes.NewTestMetadata()),
+					defsecTypes.String("10.2.0.0/8", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -69,21 +69,21 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: eks.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Logging: eks.Logging{
-					Metadata:          defsecTypes.NewTestMetadata(),
-					API:               defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Authenticator:     defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Audit:             defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Scheduler:         defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					ControllerManager: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+					API:               defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					Authenticator:     defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					Audit:             defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					Scheduler:         defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					ControllerManager: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Encryption: eks.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Secrets:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Secrets:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				},
-				PublicAccessEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				PublicAccessEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				PublicAccessCIDRs:   nil,
 			},
 		},

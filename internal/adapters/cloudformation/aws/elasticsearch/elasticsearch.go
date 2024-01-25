@@ -1,7 +1,7 @@
 package elasticsearch
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/elasticsearch"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/elasticsearch"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

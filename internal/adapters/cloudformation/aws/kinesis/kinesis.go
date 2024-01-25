@@ -1,7 +1,7 @@
 package kinesis
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/kinesis"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/kinesis"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

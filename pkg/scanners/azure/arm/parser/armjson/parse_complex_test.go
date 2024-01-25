@@ -3,7 +3,7 @@ package armjson
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/stretchr/testify/require"
 )
@@ -32,7 +32,7 @@ func Test_Complex(t *testing.T) {
         }
     }
 }`
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, Unmarshal([]byte(input), &target, &metadata))
 }
 
@@ -126,6 +126,6 @@ func Test_CloudFormation(t *testing.T) {
   }
 }
 `
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, Unmarshal([]byte(input), &target, &metadata))
 }

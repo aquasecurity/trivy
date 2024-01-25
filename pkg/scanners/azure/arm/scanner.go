@@ -8,14 +8,14 @@ import (
 	"io/fs"
 	"sync"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/rego"
-	"github.com/aquasecurity/defsec/pkg/rules"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/defsec/pkg/state"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/debug"
+	"github.com/aquasecurity/trivy/pkg/framework"
+	"github.com/aquasecurity/trivy/pkg/rego"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/trules"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/internal/adapters/arm"
 	"github.com/aquasecurity/trivy/pkg/scanners"
@@ -153,7 +153,7 @@ func (s *Scanner) scanDeployment(ctx context.Context, deployment azure.Deploymen
 	var results scan.Results
 	deploymentState := s.adaptDeployment(ctx, deployment)
 	if !s.regoOnly {
-		for _, rule := range rules.GetRegistered(s.frameworks...) {
+		for _, rule := range trules.GetRegistered(s.frameworks...) {
 			select {
 			case <-ctx.Done():
 				return nil, ctx.Err()

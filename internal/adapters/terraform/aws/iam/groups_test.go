@@ -3,12 +3,12 @@ package iam
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptGroups(t *testing.T) {
@@ -48,12 +48,12 @@ func Test_adaptGroups(t *testing.T) {
 			  `,
 			expected: []iam.Group{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("developers", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("developers", defsecTypes.NewTestMisconfigMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("my_developer_policy", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("my_developer_policy", defsecTypes.NewTestMisconfigMetadata()),
 							Document: defaultPolicyDocuemnt(false),
 						},
 					},
@@ -91,12 +91,12 @@ resource "aws_iam_group_policy_attachment" "test-attach" {
 `,
 			expected: []iam.Group{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-group", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test-group", defsecTypes.NewTestMisconfigMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-policy", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("test-policy", defsecTypes.NewTestMisconfigMetadata()),
 							Document: defaultPolicyDocuemnt(false),
 						},
 					},

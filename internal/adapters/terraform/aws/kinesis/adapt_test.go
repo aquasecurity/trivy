@@ -3,13 +3,13 @@ package kinesis
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/kinesis"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/kinesis"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -29,11 +29,11 @@ func Test_adaptStream(t *testing.T) {
 			}
 `,
 			expected: kinesis.Stream{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Encryption: kinesis.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String("KMS", defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("my/special/key", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Type:     defsecTypes.String("KMS", defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("my/special/key", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -44,11 +44,11 @@ func Test_adaptStream(t *testing.T) {
 			}
 `,
 			expected: kinesis.Stream{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Encryption: kinesis.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String("NONE", defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Type:     defsecTypes.String("NONE", defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

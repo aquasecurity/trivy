@@ -3,9 +3,9 @@ package apigateway
 import (
 	"testing"
 
-	v1 "github.com/aquasecurity/defsec/pkg/providers/aws/apigateway/v1"
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	v1 "github.com/aquasecurity/trivy/pkg/providers/aws/apigateway/v1"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptAPIMethodsV1(t *testing.T) {

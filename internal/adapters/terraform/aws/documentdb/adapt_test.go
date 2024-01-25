@@ -3,13 +3,13 @@ package documentdb
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/documentdb"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/documentdb"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -38,19 +38,19 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: documentdb.Cluster{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				Identifier: defsecTypes.String("my-docdb-cluster", defsecTypes.NewTestMetadata()),
-				KMSKeyID:   defsecTypes.String("kms-key", defsecTypes.NewTestMetadata()),
+				Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+				Identifier: defsecTypes.String("my-docdb-cluster", defsecTypes.NewTestMisconfigMetadata()),
+				KMSKeyID:   defsecTypes.String("kms-key", defsecTypes.NewTestMisconfigMetadata()),
 				EnabledLogExports: []defsecTypes.StringValue{
-					defsecTypes.String("audit", defsecTypes.NewTestMetadata()),
+					defsecTypes.String("audit", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Instances: []documentdb.Instance{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						KMSKeyID: defsecTypes.String("kms-key#1", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						KMSKeyID: defsecTypes.String("kms-key#1", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
-				StorageEncrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				StorageEncrypted: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -60,10 +60,10 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: documentdb.Cluster{
-				Metadata:         defsecTypes.NewTestMetadata(),
-				Identifier:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				StorageEncrypted: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				KMSKeyID:         defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:         defsecTypes.NewTestMisconfigMetadata(),
+				Identifier:       defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+				StorageEncrypted: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+				KMSKeyID:         defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

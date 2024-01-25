@@ -17,9 +17,9 @@ import (
 	"github.com/aquasecurity/trivy/internal/adapters/arm/storage"
 	"github.com/aquasecurity/trivy/internal/adapters/arm/synapse"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure"
-	"github.com/aquasecurity/defsec/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/providers/azure"
 	scanner "github.com/aquasecurity/trivy/pkg/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/state"
 )
 
 // Adapt ...

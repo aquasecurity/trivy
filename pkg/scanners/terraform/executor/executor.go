@@ -6,19 +6,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/rules"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/severity"
-	"github.com/aquasecurity/defsec/pkg/state"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-
-	"github.com/aquasecurity/defsec/pkg/rego"
 	adapter "github.com/aquasecurity/trivy/internal/adapters/terraform"
+	"github.com/aquasecurity/trivy/pkg/debug"
+	"github.com/aquasecurity/trivy/pkg/framework"
+	"github.com/aquasecurity/trivy/pkg/rego"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/severity"
+	"github.com/aquasecurity/trivy/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/trules"
 )
 
-// Executor scans HCL blocks by running all registered rules against them
+// Executor scans HCL blocks by running all registered trules against them
 type Executor struct {
 	enableIgnores             bool
 	excludedRuleIDs           []string
@@ -106,17 +105,17 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 	}
 
 	checksTime := time.Now()
-	registeredRules := rules.GetRegistered(e.frameworks...)
+	registeredRules := trules.GetRegistered(e.frameworks...)
 	e.debug.Log("Initialised %d rule(s).", len(registeredRules))
 
 	pool := NewPool(threads, registeredRules, modules, infra, e.ignoreCheckErrors, e.regoScanner, e.regoOnly)
-	e.debug.Log("Created pool with %d worker(s) to apply rules.", threads)
+	e.debug.Log("Created pool with %d worker(s) to apply trules.", threads)
 	results, err := pool.Run()
 	if err != nil {
 		return nil, metrics, err
 	}
 	metrics.Timings.RunningChecks = time.Since(checksTime)
-	e.debug.Log("Finished applying rules.")
+	e.debug.Log("Finished applying trules.")
 
 	if e.enableIgnores {
 		e.debug.Log("Applying ignores...")

@@ -1,9 +1,9 @@
 package provider
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (

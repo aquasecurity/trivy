@@ -3,12 +3,12 @@ package iam
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/google/iam"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_AdaptBinding(t *testing.T) {
@@ -29,11 +29,11 @@ func Test_AdaptBinding(t *testing.T) {
 			]
 		}`,
 			expected: iam.Binding{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Members: []defsecTypes.StringValue{
-					defsecTypes.String("user:alice@gmail.com", defsecTypes.NewTestMetadata())},
-				Role:                          defsecTypes.String("roles/browser", defsecTypes.NewTestMetadata()),
-				IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					defsecTypes.String("user:alice@gmail.com", defsecTypes.NewTestMisconfigMetadata())},
+				Role:                          defsecTypes.String("roles/browser", defsecTypes.NewTestMisconfigMetadata()),
+				IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -42,9 +42,9 @@ func Test_AdaptBinding(t *testing.T) {
 		resource "google_organization_iam_binding" "binding" {
 		}`,
 			expected: iam.Binding{
-				Metadata:                      defsecTypes.NewTestMetadata(),
-				Role:                          defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                      defsecTypes.NewTestMisconfigMetadata(),
+				Role:                          defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+				IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

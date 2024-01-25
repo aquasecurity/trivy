@@ -3,13 +3,13 @@ package computing
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/computing"
+	"github.com/aquasecurity/trivy/pkg/providers/nifcloud/computing"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptInstances(t *testing.T) {
@@ -29,12 +29,12 @@ func Test_adaptInstances(t *testing.T) {
 			}
 `,
 			expected: []computing.Instance{{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				SecurityGroup: defsecTypes.String("example-security-group", defsecTypes.NewTestMetadata()),
+				Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+				SecurityGroup: defsecTypes.String("example-security-group", defsecTypes.NewTestMisconfigMetadata()),
 				NetworkInterfaces: []computing.NetworkInterface{
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						NetworkID: defsecTypes.String("net-COMMON_PRIVATE", defsecTypes.NewTestMetadata()),
+						Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+						NetworkID: defsecTypes.String("net-COMMON_PRIVATE", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			}},
@@ -49,12 +49,12 @@ func Test_adaptInstances(t *testing.T) {
 `,
 
 			expected: []computing.Instance{{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				SecurityGroup: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+				SecurityGroup: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				NetworkInterfaces: []computing.NetworkInterface{
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						NetworkID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+						NetworkID: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			}},

@@ -1,9 +1,9 @@
 package cloudwatch
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/cloudwatch"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/cloudwatch"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) cloudwatch.CloudWatch {

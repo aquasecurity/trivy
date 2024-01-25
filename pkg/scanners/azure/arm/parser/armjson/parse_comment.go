@@ -3,10 +3,10 @@ package armjson
 import (
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func (p *parser) parseComment(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseComment(parentMetadata *types.MisconfigMetadata) (Node, error) {
 
 	if err := p.parseWhitespace(); err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (p *parser) parseComment(parentMetadata *types.Metadata) (Node, error) {
 	}
 }
 
-func (p *parser) parseLineComment(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseLineComment(parentMetadata *types.MisconfigMetadata) (Node, error) {
 
 	n, _ := p.newNode(KindComment, parentMetadata)
 
@@ -59,7 +59,7 @@ func (p *parser) parseLineComment(parentMetadata *types.Metadata) (Node, error) 
 	return n, nil
 }
 
-func (p *parser) parseBlockComment(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseBlockComment(parentMetadata *types.MisconfigMetadata) (Node, error) {
 
 	n, _ := p.newNode(KindComment, parentMetadata)
 

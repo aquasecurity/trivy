@@ -3,13 +3,13 @@ package kms
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/kms"
+	"github.com/aquasecurity/trivy/pkg/providers/google/kms"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,11 +35,11 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Keys: []kms.Key{
 						{
-							Metadata:              defsecTypes.NewTestMetadata(),
-							RotationPeriodSeconds: defsecTypes.Int(7776000, defsecTypes.NewTestMetadata()),
+							Metadata:              defsecTypes.NewTestMisconfigMetadata(),
+							RotationPeriodSeconds: defsecTypes.Int(7776000, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -55,7 +55,7 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				},
 			},
 		},
@@ -73,11 +73,11 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Keys: []kms.Key{
 						{
-							Metadata:              defsecTypes.NewTestMetadata(),
-							RotationPeriodSeconds: defsecTypes.Int(-1, defsecTypes.NewTestMetadata()),
+							Metadata:              defsecTypes.NewTestMisconfigMetadata(),
+							RotationPeriodSeconds: defsecTypes.Int(-1, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},

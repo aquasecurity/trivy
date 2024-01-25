@@ -3,13 +3,13 @@ package workspaces
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/workspaces"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/workspaces"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -29,19 +29,19 @@ func Test_adaptWorkspace(t *testing.T) {
 		}
 `,
 			expected: workspaces.WorkSpace{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				RootVolume: workspaces.Volume{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 				UserVolume: workspaces.Volume{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -53,19 +53,19 @@ func Test_adaptWorkspace(t *testing.T) {
 		}
 `,
 			expected: workspaces.WorkSpace{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				RootVolume: workspaces.Volume{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 				UserVolume: workspaces.Volume{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},

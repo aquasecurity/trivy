@@ -7,17 +7,16 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers"
-	"github.com/aquasecurity/defsec/pkg/rules"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/defsec/pkg/severity"
-	"github.com/aquasecurity/defsec/pkg/state"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/providers"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/severity"
+	"github.com/aquasecurity/trivy/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 var alwaysFailRule = scan.Rule{
@@ -203,7 +202,7 @@ resource "aws_s3_bucket" "my-bucket" {
 	bucket = "evil"
 }
 `,
-		"/rules/test.rego": `
+		"/trules/test.rego": `
 package defsec.abcdefg
 
 __rego_metadata__ := {
@@ -235,7 +234,7 @@ deny[cause] {
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithRegoOnly(true),
 	)
 
@@ -350,7 +349,7 @@ resource "aws_s3_bucket" "my-bucket" {
 	bucket = "evil"
 }
 `,
-				"/rules/test.rego": fmt.Sprintf(`
+				"/trules/test.rego": fmt.Sprintf(`
 # METADATA
 # custom:
 #   input:
@@ -371,7 +370,7 @@ cause := bucket.name
 			})
 
 			scanner := New(
-				options.ScannerWithPolicyDirs("rules"),
+				options.ScannerWithPolicyDirs("trules"),
 				options.ScannerWithPolicyNamespaces(test.includedNamespaces...),
 			)
 
@@ -432,7 +431,7 @@ resource "aws_s3_bucket" "my-bucket" {
 	bucket = "evil"
 }
 `,
-		"/rules/test.rego": `
+		"/trules/test.rego": `
 package defsec.abcdefg
 
 __rego_metadata__ := {
@@ -463,7 +462,7 @@ deny[cause] {
 	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithRegoOnly(true),
 	)
 
@@ -486,7 +485,7 @@ resource "aws_s3_bucket" "my-bucket" {
 	bucket = "evil"
 }
 `,
-		"/rules/test.rego": `
+		"/trules/test.rego": `
 package defsec.abcdefg
 
 __rego_metadata__ := {
@@ -517,7 +516,7 @@ deny[res] {
 	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(true),
 	)
@@ -544,7 +543,7 @@ module "s3-bucket" {
 }
 `,
 		// creating our own rule for the reliability of the test
-		"/rules/test.rego": `
+		"/trules/test.rego": `
 package defsec.abcdefg
 
 __rego_input__ := {
@@ -589,7 +588,7 @@ resource "aws_sqs_queue_policy" "bad_example" {
  }
  POLICY
  }`,
-		"/rules/test.rego": `
+		"/trules/test.rego": `
 # METADATA
 # title: Buckets should not be evil
 # description: You should not allow buckets to be evil
@@ -629,7 +628,7 @@ deny[res] {
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
 		options.ScannerWithTrace(debugLog),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(true),
 	)
@@ -689,7 +688,7 @@ TASK_DEFINITION
     device_type = "eia1.medium"
   }
 }`,
-		"/rules/test.rego": `
+		"/trules/test.rego": `
 package defsec.abcdefg
 
 
@@ -721,7 +720,7 @@ deny[res] {
 	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(true),
 	)
@@ -934,7 +933,7 @@ resource "aws_apigatewayv2_stage" "bad_example" {
   name   = "example-stage"
 }
 `,
-		"/rules/test.rego": `# METADATA
+		"/trules/test.rego": `# METADATA
 # schemas:
 # - input: schema.input
 # custom:
@@ -969,7 +968,7 @@ deny[res] {
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithRegoOnly(true),
 	)
 
@@ -1038,7 +1037,7 @@ resource "aws_s3_bucket" "main" {
   bucket = var.bucket_name
 }
 `,
-		"rules/bucket_name.rego": emptyBucketRule,
+		"trules/bucket_name.rego": emptyBucketRule,
 	})
 
 	configsFS := testutil.CreateFS(t, map[string]string{
@@ -1050,7 +1049,7 @@ bucket_name = "test"
 	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(false),
@@ -1081,7 +1080,7 @@ resource "aws_s3_bucket" "main" {
   bucket = var.bucket_name
 }
 `,
-		"rules/bucket_name.rego": emptyBucketRule,
+		"trules/bucket_name.rego": emptyBucketRule,
 		"main.tfvars": `
 bucket_name = "test"
 `,
@@ -1090,7 +1089,7 @@ bucket_name = "test"
 	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(false),
@@ -1146,7 +1145,7 @@ resource "aws_security_group" "main" {
 	description = var.security_group_description
 }
 `,
-		"/rules/bucket_name.rego": `
+		"/trules/bucket_name.rego": `
 # METADATA
 # schemas:
 # - input: schema.input
@@ -1165,7 +1164,7 @@ deny[res] {
   res := result.new("The name of the bucket must not be empty", bucket)
 }
 `,
-		"/rules/sec_group_description.rego": `
+		"/trules/sec_group_description.rego": `
 # METADATA
 # schemas:
 # - input: schema.input
@@ -1190,7 +1189,7 @@ deny[res] {
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithEmbeddedPolicies(false),
 		options.ScannerWithEmbeddedLibraries(false),
 		options.ScannerWithRegoOnly(true),
@@ -1241,7 +1240,7 @@ output "role_name" {
   value = aws_iam_role.example.id
 }
 		`,
-		"rules/test.rego": `
+		"trules/test.rego": `
 # METADATA
 # schemas:
 # - input: schema.input
@@ -1265,7 +1264,7 @@ deny[res] {
 	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(false),
@@ -1293,7 +1292,7 @@ provider "aws" {
   }
 }
 `,
-		"rules/region.rego": `
+		"trules/region.rego": `
 # METADATA
 # schemas:
 # - input: schema.input
@@ -1312,7 +1311,7 @@ deny[res] {
   res := result.new("Only the 'us-east-1' region is allowed!", region)
 }
 `,
-		"rules/tags.rego": `
+		"trules/tags.rego": `
 # METADATA
 # schemas:
 # - input: schema.input
@@ -1336,7 +1335,7 @@ deny[res] {
 	debugLog := bytes.NewBuffer([]byte{})
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithPolicyFilesystem(fs),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(false),

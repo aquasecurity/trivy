@@ -3,12 +3,12 @@ package compute
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/compute"
+	"github.com/aquasecurity/trivy/pkg/providers/google/compute"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptNetworks(t *testing.T) {
@@ -47,35 +47,35 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Firewall: &compute.Firewall{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Name:     defsecTypes.String("my-firewall-rule", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Name:     defsecTypes.String("my-firewall-rule", defsecTypes.NewTestMisconfigMetadata()),
 						IngressRules: []compute.IngressRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 								FirewallRule: compute.FirewallRule{
-									Metadata: defsecTypes.NewTestMetadata(),
-									IsAllow:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-									Protocol: defsecTypes.String("icmp", defsecTypes.NewTestMetadata()),
-									Enforced: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+									Metadata: defsecTypes.NewTestMisconfigMetadata(),
+									IsAllow:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+									Protocol: defsecTypes.String("icmp", defsecTypes.NewTestMisconfigMetadata()),
+									Enforced: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 									Ports: []defsecTypes.IntValue{
-										defsecTypes.Int(80, defsecTypes.NewTestMetadata()),
-										defsecTypes.Int(8080, defsecTypes.NewTestMetadata()),
+										defsecTypes.Int(80, defsecTypes.NewTestMisconfigMetadata()),
+										defsecTypes.Int(8080, defsecTypes.NewTestMisconfigMetadata()),
 									},
 								},
 								SourceRanges: []defsecTypes.StringValue{
-									defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMisconfigMetadata()),
 								},
 							},
 						},
 					},
 					Subnetworks: []compute.SubNetwork{
 						{
-							Metadata:       defsecTypes.NewTestMetadata(),
-							Name:           defsecTypes.String("test-subnetwork", defsecTypes.NewTestMetadata()),
-							EnableFlowLogs: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-							Purpose:        defsecTypes.StringDefault("PRIVATE_RFC_1918", defsecTypes.NewTestMetadata()),
+							Metadata:       defsecTypes.NewTestMisconfigMetadata(),
+							Name:           defsecTypes.String("test-subnetwork", defsecTypes.NewTestMisconfigMetadata()),
+							EnableFlowLogs: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+							Purpose:        defsecTypes.StringDefault("PRIVATE_RFC_1918", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -98,17 +98,17 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					Firewall: &compute.Firewall{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Name:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Name:     defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 					},
 					Subnetworks: []compute.SubNetwork{
 						{
-							Metadata:       defsecTypes.NewTestMetadata(),
-							Name:           defsecTypes.String("", defsecTypes.NewTestMetadata()),
-							EnableFlowLogs: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-							Purpose:        defsecTypes.String("REGIONAL_MANAGED_PROXY", defsecTypes.NewTestMetadata()),
+							Metadata:       defsecTypes.NewTestMisconfigMetadata(),
+							Name:           defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+							EnableFlowLogs: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+							Purpose:        defsecTypes.String("REGIONAL_MANAGED_PROXY", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},

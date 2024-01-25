@@ -3,13 +3,13 @@ package datafactory
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/datafactory"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/datafactory"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -31,8 +31,8 @@ func Test_adaptFactory(t *testing.T) {
 			  }
 `,
 			expected: datafactory.Factory{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				EnablePublicNetwork: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:            defsecTypes.NewTestMisconfigMetadata(),
+				EnablePublicNetwork: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -43,8 +43,8 @@ func Test_adaptFactory(t *testing.T) {
 			  }
 `,
 			expected: datafactory.Factory{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				EnablePublicNetwork: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:            defsecTypes.NewTestMisconfigMetadata(),
+				EnablePublicNetwork: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

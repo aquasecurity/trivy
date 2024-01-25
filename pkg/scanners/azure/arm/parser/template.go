@@ -1,13 +1,13 @@
 package parser
 
 import (
-	"github.com/aquasecurity/defsec/pkg/types"
 	types2 "github.com/aquasecurity/trivy/pkg/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/arm/parser/armjson"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Template struct {
-	Metadata       types.Metadata          `json:"-"`
+	Metadata       types.MisconfigMetadata `json:"-"`
 	Schema         types2.Value            `json:"$schema"`
 	ContentVersion types2.Value            `json:"contentVersion"`
 	APIProfile     types2.Value            `json:"apiProfile"`
@@ -19,7 +19,7 @@ type Template struct {
 }
 
 type Parameter struct {
-	Metadata     types.Metadata
+	Metadata     types.MisconfigMetadata
 	Type         types2.Value `json:"type"`
 	DefaultValue types2.Value `json:"defaultValue"`
 	MaxLength    types2.Value `json:"maxLength"`
@@ -29,19 +29,19 @@ type Parameter struct {
 type Function struct{}
 
 type Resource struct {
-	Metadata types.Metadata `json:"-"`
+	Metadata types.MisconfigMetadata `json:"-"`
 	innerResource
 }
 
-func (t *Template) SetMetadata(m *types.Metadata) {
+func (t *Template) SetMetadata(m *types.MisconfigMetadata) {
 	t.Metadata = *m
 }
 
-func (r *Resource) SetMetadata(m *types.Metadata) {
+func (r *Resource) SetMetadata(m *types.MisconfigMetadata) {
 	r.Metadata = *m
 }
 
-func (p *Parameter) SetMetadata(m *types.Metadata) {
+func (p *Parameter) SetMetadata(m *types.MisconfigMetadata) {
 	p.Metadata = *m
 }
 

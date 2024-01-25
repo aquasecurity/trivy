@@ -3,11 +3,11 @@ package iam
 import (
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/google/iam"
 )
 
 // see https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam
@@ -110,8 +110,8 @@ func (a *adapter) adaptProjectMembers() {
 
 			a.projects = append(a.projects, parentedProject{
 				project: iam.Project{
-					Metadata:          defsecTypes.NewUnmanagedMetadata(),
-					AutoCreateNetwork: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+					Metadata:          defsecTypes.NewUnmanagedMisconfigMetadata(),
+					AutoCreateNetwork: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 					Members:           []iam.Member{member},
 					Bindings:          nil,
 				},
@@ -209,8 +209,8 @@ func (a *adapter) adaptProjectDataBindings() {
 		// we didn't find the project - add an unmanaged one
 		a.projects = append(a.projects, parentedProject{
 			project: iam.Project{
-				Metadata:          defsecTypes.NewUnmanagedMetadata(),
-				AutoCreateNetwork: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				Metadata:          defsecTypes.NewUnmanagedMisconfigMetadata(),
+				AutoCreateNetwork: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 				Members:           nil,
 				Bindings:          bindings,
 			},
@@ -276,8 +276,8 @@ func (a *adapter) adaptProjectBindings() {
 			}
 			a.projects = append(a.projects, parentedProject{
 				project: iam.Project{
-					Metadata:          defsecTypes.NewUnmanagedMetadata(),
-					AutoCreateNetwork: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+					Metadata:          defsecTypes.NewUnmanagedMisconfigMetadata(),
+					AutoCreateNetwork: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 					Members:           nil,
 					Bindings:          []iam.Binding{binding},
 				},

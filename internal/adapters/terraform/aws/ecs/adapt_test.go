@@ -3,13 +3,13 @@ package ecs
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ecs"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/ecs"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -33,8 +33,8 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:                 defsecTypes.NewTestMisconfigMetadata(),
+				ContainerInsightsEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -50,8 +50,8 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                 defsecTypes.NewTestMisconfigMetadata(),
+				ContainerInsightsEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -61,8 +61,8 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                 defsecTypes.NewTestMisconfigMetadata(),
+				ContainerInsightsEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}
@@ -112,25 +112,25 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 			  }
 `,
 			expected: ecs.TaskDefinition{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Volumes: []ecs.Volume{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						EFSVolumeConfiguration: ecs.EFSVolumeConfiguration{
-							Metadata:                 defsecTypes.NewTestMetadata(),
-							TransitEncryptionEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata:                 defsecTypes.NewTestMisconfigMetadata(),
+							TransitEncryptionEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
 				ContainerDefinitions: []ecs.ContainerDefinition{
 					{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						Name:       defsecTypes.String("my_service", defsecTypes.NewTestMetadata()),
-						Image:      defsecTypes.String("my_image", defsecTypes.NewTestMetadata()),
-						CPU:        defsecTypes.Int(2, defsecTypes.NewTestMetadata()),
-						Memory:     defsecTypes.Int(256, defsecTypes.NewTestMetadata()),
-						Essential:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						Privileged: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+						Name:       defsecTypes.String("my_service", defsecTypes.NewTestMisconfigMetadata()),
+						Image:      defsecTypes.String("my_image", defsecTypes.NewTestMisconfigMetadata()),
+						CPU:        defsecTypes.Int(2, defsecTypes.NewTestMisconfigMetadata()),
+						Memory:     defsecTypes.Int(256, defsecTypes.NewTestMisconfigMetadata()),
+						Essential:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+						Privileged: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						Environment: []ecs.EnvVar{
 							{
 								Name:  "ENVIRONMENT",
@@ -154,14 +154,14 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 			  }
 `,
 			expected: ecs.TaskDefinition{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Volumes: []ecs.Volume{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						EFSVolumeConfiguration: ecs.EFSVolumeConfiguration{
 
-							Metadata:                 defsecTypes.NewTestMetadata(),
-							TransitEncryptionEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata:                 defsecTypes.NewTestMisconfigMetadata(),
+							TransitEncryptionEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},

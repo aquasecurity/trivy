@@ -3,12 +3,12 @@ package compute
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/compute"
+	"github.com/aquasecurity/trivy/pkg/providers/google/compute"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptInstances(t *testing.T) {
@@ -59,41 +59,41 @@ func Test_adaptInstances(t *testing.T) {
 `,
 			expected: []compute.Instance{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test", defsecTypes.NewTestMisconfigMetadata()),
 					NetworkInterfaces: []compute.NetworkInterface{
 						{
-							Metadata:    defsecTypes.NewTestMetadata(),
-							HasPublicIP: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-							NATIP:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+							HasPublicIP: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+							NATIP:       defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 					ShieldedVM: compute.ShieldedVMConfig{
-						Metadata:                   defsecTypes.NewTestMetadata(),
-						SecureBootEnabled:          defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						IntegrityMonitoringEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						VTPMEnabled:                defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:                   defsecTypes.NewTestMisconfigMetadata(),
+						SecureBootEnabled:          defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+						IntegrityMonitoringEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+						VTPMEnabled:                defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					},
 					ServiceAccount: compute.ServiceAccount{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Email:    defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Email:    defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						Scopes: []defsecTypes.StringValue{
-							defsecTypes.String("cloud-platform", defsecTypes.NewTestMetadata()),
+							defsecTypes.String("cloud-platform", defsecTypes.NewTestMisconfigMetadata()),
 						},
-						IsDefault: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						IsDefault: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
-					CanIPForward:                defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					OSLoginEnabled:              defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					EnableProjectSSHKeyBlocking: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					EnableSerialPort:            defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					CanIPForward:                defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					OSLoginEnabled:              defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					EnableProjectSSHKeyBlocking: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					EnableSerialPort:            defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 
 					BootDisks: []compute.Disk{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("boot-disk", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("boot-disk", defsecTypes.NewTestMisconfigMetadata()),
 							Encryption: compute.DiskEncryption{
-								Metadata:   defsecTypes.NewTestMetadata(),
-								KMSKeyLink: defsecTypes.String("something", defsecTypes.NewTestMetadata()),
+								Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+								KMSKeyLink: defsecTypes.String("something", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
@@ -108,23 +108,23 @@ func Test_adaptInstances(t *testing.T) {
 `,
 			expected: []compute.Instance{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 					ShieldedVM: compute.ShieldedVMConfig{
-						Metadata:                   defsecTypes.NewTestMetadata(),
-						SecureBootEnabled:          defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						IntegrityMonitoringEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						VTPMEnabled:                defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:                   defsecTypes.NewTestMisconfigMetadata(),
+						SecureBootEnabled:          defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						IntegrityMonitoringEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						VTPMEnabled:                defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 					ServiceAccount: compute.ServiceAccount{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						Email:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						IsDefault: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+						Email:     defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+						IsDefault: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
-					CanIPForward:                defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					OSLoginEnabled:              defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					EnableProjectSSHKeyBlocking: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					EnableSerialPort:            defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					CanIPForward:                defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					OSLoginEnabled:              defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					EnableProjectSSHKeyBlocking: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					EnableSerialPort:            defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -137,23 +137,23 @@ func Test_adaptInstances(t *testing.T) {
 `,
 			expected: []compute.Instance{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 					ShieldedVM: compute.ShieldedVMConfig{
-						Metadata:                   defsecTypes.NewTestMetadata(),
-						SecureBootEnabled:          defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						IntegrityMonitoringEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						VTPMEnabled:                defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:                   defsecTypes.NewTestMisconfigMetadata(),
+						SecureBootEnabled:          defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						IntegrityMonitoringEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						VTPMEnabled:                defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 					ServiceAccount: compute.ServiceAccount{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						Email:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						IsDefault: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+						Email:     defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+						IsDefault: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					},
-					CanIPForward:                defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					OSLoginEnabled:              defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					EnableProjectSSHKeyBlocking: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					EnableSerialPort:            defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					CanIPForward:                defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					OSLoginEnabled:              defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					EnableProjectSSHKeyBlocking: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					EnableSerialPort:            defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

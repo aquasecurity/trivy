@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/pkg/framework"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -23,7 +23,7 @@ x:
   - b
   - c
 `,
-		"/rules/rule.rego": `package builtin.yaml.lol
+		"/trules/rule.rego": `package builtin.yaml.lol
 
 __rego_metadata__ := {
 	"id": "ABC123",
@@ -54,7 +54,7 @@ deny[res] {
 `,
 	})
 
-	scanner := NewScanner(options.ScannerWithPolicyDirs("rules"))
+	scanner := NewScanner(options.ScannerWithPolicyDirs("trules"))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)

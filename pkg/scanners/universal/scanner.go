@@ -4,8 +4,7 @@ import (
 	"context"
 	"io/fs"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/scanners"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/arm"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation"
@@ -13,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/helm"
 	"github.com/aquasecurity/trivy/pkg/scanners/json"
 	"github.com/aquasecurity/trivy/pkg/scanners/kubernetes"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/scanners/toml"
 	"github.com/aquasecurity/trivy/pkg/scanners/yaml"

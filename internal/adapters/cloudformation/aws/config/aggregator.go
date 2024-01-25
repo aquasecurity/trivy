@@ -1,15 +1,15 @@
 package config
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/config"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/config"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func getConfigurationAggregator(ctx parser.FileContext) config.ConfigurationAggregrator {
 
 	aggregator := config.ConfigurationAggregrator{
-		Metadata:         defsecTypes.NewUnmanagedMetadata(),
+		Metadata:         defsecTypes.NewUnmanagedMisconfigMetadata(),
 		SourceAllRegions: defsecTypes.BoolDefault(false, ctx.Metadata()),
 	}
 

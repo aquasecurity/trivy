@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/network"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Adapt(deployment azure.Deployment) network.Network {
@@ -97,7 +97,7 @@ func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherF
 	}
 }
 
-func expandRange(r string, m defsecTypes.Metadata) network.PortRange {
+func expandRange(r string, m defsecTypes.MisconfigMetadata) network.PortRange {
 	start := 0
 	end := 65535
 	switch {

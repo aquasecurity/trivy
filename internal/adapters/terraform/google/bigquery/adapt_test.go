@@ -3,13 +3,13 @@ package bigquery
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/bigquery"
+	"github.com/aquasecurity/trivy/pkg/providers/google/bigquery"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -38,20 +38,20 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						ID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						ID:       defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						AccessGrants: []bigquery.AccessGrant{
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								Role:         defsecTypes.String("OWNER", defsecTypes.NewTestMetadata()),
-								Domain:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								SpecialGroup: defsecTypes.String(bigquery.SpecialGroupAllAuthenticatedUsers, defsecTypes.NewTestMetadata()),
+								Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+								Role:         defsecTypes.String("OWNER", defsecTypes.NewTestMisconfigMetadata()),
+								Domain:       defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+								SpecialGroup: defsecTypes.String(bigquery.SpecialGroupAllAuthenticatedUsers, defsecTypes.NewTestMisconfigMetadata()),
 							},
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								Role:         defsecTypes.String("READER", defsecTypes.NewTestMetadata()),
-								Domain:       defsecTypes.String("hashicorp.com", defsecTypes.NewTestMetadata()),
-								SpecialGroup: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+								Role:         defsecTypes.String("READER", defsecTypes.NewTestMisconfigMetadata()),
+								Domain:       defsecTypes.String("hashicorp.com", defsecTypes.NewTestMisconfigMetadata()),
+								SpecialGroup: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
@@ -68,8 +68,8 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						ID:       defsecTypes.String("example_dataset", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						ID:       defsecTypes.String("example_dataset", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -85,14 +85,14 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						ID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						ID:       defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						AccessGrants: []bigquery.AccessGrant{
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								Role:         defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								Domain:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								SpecialGroup: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+								Role:         defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+								Domain:       defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+								SpecialGroup: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},

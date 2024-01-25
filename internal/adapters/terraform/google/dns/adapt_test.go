@@ -3,13 +3,13 @@ package dns
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/dns"
+	"github.com/aquasecurity/trivy/pkg/providers/google/dns"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -46,20 +46,20 @@ resource "google_dns_managed_zone" "example" {
 			expected: dns.DNS{
 				ManagedZones: []dns.ManagedZone{
 					{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						Visibility: defsecTypes.String("public", defsecTypes.NewTestMetadata()),
+						Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+						Visibility: defsecTypes.String("public", defsecTypes.NewTestMisconfigMetadata()),
 						DNSSec: dns.DNSSec{
-							Enabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Enabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 							DefaultKeySpecs: []dns.KeySpecs{
 								{
-									Metadata:  defsecTypes.NewTestMetadata(),
-									Algorithm: defsecTypes.String("rsasha1", defsecTypes.NewTestMetadata()),
-									KeyType:   defsecTypes.String("keySigning", defsecTypes.NewTestMetadata()),
+									Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+									Algorithm: defsecTypes.String("rsasha1", defsecTypes.NewTestMisconfigMetadata()),
+									KeyType:   defsecTypes.String("keySigning", defsecTypes.NewTestMisconfigMetadata()),
 								},
 								{
-									Metadata:  defsecTypes.NewTestMetadata(),
-									Algorithm: defsecTypes.String("rsasha1", defsecTypes.NewTestMetadata()),
-									KeyType:   defsecTypes.String("zoneSigning", defsecTypes.NewTestMetadata()),
+									Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+									Algorithm: defsecTypes.String("rsasha1", defsecTypes.NewTestMisconfigMetadata()),
+									KeyType:   defsecTypes.String("zoneSigning", defsecTypes.NewTestMisconfigMetadata()),
 								},
 							},
 						},

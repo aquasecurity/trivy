@@ -3,15 +3,15 @@ package ec2
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/ec2"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_AdaptVPC(t *testing.T) {
@@ -78,50 +78,50 @@ func Test_AdaptVPC(t *testing.T) {
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
 					{
-						Metadata:        defsecTypes.NewTestMetadata(),
-						IsDefault:       defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						ID:              defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						FlowLogsEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:        defsecTypes.NewTestMisconfigMetadata(),
+						IsDefault:       defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+						ID:              defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+						FlowLogsEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 					{
-						Metadata:        defsecTypes.NewTestMetadata(),
-						IsDefault:       defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						ID:              defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						FlowLogsEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:        defsecTypes.NewTestMisconfigMetadata(),
+						IsDefault:       defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						ID:              defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+						FlowLogsEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 				SecurityGroups: []ec2.SecurityGroup{
 					{
-						Metadata:    defsecTypes.NewTestMetadata(),
-						Description: defsecTypes.String("Allow inbound HTTP traffic", defsecTypes.NewTestMetadata()),
-						IsDefault:   defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						VPCID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+						Description: defsecTypes.String("Allow inbound HTTP traffic", defsecTypes.NewTestMisconfigMetadata()),
+						IsDefault:   defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						VPCID:       defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						IngressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 
-								Description: defsecTypes.String("Rule #1", defsecTypes.NewTestMetadata()),
+								Description: defsecTypes.String("Rule #1", defsecTypes.NewTestMisconfigMetadata()),
 								CIDRs: []defsecTypes.StringValue{
-									defsecTypes.String("4.5.6.7/32", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("4.5.6.7/32", defsecTypes.NewTestMisconfigMetadata()),
 								},
 							},
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 
-								Description: defsecTypes.String("Rule #2", defsecTypes.NewTestMetadata()),
+								Description: defsecTypes.String("Rule #2", defsecTypes.NewTestMisconfigMetadata()),
 								CIDRs: []defsecTypes.StringValue{
-									defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMetadata()),
-									defsecTypes.String("4.5.6.7/32", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMisconfigMetadata()),
+									defsecTypes.String("4.5.6.7/32", defsecTypes.NewTestMisconfigMetadata()),
 								},
 							},
 						},
 
 						EgressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata:    defsecTypes.NewTestMetadata(),
-								Description: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+								Description: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 								CIDRs: []defsecTypes.StringValue{
-									defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMisconfigMetadata()),
 								},
 							},
 						},
@@ -129,19 +129,19 @@ func Test_AdaptVPC(t *testing.T) {
 				},
 				NetworkACLs: []ec2.NetworkACL{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						Rules: []ec2.NetworkACLRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Type:     defsecTypes.String("ingress", defsecTypes.NewTestMetadata()),
-								Action:   defsecTypes.String("allow", defsecTypes.NewTestMetadata()),
-								Protocol: defsecTypes.String("tcp", defsecTypes.NewTestMetadata()),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
+								Type:     defsecTypes.String("ingress", defsecTypes.NewTestMisconfigMetadata()),
+								Action:   defsecTypes.String("allow", defsecTypes.NewTestMisconfigMetadata()),
+								Protocol: defsecTypes.String("tcp", defsecTypes.NewTestMisconfigMetadata()),
 								CIDRs: []defsecTypes.StringValue{
-									defsecTypes.String("10.0.0.0/16", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("10.0.0.0/16", defsecTypes.NewTestMisconfigMetadata()),
 								},
 							},
 						},
-						IsDefaultRule: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						IsDefaultRule: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -163,37 +163,37 @@ func Test_AdaptVPC(t *testing.T) {
 			expected: ec2.EC2{
 				SecurityGroups: []ec2.SecurityGroup{
 					{
-						Metadata:    defsecTypes.NewTestMetadata(),
-						Description: defsecTypes.String("Managed by Terraform", defsecTypes.NewTestMetadata()),
-						IsDefault:   defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						VPCID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+						Description: defsecTypes.String("Managed by Terraform", defsecTypes.NewTestMisconfigMetadata()),
+						IsDefault:   defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						VPCID:       defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						IngressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata:    defsecTypes.NewTestMetadata(),
-								Description: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+								Description: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 
 						EgressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata:    defsecTypes.NewTestMetadata(),
-								Description: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+								Description: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
 				},
 				NetworkACLs: []ec2.NetworkACL{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						Rules: []ec2.NetworkACLRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Type:     defsecTypes.String("ingress", defsecTypes.NewTestMetadata()),
-								Action:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								Protocol: defsecTypes.String("-1", defsecTypes.NewTestMetadata()),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
+								Type:     defsecTypes.String("ingress", defsecTypes.NewTestMisconfigMetadata()),
+								Action:   defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+								Protocol: defsecTypes.String("-1", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
-						IsDefaultRule: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						IsDefaultRule: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -215,10 +215,10 @@ resource "aws_flow_log" "this" {
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
 					{
-						Metadata:        defsecTypes.NewTestMetadata(),
-						IsDefault:       defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						ID:              defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						FlowLogsEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:        defsecTypes.NewTestMisconfigMetadata(),
+						IsDefault:       defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						ID:              defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+						FlowLogsEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},

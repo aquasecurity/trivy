@@ -1,9 +1,9 @@
 package datalake
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/datalake"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/datalake"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) datalake.DataLake {

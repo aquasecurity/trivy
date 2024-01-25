@@ -1,25 +1,25 @@
 package storage
 
 import (
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/storage"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/storage"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 )
 
 func Adapt(modules terraform.Modules) storage.Storage {
 	accounts, containers, networkRules := adaptAccounts(modules)
 
 	orphanAccount := storage.Account{
-		Metadata:     defsecTypes.NewUnmanagedMetadata(),
+		Metadata:     defsecTypes.NewUnmanagedMisconfigMetadata(),
 		NetworkRules: adaptOrphanNetworkRules(modules, networkRules),
-		EnforceHTTPS: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+		EnforceHTTPS: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 		Containers:   adaptOrphanContainers(modules, containers),
 		QueueProperties: storage.QueueProperties{
-			Metadata:      defsecTypes.NewUnmanagedMetadata(),
-			EnableLogging: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			Metadata:      defsecTypes.NewUnmanagedMisconfigMetadata(),
+			EnableLogging: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 		},
-		MinimumTLSVersion: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+		MinimumTLSVersion: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 	}
 
 	accounts = append(accounts, orphanAccount)

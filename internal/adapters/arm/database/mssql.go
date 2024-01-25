@@ -1,9 +1,9 @@
 package database
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/database"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func adaptMSSQLServers(deployment azure.Deployment) (msSQlServers []database.MSSQLServer) {
@@ -55,7 +55,7 @@ func adaptSecurityAlertPolicies(resource azure.Resource, deployment azure.Deploy
 func adaptStringList(value azure.Value) []defsecTypes.StringValue {
 	var list []defsecTypes.StringValue
 	for _, v := range value.AsList() {
-		list = append(list, v.AsStringValue("", value.Metadata))
+		list = append(list, v.AsStringValue("", value.MisconfigMetadata))
 	}
 	return list
 }

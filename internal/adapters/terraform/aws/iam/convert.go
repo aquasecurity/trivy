@@ -3,11 +3,11 @@ package iam
 import (
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scan"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
 
 	"github.com/liamg/iamgo"
 )

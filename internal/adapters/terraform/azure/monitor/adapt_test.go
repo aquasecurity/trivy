@@ -3,13 +3,13 @@ package monitor
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/monitor"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/monitor"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -43,21 +43,21 @@ func Test_adaptLogProfile(t *testing.T) {
 			  }
 `,
 			expected: monitor.LogProfile{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Categories: []defsecTypes.StringValue{
-					defsecTypes.String("Action", defsecTypes.NewTestMetadata()),
-					defsecTypes.String("Delete", defsecTypes.NewTestMetadata()),
-					defsecTypes.String("Write", defsecTypes.NewTestMetadata()),
+					defsecTypes.String("Action", defsecTypes.NewTestMisconfigMetadata()),
+					defsecTypes.String("Delete", defsecTypes.NewTestMisconfigMetadata()),
+					defsecTypes.String("Write", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				RetentionPolicy: monitor.RetentionPolicy{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Days:     defsecTypes.Int(365, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					Days:     defsecTypes.Int(365, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Locations: []defsecTypes.StringValue{
-					defsecTypes.String("eastus", defsecTypes.NewTestMetadata()),
-					defsecTypes.String("eastus2", defsecTypes.NewTestMetadata()),
-					defsecTypes.String("southcentralus", defsecTypes.NewTestMetadata()),
+					defsecTypes.String("eastus", defsecTypes.NewTestMisconfigMetadata()),
+					defsecTypes.String("eastus2", defsecTypes.NewTestMisconfigMetadata()),
+					defsecTypes.String("southcentralus", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -68,11 +68,11 @@ func Test_adaptLogProfile(t *testing.T) {
 			  }
 `,
 			expected: monitor.LogProfile{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				RetentionPolicy: monitor.RetentionPolicy{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Days:     defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					Days:     defsecTypes.Int(0, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

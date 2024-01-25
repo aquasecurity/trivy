@@ -1,6 +1,6 @@
 package armjson
 
-import "github.com/aquasecurity/defsec/pkg/types"
+import "github.com/aquasecurity/trivy/pkg/types"
 
 type Node interface {
 	Comments() []Node
@@ -8,7 +8,7 @@ type Node interface {
 	Decode(target interface{}) error
 	Kind() Kind
 	Content() []Node
-	Metadata() types.Metadata
+	Metadata() types.MisconfigMetadata
 }
 
 type Range struct {
@@ -28,7 +28,7 @@ type node struct {
 	kind     Kind
 	content  []Node
 	comments []Node
-	metadata *types.Metadata
+	metadata *types.MisconfigMetadata
 	ref      string
 }
 

@@ -25,18 +25,18 @@ type Scanner struct {
 }
 
 type Config struct {
-	// Enable only specified built-in rules. If only one ID is specified, all other rules are disabled.
-	// All the built-in rules are enabled if this field is not specified. It doesn't affect custom rules.
-	EnableBuiltinRuleIDs []string `yaml:"enable-builtin-rules"`
+	// Enable only specified built-in trules. If only one ID is specified, all other trules are disabled.
+	// All the built-in trules are enabled if this field is not specified. It doesn't affect custom trules.
+	EnableBuiltinRuleIDs []string `yaml:"enable-builtin-trules"`
 
-	// Disable rules. It is applied to enabled IDs.
-	DisableRuleIDs []string `yaml:"disable-rules"`
+	// Disable trules. It is applied to enabled IDs.
+	DisableRuleIDs []string `yaml:"disable-trules"`
 
-	// Disable allow rules.
-	DisableAllowRuleIDs []string `yaml:"disable-allow-rules"`
+	// Disable allow trules.
+	DisableAllowRuleIDs []string `yaml:"disable-allow-trules"`
 
-	CustomRules      []Rule       `yaml:"rules"`
-	CustomAllowRules AllowRules   `yaml:"allow-rules"`
+	CustomRules      []Rule       `yaml:"trules"`
+	CustomAllowRules AllowRules   `yaml:"allow-trules"`
 	ExcludeBlock     ExcludeBlock `yaml:"exclude-block"`
 }
 
@@ -88,7 +88,7 @@ type Rule struct {
 	Regex           *Regexp                  `yaml:"regex"`
 	Keywords        []string                 `yaml:"keywords"`
 	Path            *Regexp                  `yaml:"path"`
-	AllowRules      AllowRules               `yaml:"allow-rules"`
+	AllowRules      AllowRules               `yaml:"allow-trules"`
 	ExcludeBlock    ExcludeBlock             `yaml:"exclude-block"`
 	SecretGroupName string                   `yaml:"secret-group-name"`
 }
@@ -265,14 +265,14 @@ func (b *Blocks) find() {
 }
 
 func ParseConfig(configPath string) (*Config, error) {
-	// If no config is passed, use built-in rules and allow rules.
+	// If no config is passed, use built-in trules and allow trules.
 	if configPath == "" {
 		return nil, nil
 	}
 
 	f, err := os.Open(configPath)
 	if errors.Is(err, os.ErrNotExist) {
-		// If the specified file doesn't exist, it just uses built-in rules and allow rules.
+		// If the specified file doesn't exist, it just uses built-in trules and allow trules.
 		log.Logger.Debugf("No secret config detected: %s", configPath)
 		return nil, nil
 	} else if err != nil {
@@ -291,7 +291,7 @@ func ParseConfig(configPath string) (*Config, error) {
 }
 
 func NewScanner(config *Config) Scanner {
-	// Use the default rules
+	// Use the default trules
 	if config == nil {
 		return Scanner{Global: &Global{
 			Rules:      builtinRules,
@@ -301,21 +301,21 @@ func NewScanner(config *Config) Scanner {
 
 	enabledRules := builtinRules
 	if len(config.EnableBuiltinRuleIDs) != 0 {
-		// Enable only specified built-in rules
+		// Enable only specified built-in trules
 		enabledRules = lo.Filter(builtinRules, func(v Rule, _ int) bool {
 			return slices.Contains(config.EnableBuiltinRuleIDs, v.ID)
 		})
 	}
 
-	// Custom rules are enabled regardless of "enable-builtin-rules".
+	// Custom trules are enabled regardless of "enable-builtin-trules".
 	enabledRules = append(enabledRules, config.CustomRules...)
 
-	// Disable specified rules
+	// Disable specified trules
 	rules := lo.Filter(enabledRules, func(v Rule, _ int) bool {
 		return !slices.Contains(config.DisableRuleIDs, v.ID)
 	})
 
-	// Disable specified allow rules
+	// Disable specified allow trules
 	allowRules := append(builtinAllowRules, config.CustomAllowRules...)
 	allowRules = lo.Filter(allowRules, func(v AllowRule, _ int) bool {
 		return !slices.Contains(config.DisableAllowRuleIDs, v.ID)

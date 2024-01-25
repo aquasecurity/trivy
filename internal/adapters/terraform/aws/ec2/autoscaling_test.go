@@ -3,13 +3,13 @@ package ec2
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/ec2"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -41,23 +41,23 @@ func Test_AdaptAutoscaling(t *testing.T) {
 			expected: ec2.EC2{
 				LaunchConfigurations: []ec2.LaunchConfiguration{
 					{
-						Metadata:          defsecTypes.NewTestMetadata(),
-						Name:              defsecTypes.String("web_config", defsecTypes.NewTestMetadata()),
-						AssociatePublicIP: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						UserData:          defsecTypes.String("export EDITOR=vimacs", defsecTypes.NewTestMetadata()),
+						Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+						Name:              defsecTypes.String("web_config", defsecTypes.NewTestMisconfigMetadata()),
+						AssociatePublicIP: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						UserData:          defsecTypes.String("export EDITOR=vimacs", defsecTypes.NewTestMisconfigMetadata()),
 						MetadataOptions: ec2.MetadataOptions{
-							Metadata:     defsecTypes.NewTestMetadata(),
-							HttpTokens:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
-							HttpEndpoint: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+							HttpTokens:   defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+							HttpEndpoint: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  defsecTypes.NewTestMetadata(),
-							Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+							Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						EBSBlockDevices: []*ec2.BlockDevice{
 							{
-								Metadata:  defsecTypes.NewTestMetadata(),
-								Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+								Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+								Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
@@ -88,21 +88,21 @@ export AWS_DEFAULT_REGION=us-west-2
 			expected: ec2.EC2{
 				LaunchConfigurations: []ec2.LaunchConfiguration{
 					{
-						Metadata:          defsecTypes.NewTestMetadata(),
-						Name:              defsecTypes.String("web_config", defsecTypes.NewTestMetadata()),
-						AssociatePublicIP: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+						Name:              defsecTypes.String("web_config", defsecTypes.NewTestMisconfigMetadata()),
+						AssociatePublicIP: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						UserData: defsecTypes.String(`export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 export AWS_DEFAULT_REGION=us-west-2 
-`, defsecTypes.NewTestMetadata()),
+`, defsecTypes.NewTestMisconfigMetadata()),
 						MetadataOptions: ec2.MetadataOptions{
-							Metadata:     defsecTypes.NewTestMetadata(),
-							HttpTokens:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
-							HttpEndpoint: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+							HttpTokens:   defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+							HttpEndpoint: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  defsecTypes.NewTestMetadata(),
-							Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+							Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -125,14 +125,14 @@ export AWS_DEFAULT_REGION=us-west-2
 			expected: ec2.EC2{
 				LaunchTemplates: []ec2.LaunchTemplate{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						Instance: ec2.Instance{
-							Metadata: defsecTypes.NewTestMetadata(),
-							UserData: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							UserData: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 							MetadataOptions: ec2.MetadataOptions{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								HttpTokens:   defsecTypes.String("required", defsecTypes.NewTestMetadata()),
-								HttpEndpoint: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+								HttpTokens:   defsecTypes.String("required", defsecTypes.NewTestMisconfigMetadata()),
+								HttpEndpoint: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},

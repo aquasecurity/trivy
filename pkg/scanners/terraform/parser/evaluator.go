@@ -10,10 +10,10 @@ import (
 
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	tfcontext "github.com/aquasecurity/defsec/pkg/terraform/context"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/debug"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	tfcontext "github.com/aquasecurity/trivy/pkg/terraform/context"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
 	"github.com/zclconf/go-cty/cty"

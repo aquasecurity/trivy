@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/stretchr/testify/require"
 )
@@ -35,7 +35,7 @@ func BenchmarkUnmarshal_JFather(b *testing.B) {
 }`)
 
 	for n := 0; n < b.N; n++ {
-		metadata := types.NewTestMetadata()
+		metadata := types.NewTestMisconfigMetadata()
 		require.NoError(b, Unmarshal(input, &target, &metadata))
 	}
 }

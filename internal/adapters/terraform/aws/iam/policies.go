@@ -1,9 +1,9 @@
 package iam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/liamg/iamgo"
 )
 
@@ -12,7 +12,7 @@ func parsePolicy(policyBlock *terraform.Block, modules terraform.Modules) (iam.P
 		Metadata: policyBlock.GetMetadata(),
 		Name:     policyBlock.GetAttribute("name").AsStringValueOrDefault("", policyBlock),
 		Document: iam.Document{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Parsed:   iamgo.Document{},
 			IsOffset: false,
 			HasRefs:  false,

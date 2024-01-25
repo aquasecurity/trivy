@@ -1,9 +1,9 @@
 package nas
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/nas"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/nifcloud/nas"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func adaptNASSecurityGroups(modules terraform.Modules) []nas.NASSecurityGroup {

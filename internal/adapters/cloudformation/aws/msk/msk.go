@@ -1,7 +1,7 @@
 package msk
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/msk"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/msk"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

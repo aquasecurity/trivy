@@ -3,8 +3,7 @@ package test
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/rules"
+	"github.com/aquasecurity/trivy/pkg/framework"
 )
 
 func TestAVDIDs(t *testing.T) {
@@ -24,7 +23,7 @@ func TestAVDIDs(t *testing.T) {
 }
 
 //func TestRulesAgainstExampleCode(t *testing.T) {
-//	for _, rule := range rules.GetRegistered(framework.ALL) {
+//	for _, rule := range trules.GetRegistered(framework.ALL) {
 //		testName := fmt.Sprintf("%s/%s", rule.GetRule().AVDID, rule.LongID())
 //		t.Run(testName, func(t *testing.T) {
 //			rule := rule

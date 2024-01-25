@@ -1,9 +1,9 @@
 package openstack
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/openstack"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/openstack"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/google/uuid"
 )
 
@@ -60,9 +60,9 @@ func adaptSecurityGroups(modules terraform.Modules) []openstack.SecurityGroup {
 		}
 
 		group := openstack.SecurityGroup{
-			Metadata:    defsecTypes.NewUnmanagedMetadata(),
-			Name:        defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-			Description: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata:    defsecTypes.NewUnmanagedMisconfigMetadata(),
+			Name:        defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+			Description: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			Rules:       []openstack.SecurityGroupRule{rule},
 		}
 		groupMap[uuid.NewString()] = group

@@ -6,11 +6,9 @@ import (
 	"io/fs"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/rules"
-
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func BenchmarkCalculate(b *testing.B) {

@@ -5,15 +5,15 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/rego"
-	"github.com/aquasecurity/defsec/pkg/rego/schemas"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/framework"
+	"github.com/aquasecurity/trivy/pkg/rego"
+	"github.com/aquasecurity/trivy/pkg/rego/schemas"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 const DS006PolicyWithDockerfileSchema = `# METADATA
@@ -217,10 +217,10 @@ func Test_BasicScanLegacyRegoMetadata(t *testing.T) {
 		"/code/Dockerfile": `FROM ubuntu
 USER root
 `,
-		"/rules/rule.rego": DS006LegacyWithOldStyleMetadata,
+		"/trules/rule.rego": DS006LegacyWithOldStyleMetadata,
 	})
 
-	scanner := NewScanner(options.ScannerWithPolicyDirs("rules"))
+	scanner := NewScanner(options.ScannerWithPolicyDirs("trules"))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)
@@ -547,7 +547,7 @@ package builtin.dockerfile.DS006
 deny[res]{
 res := true
 }`,
-			expectedError: `1 error occurred: rules/rule.rego:12: rego_type_error: undefined schema: schema["spooky-schema"]`,
+			expectedError: `1 error occurred: trules/rule.rego:12: rego_type_error: undefined schema: schema["spooky-schema"]`,
 		},
 	}
 
@@ -557,19 +557,19 @@ res := true
 			libs, err := rego.LoadEmbeddedLibraries()
 			require.NoError(t, err)
 			for name, library := range libs {
-				regoMap["/rules/"+name] = library.String()
+				regoMap["/trules/"+name] = library.String()
 			}
 			regoMap["/code/Dockerfile"] = `FROM golang:1.7.3 as dep
 COPY --from=dep /binary /`
-			regoMap["/rules/rule.rego"] = tc.inputRegoPolicy
-			regoMap["/rules/schemas/myfancydockerfile.json"] = string(schemas.Dockerfile) // just use the same for testing
+			regoMap["/trules/rule.rego"] = tc.inputRegoPolicy
+			regoMap["/trules/schemas/myfancydockerfile.json"] = string(schemas.Dockerfile) // just use the same for testing
 			fs := testutil.CreateFS(t, regoMap)
 
 			var traceBuf bytes.Buffer
 			var debugBuf bytes.Buffer
 
 			scanner := NewScanner(
-				options.ScannerWithPolicyDirs("rules"),
+				options.ScannerWithPolicyDirs("trules"),
 				options.ScannerWithTrace(&traceBuf),
 				options.ScannerWithDebug(&debugBuf),
 				options.ScannerWithRegoErrorLimits(0),

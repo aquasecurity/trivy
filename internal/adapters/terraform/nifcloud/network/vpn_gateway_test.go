@@ -3,12 +3,12 @@ package network
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/network"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/nifcloud/network"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptVpnGateways(t *testing.T) {
@@ -25,8 +25,8 @@ func Test_adaptVpnGateways(t *testing.T) {
 			}
 `,
 			expected: []network.VpnGateway{{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				SecurityGroup: defsecTypes.String("example-security-group", defsecTypes.NewTestMetadata()),
+				Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+				SecurityGroup: defsecTypes.String("example-security-group", defsecTypes.NewTestMisconfigMetadata()),
 			}},
 		},
 		{
@@ -37,8 +37,8 @@ func Test_adaptVpnGateways(t *testing.T) {
 `,
 
 			expected: []network.VpnGateway{{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				SecurityGroup: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+				SecurityGroup: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 			}},
 		},
 	}

@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/stretchr/testify/require"
 )
@@ -17,8 +17,8 @@ func Test_AdaptStorageDefaults(t *testing.T) {
 	input := azure.Deployment{
 		Resources: []azure.Resource{
 			{
-				Type:       azure.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMetadata()),
-				Properties: azure.NewValue(map[string]azure.Value{}, types.NewTestMetadata()),
+				Type:       azure.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMisconfigMetadata()),
+				Properties: azure.NewValue(map[string]azure.Value{}, types.NewTestMisconfigMetadata()),
 			},
 		},
 	}
@@ -38,12 +38,12 @@ func Test_AdaptStorage(t *testing.T) {
 	input := azure.Deployment{
 		Resources: []azure.Resource{
 			{
-				Type: azure.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMetadata()),
+				Type: azure.NewValue("Microsoft.Storage/storageAccounts", types.NewTestMisconfigMetadata()),
 				Name: azure.Value{},
 				Properties: azure.NewValue(map[string]azure.Value{
-					"minimumTlsVersion":        azure.NewValue("TLS1_2", types.NewTestMetadata()),
-					"supportsHttpsTrafficOnly": azure.NewValue(true, types.NewTestMetadata()),
-				}, types.NewTestMetadata()),
+					"minimumTlsVersion":        azure.NewValue("TLS1_2", types.NewTestMisconfigMetadata()),
+					"supportsHttpsTrafficOnly": azure.NewValue(true, types.NewTestMisconfigMetadata()),
+				}, types.NewTestMisconfigMetadata()),
 			},
 		},
 	}

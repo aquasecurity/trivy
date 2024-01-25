@@ -9,11 +9,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/defsec/pkg/rego"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/state"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	types "github.com/aquasecurity/defsec/pkg/types/rules"
+	"github.com/aquasecurity/trivy/pkg/rego"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	types "github.com/aquasecurity/trivy/pkg/types/rules"
 )
 
 type Pool struct {

@@ -1,7 +1,7 @@
 package sns
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/sns"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/sns"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

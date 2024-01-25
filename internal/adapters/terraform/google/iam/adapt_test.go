@@ -3,11 +3,11 @@ package iam
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/providers/google/iam"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -75,64 +75,64 @@ func Test_Adapt(t *testing.T) {
 			expected: iam.IAM{
 				Organizations: []iam.Organization{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 
 						Projects: []iam.Project{
 							{
-								Metadata:          defsecTypes.NewTestMetadata(),
-								AutoCreateNetwork: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+								Metadata:          defsecTypes.NewTestMisconfigMetadata(),
+								AutoCreateNetwork: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 
 						Folders: []iam.Folder{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 								Members: []iam.Member{
 									{
-										Metadata:              defsecTypes.NewTestMetadata(),
-										Member:                defsecTypes.String("user:alice@gmail.com", defsecTypes.NewTestMetadata()),
-										Role:                  defsecTypes.String("roles/editor", defsecTypes.NewTestMetadata()),
-										DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+										Metadata:              defsecTypes.NewTestMisconfigMetadata(),
+										Member:                defsecTypes.String("user:alice@gmail.com", defsecTypes.NewTestMisconfigMetadata()),
+										Role:                  defsecTypes.String("roles/editor", defsecTypes.NewTestMisconfigMetadata()),
+										DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 									},
 								},
 								Bindings: []iam.Binding{
 									{
-										Metadata: defsecTypes.NewTestMetadata(),
+										Metadata: defsecTypes.NewTestMisconfigMetadata(),
 										Members: []defsecTypes.StringValue{
-											defsecTypes.String("user:not-alice@gmail.com", defsecTypes.NewTestMetadata()),
+											defsecTypes.String("user:not-alice@gmail.com", defsecTypes.NewTestMisconfigMetadata()),
 										},
-										Role:                          defsecTypes.String("roles/nothing", defsecTypes.NewTestMetadata()),
-										IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+										Role:                          defsecTypes.String("roles/nothing", defsecTypes.NewTestMisconfigMetadata()),
+										IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 									},
 								},
 							},
 						},
 						Members: []iam.Member{
 							{
-								Metadata:              defsecTypes.NewTestMetadata(),
-								Member:                defsecTypes.String("user:member@gmail.com", defsecTypes.NewTestMetadata()),
-								Role:                  defsecTypes.String("roles/whatever", defsecTypes.NewTestMetadata()),
-								DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Metadata:              defsecTypes.NewTestMisconfigMetadata(),
+								Member:                defsecTypes.String("user:member@gmail.com", defsecTypes.NewTestMisconfigMetadata()),
+								Role:                  defsecTypes.String("roles/whatever", defsecTypes.NewTestMisconfigMetadata()),
+								DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 						Bindings: []iam.Binding{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
 								Members: []defsecTypes.StringValue{
-									defsecTypes.String("user:member_2@gmail.com", defsecTypes.NewTestMetadata())},
-								Role:                          defsecTypes.String("roles/browser", defsecTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+									defsecTypes.String("user:member_2@gmail.com", defsecTypes.NewTestMisconfigMetadata())},
+								Role:                          defsecTypes.String("roles/browser", defsecTypes.NewTestMisconfigMetadata()),
+								IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
 				},
 				WorkloadIdentityPoolProviders: []iam.WorkloadIdentityPoolProvider{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 
-						WorkloadIdentityPoolId:         defsecTypes.String("example-pool", defsecTypes.NewTestMetadata()),
-						WorkloadIdentityPoolProviderId: defsecTypes.String("example-provider", defsecTypes.NewTestMetadata()),
-						AttributeCondition:             defsecTypes.String("assertion.repository_owner=='your-github-organization'", defsecTypes.NewTestMetadata()),
+						WorkloadIdentityPoolId:         defsecTypes.String("example-pool", defsecTypes.NewTestMisconfigMetadata()),
+						WorkloadIdentityPoolProviderId: defsecTypes.String("example-provider", defsecTypes.NewTestMisconfigMetadata()),
+						AttributeCondition:             defsecTypes.String("assertion.repository_owner=='your-github-organization'", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},

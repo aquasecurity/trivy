@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -17,7 +17,7 @@ func Test_OptionWithPolicyDirs_OldRegoMetadata(t *testing.T) {
 	b, _ := os.ReadFile("test/testdata/plan.json")
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.tfplan.json": string(b),
-		"/rules/test.rego": `
+		"/trules/test.rego": `
 package defsec.abcdefg
 
 __rego_metadata__ := {
@@ -49,7 +49,7 @@ deny[cause] {
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedPolicies(false),
 	)
@@ -72,7 +72,7 @@ func Test_OptionWithPolicyDirs_WithUserNamespace(t *testing.T) {
 	b, _ := os.ReadFile("test/testdata/plan.json")
 	fs := testutil.CreateFS(t, map[string]string{
 		"/code/main.tfplan.json": string(b),
-		"/rules/test.rego": `
+		"/trules/test.rego": `
 # METADATA
 # title: Bad buckets are bad
 # description: Bad buckets are bad because they are not good.
@@ -99,7 +99,7 @@ deny[cause] {
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithPolicyNamespaces("user"),
 		options.ScannerWithEmbeddedPolicies(false),

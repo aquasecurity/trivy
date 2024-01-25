@@ -3,7 +3,7 @@ package armjson
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,7 +18,7 @@ func Test_Object(t *testing.T) {
 		Name    string  `json:"name"`
 		Balance float64 `json:"balance"`
 	}{}
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))
 	assert.Equal(t, "testing", target.Name)
 	assert.Equal(t, 3.14, target.Balance)
@@ -33,7 +33,7 @@ func Test_ObjectWithPointers(t *testing.T) {
 		Name    *string  `json:"name"`
 		Balance *float64 `json:"balance"`
 	}{}
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, Unmarshal(example, &target, &metadata))
 	assert.Equal(t, "testing", *target.Name)
 	assert.Equal(t, 3.14, *target.Balance)
@@ -57,7 +57,7 @@ func Test_ObjectWithPointerToNestedStruct(t *testing.T) {
 }`)
 
 	var parent nestedParent
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, Unmarshal(example, &parent, &metadata))
 	assert.Equal(t, "testing", parent.Name)
 	assert.Equal(t, "password", parent.Child.Blah)
@@ -69,7 +69,7 @@ func Test_Object_ToMapStringInterface(t *testing.T) {
 }`)
 
 	parent := make(map[string]interface{})
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, Unmarshal(example, &parent, &metadata))
 	assert.Equal(t, "testing", parent["Name"])
 }
@@ -94,7 +94,7 @@ func Test_Object_ToNestedMapStringInterfaceFromIAM(t *testing.T) {
 }`)
 
 	parent := make(map[string]interface{})
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, Unmarshal(example, &parent, &metadata))
 }
 
@@ -107,7 +107,7 @@ func Test_Object_ToNestedMapStringInterface(t *testing.T) {
 }`)
 
 	parent := make(map[string]interface{})
-	metadata := types.NewTestMetadata()
+	metadata := types.NewTestMisconfigMetadata()
 	require.NoError(t, Unmarshal(example, &parent, &metadata))
 	assert.Equal(t, "testing", parent["Name"])
 	child := parent["Child"].(map[string]interface{})

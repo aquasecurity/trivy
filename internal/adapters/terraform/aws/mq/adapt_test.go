@@ -3,13 +3,13 @@ package mq
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/mq"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/mq"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -32,12 +32,12 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				Metadata:     defsecTypes.NewTestMetadata(),
-				PublicAccess: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+				PublicAccess: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				Logging: mq.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					General:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Audit:    defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					General:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					Audit:    defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -53,12 +53,12 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				Metadata:     defsecTypes.NewTestMetadata(),
-				PublicAccess: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+				PublicAccess: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				Logging: mq.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					General:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Audit:    defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					General:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					Audit:    defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -69,12 +69,12 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				Metadata:     defsecTypes.NewTestMetadata(),
-				PublicAccess: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+				PublicAccess: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				Logging: mq.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					General:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Audit:    defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					General:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					Audit:    defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

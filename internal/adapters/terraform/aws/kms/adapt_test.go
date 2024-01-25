@@ -3,13 +3,13 @@ package kms
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/kms"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/kms"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -29,8 +29,8 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: kms.Key{
-				Usage:           defsecTypes.String(kms.KeyUsageSignAndVerify, defsecTypes.NewTestMetadata()),
-				RotationEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Usage:           defsecTypes.String(kms.KeyUsageSignAndVerify, defsecTypes.NewTestMisconfigMetadata()),
+				RotationEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -40,8 +40,8 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: kms.Key{
-				Usage:           defsecTypes.String("ENCRYPT_DECRYPT", defsecTypes.NewTestMetadata()),
-				RotationEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Usage:           defsecTypes.String("ENCRYPT_DECRYPT", defsecTypes.NewTestMisconfigMetadata()),
+				RotationEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

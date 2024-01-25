@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/rds"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/rds"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func TestAdapt(t *testing.T) {
@@ -70,69 +70,69 @@ Resources:
 			expected: rds.RDS{
 				ParameterGroups: []rds.ParameterGroups{
 					{
-						Metadata:             types.NewTestMetadata(),
-						DBParameterGroupName: types.String("testgroup", types.NewTestMetadata()),
+						Metadata:             types.NewTestMisconfigMetadata(),
+						DBParameterGroupName: types.String("testgroup", types.NewTestMisconfigMetadata()),
 					},
 				},
 				Clusters: []rds.Cluster{
 					{
-						Metadata:                  types.NewTestMetadata(),
-						BackupRetentionPeriodDays: types.Int(2, types.NewTestMetadata()),
-						Engine:                    types.String("aurora-postgresql", types.NewTestMetadata()),
+						Metadata:                  types.NewTestMisconfigMetadata(),
+						BackupRetentionPeriodDays: types.Int(2, types.NewTestMisconfigMetadata()),
+						Engine:                    types.String("aurora-postgresql", types.NewTestMisconfigMetadata()),
 						Encryption: rds.Encryption{
-							EncryptStorage: types.Bool(true, types.NewTestMetadata()),
-							KMSKeyID:       types.String("your-kms-key-id", types.NewTestMetadata()),
+							EncryptStorage: types.Bool(true, types.NewTestMisconfigMetadata()),
+							KMSKeyID:       types.String("your-kms-key-id", types.NewTestMisconfigMetadata()),
 						},
 						PerformanceInsights: rds.PerformanceInsights{
-							Metadata: types.NewTestMetadata(),
-							Enabled:  types.Bool(true, types.NewTestMetadata()),
-							KMSKeyID: types.String("test-kms-key-id", types.NewTestMetadata()),
+							Metadata: types.NewTestMisconfigMetadata(),
+							Enabled:  types.Bool(true, types.NewTestMisconfigMetadata()),
+							KMSKeyID: types.String("test-kms-key-id", types.NewTestMisconfigMetadata()),
 						},
-						PublicAccess:       types.Bool(false, types.NewTestMetadata()),
-						DeletionProtection: types.Bool(true, types.NewTestMetadata()),
+						PublicAccess:       types.Bool(false, types.NewTestMisconfigMetadata()),
+						DeletionProtection: types.Bool(true, types.NewTestMisconfigMetadata()),
 						Instances: []rds.ClusterInstance{
 							{
 								Instance: rds.Instance{
-									Metadata:         types.NewTestMetadata(),
-									StorageEncrypted: types.Bool(true, types.NewTestMetadata()),
+									Metadata:         types.NewTestMisconfigMetadata(),
+									StorageEncrypted: types.Bool(true, types.NewTestMisconfigMetadata()),
 									Encryption: rds.Encryption{
-										EncryptStorage: types.Bool(true, types.NewTestMetadata()),
-										KMSKeyID:       types.String("your-kms-key-id", types.NewTestMetadata()),
+										EncryptStorage: types.Bool(true, types.NewTestMisconfigMetadata()),
+										KMSKeyID:       types.String("your-kms-key-id", types.NewTestMisconfigMetadata()),
 									},
-									DBInstanceIdentifier:      types.String("test", types.NewTestMetadata()),
-									PubliclyAccessible:        types.Bool(false, types.NewTestMetadata()),
-									PublicAccess:              types.BoolDefault(false, types.NewTestMetadata()),
-									BackupRetentionPeriodDays: types.IntDefault(1, types.NewTestMetadata()),
-									Engine:                    types.StringDefault("aurora-mysql", types.NewTestMetadata()),
-									EngineVersion:             types.String("5.7.12", types.NewTestMetadata()),
-									MultiAZ:                   types.Bool(true, types.NewTestMetadata()),
-									AutoMinorVersionUpgrade:   types.Bool(true, types.NewTestMetadata()),
-									DBInstanceArn:             types.String("arn:aws:rds:us-east-2:123456789012:db:my-mysql-instance-1", types.NewTestMetadata()),
-									IAMAuthEnabled:            types.Bool(true, types.NewTestMetadata()),
+									DBInstanceIdentifier:      types.String("test", types.NewTestMisconfigMetadata()),
+									PubliclyAccessible:        types.Bool(false, types.NewTestMisconfigMetadata()),
+									PublicAccess:              types.BoolDefault(false, types.NewTestMisconfigMetadata()),
+									BackupRetentionPeriodDays: types.IntDefault(1, types.NewTestMisconfigMetadata()),
+									Engine:                    types.StringDefault("aurora-mysql", types.NewTestMisconfigMetadata()),
+									EngineVersion:             types.String("5.7.12", types.NewTestMisconfigMetadata()),
+									MultiAZ:                   types.Bool(true, types.NewTestMisconfigMetadata()),
+									AutoMinorVersionUpgrade:   types.Bool(true, types.NewTestMisconfigMetadata()),
+									DBInstanceArn:             types.String("arn:aws:rds:us-east-2:123456789012:db:my-mysql-instance-1", types.NewTestMisconfigMetadata()),
+									IAMAuthEnabled:            types.Bool(true, types.NewTestMisconfigMetadata()),
 									PerformanceInsights: rds.PerformanceInsights{
-										Metadata: types.NewTestMetadata(),
-										Enabled:  types.Bool(true, types.NewTestMetadata()),
-										KMSKeyID: types.String("test-kms-key-id2", types.NewTestMetadata()),
+										Metadata: types.NewTestMisconfigMetadata(),
+										Enabled:  types.Bool(true, types.NewTestMisconfigMetadata()),
+										KMSKeyID: types.String("test-kms-key-id2", types.NewTestMisconfigMetadata()),
 									},
 									EnabledCloudwatchLogsExports: []types.StringValue{
-										types.String("error", types.NewTestMetadata()),
-										types.String("general", types.NewTestMetadata()),
+										types.String("error", types.NewTestMisconfigMetadata()),
+										types.String("general", types.NewTestMisconfigMetadata()),
 									},
 									DBParameterGroups: []rds.DBParameterGroupsList{
 										{
-											DBParameterGroupName: types.String("testgroup", types.NewTestMetadata()),
+											DBParameterGroupName: types.String("testgroup", types.NewTestMisconfigMetadata()),
 										},
 									},
 									TagList: []rds.TagList{
 										{
-											Metadata: types.NewTestMetadata(),
+											Metadata: types.NewTestMisconfigMetadata(),
 										},
 										{
-											Metadata: types.NewTestMetadata(),
+											Metadata: types.NewTestMisconfigMetadata(),
 										},
 									},
 								},
-								ClusterIdentifier: types.String("RDSCluster", types.NewTestMetadata()),
+								ClusterIdentifier: types.String("RDSCluster", types.NewTestMisconfigMetadata()),
 							},
 						},
 					},

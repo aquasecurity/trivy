@@ -14,12 +14,11 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/detection"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/aquasecurity/trivy/pkg/scanners"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/arm"
 	cfscanner "github.com/aquasecurity/trivy/pkg/scanners/cloudformation"
@@ -27,6 +26,7 @@ import (
 	dfscanner "github.com/aquasecurity/trivy/pkg/scanners/dockerfile"
 	"github.com/aquasecurity/trivy/pkg/scanners/helm"
 	k8sscanner "github.com/aquasecurity/trivy/pkg/scanners/kubernetes"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
 	tfscanner "github.com/aquasecurity/trivy/pkg/scanners/terraform"
 	tfpscanner "github.com/aquasecurity/trivy/pkg/scanners/terraformplan"
 

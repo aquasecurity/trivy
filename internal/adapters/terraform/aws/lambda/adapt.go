@@ -1,9 +1,9 @@
 package lambda
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/lambda"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/lambda"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) lambda.Lambda {
@@ -34,10 +34,10 @@ func (a *adapter) adaptFunctions(modules terraform.Modules) []lambda.Function {
 
 	if len(orphanResources) > 0 {
 		orphanage := lambda.Function{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Tracing: lambda.Tracing{
-				Metadata: defsecTypes.NewUnmanagedMetadata(),
-				Mode:     defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
+				Mode:     defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			},
 			Permissions: nil,
 		}

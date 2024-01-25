@@ -3,11 +3,11 @@ package provider
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws"
+	"github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func TestAdapt(t *testing.T) {
@@ -49,32 +49,32 @@ provider "aws" {
 }`,
 			expected: []aws.TerraformProvider{
 				{
-					Version: types.String("~> 5.0", types.NewTestMetadata()),
-					Region:  types.String("us-east-1", types.NewTestMetadata()),
+					Version: types.String("~> 5.0", types.NewTestMisconfigMetadata()),
+					Region:  types.String("us-east-1", types.NewTestMisconfigMetadata()),
 					DefaultTags: aws.DefaultTags{
-						Metadata: types.NewTestMetadata(),
+						Metadata: types.NewTestMisconfigMetadata(),
 						Tags: types.Map(map[string]string{
 							"Environment": "Local",
 							"Name":        "LocalStack",
-						}, types.NewTestMetadata()),
+						}, types.NewTestMisconfigMetadata()),
 					},
 					Endpoints: types.Map(map[string]string{
 						"dynamodb": "http://localhost:4566",
 						"s3":       "http://localhost:4566",
-					}, types.NewTestMetadata()),
-					Profile:                   types.String("localstack", types.NewTestMetadata()),
-					AccessKey:                 types.String("fake", types.NewTestMetadata()),
-					SecretKey:                 types.String("fake", types.NewTestMetadata()),
-					SkipCredentialsValidation: types.Bool(true, types.NewTestMetadata()),
-					SkipMetadataAPICheck:      types.Bool(true, types.NewTestMetadata()),
-					SkipRequestingAccountID:   types.Bool(true, types.NewTestMetadata()),
-					S3UsePathStyle:            types.Bool(true, types.NewTestMetadata()),
-					MaxRetries:                types.IntDefault(defaultMaxRetires, types.NewTestMetadata()),
+					}, types.NewTestMisconfigMetadata()),
+					Profile:                   types.String("localstack", types.NewTestMisconfigMetadata()),
+					AccessKey:                 types.String("fake", types.NewTestMisconfigMetadata()),
+					SecretKey:                 types.String("fake", types.NewTestMisconfigMetadata()),
+					SkipCredentialsValidation: types.Bool(true, types.NewTestMisconfigMetadata()),
+					SkipMetadataAPICheck:      types.Bool(true, types.NewTestMisconfigMetadata()),
+					SkipRequestingAccountID:   types.Bool(true, types.NewTestMisconfigMetadata()),
+					S3UsePathStyle:            types.Bool(true, types.NewTestMisconfigMetadata()),
+					MaxRetries:                types.IntDefault(defaultMaxRetires, types.NewTestMisconfigMetadata()),
 					SharedConfigFiles: types.StringValueList{
-						types.StringDefault(defaultSharedConfigFile, types.NewTestMetadata()),
+						types.StringDefault(defaultSharedConfigFile, types.NewTestMisconfigMetadata()),
 					},
 					SharedCredentialsFiles: types.StringValueList{
-						types.StringDefault(defaultSharedCredentialsFile, types.NewTestMetadata()),
+						types.StringDefault(defaultSharedCredentialsFile, types.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -94,26 +94,26 @@ provider "aws" {
 `,
 			expected: []aws.TerraformProvider{
 				{
-					Region:     types.String("us-east-1", types.NewTestMetadata()),
-					Endpoints:  types.Map(make(map[string]string), types.NewTestMetadata()),
-					MaxRetries: types.IntDefault(defaultMaxRetires, types.NewTestMetadata()),
+					Region:     types.String("us-east-1", types.NewTestMisconfigMetadata()),
+					Endpoints:  types.Map(make(map[string]string), types.NewTestMisconfigMetadata()),
+					MaxRetries: types.IntDefault(defaultMaxRetires, types.NewTestMisconfigMetadata()),
 					SharedConfigFiles: types.StringValueList{
-						types.StringDefault(defaultSharedConfigFile, types.NewTestMetadata()),
+						types.StringDefault(defaultSharedConfigFile, types.NewTestMisconfigMetadata()),
 					},
 					SharedCredentialsFiles: types.StringValueList{
-						types.StringDefault(defaultSharedCredentialsFile, types.NewTestMetadata()),
+						types.StringDefault(defaultSharedCredentialsFile, types.NewTestMisconfigMetadata()),
 					},
 				},
 				{
-					Alias:      types.String("west", types.NewTestMetadata()),
-					Region:     types.String("us-west-2", types.NewTestMetadata()),
-					Endpoints:  types.Map(make(map[string]string), types.NewTestMetadata()),
-					MaxRetries: types.IntDefault(defaultMaxRetires, types.NewTestMetadata()),
+					Alias:      types.String("west", types.NewTestMisconfigMetadata()),
+					Region:     types.String("us-west-2", types.NewTestMisconfigMetadata()),
+					Endpoints:  types.Map(make(map[string]string), types.NewTestMisconfigMetadata()),
+					MaxRetries: types.IntDefault(defaultMaxRetires, types.NewTestMisconfigMetadata()),
 					SharedConfigFiles: types.StringValueList{
-						types.StringDefault(defaultSharedConfigFile, types.NewTestMetadata()),
+						types.StringDefault(defaultSharedConfigFile, types.NewTestMisconfigMetadata()),
 					},
 					SharedCredentialsFiles: types.StringValueList{
-						types.StringDefault(defaultSharedCredentialsFile, types.NewTestMetadata()),
+						types.StringDefault(defaultSharedCredentialsFile, types.NewTestMisconfigMetadata()),
 					},
 				},
 			},

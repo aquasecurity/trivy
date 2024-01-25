@@ -4,9 +4,9 @@ import (
 	"regexp"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/s3"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/s3"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

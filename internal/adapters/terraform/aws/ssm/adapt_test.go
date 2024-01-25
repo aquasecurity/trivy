@@ -3,13 +3,13 @@ package ssm
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ssm"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/ssm"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,8 +35,8 @@ func Test_Adapt(t *testing.T) {
 			expected: ssm.SSM{
 				Secrets: []ssm.Secret{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						KMSKeyID: defsecTypes.String("aws_kms_key.secrets", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						KMSKeyID: defsecTypes.String("aws_kms_key.secrets", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -52,8 +52,8 @@ func Test_Adapt(t *testing.T) {
 			expected: ssm.SSM{
 				Secrets: []ssm.Secret{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						KMSKeyID: defsecTypes.String("key_id", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						KMSKeyID: defsecTypes.String("key_id", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -67,8 +67,8 @@ func Test_Adapt(t *testing.T) {
 			expected: ssm.SSM{
 				Secrets: []ssm.Secret{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						KMSKeyID: defsecTypes.String("alias/aws/secretsmanager", defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						KMSKeyID: defsecTypes.String("alias/aws/secretsmanager", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},

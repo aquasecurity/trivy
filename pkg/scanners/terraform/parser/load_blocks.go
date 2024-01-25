@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/hashicorp/hcl/v2"
 )
 

@@ -4,11 +4,11 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptRoles(t *testing.T) {
@@ -54,12 +54,12 @@ data "aws_iam_policy_document" "policy" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test_role", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test_role", defsecTypes.NewTestMisconfigMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test_policy", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("test_policy", defsecTypes.NewTestMisconfigMetadata()),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
@@ -96,12 +96,12 @@ resource "aws_iam_role_policy_attachment" "test-attach" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-role", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test-role", defsecTypes.NewTestMisconfigMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-policy", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("test-policy", defsecTypes.NewTestMisconfigMetadata()),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
@@ -132,12 +132,12 @@ resource "aws_iam_role" "example" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-role", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test-role", defsecTypes.NewTestMisconfigMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("my_inline_policy", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("my_inline_policy", defsecTypes.NewTestMisconfigMetadata()),
 							Document: defaultPolicyDocuemnt(false),
 						},
 					},
@@ -182,23 +182,23 @@ resource "aws_iam_role_policy_attachment" "this" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-role1", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test-role1", defsecTypes.NewTestMisconfigMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-role1-policy", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("test-role1-policy", defsecTypes.NewTestMisconfigMetadata()),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
 				},
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-role2", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test-role2", defsecTypes.NewTestMisconfigMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-role2-policy", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Name:     defsecTypes.String("test-role2-policy", defsecTypes.NewTestMisconfigMetadata()),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},

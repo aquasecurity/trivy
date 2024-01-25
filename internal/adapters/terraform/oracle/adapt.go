@@ -1,8 +1,8 @@
 package oracle
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/oracle"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/providers/oracle"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 )
 
 func Adapt(modules terraform.Modules) oracle.Oracle {

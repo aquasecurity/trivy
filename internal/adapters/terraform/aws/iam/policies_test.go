@@ -3,13 +3,13 @@ package iam
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
 	"github.com/liamg/iamgo"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func defaultPolicyDocuemnt(offset bool) iam.Document {
@@ -26,7 +26,7 @@ func defaultPolicyDocuemnt(offset bool) iam.Document {
 
 	return iam.Document{
 		Parsed:   builder.Build(),
-		Metadata: defsecTypes.NewTestMetadata(),
+		Metadata: defsecTypes.NewTestMisconfigMetadata(),
 		IsOffset: offset,
 		HasRefs:  false,
 	}
@@ -60,10 +60,10 @@ func Test_adaptPolicies(t *testing.T) {
 `,
 			expected: []iam.Policy{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test", defsecTypes.NewTestMisconfigMetadata()),
 					Document: defaultPolicyDocuemnt(false),
-					Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -96,11 +96,11 @@ resource "aws_iam_policy" "this" {
 `,
 			expected: []iam.Policy{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-0", defsecTypes.NewTestMetadata()),
-					Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test-0", defsecTypes.NewTestMisconfigMetadata()),
+					Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					Document: iam.Document{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						IsOffset: true,
 						HasRefs:  false,
 						Parsed: func() iamgo.Document {
@@ -147,11 +147,11 @@ resource "aws_iam_policy" "this" {
 }`,
 			expected: []iam.Policy{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-sqs1", defsecTypes.NewTestMetadata()),
-					Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("test-sqs1", defsecTypes.NewTestMisconfigMetadata()),
+					Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					Document: iam.Document{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						IsOffset: true,
 						HasRefs:  false,
 						Parsed: func() iamgo.Document {

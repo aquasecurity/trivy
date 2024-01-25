@@ -4,13 +4,13 @@ import (
 	"testing"
 	"time"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/keyvault"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/keyvault"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -39,12 +39,12 @@ func Test_Adapt(t *testing.T) {
 			expected: keyvault.KeyVault{
 				Vaults: []keyvault.Vault{
 					{
-						Metadata:                defsecTypes.NewTestMetadata(),
-						EnablePurgeProtection:   defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						SoftDeleteRetentionDays: defsecTypes.Int(7, defsecTypes.NewTestMetadata()),
+						Metadata:                defsecTypes.NewTestMisconfigMetadata(),
+						EnablePurgeProtection:   defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+						SoftDeleteRetentionDays: defsecTypes.Int(7, defsecTypes.NewTestMisconfigMetadata()),
 						NetworkACLs: keyvault.NetworkACLs{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							DefaultAction: defsecTypes.String("Deny", defsecTypes.NewTestMetadata()),
+							Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+							DefaultAction: defsecTypes.String("Deny", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -59,12 +59,12 @@ func Test_Adapt(t *testing.T) {
 			expected: keyvault.KeyVault{
 				Vaults: []keyvault.Vault{
 					{
-						Metadata:                defsecTypes.NewTestMetadata(),
-						EnablePurgeProtection:   defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						SoftDeleteRetentionDays: defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
+						Metadata:                defsecTypes.NewTestMisconfigMetadata(),
+						EnablePurgeProtection:   defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						SoftDeleteRetentionDays: defsecTypes.Int(0, defsecTypes.NewTestMisconfigMetadata()),
 						NetworkACLs: keyvault.NetworkACLs{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							DefaultAction: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+							DefaultAction: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -94,9 +94,9 @@ func Test_adaptSecret(t *testing.T) {
 			}
 `,
 			expected: keyvault.Secret{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				ContentType: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				ExpiryDate:  defsecTypes.Time(time.Time{}, defsecTypes.NewTestMetadata()),
+				Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+				ContentType: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+				ExpiryDate:  defsecTypes.Time(time.Time{}, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -108,12 +108,12 @@ func Test_adaptSecret(t *testing.T) {
 			}
 `,
 			expected: keyvault.Secret{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				ContentType: defsecTypes.String("password", defsecTypes.NewTestMetadata()),
+				Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+				ContentType: defsecTypes.String("password", defsecTypes.NewTestMisconfigMetadata()),
 				ExpiryDate: defsecTypes.Time(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("1982-12-31T00:00:00Z"), defsecTypes.NewTestMetadata())},
+				}("1982-12-31T00:00:00Z"), defsecTypes.NewTestMisconfigMetadata())},
 		},
 	}
 
@@ -141,11 +141,11 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: keyvault.Key{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				ExpiryDate: defsecTypes.Time(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("1982-12-31T00:00:00Z"), defsecTypes.NewTestMetadata()),
+				}("1982-12-31T00:00:00Z"), defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -155,8 +155,8 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: keyvault.Key{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				ExpiryDate: defsecTypes.Time(time.Time{}, defsecTypes.NewTestMetadata()),
+				Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+				ExpiryDate: defsecTypes.Time(time.Time{}, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -199,8 +199,8 @@ resource "azurerm_key_vault_key" "this" {
 }
 `,
 			expected: keyvault.Key{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				ExpiryDate: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+				Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+				ExpiryDate: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

@@ -3,12 +3,12 @@ package dns
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/dns"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/nifcloud/dns"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptRecords(t *testing.T) {
@@ -26,9 +26,9 @@ func Test_adaptRecords(t *testing.T) {
 			}
 `,
 			expected: []dns.Record{{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Type:     defsecTypes.String("A", defsecTypes.NewTestMetadata()),
-				Record:   defsecTypes.String("example-record", defsecTypes.NewTestMetadata()),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
+				Type:     defsecTypes.String("A", defsecTypes.NewTestMisconfigMetadata()),
+				Record:   defsecTypes.String("example-record", defsecTypes.NewTestMisconfigMetadata()),
 			}},
 		},
 		{
@@ -39,9 +39,9 @@ func Test_adaptRecords(t *testing.T) {
 `,
 
 			expected: []dns.Record{{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Type:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				Record:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
+				Type:     defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+				Record:   defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 			}},
 		},
 	}

@@ -3,8 +3,8 @@ package compute
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/stretchr/testify/assert"
 
@@ -16,14 +16,14 @@ func Test_AdaptLinuxVM(t *testing.T) {
 	input := azure.Deployment{
 		Resources: []azure.Resource{
 			{
-				Type: azure.NewValue("Microsoft.Compute/virtualMachines", types.NewTestMetadata()),
+				Type: azure.NewValue("Microsoft.Compute/virtualMachines", types.NewTestMisconfigMetadata()),
 				Properties: azure.NewValue(map[string]azure.Value{
 					"osProfile": azure.NewValue(map[string]azure.Value{
 						"linuxConfiguration": azure.NewValue(map[string]azure.Value{
-							"disablePasswordAuthentication": azure.NewValue(true, types.NewTestMetadata()),
-						}, types.NewTestMetadata()),
-					}, types.NewTestMetadata()),
-				}, types.NewTestMetadata()),
+							"disablePasswordAuthentication": azure.NewValue(true, types.NewTestMisconfigMetadata()),
+						}, types.NewTestMisconfigMetadata()),
+					}, types.NewTestMisconfigMetadata()),
+				}, types.NewTestMisconfigMetadata()),
 			},
 		},
 	}
@@ -43,12 +43,12 @@ func Test_AdaptWindowsVM(t *testing.T) {
 	input := azure.Deployment{
 		Resources: []azure.Resource{
 			{
-				Type: azure.NewValue("Microsoft.Compute/virtualMachines", types.NewTestMetadata()),
+				Type: azure.NewValue("Microsoft.Compute/virtualMachines", types.NewTestMisconfigMetadata()),
 				Properties: azure.NewValue(map[string]azure.Value{
 					"osProfile": azure.NewValue(map[string]azure.Value{
-						"windowsConfiguration": azure.NewValue(map[string]azure.Value{}, types.NewTestMetadata()),
-					}, types.NewTestMetadata()),
-				}, types.NewTestMetadata()),
+						"windowsConfiguration": azure.NewValue(map[string]azure.Value{}, types.NewTestMisconfigMetadata()),
+					}, types.NewTestMisconfigMetadata()),
+				}, types.NewTestMisconfigMetadata()),
 			},
 		},
 	}

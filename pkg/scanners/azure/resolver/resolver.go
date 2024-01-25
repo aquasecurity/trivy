@@ -1,9 +1,9 @@
 package resolver
 
 import (
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/expressions"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Resolver interface {
@@ -40,7 +40,7 @@ func (r *resolver) ResolveExpression(expression azure.Value) azure.Value {
 	return resolved
 }
 
-func (r *resolver) resolveExpressionString(code string, metadata defsecTypes.Metadata) (azure.Value, error) {
+func (r *resolver) resolveExpressionString(code string, metadata defsecTypes.MisconfigMetadata) (azure.Value, error) {
 	et, err := expressions.NewExpressionTree(code)
 	if err != nil {
 		return azure.NullValue, err

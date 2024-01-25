@@ -3,12 +3,12 @@ package compute
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/compute"
+	"github.com/aquasecurity/trivy/pkg/providers/google/compute"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptDisks(t *testing.T) {
@@ -38,20 +38,20 @@ func Test_adaptDisks(t *testing.T) {
 `,
 			expected: []compute.Disk{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("disk #1", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("disk #1", defsecTypes.NewTestMisconfigMetadata()),
 					Encryption: compute.DiskEncryption{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						KMSKeyLink: defsecTypes.String("something", defsecTypes.NewTestMetadata()),
+						Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+						KMSKeyLink: defsecTypes.String("something", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("disk #2", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("disk #2", defsecTypes.NewTestMisconfigMetadata()),
 					Encryption: compute.DiskEncryption{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						KMSKeyLink: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						RawKey:     defsecTypes.Bytes([]byte("b2ggbm8gdGhpcyBpcyBiYWQ"), defsecTypes.NewTestMetadata()),
+						Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+						KMSKeyLink: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+						RawKey:     defsecTypes.Bytes([]byte("b2ggbm8gdGhpcyBpcyBiYWQ"), defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -72,11 +72,11 @@ func Test_adaptDisks(t *testing.T) {
 			  }`,
 			expected: []compute.Disk{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("disk #3", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("disk #3", defsecTypes.NewTestMisconfigMetadata()),
 					Encryption: compute.DiskEncryption{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						KMSKeyLink: defsecTypes.String("google_kms_crypto_key.my_crypto_key", defsecTypes.NewTestMetadata()),
+						Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+						KMSKeyLink: defsecTypes.String("google_kms_crypto_key.my_crypto_key", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},

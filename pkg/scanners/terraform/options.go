@@ -4,10 +4,10 @@ import (
 	"io/fs"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/defsec/pkg/severity"
-	"github.com/aquasecurity/defsec/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/severity"
+	"github.com/aquasecurity/trivy/pkg/state"
 
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"

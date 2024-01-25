@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/cftypes"
 
@@ -113,7 +113,7 @@ func (p *Property) Range() defsecTypes.Range {
 	return p.rng
 }
 
-func (p *Property) Metadata() defsecTypes.Metadata {
+func (p *Property) Metadata() defsecTypes.MisconfigMetadata {
 	base := p
 	if p.isFunction() {
 		if resolved, ok := p.resolveValue(); ok {
@@ -121,12 +121,12 @@ func (p *Property) Metadata() defsecTypes.Metadata {
 		}
 	}
 	ref := NewCFReferenceWithValue(p.parentRange, *base, p.logicalId)
-	return defsecTypes.NewMetadata(p.Range(), ref.String())
+	return defsecTypes.NewMisconfigMetadata(p.Range(), ref.String())
 }
 
-func (p *Property) MetadataWithValue(resolvedValue *Property) defsecTypes.Metadata {
+func (p *Property) MetadataWithValue(resolvedValue *Property) defsecTypes.MisconfigMetadata {
 	ref := NewCFReferenceWithValue(p.parentRange, *resolvedValue, p.logicalId)
-	return defsecTypes.NewMetadata(p.Range(), ref.String())
+	return defsecTypes.NewMisconfigMetadata(p.Range(), ref.String())
 }
 
 func (p *Property) isFunction() bool {

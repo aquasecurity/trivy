@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/redshift"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/redshift"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -46,27 +46,27 @@ func Test_Adapt(t *testing.T) {
 			expected: redshift.Redshift{
 				Clusters: []redshift.Cluster{
 					{
-						Metadata:            defsecTypes.NewTestMetadata(),
-						ClusterIdentifier:   defsecTypes.String("tf-redshift-cluster", defsecTypes.NewTestMetadata()),
-						PubliclyAccessible:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						NumberOfNodes:       defsecTypes.Int(1, defsecTypes.NewTestMetadata()),
-						AllowVersionUpgrade: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:            defsecTypes.NewTestMisconfigMetadata(),
+						ClusterIdentifier:   defsecTypes.String("tf-redshift-cluster", defsecTypes.NewTestMisconfigMetadata()),
+						PubliclyAccessible:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+						NumberOfNodes:       defsecTypes.Int(1, defsecTypes.NewTestMisconfigMetadata()),
+						AllowVersionUpgrade: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 						EndPoint: redshift.EndPoint{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Port:     defsecTypes.Int(5440, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Port:     defsecTypes.Int(5440, defsecTypes.NewTestMisconfigMetadata()),
 						},
 						Encryption: redshift.Encryption{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-							KMSKeyID: defsecTypes.String("aws_kms_key.redshift", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+							KMSKeyID: defsecTypes.String("aws_kms_key.redshift", defsecTypes.NewTestMisconfigMetadata()),
 						},
-						SubnetGroupName: defsecTypes.String("redshift_subnet", defsecTypes.NewTestMetadata()),
+						SubnetGroupName: defsecTypes.String("redshift_subnet", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 				SecurityGroups: []redshift.SecurityGroup{
 					{
-						Metadata:    defsecTypes.NewTestMetadata(),
-						Description: defsecTypes.String("some description", defsecTypes.NewTestMetadata()),
+						Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+						Description: defsecTypes.String("some description", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -104,21 +104,21 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: redshift.Cluster{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				ClusterIdentifier:   defsecTypes.String("tf-redshift-cluster", defsecTypes.NewTestMetadata()),
-				PubliclyAccessible:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				NumberOfNodes:       defsecTypes.Int(1, defsecTypes.NewTestMetadata()),
-				AllowVersionUpgrade: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:            defsecTypes.NewTestMisconfigMetadata(),
+				ClusterIdentifier:   defsecTypes.String("tf-redshift-cluster", defsecTypes.NewTestMisconfigMetadata()),
+				PubliclyAccessible:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+				NumberOfNodes:       defsecTypes.Int(1, defsecTypes.NewTestMisconfigMetadata()),
+				AllowVersionUpgrade: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				EndPoint: redshift.EndPoint{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Port:     defsecTypes.Int(5440, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Port:     defsecTypes.Int(5440, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Encryption: redshift.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("key-id", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("key-id", defsecTypes.NewTestMisconfigMetadata()),
 				},
-				SubnetGroupName: defsecTypes.String("redshift_subnet", defsecTypes.NewTestMetadata()),
+				SubnetGroupName: defsecTypes.String("redshift_subnet", defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -128,21 +128,21 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: redshift.Cluster{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				ClusterIdentifier:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				PubliclyAccessible:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				NumberOfNodes:       defsecTypes.Int(1, defsecTypes.NewTestMetadata()),
-				AllowVersionUpgrade: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:            defsecTypes.NewTestMisconfigMetadata(),
+				ClusterIdentifier:   defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+				PubliclyAccessible:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+				NumberOfNodes:       defsecTypes.Int(1, defsecTypes.NewTestMisconfigMetadata()),
+				AllowVersionUpgrade: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				EndPoint: redshift.EndPoint{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Port:     defsecTypes.Int(5439, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Port:     defsecTypes.Int(5439, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Encryption: redshift.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				},
-				SubnetGroupName: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				SubnetGroupName: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}
@@ -169,8 +169,8 @@ resource "" "example" {
 }
 `,
 			expected: redshift.SecurityGroup{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				Description: defsecTypes.String("Managed by Terraform", defsecTypes.NewTestMetadata()),
+				Metadata:    defsecTypes.NewTestMisconfigMetadata(),
+				Description: defsecTypes.String("Managed by Terraform", defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

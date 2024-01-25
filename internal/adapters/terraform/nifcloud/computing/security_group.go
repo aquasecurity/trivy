@@ -1,9 +1,9 @@
 package computing
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/computing"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/nifcloud/computing"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 type sgAdapter struct {
@@ -18,8 +18,8 @@ func (a *sgAdapter) adaptSecurityGroups(modules terraform.Modules) []computing.S
 	orphanResources := modules.GetResourceByIDs(a.sgRuleIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := computing.SecurityGroup{
-			Metadata:     defsecTypes.NewUnmanagedMetadata(),
-			Description:  defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata:     defsecTypes.NewUnmanagedMisconfigMetadata(),
+			Description:  defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			IngressRules: nil,
 		}
 		for _, sgRule := range orphanResources {

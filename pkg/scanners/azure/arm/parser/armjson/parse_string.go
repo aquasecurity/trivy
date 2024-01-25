@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var escapes = map[rune]string{
@@ -19,7 +19,7 @@ var escapes = map[rune]string{
 }
 
 // nolint: cyclop
-func (p *parser) parseString(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseString(parentMetadata *types.MisconfigMetadata) (Node, error) {
 
 	n, _ := p.newNode(KindString, parentMetadata)
 

@@ -3,13 +3,13 @@ package cloudtrail
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/cloudtrail"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/cloudtrail"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,14 +35,14 @@ func Test_adaptTrail(t *testing.T) {
 			}
 `,
 			expected: cloudtrail.Trail{
-				Metadata:                  defsecTypes.NewTestMetadata(),
-				Name:                      defsecTypes.String("example", defsecTypes.NewTestMetadata()),
-				EnableLogFileValidation:   defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				IsMultiRegion:             defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				KMSKeyID:                  defsecTypes.String("kms-key", defsecTypes.NewTestMetadata()),
-				CloudWatchLogsLogGroupArn: defsecTypes.String("abc", defsecTypes.NewTestMetadata()),
-				IsLogging:                 defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				BucketName:                defsecTypes.String("abcdefgh", defsecTypes.NewTestMetadata()),
+				Metadata:                  defsecTypes.NewTestMisconfigMetadata(),
+				Name:                      defsecTypes.String("example", defsecTypes.NewTestMisconfigMetadata()),
+				EnableLogFileValidation:   defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+				IsMultiRegion:             defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+				KMSKeyID:                  defsecTypes.String("kms-key", defsecTypes.NewTestMisconfigMetadata()),
+				CloudWatchLogsLogGroupArn: defsecTypes.String("abc", defsecTypes.NewTestMisconfigMetadata()),
+				IsLogging:                 defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+				BucketName:                defsecTypes.String("abcdefgh", defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -52,14 +52,14 @@ func Test_adaptTrail(t *testing.T) {
 			}
 `,
 			expected: cloudtrail.Trail{
-				Metadata:                  defsecTypes.NewTestMetadata(),
-				Name:                      defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				EnableLogFileValidation:   defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				IsMultiRegion:             defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				KMSKeyID:                  defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				BucketName:                defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				CloudWatchLogsLogGroupArn: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				IsLogging:                 defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:                  defsecTypes.NewTestMisconfigMetadata(),
+				Name:                      defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+				EnableLogFileValidation:   defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+				IsMultiRegion:             defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+				KMSKeyID:                  defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+				BucketName:                defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+				CloudWatchLogsLogGroupArn: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
+				IsLogging:                 defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

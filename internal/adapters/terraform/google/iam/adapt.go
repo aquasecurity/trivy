@@ -1,9 +1,9 @@
 package iam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/google/iam"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/google/uuid"
 )
 
@@ -35,7 +35,7 @@ func (a *adapter) Adapt() iam.IAM {
 func (a *adapter) addOrg(blockID string) {
 	if _, ok := a.orgs[blockID]; !ok {
 		a.orgs[blockID] = iam.Organization{
-			Metadata: types.NewUnmanagedMetadata(),
+			Metadata: types.NewUnmanagedMisconfigMetadata(),
 		}
 	}
 }
@@ -61,7 +61,7 @@ PROJECT:
 		}
 
 		org := iam.Organization{
-			Metadata: types.NewUnmanagedMetadata(),
+			Metadata: types.NewUnmanagedMisconfigMetadata(),
 			Projects: []iam.Project{project.project},
 		}
 		a.orgs[uuid.NewString()] = org
@@ -90,7 +90,7 @@ FOLDER_ORG:
 		} else {
 			// add to placeholder?
 			org := iam.Organization{
-				Metadata: types.NewUnmanagedMetadata(),
+				Metadata: types.NewUnmanagedMisconfigMetadata(),
 				Folders:  []iam.Folder{folder.folder},
 			}
 			a.orgs[uuid.NewString()] = org

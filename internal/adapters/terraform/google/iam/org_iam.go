@@ -1,8 +1,8 @@
 package iam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/google/iam"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/google/uuid"
 )
 
@@ -43,7 +43,7 @@ func (a *adapter) adaptOrganizationMembers() {
 		// we didn't find the organization - add an unmanaged one
 		placeholderID := uuid.NewString()
 		org := iam.Organization{
-			Metadata: types.NewUnmanagedMetadata(),
+			Metadata: types.NewUnmanagedMisconfigMetadata(),
 			Members:  []iam.Member{member},
 		}
 		a.orgs[placeholderID] = org
@@ -79,7 +79,7 @@ func (a *adapter) adaptOrganizationBindings() {
 		// we didn't find the organization - add an unmanaged one
 		placeholderID := uuid.NewString()
 		org := iam.Organization{
-			Metadata: types.NewUnmanagedMetadata(),
+			Metadata: types.NewUnmanagedMisconfigMetadata(),
 			Bindings: bindings,
 		}
 		a.orgs[placeholderID] = org
@@ -105,7 +105,7 @@ func (a *adapter) adaptOrganizationBindings() {
 		// we didn't find the organization - add an unmanaged one
 		placeholderID := uuid.NewString()
 		org := iam.Organization{
-			Metadata: types.NewUnmanagedMetadata(),
+			Metadata: types.NewUnmanagedMisconfigMetadata(),
 			Bindings: []iam.Binding{binding},
 		}
 		a.orgs[placeholderID] = org

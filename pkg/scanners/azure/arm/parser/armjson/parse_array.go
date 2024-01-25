@@ -3,10 +3,10 @@ package armjson
 import (
 	"fmt"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func (p *parser) parseArray(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseArray(parentMetadata *types.MisconfigMetadata) (Node, error) {
 	n, metadata := p.newNode(KindArray, parentMetadata)
 
 	c, err := p.next()

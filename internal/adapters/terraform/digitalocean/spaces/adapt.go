@@ -1,9 +1,9 @@
 package spaces
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/digitalocean/spaces"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/digitalocean/spaces"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/google/uuid"
 )
 
@@ -68,13 +68,13 @@ func adaptBuckets(modules terraform.Modules) []spaces.Bucket {
 				}
 			}
 			bucketMap[uuid.NewString()] = spaces.Bucket{
-				Metadata: defsecTypes.NewUnmanagedMetadata(),
-				Name:     defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
+				Name:     defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 				Objects: []spaces.Object{
 					object,
 				},
-				ACL:          defsecTypes.StringDefault("private", defsecTypes.NewUnmanagedMetadata()),
-				ForceDestroy: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				ACL:          defsecTypes.StringDefault("private", defsecTypes.NewUnmanagedMisconfigMetadata()),
+				ForceDestroy: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 				Versioning: spaces.Versioning{
 					Metadata: block.GetMetadata(),
 					Enabled:  defsecTypes.BoolDefault(false, block.GetMetadata()),

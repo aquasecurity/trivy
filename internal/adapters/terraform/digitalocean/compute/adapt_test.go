@@ -3,14 +3,14 @@ package compute
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/digitalocean/compute"
+	"github.com/aquasecurity/trivy/pkg/providers/digitalocean/compute"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptDroplets(t *testing.T) {
@@ -32,9 +32,9 @@ func Test_adaptDroplets(t *testing.T) {
 `,
 			expected: []compute.Droplet{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					SSHKeys: []defsecTypes.StringValue{
-						defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -52,9 +52,9 @@ func Test_adaptDroplets(t *testing.T) {
 `,
 			expected: []compute.Droplet{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					SSHKeys: []defsecTypes.StringValue{
-						defsecTypes.String("my-ssh-key", defsecTypes.NewTestMetadata()),
+						defsecTypes.String("my-ssh-key", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -67,7 +67,7 @@ func Test_adaptDroplets(t *testing.T) {
 `,
 			expected: []compute.Droplet{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				},
 			},
 		},
@@ -109,21 +109,21 @@ func Test_adaptFirewalls(t *testing.T) {
 `,
 			expected: []compute.Firewall{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 					OutboundRules: []compute.OutboundFirewallRule{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
 							DestinationAddresses: []defsecTypes.StringValue{
-								defsecTypes.String("192.168.1.0/24", defsecTypes.NewTestMetadata()),
+								defsecTypes.String("192.168.1.0/24", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
 					InboundRules: []compute.InboundFirewallRule{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
 							SourceAddresses: []defsecTypes.StringValue{
-								defsecTypes.String("192.168.1.0/24", defsecTypes.NewTestMetadata()),
-								defsecTypes.String("fc00::/7", defsecTypes.NewTestMetadata()),
+								defsecTypes.String("192.168.1.0/24", defsecTypes.NewTestMisconfigMetadata()),
+								defsecTypes.String("fc00::/7", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
@@ -138,7 +138,7 @@ func Test_adaptFirewalls(t *testing.T) {
 `,
 			expected: []compute.Firewall{
 				{
-					Metadata:      defsecTypes.NewTestMetadata(),
+					Metadata:      defsecTypes.NewTestMisconfigMetadata(),
 					OutboundRules: []compute.OutboundFirewallRule{},
 					InboundRules:  []compute.InboundFirewallRule{},
 				},
@@ -179,12 +179,12 @@ func Test_adaptLoadBalancers(t *testing.T) {
 `,
 			expected: []compute.LoadBalancer{
 				{
-					Metadata:            defsecTypes.NewTestMetadata(),
-					RedirectHttpToHttps: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:            defsecTypes.NewTestMisconfigMetadata(),
+					RedirectHttpToHttps: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					ForwardingRules: []compute.ForwardingRule{
 						{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							EntryProtocol: defsecTypes.String("https", defsecTypes.NewTestMetadata()),
+							Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+							EntryProtocol: defsecTypes.String("https", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -198,7 +198,7 @@ func Test_adaptLoadBalancers(t *testing.T) {
 `,
 			expected: []compute.LoadBalancer{
 				{
-					Metadata:        defsecTypes.NewTestMetadata(),
+					Metadata:        defsecTypes.NewTestMisconfigMetadata(),
 					ForwardingRules: nil,
 				},
 			},
@@ -233,9 +233,9 @@ func Test_adaptKubernetesClusters(t *testing.T) {
 `,
 			expected: []compute.KubernetesCluster{
 				{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					SurgeUpgrade: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					AutoUpgrade:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+					SurgeUpgrade: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					AutoUpgrade:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -247,9 +247,9 @@ func Test_adaptKubernetesClusters(t *testing.T) {
 `,
 			expected: []compute.KubernetesCluster{
 				{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					SurgeUpgrade: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					AutoUpgrade:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+					SurgeUpgrade: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					AutoUpgrade:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

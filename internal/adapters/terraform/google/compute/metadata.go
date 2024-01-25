@@ -1,17 +1,17 @@
 package compute
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/google/compute"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/google/compute"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/zclconf/go-cty/cty"
 )
 
 func adaptProjectMetadata(modules terraform.Modules) compute.ProjectMetadata {
 	metadata := compute.ProjectMetadata{
-		Metadata: defsecTypes.NewUnmanagedMetadata(),
+		Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 		EnableOSLogin: defsecTypes.BoolUnresolvable(
-			defsecTypes.NewUnmanagedMetadata(),
+			defsecTypes.NewUnmanagedMisconfigMetadata(),
 		),
 	}
 	for _, metadataBlock := range modules.GetResourcesByType("google_compute_project_metadata") {

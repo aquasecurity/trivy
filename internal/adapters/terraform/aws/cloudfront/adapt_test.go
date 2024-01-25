@@ -3,13 +3,13 @@ package cloudfront
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/cloudfront"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/cloudfront"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -46,27 +46,27 @@ func Test_adaptDistribution(t *testing.T) {
 			}
 `,
 			expected: cloudfront.Distribution{
-				Metadata: defsecTypes.NewTestMetadata(),
-				WAFID:    defsecTypes.String("waf_id", defsecTypes.NewTestMetadata()),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
+				WAFID:    defsecTypes.String("waf_id", defsecTypes.NewTestMisconfigMetadata()),
 				Logging: cloudfront.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Bucket:   defsecTypes.String("mylogs.s3.amazonaws.com", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Bucket:   defsecTypes.String("mylogs.s3.amazonaws.com", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				DefaultCacheBehaviour: cloudfront.CacheBehaviour{
-					Metadata:             defsecTypes.NewTestMetadata(),
-					ViewerProtocolPolicy: defsecTypes.String("redirect-to-https", defsecTypes.NewTestMetadata()),
+					Metadata:             defsecTypes.NewTestMisconfigMetadata(),
+					ViewerProtocolPolicy: defsecTypes.String("redirect-to-https", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				OrdererCacheBehaviours: []cloudfront.CacheBehaviour{
 					{
-						Metadata:             defsecTypes.NewTestMetadata(),
-						ViewerProtocolPolicy: defsecTypes.String("redirect-to-https", defsecTypes.NewTestMetadata()),
+						Metadata:             defsecTypes.NewTestMisconfigMetadata(),
+						ViewerProtocolPolicy: defsecTypes.String("redirect-to-https", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 				ViewerCertificate: cloudfront.ViewerCertificate{
-					Metadata:                     defsecTypes.NewTestMetadata(),
-					MinimumProtocolVersion:       defsecTypes.String("TLSv1.2_2021", defsecTypes.NewTestMetadata()),
-					CloudfrontDefaultCertificate: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					SSLSupportMethod:             defsecTypes.String("sni-only", defsecTypes.NewTestMetadata()),
+					Metadata:                     defsecTypes.NewTestMisconfigMetadata(),
+					MinimumProtocolVersion:       defsecTypes.String("TLSv1.2_2021", defsecTypes.NewTestMisconfigMetadata()),
+					CloudfrontDefaultCertificate: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					SSLSupportMethod:             defsecTypes.String("sni-only", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -77,20 +77,20 @@ func Test_adaptDistribution(t *testing.T) {
 			}
 `,
 			expected: cloudfront.Distribution{
-				Metadata: defsecTypes.NewTestMetadata(),
-				WAFID:    defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
+				WAFID:    defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				Logging: cloudfront.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Bucket:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Bucket:   defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				DefaultCacheBehaviour: cloudfront.CacheBehaviour{
-					Metadata:             defsecTypes.NewTestMetadata(),
-					ViewerProtocolPolicy: defsecTypes.String("allow-all", defsecTypes.NewTestMetadata()),
+					Metadata:             defsecTypes.NewTestMisconfigMetadata(),
+					ViewerProtocolPolicy: defsecTypes.String("allow-all", defsecTypes.NewTestMisconfigMetadata()),
 				},
 
 				ViewerCertificate: cloudfront.ViewerCertificate{
-					Metadata:               defsecTypes.NewTestMetadata(),
-					MinimumProtocolVersion: defsecTypes.String("TLSv1", defsecTypes.NewTestMetadata()),
+					Metadata:               defsecTypes.NewTestMisconfigMetadata(),
+					MinimumProtocolVersion: defsecTypes.String("TLSv1", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

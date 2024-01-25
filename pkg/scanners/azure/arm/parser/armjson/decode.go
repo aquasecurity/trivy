@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func (n *node) Decode(target interface{}) error {
@@ -12,7 +12,7 @@ func (n *node) Decode(target interface{}) error {
 	return n.decodeToValue(v)
 }
 
-func (n *node) Metadata() types.Metadata {
+func (n *node) Metadata() types.MisconfigMetadata {
 	return *n.metadata
 }
 

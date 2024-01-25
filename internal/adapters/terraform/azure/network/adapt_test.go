@@ -3,14 +3,14 @@ package network
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/network"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/network"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_Adapt(t *testing.T) {
@@ -51,44 +51,44 @@ func Test_Adapt(t *testing.T) {
 			expected: network.Network{
 				SecurityGroups: []network.SecurityGroup{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						Rules: []network.SecurityGroupRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Outbound: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-								Allow:    defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
+								Outbound: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+								Allow:    defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 								SourceAddresses: []defsecTypes.StringValue{
-									defsecTypes.String("4.53.160.75", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("4.53.160.75", defsecTypes.NewTestMisconfigMetadata()),
 								},
 								DestinationAddresses: []defsecTypes.StringValue{
-									defsecTypes.String("*", defsecTypes.NewTestMetadata()),
+									defsecTypes.String("*", defsecTypes.NewTestMisconfigMetadata()),
 								},
 								SourcePorts: []network.PortRange{
 									{
-										Metadata: defsecTypes.NewTestMetadata(),
+										Metadata: defsecTypes.NewTestMisconfigMetadata(),
 										Start:    0,
 										End:      65535,
 									},
 								},
 								DestinationPorts: []network.PortRange{
 									{
-										Metadata: defsecTypes.NewTestMetadata(),
+										Metadata: defsecTypes.NewTestMisconfigMetadata(),
 										Start:    3389,
 										End:      3389,
 									},
 								},
-								Protocol: defsecTypes.String("TCP", defsecTypes.NewTestMetadata()),
+								Protocol: defsecTypes.String("TCP", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
 				},
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						RetentionPolicy: network.RetentionPolicy{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-							Days:     defsecTypes.Int(7, defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+							Days:     defsecTypes.Int(7, defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -106,13 +106,13 @@ func Test_Adapt(t *testing.T) {
 			expected: network.Network{
 				SecurityGroups: []network.SecurityGroup{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
 						Rules: []network.SecurityGroupRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Outbound: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-								Allow:    defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-								Protocol: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata: defsecTypes.NewTestMisconfigMetadata(),
+								Outbound: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+								Allow:    defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+								Protocol: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},
@@ -147,11 +147,11 @@ func Test_adaptWatcherLog(t *testing.T) {
 			}
 `,
 			expected: network.NetworkWatcherFlowLog{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				RetentionPolicy: network.RetentionPolicy{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Days:     defsecTypes.Int(90, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					Days:     defsecTypes.Int(90, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -164,11 +164,11 @@ func Test_adaptWatcherLog(t *testing.T) {
 			}
 `,
 			expected: network.NetworkWatcherFlowLog{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				RetentionPolicy: network.RetentionPolicy{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Days:     defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					Days:     defsecTypes.Int(0, defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

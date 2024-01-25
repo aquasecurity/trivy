@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func (p *parser) parseNumber(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseNumber(parentMetadata *types.MisconfigMetadata) (Node, error) {
 
 	n, _ := p.newNode(KindNumber, parentMetadata)
 

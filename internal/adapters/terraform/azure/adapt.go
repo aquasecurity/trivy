@@ -1,8 +1,6 @@
 package azure
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure"
-	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/azure/appservice"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/azure/authorization"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/azure/compute"
@@ -16,6 +14,8 @@ import (
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/azure/securitycenter"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/azure/storage"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/azure/synapse"
+	"github.com/aquasecurity/trivy/pkg/providers/azure"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 )
 
 func Adapt(modules terraform.Modules) azure.Azure {

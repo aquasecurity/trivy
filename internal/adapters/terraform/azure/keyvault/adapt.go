@@ -3,11 +3,11 @@ package keyvault
 import (
 	"time"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/keyvault"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/keyvault"
 )
 
 func Adapt(modules terraform.Modules) keyvault.KeyVault {
@@ -40,14 +40,14 @@ func (a *adapter) adaptVaults(modules terraform.Modules) []keyvault.Vault {
 
 	if len(orphanResources) > 0 {
 		orphanage := keyvault.Vault{
-			Metadata:                defsecTypes.NewUnmanagedMetadata(),
+			Metadata:                defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Secrets:                 nil,
 			Keys:                    nil,
-			EnablePurgeProtection:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-			SoftDeleteRetentionDays: defsecTypes.IntDefault(0, defsecTypes.NewUnmanagedMetadata()),
+			EnablePurgeProtection:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+			SoftDeleteRetentionDays: defsecTypes.IntDefault(0, defsecTypes.NewUnmanagedMisconfigMetadata()),
 			NetworkACLs: keyvault.NetworkACLs{
-				Metadata:      defsecTypes.NewUnmanagedMetadata(),
-				DefaultAction: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata:      defsecTypes.NewUnmanagedMisconfigMetadata(),
+				DefaultAction: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			},
 		}
 		for _, secretResource := range orphanResources {
@@ -60,14 +60,14 @@ func (a *adapter) adaptVaults(modules terraform.Modules) []keyvault.Vault {
 
 	if len(orphanResources) > 0 {
 		orphanage := keyvault.Vault{
-			Metadata:                defsecTypes.NewUnmanagedMetadata(),
+			Metadata:                defsecTypes.NewUnmanagedMisconfigMetadata(),
 			Secrets:                 nil,
 			Keys:                    nil,
-			EnablePurgeProtection:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-			SoftDeleteRetentionDays: defsecTypes.IntDefault(0, defsecTypes.NewUnmanagedMetadata()),
+			EnablePurgeProtection:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+			SoftDeleteRetentionDays: defsecTypes.IntDefault(0, defsecTypes.NewUnmanagedMisconfigMetadata()),
 			NetworkACLs: keyvault.NetworkACLs{
-				Metadata:      defsecTypes.NewUnmanagedMetadata(),
-				DefaultAction: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata:      defsecTypes.NewUnmanagedMisconfigMetadata(),
+				DefaultAction: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			},
 		}
 		for _, secretResource := range orphanResources {
@@ -103,7 +103,7 @@ func (a *adapter) adaptVault(resource *terraform.Block, module *terraform.Module
 	softDeleteRetentionDaysAttr := resource.GetAttribute("soft_delete_retention_days")
 	softDeleteRetentionDaysVal := softDeleteRetentionDaysAttr.AsIntValueOrDefault(0, resource)
 
-	aclMetadata := defsecTypes.NewUnmanagedMetadata()
+	aclMetadata := defsecTypes.NewUnmanagedMisconfigMetadata()
 	if aclBlock := resource.GetBlock("network_acls"); aclBlock.IsNotNil() {
 		aclMetadata = aclBlock.GetMetadata()
 		defaultActionAttr := aclBlock.GetAttribute("default_action")

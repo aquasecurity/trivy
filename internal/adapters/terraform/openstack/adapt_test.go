@@ -3,13 +3,13 @@ package openstack
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/openstack"
+	"github.com/aquasecurity/trivy/pkg/providers/openstack"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -31,8 +31,8 @@ func TestFields(t *testing.T) {
 				Compute: openstack.Compute{
 					Instances: []openstack.Instance{
 						{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							AdminPassword: defsecTypes.String("N0tSoS3cretP4ssw0rd", defsecTypes.NewTestMetadata()),
+							Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+							AdminPassword: defsecTypes.String("N0tSoS3cretP4ssw0rd", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -47,8 +47,8 @@ func TestFields(t *testing.T) {
 				Compute: openstack.Compute{
 					Instances: []openstack.Instance{
 						{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							AdminPassword: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+							AdminPassword: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -70,12 +70,12 @@ func TestFields(t *testing.T) {
 					Firewall: openstack.Firewall{
 						AllowRules: []openstack.FirewallRule{
 							{
-								Metadata:        defsecTypes.NewTestMetadata(),
-								Enabled:         defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-								Destination:     defsecTypes.String("10.10.10.1", defsecTypes.NewTestMetadata()),
-								Source:          defsecTypes.String("10.10.10.2", defsecTypes.NewTestMetadata()),
-								DestinationPort: defsecTypes.String("22", defsecTypes.NewTestMetadata()),
-								SourcePort:      defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:        defsecTypes.NewTestMisconfigMetadata(),
+								Enabled:         defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+								Destination:     defsecTypes.String("10.10.10.1", defsecTypes.NewTestMisconfigMetadata()),
+								Source:          defsecTypes.String("10.10.10.2", defsecTypes.NewTestMisconfigMetadata()),
+								DestinationPort: defsecTypes.String("22", defsecTypes.NewTestMisconfigMetadata()),
+								SourcePort:      defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 							},
 						},
 					},

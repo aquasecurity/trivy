@@ -1,10 +1,10 @@
 package sam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	"github.com/aquasecurity/defsec/pkg/providers/aws/sam"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/sam"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/liamg/iamgo"
 )
 

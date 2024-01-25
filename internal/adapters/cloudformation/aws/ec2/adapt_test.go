@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func TestAdapt(t *testing.T) {
@@ -41,19 +41,19 @@ Resources:
 			expected: ec2.EC2{
 				Instances: []ec2.Instance{
 					{
-						Metadata: types.NewTestMetadata(),
+						Metadata: types.NewTestMisconfigMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							HttpEndpoint: types.StringDefault("enabled", types.NewTestMetadata()),
-							HttpTokens:   types.StringDefault("optional", types.NewTestMetadata()),
+							HttpEndpoint: types.StringDefault("enabled", types.NewTestMisconfigMetadata()),
+							HttpTokens:   types.StringDefault("optional", types.NewTestMisconfigMetadata()),
 						},
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  types.NewTestMetadata(),
-							Encrypted: types.BoolDefault(true, types.NewTestMetadata()),
+							Metadata:  types.NewTestMisconfigMetadata(),
+							Encrypted: types.BoolDefault(true, types.NewTestMisconfigMetadata()),
 						},
 						EBSBlockDevices: []*ec2.BlockDevice{
 							{
-								Metadata:  types.NewTestMetadata(),
-								Encrypted: types.BoolDefault(false, types.NewTestMetadata()),
+								Metadata:  types.NewTestMisconfigMetadata(),
+								Encrypted: types.BoolDefault(false, types.NewTestMisconfigMetadata()),
 							},
 						},
 					},
@@ -82,27 +82,27 @@ Resources:
 			expected: ec2.EC2{
 				LaunchTemplates: []ec2.LaunchTemplate{
 					{
-						Metadata: types.NewTestMetadata(),
-						Name:     types.String("MyTemplate", types.NewTestMetadata()),
+						Metadata: types.NewTestMisconfigMetadata(),
+						Name:     types.String("MyTemplate", types.NewTestMisconfigMetadata()),
 						Instance: ec2.Instance{
-							Metadata: types.NewTestMetadata(),
+							Metadata: types.NewTestMisconfigMetadata(),
 							MetadataOptions: ec2.MetadataOptions{
-								HttpEndpoint: types.String("enabled", types.NewTestMetadata()),
-								HttpTokens:   types.String("required", types.NewTestMetadata()),
+								HttpEndpoint: types.String("enabled", types.NewTestMisconfigMetadata()),
+								HttpTokens:   types.String("required", types.NewTestMisconfigMetadata()),
 							},
 						},
 					},
 				},
 				Instances: []ec2.Instance{
 					{
-						Metadata: types.NewTestMetadata(),
+						Metadata: types.NewTestMisconfigMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							HttpEndpoint: types.String("enabled", types.NewTestMetadata()),
-							HttpTokens:   types.String("required", types.NewTestMetadata()),
+							HttpEndpoint: types.String("enabled", types.NewTestMisconfigMetadata()),
+							HttpTokens:   types.String("required", types.NewTestMisconfigMetadata()),
 						},
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  types.NewTestMetadata(),
-							Encrypted: types.Bool(false, types.NewTestMetadata()),
+							Metadata:  types.NewTestMisconfigMetadata(),
+							Encrypted: types.Bool(false, types.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -130,27 +130,27 @@ Resources:
 			expected: ec2.EC2{
 				LaunchTemplates: []ec2.LaunchTemplate{
 					{
-						Metadata: types.NewTestMetadata(),
-						Name:     types.String("MyTemplate", types.NewTestMetadata()),
+						Metadata: types.NewTestMisconfigMetadata(),
+						Name:     types.String("MyTemplate", types.NewTestMisconfigMetadata()),
 						Instance: ec2.Instance{
-							Metadata: types.NewTestMetadata(),
+							Metadata: types.NewTestMisconfigMetadata(),
 							MetadataOptions: ec2.MetadataOptions{
-								HttpEndpoint: types.String("enabled", types.NewTestMetadata()),
-								HttpTokens:   types.String("required", types.NewTestMetadata()),
+								HttpEndpoint: types.String("enabled", types.NewTestMisconfigMetadata()),
+								HttpTokens:   types.String("required", types.NewTestMisconfigMetadata()),
 							},
 						},
 					},
 				},
 				Instances: []ec2.Instance{
 					{
-						Metadata: types.NewTestMetadata(),
+						Metadata: types.NewTestMisconfigMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							HttpEndpoint: types.String("enabled", types.NewTestMetadata()),
-							HttpTokens:   types.String("required", types.NewTestMetadata()),
+							HttpEndpoint: types.String("enabled", types.NewTestMisconfigMetadata()),
+							HttpTokens:   types.String("required", types.NewTestMisconfigMetadata()),
 						},
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  types.NewTestMetadata(),
-							Encrypted: types.Bool(false, types.NewTestMetadata()),
+							Metadata:  types.NewTestMisconfigMetadata(),
+							Encrypted: types.Bool(false, types.NewTestMisconfigMetadata()),
 						},
 					},
 				},

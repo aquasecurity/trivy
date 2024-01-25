@@ -3,13 +3,13 @@ package spaces
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/digitalocean/spaces"
+	"github.com/aquasecurity/trivy/pkg/providers/digitalocean/spaces"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -42,19 +42,19 @@ func Test_adaptBuckets(t *testing.T) {
 `,
 			expected: []spaces.Bucket{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("public_space", defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Name:     defsecTypes.String("public_space", defsecTypes.NewTestMisconfigMetadata()),
 					Objects: []spaces.Object{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							ACL:      defsecTypes.String("private", defsecTypes.NewTestMetadata()),
+							Metadata: defsecTypes.NewTestMisconfigMetadata(),
+							ACL:      defsecTypes.String("private", defsecTypes.NewTestMisconfigMetadata()),
 						},
 					},
-					ACL:          defsecTypes.String("private", defsecTypes.NewTestMetadata()),
-					ForceDestroy: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					ACL:          defsecTypes.String("private", defsecTypes.NewTestMisconfigMetadata()),
+					ForceDestroy: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					Versioning: spaces.Versioning{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},
@@ -68,14 +68,14 @@ func Test_adaptBuckets(t *testing.T) {
 `,
 			expected: []spaces.Bucket{
 				{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					Name:         defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+					Name:         defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 					Objects:      nil,
-					ACL:          defsecTypes.String("public-read", defsecTypes.NewTestMetadata()),
-					ForceDestroy: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					ACL:          defsecTypes.String("public-read", defsecTypes.NewTestMisconfigMetadata()),
+					ForceDestroy: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					Versioning: spaces.Versioning{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata: defsecTypes.NewTestMisconfigMetadata(),
+						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			},

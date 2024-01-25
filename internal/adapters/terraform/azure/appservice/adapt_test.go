@@ -3,13 +3,13 @@ package appservice
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/appservice"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/appservice"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -42,20 +42,20 @@ func Test_adaptService(t *testing.T) {
 			}
 `,
 			expected: appservice.Service{
-				Metadata:         defsecTypes.NewTestMetadata(),
-				EnableClientCert: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:         defsecTypes.NewTestMisconfigMetadata(),
+				EnableClientCert: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				Identity: struct{ Type defsecTypes.StringValue }{
-					Type: defsecTypes.String("UserAssigned", defsecTypes.NewTestMetadata()),
+					Type: defsecTypes.String("UserAssigned", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Authentication: struct{ Enabled defsecTypes.BoolValue }{
-					Enabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Enabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Site: struct {
 					EnableHTTP2       defsecTypes.BoolValue
 					MinimumTLSVersion defsecTypes.StringValue
 				}{
-					EnableHTTP2:       defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					MinimumTLSVersion: defsecTypes.String("1.0", defsecTypes.NewTestMetadata()),
+					EnableHTTP2:       defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					MinimumTLSVersion: defsecTypes.String("1.0", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -66,20 +66,20 @@ func Test_adaptService(t *testing.T) {
 			}
 `,
 			expected: appservice.Service{
-				Metadata:         defsecTypes.NewTestMetadata(),
-				EnableClientCert: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:         defsecTypes.NewTestMisconfigMetadata(),
+				EnableClientCert: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				Identity: struct{ Type defsecTypes.StringValue }{
-					Type: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Type: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Authentication: struct{ Enabled defsecTypes.BoolValue }{
-					Enabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Enabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Site: struct {
 					EnableHTTP2       defsecTypes.BoolValue
 					MinimumTLSVersion defsecTypes.StringValue
 				}{
-					EnableHTTP2:       defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					MinimumTLSVersion: defsecTypes.String("1.2", defsecTypes.NewTestMetadata()),
+					EnableHTTP2:       defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					MinimumTLSVersion: defsecTypes.String("1.2", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -109,8 +109,8 @@ func Test_adaptFunctionApp(t *testing.T) {
 			}
 `,
 			expected: appservice.FunctionApp{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				HTTPSOnly: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+				HTTPSOnly: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -120,8 +120,8 @@ func Test_adaptFunctionApp(t *testing.T) {
 			}
 `,
 			expected: appservice.FunctionApp{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				HTTPSOnly: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+				HTTPSOnly: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

@@ -1,9 +1,9 @@
 package gke
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/google/gke"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/google/gke"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/google/uuid"
 	"github.com/zclconf/go-cty/cty"
 )
@@ -208,51 +208,51 @@ func (a *adapter) adaptNodePool(resource *terraform.Block) {
 
 	// we didn't find a cluster to put the nodepool in, so create a placeholder
 	a.clusterMap[uuid.NewString()] = gke.Cluster{
-		Metadata:  defsecTypes.NewUnmanagedMetadata(),
+		Metadata:  defsecTypes.NewUnmanagedMisconfigMetadata(),
 		NodePools: []gke.NodePool{nodePool},
 		IPAllocationPolicy: gke.IPAllocationPolicy{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
-			Enabled:  defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
+			Enabled:  defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 		},
 		MasterAuthorizedNetworks: gke.MasterAuthorizedNetworks{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
-			Enabled:  defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
+			Enabled:  defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 			CIDRs:    nil,
 		},
 		NetworkPolicy: gke.NetworkPolicy{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
-			Enabled:  defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
+			Enabled:  defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 		},
 		PrivateCluster: gke.PrivateCluster{
-			Metadata:           defsecTypes.NewUnmanagedMetadata(),
-			EnablePrivateNodes: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			Metadata:           defsecTypes.NewUnmanagedMisconfigMetadata(),
+			EnablePrivateNodes: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 		},
-		LoggingService:    defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-		MonitoringService: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+		LoggingService:    defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+		MonitoringService: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 		MasterAuth: gke.MasterAuth{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: defsecTypes.NewUnmanagedMisconfigMetadata(),
 			ClientCertificate: gke.ClientCertificate{
-				Metadata:         defsecTypes.NewUnmanagedMetadata(),
-				IssueCertificate: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				Metadata:         defsecTypes.NewUnmanagedMisconfigMetadata(),
+				IssueCertificate: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 			},
-			Username: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-			Password: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Username: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+			Password: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 		},
 		NodeConfig: gke.NodeConfig{
-			Metadata:  defsecTypes.NewUnmanagedMetadata(),
-			ImageType: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata:  defsecTypes.NewUnmanagedMisconfigMetadata(),
+			ImageType: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			WorkloadMetadataConfig: gke.WorkloadMetadataConfig{
-				Metadata:     defsecTypes.NewUnmanagedMetadata(),
-				NodeMetadata: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata:     defsecTypes.NewUnmanagedMisconfigMetadata(),
+				NodeMetadata: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
 			},
-			ServiceAccount:        defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-			EnableLegacyEndpoints: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			ServiceAccount:        defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMisconfigMetadata()),
+			EnableLegacyEndpoints: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 		},
-		EnableShieldedNodes:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-		EnableLegacyABAC:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-		ResourceLabels:        defsecTypes.MapDefault(nil, defsecTypes.NewUnmanagedMetadata()),
-		RemoveDefaultNodePool: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-		EnableAutpilot:        defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+		EnableShieldedNodes:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+		EnableLegacyABAC:      defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+		ResourceLabels:        defsecTypes.MapDefault(nil, defsecTypes.NewUnmanagedMisconfigMetadata()),
+		RemoveDefaultNodePool: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
+		EnableAutpilot:        defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMisconfigMetadata()),
 	}
 }
 

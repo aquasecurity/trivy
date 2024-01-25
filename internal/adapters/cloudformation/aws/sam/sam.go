@@ -1,7 +1,7 @@
 package sam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/sam"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/sam"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

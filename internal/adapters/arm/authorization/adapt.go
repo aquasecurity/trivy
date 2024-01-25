@@ -1,7 +1,7 @@
 package authorization
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/authorization"
+	"github.com/aquasecurity/trivy/pkg/providers/azure/authorization"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
 )
 

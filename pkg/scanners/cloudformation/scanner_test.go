@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/framework"
+	"github.com/aquasecurity/trivy/pkg/scan"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_BasicScan(t *testing.T) {
@@ -24,7 +24,7 @@ Resources:
       BucketName: public-bucket
 
 `,
-		"/rules/rule.rego": `package builtin.dockerfile.DS006
+		"/trules/rule.rego": `package builtin.dockerfile.DS006
 
 __rego_metadata__ := {
 	"id": "DS006",
@@ -56,7 +56,7 @@ deny[res] {
 `,
 	})
 
-	scanner := New(options.ScannerWithPolicyDirs("rules"), options.ScannerWithRegoOnly(true))
+	scanner := New(options.ScannerWithPolicyDirs("trules"), options.ScannerWithRegoOnly(true))
 
 	results, err := scanner.ScanFS(context.TODO(), fs, "code")
 	require.NoError(t, err)

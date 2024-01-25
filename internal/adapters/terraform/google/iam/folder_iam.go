@@ -1,8 +1,8 @@
 package iam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/google/iam"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // see https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_folder_iam
@@ -36,7 +36,7 @@ func (a *adapter) adaptFolderMembers() {
 		// we didn't find the folder - add an unmanaged one
 		a.folders = append(a.folders, parentedFolder{
 			folder: iam.Folder{
-				Metadata: types.NewUnmanagedMetadata(),
+				Metadata: types.NewUnmanagedMisconfigMetadata(),
 				Members:  []iam.Member{member},
 			},
 		})
@@ -79,7 +79,7 @@ func (a *adapter) adaptFolderBindings() {
 		// we didn't find the project - add an unmanaged one
 		a.folders = append(a.folders, parentedFolder{
 			folder: iam.Folder{
-				Metadata: types.NewUnmanagedMetadata(),
+				Metadata: types.NewUnmanagedMisconfigMetadata(),
 				Bindings: bindings,
 			},
 		})
@@ -109,7 +109,7 @@ func (a *adapter) adaptFolderBindings() {
 		// we didn't find the folder - add an unmanaged one
 		a.folders = append(a.folders, parentedFolder{
 			folder: iam.Folder{
-				Metadata: types.NewUnmanagedMetadata(),
+				Metadata: types.NewUnmanagedMisconfigMetadata(),
 				Bindings: []iam.Binding{binding},
 			},
 		})

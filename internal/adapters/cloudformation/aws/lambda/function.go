@@ -1,9 +1,9 @@
 package lambda
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/lambda"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/lambda"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func getFunctions(ctx parser.FileContext) (functions []lambda.Function) {

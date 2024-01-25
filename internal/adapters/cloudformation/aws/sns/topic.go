@@ -1,9 +1,9 @@
 package sns
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/sns"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/sns"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func getTopics(ctx parser.FileContext) (topics []sns.Topic) {

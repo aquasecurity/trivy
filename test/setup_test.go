@@ -4,14 +4,14 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/terraform"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	tfScanner "github.com/aquasecurity/trivy/pkg/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func createModulesFromSource(t *testing.T, source string, ext string) terraform.Modules {

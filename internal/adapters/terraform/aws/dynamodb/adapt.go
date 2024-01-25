@@ -1,9 +1,9 @@
 package dynamodb
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/dynamodb"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/dynamodb"
+	"github.com/aquasecurity/trivy/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) dynamodb.DynamoDB {

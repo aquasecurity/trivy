@@ -3,12 +3,12 @@ package ecr
 import (
 	"fmt"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ecr"
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/ecr"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/iam"
 
 	"github.com/liamg/iamgo"
 )

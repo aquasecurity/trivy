@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -52,7 +52,7 @@ func Test_resolveFunc(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			resolver := resolver{}
 
-			resolvedValue, err := resolver.resolveExpressionString(tt.expr, types.NewTestMetadata())
+			resolvedValue, err := resolver.resolveExpressionString(tt.expr, types.NewTestMisconfigMetadata())
 			require.NoError(t, err)
 			require.Equal(t, azure.KindString, resolvedValue.Kind)
 
@@ -75,7 +75,7 @@ func Test_resolveParameter(t *testing.T) {
 					{
 						Variable: azure.Variable{
 							Name:  "dbName",
-							Value: azure.NewValue("myPostgreSQLServer", types.NewTestMetadata()),
+							Value: azure.NewValue("myPostgreSQLServer", types.NewTestMisconfigMetadata()),
 						},
 					},
 				},
@@ -90,7 +90,7 @@ func Test_resolveParameter(t *testing.T) {
 				deployment: tt.deployment,
 			}
 
-			resolvedValue, err := resolver.resolveExpressionString(tt.expr, types.NewTestMetadata())
+			resolvedValue, err := resolver.resolveExpressionString(tt.expr, types.NewTestMisconfigMetadata())
 			require.NoError(t, err)
 			require.Equal(t, azure.KindString, resolvedValue.Kind)
 

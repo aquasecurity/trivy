@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/config"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/config"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func TestAdapt(t *testing.T) {
@@ -30,8 +30,8 @@ Resources:
 `,
 			expected: config.Config{
 				ConfigurationAggregrator: config.ConfigurationAggregrator{
-					Metadata:         types.NewTestMetadata(),
-					SourceAllRegions: types.Bool(true, types.NewTestMetadata()),
+					Metadata:         types.NewTestMisconfigMetadata(),
+					SourceAllRegions: types.Bool(true, types.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -47,8 +47,8 @@ Resources:
 `,
 			expected: config.Config{
 				ConfigurationAggregrator: config.ConfigurationAggregrator{
-					Metadata:         types.NewTestMetadata(),
-					SourceAllRegions: types.Bool(true, types.NewTestMetadata()),
+					Metadata:         types.NewTestMisconfigMetadata(),
+					SourceAllRegions: types.Bool(true, types.NewTestMisconfigMetadata()),
 				},
 			},
 		},

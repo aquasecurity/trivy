@@ -4,12 +4,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/sslcertificate"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/nifcloud/sslcertificate"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 const certificate = `
@@ -41,11 +41,11 @@ func Test_adaptServerCertificates(t *testing.T) {
 			}
 `,
 			expected: []sslcertificate.ServerCertificate{{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Expiration: defsecTypes.Time(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("2015-09-12T21:52:02Z"), defsecTypes.NewTestMetadata()),
+				}("2015-09-12T21:52:02Z"), defsecTypes.NewTestMisconfigMetadata()),
 			}},
 		},
 		{
@@ -56,8 +56,8 @@ func Test_adaptServerCertificates(t *testing.T) {
 `,
 
 			expected: []sslcertificate.ServerCertificate{{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				Expiration: defsecTypes.Time(time.Time{}, defsecTypes.NewTestMetadata()),
+				Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+				Expiration: defsecTypes.Time(time.Time{}, defsecTypes.NewTestMisconfigMetadata()),
 			}},
 		},
 	}

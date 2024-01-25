@@ -6,8 +6,8 @@ import (
 
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/scanners/azure/arm/parser/armjson"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type EvalContext struct{}
@@ -26,7 +26,7 @@ const (
 )
 
 type Value struct {
-	types.Metadata
+	types.MisconfigMetadata
 	rLit     interface{}
 	rMap     map[string]Value
 	rArr     []Value
@@ -38,10 +38,10 @@ var NullValue = Value{
 	Kind: KindNull,
 }
 
-func NewValue(value interface{}, metadata types.Metadata) Value {
+func NewValue(value interface{}, metadata types.MisconfigMetadata) Value {
 
 	v := Value{
-		Metadata: metadata,
+		MisconfigMetadata: metadata,
 	}
 
 	switch ty := value.(type) {
@@ -94,15 +94,15 @@ func NewValue(value interface{}, metadata types.Metadata) Value {
 	return v
 }
 
-func (v *Value) GetMetadata() types.Metadata {
-	return v.Metadata
+func (v *Value) GetMetadata() types.MisconfigMetadata {
+	return v.MisconfigMetadata
 }
 
 func (v *Value) UnmarshalJSONWithMetadata(node armjson.Node) error {
 
 	v.updateValueKind(node)
 
-	v.Metadata = node.Metadata()
+	v.MisconfigMetadata = node.Metadata()
 
 	switch node.Kind() {
 	case armjson.KindArray:
@@ -237,7 +237,7 @@ func (v Value) AsFloat() float64 {
 	return v.rLit.(float64)
 }
 
-func (v Value) AsIntValue(defaultValue int, metadata types.Metadata) types.IntValue {
+func (v Value) AsIntValue(defaultValue int, metadata types.MisconfigMetadata) types.IntValue {
 	v.Resolve()
 	if v.Kind != KindNumber {
 		return types.Int(defaultValue, metadata)
@@ -245,7 +245,7 @@ func (v Value) AsIntValue(defaultValue int, metadata types.Metadata) types.IntVa
 	return types.Int(v.AsInt(), metadata)
 }
 
-func (v Value) AsBoolValue(defaultValue bool, metadata types.Metadata) types.BoolValue {
+func (v Value) AsBoolValue(defaultValue bool, metadata types.MisconfigMetadata) types.BoolValue {
 	v.Resolve()
 	if v.Kind == KindString {
 		possibleValue := strings.ToLower(v.rLit.(string))
@@ -270,12 +270,12 @@ func (v Value) EqualTo(value interface{}) bool {
 	}
 }
 
-func (v Value) AsStringValue(defaultValue string, metadata types.Metadata) types.StringValue {
+func (v Value) AsStringValue(defaultValue string, metadata types.MisconfigMetadata) types.StringValue {
 	v.Resolve()
 	if v.Kind != KindString {
 		return types.StringDefault(defaultValue, metadata)
 	}
-	return types.String(v.rLit.(string), v.Metadata)
+	return types.String(v.rLit.(string), v.MisconfigMetadata)
 }
 
 func (v Value) GetMapValue(key string) Value {
@@ -330,7 +330,7 @@ func (v Value) HasKey(key string) bool {
 	return ok
 }
 
-func (v Value) AsTimeValue(metadata types.Metadata) types.TimeValue {
+func (v Value) AsTimeValue(metadata types.MisconfigMetadata) types.TimeValue {
 	v.Resolve()
 	if v.Kind != KindString {
 		return types.Time(time.Time{}, metadata)
@@ -351,7 +351,7 @@ func (v Value) AsStringValuesList(defaultValue string) (stringValues []types.Str
 		return
 	}
 	for _, item := range v.rArr {
-		stringValues = append(stringValues, item.AsStringValue(defaultValue, item.Metadata))
+		stringValues = append(stringValues, item.AsStringValue(defaultValue, item.MisconfigMetadata))
 	}
 
 	return stringValues

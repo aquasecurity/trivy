@@ -3,12 +3,12 @@ package network
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/network"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/nifcloud/network"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptLoadBalancers(t *testing.T) {
@@ -34,17 +34,17 @@ func Test_adaptLoadBalancers(t *testing.T) {
 
 `,
 			expected: []network.LoadBalancer{{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Listeners: []network.LoadBalancerListener{
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						TLSPolicy: defsecTypes.String("example-ssl-policy-id", defsecTypes.NewTestMetadata()),
-						Protocol:  defsecTypes.String("HTTP", defsecTypes.NewTestMetadata()),
+						Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+						TLSPolicy: defsecTypes.String("example-ssl-policy-id", defsecTypes.NewTestMisconfigMetadata()),
+						Protocol:  defsecTypes.String("HTTP", defsecTypes.NewTestMisconfigMetadata()),
 					},
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						TLSPolicy: defsecTypes.String("example-ssl-policy-name", defsecTypes.NewTestMetadata()),
-						Protocol:  defsecTypes.String("HTTPS", defsecTypes.NewTestMetadata()),
+						Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+						TLSPolicy: defsecTypes.String("example-ssl-policy-name", defsecTypes.NewTestMisconfigMetadata()),
+						Protocol:  defsecTypes.String("HTTPS", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			}},
@@ -57,9 +57,9 @@ func Test_adaptLoadBalancers(t *testing.T) {
 `,
 
 			expected: []network.LoadBalancer{{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Listeners: []network.LoadBalancerListener{{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				}},
 			}},
 		},

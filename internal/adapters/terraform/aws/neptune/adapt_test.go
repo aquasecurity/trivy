@@ -3,13 +3,13 @@ package neptune
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/neptune"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/neptune"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,13 +30,13 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: neptune.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Logging: neptune.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Audit:    defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Audit:    defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
-				StorageEncrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				KMSKeyID:         defsecTypes.String("kms-key", defsecTypes.NewTestMetadata()),
+				StorageEncrypted: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+				KMSKeyID:         defsecTypes.String("kms-key", defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 		{
@@ -46,13 +46,13 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: neptune.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: defsecTypes.NewTestMisconfigMetadata(),
 				Logging: neptune.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Audit:    defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Audit:    defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
-				StorageEncrypted: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				KMSKeyID:         defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				StorageEncrypted: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+				KMSKeyID:         defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 			},
 		},
 	}

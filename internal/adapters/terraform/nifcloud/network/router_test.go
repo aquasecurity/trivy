@@ -3,12 +3,12 @@ package network
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/network"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/providers/nifcloud/network"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptRouters(t *testing.T) {
@@ -28,12 +28,12 @@ func Test_adaptRouters(t *testing.T) {
 			}
 `,
 			expected: []network.Router{{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				SecurityGroup: defsecTypes.String("example-security-group", defsecTypes.NewTestMetadata()),
+				Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+				SecurityGroup: defsecTypes.String("example-security-group", defsecTypes.NewTestMisconfigMetadata()),
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						NetworkID: defsecTypes.String("net-COMMON_PRIVATE", defsecTypes.NewTestMetadata()),
+						Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+						NetworkID: defsecTypes.String("net-COMMON_PRIVATE", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			}},
@@ -48,12 +48,12 @@ func Test_adaptRouters(t *testing.T) {
 `,
 
 			expected: []network.Router{{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				SecurityGroup: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:      defsecTypes.NewTestMisconfigMetadata(),
+				SecurityGroup: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						NetworkID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata:  defsecTypes.NewTestMisconfigMetadata(),
+						NetworkID: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 					},
 				},
 			}},

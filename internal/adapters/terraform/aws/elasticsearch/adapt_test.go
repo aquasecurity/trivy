@@ -3,13 +3,13 @@ package elasticsearch
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/elasticsearch"
+	"github.com/aquasecurity/trivy/pkg/providers/aws/elasticsearch"
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -47,24 +47,24 @@ func Test_adaptDomain(t *testing.T) {
 			  }
 `,
 			expected: elasticsearch.Domain{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				DomainName: defsecTypes.String("domain-foo", defsecTypes.NewTestMetadata()),
+				Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+				DomainName: defsecTypes.String("domain-foo", defsecTypes.NewTestMisconfigMetadata()),
 				LogPublishing: elasticsearch.LogPublishing{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					AuditEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+					AuditEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				TransitEncryption: elasticsearch.TransitEncryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				AtRestEncryption: elasticsearch.AtRestEncryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Endpoint: elasticsearch.Endpoint{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					EnforceHTTPS: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					TLSPolicy:    defsecTypes.String("Policy-Min-TLS-1-2-2019-07", defsecTypes.NewTestMetadata()),
+					Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+					EnforceHTTPS: defsecTypes.Bool(true, defsecTypes.NewTestMisconfigMetadata()),
+					TLSPolicy:    defsecTypes.String("Policy-Min-TLS-1-2-2019-07", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},
@@ -75,24 +75,24 @@ func Test_adaptDomain(t *testing.T) {
 			  }
 `,
 			expected: elasticsearch.Domain{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				DomainName: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:   defsecTypes.NewTestMisconfigMetadata(),
+				DomainName: defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				LogPublishing: elasticsearch.LogPublishing{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					AuditEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+					AuditEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				TransitEncryption: elasticsearch.TransitEncryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				AtRestEncryption: elasticsearch.AtRestEncryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: defsecTypes.NewTestMisconfigMetadata(),
+					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
 				},
 				Endpoint: elasticsearch.Endpoint{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					EnforceHTTPS: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					TLSPolicy:    defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:     defsecTypes.NewTestMisconfigMetadata(),
+					EnforceHTTPS: defsecTypes.Bool(false, defsecTypes.NewTestMisconfigMetadata()),
+					TLSPolicy:    defsecTypes.String("", defsecTypes.NewTestMisconfigMetadata()),
 				},
 			},
 		},

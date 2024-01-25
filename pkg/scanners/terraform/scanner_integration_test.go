@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -24,7 +24,7 @@ module "s3_bucket" {
   bucket = "my-s3-bucket"
 }
 `,
-		"/rules/bucket_name.rego": `
+		"/trules/bucket_name.rego": `
 # METADATA
 # schemas:
 # - input: schema.input
@@ -49,7 +49,7 @@ deny[res] {
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithEmbeddedPolicies(false),
 		options.ScannerWithEmbeddedLibraries(false),
 		options.ScannerWithRegoOnly(true),
@@ -88,7 +88,7 @@ module "s3_bucket" {
   bucket = var.bucket
 }
 `,
-		"rules/bucket_name.rego": `
+		"trules/bucket_name.rego": `
 # METADATA
 # schemas:
 # - input: schema.input
@@ -113,7 +113,7 @@ deny[res] {
 	scanner := New(
 		options.ScannerWithDebug(debugLog),
 		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyDirs("trules"),
 		options.ScannerWithEmbeddedPolicies(false),
 		options.ScannerWithEmbeddedLibraries(false),
 		options.ScannerWithRegoOnly(true),

@@ -3,13 +3,13 @@ package armjson
 import (
 	"fmt"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var trueRunes = []rune("true")
 var falseRunes = []rune("false")
 
-func (p *parser) parseBoolean(parentMetadata *types.Metadata) (Node, error) {
+func (p *parser) parseBoolean(parentMetadata *types.MisconfigMetadata) (Node, error) {
 
 	n, _ := p.newNode(KindBoolean, parentMetadata)
 
