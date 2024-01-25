@@ -208,8 +208,9 @@ Since CSAF aims to be SBOM format agnostic, both CycloneDX and SPDX formats are 
 
 The following steps are required:
 
-1. Create a CSAF document based on the SBOM generated in step 1
-2. Provide the CSAF document when scanning the SBOM
+1. Create a CSAF document
+2. Provide the CSAF when scanning your target
+
 
 ### Create the CSAF document
 Create a CSAF document in JSON format as follows:
