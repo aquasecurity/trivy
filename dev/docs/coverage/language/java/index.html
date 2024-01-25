@@ -3638,6 +3638,7 @@ You're not viewing the latest version.
 <th align="center">Internet access</th>
 <th align="center">Dev dependencies</th>
 <th align="center"><a href="../../../configuration/reporting/#show-origins-of-vulnerable-dependencies">Dependency graph</a></th>
+<th align="center">Position</th>
 </tr>
 </thead>
 <tbody>
@@ -3646,17 +3647,20 @@ You're not viewing the latest version.
 <td align="center">Trivy Java DB</td>
 <td align="center">Include</td>
 <td align="center">-</td>
+<td align="center">-</td>
 </tr>
 <tr>
 <td>pom.xml</td>
 <td align="center">Maven repository <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
 <td align="center">Exclude</td>
 <td align="center">✓</td>
+<td align="center">✓<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup></td>
 </tr>
 <tr>
 <td>*gradle.lockfile</td>
 <td align="center">-</td>
 <td align="center">Exclude</td>
+<td align="center">-</td>
 <td align="center">-</td>
 </tr>
 </tbody>
@@ -3686,7 +3690,7 @@ To find information about these JARs<sup id="fnref7:2"><a class="footnote-ref" h
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Trivy only takes information about packages. We don't take a list of vulnerabilities for packages from the <code>maven repository</code>.
-Information about data sources for Java you can see <a href="../../../scanner/vulnerability/#data-sources_1">here</a>.</p>
+Information about data sources for Java you can see <a href="../../../scanner/vulnerability/#data-sources-1">here</a>.</p>
 </div>
 <p>You can disable connecting to the maven repository with the <code>--offline-scan</code> flag.
 The <code>--offline-scan</code> flag does not affect the Trivy database.
@@ -3719,6 +3723,9 @@ It doesn't require the internet access.</p>
 </li>
 <li id="fn:6">
 <p><code>/Users/&lt;username&gt;/.m2/repository</code> (for Linux and Mac) and <code>C:/Users/&lt;username&gt;/.m2/repository</code> (for Windows) by default&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:7">
+<p>To avoid confusion, Trivy only finds locations for direct dependencies from the base pom.xml file.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
