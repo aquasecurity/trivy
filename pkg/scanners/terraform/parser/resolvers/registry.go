@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Masterminds/semver"
+	"github.com/aquasecurity/go-version/pkg/semver"
 )
 
 type registryResolver struct {
@@ -144,13 +144,13 @@ func resolveVersion(input string, versions moduleVersions) (string, error) {
 		return "", fmt.Errorf("no available versions for module")
 	}
 
-	constraints, err := semver.NewConstraint(input)
+	constraints, err := semver.NewConstraints(input)
 	if err != nil {
 		return "", err
 	}
 	var realVersions semver.Collection
 	for _, rawVersion := range versions.Modules[0].Versions {
-		realVersion, err := semver.NewVersion(rawVersion.Version)
+		realVersion, err := semver.Parse(rawVersion.Version)
 		if err != nil {
 			continue
 		}

@@ -118,7 +118,6 @@ require (
 )
 
 require (
-	github.com/Masterminds/semver v1.5.0
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/aws/smithy-go v1.19.0
 	github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
