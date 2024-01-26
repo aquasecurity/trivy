@@ -23,6 +23,7 @@ func TestAVDIDs(t *testing.T) {
 	}
 }
 
+// TODO(simar7): Re-evaluate where this test should live?
 //func TestRulesAgainstExampleCode(t *testing.T) {
 //	for _, rule := range rules.GetRegistered(framework.ALL) {
 //		testName := fmt.Sprintf("%s/%s", rule.GetRule().AVDID, rule.LongID())
