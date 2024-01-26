@@ -211,7 +211,9 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath string) (map[string]s
 			log.Logger.Warnf("Unable to parse %q: %s", memberPath, err)
 			continue
 		}
-		maps.Copy(dependencies, memberDeps)
+		// Member dependencies shouldn't overwrite dependencies from root cargo.toml file
+		maps.Copy(memberDeps, dependencies)
+		dependencies = memberDeps
 	}
 
 	deps := make(map[string]string)

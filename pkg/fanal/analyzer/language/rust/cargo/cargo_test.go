@@ -445,10 +445,9 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "regex@1.10.2",
-								Name:     "regex",
-								Version:  "1.10.2",
-								Indirect: true,
+								ID:      "regex@1.10.2",
+								Name:    "regex",
+								Version: "1.10.2",
 								Locations: []types.Location{
 									{
 										StartLine: 50,
