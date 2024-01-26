@@ -143,6 +143,7 @@ func resolveVersion(input string, versions moduleVersions) (string, error) {
 	if len(versions.Modules[0].Versions) == 0 {
 		return "", fmt.Errorf("no available versions for module")
 	}
+
 	constraints, err := semver.NewConstraint(input)
 	if err != nil {
 		return "", err

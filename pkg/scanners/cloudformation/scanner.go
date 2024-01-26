@@ -15,7 +15,6 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/types"
-
 	adapter "github.com/aquasecurity/trivy/internal/adapters/cloudformation"
 	"github.com/aquasecurity/trivy/pkg/scanners"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
@@ -48,7 +47,7 @@ func WithConfigsFS(fsys fs.FS) options.ScannerOption {
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct {
+type Scanner struct { // nolint: gocritic
 	debug                 debug.Logger
 	policyDirs            []string
 	policyReaders         []io.Reader
@@ -151,9 +150,9 @@ func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
 	return regoScanner, nil
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, dir string) (results scan.Results, err error) {
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (results scan.Results, err error) {
 
-	contexts, err := s.parser.ParseFS(ctx, fs, dir)
+	contexts, err := s.parser.ParseFS(ctx, fsys, dir)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +161,7 @@ func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, dir string) (results sca
 		return nil, nil
 	}
 
-	regoScanner, err := s.initRegoScanner(fs)
+	regoScanner, err := s.initRegoScanner(fsys)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +170,7 @@ func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, dir string) (results sca
 		if cfCtx == nil {
 			continue
 		}
-		fileResults, err := s.scanFileContext(ctx, regoScanner, cfCtx, fs)
+		fileResults, err := s.scanFileContext(ctx, regoScanner, cfCtx, fsys)
 		if err != nil {
 			return nil, err
 		}
@@ -183,23 +182,23 @@ func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, dir string) (results sca
 	return results, nil
 }
 
-func (s *Scanner) ScanFile(ctx context.Context, fs fs.FS, path string) (scan.Results, error) {
+func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.Results, error) {
 
-	cfCtx, err := s.parser.ParseFile(ctx, fs, path)
+	cfCtx, err := s.parser.ParseFile(ctx, fsys, path)
 	if err != nil {
 		return nil, err
 	}
 
-	regoScanner, err := s.initRegoScanner(fs)
+	regoScanner, err := s.initRegoScanner(fsys)
 	if err != nil {
 		return nil, err
 	}
 
-	results, err := s.scanFileContext(ctx, regoScanner, cfCtx, fs)
+	results, err := s.scanFileContext(ctx, regoScanner, cfCtx, fsys)
 	if err != nil {
 		return nil, err
 	}
-	results.SetSourceAndFilesystem("", fs, false)
+	results.SetSourceAndFilesystem("", fsys, false)
 
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Rule().AVDID < results[j].Rule().AVDID
@@ -207,7 +206,7 @@ func (s *Scanner) ScanFile(ctx context.Context, fs fs.FS, path string) (scan.Res
 	return results, nil
 }
 
-func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner, cfCtx *parser.FileContext, fs fs.FS) (results scan.Results, err error) {
+func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner, cfCtx *parser.FileContext, fsys fs.FS) (results scan.Results, err error) {
 	state := adapter.Adapt(*cfCtx)
 	if state == nil {
 		return nil, nil
@@ -242,7 +241,7 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 	}
 	regoResults, err := regoScanner.ScanInput(ctx, rego.Input{
 		Path:     cfCtx.Metadata().Range().GetFilename(),
-		FS:       fs,
+		FS:       fsys,
 		Contents: state.ToRego(),
 	})
 	if err != nil {

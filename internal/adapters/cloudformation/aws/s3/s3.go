@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an S3 instance
 func Adapt(cfFile parser.FileContext) s3.S3 {
 	return s3.S3{
 		Buckets: getBuckets(cfFile),

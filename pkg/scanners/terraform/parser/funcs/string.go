@@ -43,7 +43,7 @@ var ReplaceFunc = function.New(&function.Spec{
 			return cty.StringVal(re.ReplaceAllString(str, replace)), nil
 		}
 
-		return cty.StringVal(strings.Replace(str, substr, replace, -1)), nil
+		return cty.StringVal(strings.ReplaceAll(str, substr, replace)), nil
 	},
 })
 

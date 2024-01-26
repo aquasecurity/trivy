@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an EC2 instance
 func Adapt(cfFile parser.FileContext) ec2.EC2 {
 	return ec2.EC2{
 		LaunchConfigurations: getLaunchConfigurations(cfFile),

@@ -10,15 +10,15 @@ import (
 	"sync"
 	"time"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/aquasecurity/defsec/pkg/framework"
+	"github.com/aquasecurity/defsec/pkg/rego"
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/defsec/pkg/types"
-	"golang.org/x/exp/slices"
-
-	"github.com/aquasecurity/defsec/pkg/rego"
 	"github.com/aquasecurity/trivy/pkg/extrafs"
 	"github.com/aquasecurity/trivy/pkg/scanners"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/executor"
@@ -30,7 +30,7 @@ var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 var _ ConfigurableTerraformScanner = (*Scanner)(nil)
 
-type Scanner struct {
+type Scanner struct { // nolint: gocritic
 	sync.Mutex
 	options               []options.ScannerOption
 	parserOpt             []options.ParserOption
@@ -76,12 +76,12 @@ func (s *Scanner) SetForceAllDirs(b bool) {
 	s.forceAllDirs = b
 }
 
-func (s *Scanner) AddParserOptions(options ...options.ParserOption) {
-	s.parserOpt = append(s.parserOpt, options...)
+func (s *Scanner) AddParserOptions(opts ...options.ParserOption) {
+	s.parserOpt = append(s.parserOpt, opts...)
 }
 
-func (s *Scanner) AddExecutorOptions(options ...executor.Option) {
-	s.executorOpt = append(s.executorOpt, options...)
+func (s *Scanner) AddExecutorOptions(opts ...executor.Option) {
+	s.executorOpt = append(s.executorOpt, opts...)
 }
 
 func (s *Scanner) SetPolicyReaders(readers []io.Reader) {
@@ -128,12 +128,12 @@ type Metrics struct {
 	}
 }
 
-func New(options ...options.ScannerOption) *Scanner {
+func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		dirs:    make(map[string]struct{}),
-		options: options,
+		options: opts,
 	}
-	for _, opt := range options {
+	for _, opt := range opts {
 		opt(s)
 	}
 	return s

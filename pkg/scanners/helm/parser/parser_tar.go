@@ -11,8 +11,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/aquasecurity/trivy/pkg/detection"
 	"github.com/liamg/memoryfs"
+
+	"github.com/aquasecurity/trivy/pkg/detection"
 )
 
 var errSkipFS = errors.New("skip parse FS")

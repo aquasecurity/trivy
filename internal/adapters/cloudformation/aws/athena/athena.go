@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an Athena instance
 func Adapt(cfFile parser.FileContext) athena.Athena {
 	return athena.Athena{
 		Databases:  nil,

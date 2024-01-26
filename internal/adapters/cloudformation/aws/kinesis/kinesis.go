@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts a Kinesis instance
 func Adapt(cfFile parser.FileContext) kinesis.Kinesis {
 	return kinesis.Kinesis{
 		Streams: getStreams(cfFile),

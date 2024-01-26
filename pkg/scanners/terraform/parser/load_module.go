@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/zclconf/go-cty/cty"
+
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser/resolvers"
-
-	"github.com/zclconf/go-cty/cty"
 )
 
 type moduleLoadError struct {
@@ -146,7 +146,7 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 
 func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, source string) (*ModuleDefinition, error) {
 
-	e.debug.Log("locating non-initialised module '%s'...", source)
+	e.debug.Log("locating non-initialized module '%s'...", source)
 
 	version := b.GetAttribute("version").AsStringValueOrDefault("", b).Value()
 	opt := resolvers.Options{

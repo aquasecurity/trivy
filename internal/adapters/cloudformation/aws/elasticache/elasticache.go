@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an ElasticCache instance
 func Adapt(cfFile parser.FileContext) elasticache.ElastiCache {
 	return elasticache.ElastiCache{
 		Clusters:          getClusterGroups(cfFile),

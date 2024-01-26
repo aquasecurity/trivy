@@ -12,6 +12,8 @@ type parentedBinding struct {
 	bindings      []iamTypes.Binding
 }
 
+const GoogleStorageBucket = "google_storage_bucket"
+
 type parentedMember struct {
 	blockID       string
 	bucketID      string
@@ -31,7 +33,7 @@ func (a *adapter) adaptBindings() {
 		}
 
 		if refBlock, err := a.modules.GetReferencedBlock(bucketAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_storage_bucket" {
+			if refBlock.TypeLabel() == GoogleStorageBucket {
 				parented.bucketBlockID = refBlock.ID()
 			}
 		}
@@ -62,7 +64,7 @@ func (a *adapter) adaptBindings() {
 		}
 
 		if refBlock, err := a.modules.GetReferencedBlock(bucketAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_storage_bucket" {
+			if refBlock.TypeLabel() == GoogleStorageBucket {
 				parented.bucketBlockID = refBlock.ID()
 			}
 		}
@@ -85,7 +87,7 @@ func (a *adapter) adaptMembers() {
 		}
 
 		if refBlock, err := a.modules.GetReferencedBlock(bucketAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_storage_bucket" {
+			if refBlock.TypeLabel() == GoogleStorageBucket {
 				parented.bucketBlockID = refBlock.ID()
 			}
 		}

@@ -3,10 +3,8 @@ package ec2
 import (
 	"strconv"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
 	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
-
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 

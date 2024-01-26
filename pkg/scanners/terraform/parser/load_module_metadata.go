@@ -16,7 +16,7 @@ type modulesMetadata struct {
 }
 
 func loadModuleMetadata(target fs.FS, fullPath string) (*modulesMetadata, string, error) {
-	metadataPath := filepath.Join(fullPath, ".terraform/modules/modules.json")
+	metadataPath := filepath.Join(fullPath, ".terraform/modules/modules.json") // nolint: gocritic
 
 	f, err := target.Open(metadataPath)
 	if err != nil {

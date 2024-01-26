@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts a RedShift instance
 func Adapt(cfFile parser.FileContext) redshift.Redshift {
 	return redshift.Redshift{
 		Clusters:          getClusters(cfFile),

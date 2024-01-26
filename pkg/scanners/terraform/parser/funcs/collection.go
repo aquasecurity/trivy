@@ -353,7 +353,7 @@ var MatchkeysFunc = function.New(&function.Spec{
 			return cty.ListValEmpty(retType.ElementType()), errors.New("length of keys and values should be equal")
 		}
 
-		output := make([]cty.Value, 0)
+		var output []cty.Value
 		values := args[0]
 
 		// Keys and searchset must be the same type.
@@ -582,7 +582,7 @@ var TransposeFunc = function.New(&function.Spec{
 		}
 
 		for outKey, outVal := range tmpMap {
-			values := make([]cty.Value, 0)
+			var values []cty.Value
 			for _, v := range outVal {
 				values = append(values, cty.StringVal(v))
 			}
@@ -600,7 +600,7 @@ var TransposeFunc = function.New(&function.Spec{
 // ListFunc constructs a function that takes an arbitrary number of arguments
 // and returns a list containing those values in the same order.
 //
-// This function is deprecated in Terraform v0.12
+// Deprecated: This function is deprecated in Terraform v0.12
 var ListFunc = function.New(&function.Spec{
 	Params: []function.Parameter{},
 	VarParam: &function.Parameter{
@@ -621,7 +621,7 @@ var ListFunc = function.New(&function.Spec{
 // MapFunc constructs a function that takes an even number of arguments and
 // returns a map whose elements are constructed from consecutive pairs of arguments.
 //
-// This function is deprecated in Terraform v0.12
+// Deprecated: This function is deprecated in Terraform v0.12
 var MapFunc = function.New(&function.Spec{
 	Params: []function.Parameter{},
 	VarParam: &function.Parameter{

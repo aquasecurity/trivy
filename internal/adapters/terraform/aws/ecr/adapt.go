@@ -1,12 +1,13 @@
 package ecr
 
 import (
+	"github.com/liamg/iamgo"
+
 	"github.com/aquasecurity/defsec/pkg/providers/aws/ecr"
 	iamp "github.com/aquasecurity/defsec/pkg/providers/aws/iam"
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/aws/iam"
-	"github.com/liamg/iamgo"
 )
 
 func Adapt(modules terraform.Modules) ecr.ECR {

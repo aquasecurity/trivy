@@ -8,8 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/olekukonko/tablewriter"
+
+	"github.com/aquasecurity/defsec/pkg/scan"
 )
 
 type StatisticsItem struct {

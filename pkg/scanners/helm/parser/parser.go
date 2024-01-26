@@ -13,16 +13,15 @@ import (
 	"sort"
 	"strings"
 
-	"gopkg.in/yaml.v3"
-
-	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/google/uuid"
+	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/chart/loader"
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/releaseutil"
 
+	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/detection"
 )
@@ -77,7 +76,7 @@ func (p *Parser) SetAPIVersions(values ...string) {
 	p.apiVersions = values
 }
 
-func New(path string, options ...options.ParserOption) *Parser {
+func New(path string, opts ...options.ParserOption) *Parser {
 
 	client := action.NewInstall(&action.Configuration{})
 	client.DryRun = true     // don't do anything
@@ -89,7 +88,7 @@ func New(path string, options ...options.ParserOption) *Parser {
 		ChartSource: path,
 	}
 
-	for _, option := range options {
+	for _, option := range opts {
 		option(p)
 	}
 
@@ -167,14 +166,14 @@ func (p *Parser) addPaths(paths ...string) error {
 
 func (p *Parser) extractChartName(chartPath string) error {
 
-	chart, err := p.workingFS.Open(chartPath)
+	chrt, err := p.workingFS.Open(chartPath)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = chart.Close() }()
+	defer func() { _ = chrt.Close() }()
 
 	var chartContent map[string]interface{}
-	if err := yaml.NewDecoder(chart).Decode(&chartContent); err != nil {
+	if err := yaml.NewDecoder(chrt).Decode(&chartContent); err != nil {
 		// the chart likely has the name templated and so cannot be parsed as yaml - use a temporary name
 		if dir := filepath.Dir(chartPath); dir != "" && dir != "." {
 			p.helmClient.ReleaseName = dir
@@ -224,7 +223,7 @@ func (p *Parser) RenderedChartFiles() ([]ChartFile, error) {
 	return p.getRenderedManifests(manifestsKeys, splitManifests), nil
 }
 
-func (p *Parser) getRelease(chart *chart.Chart) (*release.Release, error) {
+func (p *Parser) getRelease(chrt *chart.Chart) (*release.Release, error) {
 	opts := &ValueOptions{
 		ValueFiles:   p.valuesFiles,
 		Values:       p.values,
@@ -236,7 +235,7 @@ func (p *Parser) getRelease(chart *chart.Chart) (*release.Release, error) {
 	if err != nil {
 		return nil, err
 	}
-	r, err := p.helmClient.RunWithContext(context.Background(), chart, vals)
+	r, err := p.helmClient.RunWithContext(context.Background(), chrt, vals)
 	if err != nil {
 		return nil, err
 	}

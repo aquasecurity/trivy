@@ -8,10 +8,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/detection"
-	"gopkg.in/yaml.v3"
 )
 
 var _ options.ConfigurableParser = (*Parser)(nil)
@@ -70,8 +71,8 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 }
 
 // ParseFile parses yaml content from the provided filesystem path.
-func (p *Parser) ParseFile(_ context.Context, fs fs.FS, path string) ([]interface{}, error) {
-	f, err := fs.Open(filepath.ToSlash(path))
+func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) ([]interface{}, error) {
+	f, err := fsys.Open(filepath.ToSlash(path))
 	if err != nil {
 		return nil, err
 	}

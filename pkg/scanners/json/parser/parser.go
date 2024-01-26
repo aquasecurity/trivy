@@ -68,8 +68,8 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 }
 
 // ParseFile parses Dockerfile content from the provided filesystem path.
-func (p *Parser) ParseFile(_ context.Context, fs fs.FS, path string) (interface{}, error) {
-	f, err := fs.Open(filepath.ToSlash(path))
+func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) (interface{}, error) {
+	f, err := fsys.Open(filepath.ToSlash(path))
 	if err != nil {
 		return nil, err
 	}

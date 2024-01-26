@@ -1,14 +1,14 @@
 package sqs
 
 import (
+	"github.com/google/uuid"
+	"github.com/liamg/iamgo"
+
 	iamp "github.com/aquasecurity/defsec/pkg/providers/aws/iam"
 	"github.com/aquasecurity/defsec/pkg/providers/aws/sqs"
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/aws/iam"
-	"github.com/liamg/iamgo"
-
-	"github.com/google/uuid"
 )
 
 func Adapt(modules terraform.Modules) sqs.SQS {
@@ -49,7 +49,7 @@ func (a *adapter) adaptQueues() []sqs.Queue {
 				}
 				policy.Document.Parsed = *parsed
 				policy.Document.Metadata = attr.GetMetadata()
-			} else if dataBlock.Type() == "data" && dataBlock.TypeLabel() == "aws_iam_policy_document" {
+			} else if dataBlock.Type() == "data" && dataBlock.TypeLabel() == "aws_iam_policy_document" { // nolint: goconst
 				if doc, err := iam.ConvertTerraformDocument(a.modules, dataBlock); err == nil {
 					policy.Document.Parsed = doc.Document
 					policy.Document.Metadata = doc.Source.GetMetadata()
@@ -57,7 +57,7 @@ func (a *adapter) adaptQueues() []sqs.Queue {
 				}
 			}
 		} else if refBlock, err := a.modules.GetReferencedBlock(attr, policyBlock); err == nil {
-			if refBlock.Type() == "data" && refBlock.TypeLabel() == "aws_iam_policy_document" {
+			if refBlock.Type() == "data" && refBlock.TypeLabel() == "aws_iam_policy_document" { // nolint: goconst
 				if doc, err := iam.ConvertTerraformDocument(a.modules, refBlock); err == nil {
 					policy.Document.Parsed = doc.Document
 					policy.Document.Metadata = doc.Source.GetMetadata()

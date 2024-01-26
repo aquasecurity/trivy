@@ -15,7 +15,7 @@ type parentedProject struct {
 }
 
 func (a *adapter) adaptProjects() {
-	for _, projectBlock := range a.modules.GetResourcesByType("google_project") {
+	for _, projectBlock := range a.modules.GetResourcesByType(GoogleProject) {
 		var project parentedProject
 		project.project.Metadata = projectBlock.GetMetadata()
 		idAttr := projectBlock.GetAttribute("project_id")
@@ -40,7 +40,7 @@ func (a *adapter) adaptProjects() {
 
 		if orgAttr.IsNotNil() {
 			if referencedBlock, err := a.modules.GetReferencedBlock(orgAttr, projectBlock); err == nil {
-				if referencedBlock.TypeLabel() == "google_organization" {
+				if referencedBlock.TypeLabel() == GoogleOrganization {
 					project.orgBlockID = referencedBlock.ID()
 					a.addOrg(project.orgBlockID)
 				}
@@ -48,7 +48,7 @@ func (a *adapter) adaptProjects() {
 		}
 		if folderAttr.IsNotNil() {
 			if referencedBlock, err := a.modules.GetReferencedBlock(folderAttr, projectBlock); err == nil {
-				if referencedBlock.TypeLabel() == "google_folder" {
+				if referencedBlock.TypeLabel() == GoogleFolder {
 					project.folderBlockID = referencedBlock.ID()
 				}
 			}

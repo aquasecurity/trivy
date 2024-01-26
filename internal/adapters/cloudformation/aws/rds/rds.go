@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an RDS instance
 func Adapt(cfFile parser.FileContext) rds.RDS {
 	clusters, orphans := getClustersAndInstances(cfFile)
 	return rds.RDS{

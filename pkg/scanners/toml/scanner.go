@@ -17,7 +17,7 @@ import (
 
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct {
+type Scanner struct { // nolint: gocritic
 	debug         debug.Logger
 	options       []options.ScannerOption
 	policyDirs    []string
@@ -96,9 +96,9 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	return s
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, path string) (scan.Results, error) {
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, path string) (scan.Results, error) {
 
-	files, err := s.parser.ParseFS(ctx, fs, path)
+	files, err := s.parser.ParseFS(ctx, fsys, path)
 	if err != nil {
 		return nil, err
 	}
@@ -112,24 +112,24 @@ func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, path string) (scan.Resul
 		inputs = append(inputs, rego.Input{
 			Path:     path,
 			Contents: file,
-			FS:       fs,
+			FS:       fsys,
 		})
 	}
 
-	results, err := s.scanRego(ctx, fs, inputs...)
+	results, err := s.scanRego(ctx, fsys, inputs...)
 	if err != nil {
 		return nil, err
 	}
 	return results, nil
 }
 
-func (s *Scanner) ScanFile(ctx context.Context, fs fs.FS, path string) (scan.Results, error) {
-	parsed, err := s.parser.ParseFile(ctx, fs, path)
+func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, path string) (scan.Results, error) {
+	parsed, err := s.parser.ParseFile(ctx, fsys, path)
 	if err != nil {
 		return nil, err
 	}
 	s.debug.Log("Scanning %s...", path)
-	return s.scanRego(ctx, fs, rego.Input{
+	return s.scanRego(ctx, fsys, rego.Input{
 		Path:     path,
 		Contents: parsed,
 	})

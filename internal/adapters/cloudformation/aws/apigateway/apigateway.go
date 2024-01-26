@@ -7,7 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an APIGateway instance
 func Adapt(cfFile parser.FileContext) apigateway.APIGateway {
 	return apigateway.APIGateway{
 		V1: v1.APIGateway{

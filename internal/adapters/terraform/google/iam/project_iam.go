@@ -3,14 +3,14 @@ package iam
 import (
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
-	"github.com/aquasecurity/defsec/pkg/terraform"
-
 	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
+	"github.com/aquasecurity/defsec/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 )
 
 // see https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam
+
+const GoogleProject = "google_project"
 
 func (a *adapter) adaptProjectIAM() {
 	a.adaptProjectMembers()
@@ -77,7 +77,7 @@ func (a *adapter) adaptProjectMembers() {
 			}
 
 			if refBlock, err := a.modules.GetReferencedBlock(projectAttr, iamBlock); err == nil {
-				if refBlock.TypeLabel() == "google_project" {
+				if refBlock.TypeLabel() == GoogleProject {
 					var foundProject bool
 					for i, project := range a.projects {
 						if project.blockID == refBlock.ID() {
@@ -189,7 +189,7 @@ func (a *adapter) adaptProjectDataBindings() {
 		}
 
 		if refBlock, err := a.modules.GetReferencedBlock(projectAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_project" {
+			if refBlock.TypeLabel() == GoogleProject {
 				var foundProject bool
 				for i, project := range a.projects {
 					if project.blockID == refBlock.ID() {
@@ -244,7 +244,7 @@ func (a *adapter) adaptProjectBindings() {
 			}
 
 			if refBlock, err := a.modules.GetReferencedBlock(projectAttr, iamBlock); err == nil {
-				if refBlock.TypeLabel() == "google_project" {
+				if refBlock.TypeLabel() == GoogleProject {
 					var foundProject bool
 					for i, project := range a.projects {
 						if project.blockID == refBlock.ID() {

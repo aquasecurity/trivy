@@ -8,6 +8,8 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/liamg/memoryfs"
+
 	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/rego"
@@ -16,13 +18,12 @@ import (
 	"github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/scanners"
 	"github.com/aquasecurity/trivy/pkg/scanners/kubernetes/parser"
-	"github.com/liamg/memoryfs"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
-type Scanner struct {
+type Scanner struct { // nolint: gocritic
 	debug         debug.Logger
 	options       []options.ScannerOption
 	policyDirs    []string

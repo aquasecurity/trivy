@@ -36,7 +36,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts a Cloudformation AWS instance
 func Adapt(cfFile parser.FileContext) aws.AWS {
 	return aws.AWS{
 		APIGateway:    apigateway.Adapt(cfFile),

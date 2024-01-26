@@ -13,13 +13,13 @@ func Adapt(modules terraform.Modules) workspaces.WorkSpaces {
 }
 
 func adaptWorkspaces(modules terraform.Modules) []workspaces.WorkSpace {
-	var workspaces []workspaces.WorkSpace
+	var ws []workspaces.WorkSpace
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("aws_workspaces_workspace") {
-			workspaces = append(workspaces, adaptWorkspace(resource))
+			ws = append(ws, adaptWorkspace(resource))
 		}
 	}
-	return workspaces
+	return ws
 }
 
 func adaptWorkspace(resource *terraform.Block) workspaces.WorkSpace {

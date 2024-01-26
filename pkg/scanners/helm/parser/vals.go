@@ -22,11 +22,11 @@ type ValueOptions struct {
 // MergeValues merges values from files specified via -f/--values and directly
 // via --set, --set-string, or --set-file, marshaling them to YAML
 func (opts *ValueOptions) MergeValues() (map[string]interface{}, error) {
-	base := map[string]interface{}{}
+	base := make(map[string]interface{})
 
 	// User specified a values files via -f/--values
 	for _, filePath := range opts.ValueFiles {
-		currentMap := map[string]interface{}{}
+		currentMap := make(map[string]interface{})
 
 		bytes, err := readFile(filePath)
 		if err != nil {

@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts a Cloudwatch instance
 func Adapt(cfFile parser.FileContext) cloudwatch.CloudWatch {
 	return cloudwatch.CloudWatch{
 		LogGroups: getLogGroups(cfFile),

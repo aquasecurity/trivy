@@ -3,11 +3,9 @@ package sql
 import (
 	"strconv"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
-	"github.com/aquasecurity/defsec/pkg/terraform"
-
 	"github.com/aquasecurity/defsec/pkg/providers/google/sql"
+	"github.com/aquasecurity/defsec/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 )
 
 func Adapt(modules terraform.Modules) sql.SQL {

@@ -4,10 +4,10 @@ import (
 	"io/fs"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
+
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 )
 
 type Resource struct {

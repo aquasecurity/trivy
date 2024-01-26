@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an SQS instance
 func Adapt(cfFile parser.FileContext) sqs.SQS {
 	return sqs.SQS{
 		Queues: getQueues(cfFile),

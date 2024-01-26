@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts a dynamodb instance
 func Adapt(cfFile parser.FileContext) dynamodb.DynamoDB {
 	return dynamodb.DynamoDB{
 		DAXClusters: getClusters(cfFile),

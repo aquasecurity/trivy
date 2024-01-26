@@ -3,12 +3,13 @@ package parser
 import (
 	"io/fs"
 
-	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser/funcs"
 	"github.com/hashicorp/hcl/v2/ext/tryfunc"
 	ctyyaml "github.com/zclconf/go-cty-yaml"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/function"
 	"github.com/zclconf/go-cty/cty/function/stdlib"
+
+	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser/funcs"
 )
 
 // Functions returns the set of functions that should be used to when evaluating

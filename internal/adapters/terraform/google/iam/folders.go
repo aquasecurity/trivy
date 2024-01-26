@@ -4,6 +4,9 @@ import (
 	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
 )
 
+const GoogleOrganization = "google_organization"
+const GoogleFolder = "google_folder"
+
 type parentedFolder struct {
 	blockID       string
 	parentBlockID string
@@ -12,7 +15,7 @@ type parentedFolder struct {
 }
 
 func (a *adapter) adaptFolders() {
-	for _, folderBlock := range a.modules.GetResourcesByType("google_folder") {
+	for _, folderBlock := range a.modules.GetResourcesByType(GoogleFolder) {
 		var folder parentedFolder
 		parentAttr := folderBlock.GetAttribute("parent")
 		if parentAttr.IsNil() {
@@ -26,10 +29,10 @@ func (a *adapter) adaptFolders() {
 		}
 
 		if referencedBlock, err := a.modules.GetReferencedBlock(parentAttr, folderBlock); err == nil {
-			if referencedBlock.TypeLabel() == "google_folder" {
+			if referencedBlock.TypeLabel() == GoogleFolder {
 				folder.parentBlockID = referencedBlock.ID()
 			}
-			if referencedBlock.TypeLabel() == "google_organization" {
+			if referencedBlock.TypeLabel() == GoogleOrganization {
 				folder.parentBlockID = referencedBlock.ID()
 				a.addOrg(folder.parentBlockID)
 			}

@@ -50,10 +50,10 @@ func (s *Scanner) Name() string {
 	return "Universal"
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, fs fs.FS, dir string) (scan.Results, error) {
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
 	var results scan.Results
 	for _, inner := range s.fsScanners {
-		innerResults, err := inner.ScanFS(ctx, fs, dir)
+		innerResults, err := inner.ScanFS(ctx, fsys, dir)
 		if err != nil {
 			return nil, err
 		}

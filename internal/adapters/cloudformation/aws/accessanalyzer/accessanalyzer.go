@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an AccessAnalyzer instance
 func Adapt(cfFile parser.FileContext) accessanalyzer.AccessAnalyzer {
 	return accessanalyzer.AccessAnalyzer{
 		Analyzers: getAccessAnalyzer(cfFile),

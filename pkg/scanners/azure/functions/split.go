@@ -16,8 +16,7 @@ func Split(args ...interface{}) interface{} {
 	case string:
 		return strings.Split(input, separator)
 	case interface{}:
-		switch separator := separator.(type) {
-		case []string:
+		if separator, ok := separator.([]string); ok {
 			m := make(map[rune]int)
 			for _, r := range separator {
 				r := rune(r[0])

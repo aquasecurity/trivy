@@ -17,7 +17,7 @@ func (a *adapter) adaptFolderMembers() {
 		member := a.adaptMember(iamBlock)
 		folderAttr := iamBlock.GetAttribute("folder")
 		if refBlock, err := a.modules.GetReferencedBlock(folderAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_folder" {
+			if refBlock.TypeLabel() == GoogleFolder {
 				var foundFolder bool
 				for i, folder := range a.folders {
 					if folder.blockID == refBlock.ID() {
@@ -59,7 +59,7 @@ func (a *adapter) adaptFolderBindings() {
 		folderAttr := iamBlock.GetAttribute("folder")
 
 		if refBlock, err := a.modules.GetReferencedBlock(folderAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_folder" {
+			if refBlock.TypeLabel() == GoogleFolder {
 				var foundFolder bool
 				for i, folder := range a.folders {
 					if folder.blockID == refBlock.ID() {
@@ -89,7 +89,7 @@ func (a *adapter) adaptFolderBindings() {
 		binding := a.adaptBinding(iamBlock)
 		folderAttr := iamBlock.GetAttribute("folder")
 		if refBlock, err := a.modules.GetReferencedBlock(folderAttr, iamBlock); err == nil {
-			if refBlock.TypeLabel() == "google_folder" {
+			if refBlock.TypeLabel() == GoogleFolder {
 				var foundFolder bool
 				for i, folder := range a.folders {
 					if folder.blockID == refBlock.ID() {

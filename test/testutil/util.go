@@ -7,10 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/defsec/pkg/scan"
 )
 
 func AssertRuleFound(t *testing.T, ruleID string, results scan.Results, message string, args ...interface{}) {
@@ -56,7 +57,7 @@ func CreateFS(t *testing.T, files map[string]string) fs.FS {
 	return memfs
 }
 
-func AssertDefsecEqual(t *testing.T, expected interface{}, actual interface{}) {
+func AssertDefsecEqual(t *testing.T, expected, actual interface{}) {
 	expectedJson, err := json.MarshalIndent(expected, "", "\t")
 	require.NoError(t, err)
 	actualJson, err := json.MarshalIndent(actual, "", "\t")

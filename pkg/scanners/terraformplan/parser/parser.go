@@ -8,8 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/liamg/memoryfs"
+
+	"github.com/aquasecurity/defsec/pkg/terraform"
 )
 
 type Parser struct {
@@ -141,13 +142,12 @@ func getResources(module Module, resourceChanges []ResourceChange, configuration
 	return resources, nil
 }
 
-func unpackConfigurationValue(val interface{}, r Resource) (interface{}, bool) {
-	switch t := val.(type) {
-	case map[string]interface{}:
+func unpackConfigurationValue(val any, r Resource) (any, bool) {
+	if t, ok := val.(map[string]any); ok {
 		for k, v := range t {
 			switch k {
 			case "references":
-				reference := v.([]interface{})[0].(string)
+				reference := v.([]any)[0].(string)
 				if strings.HasPrefix(r.Address, "module.") {
 					hashable := strings.TrimSuffix(strings.Split(r.Address, fmt.Sprintf(".%s.", r.Type))[0], ".data")
 					/* #nosec */
@@ -171,9 +171,7 @@ func unpackConfigurationValue(val interface{}, r Resource) (interface{}, bool) {
 
 					reference = strings.Join(rejoin, ".")
 				}
-
-				shouldReplace := false
-				return terraform.PlanReference{Value: reference}, shouldReplace
+				return terraform.PlanReference{Value: reference}, false
 			case "constant_value":
 				return v, false
 			}

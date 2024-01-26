@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an SSM instance
 func Adapt(cfFile parser.FileContext) ssm.SSM {
 	return ssm.SSM{
 		Secrets: getSecrets(cfFile),

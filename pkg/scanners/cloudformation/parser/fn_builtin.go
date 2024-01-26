@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/cftypes"
-
 	"github.com/apparentlymart/go-cidr/cidr"
+
+	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/cftypes"
 )
 
 func GetAzs(property *Property) (*Property, bool) {
@@ -43,7 +43,7 @@ func GetCidr(property *Property) (*Property, bool) {
 	return property.deriveResolved(cftypes.List, ranges), true
 }
 
-func calculateCidrs(ipaddress string, count int, bit int, original *Property) ([]*Property, error) {
+func calculateCidrs(ipaddress string, count, bit int, original *Property) ([]*Property, error) {
 
 	var cidrProperties []*Property
 

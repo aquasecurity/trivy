@@ -3,13 +3,11 @@ package iam
 import (
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/liamg/iamgo"
 
 	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-
-	"github.com/liamg/iamgo"
+	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/defsec/pkg/terraform"
 )
 
 type wrappedDocument struct {

@@ -1,10 +1,11 @@
 package iam
 
 import (
+	"github.com/google/uuid"
+
 	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/defsec/pkg/types"
-	"github.com/google/uuid"
 )
 
 func Adapt(modules terraform.Modules) iam.IAM {
@@ -68,24 +69,24 @@ PROJECT:
 	}
 
 	// add folders to folders, orgs
-FOLDER_NESTED:
+FOLDER_NESTED: // nolint: gocritic
 	for _, folder := range a.folders {
 		for i, existing := range a.folders {
 			if folder.parentBlockID != "" && folder.parentBlockID == existing.blockID {
 				existing.folder.Folders = append(existing.folder.Folders, folder.folder)
 				a.folders[i] = existing
-				continue FOLDER_NESTED
+				continue FOLDER_NESTED // nolint: gocritic
 			}
 
 		}
 	}
-FOLDER_ORG:
+FOLDER_ORG: // nolint: gocritic
 	for _, folder := range a.folders {
 		if folder.parentBlockID != "" {
 			if org, ok := a.orgs[folder.parentBlockID]; ok {
 				org.Folders = append(org.Folders, folder.folder)
 				a.orgs[folder.parentBlockID] = org
-				continue FOLDER_ORG
+				continue FOLDER_ORG // nolint: gocritic
 			}
 		} else {
 			// add to placeholder?

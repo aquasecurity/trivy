@@ -3,6 +3,8 @@ package arm
 import (
 	"context"
 
+	"github.com/aquasecurity/defsec/pkg/providers/azure"
+	"github.com/aquasecurity/defsec/pkg/state"
 	"github.com/aquasecurity/trivy/internal/adapters/arm/appservice"
 	"github.com/aquasecurity/trivy/internal/adapters/arm/authorization"
 	"github.com/aquasecurity/trivy/internal/adapters/arm/compute"
@@ -16,13 +18,10 @@ import (
 	"github.com/aquasecurity/trivy/internal/adapters/arm/securitycenter"
 	"github.com/aquasecurity/trivy/internal/adapters/arm/storage"
 	"github.com/aquasecurity/trivy/internal/adapters/arm/synapse"
-
-	"github.com/aquasecurity/defsec/pkg/providers/azure"
-	"github.com/aquasecurity/defsec/pkg/state"
 	scanner "github.com/aquasecurity/trivy/pkg/scanners/azure"
 )
 
-// Adapt ...
+// Adapt adapts an azure arm instance
 func Adapt(ctx context.Context, deployment scanner.Deployment) *state.State {
 	return &state.State{
 		Azure: adaptAzure(deployment),

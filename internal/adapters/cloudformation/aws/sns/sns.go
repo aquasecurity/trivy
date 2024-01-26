@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts a SNS instance
 func Adapt(cfFile parser.FileContext) sns.SNS {
 	return sns.SNS{
 		Topics: getTopics(cfFile),

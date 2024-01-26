@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/fs"
 
+	"github.com/bmatcuk/doublestar/v4"
+
 	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/scan"
@@ -13,7 +15,6 @@ import (
 	terraformScanner "github.com/aquasecurity/trivy/pkg/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraformplan/parser"
-	"github.com/bmatcuk/doublestar/v4"
 )
 
 var tfPlanExts = []string{
@@ -123,21 +124,21 @@ func (s *Scanner) ScanFS(ctx context.Context, inputFS fs.FS, dir string) (scan.R
 	return results, nil
 }
 
-func New(options ...options.ScannerOption) *Scanner {
+func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
 		parser:  *parser.New(),
-		options: options,
+		options: opts,
 	}
-	for _, o := range options {
+	for _, o := range opts {
 		o(scanner)
 	}
 	return scanner
 }
 
-func (s *Scanner) ScanFile(filepath string, fs fs.FS) (scan.Results, error) {
+func (s *Scanner) ScanFile(filepath string, fsys fs.FS) (scan.Results, error) {
 
 	s.debug.Log("Scanning file %s", filepath)
-	file, err := fs.Open(filepath)
+	file, err := fsys.Open(filepath)
 	if err != nil {
 		return nil, err
 	}

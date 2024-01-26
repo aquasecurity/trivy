@@ -1,6 +1,6 @@
 package functions
 
-var loopCounter = map[string]int{}
+var loopCounter = make(map[string]int)
 
 func CopyIndex(args ...interface{}) interface{} {
 	loopName := "default"

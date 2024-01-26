@@ -6,12 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
-	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/cftypes"
-
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
+
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/cftypes"
 )
 
 type EqualityOptions = int
@@ -414,7 +413,7 @@ func removeLeftMargin(lines []string) []string {
 func convert(input interface{}) interface{} {
 	switch x := input.(type) {
 	case map[interface{}]interface{}:
-		outpMap := map[string]interface{}{}
+		outpMap := make(map[string]interface{})
 		for k, v := range x {
 			outpMap[k.(string)] = convert(v)
 		}

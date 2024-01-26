@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an ECS instance
 func Adapt(cfFile parser.FileContext) ecs.ECS {
 	return ecs.ECS{
 		Clusters:        getClusters(cfFile),

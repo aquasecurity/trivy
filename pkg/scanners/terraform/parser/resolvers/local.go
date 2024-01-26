@@ -10,7 +10,7 @@ type localResolver struct{}
 
 var Local = &localResolver{}
 
-func (r *localResolver) Resolve(_ context.Context, target fs.FS, opt Options) (filesystem fs.FS, prefix string, downloadPath string, applies bool, err error) {
+func (r *localResolver) Resolve(_ context.Context, target fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {
 	if !opt.hasPrefix(".", "..") {
 		return nil, "", "", false, nil
 	}

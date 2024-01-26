@@ -70,7 +70,7 @@ func (v *Resource) UnmarshalJSONWithMetadata(node armjson.Node) error {
 		if err := comment.Decode(&str); err != nil {
 			return err
 		}
-		// TODO
+		// TODO(someone): add support for metadata comments
 		// v.Metadata.Comments = append(v.Metadata.Comments, str)
 	}
 

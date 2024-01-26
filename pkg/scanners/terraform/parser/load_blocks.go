@@ -6,9 +6,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/hcl/v2"
+
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/defsec/pkg/types"
-	"github.com/hashicorp/hcl/v2"
 )
 
 func loadBlocksFromFile(file sourceFile, moduleSource string) (hcl.Blocks, []terraform.Ignore, error) {
@@ -23,7 +24,7 @@ func loadBlocksFromFile(file sourceFile, moduleSource string) (hcl.Blocks, []ter
 	return contents.Blocks, ignores, nil
 }
 
-func parseIgnores(data []byte, path string, moduleSource string) []terraform.Ignore {
+func parseIgnores(data []byte, path, moduleSource string) []terraform.Ignore {
 	var ignores []terraform.Ignore
 	for i, line := range strings.Split(string(data), "\n") {
 		line = strings.TrimSpace(line)

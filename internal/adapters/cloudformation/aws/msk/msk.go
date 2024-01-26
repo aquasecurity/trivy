@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an MSK instance
 func Adapt(cfFile parser.FileContext) msk.MSK {
 	return msk.MSK{
 		Clusters: getClusters(cfFile),

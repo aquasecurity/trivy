@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
+
 	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/detection"
@@ -68,8 +69,8 @@ func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) (map[st
 }
 
 // ParseFile parses toml content from the provided filesystem path.
-func (p *Parser) ParseFile(_ context.Context, fs fs.FS, path string) (interface{}, error) {
-	f, err := fs.Open(filepath.ToSlash(path))
+func (p *Parser) ParseFile(_ context.Context, fsys fs.FS, path string) (interface{}, error) {
+	f, err := fsys.Open(filepath.ToSlash(path))
 	if err != nil {
 		return nil, err
 	}

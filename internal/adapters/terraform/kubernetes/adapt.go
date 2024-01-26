@@ -99,7 +99,7 @@ func adaptNetworkPolicy(resourceBlock *terraform.Block) kubernetes.NetworkPolicy
 }
 
 // https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/guides/versioned-resources
-func getBlocksIgnoreVersion(module *terraform.Module, blockType string, resourceType string) terraform.Blocks {
+func getBlocksIgnoreVersion(module *terraform.Module, blockType, resourceType string) terraform.Blocks {
 	var res terraform.Blocks
 	for _, block := range module.GetBlocks().OfType(blockType) {
 		if isMatchingTypeLabel(block.TypeLabel(), resourceType) {
@@ -109,7 +109,7 @@ func getBlocksIgnoreVersion(module *terraform.Module, blockType string, resource
 	return res
 }
 
-func isMatchingTypeLabel(typeLabel string, resourceType string) bool {
+func isMatchingTypeLabel(typeLabel, resourceType string) bool {
 	if typeLabel == resourceType {
 		return true
 	}

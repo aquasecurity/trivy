@@ -19,7 +19,7 @@ func Intersection(args ...interface{}) interface{} {
 }
 
 func intersectionArray(args ...interface{}) interface{} {
-	result := []interface{}{}
+	var result []interface{}
 	hash := make(map[interface{}]bool)
 
 	for _, arg := range args[0].([]interface{}) {

@@ -6,7 +6,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an IAM instance
 func Adapt(cfFile parser.FileContext) iam.IAM {
 	return iam.IAM{
 		PasswordPolicy: iam.PasswordPolicy{

@@ -9,8 +9,7 @@ func Max(args ...interface{}) interface{} {
 		}
 		return maxInt(ints)
 	case interface{}:
-		switch iType := args[0].(type) {
-		case []int:
+		if iType, ok := args[0].([]int); ok {
 			return maxInt(iType)
 		}
 	}

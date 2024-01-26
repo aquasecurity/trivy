@@ -3,11 +3,9 @@ package ec2
 import (
 	"encoding/base64"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
-
-	"github.com/aquasecurity/defsec/pkg/terraform"
-
 	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
+	"github.com/aquasecurity/defsec/pkg/terraform"
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 )
 
 func adaptLaunchTemplates(modules terraform.Modules) (templates []ec2.LaunchTemplate) {

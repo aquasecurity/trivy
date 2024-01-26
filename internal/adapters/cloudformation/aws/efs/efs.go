@@ -5,7 +5,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
 )
 
-// Adapt ...
+// Adapt adapts an EFS instance
 func Adapt(cfFile parser.FileContext) efs.EFS {
 	return efs.EFS{
 		FileSystems: getFileSystems(cfFile),

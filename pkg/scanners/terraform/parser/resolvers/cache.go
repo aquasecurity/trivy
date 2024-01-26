@@ -25,7 +25,7 @@ func locateCacheFS() (fs.FS, error) {
 
 func locateCacheDir() (string, error) {
 	cacheDir := filepath.Join(os.TempDir(), tempDirName, "cache")
-	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+	if err := os.MkdirAll(cacheDir, 0o750); err != nil {
 		return "", err
 	}
 	if !isWritable(cacheDir) {
@@ -34,7 +34,7 @@ func locateCacheDir() (string, error) {
 	return cacheDir, nil
 }
 
-func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix string, downloadPath string, applies bool, err error) {
+func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {
 	if opt.SkipCache {
 		opt.Debug("Cache is disabled.")
 		return nil, "", "", false, nil

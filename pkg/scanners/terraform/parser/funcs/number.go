@@ -165,6 +165,6 @@ func Signum(num cty.Value) (cty.Value, error) {
 }
 
 // ParseInt parses a string argument and returns an integer of the specified base.
-func ParseInt(num cty.Value, base cty.Value) (cty.Value, error) {
+func ParseInt(num, base cty.Value) (cty.Value, error) {
 	return ParseIntFunc.Call([]cty.Value{num, base})
 }

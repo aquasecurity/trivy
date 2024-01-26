@@ -19,7 +19,7 @@ var defaultResolvers = []ModuleResolver{
 	resolvers.Registry,
 }
 
-func resolveModule(ctx context.Context, current fs.FS, opt resolvers.Options) (filesystem fs.FS, sourcePrefix string, downloadPath string, err error) {
+func resolveModule(ctx context.Context, current fs.FS, opt resolvers.Options) (filesystem fs.FS, sourcePrefix, downloadPath string, err error) {
 	opt.Debug("Resolving module '%s' with source: '%s'...", opt.Name, opt.Source)
 	for _, resolver := range defaultResolvers {
 		if filesystem, prefix, path, applies, err := resolver.Resolve(ctx, current, opt); err != nil {

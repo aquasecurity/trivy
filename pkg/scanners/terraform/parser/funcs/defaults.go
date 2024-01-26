@@ -69,6 +69,7 @@ var DefaultsFunc = function.New(&function.Spec{
 	},
 })
 
+// nolint: gocyclo
 func defaultsApply(input, fallback cty.Value) cty.Value {
 	wantTy := input.Type()
 
@@ -113,7 +114,7 @@ func defaultsApply(input, fallback cty.Value) cty.Value {
 			return input
 		}
 		atys := wantTy.AttributeTypes()
-		ret := map[string]cty.Value{}
+		ret := make(map[string]cty.Value)
 		for attr, aty := range atys {
 			inputSub := umInput.GetAttr(attr)
 			fallbackSub := cty.NullVal(aty)
@@ -154,7 +155,7 @@ func defaultsApply(input, fallback cty.Value) cty.Value {
 		ety := wantTy.ElementType()
 		switch {
 		case wantTy.IsMapType():
-			newVals := map[string]cty.Value{}
+			newVals := make(map[string]cty.Value)
 
 			if !umInput.IsNull() {
 				for it := umInput.ElementIterator(); it.Next(); {
