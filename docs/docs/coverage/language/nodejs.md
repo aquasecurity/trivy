@@ -1,6 +1,6 @@
 # Node.js
 
-Trivy supports three types of Node.js package managers: `npm`, `Yarn` and `pnpm`.
+Trivy supports four types of Node.js package managers: `npm`, `Yarn`, `pnpm` and `Bun`[^1].
 
 The following scanners are supported.
 
@@ -9,6 +9,7 @@ The following scanners are supported.
 | npm      |   ✓   |       ✓       |    ✓    |
 | Yarn     |   ✓   |       ✓       |    ✓    |
 | pnpm     |   ✓   |       ✓       |    -    |
+| Bun      |   ✓   |       ✓       |    ✓    |
 
 The following table provides an outline of the features Trivy offers.
 
@@ -17,6 +18,7 @@ The following table provides an outline of the features Trivy offers.
 |       npm       | package-lock.json |            ✓            | [Excluded](#npm)  |                  ✓                   |    ✓     |
 |      Yarn       | yarn.lock         |            ✓            | [Excluded](#yarn) |                  ✓                   |    ✓     |
 |      pnpm       | pnpm-lock.yaml    |            ✓            |     Excluded      |                  ✓                   |    -     |
+|      Bun        | yarn.lock         |            ✓            | [Excluded](#yarn) |                  ✓                   |    ✓     |
 
 In addition, Trivy scans installed packages with `package.json`.
 
@@ -64,3 +66,5 @@ Trivy searches for `package.json` files under `node_modules` and identifies inst
 It only extracts package names, versions and licenses for those packages.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
+
+[^1]: [yarn.lock](#bun) must be generated
