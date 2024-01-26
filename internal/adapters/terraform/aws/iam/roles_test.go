@@ -7,8 +7,8 @@ import (
 	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptRoles(t *testing.T) {

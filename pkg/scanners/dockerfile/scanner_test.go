@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 const DS006PolicyWithDockerfileSchema = `# METADATA

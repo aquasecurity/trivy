@@ -8,8 +8,8 @@ import (
 	"github.com/aquasecurity/defsec/pkg/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/pkg/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func TestAdapt(t *testing.T) {

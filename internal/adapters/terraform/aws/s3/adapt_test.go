@@ -7,8 +7,8 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
 	"github.com/aquasecurity/defsec/pkg/providers/aws/s3"
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 	"github.com/liamg/iamgo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

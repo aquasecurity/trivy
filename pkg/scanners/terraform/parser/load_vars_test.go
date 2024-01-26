@@ -3,7 +3,7 @@ package parser
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 
 	"github.com/zclconf/go-cty/cty"
 

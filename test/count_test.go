@@ -10,7 +10,7 @@ import (
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_ResourcesWithCount(t *testing.T) {

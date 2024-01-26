@@ -9,7 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptDBInstances(t *testing.T) {

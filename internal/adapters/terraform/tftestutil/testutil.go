@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func CreateModulesFromSource(t *testing.T, source, ext string) terraform.Modules {

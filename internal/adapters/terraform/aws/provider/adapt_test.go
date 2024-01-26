@@ -6,8 +6,8 @@ import (
 	"github.com/aquasecurity/defsec/pkg/providers/aws"
 	"github.com/aquasecurity/defsec/pkg/types"
 
-	"github.com/aquasecurity/trivy-iac/test/testutil"
 	"github.com/aquasecurity/trivy/internal/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func TestAdapt(t *testing.T) {
