@@ -29,9 +29,15 @@ type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) er
 type walker struct {
 	skipFiles []string
 	skipDirs  []string
+	onlyDirs  []pattern
 }
 
-func newWalker(skipFiles, skipDirs []string) walker {
+type pattern struct {
+	pattern string
+	base    string
+}
+
+func newWalker(skipFiles, skipDirs, onlyDirs []string) walker {
 	var cleanSkipFiles, cleanSkipDirs []string
 	for _, skipFile := range skipFiles {
 		skipFile = filepath.ToSlash(filepath.Clean(skipFile))
@@ -45,9 +51,18 @@ func newWalker(skipFiles, skipDirs []string) walker {
 		cleanSkipDirs = append(cleanSkipDirs, skipDir)
 	}
 
+	var cleanOnlyDirs []pattern
+	for _, onlyDir := range onlyDirs {
+		onlyDir = filepath.ToSlash(filepath.Clean(onlyDir))
+		onlyDir = strings.TrimLeft(onlyDir, "/")
+		base, _ := doublestar.SplitPattern(onlyDir)
+		cleanOnlyDirs = append(cleanOnlyDirs, pattern{base: base, pattern: onlyDir})
+	}
+
 	return walker{
 		skipFiles: cleanSkipFiles,
 		skipDirs:  cleanSkipDirs,
+		onlyDirs:  cleanOnlyDirs,
 	}
 }
 
@@ -64,6 +79,21 @@ func (w *walker) shouldSkipFile(filePath string) bool {
 			return true
 		}
 	}
+
+	if len(w.onlyDirs) > 0 {
+		dir := filepath.ToSlash(filepath.Dir(filePath))
+		for _, onlyDir := range w.onlyDirs {
+			match, err := doublestar.Match(onlyDir.pattern, dir)
+			if err != nil {
+				return false // return early if bad pattern
+			} else if match {
+				log.Logger.Debugf("Skipping file: %s", filePath)
+				return false
+			}
+		}
+		return true
+	}
+
 	return false
 }
 
@@ -84,6 +114,17 @@ func (w *walker) shouldSkipDir(dir string) bool {
 			log.Logger.Debugf("Skipping directory: %s", dir)
 			return true
 		}
+	}
+
+	if dir != "." && len(w.onlyDirs) > 0 {
+		for _, onlyDir := range w.onlyDirs {
+			if onlyDir.base == "." || strings.HasPrefix(onlyDir.base+"/", dir+"/") || strings.HasPrefix(dir+"/", onlyDir.base+"/") {
+				return false
+			}
+		}
+
+		log.Logger.Debugf("Skipping directory: %s", dir)
+		return true
 	}
 
 	return false

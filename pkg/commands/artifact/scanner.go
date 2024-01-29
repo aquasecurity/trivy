@@ -111,7 +111,7 @@ func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner
 // vmStandaloneScanner initializes a VM scanner in standalone mode
 func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	// TODO: The walker should be initialized in initializeVMScanner after https://github.com/aquasecurity/trivy/pull/5180
-	w := walker.NewVM(conf.ArtifactOption.SkipFiles, conf.ArtifactOption.SkipDirs)
+	w := walker.NewVM(conf.ArtifactOption.SkipFiles, conf.ArtifactOption.SkipDirs, conf.ArtifactOption.OnlyDirs)
 	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
 		w, conf.ArtifactOption)
 	if err != nil {
@@ -123,7 +123,7 @@ func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scann
 // vmRemoteScanner initializes a VM scanner in client/server mode
 func vmRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	// TODO: The walker should be initialized in initializeVMScanner after https://github.com/aquasecurity/trivy/pull/5180
-	w := walker.NewVM(conf.ArtifactOption.SkipFiles, conf.ArtifactOption.SkipDirs)
+	w := walker.NewVM(conf.ArtifactOption.SkipFiles, conf.ArtifactOption.SkipDirs, conf.ArtifactOption.OnlyDirs)
 	s, cleanup, err := initializeRemoteVMScanner(ctx, conf.Target, conf.ArtifactCache, w, conf.ServerOption, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a remote vm scanner: %w", err)
