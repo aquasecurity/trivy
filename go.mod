@@ -433,4 +433,4 @@ replace oras.land/oras-go => oras.land/oras-go v1.2.4-0.20230801060855-932dd06d3
 // ref: https://github.com/testcontainers/testcontainers-go/issues/1782
 replace github.com/testcontainers/testcontainers-go => github.com/testcontainers/testcontainers-go v0.23.0
 
-replace github.com/aquasecurity/go-dep-parser => github.com/DmitriyLewen/go-dep-parser v0.0.0-20240122113651-b23678a961ed
+replace github.com/aquasecurity/go-dep-parser => github.com/DmitriyLewen/go-dep-parser v0.0.0-20240129055736-6498684f82d3
