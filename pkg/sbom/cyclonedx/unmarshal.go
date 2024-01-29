@@ -202,7 +202,7 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 		}
 
 		// Skip unsupported package types
-		if purl.Class(pkgURL) == types.ClassUnknown {
+		if pkgURL.Class() == types.ClassUnknown {
 			continue
 		}
 		pkgs = append(pkgs, *pkg)
@@ -290,11 +290,11 @@ func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Applica
 			return nil, nil, xerrors.Errorf("failed to parse the component: %w", err)
 		}
 
-		switch purl.Class(pkgURL) {
+		switch pkgURL.Class() {
 		case types.ClassOSPkg:
 			osPkgMap[pkgURL.Type] = append(osPkgMap[pkgURL.Type], *pkg)
 		case types.ClassLangPkg:
-			langType := purl.LangType(pkgURL)
+			langType := pkgURL.LangType()
 			langPkgMap[langType] = append(langPkgMap[langType], *pkg)
 		}
 	}
@@ -337,7 +337,7 @@ func toApplication(component cdx.Component) *ftypes.Application {
 	}
 }
 
-func toPackage(component cdx.Component) (*ftypes.PackageURL, *ftypes.Package, error) {
+func toPackage(component cdx.Component) (*purl.PackageURL, *ftypes.Package, error) {
 	if component.PackageURL == "" {
 		log.Logger.Warnf("Skip the component (BOM-Ref: %s) as the PURL is empty", component.BOMRef)
 		return nil, nil, ErrPURLEmpty
@@ -347,7 +347,7 @@ func toPackage(component cdx.Component) (*ftypes.PackageURL, *ftypes.Package, er
 		return nil, nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
 
-	pkg := purl.ToPackage(p)
+	pkg := p.Package()
 	// Trivy's marshall loses case-sensitivity in PURL used in SBOM for packages (Go, Npm, PyPI),
 	// so we have to use an original package name
 	pkg.Name = packageName(p.Type, pkg.Name, component)
@@ -382,12 +382,9 @@ func toPackage(component cdx.Component) (*ftypes.PackageURL, *ftypes.Package, er
 	if pkg.FilePath != "" {
 		p.FilePath = pkg.FilePath
 	}
-	pkg.Identifier = ftypes.PkgIdentifier{
-		PURL:   p,
-		BOMRef: component.BOMRef,
-	}
+	pkg.Identifier.BOMRef = component.BOMRef
 
-	if purl.Class(p) == types.ClassOSPkg {
+	if p.Class() == types.ClassOSPkg {
 		fillSrcPkg(pkg)
 	}
 
@@ -422,16 +419,25 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 }
 
 func packageName(typ, pkgNameFromPurl string, component cdx.Component) string {
-	if typ == packageurl.TypeMaven {
-		// Jar uses `Group` field for `GroupID`
+	if typ == packageurl.TypeMaven || typ == packageurl.TypeNPM {
+		// Maven uses `Group` field for `GroupID`
+		// Npm uses `Group` field for `Scope`
 		if component.Group != "" {
-			return fmt.Sprintf("%s:%s", component.Group, component.Name)
+			return fmt.Sprintf("%s%s%s", component.Group, packageNameSeparator(typ), component.Name)
 		} else {
 			// use name derived from purl if `Group` doesn't exist
 			return pkgNameFromPurl
 		}
 	}
 	return component.Name
+}
+
+// packageNameSeparator selects separator to join `group` and `name` fields of the component
+func packageNameSeparator(typ string) string {
+	if typ == packageurl.TypeMaven {
+		return ":"
+	}
+	return "/"
 }
 
 // parsePackageLicenses checks all supported license fields and returns a list of licenses.

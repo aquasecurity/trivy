@@ -71,14 +71,26 @@ var (
 	}
 	ExcludeNodes = Flag[[]string]{
 		Name:       "exclude-nodes",
-		ConfigName: "exclude.nodes",
+		ConfigName: "kubernetes.exclude.nodes",
 		Usage:      "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)",
 	}
 	NodeCollectorImageRef = Flag[string]{
 		Name:       "node-collector-imageref",
-		ConfigName: "node.collector.imageref",
+		ConfigName: "kubernetes.node.collector.imageref",
 		Default:    "ghcr.io/aquasecurity/node-collector:0.0.9",
 		Usage:      "indicate the image reference for the node-collector scan job",
+	}
+	QPS = Flag[float64]{
+		Name:       "qps",
+		ConfigName: "kubernetes.qps",
+		Default:    5.0,
+		Usage:      "specify the maximum QPS to the master from this client",
+	}
+	Burst = Flag[int]{
+		Name:       "burst",
+		ConfigName: "kubernetes.burst",
+		Default:    10,
+		Usage:      "specify the maximum burst for throttle",
 	}
 )
 
@@ -94,6 +106,8 @@ type K8sFlagGroup struct {
 	NodeCollectorNamespace *Flag[string]
 	ExcludeOwned           *Flag[bool]
 	ExcludeNodes           *Flag[[]string]
+	QPS                    *Flag[float64]
+	Burst                  *Flag[int]
 }
 
 type K8sOptions struct {
@@ -108,6 +122,8 @@ type K8sOptions struct {
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
 	ExcludeNodes           map[string]string
+	QPS                    float32
+	Burst                  int
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
@@ -123,6 +139,8 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		ExcludeOwned:           ExcludeOwned.Clone(),
 		ExcludeNodes:           ExcludeNodes.Clone(),
 		NodeCollectorImageRef:  NodeCollectorImageRef.Clone(),
+		QPS:                    QPS.Clone(),
+		Burst:                  Burst.Clone(),
 	}
 }
 
@@ -143,6 +161,8 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 		f.ExcludeOwned,
 		f.ExcludeNodes,
 		f.NodeCollectorImageRef,
+		f.QPS,
+		f.Burst,
 	}
 }
 
@@ -178,6 +198,8 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		ExcludeOwned:           f.ExcludeOwned.Value(),
 		ExcludeNodes:           exludeNodeLabels,
 		NodeCollectorImageRef:  f.NodeCollectorImageRef.Value(),
+		QPS:                    float32(f.QPS.Value()),
+		Burst:                  f.Burst.Value(),
 	}, nil
 }
 

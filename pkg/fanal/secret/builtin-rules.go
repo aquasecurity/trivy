@@ -5,7 +5,7 @@ import (
 
 	"github.com/samber/lo"
 
-	defsecRules "github.com/aquasecurity/trivy-iac/pkg/rules"
+	defsecRules "github.com/aquasecurity/defsec/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -76,9 +76,9 @@ const (
 	quote       = `["']?`
 	connect     = `\s*(:|=>|=)?\s*`
 	startSecret = `(^|\s+)`
-	endSecret   = `(\s+|$)`
+	endSecret   = `[.,]?(\s+|$)`
 
-	aws = `(aws)?_?`
+	aws = `aws_?`
 )
 
 // This function is exported for trivy-plugin-aqua purposes only

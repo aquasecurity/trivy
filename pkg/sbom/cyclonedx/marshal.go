@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -323,8 +324,11 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 	// e.g. local Go packages
 	if pu := pkg.Identifier.PURL; pu != nil {
 		version = pu.Version
-		// use `group` field for GroupID and `name` for ArtifactID for jar files
-		if pkg.Type == ftypes.Jar {
+		// Use `group` field for GroupID and `name` for ArtifactID for java files
+		// https://github.com/aquasecurity/trivy/issues/4675
+		// Use `group` field for npm scopes
+		// https://github.com/aquasecurity/trivy/issues/5908
+		if pu.Type == packageurl.TypeMaven || pu.Type == packageurl.TypeNPM {
 			name = pu.Name
 			group = pu.Namespace
 		}
@@ -378,7 +382,7 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		Name:            name,
 		Group:           group,
 		Version:         version,
-		PackageURL:      pkg.Identifier.PURL,
+		PackageURL:      purl.WithPath(pkg.Identifier.PURL, pkg.FilePath),
 		Supplier:        pkg.Maintainer,
 		Licenses:        pkg.Licenses,
 		Hashes:          lo.Ternary(pkg.Digest == "", nil, []digest.Digest{pkg.Digest}),

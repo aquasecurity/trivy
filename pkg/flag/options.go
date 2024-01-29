@@ -526,7 +526,6 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 func (f *Flags) Usages(cmd *cobra.Command) string {
 	var usages string
 	for _, group := range f.groups() {
-
 		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
 		lflags := cmd.LocalFlags()
 		for _, flag := range group.Flags() {

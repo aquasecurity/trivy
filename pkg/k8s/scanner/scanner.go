@@ -577,7 +577,7 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 								Namespace: k8sCoreComponentNamespace,
 							},
 						},
-						PackageURL: &ftypes.PackageURL{
+						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
 						},
 					},
@@ -601,7 +601,7 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 	return properties
 }
 
-func generatePURL(name, ver, nodeName string) *ftypes.PackageURL {
+func generatePURL(name, ver, nodeName string) *purl.PackageURL {
 
 	var namespace string
 	// Identify k8s distribution. An empty namespace means upstream.
@@ -611,7 +611,7 @@ func generatePURL(name, ver, nodeName string) *ftypes.PackageURL {
 		namespace = ""
 	}
 
-	return &ftypes.PackageURL{
+	return &purl.PackageURL{
 		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, ver, nil, ""),
 	}
 }

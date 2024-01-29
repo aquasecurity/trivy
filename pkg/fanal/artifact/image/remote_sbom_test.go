@@ -84,17 +84,15 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 											Name:    "musl",
 											Version: "1.2.3-r0",
 											Identifier: types.PkgIdentifier{
-												PURL: &types.PackageURL{
-													PackageURL: packageurl.PackageURL{
-														Type:      packageurl.TypeApk,
-														Namespace: "alpine",
-														Name:      "musl",
-														Version:   "1.2.3-r0",
-														Qualifiers: packageurl.Qualifiers{
-															{
-																Key:   "distro",
-																Value: "3.16.2",
-															},
+												PURL: &packageurl.PackageURL{
+													Type:      packageurl.TypeApk,
+													Namespace: "alpine",
+													Name:      "musl",
+													Version:   "1.2.3-r0",
+													Qualifiers: packageurl.Qualifiers{
+														{
+															Key:   "distro",
+															Value: "3.16.2",
 														},
 													},
 												},
@@ -235,13 +233,11 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 											Name:    "github.com/opencontainers/go-digest",
 											Version: "v1.0.0",
 											Identifier: types.PkgIdentifier{
-												PURL: &types.PackageURL{
-													PackageURL: packageurl.PackageURL{
-														Type:      packageurl.TypeGolang,
-														Namespace: "github.com/opencontainers",
-														Name:      "go-digest",
-														Version:   "v1.0.0",
-													},
+												PURL: &packageurl.PackageURL{
+													Type:      packageurl.TypeGolang,
+													Namespace: "github.com/opencontainers",
+													Name:      "go-digest",
+													Version:   "v1.0.0",
 												},
 												BOMRef: "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
 											},
@@ -250,13 +246,11 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 											Name:    "golang.org/x/sync",
 											Version: "v0.1.0",
 											Identifier: types.PkgIdentifier{
-												PURL: &types.PackageURL{
-													PackageURL: packageurl.PackageURL{
-														Type:      packageurl.TypeGolang,
-														Namespace: "golang.org/x",
-														Name:      "sync",
-														Version:   "v0.1.0",
-													},
+												PURL: &packageurl.PackageURL{
+													Type:      packageurl.TypeGolang,
+													Namespace: "golang.org/x",
+													Name:      "sync",
+													Version:   "v0.1.0",
 												},
 												BOMRef: "pkg:golang/golang.org/x/sync@v0.1.0",
 											},

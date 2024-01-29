@@ -95,6 +95,92 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with buildkit instructions",
+			input: analyzer.ConfigAnalysisInput{
+				Config: &v1.ConfigFile{
+					Config: v1.Config{
+						Healthcheck: &v1.HealthConfig{
+							Test:     []string{"CMD-SHELL", "curl --fail http://localhost:3000 || exit 1"},
+							Interval: time.Second * 10,
+							Timeout:  time.Second * 3,
+						},
+					},
+					History: []v1.History{
+						{
+							CreatedBy:  "/bin/sh -c #(nop) ADD file:289c2fac17119508ced527225d445747cd177111b4a0018a6b04948ecb3b5e29 in / ",
+							EmptyLayer: false,
+						},
+						{
+							CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+							EmptyLayer: true,
+						},
+						{
+							CreatedBy:  "ADD ./foo.txt /foo.txt # buildkit",
+							EmptyLayer: false,
+						},
+						{
+							CreatedBy:  "COPY ./foo /foo # buildkit",
+							EmptyLayer: false,
+						},
+						{
+							CreatedBy:  "RUN /bin/sh -c ls -hl /foo # buildkit",
+							EmptyLayer: false,
+						},
+						{
+							CreatedBy:  "USER foo",
+							EmptyLayer: true,
+						},
+						{
+							CreatedBy:  `HEALTHCHECK &{["CMD-SHELL" "curl -sS 127.0.0.1 || exit 1"] "10s" "3s" "0s" '\x00'}`,
+							EmptyLayer: true,
+						},
+					},
+				},
+			},
+			want: &analyzer.ConfigAnalysisResult{
+				Misconfiguration: &types.Misconfiguration{
+					FileType: "dockerfile",
+					FilePath: "Dockerfile",
+					Failures: types.MisconfResults{
+						types.MisconfResult{
+							Namespace: "builtin.dockerfile.DS005",
+							Query:     "data.builtin.dockerfile.DS005.deny",
+							Message:   "Consider using 'COPY ./foo.txt /foo.txt' command instead of 'ADD ./foo.txt /foo.txt'",
+							PolicyMetadata: types.PolicyMetadata{
+								ID:                 "DS005",
+								AVDID:              "AVD-DS-0005",
+								Type:               "Dockerfile Security Check",
+								Title:              "ADD instead of COPY",
+								Description:        "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
+								Severity:           "LOW",
+								RecommendedActions: "Use COPY instead of ADD",
+								References:         []string{"https://docs.docker.com/engine/reference/builder/#add"},
+							},
+							CauseMetadata: types.CauseMetadata{
+								Provider:  "Dockerfile",
+								Service:   "general",
+								StartLine: 1,
+								EndLine:   1,
+								Code: types.Code{
+									Lines: []types.Line{
+										{
+											Number:      1,
+											Content:     "ADD ./foo.txt /foo.txt",
+											IsCause:     true,
+											Truncated:   false,
+											Highlighted: "\x1b[38;5;64mADD\x1b[0m ./foo.txt /foo.txt",
+											FirstCause:  true,
+											LastCause:   true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path. Base layer is found",
 			input: analyzer.ConfigAnalysisInput{
 				Config: &v1.ConfigFile{
