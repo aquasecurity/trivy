@@ -11,11 +11,11 @@ Each artifact supports the following scanners:
 
 The following table provides an outline of the features Trivy offers.
 
-| Artifact         |    Internet access    | Dev dependencies | [Dependency graph][dependency-graph] |
-|------------------|:---------------------:|:----------------:|:------------------------------------:|
-| JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |
-| pom.xml          | Maven repository [^1] |     Exclude      |                  ✓                   |
-| *gradle.lockfile |           -           |     Exclude      |                  -                   |
+| Artifact         |    Internet access    | Dev dependencies | [Dependency graph][dependency-graph] | Position |
+|------------------|:---------------------:|:----------------:|:------------------------------------:|:--------:|
+| JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |    -     |
+| pom.xml          | Maven repository [^1] |     Exclude      |                  ✓                   |  ✓[^7]   |
+| *gradle.lockfile |           -           |     Exclude      |                  -                   |    -     |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
@@ -46,7 +46,7 @@ If your machine doesn't have the necessary files - Trivy tries to find the infor
 
 !!! Note
     Trivy only takes information about packages. We don't take a list of vulnerabilities for packages from the `maven repository`.
-    Information about data sources for Java you can see [here](../../scanner/vulnerability.md#data-sources_1).
+    Information about data sources for Java you can see [here](../../scanner/vulnerability.md#data-sources-1).
 
 You can disable connecting to the maven repository with the `--offline-scan` flag.
 The `--offline-scan` flag does not affect the Trivy database.
@@ -67,5 +67,6 @@ It doesn't require the internet access.
 [^4]: e.g. when parent pom.xml file has `../pom.xml` path
 [^5]: When you use dependency path in `relativePath` field in pom.xml file
 [^6]: `/Users/<username>/.m2/repository` (for Linux and Mac) and `C:/Users/<username>/.m2/repository` (for Windows) by default
+[^7]: To avoid confusion, Trivy only finds locations for direct dependencies from the base pom.xml file.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies

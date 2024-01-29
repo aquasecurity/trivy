@@ -54,11 +54,14 @@ var (
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-09-15T13:53:49+00:00",
-					Tools: &[]cyclonedx.Tool{
-						{
-							Vendor:  "aquasecurity",
-							Name:    "trivy",
-							Version: "dev",
+					Tools: &cyclonedx.ToolsChoice{
+						Components: &[]cyclonedx.Component{
+							{
+								Type:    cyclonedx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cyclonedx.Component{
@@ -175,11 +178,14 @@ var (
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-10-21T09:50:08+00:00",
-					Tools: &[]cyclonedx.Tool{
-						{
-							Vendor:  "aquasecurity",
-							Name:    "trivy",
-							Version: "dev",
+					Tools: &cyclonedx.ToolsChoice{
+						Components: &[]cyclonedx.Component{
+							{
+								Type:    cyclonedx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cyclonedx.Component{

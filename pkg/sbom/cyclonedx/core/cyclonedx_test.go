@@ -182,11 +182,14 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
-					Tools: &[]cdx.Tool{
-						{
-							Name:    "trivy",
-							Vendor:  "aquasecurity",
-							Version: "dev",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cdx.Component{
