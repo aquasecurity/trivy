@@ -9,10 +9,9 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/scanners/kubernetes"
 )
 
 func Test_Kubernetes_RegoPoliciesFromDisk(t *testing.T) {

@@ -8,10 +8,9 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/scanners/dockerfile"
 )
 
 // func addFilesToMemFS(memfs *memoryfs.FS, typePolicy bool, folderName string) error {

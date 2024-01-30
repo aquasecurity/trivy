@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/defsec/pkg/rules"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
+	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 
-	"github.com/aquasecurity/trivy/pkg/scanners/terraform/executor"
-	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/test/testutil"
 )
 
@@ -22,7 +22,7 @@ func BenchmarkCalculate(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		p := parser.New(f, "", parser.OptionStopOnHCLError(true))
+		p := parser2.New(f, "", parser2.OptionStopOnHCLError(true))
 		if err := p.ParseFS(context.TODO(), "project"); err != nil {
 			b.Fatal(err)
 		}

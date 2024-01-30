@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/defsec/pkg/rules"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
+	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/scanners/terraform/executor"
-	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/test/testutil"
 )
 
@@ -40,7 +40,7 @@ locals {
 	})
 
 	for i := 0; i < 100; i++ {
-		p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+		p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
 		err := p.ParseFS(context.TODO(), ".")
 		require.NoError(t, err)
 		modules, _, err := p.EvaluateAll(context.TODO())

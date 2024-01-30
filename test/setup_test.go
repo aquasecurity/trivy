@@ -7,10 +7,10 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/terraform"
+	terraform2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
+	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/stretchr/testify/require"
 
-	tfScanner "github.com/aquasecurity/trivy/pkg/scanners/terraform"
-	"github.com/aquasecurity/trivy/pkg/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/test/testutil"
 )
 
@@ -19,7 +19,7 @@ func createModulesFromSource(t *testing.T, source string, ext string) terraform.
 		"source" + ext: source,
 	})
 
-	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
+	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
 	if err := p.ParseFS(context.TODO(), "."); err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func createModulesFromSource(t *testing.T, source string, ext string) terraform.
 }
 
 func scanHCLWithWorkspace(t *testing.T, source string, workspace string) scan.Results {
-	return scanHCL(t, source, tfScanner.ScannerWithWorkspaceName(workspace))
+	return scanHCL(t, source, terraform2.ScannerWithWorkspaceName(workspace))
 }
 
 func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
@@ -40,7 +40,7 @@ func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Re
 		"main.tf": source,
 	})
 
-	localScanner := tfScanner.New(append(opts, options.ScannerWithEmbeddedPolicies(false))...)
+	localScanner := terraform2.New(append(opts, options.ScannerWithEmbeddedPolicies(false))...)
 	results, err := localScanner.ScanFS(context.TODO(), fs, ".")
 	require.NoError(t, err)
 	return results
@@ -52,7 +52,7 @@ func scanJSON(t *testing.T, source string) scan.Results {
 		"main.tf.json": source,
 	})
 
-	s := tfScanner.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+	s := terraform2.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
 	results, _, err := s.ScanFSWithMetrics(context.TODO(), fs, ".")
 	require.NoError(t, err)
 	return results

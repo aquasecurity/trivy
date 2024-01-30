@@ -1,6 +1,8 @@
 package analyzer
 
-import "github.com/aquasecurity/trivy/pkg/detection"
+import (
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
+)
 
 type Type string
 
