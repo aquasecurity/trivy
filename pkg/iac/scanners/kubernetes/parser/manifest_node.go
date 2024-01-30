@@ -23,9 +23,9 @@ type ManifestNode struct {
 	StartLine int
 	EndLine   int
 	Offset    int
-	Value interface{}
-	Type  TagType
-	Path  string
+	Value     interface{}
+	Type      TagType
+	Path      string
 }
 
 func (r *ManifestNode) ToRego() interface{} {

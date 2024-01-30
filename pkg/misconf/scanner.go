@@ -11,6 +11,12 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm"
@@ -21,16 +27,10 @@ import (
 	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	tfpscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan"
-	"github.com/samber/lo"
-	"golang.org/x/xerrors"
-
-	_ "embed"
-
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+
+	_ "embed"
 )
 
 var enabledDefsecTypes = map[detection.FileType]types.ConfigType{

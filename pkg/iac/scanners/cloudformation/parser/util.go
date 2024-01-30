@@ -3,10 +3,11 @@ package parser
 import (
 	"strconv"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
+
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 )
 
 func setPropertyValueFromJson(node jfather.Node, propertyData *PropertyInner) error {

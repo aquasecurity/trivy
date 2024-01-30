@@ -3,12 +3,12 @@ package sqs
 import (
 	"fmt"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/liamg/iamgo"
 
 	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
 	"github.com/aquasecurity/defsec/pkg/providers/aws/sqs"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
 func getQueues(ctx parser.FileContext) (queues []sqs.Queue) {

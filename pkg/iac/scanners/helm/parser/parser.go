@@ -13,7 +13,6 @@ import (
 	"sort"
 	"strings"
 
-	detection2 "github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/google/uuid"
 	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/action"
@@ -24,6 +23,7 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/debug"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	detection2 "github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
 var manifestNameRegex = regexp.MustCompile("# Source: [^/]+/(.+)")

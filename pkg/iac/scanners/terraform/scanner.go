@@ -10,10 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners"
-	executor2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/defsec/pkg/debug"
@@ -24,6 +20,10 @@ import (
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/extrafs"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners"
+	executor2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)

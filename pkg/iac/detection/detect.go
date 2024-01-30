@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 )
 
 type FileType string

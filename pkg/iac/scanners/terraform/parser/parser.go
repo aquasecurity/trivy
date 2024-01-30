@@ -48,15 +48,15 @@ type Parser struct {
 	modulePath        string
 	moduleSource      string
 	moduleFS          fs.FS
-	moduleBlock *terraform.Block
-	files       []sourceFile
-	tfvarsPaths []string
+	moduleBlock       *terraform.Block
+	files             []sourceFile
+	tfvarsPaths       []string
 	stopOnHCLError    bool
 	workspaceName     string
-	underlying  *hclparse.Parser
-	children    []*Parser
-	metrics     Metrics
-	options     []options.ParserOption
+	underlying        *hclparse.Parser
+	children          []*Parser
+	metrics           Metrics
+	options           []options.ParserOption
 	debug             debug.Logger
 	allowDownloads    bool
 	skipCachedModules bool

@@ -1,7 +1,6 @@
 package sqs
 
 import (
-	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/iam"
 	"github.com/google/uuid"
 	"github.com/liamg/iamgo"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/aquasecurity/defsec/pkg/providers/aws/sqs"
 	"github.com/aquasecurity/defsec/pkg/terraform"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/iam"
 )
 
 func Adapt(modules terraform.Modules) sqs.SQS {

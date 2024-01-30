@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/apparentlymart/go-cidr/cidr"
+
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 )
 

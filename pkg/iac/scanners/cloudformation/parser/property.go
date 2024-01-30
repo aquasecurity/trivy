@@ -6,11 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
 
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 )
 
 type EqualityOptions = int

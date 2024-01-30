@@ -8,10 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
-	kparser "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 	"github.com/liamg/memoryfs"
 
 	"github.com/aquasecurity/defsec/pkg/debug"
@@ -20,6 +16,10 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
+	kparser "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes/parser"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)

@@ -4,10 +4,10 @@ import (
 	"strings"
 	"time"
 
-	armjson2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/defsec/pkg/types"
+	armjson2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 )
 
 type EvalContext struct{}

@@ -3,12 +3,12 @@ package ecr
 import (
 	"fmt"
 
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/liamg/iamgo"
 
 	"github.com/aquasecurity/defsec/pkg/providers/aws/ecr"
 	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
 func getRepositories(ctx parser2.FileContext) (repositories []ecr.Repository) {
