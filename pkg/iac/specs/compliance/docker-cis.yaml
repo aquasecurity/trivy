@@ -1,0 +1,70 @@
+---
+spec:
+  id: docker-cis
+  title: CIS Docker Community Edition Benchmark v1.1.0
+  description: CIS Docker Community Edition Benchmark
+  relatedResources : 
+    - https://www.cisecurity.org/benchmark/docker
+  version: "1.1.0"
+  controls:
+    - id: '4.1'
+      name: Ensure a user for the container has been created
+      description: 'Create a non-root user for the container in the Dockerfile for the container image.'
+      checks:
+        - id: AVD-DS-0002
+      severity: 'HIGH'
+    - id: '4.2'
+      name: Ensure that containers use trusted base images (Manual)
+      description: 'Ensure that the container image is written either from scratch or is based on another established and trusted base image downloaded over a secure channel.'
+      checks:
+      severity: 'HIGH'
+    - id: '4.3'
+      name: Ensure unnecessary packages are not installed in the container (Manual)
+      description: 'Containers tend to be minimal and slim down versions of the Operating System. Do not install anything that does not justify the purpose of container.'
+      checks:
+      severity: 'HIGH'
+    - id: '4.4'
+      name: Ensure images are scanned and rebuilt to include security patches
+      description: 'Images should be scanned "frequently" for any vulnerabilities. Rebuild the images to include patches and then instantiate new containers from it.'
+      checks:
+        - id: VULN-CRITICAL # special ID for filtering vulnerabilities
+      severity: 'CRITICAL'
+    - id: '4.5'
+      name: Ensure Content trust for Docker is Enabled (Manual)
+      description: 'Content trust is disabled by default. You should enable it.'
+      checks:
+      severity: 'LOW'
+    - id: '4.6'
+      name: Ensure HEALTHCHECK instructions have been added to the container image
+      description: 'Add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.'
+      checks:
+        - id: AVD-DS-0026
+      severity: 'LOW'
+    - id: '4.7'
+      name: Ensure update instructions are not use alone in the Dockerfile
+      description: 'Do not use update instructions such as apt-get update alone or in a single line in the Dockerfile.'
+      checks:
+        - id: AVD-DS-0017
+      severity: 'HIGH'
+    - id: '4.8'
+      name: Ensure setuid and setgid permissions are removed in the images (Manual)
+      description: 'Removing setuid and setgid permissions in the images would prevent privilege escalation attacks in the containers.'
+      checks:
+      severity: 'HIGH'
+    - id: '4.9'
+      name: Ensure COPY is used instead of ADD in Dockerfile
+      description: 'Use COPY instruction instead of ADD instruction in the Dockerfile.'
+      checks:
+        - id: AVD-DS-0005
+      severity: 'LOW'
+    - id: '4.10'
+      name: Ensure secrets are not stored in Dockerfiles
+      description: 'Do not store any secrets in Dockerfiles.'
+      checks:
+        - id: SECRET-CRITICAL # special ID for filtering secrets
+      severity: 'CRITICAL'
+    - id: '4.11'
+      name: Ensure verified packages are only Installed (Manual)
+      description: 'Verify authenticity of the packages before installing them in the image.'
+      checks: # TODO
+      severity: 'MEDIUM'

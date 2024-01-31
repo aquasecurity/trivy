@@ -1,0 +1,75 @@
+spec:
+  id: "k8s-pss-baseline"
+  title: "Kubernetes Pod Security Standards - Baseline"
+  description: Kubernetes Pod Security Standards - Baseline
+  relatedResources :
+    - https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline
+  version: "0.1"
+  controls:
+    - name: HostProcess 
+      description: "Windows pods offer the ability to run HostProcess containers which enables privileged access to the Windows node. Privileged access to the host is disallowed in the baseline policy" 
+      id: "1"
+      checks:
+        - id: AVD-KSV-0103
+      severity: 'HIGH'
+    - name: Host Namespaces
+      description: "Sharing the host namespaces must be disallowed." 
+      id: "2"
+      checks:
+        - id: AVD-KSV-0008
+      severity: 'HIGH'
+    - name: Privileged Containers
+      description: "Privileged Pods disable most security mechanisms and must be disallowed." 
+      id: "3"
+      checks:
+        - id: AVD-KSV-0017
+      severity: 'HIGH'
+    - name: Capabilities
+      description: "Adding additional capabilities beyond those listed below must be disallowed."
+      id: "4"
+      checks:
+        - id: AVD-KSV-0022
+      severity: 'MEDIUM'
+    - name: HostPath Volumes
+      description: "HostPath volumes must be forbidden."
+      id: "5"
+      checks:
+        - id: AVD-KSV-0023
+      severity: 'MEDIUM'
+    - name: host ports
+      description: "hostports should be disallowed, or at minimum restricted to a known list."
+      id: "6"
+      checks:
+        - id: avd-ksv-0024
+      severity: 'HIGH'
+    - name: AppArmor
+      description: "On supported hosts, the runtime/default AppArmor profile is applied by default. The baseline policy should prevent overriding or disabling the default AppArmor profile, or restrict overrides to an allowed set of profiles."
+      id: "7"
+      checks:
+        - id: avd-ksv-0002
+      severity: 'HIGH'
+    - name: SELinux
+      description: "Setting the SELinux type is restricted, and setting a custom SELinux user or role option is forbidden."
+      id: "8"
+      checks:
+        - id: avd-ksv-0025
+      severity: 'MEDIUM'
+    - name: "/proc Mount Type"
+      description: "The default /proc masks are set up to reduce attack surface, and should be required."
+      id: "9"
+      checks:
+        - id: avd-ksv-0027
+      severity: 'MEDIUM'
+    - name: "Seccomp"
+      description: "Seccomp profile must not be explicitly set to Unconfined."
+      id: "10"
+      checks:
+        - id: avd-ksv-0104
+      severity: 'MEDIUM'
+    - name: "Sysctls"
+      description: 'Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node.'
+      id: "11"
+      checks:
+        - id: avd-ksv-0026
+      severity: 'MEDIUM'
+

@@ -17,7 +17,6 @@ import (
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-policies/checks/cloud/aws/iam"
 	"github.com/aquasecurity/trivy/test/testutil"
 )
 
@@ -627,6 +626,6 @@ data "aws_iam_policy_document" "policy" {
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
 	results, _, _ := executor.New().Execute(modules)
-	testutil.AssertRuleNotFound(t, iam.CheckEnforceGroupMFA.LongID(), results, "")
+	testutil.AssertRuleNotFound(t, "aws-iam-enforce-group-mfa", results, "")
 
 }

@@ -1,0 +1,210 @@
+spec:
+  id: aws-cis-1.2
+  title: AWS CIS Foundations v1.2
+  description: AWS CIS Foundations
+  version: "1.2"
+  relatedResources:
+  - https://www.cisecurity.org/benchmark/amazon_web_services
+  controls:
+  - id: "1.1"
+    name: limit-root-account-usage
+    description: |-
+      The "root" account has unrestricted access to all resources in the AWS account. It is highly
+      recommended that the use of this account be avoided.
+    checks:
+    - id: AVD-AWS-0140
+    severity: LOW
+  - id: "1.10"
+    name: no-password-reuse
+    description: IAM Password policy should prevent password reuse.
+    checks:
+    - id: AVD-AWS-0056
+    severity: MEDIUM
+  - id: "1.11"
+    name: set-max-password-age
+    description: IAM Password policy should have expiry less than or equal to 90 days.
+    checks:
+    - id: AVD-AWS-0062
+    severity: MEDIUM
+  - id: "1.12"
+    name: no-root-access-keys
+    description: The root user has complete access to all services and resources in an AWS account. AWS Access Keys provide programmatic access to a given account.
+    checks:
+    - id: AVD-AWS-0141
+    severity: CRITICAL
+  - id: "1.13"
+    name: enforce-root-mfa
+    description: |-
+      The "root" account has unrestricted access to all resources in the AWS account. It is highly
+      recommended that this account have MFA enabled.
+    checks:
+    - id: AVD-AWS-0142
+    severity: CRITICAL
+  - id: "1.16"
+    name: no-user-attached-policies
+    description: IAM policies should not be granted directly to users.
+    checks:
+    - id: AVD-AWS-0143
+    severity: LOW
+  - id: "1.2"
+    name: enforce-user-mfa
+    description: IAM Users should have MFA enforcement activated.
+    checks:
+    - id: AVD-AWS-0145
+    severity: MEDIUM
+  - id: "1.3"
+    name: disable-unused-credentials
+    description: Credentials which are no longer used should be disabled.
+    checks:
+    - id: AVD-AWS-0144
+    severity: MEDIUM
+  - id: "1.4"
+    name: rotate-access-keys
+    description: Access keys should be rotated at least every 90 days
+    checks:
+    - id: AVD-AWS-0146
+    severity: LOW
+  - id: "1.5"
+    name: require-uppercase-in-passwords
+    description: IAM Password policy should have requirement for at least one uppercase character.
+    checks:
+    - id: AVD-AWS-0061
+    severity: MEDIUM
+  - id: "1.6"
+    name: require-lowercase-in-passwords
+    description: IAM Password policy should have requirement for at least one lowercase character.
+    checks:
+    - id: AVD-AWS-0058
+    severity: MEDIUM
+  - id: "1.7"
+    name: require-symbols-in-passwords
+    description: IAM Password policy should have requirement for at least one symbol in the password.
+    checks:
+    - id: AVD-AWS-0060
+    severity: MEDIUM
+  - id: "1.8"
+    name: require-numbers-in-passwords
+    description: IAM Password policy should have requirement for at least one number in the password.
+    checks:
+    - id: AVD-AWS-0059
+    severity: MEDIUM
+  - id: "1.9"
+    name: set-minimum-password-length
+    description: IAM Password policy should have minimum password length of 14 or more characters.
+    checks:
+    - id: AVD-AWS-0063
+    severity: MEDIUM
+  - id: "2.3"
+    name: no-public-log-access
+    description: The S3 Bucket backing Cloudtrail should be private
+    checks:
+    - id: AVD-AWS-0161
+    severity: CRITICAL
+  - id: "2.4"
+    name: ensure-cloudwatch-integration
+    description: CloudTrail logs should be stored in S3 and also sent to CloudWatch Logs
+    checks:
+    - id: AVD-AWS-0162
+    severity: LOW
+  - id: "2.5"
+    name: enable-all-regions
+    description: Cloudtrail should be enabled in all regions regardless of where your AWS resources are generally homed
+    checks:
+    - id: AVD-AWS-0014
+    severity: MEDIUM
+  - id: "2.6"
+    name: require-bucket-access-logging
+    description: You should enable bucket access logging on the CloudTrail S3 bucket.
+    checks:
+    - id: AVD-AWS-0163
+    severity: LOW
+  - id: "3.1"
+    name: require-unauthorised-api-call-alarm
+    description: Ensure a log metric filter and alarm exist for unauthorized API calls
+    checks:
+    - id: AVD-AWS-0147
+    severity: LOW
+  - id: "3.10"
+    name: require-sg-change-alarms
+    description: Ensure a log metric filter and alarm exist for security group changes
+    checks:
+    - id: AVD-AWS-0156
+    severity: LOW
+  - id: "3.11"
+    name: require-nacl-changes-alarm
+    description: Ensure a log metric filter and alarm exist for changes to Network Access Control Lists (NACL)
+    checks:
+    - id: AVD-AWS-0157
+    severity: LOW
+  - id: "3.12"
+    name: require-network-gateway-changes-alarm
+    description: Ensure a log metric filter and alarm exist for changes to network gateways
+    checks:
+    - id: AVD-AWS-0158
+    severity: LOW
+  - id: "3.13"
+    name: require-network-gateway-changes-alarm
+    description: Ensure a log metric filter and alarm exist for route table changes
+    checks:
+    - id: AVD-AWS-0159
+    severity: LOW
+  - id: "3.14"
+    name: require-vpc-changes-alarm
+    description: Ensure a log metric filter and alarm exist for VPC changes
+    checks:
+    - id: AVD-AWS-0160
+    severity: LOW
+  - id: "3.2"
+    name: require-non-mfa-login-alarm
+    description: Ensure a log metric filter and alarm exist for AWS Management Console sign-in without MFA
+    checks:
+    - id: AVD-AWS-0148
+    severity: LOW
+  - id: "3.3"
+    name: require-root-user-usage-alarm
+    description: Ensure a log metric filter and alarm exist for usage of root user
+    checks:
+    - id: AVD-AWS-0149
+    severity: LOW
+  - id: "3.4"
+    name: require-iam-policy-change-alarm
+    description: Ensure a log metric filter and alarm exist for IAM policy changes
+    checks:
+    - id: AVD-AWS-0150
+    severity: LOW
+  - id: "3.5"
+    name: require-cloud-trail-change-alarm
+    description: Ensure a log metric filter and alarm exist for CloudTrail configuration changes
+    checks:
+    - id: AVD-AWS-0151
+    severity: LOW
+  - id: "3.6"
+    name: require-console-login-failures-alarm
+    description: Ensure a log metric filter and alarm exist for AWS Management Console authentication failures
+    checks:
+    - id: AVD-AWS-0152
+    severity: LOW
+  - id: "3.7"
+    name: require-cmk-disabled-alarm
+    description: Ensure a log metric filter and alarm exist for disabling or scheduled deletion of customer managed keys
+    checks:
+    - id: AVD-AWS-0153
+    severity: LOW
+  - id: "3.8"
+    name: require-s3-bucket-policy-change-alarm
+    description: Ensure a log metric filter and alarm exist for S3 bucket policy changes
+    checks:
+    - id: AVD-AWS-0154
+    severity: LOW
+  - id: "3.9"
+    name: require-config-configuration-changes-alarm
+    description: Ensure a log metric filter and alarm exist for AWS Config configuration changes
+    checks:
+    - id: AVD-AWS-0155
+    severity: LOW
+  - id: "4.1"
+    name: no-public-ingress-sgr
+    description: An ingress security group rule allows traffic from /0.
+    checks:
+    - id: AVD-AWS-0107
+    severity: CRITICAL
