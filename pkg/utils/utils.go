@@ -57,10 +57,12 @@ func MergeMaps(parent, child map[string]string) map[string]string {
 	if parent == nil {
 		return child
 	}
+	// Clone parent map to avoid shadow overwrite
+	newParent := maps.Clone(parent)
 	for k, v := range child {
-		parent[k] = v
+		newParent[k] = v
 	}
-	return parent
+	return newParent
 }
 
 func PackageID(name, version string) string {

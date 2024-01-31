@@ -23,7 +23,7 @@
             <dependency>
                 <groupId>org.example</groupId>
                 <artifactId>example-dependency-management</artifactId>
-                <version>2.2.2</version>
+                <version>3.3.3</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
