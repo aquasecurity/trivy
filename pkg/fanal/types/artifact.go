@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"net/url"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -156,8 +157,16 @@ func (id *PkgIdentifier) Empty() bool {
 }
 
 func (id *PkgIdentifier) Match(s string) bool {
+	// `s` can be an unescaped string
+	// e.g. CycloneDX unescapes BOM Links - https://github.com/CycloneDX/cyclonedx-go/blob/b9654ae9b4705645152d20eb9872b5f3d73eac49/link.go#L136
+	// So we need to match escaped and unescaped BOMRef
+	var unescapedBomRef string
+	if ref, err := url.QueryUnescape(id.BOMRef); err == nil {
+		unescapedBomRef = ref
+	}
+
 	switch {
-	case id.BOMRef == s:
+	case id.BOMRef == s || unescapedBomRef == s:
 		return true
 	case id.PURL != nil && id.PURL.String() == s:
 		return true
