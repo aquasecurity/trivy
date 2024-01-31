@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strconv"
@@ -60,14 +61,14 @@ func NewCycloneDX(version string) *CycloneDX {
 	}
 }
 
-func (c *CycloneDX) Marshal(root *Component) *cdx.BOM {
+func (c *CycloneDX) Marshal(ctx context.Context, root *Component) *cdx.BOM {
 	bom := cdx.NewBOM()
 	bom.SerialNumber = uuid.New().URN()
-	bom.Metadata = c.Metadata()
+	bom.Metadata = c.Metadata(ctx)
 
-	components := map[string]*cdx.Component{}
-	dependencies := map[string]*[]string{}
-	vulnerabilities := map[string]*cdx.Vulnerability{}
+	components := make(map[string]*cdx.Component)
+	dependencies := make(map[string]*[]string)
+	vulnerabilities := make(map[string]*cdx.Vulnerability)
 	bom.Metadata.Component = c.MarshalComponent(root, components, dependencies, vulnerabilities)
 
 	// Remove metadata component
@@ -136,7 +137,7 @@ func (c *CycloneDX) MarshalComponent(component *Component, components map[string
 		}
 	}
 
-	dependencies := make([]string, 0) // Components that do not have their own dependencies must be declared as empty elements
+	dependencies := make([]string, 0) // nolint:gocritic // Components that do not have their own dependencies must be declared as empty elements
 	for _, child := range component.Components {
 		childComponent := c.MarshalComponent(child, components, deps, vulns)
 		dependencies = append(dependencies, childComponent.BOMRef)
@@ -155,7 +156,7 @@ func (c *CycloneDX) marshalVulnerability(bomRef string, vuln types.DetectedVulne
 		Ratings:     cdxRatings(vuln),
 		CWEs:        cwes(vuln.CweIDs),
 		Description: vuln.Description,
-		Advisories:  cdxAdvisories(vuln.References),
+		Advisories:  cdxAdvisories(append([]string{vuln.PrimaryURL}, vuln.References...)),
 	}
 	if vuln.FixedVersion != "" {
 		v.Recommendation = fmt.Sprintf("Upgrade %s to version %s", vuln.PkgName, vuln.FixedVersion)
@@ -180,14 +181,17 @@ func (c *CycloneDX) BOMRef(component *Component) string {
 	return component.PackageURL.BOMRef()
 }
 
-func (c *CycloneDX) Metadata() *cdx.Metadata {
+func (c *CycloneDX) Metadata(ctx context.Context) *cdx.Metadata {
 	return &cdx.Metadata{
-		Timestamp: clock.Now().UTC().Format(timeLayout),
-		Tools: &[]cdx.Tool{
-			{
-				Vendor:  ToolVendor,
-				Name:    ToolName,
-				Version: c.appVersion,
+		Timestamp: clock.Now(ctx).UTC().Format(timeLayout),
+		Tools: &cdx.ToolsChoice{
+			Components: &[]cdx.Component{
+				{
+					Type:    cdx.ComponentTypeApplication,
+					Group:   ToolVendor,
+					Name:    ToolName,
+					Version: c.appVersion,
+				},
 			},
 		},
 	}
@@ -231,11 +235,11 @@ func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.V
 	return &vulns
 }
 
-func (c *CycloneDX) PackageURL(purl *purl.PackageURL) string {
-	if purl == nil {
+func (c *CycloneDX) PackageURL(p *purl.PackageURL) string {
+	if p == nil {
 		return ""
 	}
-	return purl.String()
+	return p.String()
 }
 
 func (c *CycloneDX) Supplier(supplier string) *cdx.OrganizationalEntity {
@@ -312,11 +316,20 @@ func IsTrivySBOM(c *cdx.BOM) bool {
 		return false
 	}
 
-	for _, tool := range *c.Metadata.Tools {
+	for _, component := range lo.FromPtr(c.Metadata.Tools.Components) {
+		if component.Group == ToolVendor && component.Name == ToolName {
+			return true
+		}
+	}
+
+	// Metadata.Tools array is deprecated (as of CycloneDX v1.5). We check this field for backward compatibility.
+	// cf. https://github.com/CycloneDX/cyclonedx-go/blob/b9654ae9b4705645152d20eb9872b5f3d73eac49/cyclonedx.go#L988
+	for _, tool := range lo.FromPtr(c.Metadata.Tools.Tools) {
 		if tool.Vendor == ToolVendor && tool.Name == ToolName {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -330,7 +343,7 @@ func LookupProperty(properties *[]cdx.Property, key string) string {
 }
 
 func UnmarshalProperties(properties *[]cdx.Property) map[string]string {
-	props := map[string]string{}
+	props := make(map[string]string)
 	for _, prop := range lo.FromPtr(properties) {
 		if !strings.HasPrefix(prop.Name, Namespace) {
 			continue
@@ -341,19 +354,18 @@ func UnmarshalProperties(properties *[]cdx.Property) map[string]string {
 }
 
 func cdxAdvisories(refs []string) *[]cdx.Advisory {
+	refs = lo.Uniq(refs)
+	advs := lo.FilterMap(refs, func(ref string, _ int) (cdx.Advisory, bool) {
+		return cdx.Advisory{URL: ref}, ref != ""
+	})
+
 	// cyclonedx converts link to empty `[]cdx.Advisory` to `null`
 	// `bom-1.5.schema.json` doesn't support this - `Invalid type. Expected: array, given: null`
 	// we need to explicitly set `nil` for empty `refs` slice
-	if len(refs) == 0 {
+	if len(advs) == 0 {
 		return nil
 	}
 
-	var advs []cdx.Advisory
-	for _, ref := range refs {
-		advs = append(advs, cdx.Advisory{
-			URL: ref,
-		})
-	}
 	return &advs
 }
 
@@ -375,11 +387,11 @@ func cwes(cweIDs []string) *[]int {
 	return &ret
 }
 
-func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
-	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
-	for sourceID, severity := range vulnerability.VendorSeverity {
+func cdxRatings(vuln types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
+	rates := make([]cdx.VulnerabilityRating, 0) // nolint:gocritic // To export an empty array in JSON
+	for sourceID, severity := range vuln.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
-		if cvss, ok := vulnerability.CVSS[sourceID]; ok {
+		if cvss, ok := vuln.CVSS[sourceID]; ok {
 			if cvss.V2Score != 0 || cvss.V2Vector != "" {
 				rates = append(rates, cdxRatingV2(sourceID, severity, cvss))
 			}

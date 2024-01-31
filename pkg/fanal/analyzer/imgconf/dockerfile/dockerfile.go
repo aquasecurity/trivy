@@ -52,6 +52,15 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
 			// RUN instruction
 			createdBy = strings.ReplaceAll(h.CreatedBy, "/bin/sh -c", "RUN")
+		case strings.HasSuffix(h.CreatedBy, "# buildkit"):
+			// buildkit instructions
+			// COPY ./foo /foo # buildkit
+			// ADD ./foo.txt /foo.txt # buildkit
+			// RUN /bin/sh -c ls -hl /foo # buildkit
+			createdBy = strings.TrimSuffix(h.CreatedBy, "# buildkit")
+			if strings.HasPrefix(h.CreatedBy, "RUN /bin/sh -c") {
+				createdBy = strings.ReplaceAll(createdBy, "RUN /bin/sh -c", "RUN")
+			}
 		case strings.HasPrefix(h.CreatedBy, "USER"):
 			// USER instruction
 			createdBy = h.CreatedBy

@@ -42,6 +42,7 @@ trivy sbom [flags] SBOM_PATH
       --no-progress                 suppress progress bar
       --offline-scan                do not issue API requests to identify dependencies
   -o, --output string               output file name
+      --output-plugin-arg string    [EXPERIMENTAL] output plugin arguments
       --redis-ca string             redis ca file location, if using redis as cache backend
       --redis-cert string           redis certificate file location, if using redis as cache backend
       --redis-key string            redis key file location, if using redis as cache backend
@@ -55,7 +56,6 @@ trivy sbom [flags] SBOM_PATH
       --skip-dirs strings           specify the directories or glob patterns to skip
       --skip-files strings          specify the files or glob patterns to skip
       --skip-java-db-update         skip updating Java index database
-      --slow                        scan over time with lower CPU and memory utilization
   -t, --template string             output template
       --token string                for authentication in client/server mode
       --token-header string         specify a header name for token in client/server mode (default "Trivy-Token")

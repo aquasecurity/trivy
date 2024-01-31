@@ -78,7 +78,7 @@ https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-a
 </details>
 
 ```bash
-trivy fs --scanners vuln,secret,config myproject/
+trivy fs --scanners vuln,secret,misconfig myproject/
 ```
 
 <details>

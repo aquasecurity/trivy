@@ -2,13 +2,13 @@ package cache
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
@@ -17,14 +17,20 @@ import (
 
 var _ Cache = &S3Cache{}
 
+type s3API interface {
+	HeadObject(ctx context.Context, params *s3.HeadObjectInput, optFns ...func(*s3.Options)) (*s3.HeadObjectOutput, error)
+	PutObject(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error)
+	DeleteBucket(ctx context.Context, params *s3.DeleteBucketInput, optFns ...func(*s3.Options)) (*s3.DeleteBucketOutput, error)
+}
+
 type S3Cache struct {
-	s3Client   s3iface.S3API
-	downloader s3manageriface.DownloaderAPI
+	s3Client   s3API
+	downloader *manager.Downloader
 	bucketName string
 	prefix     string
 }
 
-func NewS3Cache(bucketName, prefix string, api s3iface.S3API, downloaderAPI s3manageriface.DownloaderAPI) S3Cache {
+func NewS3Cache(bucketName, prefix string, api s3API, downloaderAPI *manager.Downloader) S3Cache {
 	return S3Cache{
 		s3Client:   api,
 		downloader: downloaderAPI,
@@ -46,7 +52,7 @@ func (c S3Cache) DeleteBlobs(blobIDs []string) error {
 	for _, blobID := range blobIDs {
 		key := fmt.Sprintf("%s/%s/%s", blobBucket, c.prefix, blobID)
 		input := &s3.DeleteBucketInput{Bucket: aws.String(key)}
-		if _, err := c.s3Client.DeleteBucket(input); err != nil {
+		if _, err := c.s3Client.DeleteBucket(context.TODO(), input); err != nil {
 			errs = multierror.Append(errs, err)
 		}
 	}
@@ -71,12 +77,12 @@ func (c S3Cache) put(key string, body interface{}) (err error) {
 		Key:    aws.String(key),
 		Body:   bytes.NewReader(b),
 	}
-	_, err = c.s3Client.PutObject(params)
+	_, err = c.s3Client.PutObject(context.TODO(), params)
 	if err != nil {
 		return xerrors.Errorf("unable to put object: %w", err)
 	}
-	//Index file due S3 caveat read after write consistency
-	_, err = c.s3Client.PutObject(&s3.PutObjectInput{
+	// Index file due S3 caveat read after write consistency
+	_, err = c.s3Client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(c.bucketName),
 		Key:    aws.String(fmt.Sprintf("%s.index", key)),
 	})
@@ -88,8 +94,8 @@ func (c S3Cache) put(key string, body interface{}) (err error) {
 
 func (c S3Cache) GetBlob(blobID string) (types.BlobInfo, error) {
 	var blobInfo types.BlobInfo
-	buf := aws.NewWriteAtBuffer([]byte{})
-	_, err := c.downloader.Download(buf, &s3.GetObjectInput{
+	buf := manager.NewWriteAtBuffer([]byte{})
+	_, err := c.downloader.Download(context.TODO(), buf, &s3.GetObjectInput{
 		Bucket: aws.String(c.bucketName),
 		Key:    aws.String(fmt.Sprintf("%s/%s/%s", blobBucket, c.prefix, blobID)),
 	})
@@ -105,8 +111,8 @@ func (c S3Cache) GetBlob(blobID string) (types.BlobInfo, error) {
 
 func (c S3Cache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
 	var info types.ArtifactInfo
-	buf := aws.NewWriteAtBuffer([]byte{})
-	_, err := c.downloader.Download(buf, &s3.GetObjectInput{
+	buf := manager.NewWriteAtBuffer([]byte{})
+	_, err := c.downloader.Download(context.TODO(), buf, &s3.GetObjectInput{
 		Bucket: aws.String(c.bucketName),
 		Key:    aws.String(fmt.Sprintf("%s/%s/%s", artifactBucket, c.prefix, artifactID)),
 	})
@@ -120,10 +126,11 @@ func (c S3Cache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
 	return info, nil
 }
 
-func (c S3Cache) getIndex(key string, keyType string) error {
-	_, err := c.s3Client.HeadObject(&s3.HeadObjectInput{
+func (c S3Cache) getIndex(key, keyType string) error {
+	_, err := c.s3Client.HeadObject(context.TODO(), &s3.HeadObjectInput{
 		Key:    aws.String(fmt.Sprintf("%s/%s/%s.index", keyType, c.prefix, key)),
-		Bucket: &c.bucketName})
+		Bucket: &c.bucketName,
+	})
 	if err != nil {
 		return xerrors.Errorf("failed to get index from the cache: %w", err)
 	}

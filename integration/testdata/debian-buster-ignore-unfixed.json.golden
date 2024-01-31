@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/debian-buster.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -59,6 +60,9 @@
           ],
           "PkgID": "libidn2-0@2.0.5-1",
           "PkgName": "libidn2-0",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libidn2-0@2.0.5-1?arch=amd64\u0026distro=debian-10.1"
+          },
           "InstalledVersion": "2.0.5-1",
           "FixedVersion": "2.0.5-1+deb10u1",
           "Status": "fixed",
@@ -79,6 +83,12 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",

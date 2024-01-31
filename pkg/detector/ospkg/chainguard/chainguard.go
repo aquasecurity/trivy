@@ -1,49 +1,28 @@
 package chainguard
 
 import (
+	"context"
+
 	version "github.com/knqyf263/go-apk-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
-
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/chainguard"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/chainguard"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(clock clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = clock
-	}
-}
-
 // Scanner implements the Chainguard scanner
 type Scanner struct {
 	vs chainguard.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      chainguard.NewVulnSrc(),
-		options: o,
+		vs: chainguard.NewVulnSrc(),
 	}
 }
 
@@ -82,7 +61,7 @@ func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) 
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
 			})
@@ -103,8 +82,8 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 	return installedVersion.LessThan(fixedVersion)
 }
 
-// IsSupportedVersion checks the OSFamily can be scanned using Chainguard scanner
-func (s *Scanner) IsSupportedVersion(_, _ string) bool {
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	// Chainguard doesn't have versions, so there is no case where a given input yields a
 	// result of an unsupported Chainguard version.
 

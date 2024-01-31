@@ -1,95 +1,91 @@
 package oracle
 
 import (
+	"context"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"k8s.io/utils/clock"
-	clocktesting "k8s.io/utils/clock/testing"
-
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
-	vectors := map[string]struct {
-		clock     clock.Clock
-		osFamily  string
+	tests := map[string]struct {
+		now       time.Time
+		osFamily  ftypes.OSType
 		osVersion string
 		expected  bool
 	}{
 		"oracle3": {
-			clock:     clocktesting.NewFakeClock(time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC)),
+			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "oracle",
 			osVersion: "3",
 			expected:  false,
 		},
 		"oracle4": {
-			clock:     clocktesting.NewFakeClock(time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC)),
+			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "oracle",
 			osVersion: "4",
 			expected:  false,
 		},
 		"oracle5": {
-			clock:     clocktesting.NewFakeClock(time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC)),
+			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "oracle",
 			osVersion: "5",
 			expected:  false,
 		},
 		"oracle6": {
-			clock:     clocktesting.NewFakeClock(time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC)),
+			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "oracle",
 			osVersion: "6",
 			expected:  true,
 		},
 		"oracle7": {
-			clock:     clocktesting.NewFakeClock(time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC)),
+			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "oracle",
 			osVersion: "7",
 			expected:  true,
 		},
 		"oracle7.6": {
-			clock:     clocktesting.NewFakeClock(time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC)),
+			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "oracle",
 			osVersion: "7.6",
 			expected:  true,
 		},
 		"oracle8": {
-			clock:     clocktesting.NewFakeClock(time.Date(2029, 7, 18, 23, 59, 58, 59, time.UTC)),
+			now:       time.Date(2029, 7, 18, 23, 59, 58, 59, time.UTC),
 			osFamily:  "oracle",
 			osVersion: "8",
 			expected:  true,
 		},
 		"oracle8-same-time": {
-			clock:     clocktesting.NewFakeClock(time.Date(2029, 7, 18, 23, 59, 59, 0, time.UTC)),
+			now:       time.Date(2029, 7, 18, 23, 59, 59, 0, time.UTC),
 			osFamily:  "oracle",
 			osVersion: "8",
 			expected:  false,
 		},
-		"unknown": {
-			clock:     clocktesting.NewFakeClock(time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC)),
+		"latest": {
+			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "oracle",
-			osVersion: "unknown",
-			expected:  false,
+			osVersion: "latest",
+			expected:  true,
 		},
 	}
 
-	for testName, v := range vectors {
-		s := &Scanner{
-			vs:    oracleoval.NewVulnSrc(),
-			clock: v.clock,
-		}
+	for testName, tt := range tests {
+		s := NewScanner()
 		t.Run(testName, func(t *testing.T) {
-			actual := s.IsSupportedVersion(v.osFamily, v.osVersion)
-			if actual != v.expected {
-				t.Errorf("[%s] got %v, want %v", testName, actual, v.expected)
+			ctx := clock.With(context.Background(), tt.now)
+			actual := s.IsSupportedVersion(ctx, tt.osFamily, tt.osVersion)
+			if actual != tt.expected {
+				t.Errorf("[%s] got %v, want %v", testName, actual, tt.expected)
 			}
 		})
 	}
@@ -109,8 +105,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "detected",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "detected",
+			fixtures: []string{
+				"testdata/fixtures/oracle7.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -140,8 +139,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "without ksplice",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "without ksplice",
+			fixtures: []string{
+				"testdata/fixtures/oracle7.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -159,8 +161,11 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "the installed version has ksplice2",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "the installed version has ksplice2",
+			fixtures: []string{
+				"testdata/fixtures/oracle7.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -180,8 +185,11 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "with ksplice",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "with ksplice",
+			fixtures: []string{
+				"testdata/fixtures/oracle7.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -213,8 +221,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "malformed",
-			fixtures: []string{"testdata/fixtures/invalid-type.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "malformed",
+			fixtures: []string{
+				"testdata/fixtures/invalid-type.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{

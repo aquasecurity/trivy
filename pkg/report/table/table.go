@@ -1,6 +1,7 @@
 package table
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -11,12 +12,10 @@ import (
 	"github.com/fatih/color"
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/tml"
-
 	"github.com/aquasecurity/table"
+	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -54,7 +53,7 @@ type Renderer interface {
 }
 
 // Write writes the result on standard output
-func (tw Writer) Write(report types.Report) error {
+func (tw Writer) Write(_ context.Context, report types.Report) error {
 	for _, result := range report.Results {
 		// Not display a table of custom resources
 		if result.Class == types.ClassCustom {
@@ -138,7 +137,7 @@ func IsOutputToTerminal(output io.Writer) bool {
 		return false
 	}
 
-	if output != xio.NopCloser(os.Stdout) {
+	if output != os.Stdout {
 		return false
 	}
 	o, err := os.Stdout.Stat()

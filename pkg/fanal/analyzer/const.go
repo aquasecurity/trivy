@@ -1,6 +1,6 @@
 package analyzer
 
-import "github.com/aquasecurity/defsec/pkg/detection"
+import "github.com/aquasecurity/trivy-iac/pkg/detection"
 
 type Type string
 
@@ -61,8 +61,9 @@ const (
 	TypePnpm       Type = "pnpm"
 
 	// .NET
-	TypeNuget      Type = "nuget"
-	TypeDotNetCore Type = "dotnet-core"
+	TypeNuget         Type = "nuget"
+	TypeDotNetCore    Type = "dotnet-core"
+	TypePackagesProps Type = "packages-props"
 
 	// Conda
 	TypeCondaPkg Type = "conda-pkg"
@@ -171,6 +172,7 @@ var (
 		TypePnpm,
 		TypeNuget,
 		TypeDotNetCore,
+		TypePackagesProps,
 		TypeCondaPkg,
 		TypePythonPkg,
 		TypePip,

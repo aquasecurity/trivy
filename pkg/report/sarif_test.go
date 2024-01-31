@@ -89,7 +89,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -214,7 +214,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -354,7 +354,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -448,7 +448,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -518,7 +518,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "no vulns",
 			want: &sarif.Report{
 				Version: "2.1.0",
-				Schema:  "https://json.schemastore.org/sarif-2.1.0.json",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
 				Runs: []*sarif.Run{
 					{
 						Tool: sarif.Tool{
@@ -549,7 +549,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			w := report.SarifWriter{
 				Output: sarifWritten,
 			}
-			err := w.Write(tt.input)
+			err := w.Write(nil, tt.input)
 			assert.NoError(t, err)
 
 			result := &sarif.Report{}

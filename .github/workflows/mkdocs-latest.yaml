@@ -14,15 +14,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout main
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
           persist-credentials: true
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.x
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip setuptools wheel
           pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
           pip install -r docs/build/requirements.txt
         env:

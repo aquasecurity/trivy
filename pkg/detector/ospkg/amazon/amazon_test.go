@@ -1,12 +1,10 @@
 package amazon_test
 
 import (
+	"context"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -15,6 +13,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestScanner_Detect(t *testing.T) {
@@ -30,8 +30,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "amazon linux 1",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 1",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1.2",
 				pkgs: []ftypes.Package{
@@ -64,8 +67,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "amazon linux 2",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 2",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -96,8 +102,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "amazon linux 2023",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 2023",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2023",
 				pkgs: []ftypes.Package{
@@ -128,8 +137,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "empty version",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "empty version",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -140,8 +152,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1",
 				pkgs: []ftypes.Package{
@@ -176,7 +191,7 @@ func TestScanner_Detect(t *testing.T) {
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
-		osFamily string
+		osFamily ftypes.OSType
 		osVer    string
 	}
 	tests := []struct {
@@ -219,7 +234,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 				osFamily: "amazon",
 				osVer:    "2022",
 			},
-			want: false,
+			want: true,
 		},
 		{
 			name: "amazon linux 2023",
@@ -233,8 +248,9 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := amazon.NewScanner(amazon.WithClock(fake.NewFakeClock(tt.now)))
-			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			ctx := clock.With(context.Background(), tt.now)
+			s := amazon.NewScanner()
+			got := s.IsSupportedVersion(ctx, tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}

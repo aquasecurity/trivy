@@ -2,6 +2,7 @@ package result
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"io/fs"
 	"os"
@@ -72,11 +73,11 @@ func pathMatch(path string, patterns []string) bool {
 	return false
 }
 
-func (f *IgnoreFindings) Filter() {
+func (f *IgnoreFindings) Filter(ctx context.Context) {
 	var findings IgnoreFindings
 	for _, finding := range *f {
 		// Filter out expired ignore findings
-		if !finding.ExpiredAt.IsZero() && finding.ExpiredAt.Before(clock.Now()) {
+		if !finding.ExpiredAt.IsZero() && finding.ExpiredAt.Before(clock.Now(ctx)) {
 			continue
 		}
 
@@ -101,7 +102,7 @@ type IgnoreConfig struct {
 	Licenses          IgnoreFindings `yaml:"licenses"`
 }
 
-func getIgnoredFindings(ignoreFile string) (IgnoreConfig, error) {
+func getIgnoredFindings(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
 	var conf IgnoreConfig
 	if _, err := os.Stat(ignoreFile); errors.Is(err, fs.ErrNotExist) {
 		// .trivyignore doesn't necessarily exist
@@ -127,10 +128,10 @@ func getIgnoredFindings(ignoreFile string) (IgnoreConfig, error) {
 		}
 	}
 
-	conf.Vulnerabilities.Filter()
-	conf.Misconfigurations.Filter()
-	conf.Secrets.Filter()
-	conf.Licenses.Filter()
+	conf.Vulnerabilities.Filter(ctx)
+	conf.Misconfigurations.Filter(ctx)
+	conf.Secrets.Filter(ctx)
+	conf.Licenses.Filter(ctx)
 
 	return conf, nil
 }

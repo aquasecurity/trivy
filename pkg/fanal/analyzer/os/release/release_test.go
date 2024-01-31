@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -25,49 +24,70 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			name:      "alpine",
 			inputFile: "testdata/alpine",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Alpine, Name: "3.15.4"},
+				OS: types.OS{
+					Family: types.Alpine,
+					Name:   "3.15.4",
+				},
 			},
 		},
 		{
 			name:      "openSUSE-leap 15.2.1",
 			inputFile: "testdata/opensuseleap-15.2.1",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.OpenSUSELeap, Name: "15.2.1"},
+				OS: types.OS{
+					Family: types.OpenSUSELeap,
+					Name:   "15.2.1",
+				},
 			},
 		},
 		{
 			name:      "openSUSE-leap 42.3",
 			inputFile: "testdata/opensuseleap-42.3",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.OpenSUSELeap, Name: "42.3"},
+				OS: types.OS{
+					Family: types.OpenSUSELeap,
+					Name:   "42.3",
+				},
 			},
 		},
 		{
 			name:      "openSUSE-tumbleweed",
 			inputFile: "testdata/opensusetumbleweed",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.OpenSUSETumbleweed, Name: "20220412"},
+				OS: types.OS{
+					Family: types.OpenSUSETumbleweed,
+					Name:   "20220412",
+				},
 			},
 		},
 		{
 			name:      "SUSE Linux Enterprise Server",
 			inputFile: "testdata/sles",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.SLES, Name: "15.3"},
+				OS: types.OS{
+					Family: types.SLES,
+					Name:   "15.3",
+				},
 			},
 		},
 		{
 			name:      "Photon OS",
 			inputFile: "testdata/photon",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Photon, Name: "4.0"},
+				OS: types.OS{
+					Family: types.Photon,
+					Name:   "4.0",
+				},
 			},
 		},
 		{
 			name:      "Photon OS",
 			inputFile: "testdata/photon",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Photon, Name: "4.0"},
+				OS: types.OS{
+					Family: types.Photon,
+					Name:   "4.0",
+				},
 			},
 		},
 		{

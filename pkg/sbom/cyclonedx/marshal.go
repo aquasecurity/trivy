@@ -1,11 +1,13 @@
 package cyclonedx
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -57,14 +59,14 @@ func NewMarshaler(version string) *Marshaler {
 }
 
 // Marshal converts the Trivy report to the CycloneDX format
-func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
+func (e *Marshaler) Marshal(ctx context.Context, report types.Report) (*cdx.BOM, error) {
 	// Convert
 	root, err := e.MarshalReport(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to marshal report: %w", err)
 	}
 
-	return e.core.Marshal(root), nil
+	return e.core.Marshal(ctx, root), nil
 }
 
 func (e *Marshaler) MarshalReport(r types.Report) (*core.Component, error) {
@@ -166,7 +168,7 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 		}
 
 		// Recursive packages from direct dependencies
-		if component, err := e.marshalPackage(pkg, pkgs, map[string]*core.Component{}); err != nil {
+		if component, err := e.marshalPackage(pkg, pkgs, make(map[string]*core.Component)); err != nil {
 			return nil, nil
 		} else if component != nil {
 			directComponents = append(directComponents, component)
@@ -178,7 +180,7 @@ func (e *Marshaler) marshalPackages(metadata types.Metadata, result types.Result
 
 type Package struct {
 	ftypes.Package
-	Type            string
+	Type            ftypes.TargetType
 	Metadata        types.Metadata
 	Vulnerabilities []types.DetectedVulnerability
 }
@@ -192,6 +194,11 @@ func (e *Marshaler) marshalPackage(pkg Package, pkgs map[string]Package, compone
 	component, err := pkgComponent(pkg)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse pkg: %w", err)
+	}
+
+	// Skip component that can't be converted from `Package`
+	if component == nil {
+		return nil, nil
 	}
 	components[pkg.ID] = component
 
@@ -231,11 +238,12 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 			Value: r.Metadata.ImageID,
 		})
 
-		p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{})
+		p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
-		} else if p.Type != "" {
-			root.PackageURL = &p
+		}
+		if p != nil {
+			root.PackageURL = p
 		}
 
 	case ftypes.ArtifactVM:
@@ -281,7 +289,7 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 		Properties: []core.Property{
 			{
 				Name:  PropertyType,
-				Value: r.Type,
+				Value: string(r.Type),
 			},
 			{
 				Name:  PropertyClass,
@@ -295,7 +303,7 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 		// UUID needs to be generated since Operating System Component cannot generate PURL.
 		// https://cyclonedx.org/use-cases/#known-vulnerabilities
 		if osFound != nil {
-			component.Name = osFound.Family
+			component.Name = string(osFound.Family)
 			component.Version = osFound.Name
 		}
 		component.Type = cdx.ComponentTypeOS
@@ -309,17 +317,21 @@ func (e *Marshaler) resultComponent(r types.Result, osFound *ftypes.OS) *core.Co
 }
 
 func pkgComponent(pkg Package) (*core.Component, error) {
-	pu, err := purl.NewPackageURL(pkg.Type, pkg.Metadata, pkg.Package)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to new package purl: %w", err)
-	}
-
 	name := pkg.Name
+	version := pkg.Version
 	var group string
-	// use `group` field for GroupID and `name` for ArtifactID for jar files
-	if pkg.Type == ftypes.Jar {
-		name = pu.Name
-		group = pu.Namespace
+	// there are cases when we can't build purl
+	// e.g. local Go packages
+	if pu := pkg.Identifier.PURL; pu != nil {
+		version = pu.Version
+		// Use `group` field for GroupID and `name` for ArtifactID for java files
+		// https://github.com/aquasecurity/trivy/issues/4675
+		// Use `group` field for npm scopes
+		// https://github.com/aquasecurity/trivy/issues/5908
+		if pu.Type == packageurl.TypeMaven || pu.Type == packageurl.TypeNPM {
+			name = pu.Name
+			group = pu.Namespace
+		}
 	}
 
 	properties := []core.Property{
@@ -329,7 +341,7 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		},
 		{
 			Name:  PropertyPkgType,
-			Value: pkg.Type,
+			Value: string(pkg.Type),
 		},
 		{
 			Name:  PropertyFilePath,
@@ -369,8 +381,8 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		Type:            cdx.ComponentTypeLibrary,
 		Name:            name,
 		Group:           group,
-		Version:         pu.Version,
-		PackageURL:      &pu,
+		Version:         version,
+		PackageURL:      purl.WithPath(pkg.Identifier.PURL, pkg.FilePath),
 		Supplier:        pkg.Maintainer,
 		Licenses:        pkg.Licenses,
 		Hashes:          lo.Ternary(pkg.Digest == "", nil, []digest.Digest{pkg.Digest}),

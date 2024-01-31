@@ -2,13 +2,15 @@ package cargo
 
 import (
 	"context"
+	"os"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"os"
-	"testing"
 )
 
 func Test_cargoAnalyzer_Analyze(t *testing.T) {
@@ -379,6 +381,132 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			name: "broken Cargo.lock",
 			dir:  "testdata/sad",
 			want: &analyzer.AnalysisResult{},
+		},
+		{
+			name: "workspace members",
+			dir:  "testdata/toml-workspace-members",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Libraries: types.Packages{
+							{
+								ID:       "aho-corasick@1.1.2",
+								Name:     "aho-corasick",
+								Version:  "1.1.2",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   12,
+									},
+								},
+								DependsOn: []string{"memchr@2.6.4"},
+							},
+							{
+								ID:       "gdb-command@0.7.6",
+								Name:     "gdb-command",
+								Version:  "0.7.6",
+								Indirect: false,
+								Locations: []types.Location{
+									{
+										StartLine: 14,
+										EndLine:   22,
+									},
+								},
+								DependsOn: []string{
+									"regex@1.10.2",
+									"wait-timeout@0.2.0",
+								},
+							},
+							{
+								ID:       "libc@0.2.150",
+								Name:     "libc",
+								Version:  "0.2.150",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 24,
+										EndLine:   28,
+									},
+								},
+							},
+							{
+								ID:       "memchr@2.6.4",
+								Name:     "memchr",
+								Version:  "2.6.4",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 44,
+										EndLine:   48,
+									},
+								},
+							},
+							{
+								ID:      "regex@1.10.2",
+								Name:    "regex",
+								Version: "1.10.2",
+								Locations: []types.Location{
+									{
+										StartLine: 50,
+										EndLine:   60,
+									},
+								},
+								DependsOn: []string{
+									"aho-corasick@1.1.2",
+									"memchr@2.6.4",
+									"regex-automata@0.4.3",
+									"regex-syntax@0.8.2",
+								},
+							},
+							{
+								ID:       "regex-automata@0.4.3",
+								Name:     "regex-automata",
+								Version:  "0.4.3",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 62,
+										EndLine:   71,
+									},
+								},
+								DependsOn: []string{
+									"aho-corasick@1.1.2",
+									"memchr@2.6.4",
+									"regex-syntax@0.8.2",
+								},
+							},
+							{
+								ID:       "regex-syntax@0.8.2",
+								Name:     "regex-syntax",
+								Version:  "0.8.2",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 73,
+										EndLine:   77,
+									},
+								},
+							},
+							{
+								ID:       "wait-timeout@0.2.0",
+								Name:     "wait-timeout",
+								Version:  "0.2.0",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 79,
+										EndLine:   86,
+									},
+								},
+								DependsOn: []string{"libc@0.2.150"},
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 

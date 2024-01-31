@@ -11,14 +11,14 @@ import (
 	"testing"
 	"time"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/kylelemons/godebug/pretty"
 	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/kylelemons/godebug/pretty"
-	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -1070,11 +1070,11 @@ func TestAnalyze(t *testing.T) {
 			args: args{
 				targetOS: types.OS{
 					Family: "alpine",
-					Name:   "",
+					Name:   "3.9.1",
 				},
 				config: alpineConfig,
 			},
-			apkIndexArchivePath: testServer.URL + "%v",
+			apkIndexArchivePath: testServer.URL + "/%v",
 			want:                wantPkgs,
 		},
 	}

@@ -1,12 +1,12 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/ubuntu-1804.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
       "Family": "ubuntu",
-      "Name": "18.04",
-      "EOSL": true
+      "Name": "18.04"
     },
     "ImageID": "sha256:a2a15febcdf362f6115e801d37b5e60d6faaeedcb9896155e5fe9d754025be12",
     "DiffIDs": [
@@ -75,6 +75,9 @@
           "VulnerabilityID": "CVE-2019-18276",
           "PkgID": "bash@4.4.18-2ubuntu1.2",
           "PkgName": "bash",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/ubuntu/bash@4.4.18-2ubuntu1.2?arch=amd64\u0026distro=ubuntu-18.04"
+          },
           "InstalledVersion": "4.4.18-2ubuntu1.2",
           "Status": "affected",
           "Layer": {
@@ -94,6 +97,14 @@
           "CweIDs": [
             "CWE-273"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 3,
+            "nvd": 3,
+            "oracle-oval": 1,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -126,6 +137,9 @@
           "VulnerabilityID": "CVE-2019-5094",
           "PkgID": "e2fsprogs@1.44.1-1ubuntu1.1",
           "PkgName": "e2fsprogs",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/ubuntu/e2fsprogs@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04"
+          },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
           "Status": "fixed",
@@ -146,6 +160,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -184,6 +207,9 @@
           "VulnerabilityID": "CVE-2019-5094",
           "PkgID": "libcom-err2@1.44.1-1ubuntu1.1",
           "PkgName": "libcom-err2",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/ubuntu/libcom-err2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04"
+          },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
           "Status": "fixed",
@@ -204,6 +230,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -242,6 +277,9 @@
           "VulnerabilityID": "CVE-2019-5094",
           "PkgID": "libext2fs2@1.44.1-1ubuntu1.1",
           "PkgName": "libext2fs2",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/ubuntu/libext2fs2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04"
+          },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
           "Status": "fixed",
@@ -262,6 +300,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -300,6 +347,9 @@
           "VulnerabilityID": "CVE-2019-5094",
           "PkgID": "libss2@1.44.1-1ubuntu1.1",
           "PkgName": "libss2",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/ubuntu/libss2@1.44.1-1ubuntu1.1?arch=amd64\u0026distro=ubuntu-18.04"
+          },
           "InstalledVersion": "1.44.1-1ubuntu1.1",
           "FixedVersion": "1.44.1-1ubuntu1.2",
           "Status": "fixed",
@@ -320,6 +370,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "cbl-mariner": 2,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",

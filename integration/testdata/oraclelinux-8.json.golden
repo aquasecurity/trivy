@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/oraclelinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -65,6 +66,9 @@
           "VulnerabilityID": "CVE-2019-3823",
           "PkgID": "curl@7.61.1-8.el8.x86_64",
           "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0"
+          },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-11.el8",
           "Status": "fixed",
@@ -85,6 +89,15 @@
           "CweIDs": [
             "CWE-125"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 3,
+            "nvd": 3,
+            "oracle-oval": 2,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -123,6 +136,9 @@
           "VulnerabilityID": "CVE-2019-5436",
           "PkgID": "curl@7.61.1-8.el8.x86_64",
           "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0"
+          },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-12.el8",
           "Status": "fixed",
@@ -143,6 +159,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "arch-linux": 3,
+            "nvd": 3,
+            "oracle-oval": 2,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",

@@ -2,14 +2,14 @@
 Trivy supports the scanners listed in the table below.
 
 |     Scanner      | Supported |
-| :--------------: | :-------: |
+|:----------------:|:---------:|
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 
 It supports the following formats:
 
 |  Format   | Supported |
-| :-------: | :-------: |
+|:---------:|:---------:|
 |   JSON    |     ✓     |
 |    HCL    |     ✓     |
 | Plan JSON |     ✓     |
@@ -35,7 +35,7 @@ trivy conf --tf-vars dev.terraform.tfvars ./infrastructure/tf
 
 ### Exclude Downloaded Terraform Modules
 By default, downloaded modules are also scanned.
-If you don't want to scan modules downloaded into the `.terraform` directory, you can use the `--tf-exclude-downloaded-modules` flag.
+If you don't want to scan them, you can use the `--tf-exclude-downloaded-modules` flag.
 
 ```bash
 trivy conf --tf-exclude-downloaded-modules ./configs

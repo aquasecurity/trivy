@@ -11,7 +11,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -44,14 +44,14 @@ func (a marinerOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 		if len(fields) != 2 {
 			continue
 		}
-		if strings.ToLower(fields[0]) == "cbl-mariner" {
+		if strings.EqualFold(fields[0], "cbl-mariner") {
 			return types.OS{
-				Family: aos.CBLMariner,
+				Family: types.CBLMariner,
 				Name:   fields[1],
 			}, nil
 		}
 	}
-	return types.OS{}, xerrors.Errorf("cbl-mariner: %w", aos.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("cbl-mariner: %w", fos.AnalyzeOSError)
 }
 
 func (a marinerOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

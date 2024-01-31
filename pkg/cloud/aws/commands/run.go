@@ -9,8 +9,8 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/defsec/pkg/errs"
-	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
+	"github.com/aquasecurity/trivy-aws/pkg/errs"
+	awsScanner "github.com/aquasecurity/trivy-aws/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/config"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/scanner"
@@ -95,10 +95,11 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 }
 
 func filterServices(opt *flag.Options) error {
-	if len(opt.Services) == 0 && len(opt.SkipServices) == 0 {
+	switch {
+	case len(opt.Services) == 0 && len(opt.SkipServices) == 0:
 		log.Logger.Debug("No service(s) specified, scanning all services...")
 		opt.Services = allSupportedServicesFunc()
-	} else if len(opt.SkipServices) > 0 {
+	case len(opt.SkipServices) > 0:
 		log.Logger.Debug("excluding services: ", opt.SkipServices)
 		for _, s := range allSupportedServicesFunc() {
 			if slices.Contains(opt.SkipServices, s) {
@@ -108,7 +109,7 @@ func filterServices(opt *flag.Options) error {
 				opt.Services = append(opt.Services, s)
 			}
 		}
-	} else if len(opt.Services) > 0 {
+	case len(opt.Services) > 0:
 		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(opt.Services, ", "))
 		for _, service := range opt.Services {
 			var found bool
@@ -128,7 +129,6 @@ func filterServices(opt *flag.Options) error {
 }
 
 func Run(ctx context.Context, opt flag.Options) error {
-
 	ctx, cancel := context.WithTimeout(ctx, opt.GlobalOptions.Timeout)
 	defer cancel()
 
@@ -167,7 +167,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, res, opt.Services)
-	if err := report.Write(r, opt, cached); err != nil {
+	if err := report.Write(ctx, r, opt, cached); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

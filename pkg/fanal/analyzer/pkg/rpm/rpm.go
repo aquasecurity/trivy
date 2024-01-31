@@ -63,6 +63,10 @@ var osVendors = []string{
 
 type rpmPkgAnalyzer struct{}
 
+type RPMDB interface {
+	ListPackages() ([]*rpmdb.PackageInfo, error)
+}
+
 func (a rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	parsedPkgs, installedFiles, err := a.parsePkgInfo(input.Content)
 	if err != nil {
@@ -93,7 +97,12 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to open RPM DB: %w", err)
 	}
+	defer db.Close()
 
+	return a.listPkgs(db)
+}
+
+func (a rpmPkgAnalyzer) listPkgs(db RPMDB) (types.Packages, []string, error) {
 	// equivalent:
 	//   new version: rpm -qa --qf "%{NAME} %{EPOCHNUM} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
 	//   old version: rpm -qa --qf "%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
@@ -104,7 +113,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 
 	var pkgs []types.Package
 	var installedFiles []string
-	provides := map[string]string{}
+	provides := make(map[string]string)
 	for _, pkg := range pkgList {
 		arch := pkg.Arch
 		if arch == "" {
@@ -124,10 +133,14 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 		// Check if the package is vendor-provided.
 		// If the package is not provided by vendor, the installed files should not be skipped.
 		var files []string
-		if packageProvidedByVendor(pkg.Vendor) {
+		if packageProvidedByVendor(pkg) {
 			files, err = pkg.InstalledFileNames()
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
+			}
+
+			for i, file := range files {
+				files[i] = filepath.ToSlash(file)
 			}
 		}
 
@@ -136,6 +149,11 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 		var d digest.Digest
 		if pkg.SigMD5 != "" {
 			d = digest.NewDigestFromString(digest.MD5, pkg.SigMD5)
+		}
+
+		var licenses []string
+		if pkg.License != "" {
+			licenses = []string{pkg.License}
 		}
 
 		p := types.Package{
@@ -150,10 +168,11 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			SrcVersion:      srcVer,
 			SrcRelease:      srcRel,
 			Modularitylabel: pkg.Modularitylabel,
-			Licenses:        []string{pkg.License},
+			Licenses:        licenses,
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
 			Digest:          d,
+			InstalledFiles:  files,
 		}
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)
@@ -216,12 +235,19 @@ func splitFileName(filename string) (name, ver, rel string, err error) {
 	return name, ver, rel, nil
 }
 
-func packageProvidedByVendor(pkgVendor string) bool {
+func packageProvidedByVendor(pkg *rpmdb.PackageInfo) bool {
+	if pkg.Vendor == "" {
+		// Official Amazon packages may not contain `Vendor` field:
+		// https://github.com/aquasecurity/trivy/issues/5887
+		return strings.Contains(pkg.Release, "amzn")
+	}
+
 	for _, vendor := range osVendors {
-		if strings.HasPrefix(pkgVendor, vendor) {
+		if strings.HasPrefix(pkg.Vendor, vendor) {
 			return true
 		}
 	}
+
 	return false
 }
 

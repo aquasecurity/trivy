@@ -21,3 +21,11 @@ Trivy is natively integrated into Harbor, no installation is needed. More info i
 You can use Kyverno to ensure and enforce that deployed workloads' images are scanned for vulnerabilities.
 
 👉 Get it at: <https://neonmirrors.net/post/2022-07/attesting-image-scans-kyverno>
+
+## Zora (Community)
+
+[Zora](https://zora-docs.undistro.io/) is an open-source solution that scans Kubernetes clusters with multiple plugins at scheduled times.  
+
+Trivy is integrated into Zora as a vulnerability scanner plugin.
+
+👉 Get it at: <https://zora-docs.undistro.io/latest/plugins/trivy/>

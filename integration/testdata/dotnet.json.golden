@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/dotnet",
   "ArtifactType": "repository",
   "Metadata": {
@@ -22,6 +23,9 @@
       "Packages": [
         {
           "Name": "Newtonsoft.Json",
+          "Identifier": {
+            "PURL": "pkg:nuget/Newtonsoft.Json@9.0.1"
+          },
           "Version": "9.0.1",
           "Layer": {},
           "Locations": [
@@ -36,6 +40,9 @@
         {
           "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
           "PkgName": "Newtonsoft.Json",
+          "PkgIdentifier": {
+            "PURL": "pkg:nuget/Newtonsoft.Json@9.0.1"
+          },
           "InstalledVersion": "9.0.1",
           "FixedVersion": "13.0.1",
           "Status": "fixed",
@@ -53,6 +60,9 @@
           "CweIDs": [
             "CWE-755"
           ],
+          "VendorSeverity": {
+            "ghsa": 3
+          },
           "CVSS": {
             "ghsa": {
               "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",

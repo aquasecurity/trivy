@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -25,7 +24,7 @@ func Test_marinerOSAnalyzer_Analyze(t *testing.T) {
 			inputFile: "testdata/1.0/mariner-release",
 			want: &analyzer.AnalysisResult{
 				OS: types.OS{
-					Family: aos.CBLMariner,
+					Family: types.CBLMariner,
 					Name:   "1.0.20220122",
 				},
 			},

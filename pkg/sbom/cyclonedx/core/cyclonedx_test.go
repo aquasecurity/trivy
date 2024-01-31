@@ -1,6 +1,8 @@
 package core_test
 
 import (
+	"context"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"testing"
 	"time"
 
@@ -10,7 +12,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
-	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -181,11 +182,14 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
-					Tools: &[]cdx.Tool{
-						{
-							Name:    "trivy",
-							Vendor:  "aquasecurity",
-							Version: "dev",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cdx.Component{
@@ -365,11 +369,11 @@ func TestMarshaler_CoreComponent(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			marshaler := core.NewCycloneDX("dev")
-			got := marshaler.Marshal(tt.rootComponent)
+			got := marshaler.Marshal(ctx, tt.rootComponent)
 			assert.Equal(t, tt.want, got)
 		})
 	}

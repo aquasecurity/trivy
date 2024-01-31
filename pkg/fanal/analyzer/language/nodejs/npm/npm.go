@@ -8,7 +8,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -56,7 +55,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		licenses, err := a.findLicenses(input.FS, filePath)
 		if err != nil {
 			log.Logger.Errorf("Unable to collect licenses: %s", err)
-			licenses = map[string]string{}
+			licenses = make(map[string]string)
 		}
 
 		app, err := a.parseNpmPkgLock(input.FS, filePath)
@@ -87,13 +86,14 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 
 func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
+	// Don't save package-lock.json from the `node_modules` directory to avoid duplication and mistakes.
 	if fileName == types.NpmPkgLock && !xpath.Contains(filePath, "node_modules") {
 		return true
 	}
-	// The file path to package.json - */node_modules/<package_name>/package.json
-	// The path is slashed in analyzers.
-	dirs := strings.Split(path.Dir(filePath), "/")
-	if len(dirs) > 1 && dirs[len(dirs)-2] == "node_modules" && fileName == types.NpmPkg {
+
+	// Save package.json files only from the `node_modules` directory.
+	// Required to search for licenses.
+	if fileName == types.NpmPkg && xpath.Contains(filePath, "node_modules") {
 		return true
 	}
 	return false
@@ -107,8 +107,8 @@ func (a npmLibraryAnalyzer) Version() int {
 	return version
 }
 
-func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string) (*types.Application, error) {
-	f, err := fsys.Open(path)
+func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types.Application, error) {
+	f, err := fsys.Open(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
 	}
@@ -120,7 +120,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string) (*types.App
 	}
 
 	// parse package-lock.json file
-	return language.Parse(types.Npm, path, file, a.lockParser)
+	return language.Parse(types.Npm, filePath, file, a.lockParser)
 }
 
 func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string]string, error) {
@@ -139,7 +139,7 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 	// Traverse node_modules dir and find licenses
 	// Note that fs.FS is always slashed regardless of the platform,
 	// and path.Join should be used rather than filepath.Join.
-	licenses := map[string]string{}
+	licenses := make(map[string]string)
 	err := fsutils.WalkDir(fsys, root, required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		pkg, err := a.packageParser.Parse(r)
 		if err != nil {

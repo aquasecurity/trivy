@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Close issue if user does not have write or admin permissions
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             // Get the issue creator's username

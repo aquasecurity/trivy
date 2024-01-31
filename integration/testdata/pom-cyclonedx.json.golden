@@ -5,14 +5,17 @@
   "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
   "version": 1,
   "metadata": {
-    "timestamp": "2020-09-10T14:20:30+00:00",
-    "tools": [
-      {
-        "vendor": "aquasecurity",
-        "name": "trivy",
-        "version": "dev"
-      }
-    ],
+    "timestamp": "2021-08-25T12:20:30+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
     "component": {
       "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "type": "application",
@@ -44,7 +47,8 @@
     {
       "bom-ref": "pkg:maven/com.example/log4shell@1.0-SNAPSHOT",
       "type": "library",
-      "name": "com.example:log4shell",
+      "group": "com.example",
+      "name": "log4shell",
       "version": "1.0-SNAPSHOT",
       "purl": "pkg:maven/com.example/log4shell@1.0-SNAPSHOT",
       "properties": [
@@ -61,7 +65,8 @@
     {
       "bom-ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
       "type": "library",
-      "name": "com.fasterxml.jackson.core:jackson-databind",
+      "group": "com.fasterxml.jackson.core",
+      "name": "jackson-databind",
       "version": "2.9.1",
       "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1",
       "properties": [
@@ -149,6 +154,9 @@
       "description": "FasterXML jackson-databind 2.x before 2.9.10.4 mishandles the interaction between serialization gadgets and typing, related to br.com.anteros.dbcp.AnterosDBCPConfig (aka anteros-core).",
       "recommendation": "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.9.10.4",
       "advisories": [
+        {
+          "url": "https://avd.aquasec.com/nvd/cve-2020-9548"
+        },
         {
           "url": "https://access.redhat.com/security/cve/CVE-2020-9548"
         },
@@ -268,6 +276,9 @@
       "description": "A flaw was found in jackson-databind before 2.9.10.7. FasterXML mishandles the interaction between serialization gadgets and typing. The highest threat from this vulnerability is to data confidentiality and integrity as well as system availability.",
       "recommendation": "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.9.10.7",
       "advisories": [
+        {
+          "url": "https://avd.aquasec.com/nvd/cve-2021-20190"
+        },
         {
           "url": "https://access.redhat.com/security/cve/CVE-2021-20190"
         },

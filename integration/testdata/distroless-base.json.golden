@@ -1,12 +1,12 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/distroless-base.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
       "Family": "debian",
-      "Name": "9.9",
-      "EOSL": true
+      "Name": "9.9"
     },
     "ImageID": "sha256:7f04a8d247173b1f2546d22913af637bbab4e7411e00ae6207da8d94c445750d",
     "DiffIDs": [
@@ -55,6 +55,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
           "Layer": {
@@ -74,6 +77,14 @@
           "CweIDs": [
             "CWE-200"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "nvd": 2,
+            "oracle-oval": 1,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -128,6 +139,9 @@
           ],
           "PkgID": "libssl1.1@1.1.0k-1~deb9u1",
           "PkgName": "libssl1.1",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
           "Status": "fixed",
@@ -149,6 +163,14 @@
             "CWE-327",
             "CWE-203"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 1,
+            "oracle-oval": 2,
+            "photon": 1,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -207,6 +229,9 @@
           "VulnerabilityID": "CVE-2019-1551",
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
           "Layer": {
@@ -226,6 +251,14 @@
           "CweIDs": [
             "CWE-200"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "nvd": 2,
+            "oracle-oval": 1,
+            "photon": 2,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -280,6 +313,9 @@
           ],
           "PkgID": "openssl@1.1.0k-1~deb9u1",
           "PkgName": "openssl",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9"
+          },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
           "Status": "fixed",
@@ -301,6 +337,14 @@
             "CWE-327",
             "CWE-203"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "nvd": 1,
+            "oracle-oval": 2,
+            "photon": 1,
+            "redhat": 1,
+            "ubuntu": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",

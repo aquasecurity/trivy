@@ -19,7 +19,7 @@ import (
 
 const (
 	BundleVersion    = 0 // Latest released MAJOR version for defsec
-	BundleRepository = "ghcr.io/aquasecurity/defsec"
+	BundleRepository = "ghcr.io/aquasecurity/trivy-policies"
 	policyMediaType  = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
 	updateInterval   = 24 * time.Hour
 )
@@ -37,9 +37,9 @@ func WithOCIArtifact(art *oci.Artifact) Option {
 }
 
 // WithClock takes a clock
-func WithClock(clock clock.Clock) Option {
+func WithClock(c clock.Clock) Option {
 	return func(opts *options) {
-		opts.clock = clock
+		opts.clock = c
 	}
 }
 

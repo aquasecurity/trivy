@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/alpine-39.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -57,6 +58,9 @@
           "VulnerabilityID": "CVE-2019-14697",
           "PkgID": "musl@1.1.20-r4",
           "PkgName": "musl",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/musl@1.1.20-r4?arch=x86_64\u0026distro=3.9.4"
+          },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
           "Status": "fixed",
@@ -76,6 +80,9 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "nvd": 4
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -96,6 +103,9 @@
           "VulnerabilityID": "CVE-2019-14697",
           "PkgID": "musl-utils@1.1.20-r4",
           "PkgName": "musl-utils",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/musl-utils@1.1.20-r4?arch=x86_64\u0026distro=3.9.4"
+          },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
           "Status": "fixed",
@@ -115,6 +125,9 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "nvd": 4
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",

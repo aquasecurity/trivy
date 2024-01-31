@@ -94,7 +94,7 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 		return nil, cleanup, err
 	}
 
-	options := []containerd.ClientOpt{}
+	var options []containerd.ClientOpt
 	if opts.RegistryOptions.Platform.Platform != nil {
 		ociPlatform, err := platforms.Parse(opts.RegistryOptions.Platform.String())
 		if err != nil {
@@ -163,19 +163,19 @@ func parseReference(imageName string) (refdocker.Reference, []string, error) {
 	// a name plus a digest
 	// example: name@sha256:41adb3ef...
 	if isDigested && isNamed {
-		digest := d.Digest()
+		dgst := d.Digest()
 		// for the filters, each slice entry is logically or'd. each
 		// comma-separated filter is logically anded
 		return ref, []string{
-			fmt.Sprintf(`name~="^%s(:|@).*",target.digest=="%s"`, n.Name(), digest),
-			fmt.Sprintf(`name~="^%s(:|@).*",target.digest=="%s"`, refdocker.FamiliarName(n), digest),
+			fmt.Sprintf(`name~="^%s(:|@).*",target.digest==%q`, n.Name(), dgst),
+			fmt.Sprintf(`name~="^%s(:|@).*",target.digest==%q`, refdocker.FamiliarName(n), dgst),
 		}, nil
 	}
 
 	// digested, but not named. i.e. a plain digest
 	// example: sha256:41adb3ef...
 	if isDigested {
-		return ref, []string{fmt.Sprintf(`target.digest=="%s"`, d.Digest())}, nil
+		return ref, []string{fmt.Sprintf(`target.digest==%q`, d.Digest())}, nil
 	}
 
 	// a name plus a tag

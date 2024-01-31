@@ -5,6 +5,7 @@ package artifact
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
 
 	"github.com/google/wire"
 
@@ -19,9 +20,9 @@ import (
 // Standalone
 //////////////
 
-// initializeDockerScanner is for container image scanning in standalone mode
+// initializeImageScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
+func initializeImageScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
 	localArtifactCache cache.LocalArtifactCache, imageOpt types.ImageOptions, artifactOption artifact.Option) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneDockerSet)
@@ -56,7 +57,7 @@ func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache c
 }
 
 func initializeVMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (
+	localArtifactCache cache.LocalArtifactCache, walker vm.Walker, artifactOption artifact.Option) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneVMSet)
 	return scanner.Scanner{}, nil, nil
@@ -66,9 +67,9 @@ func initializeVMScanner(ctx context.Context, filePath string, artifactCache cac
 // Client/Server
 /////////////////
 
-// initializeRemoteDockerScanner is for container image scanning in client/server mode
+// initializeRemoteImageScanner is for container image scanning in client/server mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
+func initializeRemoteImageScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
 	remoteScanOptions client.ScannerOption, imageOpt types.ImageOptions, artifactOption artifact.Option) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteDockerSet)
@@ -107,7 +108,7 @@ func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache
 
 // initializeRemoteVMScanner is for vm scanning in client/server mode
 func initializeRemoteVMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
-	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	walker vm.Walker, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteVMSet)
 	return scanner.Scanner{}, nil, nil
 }

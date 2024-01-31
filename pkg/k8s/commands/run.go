@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -30,6 +30,8 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	cluster, err := k8s.GetCluster(
 		k8s.WithContext(opts.K8sOptions.ClusterContext),
 		k8s.WithKubeConfig(opts.K8sOptions.KubeConfig),
+		k8s.WithBurst(opts.K8sOptions.Burst),
+		k8s.WithQPS(opts.K8sOptions.QPS),
 	)
 	if err != nil {
 		return xerrors.Errorf("failed getting k8s cluster: %w", err)
@@ -47,8 +49,14 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	case clusterArtifact:
 		return clusterRun(ctx, opts, cluster)
 	case allArtifact:
+		if opts.Format == types.FormatCycloneDX {
+			return xerrors.Errorf("KBOM with CycloneDX format is not supported for all namespace scans")
+		}
 		return namespaceRun(ctx, opts, cluster)
 	default: // resourceArtifact
+		if opts.Format == types.FormatCycloneDX {
+			return xerrors.Errorf("KBOM with CycloneDX format is not supported for resource scans")
+		}
 		return resourceRun(ctx, args, opts, cluster)
 	}
 }
@@ -65,7 +73,7 @@ func newRunner(flagOpts flag.Options, cluster string) *runner {
 	}
 }
 
-func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error {
+func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) error {
 	runner, err := cmd.NewRunner(ctx, r.flagOpts)
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {
@@ -95,11 +103,11 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	output, err := r.flagOpts.OutputWriter()
+	output, cleanup, err := r.flagOpts.OutputWriter(ctx)
 	if err != nil {
 		return xerrors.Errorf("failed to create output file: %w", err)
 	}
-	defer output.Close()
+	defer cleanup()
 
 	if r.flagOpts.Compliance.Spec.ID != "" {
 		var scanResults []types.Results
@@ -110,14 +118,14 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		if err != nil {
 			return xerrors.Errorf("compliance report build error: %w", err)
 		}
-		return cr.Write(complianceReport, cr.Option{
+		return cr.Write(ctx, complianceReport, cr.Option{
 			Format: r.flagOpts.Format,
 			Report: r.flagOpts.ReportFormat,
 			Output: output,
 		})
 	}
 
-	if err := k8sRep.Write(rpt, report.Option{
+	if err := k8sRep.Write(ctx, rpt, report.Option{
 		Format:     r.flagOpts.Format,
 		Report:     r.flagOpts.ReportFormat,
 		Output:     output,

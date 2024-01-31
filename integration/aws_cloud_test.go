@@ -10,6 +10,7 @@ import (
 
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	testcontainers "github.com/testcontainers/testcontainers-go"
@@ -36,13 +37,16 @@ func TestAwsCommandRun(t *testing.T) {
 		},
 		{
 			name: "fail without creds",
+			envs: map[string]string{
+				"AWS_PROFILE": "non-existent-profile",
+			},
 			options: flag.Options{
 				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region: "us-east-1",
 				},
 			},
-			wantErr: "failed to retrieve credentials",
+			wantErr: "non-existent-profile",
 		},
 	}
 
@@ -57,7 +61,6 @@ func TestAwsCommandRun(t *testing.T) {
 			tt.options.AWSOptions.Endpoint = addr
 			tt.options.GlobalOptions.Timeout = time.Minute
 
-			t.Setenv("AWS_PROFILE", "non-existent-profile")
 			for k, v := range tt.envs {
 				t.Setenv(k, v)
 			}
@@ -77,11 +80,14 @@ func TestAwsCommandRun(t *testing.T) {
 
 func setupLocalStack(t *testing.T, ctx context.Context) (*localstack.LocalStackContainer, string) {
 	t.Helper()
-
+	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	container, err := localstack.RunContainer(ctx, testcontainers.CustomizeRequest(
 		testcontainers.GenericContainerRequest{
 			ContainerRequest: testcontainers.ContainerRequest{
 				Image: "localstack/localstack:2.2.0",
+				HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+					hostConfig.AutoRemove = true
+				},
 			},
 		},
 	))

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -13,8 +14,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
-	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
-
+	awsScanner "github.com/aquasecurity/trivy-aws/pkg/scanner"
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/convert"
@@ -124,7 +124,7 @@ func loadPluginCommands() []*cobra.Command {
 			Short:   p.Usage,
 			GroupID: groupPlugin,
 			RunE: func(cmd *cobra.Command, args []string) error {
-				if err = p.Run(cmd.Context(), args); err != nil {
+				if err = p.Run(cmd.Context(), plugin.RunOptions{Args: args}); err != nil {
 					return xerrors.Errorf("plugin error: %w", err)
 				}
 				return nil
@@ -232,12 +232,16 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance.Values = []string{types.ComplianceDockerCIS}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
+	misconfFlagGroup := flag.NewMisconfFlagGroup()
+	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
+	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
+
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		MisconfFlagGroup:       misconfFlagGroup,
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
@@ -308,7 +312,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFormat := flag.ReportFormatFlag
-	reportFormat.Usage = "specify a compliance report format for the output" //@TODO: support --report summary for non compliance reports
+	reportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = &reportFormat
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
@@ -583,6 +587,11 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
 	}
 
+	// java-db only works on client side.
+	serverFlags.DBFlagGroup.DownloadJavaDBOnly = nil // disable '--download-java-db-only'
+	serverFlags.DBFlagGroup.SkipJavaDBUpdate = nil   // disable '--skip-java-db-update'
+	serverFlags.DBFlagGroup.JavaDBRepository = nil   // disable '--java-db-repository'
+
 	cmd := &cobra.Command{
 		Use:     "server [flags]",
 		Aliases: []string{"s"},
@@ -618,11 +627,10 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
-	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
 	reportFormat := flag.ReportFormatFlag
-	reportFormat.Usage = "specify a compliance report format for the output" //@TODO: support --report summary for non compliance reports
+	reportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = &reportFormat
 
 	scanFlags := &flag.ScanFlagGroup{
@@ -765,7 +773,7 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "Run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return plugin.RunWithArgs(cmd.Context(), args[0], args[1:])
+				return plugin.RunWithURL(cmd.Context(), args[0], plugin.RunOptions{Args: args[1:]})
 			},
 		},
 		&cobra.Command{
@@ -859,13 +867,14 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := flag.NewScanFlagGroup()
 	scanners := flag.ScannersFlag
-	scanners.Default = fmt.Sprintf( // overwrite the default value
-		"%s,%s,%s,%s",
+	// overwrite the default scanners
+	scanners.Values = xstrings.ToStringSlice(types.Scanners{
 		types.VulnerabilityScanner,
 		types.MisconfigScanner,
 		types.SecretScanner,
 		types.RBACScanner,
-	)
+	})
+	scanners.Default = scanners.Values
 	scanFlags.Scanners = &scanners
 	scanFlags.IncludeDevDeps = nil // disable '--include-dev-deps'
 
@@ -891,12 +900,16 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	})
 	reportFlagGroup.Format = &formatFlag
 
+	misconfFlagGroup := flag.NewMisconfFlagGroup()
+	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
+	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
+
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		ImageFlagGroup:         imageFlags,
 		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
-		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		MisconfFlagGroup:       misconfFlagGroup,
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          scanFlags,
@@ -968,6 +981,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	services := awsScanner.AllSupportedServices()
+	sort.Strings(services)
 
 	cmd := &cobra.Command{
 		Use:     "aws [flags]",
@@ -978,6 +992,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Long: fmt.Sprintf(`Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
 
 The following services are supported:
+
 - %s
 `, strings.Join(services, "\n- ")),
 		Example: `  # basic scanning
@@ -1039,8 +1054,10 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			},
 		},
 	}
-	vmFlags.ReportFlagGroup.ReportFormat = nil // disable '--report'
-	vmFlags.ScanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+	vmFlags.ReportFlagGroup.ReportFormat = nil             // disable '--report'
+	vmFlags.ScanFlagGroup.IncludeDevDeps = nil             // disable '--include-dev-deps'
+	vmFlags.MisconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
+	vmFlags.MisconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
 
 	cmd := &cobra.Command{
 		Use:     "vm [flags] VM_IMAGE",
@@ -1091,6 +1108,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlagGroup := flag.NewScanFlagGroup()
 	scanFlagGroup.Scanners = nil       // disable '--scanners' as it always scans for vulnerabilities
 	scanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+	scanFlagGroup.Parallel = nil       // disable '--parallel'
 
 	sbomFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -1209,6 +1227,6 @@ func flagErrorFunc(command *cobra.Command, err error) error {
 	if err := command.Help(); err != nil {
 		return err
 	}
-	command.Println() //add empty line after list of flags
+	command.Println() // add empty line after list of flags
 	return err
 }

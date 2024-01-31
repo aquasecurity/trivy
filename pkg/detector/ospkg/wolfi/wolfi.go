@@ -1,9 +1,10 @@
 package wolfi
 
 import (
+	"context"
+
 	version "github.com/knqyf263/go-apk-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/wolfi"
@@ -13,36 +14,15 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(clock clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = clock
-	}
-}
-
 // Scanner implements the Wolfi scanner
 type Scanner struct {
 	vs wolfi.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      wolfi.NewVulnSrc(),
-		options: o,
+		vs: wolfi.NewVulnSrc(),
 	}
 }
 
@@ -81,7 +61,7 @@ func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) 
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
 			})
@@ -102,8 +82,8 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 	return installedVersion.LessThan(fixedVersion)
 }
 
-// IsSupportedVersion checks the OSFamily can be scanned using Wolfi scanner
-func (s *Scanner) IsSupportedVersion(_, _ string) bool {
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	// Wolfi doesn't have versions, so there is no case where a given input yields a
 	// result of an unsupported Wolfi version.
 

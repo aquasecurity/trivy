@@ -109,7 +109,7 @@ func (f *LicenseFlagGroup) Flags() []*Flag {
 }
 
 func (f *LicenseFlagGroup) ToOptions() LicenseOptions {
-	licenseCategories := map[types.LicenseCategory][]string{}
+	licenseCategories := make(map[types.LicenseCategory][]string)
 	licenseCategories[types.CategoryForbidden] = getStringSlice(f.LicenseForbidden)
 	licenseCategories[types.CategoryRestricted] = getStringSlice(f.LicenseRestricted)
 	licenseCategories[types.CategoryReciprocal] = getStringSlice(f.LicenseReciprocal)

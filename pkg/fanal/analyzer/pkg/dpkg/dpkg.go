@@ -65,6 +65,8 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return path != availableFile
 	}
 
+	packageFiles := make(map[string][]string)
+
 	// parse other files
 	err = fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		// parse list files
@@ -74,6 +76,7 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 			if err != nil {
 				return err
 			}
+			packageFiles[strings.TrimSuffix(filepath.Base(path), ".list")] = systemFiles
 			systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
 			return nil
 		}
@@ -87,6 +90,17 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
+	}
+
+	// map the packages to their respective files
+	for i, pkgInfo := range packageInfos {
+		for j, pkg := range pkgInfo.Packages {
+			installedFiles, found := packageFiles[pkg.Name]
+			if !found {
+				installedFiles = packageFiles[pkg.Name+":"+pkg.Arch]
+			}
+			packageInfos[i].Packages[j].InstalledFiles = installedFiles
+		}
 	}
 
 	return &analyzer.AnalysisResult{
@@ -136,7 +150,7 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 	}
 	defer f.Close()
 
-	pkgs := map[string]digest.Digest{}
+	pkgs := make(map[string]digest.Digest)
 	scanner := NewScanner(f)
 	for scanner.Scan() {
 		header, err := scanner.Header()
@@ -160,8 +174,8 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 // parseDpkgStatus parses /var/lib/dpkg/status or /var/lib/dpkg/status/*
 func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[string]digest.Digest) ([]types.PackageInfo, error) {
 	var pkg *types.Package
-	pkgs := map[string]*types.Package{}
-	pkgIDs := map[string]string{}
+	pkgs := make(map[string]*types.Package)
+	pkgIDs := make(map[string]string)
 
 	scanner := NewScanner(r)
 	for scanner.Scan() {
@@ -216,7 +230,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 	// May also specifies a version
 	if src := header.Get("Source"); src != "" {
 		srcCapture := dpkgSrcCaptureRegexp.FindAllStringSubmatch(src, -1)[0]
-		md := map[string]string{}
+		md := make(map[string]string)
 		for i, n := range srcCapture {
 			md[dpkgSrcCaptureRegexpNames[i]] = strings.TrimSpace(n)
 		}
@@ -266,7 +280,8 @@ func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		return true
 	}
 
-	if dir == statusDir {
+	// skip `*.md5sums` files from `status.d` directory
+	if dir == statusDir && filepath.Ext(fileName) != ".md5sums" {
 		return true
 	}
 	return false
@@ -308,9 +323,7 @@ func (a dpkgAnalyzer) trimVersionRequirement(s string) string {
 	// e.g.
 	//	libapt-pkg6.0 (>= 2.2.4) => libapt-pkg6.0
 	//	adduser => adduser
-	if strings.Contains(s, "(") {
-		s = s[:strings.Index(s, "(")]
-	}
+	s, _, _ = strings.Cut(s, "(")
 	return s
 }
 

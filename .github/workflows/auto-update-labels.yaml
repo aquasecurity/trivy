@@ -12,15 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.1
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
 
       - name: Install aqua tools
-        uses: aquaproj/aqua-installer@v2.1.2
+        uses: aquaproj/aqua-installer@v2.2.0
         with:
           aqua_version: v1.25.0
 

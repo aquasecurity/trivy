@@ -108,6 +108,7 @@ nav:
               - Helm: docs/coverage/iac/helm.md
               - Kubernetes: docs/coverage/iac/kubernetes.md
               - Terraform: docs/coverage/iac/terraform.md
+          - Kubernetes: docs/coverage/kubernetes.md
       - Configuration:
           - Overview: docs/configuration/index.md
           - Filtering: docs/configuration/filtering.md
@@ -175,7 +176,7 @@ nav:
     - CI/CD: ecosystem/cicd.md
     - IDE and Dev tools: ecosystem/ide.md
     - Production and Clouds: ecosystem/prod.md
-    - Security Management: ecosystem/security.md
+    - Reporting: ecosystem/reporting.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md

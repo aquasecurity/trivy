@@ -1,6 +1,7 @@
 package spdx
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
+	spdxutils "github.com/spdx/tools-golang/utils"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
@@ -105,7 +107,7 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 	return m
 }
 
-func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
+func (m *Marshaler) Marshal(ctx context.Context, r types.Report) (*spdx.Document, error) {
 	var relationShips []*spdx.Relationship
 	packages := make(map[spdx.ElementID]*spdx.Package)
 	pkgDownloadLocation := getPackageDownloadLocation(r.ArtifactType, r.ArtifactName)
@@ -147,13 +149,24 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 			files, err := m.pkgFiles(pkg)
 			if err != nil {
 				return nil, xerrors.Errorf("package file error: %w", err)
+			} else if files == nil {
+				continue
 			}
+
 			spdxFiles = append(spdxFiles, files...)
 			for _, file := range files {
 				relationShips = append(relationShips,
 					relationShip(spdxPackage.PackageSPDXIdentifier, file.FileSPDXIdentifier, RelationShipContains),
 				)
 			}
+
+			verificationCode, err := spdxutils.GetVerificationCode(files, "")
+			if err != nil {
+				return nil, xerrors.Errorf("package verification error: %w", err)
+			}
+
+			spdxPackage.FilesAnalyzed = true
+			spdxPackage.PackageVerificationCode = &verificationCode
 		}
 	}
 
@@ -174,7 +187,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 					CreatorType: "Tool",
 				},
 			},
-			Created: clock.Now().UTC().Format(time.RFC3339),
+			Created: clock.Now(ctx).UTC().Format(time.RFC3339),
 		},
 		Packages:      toPackages(packages),
 		Relationships: relationShips,
@@ -202,7 +215,7 @@ func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS, pkgD
 		}
 		return osPkg, nil
 	case types.ClassLangPkg:
-		langPkg, err := m.langPackage(result.Target, result.Type, pkgDownloadLocation)
+		langPkg, err := m.langPackage(result.Target, pkgDownloadLocation, result.Type)
 		if err != nil {
 			return spdx.Package{}, xerrors.Errorf("failed to parse application package: %w", err)
 		}
@@ -213,7 +226,7 @@ func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS, pkgD
 	}
 }
 
-func (m *Marshaler) parseFile(filePath string, digest digest.Digest) (spdx.File, error) {
+func (m *Marshaler) parseFile(filePath string, d digest.Digest) (spdx.File, error) {
 	pkgID, err := calcPkgID(m.hasher, filePath)
 	if err != nil {
 		return spdx.File{}, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
@@ -221,7 +234,7 @@ func (m *Marshaler) parseFile(filePath string, digest digest.Digest) (spdx.File,
 	file := spdx.File{
 		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
 		FileName:           filePath,
-		Checksums:          digestToSpdxFileChecksum(digest),
+		Checksums:          digestToSpdxFileChecksum(d),
 	}
 	return file, nil
 }
@@ -231,9 +244,9 @@ func (m *Marshaler) rootPackage(r types.Report, pkgDownloadLocation string) (*sp
 	attributionTexts := []string{attributionText(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion))}
 
 	// When the target is a container image, add PURL to the external references of the root package.
-	if p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{}); err != nil {
+	if p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{}); err != nil {
 		return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
-	} else if p.Type != "" {
+	} else if p != nil {
 		externalReferences = append(externalReferences, purlExternalReference(p.ToString()))
 	}
 
@@ -285,7 +298,7 @@ func (m *Marshaler) osPackage(osFound *ftypes.OS, pkgDownloadLocation string) (s
 	}
 
 	return spdx.Package{
-		PackageName:             osFound.Family,
+		PackageName:             string(osFound.Family),
 		PackageVersion:          osFound.Name,
 		PackageSPDXIdentifier:   elementID(ElementOperatingSystem, pkgID),
 		PackageDownloadLocation: pkgDownloadLocation,
@@ -293,14 +306,14 @@ func (m *Marshaler) osPackage(osFound *ftypes.OS, pkgDownloadLocation string) (s
 	}, nil
 }
 
-func (m *Marshaler) langPackage(target, appType, pkgDownloadLocation string) (spdx.Package, error) {
+func (m *Marshaler) langPackage(target, pkgDownloadLocation string, appType ftypes.LangType) (spdx.Package, error) {
 	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", target, appType))
 	if err != nil {
 		return spdx.Package{}, xerrors.Errorf("failed to get %s package ID: %w", target, err)
 	}
 
 	return spdx.Package{
-		PackageName:             appType,
+		PackageName:             string(appType),
 		PackageSourceInfo:       target, // TODO: Files seems better
 		PackageSPDXIdentifier:   elementID(ElementApplication, pkgID),
 		PackageDownloadLocation: pkgDownloadLocation,
@@ -308,7 +321,7 @@ func (m *Marshaler) langPackage(target, appType, pkgDownloadLocation string) (sp
 	}, nil
 }
 
-func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package, error) {
+func (m *Marshaler) pkgToSpdxPackage(t ftypes.TargetType, pkgDownloadLocation string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package, error) {
 	license := GetLicense(pkg)
 
 	pkgID, err := calcPkgID(m.hasher, pkg)
@@ -321,11 +334,10 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 		pkgSrcInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, pkg.SrcName, utils.FormatSrcVersion(pkg))
 	}
 
-	packageURL, err := purl.NewPackageURL(t, metadata, pkg)
-	if err != nil {
-		return spdx.Package{}, xerrors.Errorf("failed to parse purl (%s): %w", pkg.Name, err)
+	var pkgExtRefs []*spdx.PackageExternalReference
+	if pkg.Identifier.PURL != nil {
+		pkgExtRefs = []*spdx.PackageExternalReference{purlExternalReference(pkg.Identifier.PURL.String())}
 	}
-	pkgExtRefs := []*spdx.PackageExternalReference{purlExternalReference(packageURL.String())}
 
 	var attrTexts []string
 	attrTexts = appendAttributionText(attrTexts, PropertyPkgID, pkg.ID)

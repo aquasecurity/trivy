@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/opensuse-leap-151.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -64,6 +65,9 @@
           "VulnerabilityID": "openSUSE-SU-2020:0062-1",
           "PkgID": "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
           "PkgName": "libopenssl1_1",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/opensuse.leap/libopenssl1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse.leap-15.1"
+          },
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",
           "Status": "fixed",
@@ -81,6 +85,9 @@
           "Title": "Security update for openssl-1_1",
           "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
           "Severity": "MEDIUM",
+          "VendorSeverity": {
+            "suse-cvrf": 2
+          },
           "References": [
             "https://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
             "https://www.suse.com/support/security/rating/"
@@ -90,6 +97,9 @@
           "VulnerabilityID": "openSUSE-SU-2020:0062-1",
           "PkgID": "openssl-1_1@1.1.0i-lp151.8.3.1.x86_64",
           "PkgName": "openssl-1_1",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/opensuse.leap/openssl-1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse.leap-15.1"
+          },
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",
           "Status": "fixed",
@@ -107,6 +117,9 @@
           "Title": "Security update for openssl-1_1",
           "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
           "Severity": "MEDIUM",
+          "VendorSeverity": {
+            "suse-cvrf": 2
+          },
           "References": [
             "https://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
             "https://www.suse.com/support/security/rating/"

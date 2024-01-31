@@ -7,6 +7,7 @@
 Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
 
 The following services are supported:
+
 - accessanalyzer
 - api-gateway
 - athena
@@ -67,6 +68,7 @@ trivy aws [flags]
 ```
       --account string                    The AWS account to scan. It's useful to specify this when reviewing cached results for multiple accounts.
       --arn string                        The AWS ARN to show results for. Useful to filter results once a scan is cached.
+      --cf-params strings                 specify paths to override the CloudFormation parameters files
       --compliance string                 compliance report to generate (aws-cis-1.2,aws-cis-1.4)
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
@@ -81,11 +83,13 @@ trivy aws [flags]
   -h, --help                              help for aws
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
-      --include-non-failures              include successes and exceptions, available with '--scanners config'
+      --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
       --max-cache-age duration            The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this. (default 24h0m0s)
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan])
   -o, --output string                     output file name
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/defsec:0")
+      --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
+      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
       --region string                     AWS Region to scan
       --report string                     specify a report format for the output (all,summary) (default "all")
@@ -95,7 +99,7 @@ trivy aws [flags]
       --skip-policy-update                skip fetching rego policy updates
       --skip-service strings              Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.
   -t, --template string                   output template
-      --tf-exclude-downloaded-modules     remove results for downloaded modules in .terraform folder
+      --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --trace                             enable more verbose trace output for custom queries
       --update-cache                      Update the cache for the applicable cloud provider instead of using cached results.

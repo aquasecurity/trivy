@@ -1,35 +1,47 @@
-title: "<company name> "
+title: "<company name>"
 labels: ["adopters"]
 body:
-  - type: checkboxes
+  - type: textarea
+    id: info
     attributes:
-      label: Please select all the scan targets that you are using
-      options:
-        - label: Container Images
-        - label: Filesystem
-        - label: Git Repository
-        - label: Virtual Machine Images
-        - label: Kubernetes
-        - label: AWS
-    validations:
-      required: false
-  - type: checkboxes
-    attributes:
-      label: Which scanners are you using on those scan targets?
-      options:
-        - label: OS packages and software dependencies in use (SBOM)
-        - label: Known vulnerabilities (CVEs)
-        - label: IaC issues and misconfigurations
-        - label: Sensitive information and secrets
-        - label: Software licenses
+      label: "[Optional] How do you use Trivy?"
     validations:
       required: false
   - type: textarea
     id: info
     attributes:
-      label: "Additional Information"
-      description: "Please tell us more about your use case of Trivy -- anything that you would like to share 🎉"
-      value: |
-        ...
+      label: "[Optional] Can you provide us with a quote on your favourite part of Trivy? This may be used on the trivy.dev website, posted on Twitter (@AquaTrivy) or similar marketing material."
     validations:
       required: false
+  - type: checkboxes
+    attributes:
+      label: "[Optional] Which targets are you scanning with Trivy?"
+      options:
+        - label: "Container Image"
+        - label: "Filesystem"
+        - label: "Git Repository"
+        - label: "Virtual Machine Image"
+        - label: "Kubernetes"
+        - label: "AWS"
+        - label: "SBOM"
+    validations:
+      required: false
+  - type: checkboxes
+    attributes:
+      label: "[Optional] What kind of issues are scanning with Trivy?"
+      options:
+        - label: "Software Bill of Materials (SBOM)"
+        - label: "Known vulnerabilities (CVEs)"
+        - label: "IaC issues and misconfigurations"
+        - label: "Sensitive information and secrets"
+        - label: "Software licenses"
+  - type: markdown
+    attributes:
+      value: |
+        ## Get in touch
+        We are always looking for 
+        * User feedback
+        * Collaboration with other companies and organisations
+        * Or just to have a chat with you about trivy. 
+        If any of this interests you or your marketing team, please reach out at: oss@aquasec.com
+        We would love to hear from you!

@@ -2,6 +2,7 @@ package predicate_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -10,7 +11,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/predicate"
@@ -65,6 +65,9 @@ func TestWriter_Write(t *testing.T) {
 											Title:       "foobar",
 											Description: "baz",
 											Severity:    "HIGH",
+											VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+												vulnerability.NVD: dbTypes.SeverityHigh,
+											},
 										},
 									},
 								},
@@ -82,7 +85,6 @@ func TestWriter_Write(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			inputResults := types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "alpine:3.14",
@@ -96,10 +98,10 @@ func TestWriter_Write(t *testing.T) {
 
 			output := bytes.NewBuffer(nil)
 
-			clock.SetFakeTime(t, time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(context.Background(), time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
 			writer := predicate.NewVulnWriter(output, "dev")
 
-			err := writer.Write(inputResults)
+			err := writer.Write(ctx, inputResults)
 			require.NoError(t, err)
 
 			var got predicate.CosignVulnPredicate

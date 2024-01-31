@@ -1,5 +1,6 @@
 {
   "SchemaVersion": 2,
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/images/amazon-2.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -56,6 +57,9 @@
           "VulnerabilityID": "CVE-2019-5481",
           "PkgID": "curl@7.61.1-9.amzn2.0.1.x86_64",
           "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/amazon/curl@7.61.1-9.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
+          },
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-12.amzn2.0.1",
           "Status": "fixed",
@@ -76,6 +80,15 @@
           "CweIDs": [
             "CWE-415"
           ],
+          "VendorSeverity": {
+            "amazon": 2,
+            "arch-linux": 2,
+            "nvd": 4,
+            "oracle-oval": 2,
+            "photon": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -115,6 +128,9 @@
           "VulnerabilityID": "CVE-2019-5436",
           "PkgID": "curl@7.61.1-9.amzn2.0.1.x86_64",
           "PkgName": "curl",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/amazon/curl@7.61.1-9.amzn2.0.1?arch=x86_64\u0026distro=amazon-2+%28Karoo%29"
+          },
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-11.amzn2.0.2",
           "Status": "fixed",
@@ -135,6 +151,15 @@
           "CweIDs": [
             "CWE-787"
           ],
+          "VendorSeverity": {
+            "amazon": 1,
+            "arch-linux": 3,
+            "nvd": 3,
+            "oracle-oval": 2,
+            "photon": 3,
+            "redhat": 1,
+            "ubuntu": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
