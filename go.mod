@@ -35,7 +35,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.15.11
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.142.0
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.24.6
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.48.0
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.48.1
 	github.com/aws/aws-sdk-go-v2/service/sts v1.26.7
 	github.com/bmatcuk/doublestar/v4 v4.6.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
