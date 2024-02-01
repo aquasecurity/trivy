@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v4.0.0
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}
