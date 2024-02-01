@@ -3,11 +3,9 @@
 package integration
 
 import (
-	"os"
 	"path/filepath"
+	"strings"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -66,10 +64,6 @@ func TestVM(t *testing.T) {
 	// Set up testing DB
 	cacheDir := initDB(t)
 
-	// Keep the current working directory
-	currentDir, err := os.Getwd()
-	require.NoError(t, err)
-
 	const imageFile = "disk.img"
 
 	for _, tt := range tests {
@@ -86,34 +80,22 @@ func TestVM(t *testing.T) {
 				tt.args.format,
 			}
 
-			tmpDir := t.TempDir()
-
-			// Set up the output file
-			outputFile := filepath.Join(tmpDir, "output.json")
-			if *update {
-				outputFile = filepath.Join(currentDir, tt.golden)
-			}
-
-			// Get the absolute path of the golden file
-			goldenFile, err := filepath.Abs(tt.golden)
-			require.NoError(t, err)
-
 			// Decompress the gzipped image file
-			imagePath := filepath.Join(tmpDir, imageFile)
+			imagePath := filepath.Join(t.TempDir(), imageFile)
 			testutil.DecompressSparseGzip(t, tt.args.input, imagePath)
 
-			// Change the current working directory so that targets in the result could be the same as golden files.
-			err = os.Chdir(tmpDir)
-			require.NoError(t, err)
-			defer os.Chdir(currentDir)
-
-			osArgs = append(osArgs, "--output", outputFile)
-			osArgs = append(osArgs, imageFile)
+			osArgs = append(osArgs, imagePath)
 
 			// Run "trivy vm"
-			err = execute(osArgs)
-			require.NoError(t, err)
-			compareReports(t, goldenFile, outputFile, nil)
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+				override: func(_, got *types.Report) {
+					got.ArtifactName = "disk.img"
+					for i := range got.Results {
+						lastIndex := strings.LastIndex(got.Results[i].Target, "/")
+						got.Results[i].Target = got.Results[i].Target[lastIndex+1:]
+					}
+				},
+			})
 		})
 	}
 }

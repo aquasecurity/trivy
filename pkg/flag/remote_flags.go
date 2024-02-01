@@ -12,31 +12,28 @@ const (
 )
 
 var (
-	ServerTokenFlag = Flag{
+	ServerTokenFlag = Flag[string]{
 		Name:       "token",
 		ConfigName: "server.token",
-		Default:    "",
 		Usage:      "for authentication in client/server mode",
 	}
-	ServerTokenHeaderFlag = Flag{
+	ServerTokenHeaderFlag = Flag[string]{
 		Name:       "token-header",
 		ConfigName: "server.token-header",
 		Default:    DefaultTokenHeader,
 		Usage:      "specify a header name for token in client/server mode",
 	}
-	ServerAddrFlag = Flag{
+	ServerAddrFlag = Flag[string]{
 		Name:       "server",
 		ConfigName: "server.addr",
-		Default:    "",
 		Usage:      "server address in client mode",
 	}
-	ServerCustomHeadersFlag = Flag{
+	ServerCustomHeadersFlag = Flag[[]string]{
 		Name:       "custom-headers",
 		ConfigName: "server.custom-headers",
-		Default:    []string{},
 		Usage:      "custom headers in client mode",
 	}
-	ServerListenFlag = Flag{
+	ServerListenFlag = Flag[string]{
 		Name:       "listen",
 		ConfigName: "server.listen",
 		Default:    "localhost:4954",
@@ -48,15 +45,15 @@ var (
 // used for commands requiring reporting logic.
 type RemoteFlagGroup struct {
 	// for client/server
-	Token       *Flag
-	TokenHeader *Flag
+	Token       *Flag[string]
+	TokenHeader *Flag[string]
 
 	// for client
-	ServerAddr    *Flag
-	CustomHeaders *Flag
+	ServerAddr    *Flag[string]
+	CustomHeaders *Flag[[]string]
 
 	// for server
-	Listen *Flag
+	Listen *Flag[string]
 }
 
 type RemoteOptions struct {
@@ -70,10 +67,10 @@ type RemoteOptions struct {
 
 func NewClientFlags() *RemoteFlagGroup {
 	return &RemoteFlagGroup{
-		Token:         &ServerTokenFlag,
-		TokenHeader:   &ServerTokenHeaderFlag,
-		ServerAddr:    &ServerAddrFlag,
-		CustomHeaders: &ServerCustomHeadersFlag,
+		Token:         ServerTokenFlag.Clone(),
+		TokenHeader:   ServerTokenHeaderFlag.Clone(),
+		ServerAddr:    ServerAddrFlag.Clone(),
+		CustomHeaders: ServerCustomHeadersFlag.Clone(),
 	}
 }
 
@@ -89,16 +86,26 @@ func (f *RemoteFlagGroup) Name() string {
 	return "Client/Server"
 }
 
-func (f *RemoteFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Token, f.TokenHeader, f.ServerAddr, f.CustomHeaders, f.Listen}
+func (f *RemoteFlagGroup) Flags() []Flagger {
+	return []Flagger{
+		f.Token,
+		f.TokenHeader,
+		f.ServerAddr,
+		f.CustomHeaders,
+		f.Listen,
+	}
 }
 
-func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
-	serverAddr := getString(f.ServerAddr)
-	customHeaders := splitCustomHeaders(getStringSlice(f.CustomHeaders))
-	listen := getString(f.Listen)
-	token := getString(f.Token)
-	tokenHeader := getString(f.TokenHeader)
+func (f *RemoteFlagGroup) ToOptions() (RemoteOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return RemoteOptions{}, err
+	}
+
+	serverAddr := f.ServerAddr.Value()
+	customHeaders := splitCustomHeaders(f.CustomHeaders.Value())
+	listen := f.Listen.Value()
+	token := f.Token.Value()
+	tokenHeader := f.TokenHeader.Value()
 
 	if serverAddr == "" && listen == "" {
 		switch {
@@ -125,7 +132,7 @@ func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
 		ServerAddr:    serverAddr,
 		CustomHeaders: customHeaders,
 		Listen:        listen,
-	}
+	}, nil
 }
 
 func splitCustomHeaders(headers []string) http.Header {

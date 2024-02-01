@@ -5,15 +5,12 @@ package integration
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 // TestRepository tests `trivy repo` with the local code repositories
@@ -40,7 +37,7 @@ func TestRepository(t *testing.T) {
 		name     string
 		args     args
 		golden   string
-		override func(*types.Report)
+		override func(want, got *types.Report)
 	}{
 		{
 			name: "gomod",
@@ -372,8 +369,8 @@ func TestRepository(t *testing.T) {
 				skipFiles: []string{"testdata/fixtures/repo/gomod/submod2/go.mod"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
-			override: func(report *types.Report) {
-				report.ArtifactType = ftypes.ArtifactFilesystem
+			override: func(want, _ *types.Report) {
+				want.ArtifactType = ftypes.ArtifactFilesystem
 			},
 		},
 		{
@@ -386,8 +383,8 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/custom-policy",
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
-			override: func(report *types.Report) {
-				report.ArtifactType = ftypes.ArtifactFilesystem
+			override: func(want, got *types.Report) {
+				want.ArtifactType = ftypes.ArtifactFilesystem
 			},
 		},
 	}
@@ -400,7 +397,6 @@ func TestRepository(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			command := "repo"
 			if tt.args.command != "" {
 				command = tt.args.command
@@ -423,6 +419,7 @@ func TestRepository(t *testing.T) {
 				"--parallel",
 				fmt.Sprint(tt.args.parallel),
 				"--offline-scan",
+				tt.args.input,
 			}
 
 			if tt.args.scanner != "" {
@@ -478,12 +475,6 @@ func TestRepository(t *testing.T) {
 				}
 			}
 
-			// Setup the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-			if *update && tt.override == nil {
-				outputFile = tt.golden
-			}
-
 			if tt.args.listAllPkgs {
 				osArgs = append(osArgs, "--list-all-pkgs")
 			}
@@ -496,26 +487,10 @@ func TestRepository(t *testing.T) {
 				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
 			}
 
-			osArgs = append(osArgs, "--output", outputFile)
-			osArgs = append(osArgs, tt.args.input)
-
-			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-
-			// Run "trivy repo"
-			err := execute(osArgs)
-			require.NoError(t, err)
-
-			// Compare want and got
-			switch format {
-			case types.FormatCycloneDX:
-				compareCycloneDX(t, tt.golden, outputFile)
-			case types.FormatSPDXJSON:
-				compareSPDXJson(t, tt.golden, outputFile)
-			case types.FormatJSON:
-				compareReports(t, tt.golden, outputFile, tt.override)
-			default:
-				require.Fail(t, "invalid format", "format: %s", format)
-			}
+			runTest(t, osArgs, tt.golden, "", format, runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+				override: tt.override,
+			})
 		})
 	}
 }
