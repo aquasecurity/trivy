@@ -5,12 +5,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/docker/docker/api/types"
 	"io"
 	"net/url"
 	"os"
 	"os/exec"
 
+	"github.com/docker/docker/api/types"
 	apiregistry "github.com/docker/docker/api/types/registry"
 	"github.com/docker/docker/client"
 )
