@@ -51,10 +51,12 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
       --no-progress                       suppress progress bar
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
+      --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
@@ -85,6 +87,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
+      --vex string                        [EXPERIMENTAL] file path to VEX
       --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 

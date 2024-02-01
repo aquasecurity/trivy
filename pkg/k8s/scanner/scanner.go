@@ -262,7 +262,14 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 				return nil, err
 			}
 			if results != nil {
-				resources = append(resources, report.CreateK8sResource(artifact, results))
+				resource, err := s.filter(ctx, types.Report{
+					Results:      results,
+					ArtifactName: artifact.Name,
+				}, artifact)
+				if err != nil {
+					return nil, err
+				}
+				resources = append(resources, resource)
 			}
 		case nodeComponents:
 			var nf bom.NodeInfo
@@ -301,7 +308,14 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 				return nil, err
 			}
 			if results != nil {
-				resources = append(resources, report.CreateK8sResource(artifact, results))
+				resource, err := s.filter(ctx, types.Report{
+					Results:      results,
+					ArtifactName: artifact.Name,
+				}, artifact)
+				if err != nil {
+					return nil, err
+				}
+				resources = append(resources, resource)
 			}
 		case clusterInfo:
 			var cf bom.ClusterInfo
@@ -329,7 +343,14 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 				return nil, err
 			}
 			if results != nil {
-				resources = append(resources, report.CreateK8sResource(artifact, results))
+				resource, err := s.filter(ctx, types.Report{
+					Results:      results,
+					ArtifactName: artifact.Name,
+				}, artifact)
+				if err != nil {
+					return nil, err
+				}
+				resources = append(resources, resource)
 			}
 		}
 	}
@@ -373,7 +394,7 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 				}
 				ver := sanitizedVersion(c.Version)
 
-				imagePURL, err := purl.NewPackageURL(purl.TypeOCI, types.Metadata{
+				imagePURL, err := purl.New(purl.TypeOCI, types.Metadata{
 					RepoDigests: []string{
 						fmt.Sprintf("%s@%s", name, cDigest),
 					},

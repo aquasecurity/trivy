@@ -3,14 +3,15 @@ package rpm
 import (
 	"context"
 	"errors"
+	"os"
+	"strings"
+	"testing"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
-	"os"
-	"strings"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -151,12 +152,73 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 					SrcVersion: "2.17",
 					SrcRelease: "317.el7",
 					Maintainer: "Red Hat",
+					InstalledFiles: []string{
+						"/etc/ld.so.conf",
+						"/etc/rpc",
+						"/lib64/libm-2.27.so",
+					},
 				},
 			},
 			wantFiles: []string{
 				"/etc/ld.so.conf",
 				"/etc/rpc",
 				"/lib64/libm-2.27.so",
+			},
+		},
+		{
+			name: "Amazon official package without `Vendor` field",
+			mock: mock{
+				packages: []*rpmdb.PackageInfo{
+					{
+						Name:      "curl-minimal",
+						Version:   "8.3.0",
+						Release:   "1.amzn2023.0.2",
+						Arch:      "aarch64",
+						SourceRpm: "curl-8.3.0-1.amzn2023.0.2.src.rpm",
+						DirNames: []string{
+							"/usr/bin/",
+							"/usr/lib/",
+							"/usr/lib/.build-id/",
+							"/usr/lib/.build-id/aa/",
+							"/usr/share/man/man1/",
+						},
+						DirIndexes: []int32{0, 1, 2, 3, 4},
+						BaseNames: []string{
+							"curl",
+							".build-id",
+							"aa",
+							"d987ea9bc1c73706d12c7a143ee792117851ff",
+							"curl.1.gz",
+						},
+						Vendor: "",
+					},
+				},
+			},
+			wantPkgs: types.Packages{
+				{
+					ID:         "curl-minimal@8.3.0-1.amzn2023.0.2.aarch64",
+					Name:       "curl-minimal",
+					Version:    "8.3.0",
+					Release:    "1.amzn2023.0.2",
+					Arch:       "aarch64",
+					SrcName:    "curl",
+					SrcVersion: "8.3.0",
+					SrcRelease: "1.amzn2023.0.2",
+					InstalledFiles: []string{
+						"/usr/bin/curl",
+						"/usr/lib/.build-id",
+						"/usr/lib/.build-id/aa",
+						"/usr/lib/.build-id/aa/d987ea9bc1c73706d12c7a143ee792117851ff",
+						"/usr/share/man/man1/curl.1.gz",
+					},
+				},
+			},
+			wantFiles: []string{
+				"/usr/bin/curl",
+				"/usr/lib/.build-id",
+				"/usr/lib/.build-id/aa",
+				"/usr/lib/.build-id/aa/d987ea9bc1c73706d12c7a143ee792117851ff",
+				"/usr/share/man/man1/curl.1.gz",
 			},
 		},
 		{

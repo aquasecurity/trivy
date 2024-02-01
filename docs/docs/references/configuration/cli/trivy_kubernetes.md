@@ -28,6 +28,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
 
 ```
   -A, --all-namespaces                    fetch resources from all cluster namespaces
+      --burst int                         specify the maximum burst for throttle (default 10)
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --clear-cache                       clear image caches without scanning
@@ -60,15 +61,19 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan])
   -n, --namespace string                  specify a namespace to scan
       --no-progress                       suppress progress bar
+      --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.0.9")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
+      --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
+      --qps float                         specify the maximum QPS to the master from this client (default 5)
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
@@ -92,6 +97,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
+      --vex string                        [EXPERIMENTAL] file path to VEX
       --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 

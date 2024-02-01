@@ -2,6 +2,7 @@ package sbom
 
 import (
 	"context"
+	"github.com/package-url/packageurl-go"
 	"os"
 	"testing"
 
@@ -32,26 +33,54 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
-								Ref:      "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent",
+										Version:   "1.36.0",
+									},
+								},
 							},
 							{
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
-								Ref:      "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent-cached-lookup-key",
+										Version:   "1.36.0",
+									},
+								},
 							},
 							{
 								Name:     "co.elastic.apm:apm-agent-common",
 								Version:  "1.36.0",
-								Ref:      "pkg:maven/co.elastic.apm/apm-agent-common@1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent-common",
+										Version:   "1.36.0",
+									},
+								},
 							},
 							{
 								Name:     "co.elastic.apm:apm-agent-core",
 								Version:  "1.36.0",
-								Ref:      "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent-core",
+										Version:   "1.36.0",
+									},
+								},
 							},
 						},
 					},
@@ -62,9 +91,21 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "elasticsearch",
 								Version:  "8.9.1",
-								Ref:      "pkg:bitnami/elasticsearch@8.9.1?arch=arm64",
 								Arch:     "arm64",
 								Licenses: []string{"Elastic-2.0"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "elasticsearch",
+										Version: "8.9.1",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
+											},
+										},
+									},
+								},
 							},
 						},
 					},
@@ -85,13 +126,29 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
-								Ref:      "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent",
+										Version:   "1.36.0",
+									},
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
+								},
 							},
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
-								Ref:      "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent-cached-lookup-key",
+										Version:   "1.36.0",
+									},
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
+								},
 							},
 						},
 					},
@@ -112,26 +169,50 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "gdal",
 								Version:  "3.7.1",
-								Ref:      "pkg:bitnami/gdal@3.7.1",
 								Licenses: []string{"MIT"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "gdal",
+										Version: "3.7.1",
+									},
+								},
 							},
 							{
 								Name:     "geos",
 								Version:  "3.8.3",
-								Ref:      "pkg:bitnami/geos@3.8.3",
 								Licenses: []string{"LGPL-2.1-only"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "geos",
+										Version: "3.8.3",
+									},
+								},
 							},
 							{
 								Name:     "postgresql",
 								Version:  "15.3.0",
-								Ref:      "pkg:bitnami/postgresql@15.3.0",
 								Licenses: []string{"PostgreSQL"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "postgresql",
+										Version: "15.3.0",
+									},
+								},
 							},
 							{
 								Name:     "proj",
 								Version:  "6.3.2",
-								Ref:      "pkg:bitnami/proj@6.3.2",
 								Licenses: []string{"MIT"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "proj",
+										Version: "6.3.2",
+									},
+								},
 							},
 						},
 					},

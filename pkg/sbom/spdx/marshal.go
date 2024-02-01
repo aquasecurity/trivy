@@ -1,6 +1,7 @@
 package spdx
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strconv"
@@ -106,7 +107,7 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 	return m
 }
 
-func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
+func (m *Marshaler) Marshal(ctx context.Context, r types.Report) (*spdx.Document, error) {
 	var relationShips []*spdx.Relationship
 	packages := make(map[spdx.ElementID]*spdx.Package)
 	pkgDownloadLocation := getPackageDownloadLocation(r.ArtifactType, r.ArtifactName)
@@ -186,7 +187,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 					CreatorType: "Tool",
 				},
 			},
-			Created: clock.Now().UTC().Format(time.RFC3339),
+			Created: clock.Now(ctx).UTC().Format(time.RFC3339),
 		},
 		Packages:      toPackages(packages),
 		Relationships: relationShips,
@@ -243,7 +244,7 @@ func (m *Marshaler) rootPackage(r types.Report, pkgDownloadLocation string) (*sp
 	attributionTexts := []string{attributionText(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion))}
 
 	// When the target is a container image, add PURL to the external references of the root package.
-	if p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{}); err != nil {
+	if p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{}); err != nil {
 		return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
 	} else if p != nil {
 		externalReferences = append(externalReferences, purlExternalReference(p.ToString()))
@@ -333,14 +334,9 @@ func (m *Marshaler) pkgToSpdxPackage(t ftypes.TargetType, pkgDownloadLocation st
 		pkgSrcInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, pkg.SrcName, utils.FormatSrcVersion(pkg))
 	}
 
-	packageURL, err := purl.NewPackageURL(t, metadata, pkg)
-	if err != nil {
-		return spdx.Package{}, xerrors.Errorf("failed to parse purl (%s): %w", pkg.Name, err)
-	}
-
 	var pkgExtRefs []*spdx.PackageExternalReference
-	if packageURL != nil {
-		pkgExtRefs = []*spdx.PackageExternalReference{purlExternalReference(packageURL.String())}
+	if pkg.Identifier.PURL != nil {
+		pkgExtRefs = []*spdx.PackageExternalReference{purlExternalReference(pkg.Identifier.PURL.String())}
 	}
 
 	var attrTexts []string

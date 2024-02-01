@@ -30,9 +30,9 @@ import (
 
 // Injectors from inject.go:
 
-// initializeDockerScanner is for container image scanning in standalone mode
+// initializeImageScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeImageScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	ospkgScanner := ospkg.NewScanner()
 	langpkgScanner := langpkg.NewScanner()
@@ -144,9 +144,9 @@ func initializeVMScanner(ctx context.Context, filePath string, artifactCache cac
 	}, nil
 }
 
-// initializeRemoteDockerScanner is for container image scanning in client/server mode
+// initializeRemoteImageScanner is for container image scanning in client/server mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteImageScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
 	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, imageOpt)

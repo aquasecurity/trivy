@@ -319,6 +319,117 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with alias rewrite",
+			dir:  "testdata/alias",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Yarn,
+						FilePath: "yarn.lock",
+						Libraries: types.Packages{
+							{
+								ID:       "foo-json@0.8.33",
+								Name:     "@types/jsonstream",
+								Version:  "0.8.33",
+								Indirect: false,
+								Dev:      true,
+								Locations: []types.Location{
+									{
+										StartLine: 19,
+										EndLine:   24,
+									},
+								},
+								DependsOn: []string{
+									"@types/node@20.10.5",
+								},
+							},
+							{
+								ID:       "@types/node@20.10.5",
+								Name:     "@types/node",
+								Version:  "20.10.5",
+								Indirect: true,
+								Dev:      true,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   10,
+									},
+								},
+								DependsOn: []string{
+									"undici-types@5.26.5",
+								},
+							},
+							{
+								ID:       "foo-uuid@9.0.7",
+								Name:     "@types/uuid",
+								Version:  "9.0.7",
+								Indirect: false,
+								Dev:      true,
+								Locations: []types.Location{
+									{
+										StartLine: 31,
+										EndLine:   34,
+									},
+								},
+							},
+							{
+								ID:       "foo-debug@4.3.4",
+								Name:     "debug",
+								Version:  "4.3.4",
+								Indirect: false,
+								Locations: []types.Location{
+									{
+										StartLine: 12,
+										EndLine:   17,
+									},
+								},
+								DependsOn: []string{
+									"ms@2.1.2",
+								},
+							},
+							{
+								ID:       "ms@2.1.2",
+								Name:     "ms",
+								Version:  "2.1.2",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 36,
+										EndLine:   39,
+									},
+								},
+							},
+							{
+								ID:       "foo-ms@2.1.3",
+								Name:     "ms",
+								Version:  "2.1.3",
+								Indirect: false,
+								Locations: []types.Location{
+									{
+										StartLine: 26,
+										EndLine:   29,
+									},
+								},
+							},
+							{
+								ID:       "undici-types@5.26.5",
+								Name:     "undici-types",
+								Version:  "5.26.5",
+								Indirect: true,
+								Dev:      true,
+								Locations: []types.Location{
+									{
+										StartLine: 41,
+										EndLine:   44,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "monorepo",
 			dir:  "testdata/monorepo",
 			want: &analyzer.AnalysisResult{

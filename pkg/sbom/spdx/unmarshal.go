@@ -247,11 +247,12 @@ func parseOS(pkg spdx.Package) ftypes.OS {
 }
 
 func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes.Package, *purl.PackageURL, error) {
-	pkg, pkgURL, err := parseExternalReferences(spdxPkg.PackageExternalReferences)
+	pkgURL, err := parseExternalReferences(spdxPkg.PackageExternalReferences)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("external references error: %w", err)
 	}
 
+	pkg := pkgURL.Package()
 	if spdxPkg.PackageLicenseDeclared != "NONE" {
 		pkg.Licenses = strings.Split(spdxPkg.PackageLicenseDeclared, ",")
 	}
@@ -278,7 +279,7 @@ func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes
 	return pkg, pkgURL, nil
 }
 
-func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Package, *purl.PackageURL, error) {
+func parseExternalReferences(refs []*spdx.PackageExternalReference) (*purl.PackageURL, error) {
 	for _, ref := range refs {
 		// Extract the package information from PURL
 		if ref.RefType != RefTypePurl || ref.Category != CategoryPackageManager {
@@ -287,13 +288,11 @@ func parseExternalReferences(refs []*spdx.PackageExternalReference) (*ftypes.Pac
 
 		packageURL, err := purl.FromString(ref.Locator)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to parse purl from string: %w", err)
+			return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
 		}
-		pkg := packageURL.Package()
-		pkg.Ref = ref.Locator
-		return pkg, packageURL, nil
+		return packageURL, nil
 	}
-	return nil, nil, errUnknownPackageFormat
+	return nil, errUnknownPackageFormat
 }
 
 func lookupAttributionTexts(attributionTexts []string, key string) string {

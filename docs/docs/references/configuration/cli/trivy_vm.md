@@ -47,10 +47,12 @@ trivy vm [flags] VM_IMAGE
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
       --no-progress                       suppress progress bar
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
+      --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --redis-ca string                   redis ca file location, if using redis as cache backend
@@ -73,6 +75,7 @@ trivy vm [flags] VM_IMAGE
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
+      --vex string                        [EXPERIMENTAL] file path to VEX
       --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 

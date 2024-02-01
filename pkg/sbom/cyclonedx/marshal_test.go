@@ -1,6 +1,8 @@
 package cyclonedx_test
 
 import (
+	"context"
+	"github.com/package-url/packageurl-go"
 	"testing"
 	"time"
 
@@ -54,12 +56,30 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								ID:              "binutils@2.30-93.el8",
-								Name:            "binutils",
-								Version:         "2.30",
-								Release:         "93.el8",
-								Epoch:           0,
-								Arch:            "aarch64",
+								ID:      "binutils@2.30-93.el8",
+								Name:    "binutils",
+								Version: "2.30",
+								Release: "93.el8",
+								Epoch:   0,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "binutils",
+										Version:   "2.30-93.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
+											},
+										},
+									},
+								},
 								SrcName:         "binutils",
 								SrcVersion:      "2.30",
 								SrcRelease:      "93.el8",
@@ -119,15 +139,29 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
-								ID:       "actionpack@7.0.0",
-								Name:     "actionpack",
-								Version:  "7.0.0",
+								ID:      "actionpack@7.0.0",
+								Name:    "actionpack",
+								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.0",
+									},
+								},
 								Indirect: false,
 							},
 							{
-								ID:       "actioncontroller@7.0.0",
-								Name:     "actioncontroller",
-								Version:  "7.0.0",
+								ID:      "actioncontroller@7.0.0",
+								Name:    "actioncontroller",
+								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actioncontroller",
+										Version: "7.0.0",
+									},
+								},
 								Indirect: false,
 								DependsOn: []string{
 									"actionpack@7.0.0",
@@ -144,6 +178,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.0",
+									},
+								},
 							},
 						},
 					},
@@ -156,6 +197,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "Newtonsoft.Json@9.0.1",
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNuget,
+										Name:    "Newtonsoft.Json",
+										Version: "9.0.1",
+									},
+								},
 							},
 						},
 					},
@@ -167,6 +215,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.0-20210421170649-83a5a9bb288b",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "golang.org/x",
+										Name:      "crypto",
+										Version:   "v0.0.0-20210421170649-83a5a9bb288b",
+									},
+								},
 							},
 							// dependency has been replaced with local directory
 							{
@@ -186,11 +242,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
-					Tools: &[]cdx.Tool{
-						{
-							Name:    "trivy",
-							Vendor:  "aquasecurity",
-							Version: "dev",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cdx.Component{
@@ -592,12 +651,34 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.CentOS,
 						Packages: []ftypes.Package{
 							{
-								ID:              "acl@2.2.53-1.el8",
-								Name:            "acl",
-								Version:         "2.2.53",
-								Release:         "1.el8",
-								Epoch:           1,
-								Arch:            "aarch64",
+								ID:      "acl@2.2.53-1.el8",
+								Name:    "acl",
+								Version: "2.2.53",
+								Release: "1.el8",
+								Epoch:   1,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "acl",
+										Version:   "2.2.53-1.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
+											},
+											{
+												Key:   "epoch",
+												Value: "1",
+											},
+										},
+									},
+								},
 								SrcName:         "acl",
 								SrcVersion:      "2.2.53",
 								SrcRelease:      "1.el8",
@@ -610,12 +691,30 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Digest: "md5:483792b8b5f9eb8be7dc4407733118d0",
 							},
 							{
-								ID:              "glibc@2.28-151.el8",
-								Name:            "glibc",
-								Version:         "2.28",
-								Release:         "151.el8",
-								Epoch:           0,
-								Arch:            "aarch64",
+								ID:      "glibc@2.28-151.el8",
+								Name:    "glibc",
+								Version: "2.28",
+								Release: "151.el8",
+								Epoch:   0,
+								Arch:    "aarch64",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "glibc",
+										Version:   "2.28-151.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
+											},
+										},
+									},
+								},
 								SrcName:         "glibc",
 								SrcVersion:      "2.28",
 								SrcRelease:      "151.el8",
@@ -635,6 +734,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.0",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -644,6 +750,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actionpack@7.0.1",
 								Name:    "actionpack",
 								Version: "7.0.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -652,10 +765,17 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								VulnerabilityID:  "CVE-2022-23633",
-								PkgID:            "actionpack@7.0.0",
-								PkgName:          "actionpack",
-								PkgPath:          "tools/project-john/specifications/actionpack.gemspec",
+								VulnerabilityID: "CVE-2022-23633",
+								PkgID:           "actionpack@7.0.0",
+								PkgName:         "actionpack",
+								PkgPath:         "tools/project-john/specifications/actionpack.gemspec",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.0",
+									},
+								},
 								InstalledVersion: "7.0.0",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 								SeveritySource:   vulnerability.RubySec,
@@ -695,10 +815,17 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								VulnerabilityID:  "CVE-2022-23633",
-								PkgID:            "actionpack@7.0.1",
-								PkgName:          "actionpack",
-								PkgPath:          "tools/project-doe/specifications/actionpack.gemspec",
+								VulnerabilityID: "CVE-2022-23633",
+								PkgID:           "actionpack@7.0.1",
+								PkgName:         "actionpack",
+								PkgPath:         "tools/project-doe/specifications/actionpack.gemspec",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
+									},
+								},
 								InstalledVersion: "7.0.1",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 								SeveritySource:   vulnerability.RubySec,
@@ -750,11 +877,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
-					Tools: &[]cdx.Tool{
-						{
-							Name:    "trivy",
-							Vendor:  "aquasecurity",
-							Version: "dev",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cdx.Component{
@@ -1070,6 +1200,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:    "actioncable",
 								Version: "6.1.4.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actioncable",
+										Version: "6.1.4.1",
+									},
+								},
 							},
 						},
 					},
@@ -1079,9 +1216,37 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Jar,
 						Packages: []ftypes.Package{
 							{
-								Name:     "org.springframework:spring-web",
-								Version:  "5.3.22",
+								Name:    "org.springframework:spring-web",
+								Version: "5.3.22",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.springframework",
+										Name:      "spring-web",
+										Version:   "5.3.22",
+									},
+								},
 								FilePath: "spring-web-5.3.22.jar",
+							},
+						},
+					},
+					{
+						Target: "yarn.lock",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.Yarn,
+						Packages: []ftypes.Package{
+							{
+								ID:      "@babel/helper-string-parser@7.23.4",
+								Name:    "@babel/helper-string-parser",
+								Version: "7.23.4",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeNPM,
+										Namespace: "@babel",
+										Name:      "helper-string-parser",
+										Version:   "7.23.4",
+									},
+								},
 							},
 						},
 					},
@@ -1096,11 +1261,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
-					Tools: &[]cdx.Tool{
-						{
-							Name:    "trivy",
-							Vendor:  "aquasecurity",
-							Version: "dev",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cdx.Component{
@@ -1128,6 +1296,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:Type",
 								Value: "bundler",
+							},
+						},
+					},
+					{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000004",
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "yarn.lock",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "yarn",
 							},
 						},
 					},
@@ -1162,6 +1345,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						BOMRef:     "pkg:npm/%40babel/helper-string-parser@7.23.4",
+						Type:       "library",
+						Name:       "helper-string-parser",
+						Group:      "@babel",
+						Version:    "7.23.4",
+						PackageURL: "pkg:npm/%40babel/helper-string-parser@7.23.4",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "@babel/helper-string-parser@7.23.4",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "yarn",
+							},
+						},
+					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
@@ -1169,6 +1370,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
+							"3ff14136-e09f-4df9-80ea-000000000004",
 							"pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 						},
 					},
@@ -1179,11 +1381,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
+						Dependencies: &[]string{
+							"pkg:npm/%40babel/helper-string-parser@7.23.4",
+						},
+					},
+					{
 						Ref:          "pkg:gem/actioncable@6.1.4.1",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
 						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+						Dependencies: lo.ToPtr([]string{}),
+					},
+					{
+						Ref:          "pkg:npm/%40babel/helper-string-parser@7.23.4",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1202,21 +1414,45 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Jar,
 						Packages: []ftypes.Package{
 							{
-								Name:     "org.apache.nifi:nifi-dbcp-base",
-								Version:  "1.20.0",
+								Name:    "org.apache.nifi:nifi-dbcp-base",
+								Version: "1.20.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.nifi",
+										Name:      "nifi-dbcp-base",
+										Version:   "1.20.0",
+									},
+								},
 								FilePath: "nifi-dbcp-base-1.20.0.jar",
 							},
 							{
-								Name:     "org.apache.nifi:nifi-hikari-dbcp-service",
-								Version:  "1.20.0",
+								Name:    "org.apache.nifi:nifi-hikari-dbcp-service",
+								Version: "1.20.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.nifi",
+										Name:      "nifi-hikari-dbcp-service",
+										Version:   "1.20.0",
+									},
+								},
 								FilePath: "nifi-hikari-dbcp-service-1.20.0.jar",
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								VulnerabilityID:  "CVE-2023-34468",
-								PkgName:          "org.apache.nifi:nifi-dbcp-base",
-								PkgPath:          "nifi-dbcp-base-1.20.0.jar",
+								VulnerabilityID: "CVE-2023-34468",
+								PkgName:         "org.apache.nifi:nifi-dbcp-base",
+								PkgPath:         "nifi-dbcp-base-1.20.0.jar",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.nifi",
+										Name:      "nifi-dbcp-base",
+										Version:   "1.20.0",
+									},
+								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
 								SeveritySource:   vulnerability.GHSA,
@@ -1256,9 +1492,17 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								VulnerabilityID:  "CVE-2023-34468",
-								PkgName:          "org.apache.nifi:nifi-hikari-dbcp-service",
-								PkgPath:          "nifi-hikari-dbcp-service-1.20.0.jar",
+								VulnerabilityID: "CVE-2023-34468",
+								PkgName:         "org.apache.nifi:nifi-hikari-dbcp-service",
+								PkgPath:         "nifi-hikari-dbcp-service-1.20.0.jar",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.nifi",
+										Name:      "nifi-hikari-dbcp-service",
+										Version:   "1.20.0",
+									},
+								},
 								InstalledVersion: "1.20.0",
 								FixedVersion:     "1.22.0",
 								SeveritySource:   vulnerability.GHSA,
@@ -1310,11 +1554,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
-					Tools: &[]cdx.Tool{
-						{
-							Name:    "trivy",
-							Vendor:  "aquasecurity",
-							Version: "dev",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cdx.Component{
@@ -1464,9 +1711,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.NodePkg,
 						Packages: []ftypes.Package{
 							{
-								ID:       "ruby-typeprof@0.20.1",
-								Name:     "ruby-typeprof",
-								Version:  "0.20.1",
+								ID:      "ruby-typeprof@0.20.1",
+								Name:    "ruby-typeprof",
+								Version: "0.20.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "ruby-typeprof",
+										Version: "0.20.1",
+									},
+								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
@@ -1486,11 +1740,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
-					Tools: &[]cdx.Tool{
-						{
-							Name:    "trivy",
-							Vendor:  "aquasecurity",
-							Version: "dev",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cdx.Component{
@@ -1571,11 +1828,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
-					Tools: &[]cdx.Tool{
-						{
-							Name:    "trivy",
-							Vendor:  "aquasecurity",
-							Version: "dev",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cdx.Component{
@@ -1604,11 +1864,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			marshaler := cyclonedx.NewMarshaler("dev")
-			got, err := marshaler.Marshal(tt.inputReport)
+			got, err := marshaler.Marshal(ctx, tt.inputReport)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

@@ -1,12 +1,12 @@
 package alpine
 
 import (
+	"context"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-apk-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
@@ -46,40 +46,20 @@ var (
 		"3.16": time.Date(2024, 5, 23, 23, 59, 59, 0, time.UTC),
 		"3.17": time.Date(2024, 11, 22, 23, 59, 59, 0, time.UTC),
 		"3.18": time.Date(2025, 5, 9, 23, 59, 59, 0, time.UTC),
+		"3.19": time.Date(2025, 11, 1, 23, 59, 59, 0, time.UTC),
 		"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 )
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(c clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = c
-	}
-}
-
 // Scanner implements the Alpine scanner
 type Scanner struct {
 	vs alpine.VulnSrc
-	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(opts ...option) *Scanner {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
+func NewScanner() *Scanner {
 	return &Scanner{
-		vs:      alpine.NewVulnSrc(),
-		options: o,
+		vs: alpine.NewVulnSrc(),
 	}
 }
 
@@ -130,7 +110,7 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
 			})
@@ -173,8 +153,8 @@ func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Adv
 }
 
 // IsSupportedVersion checks if the version is supported.
-func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
-	return osver.Supported(s.clock, eolDates, osFamily, osver.Minor(osVer))
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(ctx, eolDates, osFamily, osver.Minor(osVer))
 }
 
 func (s *Scanner) repoRelease(repo *ftypes.Repository) string {

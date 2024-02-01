@@ -1,6 +1,7 @@
 package ospkg
 
 import (
+	"context"
 	"time"
 
 	"github.com/samber/lo"
@@ -55,17 +56,17 @@ func RegisterDriver(name ftypes.OSType, driver Driver) {
 // Driver defines operations for OS package scan
 type Driver interface {
 	Detect(string, *ftypes.Repository, []ftypes.Package) ([]types.DetectedVulnerability, error)
-	IsSupportedVersion(ftypes.OSType, string) bool
+	IsSupportedVersion(context.Context, ftypes.OSType, string) bool
 }
 
 // Detect detects the vulnerabilities
-func Detect(_, osFamily ftypes.OSType, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
+func Detect(ctx context.Context, _, osFamily ftypes.OSType, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver, err := newDriver(osFamily)
 	if err != nil {
 		return nil, false, ErrUnsupportedOS
 	}
 
-	eosl := !driver.IsSupportedVersion(osFamily, osName)
+	eosl := !driver.IsSupportedVersion(ctx, osFamily, osName)
 
 	// Package `gpg-pubkey` doesn't use the correct version.
 	// We don't need to find vulnerabilities for this package.

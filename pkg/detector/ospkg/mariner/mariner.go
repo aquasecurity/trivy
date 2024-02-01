@@ -1,6 +1,8 @@
 package mariner
 
 import (
+	"context"
+
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 
@@ -49,7 +51,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: utils.FormatVersion(pkg),
-				PkgRef:           pkg.Ref,
+				PkgIdentifier:    pkg.Identifier,
 				Layer:            pkg.Layer,
 				DataSource:       adv.DataSource,
 			}
@@ -73,7 +75,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if the version is supported.
-func (s *Scanner) IsSupportedVersion(_ ftypes.OSType, _ string) bool {
+func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	// EOL is not in public at the moment.
 	return true
 }

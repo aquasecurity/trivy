@@ -1,7 +1,7 @@
 package types
 
 import (
-	"encoding/json"
+	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
@@ -11,7 +11,7 @@ import (
 // Report represents a scan result
 type Report struct {
 	SchemaVersion int                 `json:",omitempty"`
-	CreatedAt     int64               `json:",omitempty"`
+	CreatedAt     time.Time           `json:",omitempty"`
 	ArtifactName  string              `json:",omitempty"`
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
 	Metadata      Metadata            `json:",omitempty"`
@@ -111,22 +111,6 @@ type Result struct {
 	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
 	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
-}
-
-func (r *Result) MarshalJSON() ([]byte, error) {
-	// VendorSeverity includes all vendor severities.
-	// It would be noisy to users, so it should be removed from the JSON output.
-	for i := range r.Vulnerabilities {
-		r.Vulnerabilities[i].VendorSeverity = nil
-	}
-
-	// Notice the Alias struct prevents MarshalJSON being called infinitely
-	type ResultAlias Result
-	return json.Marshal(&struct {
-		*ResultAlias
-	}{
-		ResultAlias: (*ResultAlias)(r),
-	})
 }
 
 func (r *Result) IsEmpty() bool {

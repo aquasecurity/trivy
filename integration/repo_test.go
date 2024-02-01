@@ -4,16 +4,13 @@ package integration
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
@@ -185,6 +182,15 @@ func TestRepository(t *testing.T) {
 				input:       "testdata/fixtures/repo/dotnet",
 			},
 			golden: "testdata/dotnet.json.golden",
+		},
+		{
+			name: "packages-props",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/packagesprops",
+			},
+			golden: "testdata/packagesprops.json.golden",
 		},
 		{
 			name: "swift",
@@ -407,12 +413,15 @@ func TestRepository(t *testing.T) {
 
 			osArgs := []string{
 				"-q",
-				"--cache-dir", cacheDir,
+				"--cache-dir",
+				cacheDir,
 				command,
 				"--skip-db-update",
 				"--skip-policy-update",
-				"--format", string(format),
-				"--parallel", fmt.Sprint(tt.args.parallel),
+				"--format",
+				string(format),
+				"--parallel",
+				fmt.Sprint(tt.args.parallel),
 				"--offline-scan",
 			}
 
@@ -490,7 +499,6 @@ func TestRepository(t *testing.T) {
 			osArgs = append(osArgs, "--output", outputFile)
 			osArgs = append(osArgs, tt.args.input)
 
-			clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			// Run "trivy repo"
