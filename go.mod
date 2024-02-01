@@ -42,8 +42,8 @@ require (
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/containerd/containerd v1.7.11
 	github.com/csaf-poc/csaf_distribution/v3 v3.0.0
-	github.com/docker/docker v24.0.7+incompatible
-	github.com/docker/go-connections v0.4.0
+	github.com/docker/docker v25.0.1+incompatible
+	github.com/docker/go-connections v0.5.0
 	github.com/fatih/color v1.15.0
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/go-openapi/runtime v0.26.0
@@ -79,7 +79,7 @@ require (
 	github.com/moby/buildkit v0.12.5
 	github.com/open-policy-agent/opa v0.60.0
 	github.com/opencontainers/go-digest v1.0.0
-	github.com/opencontainers/image-spec v1.1.0-rc5
+	github.com/opencontainers/image-spec v1.1.0-rc6
 	github.com/openvex/go-vex v0.2.5
 	github.com/owenrumney/go-sarif/v2 v2.3.0
 	github.com/package-url/packageurl-go v0.1.2
@@ -224,9 +224,10 @@ require (
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/distribution/reference v0.5.0 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
-	github.com/docker/cli v24.0.6+incompatible // indirect
-	github.com/docker/distribution v2.8.2+incompatible // indirect
+	github.com/docker/cli v25.0.1+incompatible // indirect
+	github.com/docker/distribution v2.8.3+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.7.0 // indirect
 	github.com/docker/go-events v0.0.0-20190806004212-e31b211e4f1c // indirect
 	github.com/docker/go-metrics v0.0.1 // indirect
@@ -322,6 +323,7 @@ require (
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/moby/sys/signal v0.7.0 // indirect
+	github.com/moby/sys/user v0.1.0 // indirect
 	github.com/moby/term v0.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -416,17 +418,13 @@ require (
 	modernc.org/opt v0.1.3 // indirect
 	modernc.org/strutil v1.1.3 // indirect
 	modernc.org/token v1.1.0 // indirect
-	oras.land/oras-go v1.2.4 // indirect
+	oras.land/oras-go v1.2.5 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/kustomize/api v0.13.5-0.20230601165947-6ce0bf390ce3 // indirect
 	sigs.k8s.io/kustomize/kyaml v0.14.3-0.20230601165947-6ce0bf390ce3 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
-
-// oras 1.2.2 is incompatible with github.com/docker/docker v24.0.2
-// cf. https://github.com/oras-project/oras-go/pull/527
-replace oras.land/oras-go => oras.land/oras-go v1.2.4-0.20230801060855-932dd06d38af
 
 // testcontainers-go has a bug with versions v0.25.0 and v0.26.0
 // ref: https://github.com/testcontainers/testcontainers-go/issues/1782
