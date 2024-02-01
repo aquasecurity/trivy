@@ -134,11 +134,11 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		OfflineScan:    &OfflineScanFlag,
 		Scanners:       &ScannersFlag,
 		FilePatterns:   &FilePatternsFlag,
+		Slow:           &SlowFlag,
 		Parallel:       &ParallelFlag,
 		SBOMSources:    &SBOMSourcesFlag,
 		RekorURL:       &RekorURLFlag,
 		IncludeDevDeps: &IncludeDevDepsFlag,
-		Slow:           &SlowFlag,
 	}
 }
 

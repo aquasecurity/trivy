@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
@@ -82,7 +83,8 @@ func initializeFilesystemScanner(ctx context.Context, path string, artifactCache
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
-	artifactArtifact, err := local2.NewArtifact(path, artifactCache, artifactOption)
+	fs := walker.NewFS()
+	artifactArtifact, err := local2.NewArtifact(path, artifactCache, fs, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -98,7 +100,8 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
-	artifactArtifact, cleanup, err := repo.NewArtifact(url, artifactCache, artifactOption)
+	fs := walker.NewFS()
+	artifactArtifact, cleanup, err := repo.NewArtifact(url, artifactCache, fs, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -124,14 +127,15 @@ func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache c
 	}, nil
 }
 
-func initializeVMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, walker vm.Walker, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeVMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	ospkgScanner := ospkg.NewScanner()
 	langpkgScanner := langpkg.NewScanner()
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, ospkgScanner, langpkgScanner, client)
-	artifactArtifact, err := vm.NewArtifact(filePath, artifactCache, walker, artifactOption)
+	walkerVM := walker.NewVM()
+	artifactArtifact, err := vm.NewArtifact(filePath, artifactCache, walkerVM, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -185,7 +189,8 @@ func initializeRemoteArchiveScanner(ctx context.Context, filePath string, artifa
 func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	artifactArtifact, err := local2.NewArtifact(path, artifactCache, artifactOption)
+	fs := walker.NewFS()
+	artifactArtifact, err := local2.NewArtifact(path, artifactCache, fs, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -198,7 +203,8 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 func initializeRemoteRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	artifactArtifact, cleanup, err := repo.NewArtifact(url, artifactCache, artifactOption)
+	fs := walker.NewFS()
+	artifactArtifact, cleanup, err := repo.NewArtifact(url, artifactCache, fs, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -222,10 +228,11 @@ func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache
 }
 
 // initializeRemoteVMScanner is for vm scanning in client/server mode
-func initializeRemoteVMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, walker vm.Walker, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteVMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	artifactArtifact, err := vm.NewArtifact(path, artifactCache, walker, artifactOption)
+	walkerVM := walker.NewVM()
+	artifactArtifact, err := vm.NewArtifact(path, artifactCache, walkerVM, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

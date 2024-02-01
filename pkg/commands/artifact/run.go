@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -646,9 +647,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		},
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
-			SkipFiles:         opts.SkipFiles,
-			SkipDirs:          opts.SkipDirs,
 			FilePatterns:      opts.FilePatterns,
+			Parallel:          opts.Parallel,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
 			Insecure:          opts.Insecure,
@@ -658,7 +658,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
 			//Platform:          opts.Platform,
-			Parallel:     opts.Parallel,
 			AWSRegion:    opts.Region,
 			AWSEndpoint:  opts.Endpoint,
 			FileChecksum: fileChecksum,
@@ -684,6 +683,12 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			LicenseScannerOption: analyzer.LicenseScannerOption{
 				Full:                      opts.LicenseFull,
 				ClassifierConfidenceLevel: opts.LicenseConfidenceLevel,
+			},
+
+			// For file walking
+			WalkerOption: walker.Option{
+				SkipFiles: opts.SkipFiles,
+				SkipDirs:  opts.SkipDirs,
 			},
 		},
 	}, scanOptions, nil
