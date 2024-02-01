@@ -3,8 +3,6 @@ package licensing
 import (
 	"regexp"
 	"strings"
-
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 var mapping = map[string]string{
@@ -103,11 +101,6 @@ func Normalize(name string) string {
 }
 
 func SplitLicenses(str string) []string {
-	if strings.HasPrefix(str, godeptypes.NonSeparableLicensePrefix) {
-		str = strings.TrimPrefix(str, godeptypes.NonSeparableLicensePrefix)
-		return []string{str}
-	}
-
 	var licenses []string
 	for _, maybeLic := range licenseSplitRegexp.Split(str, -1) {
 		lower := strings.ToLower(maybeLic)
