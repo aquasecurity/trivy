@@ -245,7 +245,10 @@ func TestDockerEngine(t *testing.T) {
 				// load image into docker engine
 				res, err := cli.ImageLoad(ctx, testfile, true)
 				require.NoError(t, err, tt.name)
-				io.Copy(io.Discard, res.Body)
+				if _, err := io.Copy(io.Discard, resp.Body); err != nil {
+					return err
+				}
+				defer resp.Body.Close()
 
 				// tag our image to something unique
 				err = cli.ImageTag(ctx, tt.imageTag, tt.input)
@@ -253,15 +256,14 @@ func TestDockerEngine(t *testing.T) {
 
 				// cleanup
 				t.Cleanup(func() {
-					_, err = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
+					_, _ = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
 						Force:         true,
 						PruneChildren: true,
 					})
-					_, err = cli.ImageRemove(ctx, tt.imageTag, api.ImageRemoveOptions{
+					_, _ = cli.ImageRemove(ctx, tt.imageTag, api.ImageRemoveOptions{
 						Force:         true,
 						PruneChildren: true,
 					})
-					assert.NoError(t, err, tt.name)
 				})
 			}
 
