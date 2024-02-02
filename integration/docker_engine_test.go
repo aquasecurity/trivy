@@ -245,10 +245,10 @@ func TestDockerEngine(t *testing.T) {
 				// load image into docker engine
 				res, err := cli.ImageLoad(ctx, testfile, true)
 				require.NoError(t, err, tt.name)
-				if _, err := io.Copy(io.Discard, resp.Body); err != nil {
-					return err
+				if _, err := io.Copy(io.Discard, res.Body); err != nil {
+					require.NoError(t, err, tt.name)
 				}
-				defer resp.Body.Close()
+				defer res.Body.Close()
 
 				// tag our image to something unique
 				err = cli.ImageTag(ctx, tt.imageTag, tt.input)
