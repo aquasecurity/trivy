@@ -71,14 +71,13 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []t
 			continue
 		}
 
-		// Packages from tarball have `name` and `version` fields.
-		// cf. https://github.com/pnpm/spec/blob/ad27a225f81d9215becadfa540ef05fa4ad6dd60/lockfile/5.2.md#packagesdependencypathname
+		// Dependency name may be present in dependencyPath or Name field. Same for Version.
+		// e.g. packages installed from local directory or tarball
+		// cf. https://github.com/pnpm/spec/blob/274ff02de23376ad59773a9f25ecfedd03a41f64/lockfile/6.0.md#packagesdependencypathname
 		name := info.Name
 		version := info.Version
 
-		// Other packages don't have these fields.
-		// Parse `dependencyPath` to determine name and version.
-		if info.Resolution.Tarball == "" {
+		if name == "" {
 			name, version = parsePackage(depPath, lockVer)
 		}
 		pkgID := p.ID(name, version)

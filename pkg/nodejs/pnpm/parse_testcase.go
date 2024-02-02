@@ -147,22 +147,35 @@ var (
 	// npm pack
 	// mkdir -p /app/foo/bar && cd /app
 	// cp /temp/node_modules/lodash/lodash-4.17.21.tgz /app/foo/bar/lodash.tgz
+	// npm init -y
 	// npm install ./foo/bar/lodash.tgz
+	// mkdir package1 && cd package1
+	// npm init -y
+	// npm install asynckit@0.4.0
+	// cd ..
+	// npm install ./package1
 	// pnpm update
 	// pnpm add https://github.com/debug-js/debug/tarball/4.3.4
 	// pnpm add https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5
 	// pnpm list --prod --depth 10 | grep -E -o "\S+\s+[0-9]+(\.[0-9]+)+$" | awk '{printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\", Indirect: false},\n")}' | sort -u
+	// manually update `Indirect` fields
 	pnpmArchives = []types.Library{
+		{ID: "asynckit@0.4.0", Name: "asynckit", Version: "0.4.0", Indirect: true},
 		{ID: "debug@4.3.4", Name: "debug", Version: "4.3.4", Indirect: false},
 		{ID: "is-negative@2.0.1", Name: "is-negative", Version: "2.0.1", Indirect: false},
 		{ID: "lodash@4.17.21", Name: "lodash", Version: "4.17.21", Indirect: false},
 		{ID: "ms@2.1.2", Name: "ms", Version: "2.1.2", Indirect: true},
+		{ID: "package1@1.0.0", Name: "package1", Version: "1.0.0", Indirect: false},
 	}
 
 	pnpmArchivesDeps = []types.Dependency{
 		{
 			ID:        "debug@4.3.4",
 			DependsOn: []string{"ms@2.1.2"},
+		},
+		{
+			ID:        "package1@1.0.0",
+			DependsOn: []string{"asynckit@0.4.0"},
 		},
 	}
 
