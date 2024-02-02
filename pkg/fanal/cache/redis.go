@@ -139,7 +139,7 @@ func (c RedisCache) Clear() error {
 		if err = c.client.Unlink(ctx, keys...).Err(); err != nil {
 			return xerrors.Errorf("failed to unlink redis keys: %w", err)
 		}
-		if cursor == 0 { // We clear all keys
+		if cursor == 0 { // We cleared all keys
 			break
 		}
 	}
