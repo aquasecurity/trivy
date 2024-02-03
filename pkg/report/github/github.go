@@ -108,6 +108,11 @@ func (w Writer) Write(ctx context.Context, report types.Report) error {
 			if report.ArtifactType == ftypes.ArtifactContainerImage {
 				// Replacing `source_location` by the image name and tag
 				image_reference := strings.Join(report.Metadata.RepoTags, ", ")
+				image_with_hash := strings.Join(report.Metadata.RepoDigests, ", ")
+				_, image_hash, found := strings.Cut(image_with_hash, "@")
+				if found {
+					image_reference += "@" + image_hash
+				}
 				manifest.File = &File{
 					SrcLocation: image_reference,
 				}

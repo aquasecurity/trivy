@@ -212,7 +212,7 @@ func TestWriter_Write(t *testing.T) {
 				"Python": {
 					Name: "python-pkg",
 					File: &github.File{
-						SrcLocation: "fake_repo.azurecr.io/image_name:latest",
+						SrcLocation: "fake_repo.azurecr.io/image_name:latest@sha256:a7c92cdcb3d010f6edeb37ddcdbacab14981aa31e7f1140e0097dc1b8e834c49",
 					},
 					Resolved: map[string]github.Package{
 						"jwcrypto": {
