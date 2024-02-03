@@ -120,6 +120,63 @@ References:
 pkg install trivy
 ```
 
+## Installation using "asdf" or "mise"
+
+[asdf](https://github.com/asdf-vm/asdf) and [mise](https://github.com/jdx/mise) are quite similar tools you can use to install trivy. See their respective documentation for more information of how to install them and use them:
+
+- [asdf](https://asdf-vm.com/guide/getting-started.html)
+- [mise](https://mise.jdx.dev/getting-started.html)
+
+The plugin used by both tools is developped [here](https://github.com/zufardhiyaulhaq/asdf-trivy)
+
+A basic global installation is shown below, for specific version or/and local version to a directory see "asdf" or "mise" documentation.
+
+### asdf
+
+#### asdf/Install plugin
+
+    ```shell
+    asdf plugin add trivy https://github.com/zufardhiyaulhaq/asdf-trivy.git
+    ```
+
+#### asdf/Install latest version
+
+    ```shell
+    asdf install trivy latest
+    ```
+
+#### asdf/Set a version globally (on your ~/.tool-versions file)
+
+    ```shell
+    asdf global trivy latest
+    ```
+
+#### asdf/Now trivy commands are available
+
+    ```shell
+    trivy --version
+    ```
+
+### mise
+
+#### mise/Install plugin and install latest version
+
+    ```shell
+    mise install trivy@latest
+    ```
+
+#### mise/Set a version globally (on your ~/.tool-versions file)
+
+    ```shell
+    mise use -g trivy@latest
+    ```
+
+#### mise/Now trivy commands are available
+
+    ```shell
+    trivy --version
+    ```
+
 ## Install from GitHub Release (Official)
 
 ### Download Binary
