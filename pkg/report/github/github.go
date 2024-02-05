@@ -106,13 +106,16 @@ func (w Writer) Write(ctx context.Context, report types.Report) error {
 		// show path for language-specific packages only
 		if result.Class == types.ClassLangPkg {
 			if report.ArtifactType == ftypes.ArtifactContainerImage {
-				// Replacing `source_location` by the image name and tag
+				// `RepoDigests` ~= <registry>/<image_name>@sha256:<image_hash>
+				// `RepoTag` ~= <registry>/<image_name>:<image_tag>
+				// By concatenating the hash from `RepoDigests` at the end of `RepoTag` we get all the information
 				image_reference := strings.Join(report.Metadata.RepoTags, ", ")
 				image_with_hash := strings.Join(report.Metadata.RepoDigests, ", ")
 				_, image_hash, found := strings.Cut(image_with_hash, "@")
 				if found {
 					image_reference += "@" + image_hash
 				}
+				// Replacing `source_location` in manifest by the image name, tag and hash
 				manifest.File = &File{
 					SrcLocation: image_reference,
 				}
