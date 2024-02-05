@@ -109,7 +109,7 @@ func (v *CSAF) inspectProductRelationships(product csaf.ProductID) map[csaf.Rela
 			case csaf.CSAFRelationshipCategoryDefaultComponentOf,
 				csaf.CSAFRelationshipCategoryInstalledOn,
 				csaf.CSAFRelationshipCategoryInstalledWith:
-				if fpn := rel.FullProductName; fpn != nil && fpn.ProductID != nil && lo.FromPtr(fpn.ProductID) == product {
+				if fpn := rel.FullProductName; fpn != nil && lo.FromPtr(fpn.ProductID) == product {
 					subProductsMap[relationship] = append(subProductsMap[relationship], rel.ProductReference)
 				}
 			}
