@@ -59,7 +59,7 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL)
 		}
 		for relationship, purls := range v.inspectProductRelationships(lo.FromPtr(product)) {
 			if matchProduct(purls, pkgURL) {
-				v.logger.Warnf("Filtered out the detected vulnerability",
+				v.logger.Warnw("Filtered out the detected vulnerability",
 					zap.String("vulnerability-id", string(*vuln.CVE)),
 					zap.String("status", string(StatusNotAffected)),
 					zap.String("relationship", string(relationship)))
@@ -77,7 +77,7 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL)
 		}
 		for relationship, purls := range v.inspectProductRelationships(lo.FromPtr(product)) {
 			if matchProduct(purls, pkgURL) {
-				v.logger.Warnf("Filtered out the detected vulnerability",
+				v.logger.Warnw("Filtered out the detected vulnerability",
 					zap.String("vulnerability-id", string(*vuln.CVE)),
 					zap.String("status", string(StatusFixed)),
 					zap.String("relationship", string(relationship)))
@@ -98,17 +98,19 @@ func (v *CSAF) getProductPurls(product csaf.ProductID) []*purl.PackageURL {
 // iterating over relationships looking for sub-products that might be part of the original product
 func (v *CSAF) inspectProductRelationships(product csaf.ProductID) map[csaf.RelationshipCategory][]*purl.PackageURL {
 	subProductsMap := make(map[csaf.RelationshipCategory]csaf.Products)
-	if rels := v.advisory.ProductTree.RelationShips; rels != nil {
-		for _, rel := range lo.FromPtr(rels) {
-			if rel != nil {
-				relationship := lo.FromPtr(rel.Category)
-				switch relationship {
-				case csaf.CSAFRelationshipCategoryDefaultComponentOf,
-					csaf.CSAFRelationshipCategoryInstalledOn,
-					csaf.CSAFRelationshipCategoryInstalledWith:
-					if fpn := rel.FullProductName; fpn != nil && fpn.ProductID != nil && lo.FromPtr(fpn.ProductID) == product {
-						subProductsMap[relationship] = append(subProductsMap[relationship], rel.ProductReference)
-					}
+	if v.advisory.ProductTree.RelationShips == nil {
+		return nil
+	}
+
+	for _, rel := range lo.FromPtr(v.advisory.ProductTree.RelationShips) {
+		if rel != nil {
+			relationship := lo.FromPtr(rel.Category)
+			switch relationship {
+			case csaf.CSAFRelationshipCategoryDefaultComponentOf,
+				csaf.CSAFRelationshipCategoryInstalledOn,
+				csaf.CSAFRelationshipCategoryInstalledWith:
+				if fpn := rel.FullProductName; fpn != nil && fpn.ProductID != nil && lo.FromPtr(fpn.ProductID) == product {
+					subProductsMap[relationship] = append(subProductsMap[relationship], rel.ProductReference)
 				}
 			}
 		}
