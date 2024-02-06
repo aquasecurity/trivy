@@ -155,7 +155,7 @@ func TestVEX_Filter(t *testing.T) {
 						PkgName:          "libstdc++6",
 						InstalledVersion: "12.3.0-1ubuntu1~22.04",
 						PkgIdentifier: ftypes.PkgIdentifier{
-							BOMRef: "pkg:deb/ubuntu/libstdc%2B%2B6@12.3.0-1ubuntu1~22.04?arch=amd64&distro=ubuntu-22.04",
+							BOMRef: "pkg:deb/ubuntu/libstdc%2B%2B6@12.3.0-1ubuntu1~22.04?distro=ubuntu-22.04&arch=amd64",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeDebian,
 								Namespace: "ubuntu",
