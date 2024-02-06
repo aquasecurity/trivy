@@ -126,7 +126,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 
 [Ecosystem]: ./ecosystem/index.md
 [Installation]: getting-started/installation.md
-[pronunciation]: #how-to-pronounce-the-name-trivy
+[pronunciation]: getting-started/faq.md#how-to-pronounce-the-name-trivy
 [Scanning Coverage]: ./docs/coverage/index.md
 
 [aquasec]: https://aquasec.com
