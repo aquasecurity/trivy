@@ -32,28 +32,28 @@ jobs:
 
         # Upload artifacts
       - name: Upload artifacts (trivy_Linux-64bit)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: trivy_Linux-64bit
           path: dist/trivy_*_Linux-64bit.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_Linux-ARM64)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: trivy_Linux-ARM64
           path: dist/trivy_*_Linux-ARM64.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-64bit)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: trivy_macOS-64bit
           path: dist/trivy_*_macOS-64bit.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-ARM64)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: trivy_macOS-ARM64
           path: dist/trivy_*_macOS-ARM64.tar.gz
