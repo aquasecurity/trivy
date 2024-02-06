@@ -140,6 +140,10 @@ func (w Writer) Write(ctx context.Context, report types.Report) error {
 				return xerrors.Errorf("unable to build purl for %s: %w", pkg.Name, err)
 			}
 
+			if pkg.FilePath != "" {
+				githubPkg.Metadata = Metadata{"source_location": pkg.FilePath}
+			}
+
 			resolved[pkg.Name] = githubPkg
 		}
 

@@ -219,11 +219,13 @@ func TestWriter_Write(t *testing.T) {
 							PackageUrl:   "pkg:pypi/jwcrypto@0.7",
 							Relationship: "direct",
 							Scope:        "runtime",
+							Metadata:     github.Metadata{"source_location": "opt/pyenv/versions/3.11.2/lib/python3.11/site-packages/jwcrypto-0.7.dist-info/METADATA"},
 						},
 						"matplotlib": {
 							PackageUrl:   "pkg:pypi/matplotlib@3.5.3",
 							Relationship: "direct",
 							Scope:        "runtime",
+							Metadata:     github.Metadata{"source_location": "opt/pyenv/versions/3.11.2/lib/python3.11/site-packages/matplotlib-3.5.3.dist-info/METADATA"},
 						},
 					},
 				},
