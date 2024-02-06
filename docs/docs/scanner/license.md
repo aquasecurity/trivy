@@ -30,10 +30,10 @@ To configure the confidence level, you can use `--license-confidence-level`. Thi
 
 Currently, the standard license scanning doesn't support filesystem and repository scanning.
 
-|   License scanning    | Image | Rootfs | Filesystem | Repository |
-| :-------------------: | :---: | :----: | :--------: | :--------: |
-|       Standard        |   ✅   |   ✅    |     -      |     -      |
-| Full (--license-full) |   ✅   |   ✅    |     ✅      |     ✅      |
+|   License scanning    | Image | Rootfs | Filesystem | Repository | SBOM |
+|:---------------------:|:-----:|:------:|:----------:|:----------:|:----:|
+|       Standard        |   ✅   |   ✅    |     -      |     -      |  ✅   |
+| Full (--license-full) |   ✅   |   ✅    |     ✅      |     ✅      |  -   |
 
 License checking classifies the identified licenses and map the classification to severity.
 

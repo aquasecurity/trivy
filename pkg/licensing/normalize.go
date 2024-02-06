@@ -67,15 +67,93 @@ var mapping = map[string]string{
 	"MPL 2":   MPL20,
 
 	// BSD
-	"BSD":          BSD3Clause, // 2? 3?
-	"BSD-2-CLAUSE": BSD2Clause,
-	"BSD-3-CLAUSE": BSD3Clause,
-	"BSD-4-CLAUSE": BSD4Clause,
+	"BSD":                          BSD3Clause, // 2? 3?
+	"BSD-2-CLAUSE":                 BSD2Clause,
+	"BSD-3-CLAUSE":                 BSD3Clause,
+	"BSD-4-CLAUSE":                 BSD4Clause,
+	"BSD 2 CLAUSE":                 BSD2Clause,
+	"BSD 2-CLAUSE":                 BSD2Clause,
+	"BSD 2-CLAUSE LICENSE":         BSD2Clause,
+	"THE BSD 2-CLAUSE LICENSE":     BSD2Clause,
+	"THE 2-CLAUSE BSD LICENSE":     BSD2Clause,
+	"TWO-CLAUSE BSD-STYLE LICENSE": BSD2Clause,
+	"BSD 3 CLAUSE":                 BSD3Clause,
+	"BSD 3-CLAUSE":                 BSD3Clause,
+	"BSD 3-CLAUSE LICENSE":         BSD3Clause,
+	"THE BSD 3-CLAUSE LICENSE":     BSD3Clause,
+	"BSD 3-CLAUSE \"NEW\" OR \"REVISED\" LICENSE (BSD-3-CLAUSE)": BSD3Clause,
+	"ECLIPSE DISTRIBUTION LICENSE (NEW BSD LICENSE)":             BSD3Clause,
+	"NEW BSD LICENSE":                      BSD3Clause,
+	"MODIFIED BSD LICENSE":                 BSD3Clause,
+	"REVISED BSD":                          BSD3Clause,
+	"REVISED BSD LICENSE":                  BSD3Clause,
+	"THE NEW BSD LICENSE":                  BSD3Clause,
+	"3-CLAUSE BSD LICENSE":                 BSD3Clause,
+	"BSD 3-CLAUSE NEW LICENSE":             BSD3Clause,
+	"BSD LICENSE":                          BSD3Clause,
+	"EDL 1.0":                              BSD3Clause,
+	"ECLIPSE DISTRIBUTION LICENSE - V 1.0": BSD3Clause,
+	"ECLIPSE DISTRIBUTION LICENSE V. 1.0":  BSD3Clause,
+	"ECLIPSE DISTRIBUTION LICENSE V1.0":    BSD3Clause,
+	"THE BSD LICENSE":                      BSD4Clause,
 
-	"APACHE":     Apache20, // 1? 2?
-	"APACHE 2.0": Apache20,
-	"RUBY":       Ruby,
-	"ZLIB":       Zlib,
+	// APACHE
+	"APACHE LICENSE":                       Apache10,
+	"APACHE SOFTWARE LICENSES":             Apache10,
+	"APACHE":                               Apache20, // 1? 2?
+	"APACHE 2.0":                           Apache20,
+	"APACHE 2":                             Apache20,
+	"APACHE V2":                            Apache20,
+	"APACHE 2.0 LICENSE":                   Apache20,
+	"APACHE SOFTWARE LICENSE, VERSION 2.0": Apache20,
+	"THE APACHE SOFTWARE LICENSE, VERSION 2.0": Apache20,
+	"APACHE LICENSE (V2.0)":                    Apache20,
+	"APACHE LICENSE 2.0":                       Apache20,
+	"APACHE LICENSE V2.0":                      Apache20,
+	"APACHE LICENSE VERSION 2.0":               Apache20,
+	"APACHE LICENSE, VERSION 2.0":              Apache20,
+	"APACHE PUBLIC LICENSE 2.0":                Apache20,
+	"APACHE SOFTWARE LICENSE - VERSION 2.0":    Apache20,
+	"THE APACHE LICENSE, VERSION 2.0":          Apache20,
+	"APACHE-2.0 LICENSE":                       Apache20,
+	"APACHE 2 STYLE LICENSE":                   Apache20,
+	"ASF 2.0":                                  Apache20,
+
+	// CC0-1.0
+	"CC0 1.0 UNIVERSAL":                       CC010,
+	"PUBLIC DOMAIN, PER CREATIVE COMMONS CC0": CC010,
+
+	// CDDL 1.0
+	"CDDL 1.0":     CDDL10,
+	"CDDL LICENSE": CDDL10,
+	"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) VERSION 1.0": CDDL10,
+	"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) V1.0":        CDDL10,
+
+	// CDDL 1.1
+	"CDDL 1.1": CDDL11,
+	"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) VERSION 1.1": CDDL11,
+	"COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) V1.1":        CDDL11,
+
+	// EPL 1.0
+	"ECLIPSE PUBLIC LICENSE - VERSION 1.0":      EPL10,
+	"ECLIPSE PUBLIC LICENSE (EPL) 1.0":          EPL10,
+	"ECLIPSE PUBLIC LICENSE V1.0":               EPL10,
+	"ECLIPSE PUBLIC LICENSE, VERSION 1.0":       EPL10,
+	"ECLIPSE PUBLIC LICENSE - V 1.0":            EPL10,
+	"ECLIPSE PUBLIC LICENSE - V1.0":             EPL10,
+	"ECLIPSE PUBLIC LICENSE (EPL), VERSION 1.0": EPL10,
+
+	// EPL 2.0
+	"ECLIPSE PUBLIC LICENSE - VERSION 2.0":   EPL20,
+	"EPL 2.0":                                EPL20,
+	"ECLIPSE PUBLIC LICENSE - V 2.0":         EPL20,
+	"ECLIPSE PUBLIC LICENSE V2.0":            EPL20,
+	"ECLIPSE PUBLIC LICENSE, VERSION 2.0":    EPL20,
+	"THE ECLIPSE PUBLIC LICENSE VERSION 2.0": EPL20,
+	"ECLIPSE PUBLIC LICENSE V. 2.0":          EPL20,
+
+	"RUBY": Ruby,
+	"ZLIB": Zlib,
 
 	// Public Domain
 	"PUBLIC DOMAIN": Unlicense,
