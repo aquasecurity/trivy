@@ -1,4 +1,4 @@
-package test
+package terraform
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/terraform"
-	terraform2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/stretchr/testify/require"
 
@@ -31,7 +30,7 @@ func createModulesFromSource(t *testing.T, source string, ext string) terraform.
 }
 
 func scanHCLWithWorkspace(t *testing.T, source string, workspace string) scan.Results {
-	return scanHCL(t, source, terraform2.ScannerWithWorkspaceName(workspace))
+	return scanHCL(t, source, ScannerWithWorkspaceName(workspace))
 }
 
 func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Results {
@@ -40,7 +39,7 @@ func scanHCL(t *testing.T, source string, opts ...options.ScannerOption) scan.Re
 		"main.tf": source,
 	})
 
-	localScanner := terraform2.New(append(opts, options.ScannerWithEmbeddedPolicies(false))...)
+	localScanner := New(append(opts, options.ScannerWithEmbeddedPolicies(false))...)
 	results, err := localScanner.ScanFS(context.TODO(), fs, ".")
 	require.NoError(t, err)
 	return results
@@ -52,7 +51,7 @@ func scanJSON(t *testing.T, source string) scan.Results {
 		"main.tf.json": source,
 	})
 
-	s := terraform2.New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
+	s := New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
 	results, _, err := s.ScanFSWithMetrics(context.TODO(), fs, ".")
 	require.NoError(t, err)
 	return results
