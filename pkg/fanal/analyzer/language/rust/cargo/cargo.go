@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 
@@ -58,9 +59,9 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		return filepath.Base(path) == types.CargoLock
 	}
 
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
+	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		// Parse Cargo.lock
-		app, err := a.parseCargoLock(path, r)
+		app, err := a.parseCargoLock(filePath, r)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -68,8 +69,8 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		}
 
 		// Parse Cargo.toml alongside Cargo.lock to identify the direct dependencies
-		if err = a.removeDevDependencies(input.FS, filepath.Dir(path), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.CargoToml), err)
+		if err = a.removeDevDependencies(input.FS, path.Dir(filePath), app); err != nil {
+			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", path.Join(path.Dir(filePath), types.CargoToml), err)
 		}
 		sort.Sort(app.Libraries)
 		apps = append(apps, *app)
@@ -98,13 +99,13 @@ func (a cargoAnalyzer) Version() int {
 	return version
 }
 
-func (a cargoAnalyzer) parseCargoLock(path string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Cargo, path, r, a.lockParser)
+func (a cargoAnalyzer) parseCargoLock(filePath string, r io.Reader) (*types.Application, error) {
+	return language.Parse(types.Cargo, filePath, r, a.lockParser)
 }
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
-	cargoTOMLPath := filepath.Join(dir, types.CargoToml)
-	directDeps, err := a.parseCargoTOML(fsys, cargoTOMLPath)
+	cargoTOMLPath := path.Join(dir, types.CargoToml)
+	directDeps, err := a.parseRootCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		log.Logger.Debugf("Cargo: %s not found", cargoTOMLPath)
 		return nil
@@ -155,40 +156,38 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 type cargoToml struct {
 	Dependencies Dependencies                       `toml:"dependencies"`
 	Target       map[string]map[string]Dependencies `toml:"target"`
-	Workspace    map[string]Dependencies            `toml:"workspace"`
+	Workspace    cargoTomlWorkspace                 `toml:"workspace"`
+}
+
+type cargoTomlWorkspace struct {
+	Dependencies Dependencies `toml:"dependencies"`
+	Members      []string     `toml:"members"`
 }
 
 type Dependencies map[string]interface{}
 
-func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]string, error) {
-	// Parse Cargo.json
-	f, err := fsys.Open(path)
+// parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
+// It also parses workspace members and their dependencies.
+func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[string]string, error) {
+	dependencies, members, err := parseCargoTOML(fsys, filePath)
 	if err != nil {
-		return nil, xerrors.Errorf("file open error: %w", err)
+		return nil, xerrors.Errorf("unable to parse %s: %w", filePath, err)
 	}
-	defer func() { _ = f.Close() }()
+	// According to Cargo workspace RFC, workspaces can't be nested:
+	// https://github.com/nox/rust-rfcs/blob/master/text/1525-cargo-workspace.md#validating-a-workspace
+	for _, member := range members {
+		memberPath := path.Join(path.Dir(filePath), member, types.CargoToml)
+		memberDeps, _, err := parseCargoTOML(fsys, memberPath)
+		if err != nil {
+			log.Logger.Warnf("Unable to parse %q: %s", memberPath, err)
+			continue
+		}
+		// Member dependencies shouldn't overwrite dependencies from root cargo.toml file
+		maps.Copy(memberDeps, dependencies)
+		dependencies = memberDeps
+	}
 
-	tomlFile := cargoToml{}
 	deps := make(map[string]string)
-	_, err = toml.NewDecoder(f).Decode(&tomlFile)
-	if err != nil {
-		return nil, xerrors.Errorf("toml decode error: %w", err)
-	}
-
-	// There are cases when toml file doesn't include `Dependencies` field (then map will be nil).
-	// e.g. when only `workspace.Dependencies` are used
-	// declare `dependencies` to avoid panic
-	dependencies := Dependencies{}
-	maps.Copy(dependencies, tomlFile.Dependencies)
-
-	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#platform-specific-dependencies
-	for _, target := range tomlFile.Target {
-		maps.Copy(dependencies, target["dependencies"])
-	}
-
-	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#inheriting-a-dependency-from-a-workspace
-	maps.Copy(dependencies, tomlFile.Workspace["dependencies"])
-
 	for name, value := range dependencies {
 		switch ver := value.(type) {
 		case string:
@@ -249,4 +248,34 @@ func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, er
 	}
 
 	return c.Check(ver), nil
+}
+
+func parseCargoTOML(fsys fs.FS, filePath string) (Dependencies, []string, error) {
+	// Parse Cargo.toml
+	f, err := fsys.Open(filePath)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("file open error: %w", err)
+	}
+	defer func() { _ = f.Close() }()
+
+	var tomlFile cargoToml
+	// There are cases when toml file doesn't include `Dependencies` field (then map will be nil).
+	// e.g. when only `workspace.Dependencies` are used
+	// declare `dependencies` to avoid panic
+	dependencies := Dependencies{}
+	if _, err = toml.NewDecoder(f).Decode(&tomlFile); err != nil {
+		return nil, nil, xerrors.Errorf("toml decode error: %w", err)
+	}
+
+	maps.Copy(dependencies, tomlFile.Dependencies)
+
+	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#platform-specific-dependencies
+	for _, target := range tomlFile.Target {
+		maps.Copy(dependencies, target["dependencies"])
+	}
+
+	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#inheriting-a-dependency-from-a-workspace
+	maps.Copy(dependencies, tomlFile.Workspace.Dependencies)
+	// https://doc.rust-lang.org/cargo/reference/workspaces.html#the-members-and-exclude-fields
+	return dependencies, tomlFile.Workspace.Members, nil
 }

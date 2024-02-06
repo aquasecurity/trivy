@@ -3,10 +3,9 @@
 package integration
 
 import (
+	"github.com/aquasecurity/trivy/pkg/types"
 	"path/filepath"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
@@ -51,27 +50,13 @@ func TestModule(t *testing.T) {
 				tt.input,
 			}
 
-			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
-			if *update {
-				outputFile = tt.golden
-			}
-
-			osArgs = append(osArgs, []string{
-				"--output",
-				outputFile,
-			}...)
-
-			// Run Trivy
-			err := execute(osArgs)
-			require.NoError(t, err)
-			defer func() {
+			t.Cleanup(func() {
 				analyzer.DeregisterAnalyzer("spring4shell")
 				post.DeregisterPostScanner("spring4shell")
-			}()
+			})
 
-			// Compare want and got
-			compareReports(t, tt.golden, outputFile, nil)
+			// Run Trivy
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{})
 		})
 	}
 }

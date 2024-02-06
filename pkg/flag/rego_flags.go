@@ -7,40 +7,35 @@ package flag
 //	  config-policy: "custom-policy/policy"
 //	  policy-namespaces: "user"
 var (
-	SkipPolicyUpdateFlag = Flag{
+	SkipPolicyUpdateFlag = Flag[bool]{
 		Name:       "skip-policy-update",
 		ConfigName: "rego.skip-policy-update",
-		Default:    false,
 		Usage:      "skip fetching rego policy updates",
 	}
-	TraceFlag = Flag{
+	TraceFlag = Flag[bool]{
 		Name:       "trace",
 		ConfigName: "rego.trace",
-		Default:    false,
 		Usage:      "enable more verbose trace output for custom queries",
 	}
-	ConfigPolicyFlag = Flag{
+	ConfigPolicyFlag = Flag[[]string]{
 		Name:       "config-policy",
 		ConfigName: "rego.policy",
-		Default:    []string{},
 		Usage:      "specify the paths to the Rego policy files or to the directories containing them, applying config files",
 		Aliases: []Alias{
 			{Name: "policy"},
 		},
 	}
-	ConfigDataFlag = Flag{
+	ConfigDataFlag = Flag[[]string]{
 		Name:       "config-data",
 		ConfigName: "rego.data",
-		Default:    []string{},
 		Usage:      "specify paths from which data for the Rego policies will be recursively loaded",
 		Aliases: []Alias{
 			{Name: "data"},
 		},
 	}
-	PolicyNamespaceFlag = Flag{
+	PolicyNamespaceFlag = Flag[[]string]{
 		Name:       "policy-namespaces",
 		ConfigName: "rego.namespaces",
-		Default:    []string{},
 		Usage:      "Rego namespaces",
 		Aliases: []Alias{
 			{Name: "namespaces"},
@@ -50,11 +45,11 @@ var (
 
 // RegoFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
 type RegoFlagGroup struct {
-	SkipPolicyUpdate *Flag
-	Trace            *Flag
-	PolicyPaths      *Flag
-	DataPaths        *Flag
-	PolicyNamespaces *Flag
+	SkipPolicyUpdate *Flag[bool]
+	Trace            *Flag[bool]
+	PolicyPaths      *Flag[[]string]
+	DataPaths        *Flag[[]string]
+	PolicyNamespaces *Flag[[]string]
 }
 
 type RegoOptions struct {
@@ -67,11 +62,11 @@ type RegoOptions struct {
 
 func NewRegoFlagGroup() *RegoFlagGroup {
 	return &RegoFlagGroup{
-		SkipPolicyUpdate: &SkipPolicyUpdateFlag,
-		Trace:            &TraceFlag,
-		PolicyPaths:      &ConfigPolicyFlag,
-		DataPaths:        &ConfigDataFlag,
-		PolicyNamespaces: &PolicyNamespaceFlag,
+		SkipPolicyUpdate: SkipPolicyUpdateFlag.Clone(),
+		Trace:            TraceFlag.Clone(),
+		PolicyPaths:      ConfigPolicyFlag.Clone(),
+		DataPaths:        ConfigDataFlag.Clone(),
+		PolicyNamespaces: PolicyNamespaceFlag.Clone(),
 	}
 }
 
@@ -79,8 +74,8 @@ func (f *RegoFlagGroup) Name() string {
 	return "Rego"
 }
 
-func (f *RegoFlagGroup) Flags() []*Flag {
-	return []*Flag{
+func (f *RegoFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.SkipPolicyUpdate,
 		f.Trace,
 		f.PolicyPaths,
@@ -90,11 +85,15 @@ func (f *RegoFlagGroup) Flags() []*Flag {
 }
 
 func (f *RegoFlagGroup) ToOptions() (RegoOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return RegoOptions{}, err
+	}
+
 	return RegoOptions{
-		SkipPolicyUpdate: getBool(f.SkipPolicyUpdate),
-		Trace:            getBool(f.Trace),
-		PolicyPaths:      getStringSlice(f.PolicyPaths),
-		DataPaths:        getStringSlice(f.DataPaths),
-		PolicyNamespaces: getStringSlice(f.PolicyNamespaces),
+		SkipPolicyUpdate: f.SkipPolicyUpdate.Value(),
+		Trace:            f.Trace.Value(),
+		PolicyPaths:      f.PolicyPaths.Value(),
+		DataPaths:        f.DataPaths.Value(),
+		PolicyNamespaces: f.PolicyNamespaces.Value(),
 	}, nil
 }
