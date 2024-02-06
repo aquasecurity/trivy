@@ -2,8 +2,13 @@ package pkg
 
 import (
 	"context"
+	//"fmt"
+	//	"fmt"
+	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
@@ -11,10 +16,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func init() {
 	analyzer.RegisterAnalyzer(&nodePkgLibraryAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzer.TypeNodePkg, newNodePkgLibraryAnalyzer)
 }
 
 const (
@@ -23,6 +30,10 @@ const (
 )
 
 type parser struct{}
+
+func newNodePkgLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	return &nodePkgLibraryAnalyzer{}, nil
+}
 
 func (*parser) Parse(r dio.ReadSeekerAt) ([]godeptypes.Library, []godeptypes.Dependency, error) {
 	p := packagejson.NewParser()
@@ -44,11 +55,14 @@ type nodePkgLibraryAnalyzer struct{}
 
 // Analyze analyzes package.json for node packages
 func (a nodePkgLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	return language.AnalyzePackage(types.NodePkg, input.FilePath, input.Content, &parser{}, input.Options.FileChecksum)
+	if requiredFile == filepath.Base(input.FilePath) {
+		return language.AnalyzePackage(types.NodePkg, input.FilePath, input.Content, &parser{}, input.Options.FileChecksum)
+	}
+	return &analyzer.AnalysisResult{}, nil
 }
 
 func (a nodePkgLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return requiredFile == filepath.Base(filePath)
+	return requiredFile == filepath.Base(filePath) || strings.Contains(filePath, "node_modules")
 }
 
 func (a nodePkgLibraryAnalyzer) Type() analyzer.Type {
@@ -57,4 +71,32 @@ func (a nodePkgLibraryAnalyzer) Type() analyzer.Type {
 
 func (a nodePkgLibraryAnalyzer) Version() int {
 	return version
+}
+
+func (a nodePkgLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+	// Parse package-lock.json
+	required := func(path string, _ fs.DirEntry) bool {
+		return strings.Contains(path, "node_modules")
+	}
+	files := make([]string, 0)
+	fsutils.WalkDir(input.FS, ".", required, func(filePath string, d fs.DirEntry, r io.Reader) error {
+		// Find all licenses from package.json files under node_modules dirs
+		files = append(files, filePath)
+		return nil
+	})
+	if len(files) == 0 {
+		return &analyzer.AnalysisResult{}, nil
+	}
+	return &analyzer.AnalysisResult{
+		Applications: []types.Application{
+			{
+				FilePath: "test",
+				Libraries: []types.Package{
+					{
+						InstalledFiles: files,
+					},
+				},
+			},
+		},
+	}, nil
 }
