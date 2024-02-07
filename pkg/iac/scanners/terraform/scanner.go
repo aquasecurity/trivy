@@ -243,7 +243,6 @@ func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir strin
 	}
 
 	rootModules = excludeNonRootModules(rootModules)
-
 	for _, module := range rootModules {
 		s.execLock.RLock()
 		e := executor2.New(s.executorOpt...)
