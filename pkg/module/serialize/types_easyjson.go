@@ -2270,16 +2270,16 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 				in.Delim('[')
 				if out.Licenses == nil {
 					if !in.IsDelim(']') {
-						out.Licenses = make([]string, 0, 4)
+						out.Licenses = make(types1.Licenses, 0, 2)
 					} else {
-						out.Licenses = []string{}
+						out.Licenses = types1.Licenses{}
 					}
 				} else {
 					out.Licenses = (out.Licenses)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v50 string
-					v50 = string(in.String())
+					var v50 types1.License
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, &v50)
 					out.Licenses = append(out.Licenses, v50)
 					in.WantComma()
 				}
@@ -2297,7 +2297,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes(in *jlexer.Le
 				if out.BuildInfo == nil {
 					out.BuildInfo = new(types1.BuildInfo)
 				}
-				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in, out.BuildInfo)
+				easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes10(in, out.BuildInfo)
 			}
 		case "Indirect":
 			out.Indirect = bool(in.Bool())
@@ -2520,7 +2520,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 				if v54 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v55))
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, v55)
 			}
 			out.RawByte(']')
 		}
@@ -2553,7 +2553,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 		} else {
 			out.RawString(prefix)
 		}
-		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out, *in.BuildInfo)
+		easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes10(out, *in.BuildInfo)
 	}
 	if in.Indirect {
 		const prefix string = ",\"Indirect\":"
@@ -2654,7 +2654,7 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes(out *jwriter.
 	}
 	out.RawByte('}')
 }
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in *jlexer.Lexer, out *types1.BuildInfo) {
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes10(in *jlexer.Lexer, out *types1.BuildInfo) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2710,7 +2710,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in *jlexer.L
 		in.Consumed()
 	}
 }
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out *jwriter.Writer, in types1.BuildInfo) {
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes10(out *jwriter.Writer, in types1.BuildInfo) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2748,6 +2748,61 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out *jwriter
 			out.RawString(prefix)
 		}
 		out.String(string(in.Arch))
+	}
+	out.RawByte('}')
+}
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgFanalTypes9(in *jlexer.Lexer, out *types1.License) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "Type":
+			out.Type = types1.LicenseType(in.String())
+		case "Value":
+			out.Value = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgFanalTypes9(out *jwriter.Writer, in types1.License) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.Type != "" {
+		const prefix string = ",\"Type\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.String(string(in.Type))
+	}
+	if in.Value != "" {
+		const prefix string = ",\"Value\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Value))
 	}
 	out.RawByte('}')
 }

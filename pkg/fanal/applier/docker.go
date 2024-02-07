@@ -188,7 +188,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	// Extract dpkg licenses
 	// The license information is not stored in the dpkg database and in a separate file,
 	// so we have to merge the license information into the package.
-	dpkgLicenses := make(map[string][]string)
+	dpkgLicenses := make(map[string]ftypes.Licenses)
 	mergedLayer.Licenses = lo.Reject(mergedLayer.Licenses, func(license ftypes.LicenseFile, _ int) bool {
 		if license.Type != ftypes.LicenseTypeDpkg {
 			return false
@@ -196,8 +196,11 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		// e.g.
 		//	"adduser" => {"GPL-2"}
 		//  "openssl" => {"MIT", "BSD"}
-		dpkgLicenses[license.PkgName] = lo.Map(license.Findings, func(finding ftypes.LicenseFinding, _ int) string {
-			return finding.Name
+		dpkgLicenses[license.PkgName] = lo.Map(license.Findings, func(finding ftypes.LicenseFinding, _ int) ftypes.License {
+			return ftypes.License{
+				Type:  ftypes.LicenseTypeName,
+				Value: finding.Name,
+			}
 		})
 		// Remove this license in the merged result as it is merged into the package information.
 		return true

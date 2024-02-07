@@ -151,9 +151,14 @@ func (a rpmPkgAnalyzer) listPkgs(db RPMDB) (types.Packages, []string, error) {
 			d = digest.NewDigestFromString(digest.MD5, pkg.SigMD5)
 		}
 
-		var licenses []string
+		var licenses types.Licenses
 		if pkg.License != "" {
-			licenses = []string{pkg.License}
+			licenses = types.Licenses{
+				{
+					Type:  types.LicenseTypeName,
+					Value: pkg.License,
+				},
+			}
 		}
 
 		p := types.Package{

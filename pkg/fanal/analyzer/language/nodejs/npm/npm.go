@@ -55,7 +55,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		licenses, err := a.findLicenses(input.FS, filePath)
 		if err != nil {
 			log.Logger.Errorf("Unable to collect licenses: %s", err)
-			licenses = make(map[string]string)
+			licenses = make(map[string][]types.License)
 		}
 
 		app, err := a.parseNpmPkgLock(input.FS, filePath)
@@ -68,7 +68,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		// Fill licenses
 		for i, lib := range app.Libraries {
 			if license, ok := licenses[lib.ID]; ok {
-				app.Libraries[i].Licenses = []string{license}
+				app.Libraries[i].Licenses = license
 			}
 		}
 
@@ -123,7 +123,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types
 	return language.Parse(types.Npm, filePath, file, a.lockParser)
 }
 
-func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string]string, error) {
+func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string][]types.License, error) {
 	dir := path.Dir(lockPath)
 	root := path.Join(dir, "node_modules")
 	if _, err := fs.Stat(fsys, root); errors.Is(err, fs.ErrNotExist) {
@@ -139,14 +139,17 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 	// Traverse node_modules dir and find licenses
 	// Note that fs.FS is always slashed regardless of the platform,
 	// and path.Join should be used rather than filepath.Join.
-	licenses := make(map[string]string)
+	licenses := make(map[string][]types.License)
 	err := fsutils.WalkDir(fsys, root, required, func(filePath string, d fs.DirEntry, r io.Reader) error {
 		pkg, err := a.packageParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 		}
-
-		licenses[pkg.ID] = pkg.License
+		var pkgLicenses []types.License
+		for _, pkgLicense := range pkg.Licenses {
+			pkgLicenses = append(pkgLicenses, types.NewLicense(string(pkgLicense.Type), pkgLicense.Value))
+		}
+		licenses[pkg.ID] = pkgLicenses
 		return nil
 	})
 	if err != nil {

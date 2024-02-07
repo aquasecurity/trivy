@@ -238,8 +238,8 @@ github.com/CycloneDX/cyclonedx-go v0.8.0 h1:FyWVj6x6hoJrui5uRQdYZcSievw3Z32Z88uY
 github.com/CycloneDX/cyclonedx-go v0.8.0/go.mod h1:K2bA+324+Og0X84fA8HhN2X066K7Bxz4rpMQ4ZhjtSk=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
-github.com/DmitriyLewen/go-dep-parser v0.0.0-20240130103312-39a8f0211bf6 h1:V/g8A11NjY1xCeVZ29NYBnkOykeoGHelcOTAJ0m6N4U=
-github.com/DmitriyLewen/go-dep-parser v0.0.0-20240130103312-39a8f0211bf6/go.mod h1:P0PmelcN1ABKJrDzRbPnn6hK7RvgI+xmjiV/9uPaNnY=
+github.com/DmitriyLewen/go-dep-parser v0.0.0-20240207085630-e7bb512e84cd h1:60VYwFDvfXCvybT8G6006QcZtb9guWMjBIHg5afHnYE=
+github.com/DmitriyLewen/go-dep-parser v0.0.0-20240207085630-e7bb512e84cd/go.mod h1:P0PmelcN1ABKJrDzRbPnn6hK7RvgI+xmjiV/9uPaNnY=
 github.com/DmitriyVTitov/size v1.5.0/go.mod h1:le6rNI4CoLQV1b9gzp1+3d7hMAD/uu2QcJ+aYbNgiU0=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=

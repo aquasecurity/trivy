@@ -384,7 +384,7 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		Version:         version,
 		PackageURL:      purl.WithPath(pkg.Identifier.PURL, pkg.FilePath),
 		Supplier:        pkg.Maintainer,
-		Licenses:        pkg.Licenses,
+		Licenses:        pkg.Licenses.ToStringSlice(),
 		Hashes:          lo.Ternary(pkg.Digest == "", nil, []digest.Digest{pkg.Digest}),
 		Properties:      filterProperties(properties),
 		Vulnerabilities: pkg.Vulnerabilities,

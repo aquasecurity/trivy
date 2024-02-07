@@ -312,7 +312,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 	return pkgs, nil
 }
 
-func (a yarnAnalyzer) traverseLicenses(fsys fs.FS, lockPath string) (map[string][]string, error) {
+func (a yarnAnalyzer) traverseLicenses(fsys fs.FS, lockPath string) (map[string][]types.License, error) {
 	sub, err := fs.Sub(fsys, path.Dir(lockPath))
 	if err != nil {
 		return nil, xerrors.Errorf("fs error: %w", err)
@@ -336,18 +336,18 @@ func (a yarnAnalyzer) traverseLicenses(fsys fs.FS, lockPath string) (map[string]
 	return nil, errs
 }
 
-func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS) (map[string][]string, error) {
+func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS) (map[string][]types.License, error) {
 	return a.license.Traverse(fsys, "node_modules")
 }
 
-func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS) (map[string][]string, error) {
+func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS) (map[string][]types.License, error) {
 	sub, err := fs.Sub(fsys, ".yarn")
 	if err != nil {
 		return nil, xerrors.Errorf("fs error: %w", err)
 	}
 
 	var errs error
-	licenses := make(map[string][]string)
+	licenses := make(map[string][]types.License)
 
 	if ll, err := a.traverseUnpluggedDir(sub); err != nil {
 		errs = multierror.Append(errs, err)
@@ -368,15 +368,15 @@ func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS) (map[string][]string, e
 	return licenses, nil
 }
 
-func (a yarnAnalyzer) traverseUnpluggedDir(fsys fs.FS) (map[string][]string, error) {
+func (a yarnAnalyzer) traverseUnpluggedDir(fsys fs.FS) (map[string][]types.License, error) {
 	// `unplugged` hold machine-specific build artifacts
 	// Traverse .yarn/unplugged dir
 	return a.license.Traverse(fsys, "unplugged")
 }
 
-func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]string, error) {
+func (a yarnAnalyzer) traverseCacheDir(fsys fs.FS) (map[string][]types.License, error) {
 	// Traverse .yarn/cache dir
-	licenses := make(map[string][]string)
+	licenses := make(map[string][]types.License)
 	err := fsutils.WalkDir(fsys, "cache", fsutils.RequiredExt(".zip"),
 		func(filePath string, d fs.DirEntry, r io.Reader) error {
 			fi, err := d.Info()

@@ -254,7 +254,14 @@ func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes
 
 	pkg := pkgURL.Package()
 	if spdxPkg.PackageLicenseDeclared != "NONE" {
-		pkg.Licenses = strings.Split(spdxPkg.PackageLicenseDeclared, ",")
+		var licenses ftypes.Licenses
+		for _, license := range strings.Split(spdxPkg.PackageLicenseDeclared, ",") {
+			licenses = append(licenses, ftypes.License{
+				Type:  ftypes.LicenseTypeName,
+				Value: license,
+			})
+		}
+		pkg.Licenses = licenses
 	}
 
 	if strings.HasPrefix(spdxPkg.PackageSourceInfo, SourcePackagePrefix) {

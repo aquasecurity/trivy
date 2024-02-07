@@ -29,9 +29,14 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/pip-22.2.2-py38h06a4308_0.json",
 						Libraries: types.Packages{
 							{
-								Name:     "pip",
-								Version:  "22.2.2",
-								Licenses: []string{"MIT"},
+								Name:    "pip",
+								Version: "22.2.2",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								FilePath: "testdata/pip-22.2.2-py38h06a4308_0.json",
 							},
 						},

@@ -38,7 +38,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:    "1.2.3-r0",
 								SrcName:    "musl",
 								SrcVersion: "1.2.3-r0",
-								Licenses:   []string{"MIT"},
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeApk,
@@ -183,7 +188,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 									BOMRef: "pkg:npm/@example/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 								},
-								Licenses: []string{"MIT"},
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
@@ -327,10 +337,19 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcName:    "glibc",
 								SrcVersion: "2.35",
 								SrcRelease: "0ubuntu3.1",
-								Licenses: []string{
-									"LGPL-2.1",
-									"GPL-2.0",
-									"GFDL-1.3",
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "LGPL-2.1",
+									},
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "GPL-2.0",
+									},
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "GFDL-1.3",
+									},
 								},
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
@@ -406,7 +425,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:    "1.2.3-r0",
 								SrcName:    "musl",
 								SrcVersion: "1.2.3-r0",
-								Licenses:   []string{"MIT"},
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeApk,
@@ -443,7 +467,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 									BOMRef: "pkg:composer/pear/log@1.13.1",
 								},
-								Licenses: []string{"MIT"},
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 							},
 							{
 

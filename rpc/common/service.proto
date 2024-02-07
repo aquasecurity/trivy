@@ -42,22 +42,27 @@ message Package {
   string        arch       = 5;
   // src package containing some binary packages
   // e.g. bind
-  string          src_name    = 6;
-  string          src_version = 7;
-  string          src_release = 8;
-  int32           src_epoch   = 9;
-  repeated string licenses    = 15;
-  Layer           layer       = 11;
-  string          file_path   = 12;
-  repeated string depends_on  = 14;
-  string          digest      = 16;
-  bool            dev         = 17;
-  bool            indirect    = 18;
+  string           src_name    = 6;
+  string           src_version = 7;
+  string           src_release = 8;
+  int32            src_epoch   = 9;
+  repeated License licenses    = 15;
+  Layer            layer       = 11;
+  string           file_path   = 12;
+  repeated string  depends_on  = 14;
+  string           digest      = 16;
+  bool             dev         = 17;
+  bool             indirect    = 18;
 }
 
 message PkgIdentifier {
   string purl    = 1;
   string bom_ref = 2;
+}
+
+message License {
+  LicenseType.Enum type  = 1;
+  string           value = 2;
 }
 
 message Misconfiguration {
@@ -254,9 +259,11 @@ message LicenseCategory {
 
 message LicenseType {
   enum Enum {
-    UNSPECIFIED  = 0;
-    DPKG         = 1;
-    HEADER       = 2;
-    LICENSE_FILE = 3;
+    UNSPECIFIED   = 0;
+    DPKG          = 1;
+    HEADER        = 2;
+    LICENSE_FILE  = 3;
+    LICENSE_NAME  = 4;
+    NON_SEPARABLE = 5;
   }
 }

@@ -442,24 +442,33 @@ func packageNameSeparator(typ string) string {
 
 // parsePackageLicenses checks all supported license fields and returns a list of licenses.
 // https://cyclonedx.org/docs/1.5/json/#components_items_licenses
-func parsePackageLicenses(l *cdx.Licenses) []string {
-	var licenses []string
+func parsePackageLicenses(l *cdx.Licenses) ftypes.Licenses {
+	var licenses ftypes.Licenses
 	for _, license := range lo.FromPtr(l) {
 		if license.License != nil {
 			// Trivy uses `Name` field to marshal licenses
 			if license.License.Name != "" {
-				licenses = append(licenses, license.License.Name)
+				licenses = append(licenses, ftypes.License{
+					Type:  ftypes.LicenseTypeName,
+					Value: license.License.Name,
+				})
 				continue
 			}
 
 			if license.License.ID != "" {
-				licenses = append(licenses, license.License.ID)
+				licenses = append(licenses, ftypes.License{
+					Type:  ftypes.LicenseTypeName,
+					Value: license.License.ID,
+				})
 				continue
 			}
 		}
 
 		if license.Expression != "" {
-			licenses = append(licenses, license.Expression)
+			licenses = append(licenses, ftypes.License{
+				Type:  ftypes.LicenseTypeName,
+				Value: license.Expression,
+			})
 			continue
 		}
 

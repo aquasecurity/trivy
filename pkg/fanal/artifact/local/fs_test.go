@@ -47,7 +47,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:ff28bff7756fb32d0a060b3b474b31a781a2d365dcd2789f47b4ae556a34947e",
+					BlobID: "sha256:fd78a23442f66c53137a5296631961eba6871dbec3942b4b9d578f5f95c8eb10",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -64,9 +64,14 @@ func TestArtifact_Inspect(t *testing.T) {
 										Version:    "1.1.24-r2",
 										SrcName:    "musl",
 										SrcVersion: "1.1.24-r2",
-										Licenses:   []string{"MIT"},
-										Arch:       "x86_64",
-										Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+										Licenses: []types.License{
+											{
+												Type:  types.LicenseTypeName,
+												Value: "MIT",
+											},
+										},
+										Arch:   "x86_64",
+										Digest: "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
 										InstalledFiles: []string{
 											"lib/libc.musl-x86_64.so.1",
 											"lib/ld-musl-x86_64.so.1",
@@ -82,9 +87,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:ff28bff7756fb32d0a060b3b474b31a781a2d365dcd2789f47b4ae556a34947e",
+				ID:   "sha256:fd78a23442f66c53137a5296631961eba6871dbec3942b4b9d578f5f95c8eb10",
 				BlobIDs: []string{
-					"sha256:ff28bff7756fb32d0a060b3b474b31a781a2d365dcd2789f47b4ae556a34947e",
+					"sha256:fd78a23442f66c53137a5296631961eba6871dbec3942b4b9d578f5f95c8eb10",
 				},
 			},
 		},
@@ -125,7 +130,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:ff28bff7756fb32d0a060b3b474b31a781a2d365dcd2789f47b4ae556a34947e",
+					BlobID: "sha256:fd78a23442f66c53137a5296631961eba6871dbec3942b4b9d578f5f95c8eb10",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -142,9 +147,14 @@ func TestArtifact_Inspect(t *testing.T) {
 										Version:    "1.1.24-r2",
 										SrcName:    "musl",
 										SrcVersion: "1.1.24-r2",
-										Licenses:   []string{"MIT"},
-										Arch:       "x86_64",
-										Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+										Licenses: []types.License{
+											{
+												Type:  types.LicenseTypeName,
+												Value: "MIT",
+											},
+										},
+										Arch:   "x86_64",
+										Digest: "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
 										InstalledFiles: []string{
 											"lib/libc.musl-x86_64.so.1",
 											"lib/ld-musl-x86_64.so.1",

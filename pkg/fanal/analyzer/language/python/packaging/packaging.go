@@ -116,29 +116,27 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 
 func (a packagingAnalyzer) fillAdditionalData(fsys fs.FS, app *types.Application) error {
 	for i, lib := range app.Libraries {
-		var licenses []string
-		for _, lic := range lib.Licenses {
-			// Parser adds `file://` prefix to filepath from `License-File` field
-			// We need to read this file to find licenses
-			// Otherwise, this is the name of the license
-			if !strings.HasPrefix(lic, "file://") {
-				licenses = append(licenses, lic)
-				continue
-			}
-			licenseFilePath := path.Base(strings.TrimPrefix(lic, "file://"))
+		var licenses []types.License
+		for _, license := range lib.Licenses {
+			if license.Type == types.LicenseTypeFile {
+				findings, err := classifyLicense(app.FilePath, license.Value, a.licenseClassifierConfidenceLevel, fsys)
+				if err != nil {
+					return err
+				} else if len(findings) == 0 {
+					continue
+				}
 
-			findings, err := classifyLicense(app.FilePath, licenseFilePath, a.licenseClassifierConfidenceLevel, fsys)
-			if err != nil {
-				return err
-			} else if len(findings) == 0 {
-				continue
+				// License found
+				foundLicenses := lo.Map(findings, func(finding types.LicenseFinding, _ int) types.License {
+					return types.License{
+						Type:  types.LicenseTypeName,
+						Value: finding.Name,
+					}
+				})
+				licenses = append(licenses, foundLicenses...)
+			} else {
+				licenses = append(licenses, license)
 			}
-
-			// License found
-			foundLicenses := lo.Map(findings, func(finding types.LicenseFinding, _ int) string {
-				return finding.Name
-			})
-			licenses = append(licenses, foundLicenses...)
 		}
 		app.Libraries[i].Licenses = licenses
 	}

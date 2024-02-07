@@ -38,7 +38,12 @@ func TestConvertToRpcPkgs(t *testing.T) {
 						SrcVersion: "1.2.3",
 						SrcRelease: "1",
 						SrcEpoch:   2,
-						Licenses:   []string{"MIT"},
+						Licenses: []ftypes.License{
+							{
+								Type:  ftypes.LicenseTypeName,
+								Value: "MIT",
+							},
+						},
 						Layer: ftypes.Layer{
 							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 							DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
@@ -59,7 +64,12 @@ func TestConvertToRpcPkgs(t *testing.T) {
 					SrcVersion: "1.2.3",
 					SrcRelease: "1",
 					SrcEpoch:   2,
-					Licenses:   []string{"MIT"},
+					Licenses: []*common.License{
+						{
+							Type:  common.LicenseType_LICENSE_NAME,
+							Value: "MIT",
+						},
+					},
 					Layer: &common.Layer{
 						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 						DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
@@ -100,7 +110,12 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						SrcVersion: "1.2.3",
 						SrcRelease: "1",
 						SrcEpoch:   2,
-						Licenses:   []string{"MIT"},
+						Licenses: []*common.License{
+							{
+								Type:  common.LicenseType_LICENSE_NAME,
+								Value: "MIT",
+							},
+						},
 						Layer: &common.Layer{
 							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 							DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
@@ -121,7 +136,12 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					SrcVersion: "1.2.3",
 					SrcRelease: "1",
 					SrcEpoch:   2,
-					Licenses:   []string{"MIT"},
+					Licenses: []ftypes.License{
+						{
+							Type:  ftypes.LicenseTypeName,
+							Value: "MIT",
+						},
+					},
 					Layer: ftypes.Layer{
 						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 						DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",

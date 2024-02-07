@@ -30,7 +30,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+					BlobID: "sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -45,7 +45,12 @@ func TestArtifact_Inspect(t *testing.T) {
 										Version:    "1.2.3-r0",
 										SrcName:    "musl",
 										SrcVersion: "1.2.3-r0",
-										Licenses:   []string{"MIT"},
+										Licenses: types.Licenses{
+											{
+												Type:  types.LicenseTypeName,
+												Value: "MIT",
+											},
+										},
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
@@ -158,9 +163,14 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "",
 								Libraries: types.Packages{
 									{
-										Name:     "bootstrap",
-										Version:  "5.0.2",
-										Licenses: []string{"MIT"},
+										Name:    "bootstrap",
+										Version: "5.0.2",
+										Licenses: types.Licenses{
+											{
+												Type:  types.LicenseTypeName,
+												Value: "MIT",
+											},
+										},
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -184,9 +194,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+				ID:   "sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
 				BlobIDs: []string{
-					"sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+					"sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
 				},
 			},
 		},
@@ -195,7 +205,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+					BlobID: "sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -210,7 +220,12 @@ func TestArtifact_Inspect(t *testing.T) {
 										Version:    "1.2.3-r0",
 										SrcName:    "musl",
 										SrcVersion: "1.2.3-r0",
-										Licenses:   []string{"MIT"},
+										Licenses: types.Licenses{
+											{
+												Type:  types.LicenseTypeName,
+												Value: "MIT",
+											},
+										},
 										Identifier: types.PkgIdentifier{
 											PURL: &packageurl.PackageURL{
 												Type:      packageurl.TypeApk,
@@ -333,7 +348,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 											BOMRef: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 										},
-										Licenses: []string{"MIT"},
+										Licenses: types.Licenses{
+											{
+												Type:  types.LicenseTypeName,
+												Value: "MIT",
+											},
+										},
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -349,9 +369,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+				ID:   "sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
 				BlobIDs: []string{
-					"sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+					"sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
 				},
 			},
 		},

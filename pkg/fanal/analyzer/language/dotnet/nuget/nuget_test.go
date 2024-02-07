@@ -66,7 +66,12 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   10,
 									},
 								},
-								Licenses: []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 							},
 							{
 								ID:      "NuGet.Frameworks@5.7.0",
@@ -107,7 +112,12 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   10,
 									},
 								},
-								Licenses: []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 							},
 							{
 								ID:      "NuGet.Frameworks@5.7.0",

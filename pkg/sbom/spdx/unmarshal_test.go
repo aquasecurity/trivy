@@ -38,7 +38,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:    "1.2.3-r0",
 								SrcName:    "musl",
 								SrcVersion: "1.2.3-r0",
-								Licenses:   []string{"MIT"},
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeApk,
@@ -152,7 +157,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Version: "5.0.2",
 									},
 								},
-								Licenses: []string{"MIT"},
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
@@ -171,10 +181,15 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: "node-pkg",
 						Libraries: ftypes.Packages{
 							{
-								ID:       "yargs-parser@21.1.1",
-								Name:     "yargs-parser",
-								Version:  "21.1.1",
-								Licenses: []string{"ISC"},
+								ID:      "yargs-parser@21.1.1",
+								Name:    "yargs-parser",
+								Version: "21.1.1",
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "ISC",
+									},
+								},
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeNPM,
@@ -198,10 +213,15 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: "node-pkg",
 						Libraries: ftypes.Packages{
 							{
-								ID:       "yargs-parser@21.1.1",
-								Name:     "yargs-parser",
-								Version:  "21.1.1",
-								Licenses: []string{"ISC"},
+								ID:      "yargs-parser@21.1.1",
+								Name:    "yargs-parser",
+								Version: "21.1.1",
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "ISC",
+									},
+								},
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeNPM,

@@ -49,8 +49,13 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion:      "4.18.0",
 						SrcRelease:      "348.el8.0.3",
 						Modularitylabel: "",
-						Licenses:        []string{"GPLv2"},
-						Layer:           ftypes.Layer{},
+						Licenses: ftypes.Licenses{
+							{
+								Type:  ftypes.LicenseTypeName,
+								Value: "GPLv2",
+							},
+						},
+						Layer: ftypes.Layer{},
 					},
 				},
 			},
@@ -89,8 +94,13 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion:      "1.16.1",
 						SrcRelease:      "2.module+el8.4.0+543+efbf198b.0",
 						Modularitylabel: "nginx:1.16:8040020210610090125:9f9e2e7e",
-						Licenses:        []string{"BSD"},
-						Layer:           ftypes.Layer{},
+						Licenses: ftypes.Licenses{
+							{
+								Type:  ftypes.LicenseTypeName,
+								Value: "BSD",
+							},
+						},
+						Layer: ftypes.Layer{},
 					},
 				},
 			},

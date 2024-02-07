@@ -89,10 +89,15 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/elasticsearch",
 						Libraries: types.Packages{
 							{
-								Name:     "elasticsearch",
-								Version:  "8.9.1",
-								Arch:     "arm64",
-								Licenses: []string{"Elastic-2.0"},
+								Name:    "elasticsearch",
+								Version: "8.9.1",
+								Arch:    "arm64",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "Elastic-2.0",
+									},
+								},
 								Identifier: types.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,
@@ -167,9 +172,14 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/postgresql",
 						Libraries: types.Packages{
 							{
-								Name:     "gdal",
-								Version:  "3.7.1",
-								Licenses: []string{"MIT"},
+								Name:    "gdal",
+								Version: "3.7.1",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Identifier: types.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,
@@ -179,9 +189,14 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								Name:     "geos",
-								Version:  "3.8.3",
-								Licenses: []string{"LGPL-2.1-only"},
+								Name:    "geos",
+								Version: "3.8.3",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "LGPL-2.1-only",
+									},
+								},
 								Identifier: types.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,
@@ -191,9 +206,14 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								Name:     "postgresql",
-								Version:  "15.3.0",
-								Licenses: []string{"PostgreSQL"},
+								Name:    "postgresql",
+								Version: "15.3.0",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "PostgreSQL",
+									},
+								},
 								Identifier: types.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,
@@ -203,9 +223,14 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								Name:     "proj",
-								Version:  "6.3.2",
-								Licenses: []string{"MIT"},
+								Name:    "proj",
+								Version: "6.3.2",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Identifier: types.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeBitnami,

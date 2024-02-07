@@ -49,8 +49,13 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion:      "3.6.8",
 						SrcRelease:      "36.el8.alma",
 						Modularitylabel: "",
-						Licenses:        []string{"Python"},
-						Layer:           ftypes.Layer{},
+						Licenses: ftypes.Licenses{
+							{
+								Type:  ftypes.LicenseTypeName,
+								Value: "Python",
+							},
+						},
+						Layer: ftypes.Layer{},
 					},
 				},
 			},
@@ -89,8 +94,13 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion:      "1.14.1",
 						SrcRelease:      "8.module_el8.3.0+2165+af250afe.alma",
 						Modularitylabel: "", // ref: https://bugs.almalinux.org/view.php?id=173 ,  https://github.com/aquasecurity/trivy/issues/2342#issuecomment-1158459628
-						Licenses:        []string{"BSD"},
-						Layer:           ftypes.Layer{},
+						Licenses: ftypes.Licenses{
+							{
+								Type:  ftypes.LicenseTypeName,
+								Value: "ISC",
+							},
+						},
+						Layer: ftypes.Layer{},
 					},
 				},
 			},
@@ -116,8 +126,13 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion:      "2.4.37",
 						SrcRelease:      "46.module_el8.6.0+2872+fe0ff7aa.1.alma",
 						Modularitylabel: "httpd:2.4:8060020220510105858:9edba152",
-						Licenses:        []string{"ASL 2.0"},
-						Layer:           ftypes.Layer{},
+						Licenses: ftypes.Licenses{
+							{
+								Type:  ftypes.LicenseTypeName,
+								Value: "ASL 2.0",
+							},
+						},
+						Layer: ftypes.Layer{},
 					},
 				},
 			},

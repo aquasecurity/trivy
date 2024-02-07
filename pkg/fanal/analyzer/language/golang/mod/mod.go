@@ -132,7 +132,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 		return nil
 	}
 
-	licenses := make(map[string][]string)
+	licenses := make(map[string][]types.License)
 	for i, app := range apps {
 		// Actually used dependencies
 		usedLibs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
@@ -260,7 +260,7 @@ func mergeGoSum(gomod, gosum *types.Application) {
 	gomod.Libraries = maps.Values(uniq)
 }
 
-func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error) {
+func findLicense(dir string, classifierConfidenceLevel float64) ([]types.License, error) {
 	var license *types.LicenseFile
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {

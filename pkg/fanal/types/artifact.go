@@ -77,7 +77,7 @@ type Package struct {
 	SrcVersion string        `json:",omitempty"`
 	SrcRelease string        `json:",omitempty"`
 	SrcEpoch   int           `json:",omitempty"`
-	Licenses   []string      `json:",omitempty"`
+	Licenses   Licenses      `json:",omitempty"`
 	Maintainer string        `json:",omitempty"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions

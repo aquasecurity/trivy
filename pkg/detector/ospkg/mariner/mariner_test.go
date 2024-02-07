@@ -46,8 +46,13 @@ func TestScanner_Detect(t *testing.T) {
 						SrcEpoch:   0,
 						SrcVersion: "9.16.14",
 						SrcRelease: "1.cm1",
-						Licenses:   []string{"ISC"},
-						Layer:      ftypes.Layer{},
+						Licenses: ftypes.Licenses{
+							{
+								Type:  ftypes.LicenseTypeName,
+								Value: "ISC",
+							},
+						},
+						Layer: ftypes.Layer{},
 					},
 				},
 			},
@@ -85,8 +90,13 @@ func TestScanner_Detect(t *testing.T) {
 						SrcEpoch:   0,
 						SrcVersion: "8.2.4081",
 						SrcRelease: "1.cm1",
-						Licenses:   []string{"Vim"},
-						Layer:      ftypes.Layer{},
+						Licenses: ftypes.Licenses{
+							{
+								Type:  ftypes.LicenseTypeName,
+								Value: "Vim",
+							},
+						},
+						Layer: ftypes.Layer{},
 					},
 				},
 			},
@@ -120,8 +130,13 @@ func TestScanner_Detect(t *testing.T) {
 						SrcEpoch:   0,
 						SrcVersion: "9.16.14",
 						SrcRelease: "1.cm1",
-						Licenses:   []string{"ISC"},
-						Layer:      ftypes.Layer{},
+						Licenses: ftypes.Licenses{
+							{
+								Type:  ftypes.LicenseTypeName,
+								Value: "ISC",
+							},
+						},
+						Layer: ftypes.Layer{},
 					},
 				},
 			},

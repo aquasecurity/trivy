@@ -36,8 +36,11 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:      "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
 								Name:    "github.com/aquasecurity/go-dep-parser",
 								Version: "0.0.0-20220406074731-71021a481237",
-								Licenses: []string{
-									"MIT",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
 								},
 								DependsOn: []string{
 									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
@@ -100,8 +103,11 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								Name:     "github.com/BurntSushi/toml",
 								Version:  "0.3.1",
 								Indirect: true,
-								Licenses: []string{
-									"MIT",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
 								},
 							},
 						},

@@ -756,10 +756,15 @@ func TestApplyLayers(t *testing.T) {
 				},
 				Packages: types.Packages{
 					{
-						Name:     "libc",
-						Version:  "1.2.4",
-						Release:  "4.5.7",
-						Licenses: []string{"GPL-2"},
+						Name:    "libc",
+						Version: "1.2.4",
+						Release: "4.5.7",
+						Licenses: types.Licenses{
+							{
+								Type:  types.LicenseTypeName,
+								Value: "GPL-2",
+							},
+						},
 						Identifier: types.PkgIdentifier{
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeDebian,
@@ -780,10 +785,15 @@ func TestApplyLayers(t *testing.T) {
 						},
 					},
 					{
-						Name:     "openssl",
-						Version:  "1.2.3",
-						Release:  "4.5.6",
-						Licenses: []string{"OpenSSL"},
+						Name:    "openssl",
+						Version: "1.2.3",
+						Release: "4.5.6",
+						Licenses: types.Licenses{
+							{
+								Type:  types.LicenseTypeName,
+								Value: "OpenSSL",
+							},
+						},
 						Identifier: types.PkgIdentifier{
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeDebian,

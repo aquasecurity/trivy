@@ -85,9 +85,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcRelease:      "93.el8",
 								SrcEpoch:        0,
 								Modularitylabel: "",
-								Licenses:        []string{"GPLv3+"},
-								Maintainer:      "CentOS",
-								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "GPLv3+",
+									},
+								},
+								Maintainer: "CentOS",
+								Digest:     "md5:7459cec61bb4d1b0ca8107e25e0dd005",
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -684,7 +689,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcRelease:      "1.el8",
 								SrcEpoch:        1,
 								Modularitylabel: "",
-								Licenses:        []string{"GPLv2+"},
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "GPLv2+",
+									},
+								},
 								DependsOn: []string{
 									"glibc@2.28-151.el8",
 								},
@@ -720,8 +730,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcRelease:      "151.el8",
 								SrcEpoch:        0,
 								Modularitylabel: "",
-								Licenses:        []string{"GPLv2+"},
-								Digest:          "md5:969b3c9231627022f8bf7ac70de807a1",
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "GPLv2+",
+									},
+								},
+								Digest: "md5:969b3c9231627022f8bf7ac70de807a1",
 							},
 						},
 					},
@@ -1721,7 +1736,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 										Version: "0.20.1",
 									},
 								},
-								Licenses: []string{"MIT"},
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 								},

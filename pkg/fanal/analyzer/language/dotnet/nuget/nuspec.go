@@ -9,6 +9,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
@@ -50,7 +51,7 @@ func newNuspecParser() nuspecParser {
 	}
 }
 
-func (p nuspecParser) findLicense(name, version string) ([]string, error) {
+func (p nuspecParser) findLicense(name, version string) ([]ftypes.License, error) {
 	if p.packagesDir == "" {
 		return nil, nil
 	}
@@ -78,5 +79,5 @@ func (p nuspecParser) findLicense(name, version string) ([]string, error) {
 	if license := pkg.Metadata.License; license.Type != "expression" || license.Text == "" {
 		return nil, nil
 	}
-	return []string{pkg.Metadata.License.Text}, nil
+	return []ftypes.License{ftypes.NewLicense(string(ftypes.LicenseTypeName), pkg.Metadata.License.Text)}, nil
 }

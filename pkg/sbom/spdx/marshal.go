@@ -429,7 +429,8 @@ func GetLicense(p ftypes.Package) string {
 		return noneField
 	}
 
-	license := strings.Join(lo.Map(p.Licenses, func(license string, index int) string {
+	license := strings.Join(lo.Map(p.Licenses, func(l ftypes.License, index int) string {
+		license := l.Value
 		// e.g. GPL-3.0-with-autoconf-exception
 		license = strings.ReplaceAll(license, "-with-", " WITH ")
 		license = strings.ReplaceAll(license, "-WITH-", " WITH ")

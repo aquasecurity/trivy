@@ -49,7 +49,7 @@ func newNugetLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer,
 
 func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
-	foundLicenses := make(map[string][]string)
+	foundLicenses := make(map[string][]types.License)
 
 	// We saved only config and lock files in the FS,
 	// so we need to parse all saved files

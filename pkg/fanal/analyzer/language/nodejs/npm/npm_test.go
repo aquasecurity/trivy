@@ -39,7 +39,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "@babel/parser",
 								Version:  "7.23.6",
 								Indirect: true,
-								Licenses: []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Locations: []types.Location{
 									{
 										StartLine: 6,
@@ -78,7 +83,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:   "1.18.3",
 								Indirect:  true,
 								DependsOn: []string{"debug@2.6.9"},
-								Licenses:  []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Locations: []types.Location{
 									{
 										StartLine: 22,
@@ -92,7 +102,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:   "2.6.9",
 								Indirect:  true,
 								DependsOn: []string{"ms@2.0.0"},
-								Licenses:  []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Locations: []types.Location{
 									{
 										StartLine: 30,
@@ -110,7 +125,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:   "4.16.4",
 								Indirect:  true,
 								DependsOn: []string{"debug@2.6.9"},
-								Licenses:  []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Locations: []types.Location{
 									{
 										StartLine: 45,
@@ -123,7 +143,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "ms",
 								Version:  "2.0.0",
 								Indirect: true,
-								Licenses: []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Locations: []types.Location{
 									{
 										StartLine: 38,
@@ -140,7 +165,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "ms",
 								Version:  "2.1.1",
 								Indirect: true,
-								Licenses: []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Locations: []types.Location{
 									{
 										StartLine: 68,

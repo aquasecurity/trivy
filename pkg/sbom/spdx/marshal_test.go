@@ -84,9 +84,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcRelease:      "93.el8",
 								SrcEpoch:        0,
 								Modularitylabel: "",
-								Licenses:        []string{"GPLv3+"},
-								Maintainer:      "CentOS",
-								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "GPLv3+",
+									},
+								},
+								Maintainer: "CentOS",
+								Digest:     "md5:7459cec61bb4d1b0ca8107e25e0dd005",
 							},
 						},
 					},
@@ -369,8 +374,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcRelease:      "1.el8",
 								SrcEpoch:        1,
 								Modularitylabel: "",
-								Licenses:        []string{"GPLv2+"},
-								Digest:          "md5:483792b8b5f9eb8be7dc4407733118d0",
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "GPLv2+",
+									},
+								},
+								Digest: "md5:483792b8b5f9eb8be7dc4407733118d0",
 							},
 						},
 					},
@@ -726,7 +736,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 										Version: "0.20.1",
 									},
 								},
-								Licenses: []string{"MIT"},
+								Licenses: ftypes.Licenses{
+									{
+										Type:  ftypes.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 								},
@@ -1107,8 +1122,11 @@ func Test_GetLicense(t *testing.T) {
 		{
 			name: "happy path",
 			input: ftypes.Package{
-				Licenses: []string{
-					"GPLv2+",
+				Licenses: ftypes.Licenses{
+					{
+						Type:  ftypes.LicenseTypeName,
+						Value: "GPLv2+",
+					},
 				},
 			},
 			want: "GPL-2.0-or-later",
@@ -1116,9 +1134,15 @@ func Test_GetLicense(t *testing.T) {
 		{
 			name: "happy path with multi license",
 			input: ftypes.Package{
-				Licenses: []string{
-					"GPLv2+",
-					"GPLv3+",
+				Licenses: ftypes.Licenses{
+					{
+						Type:  ftypes.LicenseTypeName,
+						Value: "GPLv2+",
+					},
+					{
+						Type:  ftypes.LicenseTypeName,
+						Value: "GPLv3+",
+					},
 				},
 			},
 			want: "GPL-2.0-or-later AND GPL-3.0-or-later",
@@ -1126,9 +1150,15 @@ func Test_GetLicense(t *testing.T) {
 		{
 			name: "happy path with OR operator",
 			input: ftypes.Package{
-				Licenses: []string{
-					"GPLv2+",
-					"LGPL 2.0 or GNU LESSER",
+				Licenses: ftypes.Licenses{
+					{
+						Type:  ftypes.LicenseTypeName,
+						Value: "GPLv2+",
+					},
+					{
+						Type:  ftypes.LicenseTypeName,
+						Value: "LGPL 2.0 or GNU LESSER",
+					},
 				},
 			},
 			want: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-3.0-only)",
@@ -1136,9 +1166,15 @@ func Test_GetLicense(t *testing.T) {
 		{
 			name: "happy path with AND operator",
 			input: ftypes.Package{
-				Licenses: []string{
-					"GPLv2+",
-					"LGPL 2.0 and GNU LESSER",
+				Licenses: ftypes.Licenses{
+					{
+						Type:  ftypes.LicenseTypeName,
+						Value: "GPLv2+",
+					},
+					{
+						Type:  ftypes.LicenseTypeName,
+						Value: "LGPL 2.0 and GNU LESSER",
+					},
 				},
 			},
 			want: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-3.0-only",
@@ -1146,9 +1182,15 @@ func Test_GetLicense(t *testing.T) {
 		{
 			name: "happy path with WITH operator",
 			input: ftypes.Package{
-				Licenses: []string{
-					"AFL 2.0",
-					"AFL 3.0 with distribution exception",
+				Licenses: ftypes.Licenses{
+					{
+						Type:  ftypes.LicenseTypeName,
+						Value: "AFL 2.0",
+					},
+					{
+						Type:  ftypes.LicenseTypeName,
+						Value: "AFL 3.0 with distribution exception",
+					},
 				},
 			},
 			want: "AFL-2.0 AND AFL-3.0 WITH distribution-exception",

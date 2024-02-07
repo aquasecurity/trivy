@@ -95,16 +95,9 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.
 
 	var pkgs []types.Package
 	for _, lib := range libs {
-		var licenses []string
+		var licenses []types.License
 		for _, license := range lib.Licenses {
-			if license.Type == godeptypes.NonSeparableTextLicenseType {
-				licenses = append(licenses, license.Value)
-				continue
-			}
-			for _, l := range licensing.SplitLicenses(license.Value) {
-				licenses = append(licenses, licensing.Normalize(strings.TrimSpace(l)))
-			}
-
+			licenses = append(licenses, types.NewLicense(string(license.Type), licensing.Normalize(strings.TrimSpace(license.Value))))
 		}
 		var locs []types.Location
 		for _, loc := range lib.Locations {

@@ -32,10 +32,19 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "test-unit",
 								Version: "3.3.7",
-								Licenses: []string{
-									"Ruby",
-									"BSDL",
-									"PSFL",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "Ruby",
+									},
+									{
+										Type:  types.LicenseTypeName,
+										Value: "BSDL",
+									},
+									{
+										Type:  types.LicenseTypeName,
+										Value: "PSFL",
+									},
 								},
 								FilePath: "testdata/multiple_licenses.gemspec",
 							},
@@ -57,10 +66,19 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "test-unit",
 								Version: "3.3.7",
-								Licenses: []string{
-									"Ruby",
-									"BSDL",
-									"PSFL",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "Ruby",
+									},
+									{
+										Type:  types.LicenseTypeName,
+										Value: "BSDL",
+									},
+									{
+										Type:  types.LicenseTypeName,
+										Value: "PSFL",
+									},
 								},
 								FilePath: "testdata/multiple_licenses.gemspec",
 								Digest:   "sha1:6ba7904180fad7e09f224cd3e4d449ea53401fb9",

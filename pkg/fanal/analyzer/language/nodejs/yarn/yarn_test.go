@@ -276,10 +276,15 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Libraries: []types.Package{
 							{
-								ID:       "is-callable@1.2.7",
-								Name:     "is-callable",
-								Version:  "1.2.7",
-								Licenses: []string{"MIT"},
+								ID:      "is-callable@1.2.7",
+								Name:    "is-callable",
+								Version: "1.2.7",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Locations: []types.Location{
 									{
 										StartLine: 8,
@@ -288,10 +293,15 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "is-number@6.0.0",
-								Name:     "is-number",
-								Version:  "6.0.0",
-								Licenses: []string{"MIT"},
+								ID:      "is-number@6.0.0",
+								Name:    "is-number",
+								Version: "6.0.0",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								Indirect: true,
 								Locations: []types.Location{
 									{
@@ -301,10 +311,15 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:        "is-odd@3.0.1",
-								Name:      "is-odd",
-								Version:   "3.0.1",
-								Licenses:  []string{"MIT"},
+								ID:      "is-odd@3.0.1",
+								Name:    "is-odd",
+								Version: "3.0.1",
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								DependsOn: []string{"is-number@6.0.0"},
 								Locations: []types.Location{
 									{
@@ -605,7 +620,12 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   8,
 									},
 								},
-								Licenses: []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 							},
 							{
 								ID:       "@vue/compiler-sfc@2.7.14",
@@ -618,7 +638,12 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   17,
 									},
 								},
-								Licenses: []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								DependsOn: []string{
 									"@babel/parser@7.22.7",
 									"postcss@8.4.27",
@@ -636,7 +661,12 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   22,
 									},
 								},
-								Licenses: []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 							},
 							{
 								ID:       "picocolors@1.0.0",
@@ -649,7 +679,12 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   27,
 									},
 								},
-								Licenses: []string{"ISC"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "ISC",
+									},
+								},
 							},
 							{
 								ID:       "postcss@8.4.27",
@@ -662,7 +697,12 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   36,
 									},
 								},
-								Licenses: []string{"MIT"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "MIT",
+									},
+								},
 								DependsOn: []string{
 									"nanoid@3.3.6",
 									"picocolors@1.0.0",
@@ -680,7 +720,12 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   46,
 									},
 								},
-								Licenses: []string{"BSD-3-Clause"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "BSD-3-Clause",
+									},
+								},
 							},
 							{
 								ID:       "source-map-js@1.0.2",
@@ -693,7 +738,12 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 										EndLine:   41,
 									},
 								},
-								Licenses: []string{"BSD-3-Clause"},
+								Licenses: []types.License{
+									{
+										Type:  types.LicenseTypeName,
+										Value: "BSD-3-Clause",
+									},
+								},
 							},
 						},
 					},

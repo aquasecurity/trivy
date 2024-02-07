@@ -121,7 +121,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
+					BlobID:   "sha256:e7160dcddb78ed49f0293c5bd7390f2aeda204c54a79b72d74402216549f2ec3",
 					BlobInfo: expectedBlobInfo,
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -129,7 +129,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
+						ArtifactID: "sha256:e7160dcddb78ed49f0293c5bd7390f2aeda204c54a79b72d74402216549f2ec3",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -139,9 +139,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "rawdata.img",
 				Type: types.ArtifactVM,
-				ID:   "sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
+				ID:   "sha256:e7160dcddb78ed49f0293c5bd7390f2aeda204c54a79b72d74402216549f2ec3",
 				BlobIDs: []string{
-					"sha256:84a726d23c36d0e1857101969b257c1199de5432489d44581750d54ea8eff8cd",
+					"sha256:e7160dcddb78ed49f0293c5bd7390f2aeda204c54a79b72d74402216549f2ec3",
 				},
 			},
 		},
@@ -238,9 +238,14 @@ var expectedBlobInfo = types.BlobInfo{
 					Version:    "1.2.3-r5",
 					SrcName:    "musl",
 					SrcVersion: "1.2.3-r5",
-					Licenses:   []string{"MIT"},
-					Arch:       "aarch64",
-					Digest:     "sha1:742b0a26f327c6da60d42a02c3eb6189a58e468f",
+					Licenses: types.Licenses{
+						{
+							Type:  types.LicenseTypeName,
+							Value: "MIT",
+						},
+					},
+					Arch:   "aarch64",
+					Digest: "sha1:742b0a26f327c6da60d42a02c3eb6189a58e468f",
 					InstalledFiles: []string{
 						"lib/ld-musl-aarch64.so.1",
 						"lib/libc.musl-aarch64.so.1",

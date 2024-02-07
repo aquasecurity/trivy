@@ -137,7 +137,7 @@ func (a alpinePkgAnalyzer) trimRequirement(s string) string {
 	return s
 }
 
-func (a alpinePkgAnalyzer) parseLicense(line string) []string {
+func (a alpinePkgAnalyzer) parseLicense(line string) types.Licenses {
 	line = line[2:] // Remove "L:"
 	if line == "" {
 		return nil
@@ -155,7 +155,12 @@ func (a alpinePkgAnalyzer) parseLicense(line string) []string {
 			licenses = append(licenses, licensing.Normalize(s))
 		}
 	}
-	return licenses
+	return lo.Map(licenses, func(l string, _ int) types.License {
+		return types.License{
+			Type:  types.LicenseTypeName,
+			Value: l,
+		}
+	})
 }
 
 func (a alpinePkgAnalyzer) parseProvides(line, pkgID string, provides map[string]string) {

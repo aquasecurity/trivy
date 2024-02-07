@@ -30,10 +30,12 @@ var LicenseCategoryMap = map[common.LicenseCategory_Enum]ftypes.LicenseCategory{
 }
 
 var LicenseTypeMap = map[common.LicenseType_Enum]ftypes.LicenseType{
-	common.LicenseType_UNSPECIFIED:  "",
-	common.LicenseType_DPKG:         ftypes.LicenseTypeDpkg,
-	common.LicenseType_HEADER:       ftypes.LicenseTypeHeader,
-	common.LicenseType_LICENSE_FILE: ftypes.LicenseTypeFile,
+	common.LicenseType_UNSPECIFIED:   "",
+	common.LicenseType_DPKG:          ftypes.LicenseTypeDpkg,
+	common.LicenseType_HEADER:        ftypes.LicenseTypeHeader,
+	common.LicenseType_LICENSE_FILE:  ftypes.LicenseTypeFile,
+	common.LicenseType_LICENSE_NAME:  ftypes.LicenseTypeName,
+	common.LicenseType_NON_SEPARABLE: ftypes.LicenseTypeNonSeparable,
 }
 
 // ByValueOr returns the key from the map of the first matched value,
@@ -64,7 +66,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			SrcVersion: pkg.SrcVersion,
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int32(pkg.SrcEpoch),
-			Licenses:   pkg.Licenses,
+			Licenses:   ConvertToRPCPkgLicenses(pkg.Licenses),
 			Layer:      ConvertToRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
@@ -88,6 +90,17 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 		Purl:   p,
 		BomRef: pkg.BOMRef,
 	}
+}
+
+func ConvertToRPCPkgLicenses(licenses ftypes.Licenses) []*common.License {
+	var rpcLicenses []*common.License
+	for _, l := range licenses {
+		rpcLicenses = append(rpcLicenses, &common.License{
+			Type:  ConvertToRPCLicenseType(l.Type),
+			Value: l.Value,
+		})
+	}
+	return rpcLicenses
 }
 
 func ConvertToRPCCustomResources(resources []ftypes.CustomResource) []*common.CustomResource {
@@ -206,7 +219,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcVersion: pkg.SrcVersion,
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int(pkg.SrcEpoch),
-			Licenses:   pkg.Licenses,
+			Licenses:   ConvertFromRPCPkgLicense(pkg.Licenses),
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
@@ -235,6 +248,17 @@ func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier
 	}
 
 	return pkgID
+}
+
+func ConvertFromRPCPkgLicense(rpcLicenses []*common.License) ftypes.Licenses {
+	var licenses ftypes.Licenses
+	for _, l := range rpcLicenses {
+		licenses = append(licenses, ftypes.License{
+			Type:  ConvertFromRPCLicenseType(l.Type),
+			Value: l.Value,
+		})
+	}
+	return licenses
 }
 
 // ConvertToRPCVulns returns common.Vulnerability
