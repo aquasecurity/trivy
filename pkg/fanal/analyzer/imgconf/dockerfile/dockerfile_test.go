@@ -104,6 +104,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Interval: time.Second * 10,
 							Timeout:  time.Second * 3,
 						},
+						User: "1002",
 					},
 					History: []v1.History{
 						{
@@ -125,10 +126,6 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 						{
 							CreatedBy:  "RUN /bin/sh -c ls -hl /foo # buildkit",
 							EmptyLayer: false,
-						},
-						{
-							CreatedBy:  "USER foo",
-							EmptyLayer: true,
 						},
 						{
 							CreatedBy:  `HEALTHCHECK &{["CMD-SHELL" "curl -sS 127.0.0.1 || exit 1"] "10s" "3s" "0s" '\x00'}`,

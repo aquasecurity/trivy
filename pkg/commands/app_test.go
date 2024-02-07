@@ -250,7 +250,7 @@ func TestFlags(t *testing.T) {
 				"--format",
 				"foo",
 			},
-			wantErr: `invalid argument "foo" for "-f, --format" flag`,
+			wantErr: `invalid argument "foo" for "--format" flag`,
 		},
 	}
 
@@ -262,16 +262,21 @@ func TestFlags(t *testing.T) {
 			rootCmd.SetOut(io.Discard)
 
 			flags := &flag.Flags{
+				GlobalFlagGroup: globalFlags,
 				ReportFlagGroup: flag.NewReportFlagGroup(),
 			}
 			cmd := &cobra.Command{
 				Use: "test",
 				RunE: func(cmd *cobra.Command, args []string) error {
 					// Bind
-					require.NoError(t, flags.Bind(cmd))
+					if err := flags.Bind(cmd); err != nil {
+						return err
+					}
 
-					options, err := flags.ToOptions(args, globalFlags)
-					require.NoError(t, err)
+					options, err := flags.ToOptions(args)
+					if err != nil {
+						return err
+					}
 
 					assert.Equal(t, tt.want.format, options.Format)
 					assert.Equal(t, tt.want.severities, options.Severities)

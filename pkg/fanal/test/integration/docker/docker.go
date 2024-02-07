@@ -10,9 +10,9 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/docker/docker/client"
-
 	"github.com/docker/docker/api/types"
+	apiregistry "github.com/docker/docker/api/types/registry"
+	"github.com/docker/docker/client"
 )
 
 type RegistryConfig struct {
@@ -21,8 +21,8 @@ type RegistryConfig struct {
 	Password string
 }
 
-func (c RegistryConfig) GetAuthConfig() types.AuthConfig {
-	return types.AuthConfig{
+func (c RegistryConfig) GetAuthConfig() apiregistry.AuthConfig {
+	return apiregistry.AuthConfig{
 		Username:      c.Username,
 		Password:      c.Password,
 		ServerAddress: c.URL.Host,
@@ -30,7 +30,7 @@ func (c RegistryConfig) GetAuthConfig() types.AuthConfig {
 }
 
 func (c RegistryConfig) GetRegistryAuth() (string, error) {
-	authConfig := types.AuthConfig{
+	authConfig := apiregistry.AuthConfig{
 		Username: c.Username,
 		Password: c.Password,
 	}

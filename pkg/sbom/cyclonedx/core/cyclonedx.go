@@ -230,7 +230,7 @@ func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.V
 		return *value
 	})
 	sort.Slice(vulns, func(i, j int) bool {
-		return vulns[i].BOMRef < vulns[j].BOMRef
+		return vulns[i].ID < vulns[j].ID
 	})
 	return &vulns
 }

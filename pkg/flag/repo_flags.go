@@ -1,30 +1,27 @@
 package flag
 
 var (
-	FetchBranchFlag = Flag{
+	FetchBranchFlag = Flag[string]{
 		Name:       "branch",
 		ConfigName: "repository.branch",
-		Default:    "",
 		Usage:      "pass the branch name to be scanned",
 	}
-	FetchCommitFlag = Flag{
+	FetchCommitFlag = Flag[string]{
 		Name:       "commit",
 		ConfigName: "repository.commit",
-		Default:    "",
 		Usage:      "pass the commit hash to be scanned",
 	}
-	FetchTagFlag = Flag{
+	FetchTagFlag = Flag[string]{
 		Name:       "tag",
 		ConfigName: "repository.tag",
-		Default:    "",
 		Usage:      "pass the tag name to be scanned",
 	}
 )
 
 type RepoFlagGroup struct {
-	Branch *Flag
-	Commit *Flag
-	Tag    *Flag
+	Branch *Flag[string]
+	Commit *Flag[string]
+	Tag    *Flag[string]
 }
 
 type RepoOptions struct {
@@ -35,9 +32,9 @@ type RepoOptions struct {
 
 func NewRepoFlagGroup() *RepoFlagGroup {
 	return &RepoFlagGroup{
-		Branch: &FetchBranchFlag,
-		Commit: &FetchCommitFlag,
-		Tag:    &FetchTagFlag,
+		Branch: FetchBranchFlag.Clone(),
+		Commit: FetchCommitFlag.Clone(),
+		Tag:    FetchTagFlag.Clone(),
 	}
 }
 
@@ -45,14 +42,22 @@ func (f *RepoFlagGroup) Name() string {
 	return "Repository"
 }
 
-func (f *RepoFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Branch, f.Commit, f.Tag}
+func (f *RepoFlagGroup) Flags() []Flagger {
+	return []Flagger{
+		f.Branch,
+		f.Commit,
+		f.Tag,
+	}
 }
 
-func (f *RepoFlagGroup) ToOptions() RepoOptions {
-	return RepoOptions{
-		RepoBranch: getString(f.Branch),
-		RepoCommit: getString(f.Commit),
-		RepoTag:    getString(f.Tag),
+func (f *RepoFlagGroup) ToOptions() (RepoOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return RepoOptions{}, err
 	}
+
+	return RepoOptions{
+		RepoBranch: f.Branch.Value(),
+		RepoCommit: f.Commit.Value(),
+		RepoTag:    f.Tag.Value(),
+	}, nil
 }
