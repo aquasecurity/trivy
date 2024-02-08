@@ -120,7 +120,7 @@ type Result struct {
 
 func (r *Result) IsEmpty() bool {
 	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
-		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0
+		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0 && len(r.ModifiedFindings) == 0
 }
 
 type MisconfSummary struct {
