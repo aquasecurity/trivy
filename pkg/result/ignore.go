@@ -167,7 +167,7 @@ func parseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, erro
 	conf.Misconfigurations.Filter(ctx)
 	conf.Secrets.Filter(ctx)
 	conf.Licenses.Filter(ctx)
-	conf.FilePath = filepath.Clean(ignoreFile)
+	conf.FilePath = filepath.ToSlash(filepath.Clean(ignoreFile))
 
 	return conf, nil
 }

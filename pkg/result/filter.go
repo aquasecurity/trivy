@@ -232,7 +232,6 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 }
 
 func applyPolicy(ctx context.Context, result *types.Result, policyFile string) error {
-	policyFile = filepath.Clean(policyFile)
 	policy, err := os.ReadFile(policyFile)
 	if err != nil {
 		return xerrors.Errorf("unable to read the policy file: %w", err)
@@ -246,6 +245,8 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 	if err != nil {
 		return xerrors.Errorf("unable to prepare for eval: %w", err)
 	}
+
+	policyFile = filepath.ToSlash(filepath.Clean(policyFile))
 
 	// Vulnerabilities
 	var filteredVulns []types.DetectedVulnerability
