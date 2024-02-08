@@ -35,11 +35,6 @@ type FilterOption struct {
 
 // Filter filters out the report
 func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
-	// Filter out vulnerabilities based on the given VEX document.
-	if err := filterByVEX(report, opt); err != nil {
-		return xerrors.Errorf("VEX error: %w", err)
-	}
-
 	ignoreConf, err := parseIgnoreFile(ctx, opt.IgnoreFile)
 	if err != nil {
 		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
@@ -50,6 +45,12 @@ func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
 			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 	}
+
+	// Filter out vulnerabilities based on the given VEX document.
+	if err = filterByVEX(report, opt); err != nil {
+		return xerrors.Errorf("VEX error: %w", err)
+	}
+
 	return nil
 }
 
