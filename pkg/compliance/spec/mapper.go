@@ -45,11 +45,11 @@ func MapSpecCheckIDToFilteredResults(result types.Result, checkIDs map[types.Sca
 func misconfigSummary(misconfig types.DetectedMisconfiguration) *types.MisconfSummary {
 	rms := types.MisconfSummary{}
 	switch misconfig.Status {
-	case types.StatusPassed:
+	case types.MisconfStatusPassed:
 		rms.Successes = 1
-	case types.StatusFailure:
+	case types.MisconfStatusFailure:
 		rms.Failures = 1
-	case types.StatusException:
+	case types.MisconfStatusException:
 		rms.Exceptions = 1
 	}
 	return &rms

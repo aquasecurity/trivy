@@ -135,7 +135,7 @@ func (results Results) Failed() bool {
 			return true
 		}
 		for _, m := range r.Misconfigurations {
-			if m.Status == StatusFailure {
+			if m.Status == MisconfStatusFailure {
 				return true
 			}
 		}

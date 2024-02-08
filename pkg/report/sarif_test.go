@@ -197,7 +197,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 								Message:    "Message",
 								Severity:   "HIGH",
 								PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
-								Status:     types.StatusFailure,
+								Status:     types.MisconfStatusFailure,
 							},
 							{
 								Type:       "Kubernetes Security Check",
@@ -206,7 +206,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 								Message:    "Message",
 								Severity:   "CRITICAL",
 								PrimaryURL: "https://avd.aquasec.com/appshield/ksv002",
-								Status:     types.StatusPassed,
+								Status:     types.MisconfStatusPassed,
 							},
 						},
 					},

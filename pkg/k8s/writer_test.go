@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -38,7 +37,7 @@ var (
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:       "ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 				},
@@ -54,28 +53,28 @@ var (
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:       "KSV-ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "KSV-ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
 						ID:       "KSV-ID102",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 
 					{
 						ID:       "KCV-ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "KCV-ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 				},
@@ -110,37 +109,37 @@ var (
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:       "ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
 						ID:       "ID102",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 					{
 						ID:       "ID103",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "CRITICAL",
 					},
 					{
 						ID:       "ID104",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "UNKNOWN",
 					},
 					{
 						ID:       "ID105",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "ID106",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 				},

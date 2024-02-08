@@ -212,11 +212,11 @@ func filterLicenses(licenses []types.DetectedLicense, severities, ignoreLicenseN
 
 func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 	switch status {
-	case types.StatusFailure:
+	case types.MisconfStatusFailure:
 		summary.Failures++
-	case types.StatusPassed:
+	case types.MisconfStatusPassed:
 		summary.Successes++
-	case types.StatusException:
+	case types.MisconfStatusException:
 		summary.Exceptions++
 	}
 }
