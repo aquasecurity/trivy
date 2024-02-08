@@ -409,8 +409,8 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
-|      Secret      |           |
-|     License      |           |
+|      Secret      |     ✓     |
+|     License      |     ✓     |
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
@@ -455,7 +455,8 @@ trivy image -f json centos:7
 ...
 ```
 
-Each individual vulnerability (under `Results.Vulnerabilities`) or Misconfiguration (under `Results.Misconfigurations`) is evaluated for exclusion or inclusion by the `ignore` rule.
+Each individual Vulnerability, Misconfiguration, License and Secret (under `Results.Vulnerabilities`, `Results.Misconfigurations`, 
+`Results.Licenses`, `Results.Secrets`) is evaluated for exclusion or inclusion by the `ignore` rule.
 
 The following is a Rego ignore policy that filters out every vulnerability with a specific CWE ID (as seen in the JSON example above):
 

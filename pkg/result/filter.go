@@ -67,7 +67,6 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
 
 	if opt.PolicyFile != "" {
-		if err := applyPolicy(ctx, result, opt.PolicyFile); err != nil {
 			return xerrors.Errorf("failed to apply the policy: %w", err)
 		}
 	}
