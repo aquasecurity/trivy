@@ -70,7 +70,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:4902c55f8454ea502656a6deff5c2c0a4863c059509545c11cd6c2fbe5dda2ce",
+						BlobID: "sha256:5c9fad635c53ddafd1b5248fcd989b6c0f311c91a2fe2a206c7d67a715335fa1",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							OS: types.OS{
@@ -124,9 +124,9 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:4902c55f8454ea502656a6deff5c2c0a4863c059509545c11cd6c2fbe5dda2ce",
+				ID:   "sha256:5c9fad635c53ddafd1b5248fcd989b6c0f311c91a2fe2a206c7d67a715335fa1",
 				BlobIDs: []string{
-					"sha256:4902c55f8454ea502656a6deff5c2c0a4863c059509545c11cd6c2fbe5dda2ce",
+					"sha256:5c9fad635c53ddafd1b5248fcd989b6c0f311c91a2fe2a206c7d67a715335fa1",
 				},
 			},
 		},

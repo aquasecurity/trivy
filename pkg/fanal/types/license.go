@@ -1,6 +1,10 @@
 package types
 
-import "github.com/samber/lo"
+import (
+	"encoding/json"
+
+	"github.com/samber/lo"
+)
 
 type LicenseType string
 
@@ -69,11 +73,11 @@ type License struct {
 
 type Licenses []License
 
-func (licenses Licenses) ToStringSlice() []string {
+func (ll *Licenses) ToStringSlice() []string {
 	// TODO check type:
 	// don't return files?
 	// limit size of non-separable license
-	return lo.Map(licenses, func(l License, _ int) string {
+	return lo.Map(*ll, func(l License, _ int) string {
 		return l.Value
 	})
 }
@@ -96,4 +100,27 @@ func NewLicense(typ, value string) License {
 		Type:  licenseType,
 		Value: value,
 	}
+}
+
+// MarshalJSON customizes the JSON encoding of Licenses.
+func (ll *Licenses) MarshalJSON() ([]byte, error) {
+	return json.Marshal(ll.ToStringSlice())
+}
+
+// UnmarshalJSON customizes the JSON decoding of License.
+func (ll *Licenses) UnmarshalJSON(data []byte) error {
+	var stringLicenses []string
+	if err := json.Unmarshal(data, &stringLicenses); err != nil {
+		return err
+	}
+	licenses := Licenses{}
+	for _, l := range stringLicenses {
+		licenses = append(licenses, License{
+			Type:  LicenseTypeName,
+			Value: l,
+		})
+	}
+
+	*ll = licenses
+	return nil
 }

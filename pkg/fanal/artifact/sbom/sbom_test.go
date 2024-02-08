@@ -30,7 +30,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
+					BlobID: "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -194,9 +194,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
+				ID:   "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
 				BlobIDs: []string{
-					"sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
+					"sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
 				},
 			},
 		},
@@ -205,7 +205,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
+					BlobID: "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -369,9 +369,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
+				ID:   "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
 				BlobIDs: []string{
-					"sha256:07aaab8f294140370ab0cdb48ff716d5cc2bee065dcfcc247dd8c58d8c3e50fb",
+					"sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
 				},
 			},
 		},
