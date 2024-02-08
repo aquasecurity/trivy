@@ -15,7 +15,7 @@ The following table provides an outline of the features Trivy offers.
 |------------------|:---------------------:|:----------------:|:------------------------------------:|:--------:|
 | JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |    -     |
 | pom.xml          | Maven repository [^1] |     Exclude      |                  ✓                   |  ✓[^7]   |
-| *gradle.lockfile |           -           |     Exclude      |                  -                   |    -     |
+| *gradle.lockfile |           -           |     Exclude      |                  -                   |    ✓     |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
