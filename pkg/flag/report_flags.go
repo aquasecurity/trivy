@@ -104,7 +104,7 @@ var (
 	ShowSuppressedFlag = Flag[bool]{
 		Name:       "show-suppressed",
 		ConfigName: "scan.show-suppressed",
-		Usage:      "show suppressed security findings",
+		Usage:      "[EXPERIMENTAL] show suppressed security findings",
 	}
 )
 
