@@ -25,8 +25,8 @@ For information on these settings, please refer to the scanner-specific document
 ## Prioritization
 You can filter the results by 
 
-- Severity
-- Status
+- [Severity](#by-severity)
+- [Status](#by-status)
 
 ### By Status
 
