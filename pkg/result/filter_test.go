@@ -543,7 +543,7 @@ func TestFilter(t *testing.T) {
 						{
 							Vulnerabilities: []types.DetectedVulnerability{
 								vuln1,
-								vuln2, // ignored by policy
+								vuln2, // ignored by severity
 								vuln3, // ignored by policy
 							},
 						},
