@@ -257,7 +257,7 @@ var (
 		Name:      "lua",
 		Results: types.Results{
 			{
-				Secrets: []ftypes.SecretFinding{
+				Secrets: []types.DetectedSecret{
 					{
 						RuleID:   "secret1",
 						Severity: "CRITICAL",

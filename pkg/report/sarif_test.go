@@ -338,7 +338,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 					{
 						Target: "library/test",
 						Class:  types.ClassSecret,
-						Secrets: []ftypes.SecretFinding{
+						Secrets: []types.DetectedSecret{
 							{
 								RuleID:    "aws-secret-access-key",
 								Category:  "AWS",

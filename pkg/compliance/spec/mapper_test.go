@@ -99,7 +99,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 			result: types.Result{
 				Target: "target",
 				Class:  types.ClassSecret,
-				Secrets: []ftypes.SecretFinding{
+				Secrets: []types.DetectedSecret{
 					{
 						RuleID:   "aws-access-key-id",
 						Category: secret.CategoryAWS,
@@ -135,7 +135,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 					{
 						Target: "target",
 						Class:  types.ClassSecret,
-						Secrets: []ftypes.SecretFinding{
+						Secrets: []types.DetectedSecret{
 							{
 								RuleID:   "aws-access-key-id",
 								Category: secret.CategoryAWS,

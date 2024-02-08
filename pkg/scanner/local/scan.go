@@ -266,9 +266,11 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 		log.Logger.Debugf("Secret file: %s", secret.FilePath)
 
 		results = append(results, types.Result{
-			Target:  secret.FilePath,
-			Class:   types.ClassSecret,
-			Secrets: secret.Findings,
+			Target: secret.FilePath,
+			Class:  types.ClassSecret,
+			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, index int) types.DetectedSecret {
+				return types.DetectedSecret(secret)
+			}),
 		})
 	}
 	return results
