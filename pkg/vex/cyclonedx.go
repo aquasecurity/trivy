@@ -77,10 +77,6 @@ func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) b
 			continue
 		}
 		if vuln.PkgIdentifier.Match(link.Reference()) && (stmt.Status == types.FindingStatusNotAffected || stmt.Status == types.FindingStatusFixed) {
-			v.logger.Infow("Filtered out the detected vulnerability",
-				zap.String("vulnerability-id", vuln.VulnerabilityID),
-				zap.String("status", string(stmt.Status)),
-				zap.String("justification", stmt.Justification))
 			return false
 		}
 	}
