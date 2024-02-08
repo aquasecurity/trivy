@@ -325,7 +325,7 @@ func TestFilter(t *testing.T) {
 							Target: "deployment.yaml",
 							Class:  types.ClassConfig,
 							Misconfigurations: []types.DetectedMisconfiguration{
-								misconf1,
+								misconf1, // filtered by severity
 								misconf2,
 								misconf3,
 							},
