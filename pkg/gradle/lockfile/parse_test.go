@@ -21,16 +21,37 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/happy.lockfile",
 			want: []types.Library{
 				{
+					ID:      "cglib:cglib-nodep:2.1.2",
 					Name:    "cglib:cglib-nodep",
 					Version: "2.1.2",
+					Locations: []types.Location{
+						{
+							StartLine: 4,
+							EndLine:   4,
+						},
+					},
 				},
 				{
+					ID:      "org.springframework:spring-asm:3.1.3.RELEASE",
 					Name:    "org.springframework:spring-asm",
 					Version: "3.1.3.RELEASE",
+					Locations: []types.Location{
+						{
+							StartLine: 5,
+							EndLine:   5,
+						},
+					},
 				},
 				{
+					ID:      "org.springframework:spring-beans:5.0.5.RELEASE",
 					Name:    "org.springframework:spring-beans",
 					Version: "5.0.5.RELEASE",
+					Locations: []types.Location{
+						{
+							StartLine: 6,
+							EndLine:   6,
+						},
+					},
 				},
 			},
 		},
