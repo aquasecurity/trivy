@@ -49,6 +49,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			Output:               output,
 			Severities:           option.Severities,
 			Tree:                 option.DependencyTree,
+			ShowSuppressed:       option.ShowSuppressed,
 			ShowMessageOnce:      &sync.Once{},
 			IncludeNonFailures:   option.IncludeNonFailures,
 			Trace:                option.Trace,

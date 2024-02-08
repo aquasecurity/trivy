@@ -36,6 +36,9 @@ type Writer struct {
 	// Show dependency origin tree
 	Tree bool
 
+	// Show suppressed findings
+	ShowSuppressed bool
+
 	// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
 	ShowMessageOnce *sync.Once
 
@@ -73,7 +76,7 @@ func (tw Writer) write(result types.Result) {
 	switch {
 	// vulnerability
 	case result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg:
-		renderer = NewVulnerabilityRenderer(result, tw.isOutputToTerminal(), tw.Tree, tw.Severities)
+		renderer = NewVulnerabilityRenderer(result, tw.isOutputToTerminal(), tw.Tree, tw.ShowSuppressed, tw.Severities)
 	// misconfiguration
 	case result.Class == types.ClassConfig:
 		renderer = NewMisconfigRenderer(result, tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal())
