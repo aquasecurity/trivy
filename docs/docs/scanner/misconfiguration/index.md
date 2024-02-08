@@ -316,15 +316,17 @@ This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
 ### Enabling a subset of misconfiguration scanners
-It's possible to only enable certain misconfiguration scanners if you prefer. You can do so by passing the `--misconfig-scanners` option.
+It's possible to only enable certain misconfiguration scanners if you prefer.
+You can do so by passing the `--misconfig-scanners` option.
 This flag takes a comma-separated list of configuration scanner types.
+
 ```bash
 trivy config --misconfig-scanners=terraform,dockerfile .
 ```
 
 Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
 
-### Pass custom policies
+### Passing custom policies
 You can pass policy files or directories including your custom policies through `--policy` option.
 This can be repeated for specifying multiple files or directories.
 
@@ -338,7 +340,7 @@ For more details, see [Custom Policies](./custom/index.md).
 !!! tip
 You also need to specify `--namespaces` option.
 
-### Pass custom data
+### Passing custom data
 You can pass directories including your custom data through `--data` option.
 This can be repeated for specifying multiple directories.
 
@@ -349,13 +351,41 @@ trivy conf --policy ./policy --data ./data --namespaces user ./configs
 
 For more details, see [Custom Data](./custom/data.md).
 
-### Pass namespaces
+### Passing namespaces
 By default, Trivy evaluates policies defined in `builtin.*`.
 If you want to evaluate custom policies in other packages, you have to specify package prefixes through `--namespaces` option.
 This can be repeated for specifying multiple packages.
 
 ``` bash
 trivy conf --policy ./policy --namespaces main --namespaces user ./configs
+```
+
+### Skipping resources by inline comments
+Some configuration file formats (e.g. Terraform) support inline comments.
+
+In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned).
+
+The format for these comments is `trivy:ignore:<Vulnerability ID>` immediately following the format-specific line-comment token.
+You can add multiple ignores on the same comment line.
+
+For example, to filter a misconfiguration ID "AVD-GCP-0051" in a Terraform HCL file:
+
+```terraform
+#trivy:ignore:AVD-GCP-0051
+resource "google_container_cluster" "one_off_test" {
+  name     = var.cluster_name
+  location = var.region
+}
+```
+
+For example, to filter misconfigurations "AVD-GCP-0051" and "AVD-GCP-0053" in a Terraform HCL file:
+
+```terraform
+#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053
+resource "google_container_cluster" "one_off_test" {
+  name     = var.cluster_name
+  location = var.region
+}
 ```
 
 [custom]: custom/index.md

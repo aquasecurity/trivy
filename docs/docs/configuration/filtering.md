@@ -1,8 +1,34 @@
 # Filtering
 Trivy provides various methods for filtering the results.
 
+```mermaid
+flowchart LR
+  Issues("Detected\nIssues") --> Severity
 
-## By Status
+  subgraph Filtering
+    subgraph Prioritization
+        direction TB
+        Severity("By Severity") --> Status("By Status")
+    end
+    subgraph Suppression
+        Status --> Ignore("By Finding IDs")
+        Ignore --> Rego("By Rego")
+        Rego --> VEX("By VEX")
+    end
+  end
+  VEX --> Results
+```
+
+Similar to the functionality of filtering results, you can also limit the sub-targets for each scanner.
+For information on these settings, please refer to the scanner-specific documentation ([vulnerability](../scanner/vulnerability.md) , [misconfiguration](../scanner/misconfiguration/index.md), etc.).
+
+## Prioritization
+You can filter the results by 
+
+- Severity
+- Status
+
+### By Status
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -75,7 +101,7 @@ Total: 527 (UNKNOWN: 0, LOW: 276, MEDIUM: 83, HIGH: 158, CRITICAL: 10)
 $ trivy image --ignore-unfixed ruby:2.4.0
 ```
 
-## By Severity
+### By Severity
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -202,11 +228,49 @@ See https://avd.aquasec.com/misconfig/avd-aws-0081
 ```
 </details>
 
-## By Finding IDs
+## Suppression
+You can filter the results by
+
+- Finding IDs
+- Rego
+- Vulnerability Exploitability Exchange (VEX)
+
+To show the suppressed results, use the `--show-suppressed` flag.
+
+```bash
+$ trivy image --vex debian11.csaf.vex --ignorefile .trivyignore.yaml --show-suppressed debian:11
+...
+
+Suppressed Vulnerabilities (Total: 9)
+
+┌───────────────┬───────────────┬──────────┬──────────────┬─────────────────────────────────────────────┬───────────────────┐
+│    Library    │ Vulnerability │ Severity │    Status    │                  Statement                  │      Source       │
+├───────────────┼───────────────┼──────────┼──────────────┼─────────────────────────────────────────────┼───────────────────┤
+│ libdb5.3      │ CVE-2019-8457 │ CRITICAL │ not_affected │ vulnerable_code_not_in_execute_path         │ CSAF VEX          │
+├───────────────┼───────────────┼──────────┼──────────────┼─────────────────────────────────────────────┼───────────────────┤
+│ bsdutils      │ CVE-2022-0563 │ LOW      │ ignored      │ Accept the risk                             │ .trivyignore.yaml │
+├───────────────┤               │          │              │                                             │                   │
+│ libblkid1     │               │          │              │                                             │                   │
+├───────────────┤               │          │              │                                             │                   │
+│ libmount1     │               │          │              │                                             │                   │
+├───────────────┤               │          │              │                                             │                   │
+│ libsmartcols1 │               │          │              │                                             │                   │
+├───────────────┤               │          │              │                                             │                   │
+│ libuuid1      │               │          │              │                                             │                   │
+├───────────────┤               │          │              │                                             │                   │
+│ mount         │               │          │              │                                             │                   │
+├───────────────┼───────────────┤          │              ├─────────────────────────────────────────────┤                   │
+│ tar           │ CVE-2005-2541 │          │              │ The vulnerable configuration is not enabled │                   │
+├───────────────┼───────────────┤          │              ├─────────────────────────────────────────────┤                   │
+│ util-linux    │ CVE-2022-0563 │          │              │ Accept the risk                             │                   │
+└───────────────┴───────────────┴──────────┴──────────────┴─────────────────────────────────────────────┴───────────────────┘
+```
+
+### By Finding IDs
 
 Trivy supports the [.trivyignore](#trivyignore) and [.trivyignore.yaml](#trivyignoreyaml) ignore files.
 
-### .trivyignore
+#### .trivyignore
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -254,7 +318,7 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 </details>
 
-### .trivyignore.yaml
+#### .trivyignore.yaml
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -339,76 +403,7 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 </details>
 
-
-## By Vulnerability Target
-|     Scanner      | Supported |
-|:----------------:|:---------:|
-|  Vulnerability   |     ✓     |
-| Misconfiguration |           |
-|      Secret      |           |
-|     License      |           |
-
-Use `--vuln-type` option.
-
-```bash
-$ trivy image --vuln-type os ruby:2.4.0
-```
-
-Available values:
-
-- library
-- os
-
-<details>
-<summary>Result</summary>
-
-```bash
-2019-05-22T19:36:50.530+0200    [34mINFO[0m    Updating vulnerability database...
-2019-05-22T19:36:51.681+0200    [34mINFO[0m    Detecting Alpine vulnerabilities...
-2019-05-22T19:36:51.685+0200    [34mINFO[0m    Updating npm Security DB...
-2019-05-22T19:36:52.389+0200    [34mINFO[0m    Detecting npm vulnerabilities...
-2019-05-22T19:36:52.390+0200    [34mINFO[0m    Updating pipenv Security DB...
-2019-05-22T19:36:53.406+0200    [34mINFO[0m    Detecting pipenv vulnerabilities...
-
-ruby:2.4.0 (debian 8.7)
-=======================
-Total: 7 (UNKNOWN: 0, LOW: 1, MEDIUM: 1, HIGH: 3, CRITICAL: 2)
-
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |              TITLE               |
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-| curl    | CVE-2018-14618   | CRITICAL | 7.61.0-r0         | 7.61.1-r0     | curl: NTLM password overflow     |
-|         |                  |          |                   |               | via integer overflow             |
-+         +------------------+----------+                   +---------------+----------------------------------+
-|         | CVE-2018-16839   | HIGH     |                   | 7.61.1-r1     | curl: Integer overflow leading   |
-|         |                  |          |                   |               | to heap-based buffer overflow in |
-|         |                  |          |                   |               | Curl_sasl_create_plain_message() |
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-| git     | CVE-2018-17456   | HIGH     | 2.15.2-r0         | 2.15.3-r0     | git: arbitrary code execution    |
-|         |                  |          |                   |               | via .gitmodules                  |
-+         +------------------+          +                   +               +----------------------------------+
-|         | CVE-2018-19486   |          |                   |               | git: Improper handling of        |
-|         |                  |          |                   |               | PATH allows for commands to be   |
-|         |                  |          |                   |               | executed from...                 |
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-| libssh2 | CVE-2019-3855    | CRITICAL | 1.8.0-r2          | 1.8.1-r0      | libssh2: Integer overflow in     |
-|         |                  |          |                   |               | transport read resulting in      |
-|         |                  |          |                   |               | out of bounds write...           |
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-| sqlite  | CVE-2018-20346   | MEDIUM   | 3.21.0-r1         | 3.25.3-r0     | CVE-2018-20505 CVE-2018-20506    |
-|         |                  |          |                   |               | sqlite: Multiple flaws in        |
-|         |                  |          |                   |               | sqlite which can be triggered    |
-|         |                  |          |                   |               | via...                           |
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-| tar     | CVE-2018-20482   | LOW      | 1.29-r1           | 1.31-r0       | tar: Infinite read loop in       |
-|         |                  |          |                   |               | sparse_dump_region function in   |
-|         |                  |          |                   |               | sparse.c                         |
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-```
-
-</details>
-
-## By Rego
+### By Rego
 
 |     Scanner      | Supported |
 |:----------------:|:---------:|
@@ -483,39 +478,15 @@ More info about the helper functions are in the library [here](https://github.co
 
 You can find more example policies [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go)
 
-## By Inline Comments
-
+### By Vulnerability Exploitability Exchange (VEX)
 |     Scanner      | Supported |
 |:----------------:|:---------:|
-|  Vulnerability   |           |
-| Misconfiguration |     ✓     |
+|  Vulnerability   |     ✓     |
+| Misconfiguration |           |
 |      Secret      |           |
 |     License      |           |
 
-Some configuration file formats (e.g. Terraform) support inline comments.
+Please refer to the [VEX documentation](../supply-chain/vex.md) for the details.
 
-In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned).
-
-The format for these comments is `trivy:ignore:<Vulnerability ID>` immediately following the format-specific line-comment token. You can add multiple ignores on the same comment line.
-
-For example, to filter a Vulnerability ID "AVD-GCP-0051" in a Terraform HCL file:
-
-```terraform
-#trivy:ignore:AVD-GCP-0051
-resource "google_container_cluster" "one_off_test" {
-  name     = var.cluster_name
-  location = var.region
-}
-```
-
-For example, to filter vulnerabilities "AVD-GCP-0051" and "AVD-GCP-0053" in a Terraform HCL file:
-
-```terraform
-#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053
-resource "google_container_cluster" "one_off_test" {
-  name     = var.cluster_name
-  location = var.region
-}
-```
 
 [^1]: license name is used as id for `.trivyignore.yaml` files
