@@ -67,7 +67,7 @@ trivy vm [flags] VM_IMAGE
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
       --server string                     server address in client mode
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
-      --show-suppressed                   [EXPERIMENTAL] show suppressed security findings
+      --show-suppressed                   [EXPERIMENTAL] show suppressed vulnerabilities
       --skip-db-update                    skip updating vulnerability database
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip

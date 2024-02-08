@@ -31,7 +31,7 @@ trivy convert [flags] RESULT_JSON
       --output-plugin-arg string   [EXPERIMENTAL] output plugin arguments
       --report string              specify a report format for the output (all,summary) (default "all")
   -s, --severity strings           severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
-      --show-suppressed            [EXPERIMENTAL] show suppressed security findings
+      --show-suppressed            [EXPERIMENTAL] show suppressed vulnerabilities
   -t, --template string            output template
 ```
 
