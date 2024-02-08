@@ -96,7 +96,6 @@ trivy aws [flags]
       --reset-policy-bundle               remove policy bundle
       --service strings                   Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
-      --show-suppressed                   [EXPERIMENTAL] show suppressed security findings
       --skip-policy-update                skip fetching rego policy updates
       --skip-service strings              Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.
   -t, --template string                   output template
