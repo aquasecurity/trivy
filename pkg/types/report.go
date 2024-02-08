@@ -111,6 +111,11 @@ type Result struct {
 	Secrets           []DetectedSecret           `json:"Secrets,omitempty"`
 	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
+
+	// ModifiedFindings holds a list of findings that have been modified from their original state.
+	// This can include vulnerabilities that have been marked as ignored, not affected, or have had
+	// their severity adjusted. It is currently available only in the table format.
+	ModifiedFindings []ModifiedFinding `json:"-"`
 }
 
 func (r *Result) IsEmpty() bool {

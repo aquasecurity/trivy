@@ -38,7 +38,4 @@ const (
 	MisconfStatusException MisconfStatus = "EXCEPTION"
 )
 
-// GetID retrun misconfig ID
-func (mc *DetectedMisconfiguration) GetID() string {
-	return mc.AVDID
-}
+func (DetectedMisconfiguration) findingType() FindingType { return FindingTypeMisconfiguration }
