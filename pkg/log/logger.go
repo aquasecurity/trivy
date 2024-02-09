@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/xerrors"
 
-	dlog "github.com/aquasecurity/go-dep-parser/pkg/log"
+	dlog "github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	flog "github.com/aquasecurity/trivy/pkg/fanal/log"
 )
 
