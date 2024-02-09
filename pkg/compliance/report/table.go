@@ -2,8 +2,9 @@ package report
 
 import (
 	"context"
-	"golang.org/x/xerrors"
 	"io"
+
+	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
