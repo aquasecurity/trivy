@@ -1,0 +1,7 @@
+keyring >= 4.1.1            # Minimum version 4.1.1
+coverage != 3.5             # Version Exclusion. Anything except version 3.5
+Mopidy-Dirble ~= 1.1        # Compatible release. Same as >= 1.1, == 1.*
+Django == 2.3.4
+SomeProject ==5.4 ; python_version < '3.8'
+numpyNew; sys_platform == 'win32'
+numpy >= 3.4.1; sys_platform == 'win32'

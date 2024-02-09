@@ -1,0 +1,26 @@
+{
+    "version": 1,
+    "dependencies": {
+        ".NETCoreApp,Version=v5.0": {
+            "AWSSDK.Core": {
+                "type": "Direct",
+                "requested": "[3.5.1.30, )",
+                "resolved": "3.5.1.30",
+                "contentHash": "kNqzY/py4pDlW9aPn2SpnG7y7Mr4Z0jg/BdkHiRr9WLt7k/lwGMmJ5hd3x/ZHDkv8kIdjllkVrrhYkXvj6AkCA=="
+            },
+            "Newtonsoft.Json": {
+                "type": "Direct",
+                "requested": "[12.0.3, )",
+                "resolved": "12.0.3",
+                "contentHash": "6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg=="
+            },
+            "my.project": {
+                "type": "Project",
+                "dependencies": {
+                    "Newtonsoft.Json": "12.0.3",
+                    "AWSSDK.Core": "3.5.1.30"
+                }
+            }
+        }
+    }
+}
