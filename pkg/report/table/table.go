@@ -7,7 +7,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"sync"
 
 	"github.com/fatih/color"
 	"golang.org/x/exp/slices"
@@ -39,9 +38,6 @@ type Writer struct {
 	// Show suppressed findings
 	ShowSuppressed bool
 
-	// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
-	ShowMessageOnce *sync.Once
-
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
@@ -57,6 +53,7 @@ type Renderer interface {
 
 // Write writes the result on standard output
 func (tw Writer) Write(_ context.Context, report types.Report) error {
+
 	for _, result := range report.Results {
 		// Not display a table of custom resources
 		if result.Class == types.ClassCustom {
