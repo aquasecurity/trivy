@@ -6,11 +6,11 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/framework"
 	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_BasicScan(t *testing.T) {

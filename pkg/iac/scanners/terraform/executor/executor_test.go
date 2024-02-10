@@ -9,11 +9,10 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/severity"
 	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 var panicRule = scan.Rule{

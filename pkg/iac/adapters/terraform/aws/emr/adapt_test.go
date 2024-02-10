@@ -4,13 +4,12 @@ import (
 	"testing"
 
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 
 	"github.com/aquasecurity/defsec/pkg/providers/aws/emr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptSecurityConfiguration(t *testing.T) {

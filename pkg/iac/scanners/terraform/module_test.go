@@ -13,12 +13,12 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/severity"
 	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-policies/checks/cloud/aws/iam"
-	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 var badRule = scan.Rule{

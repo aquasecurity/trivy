@@ -10,10 +10,9 @@ import (
 	"github.com/aquasecurity/defsec/pkg/rego/schemas"
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 const DS006PolicyWithDockerfileSchema = `# METADATA

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/trivy/test/testutil"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/stretchr/testify/require"
 )
 

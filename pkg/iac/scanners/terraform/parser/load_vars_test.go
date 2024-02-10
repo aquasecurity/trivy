@@ -3,8 +3,7 @@ package parser
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/test/testutil"
-
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/stretchr/testify/assert"

@@ -7,10 +7,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func parseFile(t *testing.T, source string, name string) (FileContexts, error) {

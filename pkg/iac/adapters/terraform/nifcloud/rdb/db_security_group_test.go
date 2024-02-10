@@ -4,11 +4,10 @@ import (
 	"testing"
 
 	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 
 	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/rdb"
-
-	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_adaptDBSecurityGroups(t *testing.T) {

@@ -8,9 +8,8 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/severity"
 	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/aquasecurity/trivy/test/testutil"
 )
 
 func Test_ResourcesWithCount(t *testing.T) {
