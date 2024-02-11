@@ -50,8 +50,9 @@ func (tw TableWriter) Write(ctx context.Context, report Report) error {
 			Output:     tw.Output,
 			Severities: tw.Severities,
 		}
-		for _, r := range report.Resources {
+		for i, r := range report.Resources {
 			if r.Report.Results.Failed() {
+				updateTargetContext(&report.Resources[i])
 				err := t.Write(ctx, r.Report)
 				if err != nil {
 					return err
@@ -66,4 +67,11 @@ func (tw TableWriter) Write(ctx context.Context, report Report) error {
 	}
 
 	return nil
+}
+
+// updateTargetContext add context namespace, kind and name to the target
+func updateTargetContext(r *Resource) {
+	for i := range r.Report.Results {
+		r.Report.Results[i].Target = r.fullname()
+	}
 }
