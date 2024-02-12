@@ -268,7 +268,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) 
 	devDependencies := rootPkg.DevDependencies
 
 	if len(rootPkg.Workspaces) > 0 {
-		pkgs, err := a.traverseWorkspaces(fsys, filepath.Dir(filePath), rootPkg.Workspaces)
+		pkgs, err := a.traverseWorkspaces(fsys, path.Dir(filePath), rootPkg.Workspaces)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("traverse workspaces error: %w", err)
 		}
@@ -300,7 +300,7 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []st
 	for _, workspace := range workspaces {
 		// We need to add the path to the `package.json` file
 		// to properly get the pattern to search in `fs`
-		workspace = filepath.Join(dir, workspace)
+		workspace = path.Join(dir, workspace)
 		matches, err := fs.Glob(fsys, workspace)
 		if err != nil {
 			return nil, err
