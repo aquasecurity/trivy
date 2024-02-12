@@ -6,7 +6,7 @@ import (
 	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/stretchr/testify/require"
 )

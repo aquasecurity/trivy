@@ -4,9 +4,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/gke"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/gke"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) gke.GKE {

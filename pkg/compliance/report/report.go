@@ -6,9 +6,9 @@ import (
 
 	"golang.org/x/xerrors"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

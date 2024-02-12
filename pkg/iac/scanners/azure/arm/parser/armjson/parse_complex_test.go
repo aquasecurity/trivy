@@ -3,7 +3,7 @@ package armjson
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/stretchr/testify/require"
 )

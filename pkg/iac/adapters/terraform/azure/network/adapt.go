@@ -6,9 +6,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/network"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) network.Network {

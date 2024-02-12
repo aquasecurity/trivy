@@ -7,7 +7,7 @@ import (
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Resource struct {

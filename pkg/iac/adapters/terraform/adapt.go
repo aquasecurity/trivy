@@ -1,8 +1,6 @@
 package terraform
 
 import (
-	"github.com/aquasecurity/defsec/pkg/state"
-	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/cloudstack"
@@ -13,6 +11,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/nifcloud"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/openstack"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/oracle"
+	"github.com/aquasecurity/trivy/pkg/iac/state"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func Adapt(modules terraform.Modules) *state.State {

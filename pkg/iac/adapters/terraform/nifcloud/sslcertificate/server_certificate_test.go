@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/sslcertificate"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/sslcertificate"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 const certificate = `

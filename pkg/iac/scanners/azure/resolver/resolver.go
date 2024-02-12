@@ -1,9 +1,9 @@
 package resolver
 
 import (
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/expressions"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Resolver interface {

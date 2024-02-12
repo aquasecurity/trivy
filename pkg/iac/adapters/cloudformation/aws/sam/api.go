@@ -1,9 +1,9 @@
 package sam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/sam"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getApis(cfFile parser2.FileContext) (apis []sam.API) {

@@ -1,7 +1,7 @@
 package efs
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/efs"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/efs"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 

@@ -3,11 +3,11 @@ package datalake
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/datalake"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datalake"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

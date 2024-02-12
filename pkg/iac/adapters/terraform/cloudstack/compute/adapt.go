@@ -3,9 +3,9 @@ package compute
 import (
 	"encoding/base64"
 
-	"github.com/aquasecurity/defsec/pkg/providers/cloudstack/compute"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/cloudstack/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) compute.Compute {

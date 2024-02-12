@@ -3,11 +3,11 @@ package iam
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 )
 
 func Test_adaptGroups(t *testing.T) {

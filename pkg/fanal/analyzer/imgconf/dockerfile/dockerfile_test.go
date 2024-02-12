@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -248,7 +249,26 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newHistoryAnalyzer(analyzer.ConfigAnalyzerOptions{})
+			a, err := newHistoryAnalyzer(analyzer.ConfigAnalyzerOptions{
+				MisconfScannerOption: misconf.ScannerOption{
+					Debug:                    false,
+					Trace:                    false,
+					RegoOnly:                 false,
+					Namespaces:               nil,
+					PolicyPaths:              nil,
+					DataPaths:                nil,
+					DisableEmbeddedPolicies:  false,
+					DisableEmbeddedLibraries: false,
+					HelmValues:               nil,
+					HelmValueFiles:           nil,
+					HelmFileValues:           nil,
+					HelmStringValues:         nil,
+					TerraformTFVars:          nil,
+					CloudFormationParamVars:  nil,
+					TfExcludeDownloaded:      false,
+					K8sVersion:               "",
+				},
+			})
 			require.NoError(t, err)
 			got, err := a.Analyze(context.Background(), tt.input)
 			if tt.wantErr {

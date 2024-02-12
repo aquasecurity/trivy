@@ -7,9 +7,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	fanaltypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

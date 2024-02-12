@@ -1,9 +1,9 @@
 package iam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 // Adapt adapts an IAM instance

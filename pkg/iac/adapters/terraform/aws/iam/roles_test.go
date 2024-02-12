@@ -4,10 +4,10 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptRoles(t *testing.T) {

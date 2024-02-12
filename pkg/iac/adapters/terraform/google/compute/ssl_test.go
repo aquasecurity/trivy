@@ -3,11 +3,11 @@ package compute
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 )
 
 func Test_adaptSSLPolicies(t *testing.T) {

@@ -1,9 +1,9 @@
 package compute
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/google/compute"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptDisks(modules terraform.Modules) (disks []compute.Disk) {

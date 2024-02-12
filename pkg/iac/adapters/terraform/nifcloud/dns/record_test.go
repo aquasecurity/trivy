@@ -3,10 +3,10 @@ package dns
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/dns"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/dns"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptRecords(t *testing.T) {

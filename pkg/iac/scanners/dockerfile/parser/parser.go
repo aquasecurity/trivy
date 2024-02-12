@@ -11,10 +11,10 @@ import (
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/moby/buildkit/frontend/dockerfile/parser"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/providers/dockerfile"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/dockerfile"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 var _ options.ConfigurableParser = (*Parser)(nil)

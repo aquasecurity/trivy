@@ -1,9 +1,9 @@
 package config
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/config"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/config"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getConfigurationAggregator(ctx parser2.FileContext) config.ConfigurationAggregrator {

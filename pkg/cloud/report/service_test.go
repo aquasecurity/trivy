@@ -3,18 +3,19 @@ package report
 import (
 	"bytes"
 	"context"
-	"github.com/aquasecurity/trivy/pkg/clock"
 	"testing"
 	"time"
+
+	"github.com/aquasecurity/trivy/pkg/clock"
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_ServiceReport(t *testing.T) {

@@ -1,8 +1,8 @@
 package kms
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/kms"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/kms"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func Adapt(modules terraform.Modules) kms.KMS {

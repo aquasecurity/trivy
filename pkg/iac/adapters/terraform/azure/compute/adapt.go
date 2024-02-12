@@ -3,9 +3,9 @@ package compute
 import (
 	"encoding/base64"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/compute"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 const AzureVirtualMachine = "azurerm_virtual_machine"

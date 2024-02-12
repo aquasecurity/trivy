@@ -1,7 +1,6 @@
 package aws
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/apigateway"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/athena"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/cloudfront"
@@ -33,6 +32,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/sqs"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/ssm"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws/workspaces"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 

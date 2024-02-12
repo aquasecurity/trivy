@@ -4,9 +4,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/s3"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 var aclConvertRegex = regexp.MustCompile(`[A-Z][^A-Z]*`)

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Unmarshaller interface {

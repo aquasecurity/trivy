@@ -3,7 +3,7 @@ package parser
 import (
 	"fmt"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type CFReference struct {

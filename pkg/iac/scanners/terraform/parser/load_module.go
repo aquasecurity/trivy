@@ -10,8 +10,8 @@ import (
 
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 type moduleLoadError struct {
