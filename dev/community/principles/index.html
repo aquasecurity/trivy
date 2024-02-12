@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/community/governance/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/community/principles/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Governance - Trivy</title>
+        <title>Principles - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#trivy-project-governance" class="md-skip">
+        <a href="#trivy-project-principles" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@ You're not viewing the latest version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Governance
+              Principles
             
           </span>
         </div>
@@ -3336,12 +3336,12 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Governance
+          Principles
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Governance
+        Principles
       </a>
       
         
@@ -3408,9 +3408,36 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#governance-model" class="md-nav__link">
-    Governance Model
+  <a href="#out-of-scope-features" class="md-nav__link">
+    Out of Scope Features
   </a>
+  
+    <nav class="md-nav" aria-label="Out of Scope Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#runtime-security" class="md-nav__link">
+    Runtime Security
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intentional-attacks" class="md-nav__link">
+    Intentional Attacks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-interface" class="md-nav__link">
+    User Interface
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3644,9 +3671,36 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#governance-model" class="md-nav__link">
-    Governance Model
+  <a href="#out-of-scope-features" class="md-nav__link">
+    Out of Scope Features
   </a>
+  
+    <nav class="md-nav" aria-label="Out of Scope Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#runtime-security" class="md-nav__link">
+    Runtime Security
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intentional-attacks" class="md-nav__link">
+    Intentional Attacks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-interface" class="md-nav__link">
+    User Interface
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3662,13 +3716,13 @@ You're not viewing the latest version.
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/community/governance.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/community/principles.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
 
-<h1 id="trivy-project-governance">Trivy Project Governance</h1>
+<h1 id="trivy-project-principles">Trivy Project Principles</h1>
 <p>This document outlines the guiding principles and governance framework for the Trivy project.</p>
 <h2 id="core-principles">Core Principles</h2>
 <p>Trivy is a security scanner focused on static analysis and designed with simplicity and security at its core.
@@ -3694,9 +3748,16 @@ It can, however, produce and output intermediate representations like SBOMs for 
 <h3 id="detecting-unintended-states">Detecting Unintended States</h3>
 <p>Trivy is designed to detect unintended vulnerable states in projects, such as the use of vulnerable versions of dependencies or misconfigurations in Infrastructure as Code (IaC) that may unintentionally expose servers to the internet.
 The focus is on identifying developer mistakes or undesirable states, not on detecting intentional attacks, such as malicious images and malware.</p>
-<h2 id="governance-model">Governance Model</h2>
-<p>The governance of Trivy is collaborative, valuing community input while recognizing Aqua Security's role in making final decisions.
-This model ensures that decisions, proposals, and enhancements align with Trivy's mission to provide a secure, simple, and independent security scanning solution, adhering to the project's core principles.</p>
+<h2 id="out-of-scope-features">Out of Scope Features</h2>
+<p>Aqua Security offers a premium version with several features not available in the open-source Trivy project. 
+While detailed information can be found <a href="https://github.com/aquasecurity/resources/blob/main/trivy-aqua.md">here</a>, it's beneficial to highlight specific functionalities frequently inquired about:</p>
+<h3 id="runtime-security">Runtime Security</h3>
+<p>As mentioned in <a href="#static-analysis-no-runtime-required">the Core Principles</a>, Trivy is a static analysis security scanner, making runtime security outside its scope.
+Runtime security needs are addressed by <a href="https://github.com/aquasecurity/tracee">Tracee</a> or <a href="">the commercial version of Aqua Security</a>.</p>
+<h3 id="intentional-attacks">Intentional Attacks</h3>
+<p>As mentioned in <a href="#detecting-unintended-states">the Core Principles</a>, detection of intentional attacks, such as malware or malicious container images, is not covered by Trivy and is supported in <a href="https://www.aquasec.com/">the commercial version</a>.</p>
+<h3 id="user-interface">User Interface</h3>
+<p>Trivy primarily operates via CLI for displaying results, with a richer UI available in <a href="https://www.aquasec.com/">the commercial version</a>.</p>
 
               
             </article>
