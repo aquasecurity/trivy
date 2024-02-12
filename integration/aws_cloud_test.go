@@ -8,13 +8,14 @@ import (
 	"testing"
 	"time"
 
-	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
-	"github.com/aquasecurity/trivy/pkg/flag"
 	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	testcontainers "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/localstack"
+
+	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
+	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
 func TestAwsCommandRun(t *testing.T) {

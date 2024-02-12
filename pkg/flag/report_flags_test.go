@@ -185,6 +185,8 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Cleanup(viper.Reset)
+
 			level := zap.WarnLevel
 			if tt.fields.debug {
 				level = zap.DebugLevel
@@ -192,34 +194,34 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			core, obs := observer.New(level)
 			log.Logger = zap.New(core).Sugar()
 
-			viper.Set(flag.FormatFlag.ConfigName, string(tt.fields.format))
-			viper.Set(flag.TemplateFlag.ConfigName, tt.fields.template)
-			viper.Set(flag.DependencyTreeFlag.ConfigName, tt.fields.dependencyTree)
-			viper.Set(flag.ListAllPkgsFlag.ConfigName, tt.fields.listAllPkgs)
-			viper.Set(flag.IgnoreFileFlag.ConfigName, tt.fields.ignoreFile)
-			viper.Set(flag.IgnoreUnfixedFlag.ConfigName, tt.fields.ignoreUnfixed)
-			viper.Set(flag.IgnorePolicyFlag.ConfigName, tt.fields.ignorePolicy)
-			viper.Set(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
-			viper.Set(flag.ExitOnEOLFlag.ConfigName, tt.fields.exitOnEOSL)
-			viper.Set(flag.OutputFlag.ConfigName, tt.fields.output)
-			viper.Set(flag.OutputPluginArgFlag.ConfigName, tt.fields.outputPluginArgs)
-			viper.Set(flag.SeverityFlag.ConfigName, tt.fields.severities)
-			viper.Set(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
+			setValue(flag.FormatFlag.ConfigName, string(tt.fields.format))
+			setValue(flag.TemplateFlag.ConfigName, tt.fields.template)
+			setValue(flag.DependencyTreeFlag.ConfigName, tt.fields.dependencyTree)
+			setValue(flag.ListAllPkgsFlag.ConfigName, tt.fields.listAllPkgs)
+			setValue(flag.IgnoreFileFlag.ConfigName, tt.fields.ignoreFile)
+			setValue(flag.IgnoreUnfixedFlag.ConfigName, tt.fields.ignoreUnfixed)
+			setValue(flag.IgnorePolicyFlag.ConfigName, tt.fields.ignorePolicy)
+			setValue(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
+			setValue(flag.ExitOnEOLFlag.ConfigName, tt.fields.exitOnEOSL)
+			setValue(flag.OutputFlag.ConfigName, tt.fields.output)
+			setValue(flag.OutputPluginArgFlag.ConfigName, tt.fields.outputPluginArgs)
+			setValue(flag.SeverityFlag.ConfigName, tt.fields.severities)
+			setValue(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
 
 			// Assert options
 			f := &flag.ReportFlagGroup{
-				Format:          &flag.FormatFlag,
-				Template:        &flag.TemplateFlag,
-				DependencyTree:  &flag.DependencyTreeFlag,
-				ListAllPkgs:     &flag.ListAllPkgsFlag,
-				IgnoreFile:      &flag.IgnoreFileFlag,
-				IgnorePolicy:    &flag.IgnorePolicyFlag,
-				ExitCode:        &flag.ExitCodeFlag,
-				ExitOnEOL:       &flag.ExitOnEOLFlag,
-				Output:          &flag.OutputFlag,
-				OutputPluginArg: &flag.OutputPluginArgFlag,
-				Severity:        &flag.SeverityFlag,
-				Compliance:      &flag.ComplianceFlag,
+				Format:          flag.FormatFlag.Clone(),
+				Template:        flag.TemplateFlag.Clone(),
+				DependencyTree:  flag.DependencyTreeFlag.Clone(),
+				ListAllPkgs:     flag.ListAllPkgsFlag.Clone(),
+				IgnoreFile:      flag.IgnoreFileFlag.Clone(),
+				IgnorePolicy:    flag.IgnorePolicyFlag.Clone(),
+				ExitCode:        flag.ExitCodeFlag.Clone(),
+				ExitOnEOL:       flag.ExitOnEOLFlag.Clone(),
+				Output:          flag.OutputFlag.Clone(),
+				OutputPluginArg: flag.OutputPluginArgFlag.Clone(),
+				Severity:        flag.SeverityFlag.Clone(),
+				Compliance:      flag.ComplianceFlag.Clone(),
 			}
 
 			got, err := f.ToOptions()

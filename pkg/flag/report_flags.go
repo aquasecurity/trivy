@@ -22,7 +22,7 @@ import (
 //	dependency-tree: true
 //	severity: HIGH,CRITICAL
 var (
-	FormatFlag = Flag{
+	FormatFlag = Flag[string]{
 		Name:       "format",
 		ConfigName: "format",
 		Shorthand:  "f",
@@ -30,70 +30,65 @@ var (
 		Values:     xstrings.ToStringSlice(types.SupportedFormats),
 		Usage:      "format",
 	}
-	ReportFormatFlag = Flag{
+	ReportFormatFlag = Flag[string]{
 		Name:       "report",
 		ConfigName: "report",
 		Default:    "all",
-		Values:     []string{"all", "summary"},
-		Usage:      "specify a report format for the output",
+		Values: []string{
+			"all",
+			"summary",
+		},
+		Usage: "specify a report format for the output",
 	}
-	TemplateFlag = Flag{
+	TemplateFlag = Flag[string]{
 		Name:       "template",
 		ConfigName: "template",
 		Shorthand:  "t",
-		Default:    "",
 		Usage:      "output template",
 	}
-	DependencyTreeFlag = Flag{
+	DependencyTreeFlag = Flag[bool]{
 		Name:       "dependency-tree",
 		ConfigName: "dependency-tree",
-		Default:    false,
 		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
 	}
-	ListAllPkgsFlag = Flag{
+	ListAllPkgsFlag = Flag[bool]{
 		Name:       "list-all-pkgs",
 		ConfigName: "list-all-pkgs",
-		Default:    false,
 		Usage:      "enabling the option will output all packages regardless of vulnerability",
 	}
-	IgnoreFileFlag = Flag{
+	IgnoreFileFlag = Flag[string]{
 		Name:       "ignorefile",
 		ConfigName: "ignorefile",
 		Default:    result.DefaultIgnoreFile,
 		Usage:      "specify .trivyignore file",
 	}
-	IgnorePolicyFlag = Flag{
+	IgnorePolicyFlag = Flag[string]{
 		Name:       "ignore-policy",
 		ConfigName: "ignore-policy",
-		Default:    "",
 		Usage:      "specify the Rego file path to evaluate each vulnerability",
 	}
-	ExitCodeFlag = Flag{
+	ExitCodeFlag = Flag[int]{
 		Name:       "exit-code",
 		ConfigName: "exit-code",
-		Default:    0,
 		Usage:      "specify exit code when any security issues are found",
 	}
-	ExitOnEOLFlag = Flag{
+	ExitOnEOLFlag = Flag[int]{
 		Name:       "exit-on-eol",
 		ConfigName: "exit-on-eol",
-		Default:    0,
 		Usage:      "exit with the specified code when the OS reaches end of service/life",
 	}
-	OutputFlag = Flag{
+	OutputFlag = Flag[string]{
 		Name:       "output",
 		ConfigName: "output",
 		Shorthand:  "o",
-		Default:    "",
 		Usage:      "output file name",
 	}
-	OutputPluginArgFlag = Flag{
+	OutputPluginArgFlag = Flag[string]{
 		Name:       "output-plugin-arg",
 		ConfigName: "output-plugin-arg",
-		Default:    "",
 		Usage:      "[EXPERIMENTAL] output plugin arguments",
 	}
-	SeverityFlag = Flag{
+	SeverityFlag = Flag[[]string]{
 		Name:       "severity",
 		ConfigName: "severity",
 		Shorthand:  "s",
@@ -101,10 +96,9 @@ var (
 		Values:     dbTypes.SeverityNames,
 		Usage:      "severities of security issues to be displayed",
 	}
-	ComplianceFlag = Flag{
+	ComplianceFlag = Flag[string]{
 		Name:       "compliance",
 		ConfigName: "scan.compliance",
-		Default:    "",
 		Usage:      "compliance report to generate",
 	}
 )
@@ -112,19 +106,19 @@ var (
 // ReportFlagGroup composes common printer flag structs
 // used for commands requiring reporting logic.
 type ReportFlagGroup struct {
-	Format          *Flag
-	ReportFormat    *Flag
-	Template        *Flag
-	DependencyTree  *Flag
-	ListAllPkgs     *Flag
-	IgnoreFile      *Flag
-	IgnorePolicy    *Flag
-	ExitCode        *Flag
-	ExitOnEOL       *Flag
-	Output          *Flag
-	OutputPluginArg *Flag
-	Severity        *Flag
-	Compliance      *Flag
+	Format          *Flag[string]
+	ReportFormat    *Flag[string]
+	Template        *Flag[string]
+	DependencyTree  *Flag[bool]
+	ListAllPkgs     *Flag[bool]
+	IgnoreFile      *Flag[string]
+	IgnorePolicy    *Flag[string]
+	ExitCode        *Flag[int]
+	ExitOnEOL       *Flag[int]
+	Output          *Flag[string]
+	OutputPluginArg *Flag[string]
+	Severity        *Flag[[]string]
+	Compliance      *Flag[string]
 }
 
 type ReportOptions struct {
@@ -145,19 +139,19 @@ type ReportOptions struct {
 
 func NewReportFlagGroup() *ReportFlagGroup {
 	return &ReportFlagGroup{
-		Format:          &FormatFlag,
-		ReportFormat:    &ReportFormatFlag,
-		Template:        &TemplateFlag,
-		DependencyTree:  &DependencyTreeFlag,
-		ListAllPkgs:     &ListAllPkgsFlag,
-		IgnoreFile:      &IgnoreFileFlag,
-		IgnorePolicy:    &IgnorePolicyFlag,
-		ExitCode:        &ExitCodeFlag,
-		ExitOnEOL:       &ExitOnEOLFlag,
-		Output:          &OutputFlag,
-		OutputPluginArg: &OutputPluginArgFlag,
-		Severity:        &SeverityFlag,
-		Compliance:      &ComplianceFlag,
+		Format:          FormatFlag.Clone(),
+		ReportFormat:    ReportFormatFlag.Clone(),
+		Template:        TemplateFlag.Clone(),
+		DependencyTree:  DependencyTreeFlag.Clone(),
+		ListAllPkgs:     ListAllPkgsFlag.Clone(),
+		IgnoreFile:      IgnoreFileFlag.Clone(),
+		IgnorePolicy:    IgnorePolicyFlag.Clone(),
+		ExitCode:        ExitCodeFlag.Clone(),
+		ExitOnEOL:       ExitOnEOLFlag.Clone(),
+		Output:          OutputFlag.Clone(),
+		OutputPluginArg: OutputPluginArgFlag.Clone(),
+		Severity:        SeverityFlag.Clone(),
+		Compliance:      ComplianceFlag.Clone(),
 	}
 }
 
@@ -165,8 +159,8 @@ func (f *ReportFlagGroup) Name() string {
 	return "Report"
 }
 
-func (f *ReportFlagGroup) Flags() []*Flag {
-	return []*Flag{
+func (f *ReportFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.Format,
 		f.ReportFormat,
 		f.Template,
@@ -184,10 +178,14 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 }
 
 func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
-	format := getUnderlyingString[types.Format](f.Format)
-	template := getString(f.Template)
-	dependencyTree := getBool(f.DependencyTree)
-	listAllPkgs := getBool(f.ListAllPkgs)
+	if err := parseFlags(f); err != nil {
+		return ReportOptions{}, err
+	}
+
+	format := types.Format(f.Format.Value())
+	template := f.Template.Value()
+	dependencyTree := f.DependencyTree.Value()
+	listAllPkgs := f.ListAllPkgs.Value()
 
 	if template != "" {
 		if format == "" {
@@ -222,13 +220,13 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 		listAllPkgs = true
 	}
 
-	cs, err := loadComplianceTypes(getString(f.Compliance))
+	cs, err := loadComplianceTypes(f.Compliance.Value())
 	if err != nil {
 		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
 	}
 
 	var outputPluginArgs []string
-	if arg := getString(f.OutputPluginArg); arg != "" {
+	if arg := f.OutputPluginArg.Value(); arg != "" {
 		outputPluginArgs, err = shellwords.Parse(arg)
 		if err != nil {
 			return ReportOptions{}, xerrors.Errorf("unable to parse output plugin argument: %w", err)
@@ -237,17 +235,17 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 
 	return ReportOptions{
 		Format:           format,
-		ReportFormat:     getString(f.ReportFormat),
+		ReportFormat:     f.ReportFormat.Value(),
 		Template:         template,
 		DependencyTree:   dependencyTree,
 		ListAllPkgs:      listAllPkgs,
-		IgnoreFile:       getString(f.IgnoreFile),
-		ExitCode:         getInt(f.ExitCode),
-		ExitOnEOL:        getInt(f.ExitOnEOL),
-		IgnorePolicy:     getString(f.IgnorePolicy),
-		Output:           getString(f.Output),
+		IgnoreFile:       f.IgnoreFile.Value(),
+		ExitCode:         f.ExitCode.Value(),
+		ExitOnEOL:        f.ExitOnEOL.Value(),
+		IgnorePolicy:     f.IgnorePolicy.Value(),
+		Output:           f.Output.Value(),
 		OutputPluginArgs: outputPluginArgs,
-		Severities:       toSeverity(getStringSlice(f.Severity)),
+		Severities:       toSeverity(f.Severity.Value()),
 		Compliance:       cs,
 	}, nil
 }

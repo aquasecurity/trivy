@@ -1,0 +1,36 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+spec:
+  {{- if and .Values.ingress.ingressClassName (eq "true" (include "common.ingress.supportsIngressClassname" .)) }}
+  ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.hostnames }}
+    - host: {{ . }}
+      http:
+        paths:
+          - path: /
+            {{- if $.Values.ingress.publicPaths -}}
+              (
+                {{- range $index,$path := $.Values.ingress.publicPaths }}
+                  {{- if $index }}|{{ end }}
+                  {{- $path }}
+                {{- end -}}
+              )
+            {{- end }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "common.names.fullname" $ }}
+                port:
+                  name: http
+    {{- end }}
+# tls: []
+#   hosts:
+#     - hollow-metadataservice.mydomain
+#   secretName: hollow-metadataservice-example-tls
+{{- end }}

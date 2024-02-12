@@ -74,9 +74,9 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 
 			// Assert options
 			f := &flag.DBFlagGroup{
-				DownloadDBOnly: &flag.DownloadDBOnlyFlag,
-				SkipDBUpdate:   &flag.SkipDBUpdateFlag,
-				Light:          &flag.LightFlag,
+				DownloadDBOnly: flag.DownloadDBOnlyFlag.Clone(),
+				SkipDBUpdate:   flag.SkipDBUpdateFlag.Clone(),
+				Light:          flag.LightFlag.Clone(),
 			}
 			got, err := f.ToOptions()
 			tt.assertion(t, err)
