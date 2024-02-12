@@ -2,7 +2,9 @@ package report
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -71,7 +73,11 @@ func (tw TableWriter) Write(ctx context.Context, report Report) error {
 
 // updateTargetContext add context namespace, kind and name to the target
 func updateTargetContext(r *Resource) {
+	targetName := fmt.Sprintf("namespace: %s, %s: %s", r.Namespace, strings.ToLower(r.Kind), r.Name)
+	if r.Kind == "NodeComponents" {
+		targetName = fmt.Sprintf("node: %s", r.Name)
+	}
 	for i := range r.Report.Results {
-		r.Report.Results[i].Target = r.fullname()
+		r.Report.Results[i].Target = targetName
 	}
 }
