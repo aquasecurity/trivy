@@ -250,6 +250,8 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 		root.Type = cdx.ComponentTypeContainer
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRepository:
 		root.Type = cdx.ComponentTypeApplication
+	case ftypes.ArtifactCycloneDX:
+		return toCoreComponent(r.CycloneDX.Metadata.Component)
 	}
 
 	if r.Metadata.Size != 0 {
@@ -395,4 +397,25 @@ func filterProperties(props []core.Property) []core.Property {
 	return lo.Filter(props, func(property core.Property, index int) bool {
 		return !(property.Value == "" || (property.Name == PropertySrcEpoch && property.Value == "0"))
 	})
+}
+
+func toCoreComponent(c ftypes.Component) (*core.Component, error) {
+	var props []core.Property
+	for _, prop := range c.Properties {
+		props = append(props, core.Property{
+			Name:  prop.Name,
+			Value: prop.Value,
+		})
+	}
+	p, err := purl.FromString(c.PackageURL)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse purl: %w", err)
+	}
+	return &core.Component{
+		Name:       c.Name,
+		Group:      c.Group,
+		PackageURL: p,
+		Type:       cdx.ComponentType(c.Type),
+		Properties: props,
+	}, nil
 }

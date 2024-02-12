@@ -26,8 +26,15 @@ type Component struct {
 	MIMEType   string        `json:"mime-type,omitempty" xml:"mime-type,attr,omitempty"`
 	Type       ComponentType `json:"type" xml:"type,attr"`
 	Name       string        `json:"name" xml:"name"`
+	Group      string        `json:"group" xml:"group"`
 	Version    string        `json:"version,omitempty" xml:"version,omitempty"`
 	PackageURL string        `json:"purl,omitempty" xml:"purl,omitempty"`
+	Properties []Property    `json:"properties,omitempty" xml:"properties>property,omitempty"`
+}
+
+type Property struct {
+	Name  string `json:"name" xml:"name,attr"`
+	Value string `json:"value" xml:",chardata"`
 }
 
 type (
