@@ -1,9 +1,13 @@
 # Custom Policies with Rego
 
+This tutorial uses the Trivy [custom policies documentation](https://aquasecurity.github.io/trivy/v0.49/docs/scanner/misconfiguration/custom) to showcase how to write a custom policy for a Dockerfile.
+
 The Schemas that Trivy imports for misconfiguration scanning can be found here: https://github.com/aquasecurity/defsec/tree/master/pkg/rego/schemas
 
 This tutorial will make use of the [dockerfile.json schema](https://github.com/aquasecurity/defsec/tree/master/pkg/rego/schemas). Alternatively, users can use the [Schema Explorer.](https://aquasecurity.github.io/trivy-schemas/)
 Either schema listed in the directory is needed to verify our configuration file. 
+
+## Specify Trivy metadata
 
 First, we need to specify metadata for Trivy:
 ```
