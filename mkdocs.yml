@@ -178,7 +178,7 @@ nav:
     - Production and Clouds: ecosystem/prod.md
     - Reporting: ecosystem/reporting.md
   - Contributing:
-      - Governance: community/governance.md
+      - Principles: community/principles.md
       - How to contribute:
           - Issues: community/contribute/issue.md
           - Discussions: community/contribute/discussion.md
