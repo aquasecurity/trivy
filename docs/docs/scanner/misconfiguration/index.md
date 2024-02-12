@@ -358,4 +358,22 @@ This can be repeated for specifying multiple packages.
 trivy conf --policy ./policy --namespaces main --namespaces user ./configs
 ```
 
+### Private terraform registries
+Trivy can download terraform code from private registries.
+To pass credentials you must use the `TF_TOKEN_` environment variables.
+You cannot use a `.terraformrc` or `terraform.rc` file, these are not supported by trivy yet.
+
+From the terraform docs:
+
+> Environment variable names should have the prefix TF_TOKEN_ added to the domain name, with periods encoded as underscores.
+> For example, the value of a variable named `TF_TOKEN_app_terraform_io` will be used as a bearer authorization token when the CLI makes service requests to the hostname `app.terraform.io`.
+>
+> You must convert domain names containing non-ASCII characters to their punycode equivalent with an ACE prefix.
+> For example, token credentials for `例えば.com` must be set in a variable called `TF_TOKEN_xn--r8j3dr99h_com`.
+>
+> Hyphens are also valid within host names but usually invalid as variable names and may be encoded as double underscores.
+> For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--caf-dma_fr or TF_TOKEN_xn____caf__dma_fr.
+
+If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.
+
 [custom]: custom/index.md
