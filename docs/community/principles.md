@@ -1,4 +1,4 @@
-# Trivy Project Governance
+# Trivy Project Principles
 This document outlines the guiding principles and governance framework for the Trivy project.
 
 ## Core Principles
@@ -34,6 +34,20 @@ Trivy serves as a tool with opinions on security, used to warn users about poten
 Trivy is designed to detect unintended vulnerable states in projects, such as the use of vulnerable versions of dependencies or misconfigurations in Infrastructure as Code (IaC) that may unintentionally expose servers to the internet.
 The focus is on identifying developer mistakes or undesirable states, not on detecting intentional attacks, such as malicious images and malware.
 
-## Governance Model
-The governance of Trivy is collaborative, valuing community input while recognizing Aqua Security's role in making final decisions.
-This model ensures that decisions, proposals, and enhancements align with Trivy's mission to provide a secure, simple, and independent security scanning solution, adhering to the project's core principles.
+## Out of Scope Features
+Aqua Security offers a premium version with several features not available in the open-source Trivy project. 
+While detailed information can be found [here][trivy-aqua], it's beneficial to highlight specific functionalities frequently inquired about:
+
+### Runtime Security
+As mentioned in [the Core Principles](#static-analysis-no-runtime-required), Trivy is a static analysis security scanner, making runtime security outside its scope.
+Runtime security needs are addressed by [Tracee][tracee] or [the commercial version of Aqua Security]().
+
+### Intentional Attacks
+As mentioned in [the Core Principles](#detecting-unintended-states), detection of intentional attacks, such as malware or malicious container images, is not covered by Trivy and is supported in [the commercial version][aqua].
+
+### User Interface
+Trivy primarily operates via CLI for displaying results, with a richer UI available in [the commercial version][aqua].
+
+[trivy-aqua]: https://github.com/aquasecurity/resources/blob/main/trivy-aqua.md
+[tracee]: https://github.com/aquasecurity/tracee
+[aqua]: https://www.aquasec.com/
