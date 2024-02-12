@@ -249,8 +249,6 @@ github.com/MakeNowJust/heredoc v1.0.0 h1:cXCdzVdstXyiTqTvfqk9SDHpKNjxuom+DOlyEeQ
 github.com/MakeNowJust/heredoc v1.0.0/go.mod h1:mG5amYoWBHf8vpLOuehzbGGw0EHxpZZ6lCpQ4fNJ8LE=
 github.com/Masterminds/goutils v1.1.1 h1:5nUrii3FMTL5diU80unEVvNevw1nH4+ZV4DSLVJLSYI=
 github.com/Masterminds/goutils v1.1.1/go.mod h1:8cTjp+g8YejhMuvIA5y2vz3BpJxksy863GQaJW2MFNU=
-github.com/Masterminds/semver v1.5.0 h1:H65muMkzWKEuNDnfl9d70GUjFniHKHRbFPGBuZ3QEww=
-github.com/Masterminds/semver v1.5.0/go.mod h1:MB6lktGJrhw8PrUyiEoblNEGEQ+RzHPF078ddwwvV3Y=
 github.com/Masterminds/semver/v3 v3.2.0/go.mod h1:qvl/7zhW3nngYb5+80sSMF+FG2BjYrf8m9wsX0PNOMQ=
 github.com/Masterminds/semver/v3 v3.2.1 h1:RN9w6+7QoMeJVGyfmbcgs28Br8cvmnucEXnY0rYXWg0=
 github.com/Masterminds/semver/v3 v3.2.1/go.mod h1:qvl/7zhW3nngYb5+80sSMF+FG2BjYrf8m9wsX0PNOMQ=
@@ -323,8 +321,8 @@ github.com/apparentlymart/go-textseg/v15 v15.0.0 h1:uYvfpb3DyLSCGWnctWKGj857c6ew
 github.com/apparentlymart/go-textseg/v15 v15.0.0/go.mod h1:K8XmNZdhEBkdlyDdvbmmsvpAG721bKi0joRfFdHIWJ4=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.94.1 h1:lk44bfUltm0f0Dw4DbO3Ka9d/bf3N8cWclSdHXMyKF4=
-github.com/aquasecurity/defsec v0.94.1/go.mod h1:wiX9BX0SOG0ZWjVIPYGPl46fyO3Gu8lJnk4rmhFR7IA=
+github.com/aquasecurity/defsec v0.94.2-0.20240119001230-c2d65f49dfeb h1:7x3aMSnQhXJLcFOCivOmNBk0zAVLKkEk5UWkrRxxHIk=
+github.com/aquasecurity/defsec v0.94.2-0.20240119001230-c2d65f49dfeb/go.mod h1:wiX9BX0SOG0ZWjVIPYGPl46fyO3Gu8lJnk4rmhFR7IA=
 github.com/aquasecurity/go-dep-parser v0.0.0-20240208080026-8cc7d408bce4 h1:6qs80w4qPbPnF6GhbIifSANqfCrq90CKtSUBaw6p0z0=
 github.com/aquasecurity/go-dep-parser v0.0.0-20240208080026-8cc7d408bce4/go.mod h1:P0PmelcN1ABKJrDzRbPnn6hK7RvgI+xmjiV/9uPaNnY=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -350,8 +348,6 @@ github.com/aquasecurity/trivy-aws v0.7.1 h1:XElKZsP9Hqe2JVekQgGCIkFtgRgVlP+80wKL
 github.com/aquasecurity/trivy-aws v0.7.1/go.mod h1:bJT7pzsqo9q5yi3arJSt789bAH0eDb7c+niFYMBNcMQ=
 github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d h1:fjI9mkoTUAkbGqpzt9nJsO24RAdfG+ZSiLFj0G2jO8c=
 github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d/go.mod h1:cj9/QmD9N3OZnKQMp+/DvdV+ym3HyIkd4e+F0ZM3ZGs=
-github.com/aquasecurity/trivy-iac v0.8.0 h1:NKFhk/BTwQ0jIh4t74V8+6UIGUvPlaxO9HPlSMQi3fo=
-github.com/aquasecurity/trivy-iac v0.8.0/go.mod h1:ARiMeNqcaVWOXJmp8hmtMnNm/Jd836IOmDBUW5r4KEk=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48 h1:JVgBIuIYbwG+ekC5lUHUpGJboPYiCcxiz06RCtz8neI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.6.3-0.20240118072219-c433b06f98e1 h1:/LsIHMQJ4SOxZeib/bvLP7S3YDTXJVIsQyS4kIIP0GQ=
