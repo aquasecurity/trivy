@@ -6,14 +6,13 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
+
 	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-
-	"github.com/samber/lo"
-
-	"golang.org/x/xerrors"
 )
 
 type cargoPkg struct {

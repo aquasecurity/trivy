@@ -3,13 +3,13 @@ package pom
 import (
 	"encoding/xml"
 	"fmt"
-	"golang.org/x/xerrors"
 	"io"
 	"maps"
 	"reflect"
 	"strings"
 
 	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
@@ -52,7 +52,7 @@ func (p pom) projectProperties() map[string]string {
 	props["version"] = p.content.Version
 
 	// https://maven.apache.org/pom.html#properties
-	projectProperties := map[string]string{}
+	projectProperties := make(map[string]string)
 	for k, v := range props {
 		if strings.HasPrefix(k, "project.") {
 			continue
@@ -71,7 +71,7 @@ func (p pom) projectProperties() map[string]string {
 }
 
 func (p pom) listProperties(val reflect.Value) map[string]string {
-	props := map[string]string{}
+	props := make(map[string]string)
 	for i := 0; i < val.NumField(); i++ {
 		f := val.Type().Field(i)
 
@@ -264,7 +264,7 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 	// To avoid shadow adding exclusions to top pom's,
 	// we need to initialize a new map for each new artifact
 	// See `exclusions in child` test for more information
-	exclusions := map[string]struct{}{}
+	exclusions := make(map[string]struct{})
 	if opts.exclusions != nil {
 		exclusions = maps.Clone(opts.exclusions)
 	}
@@ -323,22 +323,23 @@ func (deps *pomDependencies) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) er
 			return xerrors.Errorf("XML decode error: %w", err)
 		}
 
-		switch t := token.(type) {
-		case xml.StartElement:
-			if t.Name.Local == "dependency" {
-				var dep pomDependency
-				dep.StartLine, _ = d.InputPos() // <dependency> tag starts
+		t, ok := token.(xml.StartElement)
+		if !ok {
+			continue
+		}
 
-				// Decode the <dependency> element
-				err = d.DecodeElement(&dep, &t)
-				if err != nil {
-					return xerrors.Errorf("Error decoding dependency: %w")
-				}
+		if t.Name.Local == "dependency" {
+			var dep pomDependency
+			dep.StartLine, _ = d.InputPos() // <dependency> tag starts
 
-				dep.EndLine, _ = d.InputPos() // <dependency> tag ends
-
-				deps.Dependency = append(deps.Dependency, dep)
+			// Decode the <dependency> element
+			err = d.DecodeElement(&dep, &t)
+			if err != nil {
+				return xerrors.Errorf("Error decoding dependency: %w")
 			}
+
+			dep.EndLine, _ = d.InputPos() // <dependency> tag ends
+			deps.Dependency = append(deps.Dependency, dep)
 		}
 	}
 	return nil

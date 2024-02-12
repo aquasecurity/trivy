@@ -1,13 +1,14 @@
 package pipenv
 
 import (
-	"github.com/liamg/jfather"
 	"io"
 	"strings"
 
+	"github.com/liamg/jfather"
+	"golang.org/x/xerrors"
+
 	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"golang.org/x/xerrors"
 )
 
 type lockFile struct {

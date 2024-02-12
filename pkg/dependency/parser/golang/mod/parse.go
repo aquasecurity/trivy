@@ -66,7 +66,7 @@ func resolveVCSUrl(modulePath string) string {
 
 // Parse parses a go.mod file
 func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	libs := map[string]types.Library{}
+	libs := make(map[string]types.Library)
 
 	goModData, err := io.ReadAll(r)
 	if err != nil {

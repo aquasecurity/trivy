@@ -31,8 +31,8 @@ func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		return nil, nil, xerrors.Errorf("failed to decode cocoapods lock file: %s", err.Error())
 	}
 
-	parsedDeps := map[string]types.Library{} // dependency name => Library
-	directDeps := map[string][]string{}      // dependency name => slice of child dependency names
+	parsedDeps := make(map[string]types.Library) // dependency name => Library
+	directDeps := make(map[string][]string)      // dependency name => slice of child dependency names
 	for _, pod := range lock.Pods {
 		switch p := pod.(type) {
 		case string: // dependency with version number

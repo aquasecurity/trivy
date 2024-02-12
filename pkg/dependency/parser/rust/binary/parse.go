@@ -2,12 +2,12 @@
 package binary
 
 import (
+	rustaudit "github.com/microsoft/go-rustaudit"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	rustaudit "github.com/microsoft/go-rustaudit"
 )
 
 var (
@@ -45,25 +45,29 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	var libs []types.Library
 	var deps []types.Dependency
 	for _, pkg := range info.Packages {
-		if pkg.Kind == rustaudit.Runtime {
-			pkgID := utils.PackageID(pkg.Name, pkg.Version)
-			libs = append(libs, types.Library{
-				ID:       pkgID,
-				Name:     pkg.Name,
-				Version:  pkg.Version,
-				Indirect: !pkg.Root,
-			})
+		if pkg.Kind != rustaudit.Runtime {
+			continue
+		}
+		pkgID := utils.PackageID(pkg.Name, pkg.Version)
+		libs = append(libs, types.Library{
+			ID:       pkgID,
+			Name:     pkg.Name,
+			Version:  pkg.Version,
+			Indirect: !pkg.Root,
+		})
 
-			var childDeps []string
-			for _, dep_idx := range pkg.Dependencies {
-				dep := info.Packages[dep_idx]
-				if dep.Kind == rustaudit.Runtime {
-					childDeps = append(childDeps, utils.PackageID(dep.Name, dep.Version))
-				}
+		var childDeps []string
+		for _, dep_idx := range pkg.Dependencies {
+			dep := info.Packages[dep_idx]
+			if dep.Kind == rustaudit.Runtime {
+				childDeps = append(childDeps, utils.PackageID(dep.Name, dep.Version))
 			}
-			if len(childDeps) > 0 {
-				deps = append(deps, types.Dependency{ID: pkgID, DependsOn: childDeps})
-			}
+		}
+		if len(childDeps) > 0 {
+			deps = append(deps, types.Dependency{
+				ID:        pkgID,
+				DependsOn: childDeps,
+			})
 		}
 	}
 

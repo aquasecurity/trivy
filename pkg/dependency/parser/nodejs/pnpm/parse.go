@@ -8,10 +8,10 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/go-version/pkg/semver"
 	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/go-version/pkg/semver"
 )
 
 type PackageResolution struct {

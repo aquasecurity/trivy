@@ -35,7 +35,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("failed to decode .config file: %w", err)
 	}
 
-	libs := make([]types.Library, 0)
+	var libs []types.Library
 	for _, pkg := range cfgData.Packages {
 		if pkg.ID == "" || pkg.DevDependency {
 			continue

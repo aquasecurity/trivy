@@ -2,13 +2,13 @@ package npm
 
 import (
 	"fmt"
-	"github.com/samber/lo"
 	"io"
 	"path"
 	"sort"
 	"strings"
 
 	"github.com/liamg/jfather"
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
@@ -68,7 +68,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	var libs []types.Library
 	var deps []types.Dependency
 	if lockFile.LockfileVersion == 1 {
-		libs, deps = p.parseV1(lockFile.Dependencies, map[string]string{})
+		libs, deps = p.parseV1(lockFile.Dependencies, make(map[string]string))
 	} else {
 		libs, deps = p.parseV2(lockFile.Packages)
 	}
@@ -84,7 +84,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 	// https://docs.npmjs.com/cli/v9/configuring-npm/package-lock-json#packages
 	resolveLinks(packages)
 
-	directDeps := map[string]struct{}{}
+	directDeps := make(map[string]struct{})
 	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies, packages[""].DevDependencies) {
 		pkgPath := joinPaths(nodeModulesDir, name)
 		if _, ok := packages[pkgPath]; !ok {
@@ -233,10 +233,10 @@ func findDependsOn(pkgPath, depName string, packages map[string]Package) (string
 		if paths[i] != nodeModulesDir {
 			continue
 		}
-		path := joinPaths(paths[:i+1]...)
-		path = joinPaths(path, depName)
+		modulePath := joinPaths(paths[:i+1]...)
+		modulePath = joinPaths(modulePath, depName)
 
-		if dep, ok := packages[path]; ok {
+		if dep, ok := packages[modulePath]; ok {
 			return utils.PackageID(depName, dep.Version), nil
 		}
 	}
@@ -340,18 +340,18 @@ func isIndirectLib(pkgPath string, directDeps map[string]struct{}) bool {
 	return true
 }
 
-func pkgNameFromPath(path string) string {
+func pkgNameFromPath(pkgPath string) string {
 	// lock file contains path to dependency in `node_modules`. e.g.:
 	// node_modules/string-width
 	// node_modules/string-width/node_modules/strip-ansi
 	// we renamed to `node_modules` directory prefixes `workspace` when resolving Links
 	// node_modules/function1
 	// node_modules/nested_func/node_modules/debug
-	if index := strings.LastIndex(path, nodeModulesDir); index != -1 {
-		return path[index+len(nodeModulesDir)+1:]
+	if index := strings.LastIndex(pkgPath, nodeModulesDir); index != -1 {
+		return pkgPath[index+len(nodeModulesDir)+1:]
 	}
-	log.Logger.Warnf("npm %q package path doesn't have `node_modules` prefix", path)
-	return path
+	log.Logger.Warnf("npm %q package path doesn't have `node_modules` prefix", pkgPath)
+	return pkgPath
 }
 
 func joinPaths(paths ...string) string {

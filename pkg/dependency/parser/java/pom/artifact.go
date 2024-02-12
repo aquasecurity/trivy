@@ -122,7 +122,7 @@ func (v1 version) String() string {
 
 func evaluateVariable(s string, props map[string]string, seenProps []string) string {
 	if props == nil {
-		props = map[string]string{}
+		props = make(map[string]string)
 	}
 
 	for _, m := range varRegexp.FindAllStringSubmatch(s, -1) {

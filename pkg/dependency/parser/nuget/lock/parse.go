@@ -4,7 +4,6 @@ import (
 	"io"
 
 	"github.com/liamg/jfather"
-
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
@@ -43,7 +42,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("failed to decode packages.lock.json: %w", err)
 	}
 
-	libs := make([]types.Library, 0)
+	var libs []types.Library
 	depsMap := make(map[string][]string)
 	for _, targetContent := range lockFile.Targets {
 		for packageName, packageContent := range targetContent {
@@ -84,7 +83,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		}
 	}
 
-	deps := make([]types.Dependency, 0)
+	var deps []types.Dependency
 	for depId, dependsOn := range depsMap {
 		dep := types.Dependency{
 			ID:        depId,

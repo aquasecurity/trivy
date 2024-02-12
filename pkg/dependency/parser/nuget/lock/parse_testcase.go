@@ -15,7 +15,7 @@ var (
 		{ID: "Newtonsoft.Json@12.0.3", Name: "Newtonsoft.Json", Version: "12.0.3", Indirect: false, Locations: []types.Location{{StartLine: 5, EndLine: 10}}},
 		{ID: "NuGet.Frameworks@5.7.0", Name: "NuGet.Frameworks", Version: "5.7.0", Indirect: false, Locations: []types.Location{{StartLine: 11, EndLine: 16}}},
 	}
-	nuGetSimpleDeps = []types.Dependency{}
+	nuGetSimpleDeps []types.Dependency
 
 	// docker run --rm -i -t mcr.microsoft.com/dotnet/sdk:latest
 	// apt -y update && apt -y install jq
@@ -52,7 +52,7 @@ var (
 		{ID: "AWSSDK.Core@3.5.1.30", Name: "AWSSDK.Core", Version: "3.5.1.30", Indirect: false, Locations: []types.Location{{StartLine: 5, EndLine: 10}}},
 		{ID: "Newtonsoft.Json@12.0.3", Name: "Newtonsoft.Json", Version: "12.0.3", Indirect: false, Locations: []types.Location{{StartLine: 11, EndLine: 16}}},
 	}
-	nuGetLegacyDeps = []types.Dependency{}
+	nuGetLegacyDeps []types.Dependency
 
 	// docker run --rm -i -t mcr.microsoft.com/dotnet/sdk:latest
 	// apt -y update && apt -y install jq

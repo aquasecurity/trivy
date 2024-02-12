@@ -2,8 +2,10 @@ package jar
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 )
 
 var ArtifactNotFoundErr = xerrors.New("no artifact found")

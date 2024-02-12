@@ -7,11 +7,11 @@ import (
 	"github.com/BurntSushi/toml"
 	"golang.org/x/xerrors"
 
+	version "github.com/aquasecurity/go-pep440-version"
 	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	version "github.com/aquasecurity/go-pep440-version"
 )
 
 type Lockfile struct {
@@ -71,7 +71,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 // parseVersions stores all installed versions of libraries for use in dependsOn
 // as the dependencies of libraries use version range.
 func parseVersions(lockfile Lockfile) map[string][]string {
-	libVersions := map[string][]string{}
+	libVersions := make(map[string][]string)
 	for _, pkg := range lockfile.Packages {
 		if pkg.Category == "dev" {
 			continue

@@ -83,7 +83,7 @@ func New(opts ...Option) Sonatype {
 }
 
 func (s Sonatype) Exists(groupID, artifactID string) (bool, error) {
-	req, err := http.NewRequest(http.MethodGet, s.baseURL, nil)
+	req, err := http.NewRequest(http.MethodGet, s.baseURL, http.NoBody)
 	if err != nil {
 		return false, xerrors.Errorf("unable to initialize HTTP client: %w", err)
 	}
@@ -108,7 +108,7 @@ func (s Sonatype) Exists(groupID, artifactID string) (bool, error) {
 
 func (s Sonatype) SearchBySHA1(sha1 string) (jar.Properties, error) {
 
-	req, err := http.NewRequest(http.MethodGet, s.baseURL, nil)
+	req, err := http.NewRequest(http.MethodGet, s.baseURL, http.NoBody)
 	if err != nil {
 		return jar.Properties{}, xerrors.Errorf("unable to initialize HTTP client: %w", err)
 	}
@@ -154,7 +154,7 @@ func (s Sonatype) SearchBySHA1(sha1 string) (jar.Properties, error) {
 }
 
 func (s Sonatype) SearchByArtifactID(artifactID, _ string) (string, error) {
-	req, err := http.NewRequest(http.MethodGet, s.baseURL, nil)
+	req, err := http.NewRequest(http.MethodGet, s.baseURL, http.NoBody)
 	if err != nil {
 		return "", xerrors.Errorf("unable to initialize HTTP client: %w", err)
 	}

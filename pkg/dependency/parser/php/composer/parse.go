@@ -43,8 +43,8 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
-	libs := map[string]types.Library{}
-	foundDeps := map[string][]string{}
+	libs := make(map[string]types.Library)
+	foundDeps := make(map[string][]string)
 	for _, pkg := range lockFile.Packages {
 		lib := types.Library{
 			ID:       utils.PackageID(pkg.Name, pkg.Version),

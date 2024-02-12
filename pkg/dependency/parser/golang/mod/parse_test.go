@@ -26,7 +26,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name:    "without go version",
-			file:    "testdata/no-go-version/go.mod",
+			file:    "testdata/no-go-version/gomod",
 			replace: true,
 			want:    GoModNoGoVersion,
 		},

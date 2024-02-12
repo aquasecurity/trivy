@@ -1,14 +1,16 @@
 package swift
 
 import (
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	"github.com/liamg/jfather"
-	"golang.org/x/xerrors"
 	"io"
 	"sort"
 	"strings"
+
+	"github.com/liamg/jfather"
+	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 )
 
 // Parser is a parser for Package.resolved files

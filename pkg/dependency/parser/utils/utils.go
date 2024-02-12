@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"golang.org/x/exp/maps"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 )
 
 func UniqueStrings(ss []string) []string {
 	var results []string
-	uniq := map[string]struct{}{}
+	uniq := make(map[string]struct{})
 	for _, s := range ss {
 		if _, ok := uniq[s]; ok {
 			continue
@@ -25,7 +26,7 @@ func UniqueLibraries(libs []types.Library) []types.Library {
 	if len(libs) == 0 {
 		return nil
 	}
-	unique := map[string]types.Library{}
+	unique := make(map[string]types.Library)
 	for _, lib := range libs {
 		identifier := fmt.Sprintf("%s@%s", lib.Name, lib.Version)
 		if l, ok := unique[identifier]; !ok {

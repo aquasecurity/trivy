@@ -5,11 +5,11 @@ import (
 	"sort"
 
 	"github.com/BurntSushi/toml"
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 )
 
 type primitiveManifest struct {
@@ -72,7 +72,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	var deps []types.Dependency
 	for name, manifestDeps := range man.Dependencies {
 		for _, manifestDep := range manifestDeps {
-			version := depVersion(&manifestDep, man.JuliaVersion)
+			version := depVersion(manifestDep.Version, man.JuliaVersion)
 			pkgID := manifestDep.UUID
 			lib := types.Library{
 				ID:      pkgID,
@@ -80,7 +80,12 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				Version: version,
 			}
 			if pos, ok := lineNumIdx[manifestDep.UUID]; ok {
-				lib.Locations = []types.Location{{StartLine: pos.start, EndLine: pos.end}}
+				lib.Locations = []types.Location{
+					{
+						StartLine: pos.start,
+						EndLine:   pos.end,
+					},
+				}
 			}
 
 			libs = append(libs, lib)
@@ -100,11 +105,11 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 // Returns the effective version of the `dep`.
 // stdlib packages do not have a version in the manifest because they are packaged with julia itself
-func depVersion(dep *primitiveDependency, juliaVersion string) string {
-	if len(dep.Version) == 0 {
+func depVersion(depVersion, juliaVersion string) string {
+	if depVersion == "" {
 		return juliaVersion
 	}
-	return dep.Version
+	return depVersion
 }
 
 // Decodes a primitive manifest using the metadata from parse time.

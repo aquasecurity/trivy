@@ -2,14 +2,16 @@ package pip
 
 import (
 	"bufio"
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"strings"
+	"unicode"
+
 	"golang.org/x/text/encoding"
 	u "golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 	"golang.org/x/xerrors"
-	"strings"
-	"unicode"
+
+	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 )
 
 const (
@@ -58,7 +60,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	return libs, nil, nil
 }
 
-func rStripByKey(line string, key string) string {
+func rStripByKey(line, key string) string {
 	if pos := strings.Index(line, key); pos >= 0 {
 		line = strings.TrimRightFunc((line)[:pos], unicode.IsSpace)
 	}

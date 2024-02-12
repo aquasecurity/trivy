@@ -12,12 +12,13 @@ import (
 	"sort"
 	"strings"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
+	"go.uber.org/zap"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
+	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
@@ -116,8 +117,8 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		libs              []types.Library
 		deps              []types.Dependency
 		rootDepManagement []pomDependency
-		uniqArtifacts     = map[string]artifact{}
-		uniqDeps          = map[string][]string{}
+		uniqArtifacts     = make(map[string]artifact)
+		uniqDeps          = make(map[string][]string)
 	)
 
 	// Iterate direct and transitive dependencies
@@ -347,7 +348,7 @@ func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 }
 
 func (p *parser) mergeDependencyManagements(depManagements ...[]pomDependency) []pomDependency {
-	uniq := map[string]struct{}{}
+	uniq := make(map[string]struct{})
 	var depManagement []pomDependency
 	// The preceding argument takes precedence.
 	for _, dm := range depManagements {
@@ -423,7 +424,7 @@ func (p *parser) resolveDepManagement(props map[string]string, depManagement []p
 
 func (p *parser) mergeDependencies(parent, child []artifact, exclusions map[string]struct{}) []artifact {
 	var deps []artifact
-	unique := map[string]struct{}{}
+	unique := make(map[string]struct{})
 
 	for _, d := range append(child, parent...) {
 		if excludeDep(exclusions, d) {
@@ -589,8 +590,7 @@ func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error
 	// e.g. com.fasterxml.jackson.core, jackson-annotations, 2.10.0
 	//      => com/fasterxml/jackson/core/jackson-annotations/2.10.0/jackson-annotations-2.10.0.pom
 	paths := strings.Split(groupID, ".")
-	paths = append(paths, artifactID, version)
-	paths = append(paths, fmt.Sprintf("%s-%s.pom", artifactID, version))
+	paths = append(paths, artifactID, version, fmt.Sprintf("%s-%s.pom", artifactID, version))
 
 	// Search local remoteRepositories
 	loaded, err := p.loadPOMFromLocalRepository(paths)
@@ -599,7 +599,7 @@ func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error
 	}
 
 	// Search remote remoteRepositories
-	loaded, err = p.fetchPOMFromRemoteRepository(paths)
+	loaded, err = p.fetchPOMFromRemoteRepositories(paths)
 	if err == nil {
 		return loaded, nil
 	}
@@ -614,7 +614,7 @@ func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 	return p.openPom(localPath)
 }
 
-func (p *parser) fetchPOMFromRemoteRepository(paths []string) (*pom, error) {
+func (p *parser) fetchPOMFromRemoteRepositories(paths []string) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
 	if p.offline {
 		log.Logger.Debug("Fetching the remote pom.xml is skipped")
@@ -623,30 +623,42 @@ func (p *parser) fetchPOMFromRemoteRepository(paths []string) (*pom, error) {
 
 	// try all remoteRepositories
 	for _, repo := range p.remoteRepositories {
-		repoURL, err := url.Parse(repo)
+		fetched, err := fetchPOMFromRemoteRepository(repo, paths)
 		if err != nil {
+			return nil, xerrors.Errorf("fetch repository error: %w", err)
+		} else if fetched == nil {
 			continue
 		}
-
-		paths = append([]string{repoURL.Path}, paths...)
-		repoURL.Path = path.Join(paths...)
-
-		resp, err := http.Get(repoURL.String())
-		if err != nil || resp.StatusCode != http.StatusOK {
-			continue
-		}
-
-		content, err := parsePom(resp.Body)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to parse the remote POM: %w", err)
-		}
-
-		return &pom{
-			filePath: "", // from remote repositories
-			content:  content,
-		}, nil
+		return fetched, nil
 	}
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
+}
+
+func fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
+	repoURL, err := url.Parse(repo)
+	if err != nil {
+		log.Logger.Errorw("URL parse error", zap.String("repo", repo))
+		return nil, nil
+	}
+
+	paths = append([]string{repoURL.Path}, paths...)
+	repoURL.Path = path.Join(paths...)
+
+	resp, err := http.Get(repoURL.String())
+	if err != nil || resp.StatusCode != http.StatusOK {
+		return nil, nil
+	}
+	defer resp.Body.Close()
+
+	content, err := parsePom(resp.Body)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse the remote POM: %w", err)
+	}
+
+	return &pom{
+		filePath: "", // from remote repositories
+		content:  content,
+	}, nil
 }
 
 func parsePom(r io.Reader) (*pomXML, error) {

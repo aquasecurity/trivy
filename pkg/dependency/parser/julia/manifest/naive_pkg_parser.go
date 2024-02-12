@@ -34,7 +34,8 @@ func (parser *naivePkgParser) parse() map[string]pkgPosition {
 	lineNum := 1
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.HasPrefix(strings.TrimSpace(line), "[") {
+		switch {
+		case strings.HasPrefix(strings.TrimSpace(line), "["):
 			if currentPkg.uuid != "" {
 				currentPkg.setEndPositionIfEmpty(lineNum - 1)
 				idx[currentPkg.uuid] = currentPkg.position
@@ -42,11 +43,11 @@ func (parser *naivePkgParser) parse() map[string]pkgPosition {
 			currentPkg = minPkg{}
 			currentPkg.position.start = lineNum
 
-		} else if strings.HasPrefix(strings.TrimSpace(line), "uuid =") {
+		case strings.HasPrefix(strings.TrimSpace(line), "uuid ="):
 			currentPkg.uuid = propertyValue(line)
-		} else if strings.HasPrefix(strings.TrimSpace(line), "version =") {
+		case strings.HasPrefix(strings.TrimSpace(line), "version ="):
 			currentPkg.version = propertyValue(line)
-		} else if strings.TrimSpace(line) == "" {
+		case strings.TrimSpace(line) == "":
 			currentPkg.setEndPositionIfEmpty(lineNum - 1)
 		}
 

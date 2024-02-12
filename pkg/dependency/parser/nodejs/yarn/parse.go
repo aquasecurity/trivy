@@ -3,16 +3,17 @@ package yarn
 import (
 	"bufio"
 	"bytes"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"io"
 	"regexp"
 	"strings"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 )
 
 var (
@@ -175,7 +176,7 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		if len(line) == 0 {
+		if line == "" {
 			emptyLines++
 			continue
 		}
@@ -270,11 +271,11 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 	// patternIDs holds mapping between patterns and library IDs
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
-	patternIDs := map[string]string{}
+	patternIDs := make(map[string]string)
 
 	scanner := bufio.NewScanner(r)
 	scanner.Split(scanBlocks)
-	dependsOn := map[string][]string{}
+	dependsOn := make(map[string][]string)
 	for scanner.Scan() {
 		block := scanner.Bytes()
 		lib, deps, newLine, err := parseBlock(block, lineNumber)

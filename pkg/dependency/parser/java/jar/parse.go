@@ -3,21 +3,24 @@ package jar
 import (
 	"archive/zip"
 	"bufio"
-	"crypto/sha1"
+	"crypto/sha1" // nolint:gosec
 	"encoding/hex"
+	"errors"
 	"fmt"
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/samber/lo"
-	"go.uber.org/zap"
-	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/samber/lo"
+	"go.uber.org/zap"
+	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 )
 
 var (
@@ -81,46 +84,14 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 func (p *Parser) parseArtifact(filePath string, size int64, r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	log.Logger.Debugw("Parsing Java artifacts...", zap.String("file", filePath))
 
-	zr, err := zip.NewReader(r, size)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("zip error: %w", err)
-	}
-
 	// Try to extract artifactId and version from the file name
 	// e.g. spring-core-5.3.4-SNAPSHOT.jar => sprint-core, 5.3.4-SNAPSHOT
 	fileName := filepath.Base(filePath)
 	fileProps := parseFileName(filePath)
 
-	var libs []types.Library
-	var m manifest
-	var foundPomProps bool
-
-	for _, fileInJar := range zr.File {
-		switch {
-		case filepath.Base(fileInJar.Name) == "pom.properties":
-			props, err := parsePomProperties(fileInJar, filePath)
-			if err != nil {
-				return nil, nil, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
-			}
-			libs = append(libs, props.Library())
-
-			// Check if the pom.properties is for the original JAR/WAR/EAR
-			if fileProps.ArtifactID == props.ArtifactID && fileProps.Version == props.Version {
-				foundPomProps = true
-			}
-		case filepath.Base(fileInJar.Name) == "MANIFEST.MF":
-			m, err = parseManifest(fileInJar)
-			if err != nil {
-				return nil, nil, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
-			}
-		case isArtifact(fileInJar.Name):
-			innerLibs, _, err := p.parseInnerJar(fileInJar, filePath) //TODO process inner deps
-			if err != nil {
-				log.Logger.Debugf("Failed to parse %s: %s", fileInJar.Name, err)
-				continue
-			}
-			libs = append(libs, innerLibs...)
-		}
+	libs, m, foundPomProps, err := p.traverseZip(filePath, size, r, fileProps)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("zip error: %w", err)
 	}
 
 	// If pom.properties is found, it should be preferred than MANIFEST.MF.
@@ -151,7 +122,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r dio.ReadSeekerAt) 
 	props, err := p.searchBySHA1(r, filePath)
 	if err == nil {
 		return append(libs, props.Library()), nil, nil
-	} else if !xerrors.Is(err, ArtifactNotFoundErr) {
+	} else if !errors.Is(err, ArtifactNotFoundErr) {
 		return nil, nil, xerrors.Errorf("failed to search by SHA1: %w", err)
 	}
 
@@ -169,11 +140,52 @@ func (p *Parser) parseArtifact(filePath string, size int64, r dio.ReadSeekerAt) 
 		log.Logger.Debugw("POM was determined in a heuristic way", zap.String("file", fileName),
 			zap.String("artifact", fileProps.String()))
 		libs = append(libs, fileProps.Library())
-	} else if !xerrors.Is(err, ArtifactNotFoundErr) {
+	} else if !errors.Is(err, ArtifactNotFoundErr) {
 		return nil, nil, xerrors.Errorf("failed to search by artifact id: %w", err)
 	}
 
 	return libs, nil, nil
+}
+
+func (p *Parser) traverseZip(filePath string, size int64, r dio.ReadSeekerAt, fileProps Properties) (
+	[]types.Library, manifest, bool, error) {
+	var libs []types.Library
+	var m manifest
+	var foundPomProps bool
+
+	zr, err := zip.NewReader(r, size)
+	if err != nil {
+		return nil, manifest{}, false, xerrors.Errorf("zip error: %w", err)
+	}
+
+	for _, fileInJar := range zr.File {
+		switch {
+		case filepath.Base(fileInJar.Name) == "pom.properties":
+			props, err := parsePomProperties(fileInJar, filePath)
+			if err != nil {
+				return nil, manifest{}, false, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
+			}
+			libs = append(libs, props.Library())
+
+			// Check if the pom.properties is for the original JAR/WAR/EAR
+			if fileProps.ArtifactID == props.ArtifactID && fileProps.Version == props.Version {
+				foundPomProps = true
+			}
+		case filepath.Base(fileInJar.Name) == "MANIFEST.MF":
+			m, err = parseManifest(fileInJar)
+			if err != nil {
+				return nil, manifest{}, false, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
+			}
+		case isArtifact(fileInJar.Name):
+			innerLibs, _, err := p.parseInnerJar(fileInJar, filePath) // TODO process inner deps
+			if err != nil {
+				log.Logger.Debugf("Failed to parse %s: %s", fileInJar.Name, err)
+				continue
+			}
+			libs = append(libs, innerLibs...)
+		}
+	}
+	return libs, m, foundPomProps, nil
 }
 
 func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]types.Library, []types.Dependency, error) {
@@ -187,17 +199,22 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]types.Library, 
 		return nil, nil, xerrors.Errorf("unable to create a temp file: %w", err)
 	}
 	defer func() {
-		f.Close()
-		os.Remove(f.Name())
+		_ = f.Close()
+		_ = os.Remove(f.Name())
 	}()
 
 	// Copy the file content to the temp file
-	if _, err = io.Copy(f, fr); err != nil {
+	if n, err := io.CopyN(f, fr, int64(zf.UncompressedSize64)); err != nil {
 		return nil, nil, xerrors.Errorf("file copy error: %w", err)
+	} else if n != int64(zf.UncompressedSize64) {
+		return nil, nil, xerrors.Errorf("file copy size error: %w", err)
 	}
 
 	// build full path to inner jar
-	fullPath := path.Join(rootPath, zf.Name)
+	fullPath := path.Join(rootPath, zf.Name) // nolint:gosec
+	if !strings.HasPrefix(fullPath, filepath.Clean(rootPath)) {
+		return nil, nil, nil // zip slip
+	}
 
 	// Parse jar/war/ear recursively
 	innerLibs, innerDeps, err := p.parseArtifact(fullPath, int64(zf.UncompressedSize64), f)
@@ -213,7 +230,7 @@ func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (Properties, err
 		return Properties{}, xerrors.Errorf("file seek error: %w", err)
 	}
 
-	h := sha1.New()
+	h := sha1.New() // nolint:gosec
 	if _, err := io.Copy(h, r); err != nil {
 		return Properties{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
 	}

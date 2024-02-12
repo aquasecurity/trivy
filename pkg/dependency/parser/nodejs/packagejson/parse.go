@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"io"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
-	"golang.org/x/xerrors"
 )
 
 type packageJSON struct {

@@ -2,10 +2,10 @@ package conan
 
 import (
 	"fmt"
-	"github.com/liamg/jfather"
 	"io"
 	"strings"
 
+	"github.com/liamg/jfather"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -52,7 +52,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	// Parse packages
-	parsed := map[string]types.Library{}
+	parsed := make(map[string]types.Library)
 	for i, node := range lock.GraphLock.Nodes {
 		if node.Ref == "" {
 			continue

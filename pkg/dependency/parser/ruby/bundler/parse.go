@@ -20,7 +20,7 @@ func NewParser() types.Parser {
 }
 
 func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	libs := map[string]types.Library{}
+	libs := make(map[string]types.Library)
 	var dependsOn, directDeps []string
 	var deps []types.Dependency
 	var pkgID string
@@ -38,7 +38,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 					DependsOn: dependsOn,
 				})
 			}
-			dependsOn = make([]string, 0) //re-initialize
+			dependsOn = make([]string, 0) // re-initialize
 			line = strings.TrimSpace(line)
 			s := strings.Fields(line)
 			if len(s) != 2 {
@@ -60,7 +60,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		if countLeadingSpace(line) == 6 {
 			line = strings.TrimSpace(line)
 			s := strings.Fields(line)
-			dependsOn = append(dependsOn, s[0]) //store name only for now
+			dependsOn = append(dependsOn, s[0]) // store name only for now
 		}
 		lineNum++
 
