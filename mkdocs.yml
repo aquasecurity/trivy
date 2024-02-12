@@ -30,6 +30,7 @@ nav:
           - GitOps: tutorials/kubernetes/gitops.md
       - Misconfiguration:
           - Terraform scanning: tutorials/misconfiguration/terraform.md
+          - Custom Policies with Rego: tutorials/misconfiguration/custom-policies.md
       - Signing:
           - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
       - Shell:
