@@ -643,6 +643,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
+	reportFlagGroup.ShowSuppressed = nil // disable '--show-suppressed'
 	reportFormat := flag.ReportFormatFlag.Clone()
 	reportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
 	reportFlagGroup.ReportFormat = reportFormat
@@ -988,6 +989,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
+	reportFlagGroup.ShowSuppressed = nil     // disable '--show-suppressed'
 
 	awsFlags := &flag.Flags{
 		GlobalFlagGroup:  globalFlags,

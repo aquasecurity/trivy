@@ -11,10 +11,10 @@ func MapSpecCheckIDToFilteredResults(result types.Result, checkIDs map[types.Sca
 	mapCheckByID := make(map[string]types.Results)
 	for _, vuln := range result.Vulnerabilities {
 		// Skip irrelevant check IDs
-		if !slices.Contains(checkIDs[types.VulnerabilityScanner], vuln.GetID()) {
+		if !slices.Contains(checkIDs[types.VulnerabilityScanner], vuln.VulnerabilityID) {
 			continue
 		}
-		mapCheckByID[vuln.GetID()] = append(mapCheckByID[vuln.GetID()], types.Result{
+		mapCheckByID[vuln.VulnerabilityID] = append(mapCheckByID[vuln.VulnerabilityID], types.Result{
 			Target:          result.Target,
 			Class:           result.Class,
 			Type:            result.Type,
@@ -23,11 +23,11 @@ func MapSpecCheckIDToFilteredResults(result types.Result, checkIDs map[types.Sca
 	}
 	for _, m := range result.Misconfigurations {
 		// Skip irrelevant check IDs
-		if !slices.Contains(checkIDs[types.MisconfigScanner], m.GetID()) {
+		if !slices.Contains(checkIDs[types.MisconfigScanner], m.AVDID) {
 			continue
 		}
 
-		mapCheckByID[m.GetID()] = append(mapCheckByID[m.GetID()], types.Result{
+		mapCheckByID[m.AVDID] = append(mapCheckByID[m.AVDID], types.Result{
 			Target:            result.Target,
 			Class:             result.Class,
 			Type:              result.Type,
@@ -45,11 +45,11 @@ func MapSpecCheckIDToFilteredResults(result types.Result, checkIDs map[types.Sca
 func misconfigSummary(misconfig types.DetectedMisconfiguration) *types.MisconfSummary {
 	rms := types.MisconfSummary{}
 	switch misconfig.Status {
-	case types.StatusPassed:
+	case types.MisconfStatusPassed:
 		rms.Successes = 1
-	case types.StatusFailure:
+	case types.MisconfStatusFailure:
 		rms.Failures = 1
-	case types.StatusException:
+	case types.MisconfStatusException:
 		rms.Exceptions = 1
 	}
 	return &rms

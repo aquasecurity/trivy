@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 
 	"github.com/open-policy-agent/opa/rego"
@@ -13,7 +14,6 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
@@ -35,12 +35,7 @@ type FilterOption struct {
 
 // Filter filters out the report
 func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
-	// Filter out vulnerabilities based on the given VEX document.
-	if err := filterByVEX(report, opt); err != nil {
-		return xerrors.Errorf("VEX error: %w", err)
-	}
-
-	ignoreConf, err := getIgnoredFindings(ctx, opt.IgnoreFile)
+	ignoreConf, err := parseIgnoreFile(ctx, opt.IgnoreFile)
 	if err != nil {
 		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
 	}
@@ -50,6 +45,12 @@ func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
 			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 	}
+
+	// Filter out vulnerabilities based on the given VEX document.
+	if err = filterByVEX(report, opt); err != nil {
+		return xerrors.Errorf("VEX error: %w", err)
+	}
+
 	return nil
 }
 
@@ -60,29 +61,17 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 		return s.String()
 	})
 
-	filteredVulns := filterVulnerabilities(result, severities, opt.IgnoreStatuses, ignoreConf.Vulnerabilities)
-	misconfSummary, filteredMisconfs := filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf.Misconfigurations)
-	result.Secrets = filterSecrets(result, severities, ignoreConf.Secrets)
-	result.Licenses = filterLicenses(result.Licenses, severities, opt.IgnoreLicenses, ignoreConf.Licenses)
+	filterVulnerabilities(result, severities, opt.IgnoreStatuses, ignoreConf)
+	filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf)
+	filterSecrets(result, severities, ignoreConf)
+	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
 
-	var ignoredMisconfs int
 	if opt.PolicyFile != "" {
-		var err error
-		var ignored int
-		filteredVulns, filteredMisconfs, ignored, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, opt.PolicyFile)
-		if err != nil {
+		if err := applyPolicy(ctx, result, opt.PolicyFile); err != nil {
 			return xerrors.Errorf("failed to apply the policy: %w", err)
 		}
-		ignoredMisconfs += ignored
 	}
-	sort.Sort(types.BySeverity(filteredVulns))
-
-	result.Vulnerabilities = filteredVulns
-	result.MisconfSummary = misconfSummary
-	if result.MisconfSummary != nil {
-		result.MisconfSummary.Exceptions += ignoredMisconfs
-	}
-	result.Misconfigurations = filteredMisconfs
+	sort.Sort(types.BySeverity(result.Vulnerabilities))
 
 	return nil
 }
@@ -102,15 +91,13 @@ func filterByVEX(report types.Report, opt FilterOption) error {
 		if len(result.Vulnerabilities) == 0 {
 			continue
 		}
-		report.Results[i].Vulnerabilities = vexDoc.Filter(result.Vulnerabilities)
+		vexDoc.Filter(&report.Results[i])
 	}
 	return nil
 }
 
-func filterVulnerabilities(result *types.Result, severities []string, ignoreStatuses []dbTypes.Status,
-	ignoreFindings IgnoreFindings) []types.DetectedVulnerability {
+func filterVulnerabilities(result *types.Result, severities []string, ignoreStatuses []dbTypes.Status, ignoreConfig IgnoreConfig) {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
-
 	for _, vuln := range result.Vulnerabilities {
 		if vuln.Severity == "" {
 			vuln.Severity = dbTypes.SeverityUnknown.String()
@@ -123,9 +110,12 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 		// Filter by status
 		case slices.Contains(ignoreStatuses, vuln.Status):
 			continue
+		}
+
 		// Filter by ignore file
-		case ignoreFindings.Match(result.Target, vuln.VulnerabilityID) ||
-			ignoreFindings.Match(vuln.PkgPath, vuln.VulnerabilityID):
+		if f := ignoreConfig.MatchVulnerability(vuln.VulnerabilityID, result.Target, vuln.PkgPath); f != nil {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(vuln, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
 			continue
 		}
 
@@ -136,96 +126,116 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 		}
 		uniqVulns[key] = vuln
 	}
-	if len(uniqVulns) == 0 {
-		return nil
+
+	// Override the detected vulnerabilities
+	result.Vulnerabilities = maps.Values(uniqVulns)
+	if len(result.Vulnerabilities) == 0 {
+		result.Vulnerabilities = nil
 	}
-	return maps.Values(uniqVulns)
 }
 
 func filterMisconfigurations(result *types.Result, severities []string, includeNonFailures bool,
-	ignoreMisconfs IgnoreFindings) (*types.MisconfSummary, []types.DetectedMisconfiguration) {
+	ignoreConfig IgnoreConfig) {
 	var filtered []types.DetectedMisconfiguration
-	summary := new(types.MisconfSummary)
+	result.MisconfSummary = new(types.MisconfSummary)
 
 	for _, misconf := range result.Misconfigurations {
+		// Filter by severity
 		if !slices.Contains(severities, misconf.Severity) {
-			// Filter by severity
 			continue
-		} else if ignoreMisconfs.Match(result.Target, misconf.ID) || ignoreMisconfs.Match(result.Target, misconf.AVDID) {
-			// Filter misconfigurations by ignore file
-			summary.Exceptions++
+		}
+
+		// Filter by ignore file
+		if f := ignoreConfig.MatchMisconfiguration(misconf.ID, misconf.AVDID, result.Target); f != nil {
+			result.MisconfSummary.Exceptions++
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(misconf, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
 			continue
 		}
 
 		// Count successes, failures, and exceptions
-		summarize(misconf.Status, summary)
+		summarize(misconf.Status, result.MisconfSummary)
 
-		if misconf.Status != types.StatusFailure && !includeNonFailures {
+		if misconf.Status != types.MisconfStatusFailure && !includeNonFailures {
 			continue
 		}
 		filtered = append(filtered, misconf)
 	}
 
-	if summary.Empty() {
-		return nil, nil
+	result.Misconfigurations = filtered
+	if result.MisconfSummary.Empty() {
+		result.Misconfigurations = nil
+		result.MisconfSummary = nil
 	}
-
-	return summary, filtered
 }
 
-func filterSecrets(result *types.Result, severities []string, ignoreFindings IgnoreFindings) []ftypes.SecretFinding {
-	var filtered []ftypes.SecretFinding
+func filterSecrets(result *types.Result, severities []string, ignoreConfig IgnoreConfig) {
+	var filtered []types.DetectedSecret
 	for _, secret := range result.Secrets {
 		if !slices.Contains(severities, secret.Severity) {
 			// Filter by severity
 			continue
-		} else if ignoreFindings.Match(result.Target, secret.RuleID) {
+		} else if f := ignoreConfig.MatchSecret(secret.RuleID, result.Target); f != nil {
 			// Filter by ignore file
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(secret, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
 			continue
 		}
 		filtered = append(filtered, secret)
 	}
-	return filtered
+	result.Secrets = filtered
 }
 
-func filterLicenses(licenses []types.DetectedLicense, severities, ignoreLicenseNames []string, ignoreFindings IgnoreFindings) []types.DetectedLicense {
+func filterLicenses(result *types.Result, severities, ignoreLicenseNames []string, ignoreConfig IgnoreConfig) {
 	// Merge ignore license names into ignored findings
+	var ignoreLicenses IgnoreFindings
 	for _, licenseName := range ignoreLicenseNames {
-		ignoreFindings = append(ignoreFindings, IgnoreFinding{
+		ignoreLicenses = append(ignoreLicenses, IgnoreFinding{
 			ID: licenseName,
 		})
 	}
 
 	var filtered []types.DetectedLicense
-	for _, l := range licenses {
+	for _, l := range result.Licenses {
+		// Filter by severity
 		if !slices.Contains(severities, l.Severity) {
-			// Filter by severity
-			continue
-		} else if ignoreFindings.Match(l.FilePath, l.Name) {
-			// Filter by ignore file or ignore license names
 			continue
 		}
+
+		// Filter by `--ignored-licenses`
+		if f := ignoreLicenses.Match(l.Name, l.FilePath); f != nil {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(l, types.FindingStatusIgnored, "", "--ignored-licenses"))
+			continue
+		}
+
+		// Filter by ignore file
+		if f := ignoreConfig.MatchLicense(l.Name, l.FilePath); f != nil {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(l, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
+			continue
+		}
+
 		filtered = append(filtered, l)
 	}
-	return filtered
+	result.Licenses = filtered
 }
 
 func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 	switch status {
-	case types.StatusFailure:
+	case types.MisconfStatusFailure:
 		summary.Failures++
-	case types.StatusPassed:
+	case types.MisconfStatusPassed:
 		summary.Successes++
-	case types.StatusException:
+	case types.MisconfStatusException:
 		summary.Exceptions++
 	}
 }
 
-func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-	policyFile string) ([]types.DetectedVulnerability, []types.DetectedMisconfiguration, int, error) {
+func applyPolicy(ctx context.Context, result *types.Result, policyFile string) error {
 	policy, err := os.ReadFile(policyFile)
 	if err != nil {
-		return nil, nil, 0, xerrors.Errorf("unable to read the policy file: %w", err)
+		return xerrors.Errorf("unable to read the policy file: %w", err)
 	}
 
 	query, err := rego.New(
@@ -234,38 +244,53 @@ func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misco
 		rego.Module("trivy.rego", string(policy)),
 	).PrepareForEval(ctx)
 	if err != nil {
-		return nil, nil, 0, xerrors.Errorf("unable to prepare for eval: %w", err)
+		return xerrors.Errorf("unable to prepare for eval: %w", err)
 	}
+
+	policyFile = filepath.ToSlash(filepath.Clean(policyFile))
 
 	// Vulnerabilities
 	var filteredVulns []types.DetectedVulnerability
-	for _, vuln := range vulns {
+	for _, vuln := range result.Vulnerabilities {
 		ignored, err := evaluate(ctx, query, vuln)
 		if err != nil {
-			return nil, nil, 0, err
+			return err
 		}
 		if ignored {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(vuln, types.FindingStatusIgnored, "Filtered by Rego", policyFile))
 			continue
 		}
 		filteredVulns = append(filteredVulns, vuln)
 	}
+	result.Vulnerabilities = filteredVulns
 
 	// Misconfigurations
-	var ignoredMisconfs int
 	var filteredMisconfs []types.DetectedMisconfiguration
-	for _, misconf := range misconfs {
+	for _, misconf := range result.Misconfigurations {
 		ignored, err := evaluate(ctx, query, misconf)
 		if err != nil {
-			return nil, nil, 0, err
+			return err
 		}
 		if ignored {
-			ignoredMisconfs++
+			result.MisconfSummary.Exceptions++
+			switch misconf.Status {
+			case types.MisconfStatusFailure:
+				result.MisconfSummary.Failures--
+			case types.MisconfStatusPassed:
+				result.MisconfSummary.Successes--
+			}
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(misconf, types.FindingStatusIgnored, "Filtered by Rego", policyFile))
 			continue
 		}
 		filteredMisconfs = append(filteredMisconfs, misconf)
 	}
-	return filteredVulns, filteredMisconfs, ignoredMisconfs, nil
+	result.Misconfigurations = filteredMisconfs
+
+	return nil
 }
+
 func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
 	results, err := query.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
