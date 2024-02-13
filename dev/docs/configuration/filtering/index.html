@@ -2179,20 +2179,41 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#by-status" class="md-nav__link">
-    By Status
+  <a href="#prioritization" class="md-nav__link">
+    Prioritization
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Prioritization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#by-severity" class="md-nav__link">
     By Severity
   </a>
   
 </li>
+        
+          <li class="md-nav__item">
+  <a href="#by-status" class="md-nav__link">
+    By Status
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
+  <a href="#suppression" class="md-nav__link">
+    Suppression
+  </a>
+  
+    <nav class="md-nav" aria-label="Suppression">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#by-finding-ids" class="md-nav__link">
     By Finding IDs
   </a>
@@ -2218,25 +2239,23 @@ You're not viewing the latest version.
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#by-vulnerability-target" class="md-nav__link">
-    By Vulnerability Target
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#by-rego" class="md-nav__link">
     By Rego
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#by-inline-comments" class="md-nav__link">
-    By Inline Comments
+        
+          <li class="md-nav__item">
+  <a href="#by-vulnerability-exploitability-exchange-vex" class="md-nav__link">
+    By Vulnerability Exploitability Exchange (VEX)
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3605,20 +3624,41 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#by-status" class="md-nav__link">
-    By Status
+  <a href="#prioritization" class="md-nav__link">
+    Prioritization
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Prioritization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#by-severity" class="md-nav__link">
     By Severity
   </a>
   
 </li>
+        
+          <li class="md-nav__item">
+  <a href="#by-status" class="md-nav__link">
+    By Status
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
+  <a href="#suppression" class="md-nav__link">
+    Suppression
+  </a>
+  
+    <nav class="md-nav" aria-label="Suppression">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#by-finding-ids" class="md-nav__link">
     By Finding IDs
   </a>
@@ -3644,25 +3684,23 @@ You're not viewing the latest version.
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#by-vulnerability-target" class="md-nav__link">
-    By Vulnerability Target
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#by-rego" class="md-nav__link">
     By Rego
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#by-inline-comments" class="md-nav__link">
-    By Inline Comments
+        
+          <li class="md-nav__item">
+  <a href="#by-vulnerability-exploitability-exchange-vex" class="md-nav__link">
+    By Vulnerability Exploitability Exchange (VEX)
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3686,125 +3724,30 @@ You're not viewing the latest version.
 
 <h1 id="filtering">Filtering</h1>
 <p>Trivy provides various methods for filtering the results.</p>
-<h2 id="by-status">By Status</h2>
-<table>
-<thead>
-<tr>
-<th align="center">Scanner</th>
-<th align="center">Supported</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center">Vulnerability</td>
-<td align="center">✓</td>
-</tr>
-<tr>
-<td align="center">Misconfiguration</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">Secret</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">License</td>
-<td align="center"></td>
-</tr>
-</tbody>
-</table>
-<p>Trivy supports the following vulnerability statuses:</p>
+<pre class="mermaid"><code>flowchart LR
+  Issues("Detected\nIssues") --&gt; Severity
+
+  subgraph Filtering
+    subgraph Prioritization
+        direction TB
+        Severity("By Severity") --&gt; Status("By Status")
+    end
+    subgraph Suppression
+        Status --&gt; Ignore("By Finding IDs")
+        Ignore --&gt; Rego("By Rego")
+        Rego --&gt; VEX("By VEX")
+    end
+  end
+  VEX --&gt; Results</code></pre>
+<p>Similar to the functionality of filtering results, you can also limit the sub-targets for each scanner.
+For information on these settings, please refer to the scanner-specific documentation (<a href="../../scanner/vulnerability/">vulnerability</a> , <a href="../../scanner/misconfiguration/">misconfiguration</a>, etc.).</p>
+<h2 id="prioritization">Prioritization</h2>
+<p>You can filter the results by </p>
 <ul>
-<li><code>unknown</code></li>
-<li><code>not_affected</code>: this package is not affected by this vulnerability on this platform</li>
-<li><code>affected</code>: this package is affected by this vulnerability on this platform, but there is no patch released yet</li>
-<li><code>fixed</code>: this vulnerability is fixed on this platform</li>
-<li><code>under_investigation</code>: it is currently unknown whether or not this vulnerability affects this package on this platform, and it is under investigation</li>
-<li><code>will_not_fix</code>: this package is affected by this vulnerability on this platform, but there is currently no intention to fix it (this would primarily be for flaws that are of Low or Moderate impact that pose no significant risk to customers)</li>
-<li><code>fix_deferred</code>: this package is affected by this vulnerability on this platform, and may be fixed in the future</li>
-<li><code>end_of_life</code>: this package has been identified to contain the impacted component, but analysis to determine whether it is affected or not by this vulnerability was not performed</li>
+<li><a href="#by-severity">Severity</a></li>
+<li><a href="#by-status">Status</a></li>
 </ul>
-<p>Note that vulnerabilities with the <code>unknown</code>, <code>not_affected</code> or <code>under_investigation</code> status are not detected.
-These are only defined for comprehensiveness, and you will not have the opportunity to specify these statuses.</p>
-<p>Some statuses are supported in limited distributions.</p>
-<table>
-<thead>
-<tr>
-<th align="center">OS</th>
-<th align="center">Fixed</th>
-<th align="center">Affected</th>
-<th align="center">Under Investigation</th>
-<th align="center">Will Not Fix</th>
-<th align="center">Fix Deferred</th>
-<th align="center">End of Life</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center">Debian</td>
-<td align="center">✓</td>
-<td align="center">✓</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center">✓</td>
-<td align="center">✓</td>
-</tr>
-<tr>
-<td align="center">RHEL</td>
-<td align="center">✓</td>
-<td align="center">✓</td>
-<td align="center">✓</td>
-<td align="center">✓</td>
-<td align="center">✓</td>
-<td align="center">✓</td>
-</tr>
-<tr>
-<td align="center">Other OSes</td>
-<td align="center">✓</td>
-<td align="center">✓</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-</tbody>
-</table>
-<p>To ignore vulnerabilities with specific statuses, use the <code>--ignore-status &lt;list_of_statuses&gt;</code> option.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --ignore-status affected,fixed ruby:2.4.0
-</code></pre></div>
-<details>
-<summary>Result</summary>
-
-<div class="highlight"><pre><span></span><code>2019-05-16T12:50:14.786+0900    INFO    Detecting Debian vulnerabilities...
-
-ruby:2.4.0 (debian 8.7)
-=======================
-Total: 527 (UNKNOWN: 0, LOW: 276, MEDIUM: 83, HIGH: 158, CRITICAL: 10)
-
-┌─────────────────────────────┬──────────────────┬──────────┬──────────────┬────────────────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
-│           Library           │  Vulnerability   │ Severity │    Status    │     Installed Version      │ Fixed Version │                            Title                             │
-├─────────────────────────────┼──────────────────┼──────────┼──────────────┼────────────────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
-│ binutils                    │ CVE-2014-9939    │ CRITICAL │ will_not_fix │ 2.25-5                     │               │ binutils: buffer overflow in ihex.c                          │
-│                             │                  │          │              │                            │               │ https://avd.aquasec.com/nvd/cve-2014-9939                    │
-│                             ├──────────────────┤          │              │                            ├───────────────┼──────────────────────────────────────────────────────────────┤
-│                             │ CVE-2017-6969    │          │              │                            │               │ binutils: Heap-based buffer over-read in readelf when        │
-│                             │                  │          │              │                            │               │ processing corrupt RL78 binaries                             │
-│                             │                  │          │              │                            │               │ https://avd.aquasec.com/nvd/cve-2017-6969                    │
-│                             ├──────────────────┤          │              │                            ├───────────────┼──────────────────────────────────────────────────────────────┤
-...
-</code></pre></div>
-
-</details>
-
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>To skip all unfixed vulnerabilities, you can use the <code>--ignore-unfixed</code> flag .
-It is a shorthand of <code>--ignore-status affected,will_not_fix,fix_deferred,end_of_life</code>.
-It displays "fixed" vulnerabilities only.</p>
-</div>
-<div class="highlight"><pre><span></span><code>$ trivy image --ignore-unfixed ruby:2.4.0
-</code></pre></div>
-<h2 id="by-severity">By Severity</h2>
+<h3 id="by-severity">By Severity</h3>
 <table>
 <thead>
 <tr>
@@ -3942,9 +3885,162 @@ See https://avd.aquasec.com/misconfig/avd-aws-0081
 </code></pre></div>
 </details>
 
-<h2 id="by-finding-ids">By Finding IDs</h2>
+<h3 id="by-status">By Status</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Scanner</th>
+<th align="center">Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Vulnerability</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Misconfiguration</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">Secret</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">License</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+<p>Trivy supports the following vulnerability statuses:</p>
+<ul>
+<li><code>unknown</code></li>
+<li><code>not_affected</code>: this package is not affected by this vulnerability on this platform</li>
+<li><code>affected</code>: this package is affected by this vulnerability on this platform, but there is no patch released yet</li>
+<li><code>fixed</code>: this vulnerability is fixed on this platform</li>
+<li><code>under_investigation</code>: it is currently unknown whether or not this vulnerability affects this package on this platform, and it is under investigation</li>
+<li><code>will_not_fix</code>: this package is affected by this vulnerability on this platform, but there is currently no intention to fix it (this would primarily be for flaws that are of Low or Moderate impact that pose no significant risk to customers)</li>
+<li><code>fix_deferred</code>: this package is affected by this vulnerability on this platform, and may be fixed in the future</li>
+<li><code>end_of_life</code>: this package has been identified to contain the impacted component, but analysis to determine whether it is affected or not by this vulnerability was not performed</li>
+</ul>
+<p>Note that vulnerabilities with the <code>unknown</code>, <code>not_affected</code> or <code>under_investigation</code> status are not detected.
+These are only defined for comprehensiveness, and you will not have the opportunity to specify these statuses.</p>
+<p>Some statuses are supported in limited distributions.</p>
+<table>
+<thead>
+<tr>
+<th align="center">OS</th>
+<th align="center">Fixed</th>
+<th align="center">Affected</th>
+<th align="center">Under Investigation</th>
+<th align="center">Will Not Fix</th>
+<th align="center">Fix Deferred</th>
+<th align="center">End of Life</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Debian</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">RHEL</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Other OSes</td>
+<td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+<p>To ignore vulnerabilities with specific statuses, use the <code>--ignore-status &lt;list_of_statuses&gt;</code> option.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --ignore-status affected,fixed ruby:2.4.0
+</code></pre></div>
+<details>
+<summary>Result</summary>
+
+<div class="highlight"><pre><span></span><code>2019-05-16T12:50:14.786+0900    INFO    Detecting Debian vulnerabilities...
+
+ruby:2.4.0 (debian 8.7)
+=======================
+Total: 527 (UNKNOWN: 0, LOW: 276, MEDIUM: 83, HIGH: 158, CRITICAL: 10)
+
+┌─────────────────────────────┬──────────────────┬──────────┬──────────────┬────────────────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
+│           Library           │  Vulnerability   │ Severity │    Status    │     Installed Version      │ Fixed Version │                            Title                             │
+├─────────────────────────────┼──────────────────┼──────────┼──────────────┼────────────────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ binutils                    │ CVE-2014-9939    │ CRITICAL │ will_not_fix │ 2.25-5                     │               │ binutils: buffer overflow in ihex.c                          │
+│                             │                  │          │              │                            │               │ https://avd.aquasec.com/nvd/cve-2014-9939                    │
+│                             ├──────────────────┤          │              │                            ├───────────────┼──────────────────────────────────────────────────────────────┤
+│                             │ CVE-2017-6969    │          │              │                            │               │ binutils: Heap-based buffer over-read in readelf when        │
+│                             │                  │          │              │                            │               │ processing corrupt RL78 binaries                             │
+│                             │                  │          │              │                            │               │ https://avd.aquasec.com/nvd/cve-2017-6969                    │
+│                             ├──────────────────┤          │              │                            ├───────────────┼──────────────────────────────────────────────────────────────┤
+...
+</code></pre></div>
+
+</details>
+
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To skip all unfixed vulnerabilities, you can use the <code>--ignore-unfixed</code> flag .
+It is a shorthand of <code>--ignore-status affected,will_not_fix,fix_deferred,end_of_life</code>.
+It displays "fixed" vulnerabilities only.</p>
+</div>
+<div class="highlight"><pre><span></span><code>$ trivy image --ignore-unfixed ruby:2.4.0
+</code></pre></div>
+<h2 id="suppression">Suppression</h2>
+<p>You can filter the results by</p>
+<ul>
+<li><a href="#by-finding-ids">Finding IDs</a></li>
+<li><a href="#by-rego">Rego</a></li>
+<li><a href="#by-vulnerability-exploitability-exchange-vex">Vulnerability Exploitability Exchange (VEX)</a></li>
+</ul>
+<p>To show the suppressed results, use the <code>--show-suppressed</code> flag.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --vex debian11.csaf.vex --ignorefile .trivyignore.yaml --show-suppressed debian:11
+...
+
+Suppressed Vulnerabilities <span class="o">(</span>Total: <span class="m">9</span><span class="o">)</span>
+
+┌───────────────┬───────────────┬──────────┬──────────────┬─────────────────────────────────────────────┬───────────────────┐
+│    Library    │ Vulnerability │ Severity │    Status    │                  Statement                  │      Source       │
+├───────────────┼───────────────┼──────────┼──────────────┼─────────────────────────────────────────────┼───────────────────┤
+│ libdb5.3      │ CVE-2019-8457 │ CRITICAL │ not_affected │ vulnerable_code_not_in_execute_path         │ CSAF VEX          │
+├───────────────┼───────────────┼──────────┼──────────────┼─────────────────────────────────────────────┼───────────────────┤
+│ bsdutils      │ CVE-2022-0563 │ LOW      │ ignored      │ Accept the risk                             │ .trivyignore.yaml │
+├───────────────┤               │          │              │                                             │                   │
+│ libblkid1     │               │          │              │                                             │                   │
+├───────────────┤               │          │              │                                             │                   │
+│ libmount1     │               │          │              │                                             │                   │
+├───────────────┤               │          │              │                                             │                   │
+│ libsmartcols1 │               │          │              │                                             │                   │
+├───────────────┤               │          │              │                                             │                   │
+│ libuuid1      │               │          │              │                                             │                   │
+├───────────────┤               │          │              │                                             │                   │
+│ mount         │               │          │              │                                             │                   │
+├───────────────┼───────────────┤          │              ├─────────────────────────────────────────────┤                   │
+│ tar           │ CVE-2005-2541 │          │              │ The vulnerable configuration is not enabled │                   │
+├───────────────┼───────────────┤          │              ├─────────────────────────────────────────────┤                   │
+│ util-linux    │ CVE-2022-0563 │          │              │ Accept the risk                             │                   │
+└───────────────┴───────────────┴──────────┴──────────────┴─────────────────────────────────────────────┴───────────────────┘
+</code></pre></div>
+<h3 id="by-finding-ids">By Finding IDs</h3>
 <p>Trivy supports the <a href="#trivyignore">.trivyignore</a> and <a href="#trivyignoreyaml">.trivyignore.yaml</a> ignore files.</p>
-<h3 id="trivyignore">.trivyignore</h3>
+<h4 id="trivyignore">.trivyignore</h4>
 <table>
 <thead>
 <tr>
@@ -4003,7 +4099,7 @@ Total: <span class="m">0</span> <span class="o">(</span>UNKNOWN: <span class="m"
 
 </details>
 
-<h3 id="trivyignoreyaml">.trivyignore.yaml</h3>
+<h4 id="trivyignoreyaml">.trivyignore.yaml</h4>
 <table>
 <thead>
 <tr>
@@ -4126,90 +4222,7 @@ Total: <span class="m">0</span> <span class="o">(</span>UNKNOWN: <span class="m"
 
 </details>
 
-<h2 id="by-vulnerability-target">By Vulnerability Target</h2>
-<table>
-<thead>
-<tr>
-<th align="center">Scanner</th>
-<th align="center">Supported</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center">Vulnerability</td>
-<td align="center">✓</td>
-</tr>
-<tr>
-<td align="center">Misconfiguration</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">Secret</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">License</td>
-<td align="center"></td>
-</tr>
-</tbody>
-</table>
-<p>Use <code>--vuln-type</code> option.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --vuln-type os ruby:2.4.0
-</code></pre></div>
-<p>Available values:</p>
-<ul>
-<li>library</li>
-<li>os</li>
-</ul>
-<details>
-<summary>Result</summary>
-
-<div class="highlight"><pre><span></span><code><span class="m">2019</span>-05-22T19:36:50.530+0200    <span class="o">[</span>34mINFO<span class="o">[</span>0m    Updating vulnerability database...
-<span class="m">2019</span>-05-22T19:36:51.681+0200    <span class="o">[</span>34mINFO<span class="o">[</span>0m    Detecting Alpine vulnerabilities...
-<span class="m">2019</span>-05-22T19:36:51.685+0200    <span class="o">[</span>34mINFO<span class="o">[</span>0m    Updating npm Security DB...
-<span class="m">2019</span>-05-22T19:36:52.389+0200    <span class="o">[</span>34mINFO<span class="o">[</span>0m    Detecting npm vulnerabilities...
-<span class="m">2019</span>-05-22T19:36:52.390+0200    <span class="o">[</span>34mINFO<span class="o">[</span>0m    Updating pipenv Security DB...
-<span class="m">2019</span>-05-22T19:36:53.406+0200    <span class="o">[</span>34mINFO<span class="o">[</span>0m    Detecting pipenv vulnerabilities...
-
-ruby:2.4.0 <span class="o">(</span>debian <span class="m">8</span>.7<span class="o">)</span>
-<span class="o">=======================</span>
-Total: <span class="m">7</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">1</span>, MEDIUM: <span class="m">1</span>, HIGH: <span class="m">3</span>, CRITICAL: <span class="m">2</span><span class="o">)</span>
-
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-<span class="p">|</span> LIBRARY <span class="p">|</span> VULNERABILITY ID <span class="p">|</span> SEVERITY <span class="p">|</span> INSTALLED VERSION <span class="p">|</span> FIXED VERSION <span class="p">|</span>              TITLE               <span class="p">|</span>
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-<span class="p">|</span> curl    <span class="p">|</span> CVE-2018-14618   <span class="p">|</span> CRITICAL <span class="p">|</span> <span class="m">7</span>.61.0-r0         <span class="p">|</span> <span class="m">7</span>.61.1-r0     <span class="p">|</span> curl: NTLM password overflow     <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> via integer overflow             <span class="p">|</span>
-+         +------------------+----------+                   +---------------+----------------------------------+
-<span class="p">|</span>         <span class="p">|</span> CVE-2018-16839   <span class="p">|</span> HIGH     <span class="p">|</span>                   <span class="p">|</span> <span class="m">7</span>.61.1-r1     <span class="p">|</span> curl: Integer overflow leading   <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> to heap-based buffer overflow <span class="k">in</span> <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> Curl_sasl_create_plain_message<span class="o">()</span> <span class="p">|</span>
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-<span class="p">|</span> git     <span class="p">|</span> CVE-2018-17456   <span class="p">|</span> HIGH     <span class="p">|</span> <span class="m">2</span>.15.2-r0         <span class="p">|</span> <span class="m">2</span>.15.3-r0     <span class="p">|</span> git: arbitrary code execution    <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> via .gitmodules                  <span class="p">|</span>
-+         +------------------+          +                   +               +----------------------------------+
-<span class="p">|</span>         <span class="p">|</span> CVE-2018-19486   <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> git: Improper handling of        <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> PATH allows <span class="k">for</span> commands to be   <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> executed from...                 <span class="p">|</span>
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-<span class="p">|</span> libssh2 <span class="p">|</span> CVE-2019-3855    <span class="p">|</span> CRITICAL <span class="p">|</span> <span class="m">1</span>.8.0-r2          <span class="p">|</span> <span class="m">1</span>.8.1-r0      <span class="p">|</span> libssh2: Integer overflow <span class="k">in</span>     <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> transport <span class="nb">read</span> resulting <span class="k">in</span>      <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> out of bounds write...           <span class="p">|</span>
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-<span class="p">|</span> sqlite  <span class="p">|</span> CVE-2018-20346   <span class="p">|</span> MEDIUM   <span class="p">|</span> <span class="m">3</span>.21.0-r1         <span class="p">|</span> <span class="m">3</span>.25.3-r0     <span class="p">|</span> CVE-2018-20505 CVE-2018-20506    <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> sqlite: Multiple flaws <span class="k">in</span>        <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> sqlite which can be triggered    <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> via...                           <span class="p">|</span>
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-<span class="p">|</span> tar     <span class="p">|</span> CVE-2018-20482   <span class="p">|</span> LOW      <span class="p">|</span> <span class="m">1</span>.29-r1           <span class="p">|</span> <span class="m">1</span>.31-r0       <span class="p">|</span> tar: Infinite <span class="nb">read</span> loop <span class="k">in</span>       <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> sparse_dump_region <span class="k">function</span> <span class="k">in</span>   <span class="p">|</span>
-<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> sparse.c                         <span class="p">|</span>
-+---------+------------------+----------+-------------------+---------------+----------------------------------+
-</code></pre></div>
-
-</details>
-
-<h2 id="by-rego">By Rego</h2>
+<h3 id="by-rego">By Rego</h3>
 <table>
 <thead>
 <tr>
@@ -4290,7 +4303,7 @@ ignore {
 <p>For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>.
 More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.49.1/pkg/result/module.go">here</a>.</p>
 <p>You can find more example policies <a href="https://github.com/aquasecurity/trivy/tree/v0.49.1/pkg/result/module.go">here</a></p>
-<h2 id="by-inline-comments">By Inline Comments</h2>
+<h3 id="by-vulnerability-exploitability-exchange-vex">By Vulnerability Exploitability Exchange (VEX)</h3>
 <table>
 <thead>
 <tr>
@@ -4301,11 +4314,11 @@ More info about the helper functions are in the library <a href="https://github.
 <tbody>
 <tr>
 <td align="center">Vulnerability</td>
-<td align="center"></td>
+<td align="center">✓</td>
 </tr>
 <tr>
 <td align="center">Misconfiguration</td>
-<td align="center">✓</td>
+<td align="center"></td>
 </tr>
 <tr>
 <td align="center">Secret</td>
@@ -4317,23 +4330,7 @@ More info about the helper functions are in the library <a href="https://github.
 </tr>
 </tbody>
 </table>
-<p>Some configuration file formats (e.g. Terraform) support inline comments.</p>
-<p>In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned).</p>
-<p>The format for these comments is <code>trivy:ignore:&lt;Vulnerability ID&gt;</code> immediately following the format-specific line-comment token. You can add multiple ignores on the same comment line.</p>
-<p>For example, to filter a Vulnerability ID "AVD-GCP-0051" in a Terraform HCL file:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051</span>
-<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;one_off_test&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
-<span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</code></pre></div>
-<p>For example, to filter vulnerabilities "AVD-GCP-0051" and "AVD-GCP-0053" in a Terraform HCL file:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053</span>
-<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;one_off_test&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
-<span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</code></pre></div>
+<p>Please refer to the <a href="../../supply-chain/vex/">VEX documentation</a> for the details.</p>
 <div class="footnote">
 <hr />
 <ol>

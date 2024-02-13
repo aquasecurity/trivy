@@ -1240,22 +1240,29 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#pass-custom-policies" class="md-nav__link">
-    Pass custom policies
+  <a href="#passing-custom-policies" class="md-nav__link">
+    Passing custom policies
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pass-custom-data" class="md-nav__link">
-    Pass custom data
+  <a href="#passing-custom-data" class="md-nav__link">
+    Passing custom data
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pass-namespaces" class="md-nav__link">
-    Pass namespaces
+  <a href="#passing-namespaces" class="md-nav__link">
+    Passing namespaces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skipping-resources-by-inline-comments" class="md-nav__link">
+    Skipping resources by inline comments
   </a>
   
 </li>
@@ -3629,22 +3636,29 @@ You're not viewing the latest version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#pass-custom-policies" class="md-nav__link">
-    Pass custom policies
+  <a href="#passing-custom-policies" class="md-nav__link">
+    Passing custom policies
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pass-custom-data" class="md-nav__link">
-    Pass custom data
+  <a href="#passing-custom-data" class="md-nav__link">
+    Passing custom data
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#pass-namespaces" class="md-nav__link">
-    Pass namespaces
+  <a href="#passing-namespaces" class="md-nav__link">
+    Passing namespaces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skipping-resources-by-inline-comments" class="md-nav__link">
+    Skipping resources by inline comments
   </a>
   
 </li>
@@ -3969,12 +3983,13 @@ Failures: <span class="m">2</span> <span class="o">(</span>MEDIUM: <span class="
 <p>This section describes misconfiguration-specific configuration.
 Other common options are documented <a href="../../configuration/">here</a>.</p>
 <h3 id="enabling-a-subset-of-misconfiguration-scanners">Enabling a subset of misconfiguration scanners</h3>
-<p>It's possible to only enable certain misconfiguration scanners if you prefer. You can do so by passing the <code>--misconfig-scanners</code> option.
-This flag takes a comma-separated list of configuration scanner types.
+<p>It's possible to only enable certain misconfiguration scanners if you prefer.
+You can do so by passing the <code>--misconfig-scanners</code> option.
+This flag takes a comma-separated list of configuration scanner types.</p>
 <div class="highlight"><pre><span></span><code>trivy config --misconfig-scanners<span class="o">=</span>terraform,dockerfile .
-</code></pre></div></p>
+</code></pre></div>
 <p>Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.</p>
-<h3 id="pass-custom-policies">Pass custom policies</h3>
+<h3 id="passing-custom-policies">Passing custom policies</h3>
 <p>You can pass policy files or directories including your custom policies through <code>--policy</code> option.
 This can be repeated for specifying multiple files or directories.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span> examplex/misconf/
@@ -3985,18 +4000,37 @@ trivy conf --policy custom-policy/policy --policy combine/policy --policy policy
 <p class="admonition-title">Tip</p>
 </div>
 <p>You also need to specify <code>--namespaces</code> option.</p>
-<h3 id="pass-custom-data">Pass custom data</h3>
+<h3 id="passing-custom-data">Passing custom data</h3>
 <p>You can pass directories including your custom data through <code>--data</code> option.
 This can be repeated for specifying multiple directories.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span> examples/misconf/custom-data
 trivy conf --policy ./policy --data ./data --namespaces user ./configs
 </code></pre></div>
 <p>For more details, see <a href="custom/data/">Custom Data</a>.</p>
-<h3 id="pass-namespaces">Pass namespaces</h3>
+<h3 id="passing-namespaces">Passing namespaces</h3>
 <p>By default, Trivy evaluates policies defined in <code>builtin.*</code>.
 If you want to evaluate custom policies in other packages, you have to specify package prefixes through <code>--namespaces</code> option.
 This can be repeated for specifying multiple packages.</p>
 <div class="highlight"><pre><span></span><code>trivy conf --policy ./policy --namespaces main --namespaces user ./configs
+</code></pre></div>
+<h3 id="skipping-resources-by-inline-comments">Skipping resources by inline comments</h3>
+<p>Some configuration file formats (e.g. Terraform) support inline comments.</p>
+<p>In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned).</p>
+<p>The format for these comments is <code>trivy:ignore:&lt;Vulnerability ID&gt;</code> immediately following the format-specific line-comment token.
+You can add multiple ignores on the same comment line.</p>
+<p>For example, to filter a misconfiguration ID "AVD-GCP-0051" in a Terraform HCL file:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;one_off_test&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
+<span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>For example, to filter misconfigurations "AVD-GCP-0051" and "AVD-GCP-0053" in a Terraform HCL file:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;one_off_test&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
+<span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 
               
