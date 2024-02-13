@@ -24,7 +24,6 @@ const (
 	MisconfigurationsColumn = "Misconfigurations"
 	SecretsColumn           = "Secrets"
 	RbacAssessmentColumn    = "RBAC Assessment"
-	InfraAssessmentColumn   = "Kubernetes Infra Assessment"
 )
 
 func WorkloadColumns() []string {
@@ -40,7 +39,11 @@ func RoleColumns() []string {
 }
 
 func InfraColumns() []string {
-	return []string{InfraAssessmentColumn}
+	return []string{
+		VulnerabilitiesColumn,
+		MisconfigurationsColumn,
+		SecretsColumn,
+	}
 }
 
 func (tw TableWriter) Write(ctx context.Context, report Report) error {
