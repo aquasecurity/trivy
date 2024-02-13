@@ -212,7 +212,7 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]types.Library, 
 
 	// build full path to inner jar
 	fullPath := path.Join(rootPath, zf.Name) // nolint:gosec
-	if !strings.HasPrefix(fullPath, filepath.Clean(rootPath)) {
+	if !strings.HasPrefix(fullPath, path.Clean(rootPath)) {
 		return nil, nil, nil // zip slip
 	}
 
