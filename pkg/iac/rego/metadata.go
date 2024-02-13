@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mitchellh/mapstructure"
+	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/rego"
+
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/mitchellh/mapstructure"
-	"github.com/open-policy-agent/opa/ast"
-	"github.com/open-policy-agent/opa/rego"
 )
 
 type StaticMetadata struct {
@@ -89,13 +90,14 @@ func (sm *StaticMetadata) Update(meta map[string]any) error {
 		}
 	}
 	if raw, ok := meta["related_resources"]; ok {
-		if relatedResources, ok := raw.([]map[string]any); ok {
+		switch relatedResources := raw.(type) {
+		case []map[string]any:
 			for _, relatedResource := range relatedResources {
 				if raw, ok := relatedResource["ref"]; ok {
 					sm.References = append(sm.References, fmt.Sprintf("%s", raw))
 				}
 			}
-		} else if relatedResources, ok := raw.([]string); ok {
+		case []string:
 			sm.References = append(sm.References, relatedResources...)
 		}
 	}
@@ -304,7 +306,7 @@ func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Mo
 	return metadata, nil
 }
 
-// nolint: cyclop
+// nolint: gocyclo
 func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.Module) InputOptions {
 
 	options := InputOptions{

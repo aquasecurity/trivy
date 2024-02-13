@@ -5,15 +5,14 @@ import (
 	"io/fs"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
-	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
-
 	"github.com/google/uuid"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/gocty"
+
+	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Block struct {
@@ -315,7 +314,9 @@ func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
 	}
 
 	if working != nil {
-		return working.GetAttribute(attrName), working
+		if attr := working.GetAttribute(attrName); attr != nil {
+			return attr, working
+		}
 	}
 
 	return nil, b

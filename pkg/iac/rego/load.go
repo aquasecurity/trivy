@@ -147,7 +147,7 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 		return err
 	}
 	if custom {
-		s.inputSchema = nil // discard auto detected input schema in favour of policy defined schema
+		s.inputSchema = nil // discard auto detected input schema in favor of policy defined schema
 	}
 
 	compiler := ast.NewCompiler().

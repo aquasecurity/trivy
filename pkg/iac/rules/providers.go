@@ -150,7 +150,7 @@ func GetProviderServiceNames(providerName string) []string {
 	return uniqueServices
 }
 
-func GetProviderServiceCheckNames(providerName string, serviceName string) []string {
+func GetProviderServiceCheckNames(providerName, serviceName string) []string {
 
 	registeredRules := GetRegistered()
 

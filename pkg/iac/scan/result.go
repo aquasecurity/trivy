@@ -7,9 +7,8 @@ import (
 	"reflect"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Status uint8
@@ -190,7 +189,7 @@ func (r *Results) Add(description string, source interface{}) {
 	*r = append(*r, result)
 }
 
-func (r *Results) AddRego(description string, namespace string, rule string, traces []string, source MetadataProvider) {
+func (r *Results) AddRego(description, namespace, rule string, traces []string, source MetadataProvider) {
 	result := Result{
 		description:   description,
 		regoNamespace: namespace,
@@ -238,7 +237,7 @@ func getAnnotation(source interface{}) string {
 	return ""
 }
 
-func (r *Results) AddPassedRego(namespace string, rule string, traces []string, source interface{}) {
+func (r *Results) AddPassedRego(namespace, rule string, traces []string, source interface{}) {
 	res := Result{
 		status:        StatusPassed,
 		regoNamespace: namespace,

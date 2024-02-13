@@ -65,12 +65,12 @@ func (b *builder) fromInput(inputValue reflect.Value) error {
 
 func refName(name string, parent, t reflect.Type) string {
 	if t.Name() == "" { // inline struct
-		return sanitise(parent.PkgPath() + "." + parent.Name() + "." + name)
+		return sanitize(parent.PkgPath() + "." + parent.Name() + "." + name)
 	}
-	return sanitise(t.PkgPath() + "." + t.Name())
+	return sanitize(t.PkgPath() + "." + t.Name())
 }
 
-func sanitise(s string) string {
+func sanitize(s string) string {
 	return strings.ReplaceAll(s, "/", ".")
 }
 
@@ -169,12 +169,12 @@ var converterInterface = reflect.TypeOf((*convert.Converter)(nil)).Elem()
 func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
 
 	if b.schema.Defs == nil {
-		b.schema.Defs = map[string]*Property{}
+		b.schema.Defs = make(map[string]*Property)
 	}
 
 	def := &Property{
 		Type:       "object",
-		Properties: map[string]Property{},
+		Properties: make(map[string]Property),
 	}
 
 	if parent != nil {
@@ -232,14 +232,14 @@ func (b *builder) readSlice(name string, parent, inputType reflect.Type, indent 
 	return prop, nil
 }
 
-func (b *builder) readRego(def *Property, name string, parent reflect.Type, typ reflect.Type, raw interface{}, indent int) error {
+func (b *builder) readRego(def *Property, name string, parent, typ reflect.Type, raw interface{}, indent int) error {
 
 	switch cast := raw.(type) {
 	case map[string]interface{}:
 		def.Type = "object"
 		for k, v := range cast {
 			child := &Property{
-				Properties: map[string]Property{},
+				Properties: make(map[string]Property),
 			}
 			if err := b.readRego(child, k, reflect.TypeOf(raw), reflect.TypeOf(v), v, indent+1); err != nil {
 				return err
@@ -250,7 +250,7 @@ func (b *builder) readRego(def *Property, name string, parent reflect.Type, typ 
 		def.Type = "object"
 		for k, v := range cast {
 			child := &Property{
-				Properties: map[string]Property{},
+				Properties: make(map[string]Property),
 			}
 			if err := b.readRego(child, k, reflect.TypeOf(raw), reflect.TypeOf(v), v, indent+1); err != nil {
 				return err

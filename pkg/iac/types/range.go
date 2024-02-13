@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func NewRange(filename string, startLine int, endLine int, sourcePrefix string, srcFS fs.FS) Range {
+func NewRange(filename string, startLine, endLine int, sourcePrefix string, srcFS fs.FS) Range {
 	r := Range{
 		filename:     filename,
 		startLine:    startLine,
@@ -33,12 +33,12 @@ func NewRangeWithLogicalSource(filename string, startLine int, endLine int, sour
 	return r
 }
 
-func NewRangeWithFSKey(filename string, startLine int, endLine int, sourcePrefix string, fsKey string, fs fs.FS) Range {
+func NewRangeWithFSKey(filename string, startLine, endLine int, sourcePrefix, fsKey string, fsys fs.FS) Range {
 	r := Range{
 		filename:     filename,
 		startLine:    startLine,
 		endLine:      endLine,
-		fs:           fs,
+		fs:           fsys,
 		fsKey:        fsKey,
 		sourcePrefix: sourcePrefix,
 	}

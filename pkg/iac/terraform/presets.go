@@ -43,8 +43,7 @@ func postProcessValues(b *Block, input map[string]cty.Value) map[string]cty.Valu
 		}
 	}
 
-	switch b.TypeLabel() {
-	case "aws_s3_bucket":
+	if b.TypeLabel() == "aws_s3_bucket" {
 		var bucketName string
 		if bucket := input["bucket"]; bucket.Type().Equals(cty.String) {
 			bucketName = bucket.AsString()

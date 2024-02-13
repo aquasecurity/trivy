@@ -69,7 +69,7 @@ func (m Modules) GetReferencedBlock(referringAttr *Attribute, parentBlock *Block
 	return nil, fmt.Errorf("block not found")
 }
 
-func (m Modules) GetReferencingResources(originalBlock *Block, referencingLabel string, referencingAttributeName string) Blocks {
+func (m Modules) GetReferencingResources(originalBlock *Block, referencingLabel, referencingAttributeName string) Blocks {
 	var blocks Blocks
 	for _, module := range m {
 		blocks = append(blocks, module.GetReferencingResources(originalBlock, referencingLabel, referencingAttributeName)...)

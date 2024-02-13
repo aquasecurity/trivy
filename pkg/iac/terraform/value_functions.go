@@ -19,7 +19,7 @@ var functions = map[string]func(interface{}, interface{}) bool{
 	"regexMatches": regexMatches,
 }
 
-func evaluate(criteriaValue interface{}, testValue interface{}) bool {
+func evaluate(criteriaValue, testValue interface{}) bool {
 	switch t := criteriaValue.(type) {
 	case map[interface{}]interface{}:
 		if t[functionNameKey] != nil {
@@ -42,7 +42,7 @@ func executeFunction(functionName string, criteriaValues, testValue interface{})
 	return false
 }
 
-func isAny(criteriaValues interface{}, testValue interface{}) bool {
+func isAny(criteriaValues, testValue interface{}) bool {
 	switch t := criteriaValues.(type) {
 	case []interface{}:
 		for _, v := range t {
@@ -60,11 +60,11 @@ func isAny(criteriaValues interface{}, testValue interface{}) bool {
 	return false
 }
 
-func isNone(criteriaValues interface{}, testValue interface{}) bool {
+func isNone(criteriaValues, testValue interface{}) bool {
 	return !isAny(criteriaValues, testValue)
 }
 
-func regexMatches(criteriaValue interface{}, testValue interface{}) bool {
+func regexMatches(criteriaValue, testValue interface{}) bool {
 	var patternVal string
 	switch t := criteriaValue.(type) {
 	case string:

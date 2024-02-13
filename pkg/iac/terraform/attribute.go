@@ -8,14 +8,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/gocty"
+
+	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Attribute struct {
@@ -727,7 +727,7 @@ func (a *Attribute) IsTrue() bool {
 	case cty.String:
 		val := a.Value().AsString()
 		val = strings.Trim(val, "\"")
-		return strings.ToLower(val) == "true"
+		return strings.EqualFold(val, "true")
 	case cty.Number:
 		val := a.Value().AsBigFloat()
 		f, _ := val.Float64()
@@ -746,7 +746,7 @@ func (a *Attribute) IsFalse() bool {
 	case cty.String:
 		val := a.Value().AsString()
 		val = strings.Trim(val, "\"")
-		return strings.ToLower(val) == "false"
+		return strings.EqualFold(val, "false")
 	case cty.Number:
 		val := a.Value().AsBigFloat()
 		f, _ := val.Float64()
@@ -760,7 +760,7 @@ func (a *Attribute) IsEmpty() bool {
 		return false
 	}
 	if a.Value().Type() == cty.String {
-		return len(a.Value().AsString()) == 0
+		return a.Value().AsString() == ""
 	}
 	if a.Type().IsListType() || a.Type().IsTupleType() {
 		return len(a.Value().AsValueSlice()) == 0
@@ -900,8 +900,7 @@ func (a *Attribute) IsDataBlockReference() bool {
 	if a == nil {
 		return false
 	}
-	switch t := a.hclAttribute.Expr.(type) {
-	case *hclsyntax.ScopeTraversalExpr:
+	if t, ok := a.hclAttribute.Expr.(*hclsyntax.ScopeTraversalExpr); ok {
 		split := t.Traversal.SimpleSplit()
 		return split.Abs.RootName() == "data"
 	}
@@ -943,6 +942,7 @@ func (a *Attribute) ReferencesBlock(b *Block) bool {
 	return false
 }
 
+// nolint
 func (a *Attribute) AllReferences(blocks ...*Block) []*Reference {
 	if a == nil {
 		return nil
@@ -1026,8 +1026,7 @@ func (a *Attribute) IsResourceBlockReference(resourceType string) bool {
 	if a == nil {
 		return false
 	}
-	switch t := a.hclAttribute.Expr.(type) {
-	case *hclsyntax.ScopeTraversalExpr:
+	if t, ok := a.hclAttribute.Expr.(*hclsyntax.ScopeTraversalExpr); ok {
 		split := t.Traversal.SimpleSplit()
 		return split.Abs.RootName() == resourceType
 	}

@@ -15,7 +15,7 @@ type Module struct {
 	local      bool
 }
 
-func NewModule(rootPath string, modulePath string, blocks Blocks, ignores Ignores, local bool) *Module {
+func NewModule(rootPath, modulePath string, blocks Blocks, ignores Ignores, local bool) *Module {
 
 	blockMap := make(map[string]Blocks)
 
@@ -99,7 +99,7 @@ func (c *Module) GetDatasByType(label string) Blocks {
 	return c.getBlocksByType("data", label)
 }
 
-func (c *Module) GetProviderBlocksByProvider(providerName string, alias string) Blocks {
+func (c *Module) GetProviderBlocksByProvider(providerName, alias string) Blocks {
 	var results Blocks
 	for _, block := range c.blocks {
 		if block.Type() == "provider" && len(block.Labels()) > 0 && block.TypeLabel() == providerName {
@@ -147,7 +147,7 @@ func (c *Module) GetBlockByID(id string) (*Block, error) {
 	return found, nil
 }
 
-func (c *Module) GetReferencingResources(originalBlock *Block, referencingLabel string, referencingAttributeName string) Blocks {
+func (c *Module) GetReferencingResources(originalBlock *Block, referencingLabel, referencingAttributeName string) Blocks {
 	return c.GetReferencingBlocks(originalBlock, "resource", referencingLabel, referencingAttributeName)
 }
 
@@ -163,7 +163,7 @@ func (c *Module) GetsModulesBySource(moduleSource string) (Blocks, error) {
 	return results, nil
 }
 
-func (c *Module) GetReferencingBlocks(originalBlock *Block, referencingType string, referencingLabel string, referencingAttributeName string) Blocks {
+func (c *Module) GetReferencingBlocks(originalBlock *Block, referencingType, referencingLabel, referencingAttributeName string) Blocks {
 	blocks := c.getBlocksByType(referencingType, referencingLabel)
 	var results Blocks
 	for _, block := range blocks {

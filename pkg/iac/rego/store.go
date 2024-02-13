@@ -11,7 +11,7 @@ import (
 	"github.com/open-policy-agent/opa/storage"
 )
 
-// initialise a store populated with OPA data files found in dataPaths
+// initialize a store populated with OPA data files found in dataPaths
 func initStore(dataFS fs.FS, dataPaths, namespaces []string) (storage.Store, error) {
 	// FilteredPaths will recursively find all file paths that contain a valid document
 	// extension from the given list of data paths.

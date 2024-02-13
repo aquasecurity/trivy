@@ -5,9 +5,10 @@ import (
 	"io/fs"
 	"strconv"
 
+	"github.com/open-policy-agent/opa/rego"
+
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/open-policy-agent/opa/rego"
 )
 
 type regoResult struct {
@@ -120,7 +121,7 @@ func parseLineNumber(raw interface{}) int {
 	return n
 }
 
-func (s *Scanner) convertResults(set rego.ResultSet, input Input, namespace string, rule string, traces []string) scan.Results {
+func (s *Scanner) convertResults(set rego.ResultSet, input Input, namespace, rule string, traces []string) scan.Results {
 	var results scan.Results
 
 	offset := 0

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
 
-	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/spf13/cobra"
+
+	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 )
 
 // generate a json schema document for cloud rego input (state.State)
@@ -69,7 +71,7 @@ var verifyCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if string(data) != string(existing) {
+		if !bytes.Equal(data, existing) {
 			return fmt.Errorf("schema is out of date:\n\nplease run 'make schema' and commit the changes")
 		}
 		fmt.Println("schema is valid")

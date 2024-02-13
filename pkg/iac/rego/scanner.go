@@ -9,15 +9,16 @@ import (
 	"io/fs"
 	"strings"
 
+	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/rego"
+	"github.com/open-policy-agent/opa/storage"
+
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/open-policy-agent/opa/ast"
-	"github.com/open-policy-agent/opa/rego"
-	"github.com/open-policy-agent/opa/storage"
 )
 
 var _ options.ConfigurableScanner = (*Scanner)(nil)
@@ -71,12 +72,12 @@ func (s *Scanner) trace(heading string, input interface{}) {
 	_, _ = fmt.Fprintf(s.traceWriter, "REGO %[1]s:\n%s\nEND REGO %[1]s\n\n", heading, string(data))
 }
 
-func (s *Scanner) SetPolicyFilesystem(fs fs.FS) {
-	s.policyFS = fs
+func (s *Scanner) SetPolicyFilesystem(fsys fs.FS) {
+	s.policyFS = fsys
 }
 
-func (s *Scanner) SetDataFilesystem(fs fs.FS) {
-	s.dataFS = fs
+func (s *Scanner) SetDataFilesystem(fsys fs.FS) {
+	s.dataFS = fsys
 }
 
 func (s *Scanner) SetPolicyReaders(_ []io.Reader) {
@@ -125,7 +126,7 @@ type DynamicMetadata struct {
 	EndLine   int
 }
 
-func NewScanner(source types.Source, options ...options.ScannerOption) *Scanner {
+func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
 	schema, ok := schemas.SchemaMap[source]
 	if !ok {
 		schema = schemas.Anything
@@ -141,7 +142,7 @@ func NewScanner(source types.Source, options ...options.ScannerOption) *Scanner 
 		},
 		runtimeValues: addRuntimeValues(),
 	}
-	for _, opt := range options {
+	for _, opt := range opts {
 		opt(s)
 	}
 	if schema != schemas.None {
@@ -332,7 +333,7 @@ func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 	return false
 }
 
-func (s *Scanner) applyRule(ctx context.Context, namespace string, rule string, inputs []Input, combined bool) (scan.Results, error) {
+func (s *Scanner) applyRule(ctx context.Context, namespace, rule string, inputs []Input, combined bool) (scan.Results, error) {
 
 	// handle combined evaluations if possible
 	if combined {
@@ -374,7 +375,7 @@ func (s *Scanner) applyRule(ctx context.Context, namespace string, rule string, 
 	return results, nil
 }
 
-func (s *Scanner) applyRuleCombined(ctx context.Context, namespace string, rule string, inputs []Input) (scan.Results, error) {
+func (s *Scanner) applyRuleCombined(ctx context.Context, namespace, rule string, inputs []Input) (scan.Results, error) {
 	if len(inputs) == 0 {
 		return nil, nil
 	}

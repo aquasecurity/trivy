@@ -1,6 +1,8 @@
 package rules
 
 import (
+	trules "github.com/aquasecurity/trivy-policies/pkg/rules"
+
 	_ "github.com/aquasecurity/trivy-policies/checks/cloud/aws/accessanalyzer"
 	_ "github.com/aquasecurity/trivy-policies/checks/cloud/aws/apigateway"
 	_ "github.com/aquasecurity/trivy-policies/checks/cloud/aws/athena"
@@ -72,7 +74,6 @@ import (
 	_ "github.com/aquasecurity/trivy-policies/checks/cloud/openstack/networking"
 	_ "github.com/aquasecurity/trivy-policies/checks/cloud/oracle/compute"
 	_ "github.com/aquasecurity/trivy-policies/checks/kubernetes/network"
-	trules "github.com/aquasecurity/trivy-policies/pkg/rules"
 )
 
 func init() {

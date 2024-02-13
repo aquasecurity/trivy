@@ -112,7 +112,7 @@ func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
 	return cty.ObjectVal(data)
 }
 
-func mergeObjects(a cty.Value, b cty.Value) cty.Value {
+func mergeObjects(a, b cty.Value) cty.Value {
 	output := make(map[string]cty.Value)
 
 	for key, val := range a.AsValueMap() {

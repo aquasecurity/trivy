@@ -1,8 +1,9 @@
 package iam
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/liamg/iamgo"
+
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type IAM struct {

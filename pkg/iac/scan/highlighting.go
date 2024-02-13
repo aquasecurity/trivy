@@ -34,7 +34,7 @@ var globalCache = &cache{
 	data: make(map[string][]string),
 }
 
-func highlight(fsKey string, filename string, input []byte, theme string) []string {
+func highlight(fsKey, filename string, input []byte, theme string) []string {
 
 	key := fmt.Sprintf("%s|%s", fsKey, filename)
 	if lines, ok := globalCache.Get(key); ok {
@@ -108,8 +108,7 @@ func shiftANSIOverLineEndings(input []byte) []byte {
 		} else {
 			csi = append(csi, r)
 			skipOutput = true
-			switch {
-			case r >= 0x40 && r <= 0x7E:
+			if r >= 0x40 && r <= 0x7E {
 				csiShouldCarry = true
 				inCSI = false
 			}

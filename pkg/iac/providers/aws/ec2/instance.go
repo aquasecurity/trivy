@@ -1,8 +1,9 @@
 package ec2
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/owenrumney/squealer/pkg/squealer"
+
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Instance struct {

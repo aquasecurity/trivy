@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
 	"github.com/zclconf/go-cty/cty"
+
+	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Ignore struct {

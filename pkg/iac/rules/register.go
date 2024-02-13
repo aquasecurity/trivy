@@ -1,22 +1,22 @@
 package rules
 
 //
-//import (
+// import (
 //	"github.com/aquasecurity/trivy/pkg/iac/internal/rules"
 //	"github.com/aquasecurity/trivy/pkg/iac/framework"
 //	"github.com/aquasecurity/trivy/pkg/iac/scan"
 //	ruleTypes "github.com/aquasecurity/trivy/pkg/iac/types/rules"
 //)
 //
-//func Register(rule scan.Rule) ruleTypes.RegisteredRule {
+// func Register(rule scan.Rule) ruleTypes.RegisteredRule {
 //	return rules.Register(rule)
 //}
 //
-//func Deregister(rule ruleTypes.RegisteredRule) {
+// func Deregister(rule ruleTypes.RegisteredRule) {
 //	rules.Deregister(rule)
 //}
 //
-//func GetRegistered(fw ...framework.Framework) []ruleTypes.RegisteredRule {
+// func GetRegistered(fw ...framework.Framework) []ruleTypes.RegisteredRule {
 //	return rules.GetFrameworkRules(fw...)
 //}
 //

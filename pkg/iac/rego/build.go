@@ -5,15 +5,16 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/open-policy-agent/opa/util"
+
+	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func BuildSchemaSetFromPolicies(policies map[string]*ast.Module, paths []string, fsys fs.FS) (*ast.SchemaSet, bool, error) {
 	schemaSet := ast.NewSchemaSet()
-	schemaSet.Put(ast.MustParseRef("schema.input"), map[string]interface{}{}) // for backwards compat only
+	schemaSet.Put(ast.MustParseRef("schema.input"), make(map[string]interface{})) // for backwards compat only
 	var customFound bool
 	for _, policy := range policies {
 		for _, annotation := range policy.Annotations {

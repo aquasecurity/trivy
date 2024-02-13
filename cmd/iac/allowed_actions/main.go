@@ -198,7 +198,7 @@ func findSubtag(n *html.Node, tagName string) *html.Node {
 }
 
 func findSubtags(n *html.Node, tagName string) []*html.Node {
-	result := make([]*html.Node, 0)
+	var result []*html.Node
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		if c.Type == html.ElementNode && c.Data == tagName {
 			result = append(result, c)
