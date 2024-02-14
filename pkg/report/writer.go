@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"strings"
-	"sync"
 
 	"golang.org/x/xerrors"
 
@@ -49,7 +48,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			Output:               output,
 			Severities:           option.Severities,
 			Tree:                 option.DependencyTree,
-			ShowMessageOnce:      &sync.Once{},
+			ShowSuppressed:       option.ShowSuppressed,
 			IncludeNonFailures:   option.IncludeNonFailures,
 			Trace:                option.Trace,
 			LicenseRiskThreshold: option.LicenseRiskThreshold,

@@ -229,16 +229,16 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 		var detected []types.DetectedMisconfiguration
 
 		for _, f := range misconf.Failures {
-			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.StatusFailure, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.MisconfStatusFailure, misconf.Layer))
 		}
 		for _, w := range misconf.Warnings {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.StatusFailure, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.MisconfStatusFailure, misconf.Layer))
 		}
 		for _, w := range misconf.Successes {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusPassed, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusPassed, misconf.Layer))
 		}
 		for _, w := range misconf.Exceptions {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusException, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusException, misconf.Layer))
 		}
 
 		results = append(results, types.Result{
@@ -266,9 +266,11 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 		log.Logger.Debugf("Secret file: %s", secret.FilePath)
 
 		results = append(results, types.Result{
-			Target:  secret.FilePath,
-			Class:   types.ClassSecret,
-			Secrets: secret.Findings,
+			Target: secret.FilePath,
+			Class:  types.ClassSecret,
+			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, index int) types.DetectedSecret {
+				return types.DetectedSecret(secret)
+			}),
 		})
 	}
 	return results

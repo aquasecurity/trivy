@@ -3,7 +3,6 @@ package report
 import (
 	"context"
 	"io"
-	"sync"
 
 	"golang.org/x/xerrors"
 
@@ -48,9 +47,8 @@ func (tw TableWriter) Write(ctx context.Context, report Report) error {
 	switch tw.Report {
 	case AllReport:
 		t := pkgReport.Writer{
-			Output:          tw.Output,
-			Severities:      tw.Severities,
-			ShowMessageOnce: &sync.Once{},
+			Output:     tw.Output,
+			Severities: tw.Severities,
 		}
 		for _, r := range report.Resources {
 			if r.Report.Results.Failed() {
