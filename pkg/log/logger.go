@@ -33,7 +33,7 @@ func InitLogger(debug, disable bool) (err error) {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
 
-	// Set logger for go-dep-parser
+	// Set logger for dependency/parser
 	dlog.SetLogger(Logger)
 
 	// Set logger for fanal
