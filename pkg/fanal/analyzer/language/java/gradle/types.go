@@ -2,9 +2,10 @@ package gradle
 
 import (
 	"encoding/xml"
+	"io"
+
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
-	"io"
 )
 
 type pomXML struct {
