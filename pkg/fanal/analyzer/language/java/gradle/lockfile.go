@@ -2,7 +2,6 @@ package gradle
 
 import (
 	"context"
-	"encoding/xml"
 	"fmt"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -57,7 +56,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 	var apps []types.Application
 	err = fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		var app *types.Application
-		app, err = language.Parse(types.Pub, path, r, a.parser)
+		app, err = language.Parse(types.Gradle, path, r, a.parser)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", path, err)
 		}
@@ -65,8 +64,8 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		if app == nil {
 			return nil
 		}
-		for _, lib := range app.Libraries {
-			lib.Licenses = licenses[lib.ID]
+		for i, lib := range app.Libraries {
+			app.Libraries[i].Licenses = licenses[lib.ID]
 		}
 
 		sort.Sort(app.Libraries)
@@ -111,26 +110,15 @@ func findLicenses() (map[string][]string, error) {
 		return nil, nil
 	}
 
+	required := func(path string, d fs.DirEntry) bool {
+		return filepath.Ext(path) == ".pom"
+	}
+
 	var licenses = make(map[string][]string)
-	err := filepath.WalkDir(cacheDir, func(path string, d fs.DirEntry, err error) error {
+	err := fsutils.WalkDir(os.DirFS(cacheDir), ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
+		pom, err := parsePom(r)
 		if err != nil {
-			return err
-		} else if !d.Type().IsRegular() {
-			return nil
-		}
-		if filepath.Ext(path) != ".pom" {
-			return nil
-		}
-
-		f, err := os.Open(path)
-		if err != nil {
-			return xerrors.Errorf("file (%s) open error: %w", path, err)
-		}
-		defer func() { _ = f.Close() }()
-
-		var pom pomXML
-		if err = xml.NewDecoder(f).Decode(&pom); err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", path, err)
+			log.Logger.Debugf("Unable to get licenes for %q: %s", path, err)
 		}
 
 		// Skip if pom file doesn't contain licenses
@@ -162,20 +150,4 @@ func findLicenses() (map[string][]string, error) {
 	}
 
 	return licenses, nil
-}
-
-type pomXML struct {
-	GroupId    string      `xml:"groupId"`
-	ArtifactId string      `xml:"artifactId"`
-	Version    string      `xml:"version"`
-	Licenses   pomLicenses `xml:"licenses"`
-}
-
-type pomLicenses struct {
-	Text    string       `xml:",chardata"`
-	License []pomLicense `xml:"license"`
-}
-
-type pomLicense struct {
-	Name string `xml:"name"`
 }
