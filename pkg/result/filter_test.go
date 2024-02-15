@@ -623,7 +623,6 @@ func TestFilter(t *testing.T) {
 						{
 							Licenses: []types.DetectedLicense{
 								{
-									// this license is ignored
 									Name:       "GPL-3.0",
 									Severity:   dbTypes.SeverityLow.String(),
 									FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
@@ -638,7 +637,7 @@ func TestFilter(t *testing.T) {
 									Confidence: 1,
 								},
 							},
-							Secrets: []ftypes.SecretFinding{
+							Secrets: []types.DetectedSecret{
 								{
 									RuleID:    "generic-passed-rule",
 									Severity:  dbTypes.SeverityLow.String(),
@@ -667,7 +666,6 @@ func TestFilter(t *testing.T) {
 					{
 						Licenses: []types.DetectedLicense{
 							{
-								// this license is ignored
 								Name:       "GPL-3.0",
 								Severity:   dbTypes.SeverityLow.String(),
 								FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
@@ -675,7 +673,7 @@ func TestFilter(t *testing.T) {
 								Confidence: 1,
 							},
 						},
-						Secrets: []ftypes.SecretFinding{
+						Secrets: []types.DetectedSecret{
 							{
 								RuleID:    "generic-passed-rule",
 								Severity:  dbTypes.SeverityLow.String(),

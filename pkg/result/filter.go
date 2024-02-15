@@ -67,6 +67,7 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
 
 	if opt.PolicyFile != "" {
+		if err := applyPolicy(ctx, result, opt.PolicyFile); err != nil {
 			return xerrors.Errorf("failed to apply the policy: %w", err)
 		}
 	}
@@ -287,9 +288,9 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 	}
 	result.Misconfigurations = filteredMisconfs
 
-    // Secrets
-	var filteredSecrets []ftypes.SecretFinding
-	for _, scrt := range scrts {
+	// Secrets
+	var filteredSecrets []types.DetectedSecret
+	for _, scrt := range result.Secrets {
 		ignored, err := evaluate(ctx, query, scrt)
 		if err != nil {
 			return err
@@ -303,7 +304,7 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 
 	// Licenses
 	var filteredLicenses []types.DetectedLicense
-	for _, lic := range lics {
+	for _, lic := range result.Licenses {
 		ignored, err := evaluate(ctx, query, lic)
 		if err != nil {
 			return err
@@ -315,7 +316,7 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 	}
 	result.Licenses = filteredLicenses
 
-    return nil
+	return nil
 }
 
 func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
