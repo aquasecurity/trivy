@@ -16,11 +16,12 @@ import (
 	"time"
 
 	"github.com/antchfx/htmlquery"
-	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
 	"golang.org/x/sync/errgroup"
+
+	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 )
 
 const (
@@ -477,6 +478,7 @@ func VerifySchema() error {
 	return nil
 }
 
+// GenAllowedActions generates the list of valid actions for wildcard support
 func GenAllowedActions() error {
 	fmt.Println("Start parsing actions")
 	startTime := time.Now()
