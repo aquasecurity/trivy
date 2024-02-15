@@ -4,13 +4,16 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	"github.com/samber/lo"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -22,26 +25,61 @@ import (
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(&gradleLockAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzer.TypeGradleLock, newGradleLockAnalyzer)
 }
 
 const (
-	version        = 1
+	version        = 2
 	fileNameSuffix = "gradle.lockfile"
 )
 
 // gradleLockAnalyzer analyzes '*gradle.lockfile'
-type gradleLockAnalyzer struct{}
+type gradleLockAnalyzer struct {
+	parser godeptypes.Parser
+}
 
-func (a gradleLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	findLicenses()
-	p := lockfile.NewParser()
-	res, err := language.Analyze(types.Gradle, input.FilePath, input.Content, p)
+func newGradleLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	return &gradleLockAnalyzer{
+		parser: lockfile.NewParser(),
+	}, nil
+}
+
+func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+	licenses, err := findLicenses()
 	if err != nil {
-		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
+		log.Logger.Warnf("Unable to get licenses: %s", err)
 	}
 
-	return res, nil
+	required := func(path string, d fs.DirEntry) bool {
+		return a.Required(path, nil)
+	}
+
+	var apps []types.Application
+	err = fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
+		var app *types.Application
+		app, err = language.Parse(types.Pub, path, r, a.parser)
+		if err != nil {
+			return xerrors.Errorf("unable to parse %q: %w", path, err)
+		}
+
+		if app == nil {
+			return nil
+		}
+		for _, lib := range app.Libraries {
+			lib.Licenses = licenses[lib.ID]
+		}
+
+		sort.Sort(app.Libraries)
+		apps = append(apps, *app)
+		return nil
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("walk error: %w", err)
+	}
+
+	return &analyzer.AnalysisResult{
+		Applications: apps,
+	}, nil
 }
 
 func (a gradleLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
