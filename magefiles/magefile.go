@@ -1,17 +1,30 @@
 package main
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
+	"sync"
+	"time"
 
+	"github.com/antchfx/htmlquery"
+	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
+	"golang.org/x/sync/errgroup"
+)
+
+const (
+	schemaPath = "pkg/iac/rego/schemas/cloud.json"
 )
 
 var (
@@ -424,4 +437,107 @@ func exists(filename string) bool {
 func installed(cmd string) bool {
 	_, err := exec.LookPath(cmd)
 	return err == nil
+}
+
+// GenSchema generates the Trivy IaC schema
+func GenSchema() error {
+	schema, err := schemas.Build()
+	if err != nil {
+		return err
+	}
+	data, err := json.MarshalIndent(schema, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(schemaPath, data, 0600); err != nil {
+		return err
+	}
+	fmt.Println("schema generated")
+	return nil
+}
+
+// VerifySchema verifies a generated schema for validity
+func VerifySchema() error {
+	schema, err := schemas.Build()
+	if err != nil {
+		return err
+	}
+	data, err := json.MarshalIndent(schema, "", "  ")
+	if err != nil {
+		return err
+	}
+	existing, err := os.ReadFile(schemaPath)
+	if err != nil {
+		return err
+	}
+	if !bytes.Equal(data, existing) {
+		return fmt.Errorf("schema is out of date:\n\nplease run 'mage genschema' and commit the changes\n")
+	}
+	fmt.Println("schema is valid")
+	return nil
+}
+
+func GenAllowedActions() error {
+	fmt.Println("Start parsing actions")
+	startTime := time.Now()
+	defer func() {
+		fmt.Printf("Parsing is completed. Duration %fs\n", time.Since(startTime).Seconds())
+	}()
+
+	doc, err := htmlquery.LoadURL(serviceActionReferencesURL)
+	if err != nil {
+		return fmt.Errorf("failed to retrieve action references: %w\n", err)
+	}
+	urls, err := parseServiceURLs(doc)
+	if err != nil {
+		return err
+	}
+
+	g, ctx := errgroup.WithContext(context.TODO())
+	g.SetLimit(defaultParallel)
+
+	// actions may be the same for services of different versions,
+	// e.g. Elastic Load Balancing and Elastic Load Balancing V2
+	actionsSet := make(map[string]struct{})
+
+	var mu sync.Mutex
+
+	for _, url := range urls {
+		url := url
+		if ctx.Err() != nil {
+			break
+		}
+		g.Go(func() error {
+			serviceActions, err := parseActions(url)
+			if err != nil {
+				return fmt.Errorf("failed to parse actions from %q: %w\n", url, err)
+			}
+
+			mu.Lock()
+			for _, act := range serviceActions {
+				actionsSet[act] = struct{}{}
+			}
+			mu.Unlock()
+
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return err
+	}
+
+	actions := make([]string, 0, len(actionsSet))
+
+	for act := range actionsSet {
+		actions = append(actions, act)
+	}
+
+	sort.Strings(actions)
+
+	path := filepath.FromSlash(targetFile)
+	if err := generateFile(path, actions); err != nil {
+		return fmt.Errorf("failed to generate file: %w\n", err)
+	}
+	return nil
 }
