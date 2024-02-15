@@ -140,7 +140,7 @@ func findLicenses() (map[string][]string, error) {
 		}
 		id := fmt.Sprintf("%s:%s:%s", groupID, pom.ArtifactId, ver)
 
-		licenses[id] = lo.Map(pom.Licenses.License, func(l pomLicense, _ int) string {
+		licenses[id] = lo.Map(pom.Licenses.License, func(l License, _ int) string {
 			return l.Name
 		})
 		return nil

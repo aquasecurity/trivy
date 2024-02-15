@@ -9,18 +9,30 @@ import (
 )
 
 type pomXML struct {
-	GroupId    string      `xml:"groupId"`
-	ArtifactId string      `xml:"artifactId"`
-	Version    string      `xml:"version"`
-	Licenses   pomLicenses `xml:"licenses"`
+	GroupId      string       `xml:"groupId"`
+	ArtifactId   string       `xml:"artifactId"`
+	Version      string       `xml:"version"`
+	Dependencies Dependencies `xml:"dependencies"`
+	Licenses     Licenses     `xml:"licenses"`
+}
+type Dependencies struct {
+	Text       string       `xml:",chardata"`
+	Dependency []Dependency `xml:"dependency"`
 }
 
-type pomLicenses struct {
-	Text    string       `xml:",chardata"`
-	License []pomLicense `xml:"license"`
+type Dependency struct {
+	Text       string `xml:",chardata"`
+	GroupID    string `xml:"groupId"`
+	ArtifactID string `xml:"artifactId"`
+	Version    string `xml:"version"`
 }
 
-type pomLicense struct {
+type Licenses struct {
+	Text    string    `xml:",chardata"`
+	License []License `xml:"license"`
+}
+
+type License struct {
 	Name string `xml:"name"`
 }
 
