@@ -4164,7 +4164,7 @@ For the <code>.trivyignore.yaml</code> file, you can set ignored IDs separately 
 <td>The identifier of the vulnerability, misconfiguration, secret, or license<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</td>
 </tr>
 <tr>
-<td>paths</td>
+<td>paths<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
 <td align="center"></td>
 <td>string array</td>
 <td>The list of file paths to be ignored. If <code>paths</code> is not set, the ignore finding is applied to all files.</td>
@@ -4350,7 +4350,10 @@ More info about the helper functions are in the library <a href="https://github.
 <hr />
 <ol>
 <li id="fn:1">
-<p>license name is used as id for <code>.trivyignore.yaml</code> files&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>license name is used as id for <code>.trivyignore.yaml</code> files.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>This doesn't work for package licenses. The <code>path</code> field can only be used for license files (licenses obtained using the <a href="../../scanner/license/#full-scanning">--license-full flag</a>).&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
