@@ -12,6 +12,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 )
 
+const (
+	schemaPath = "pkg/iac/rego/schemas/cloud.json"
+)
+
 func main() {
 	if len(os.Args) < 3 {
 		log.Fatalf("invalid schema command args: %s", os.Args)

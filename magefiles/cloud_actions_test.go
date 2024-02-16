@@ -1,3 +1,5 @@
+//go:build mage_cloudactions
+
 package main
 
 import (

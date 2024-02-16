@@ -14,10 +14,6 @@ import (
 	"github.com/magefile/mage/target"
 )
 
-const (
-	schemaPath = "pkg/iac/rego/schemas/cloud.json"
-)
-
 var (
 	GOPATH = os.Getenv("GOPATH")
 	GOBIN  = filepath.Join(GOPATH, "bin")
