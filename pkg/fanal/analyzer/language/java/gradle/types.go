@@ -3,7 +3,9 @@ package gradle
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"io"
+	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/net/html/charset"
@@ -70,6 +72,23 @@ func parsePom(r io.Reader) (pomXML, error) {
 		return pomXML{}, xerrors.Errorf("xml decode error: %w", err)
 	}
 	return parsed, nil
+}
+
+func (pom *pomXML) resolveDependencyVersions(path string) {
+	for i, dep := range pom.Dependencies.Dependency {
+		if strings.HasPrefix(dep.Version, "${") && strings.HasSuffix(dep.Version, "}") {
+			dep.Version = strings.TrimPrefix(strings.TrimSuffix(dep.Version, "}"), "${")
+			if resolvedVer, ok := pom.Properties[dep.Version]; ok {
+				pom.Dependencies.Dependency[i].Version = resolvedVer
+			} else if dep.Version == "${project.version}" {
+				pom.Dependencies.Dependency[i].Version = dep.Version
+			} else {
+				// We use simplified logic to resolve properties.
+				// If necessary, update and use the logic for maven pom's
+				log.Logger.Warnf("Unable to resolve version for %q. Please open a new discussion to update the Trivy logic.", path)
+			}
+		}
+	}
 }
 
 func (licenses Licenses) toStringArray() []string {

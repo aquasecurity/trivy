@@ -151,20 +151,7 @@ func parsePoms() (map[string]pomXML, error) {
 			pom.Version = dirs[len(dirs)-3]
 		}
 
-		for i, dep := range pom.Dependencies.Dependency {
-			if strings.HasPrefix(dep.Version, "${") && strings.HasSuffix(dep.Version, "}") {
-				dep.Version = strings.TrimPrefix(strings.TrimSuffix(dep.Version, "}"), "${")
-				if resolvedVer, ok := pom.Properties[dep.Version]; ok {
-					pom.Dependencies.Dependency[i].Version = resolvedVer
-				} else if dep.Version == "${project.version}" {
-					pom.Dependencies.Dependency[i].Version = dep.Version
-				} else {
-					// We use simplified logic to resolve properties.
-					// If necessary, update and use the logic for maven pom's
-					log.Logger.Warnf("Unable to resolve version for %q. Please open a new discussion to update the Trivy logic.", path)
-				}
-			}
-		}
+		pom.resolveDependencyVersions(path)
 
 		poms[packageID(pom.GroupId, pom.ArtifactId, pom.Version)] = pom
 		return nil
