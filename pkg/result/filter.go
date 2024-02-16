@@ -288,6 +288,34 @@ func applyPolicy(ctx context.Context, result *types.Result, policyFile string) e
 	}
 	result.Misconfigurations = filteredMisconfs
 
+	// Secrets
+	var filteredSecrets []types.DetectedSecret
+	for _, scrt := range result.Secrets {
+		ignored, err := evaluate(ctx, query, scrt)
+		if err != nil {
+			return err
+		}
+		if ignored {
+			continue
+		}
+		filteredSecrets = append(filteredSecrets, scrt)
+	}
+	result.Secrets = filteredSecrets
+
+	// Licenses
+	var filteredLicenses []types.DetectedLicense
+	for _, lic := range result.Licenses {
+		ignored, err := evaluate(ctx, query, lic)
+		if err != nil {
+			return err
+		}
+		if ignored {
+			continue
+		}
+		filteredLicenses = append(filteredLicenses, lic)
+	}
+	result.Licenses = filteredLicenses
+
 	return nil
 }
 
