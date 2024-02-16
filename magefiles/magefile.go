@@ -1,23 +1,17 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strings"
-	"sync"
-	"time"
 
-	"github.com/antchfx/htmlquery"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
-	"golang.org/x/sync/errgroup"
 )
 
 const (
@@ -446,68 +440,8 @@ func (Schema) Verify() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "verify")
 }
 
-// GenAllowedActions generates the list of valid actions for wildcard support
-func GenAllowedActions() error {
-	fmt.Println("Start parsing actions")
-	startTime := time.Now()
-	defer func() {
-		fmt.Printf("Parsing is completed. Duration %fs\n", time.Since(startTime).Seconds())
-	}()
+type CloudActions mg.Namespace
 
-	doc, err := htmlquery.LoadURL(serviceActionReferencesURL)
-	if err != nil {
-		return fmt.Errorf("failed to retrieve action references: %w\n", err)
-	}
-	urls, err := parseServiceURLs(doc)
-	if err != nil {
-		return err
-	}
-
-	g, ctx := errgroup.WithContext(context.TODO())
-	g.SetLimit(defaultParallel)
-
-	// actions may be the same for services of different versions,
-	// e.g. Elastic Load Balancing and Elastic Load Balancing V2
-	actionsSet := make(map[string]struct{})
-
-	var mu sync.Mutex
-
-	for _, url := range urls {
-		url := url
-		if ctx.Err() != nil {
-			break
-		}
-		g.Go(func() error {
-			serviceActions, err := parseActions(url)
-			if err != nil {
-				return fmt.Errorf("failed to parse actions from %q: %w\n", url, err)
-			}
-
-			mu.Lock()
-			for _, act := range serviceActions {
-				actionsSet[act] = struct{}{}
-			}
-			mu.Unlock()
-
-			return nil
-		})
-	}
-
-	if err := g.Wait(); err != nil {
-		return err
-	}
-
-	actions := make([]string, 0, len(actionsSet))
-
-	for act := range actionsSet {
-		actions = append(actions, act)
-	}
-
-	sort.Strings(actions)
-
-	path := filepath.FromSlash(targetFile)
-	if err := generateFile(path, actions); err != nil {
-		return fmt.Errorf("failed to generate file: %w\n", err)
-	}
-	return nil
+func (CloudActions) Generate() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_cloudactions", "./magefiles")
 }

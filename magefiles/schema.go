@@ -14,21 +14,18 @@ import (
 
 func main() {
 	if len(os.Args) < 3 {
-		log.Printf("invalid schema command args: %s", os.Args)
-		os.Exit(1)
+		log.Fatalf("invalid schema command args: %s", os.Args)
 	}
 
 	switch os.Args[2] {
 	case "generate":
 		if err := GenSchema(); err != nil {
-			fmt.Printf(err.Error())
-			os.Exit(1)
+			log.Fatalf(err.Error())
 		}
 		log.Println("schema generated")
 	case "verify":
 		if err := VerifySchema(); err != nil {
-			fmt.Printf(err.Error())
-			os.Exit(1)
+			log.Fatalf(err.Error())
 		}
 		log.Println("schema valid")
 	}
