@@ -6,7 +6,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	defsecRules "github.com/aquasecurity/trivy/pkg/iac/rules"
+	iacRules "github.com/aquasecurity/trivy/pkg/iac/rules"
 )
 
 var (
@@ -82,9 +82,9 @@ const (
 )
 
 // This function is exported for trivy-plugin-aqua purposes only
-func GetSecretRulesMetadata() []defsecRules.Check {
-	return lo.Map(builtinRules, func(rule Rule, i int) defsecRules.Check {
-		return defsecRules.Check{
+func GetSecretRulesMetadata() []iacRules.Check {
+	return lo.Map(builtinRules, func(rule Rule, i int) iacRules.Check {
+		return iacRules.Check{
 			Name:        rule.ID,
 			Description: rule.Title,
 		}

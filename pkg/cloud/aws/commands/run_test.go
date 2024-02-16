@@ -1004,7 +1004,6 @@ deny {
 				ReportOptions: flag.ReportOptions{
 					Compliance: spec.ComplianceSpec{
 						Spec: iacTypes.Spec{
-							// TODO: refactor defsec so that the parsed spec can be passed
 							ID:          "@testdata/example-spec.yaml",
 							Title:       "my-custom-spec",
 							Description: "My fancy spec",
