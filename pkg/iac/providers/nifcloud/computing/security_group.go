@@ -1,18 +1,18 @@
 package computing
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type SecurityGroup struct {
-	Metadata     defsecTypes.Metadata
-	Description  defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	Description  iacTypes.StringValue
 	IngressRules []SecurityGroupRule
 	EgressRules  []SecurityGroupRule
 }
 
 type SecurityGroupRule struct {
-	Metadata    defsecTypes.Metadata
-	Description defsecTypes.StringValue
-	CIDR        defsecTypes.StringValue
+	Metadata    iacTypes.Metadata
+	Description iacTypes.StringValue
+	CIDR        iacTypes.StringValue
 }

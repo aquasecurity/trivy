@@ -1,23 +1,23 @@
 package s3
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type PublicAccessBlock struct {
-	Metadata              defsecTypes.Metadata
-	BlockPublicACLs       defsecTypes.BoolValue
-	BlockPublicPolicy     defsecTypes.BoolValue
-	IgnorePublicACLs      defsecTypes.BoolValue
-	RestrictPublicBuckets defsecTypes.BoolValue
+	Metadata              iacTypes.Metadata
+	BlockPublicACLs       iacTypes.BoolValue
+	BlockPublicPolicy     iacTypes.BoolValue
+	IgnorePublicACLs      iacTypes.BoolValue
+	RestrictPublicBuckets iacTypes.BoolValue
 }
 
-func NewPublicAccessBlock(metadata defsecTypes.Metadata) PublicAccessBlock {
+func NewPublicAccessBlock(metadata iacTypes.Metadata) PublicAccessBlock {
 	return PublicAccessBlock{
 		Metadata:              metadata,
-		BlockPublicPolicy:     defsecTypes.BoolDefault(false, metadata),
-		BlockPublicACLs:       defsecTypes.BoolDefault(false, metadata),
-		IgnorePublicACLs:      defsecTypes.BoolDefault(false, metadata),
-		RestrictPublicBuckets: defsecTypes.BoolDefault(false, metadata),
+		BlockPublicPolicy:     iacTypes.BoolDefault(false, metadata),
+		BlockPublicACLs:       iacTypes.BoolDefault(false, metadata),
+		IgnorePublicACLs:      iacTypes.BoolDefault(false, metadata),
+		RestrictPublicBuckets: iacTypes.BoolDefault(false, metadata),
 	}
 }

@@ -1,7 +1,7 @@
 package cloudwatch
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type CloudWatch struct {
@@ -28,36 +28,36 @@ func (w CloudWatch) GetAlarmByMetricName(metricName string) (alarm *Alarm) {
 }
 
 type Alarm struct {
-	Metadata   defsecTypes.Metadata
-	AlarmName  defsecTypes.StringValue
-	MetricName defsecTypes.StringValue
+	Metadata   iacTypes.Metadata
+	AlarmName  iacTypes.StringValue
+	MetricName iacTypes.StringValue
 	Dimensions []AlarmDimension
 	Metrics    []MetricDataQuery
 }
 
 type AlarmDimension struct {
-	Metadata defsecTypes.Metadata
-	Name     defsecTypes.StringValue
-	Value    defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Name     iacTypes.StringValue
+	Value    iacTypes.StringValue
 }
 
 type MetricFilter struct {
-	Metadata      defsecTypes.Metadata
-	FilterName    defsecTypes.StringValue
-	FilterPattern defsecTypes.StringValue
+	Metadata      iacTypes.Metadata
+	FilterName    iacTypes.StringValue
+	FilterPattern iacTypes.StringValue
 }
 
 type MetricDataQuery struct {
-	Metadata   defsecTypes.Metadata
-	Expression defsecTypes.StringValue
-	ID         defsecTypes.StringValue
+	Metadata   iacTypes.Metadata
+	Expression iacTypes.StringValue
+	ID         iacTypes.StringValue
 }
 
 type LogGroup struct {
-	Metadata        defsecTypes.Metadata
-	Arn             defsecTypes.StringValue
-	Name            defsecTypes.StringValue
-	KMSKeyID        defsecTypes.StringValue
-	RetentionInDays defsecTypes.IntValue
+	Metadata        iacTypes.Metadata
+	Arn             iacTypes.StringValue
+	Name            iacTypes.StringValue
+	KMSKeyID        iacTypes.StringValue
+	RetentionInDays iacTypes.IntValue
 	MetricFilters   []MetricFilter
 }

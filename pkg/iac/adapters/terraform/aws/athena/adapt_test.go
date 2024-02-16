@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/athena"
 
@@ -31,11 +31,11 @@ func Test_adaptDatabase(t *testing.T) {
 			}
 `,
 			expected: athena.Database{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("database_name", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Name:     iacTypes.String("database_name", iacTypes.NewTestMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeSSEKMS, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Type:     iacTypes.String(athena.EncryptionTypeSSEKMS, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -74,13 +74,13 @@ func Test_adaptWorkgroup(t *testing.T) {
 			  }
 `,
 			expected: athena.Workgroup{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("example", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Name:     iacTypes.String("example", iacTypes.NewTestMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeSSEKMS, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Type:     iacTypes.String(athena.EncryptionTypeSSEKMS, iacTypes.NewTestMetadata()),
 				},
-				EnforceConfiguration: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				EnforceConfiguration: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -101,13 +101,13 @@ func Test_adaptWorkgroup(t *testing.T) {
 			}
 `,
 			expected: athena.Workgroup{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("example", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Name:     iacTypes.String("example", iacTypes.NewTestMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeSSEKMS, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Type:     iacTypes.String(athena.EncryptionTypeSSEKMS, iacTypes.NewTestMetadata()),
 				},
-				EnforceConfiguration: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				EnforceConfiguration: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -126,13 +126,13 @@ func Test_adaptWorkgroup(t *testing.T) {
 			}
 `,
 			expected: athena.Workgroup{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("example", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Name:     iacTypes.String("example", iacTypes.NewTestMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeNone, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Type:     iacTypes.String(athena.EncryptionTypeNone, iacTypes.NewTestMetadata()),
 				},
-				EnforceConfiguration: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				EnforceConfiguration: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -143,13 +143,13 @@ func Test_adaptWorkgroup(t *testing.T) {
 			}
 `,
 			expected: athena.Workgroup{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Name:     defsecTypes.String("example", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Name:     iacTypes.String("example", iacTypes.NewTestMetadata()),
 				Encryption: athena.EncryptionConfiguration{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String(athena.EncryptionTypeNone, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Type:     iacTypes.String(athena.EncryptionTypeNone, iacTypes.NewTestMetadata()),
 				},
-				EnforceConfiguration: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				EnforceConfiguration: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

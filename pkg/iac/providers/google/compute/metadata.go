@@ -1,10 +1,10 @@
 package compute
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type ProjectMetadata struct {
-	Metadata      defsecTypes.Metadata
-	EnableOSLogin defsecTypes.BoolValue
+	Metadata      iacTypes.Metadata
+	EnableOSLogin iacTypes.BoolValue
 }

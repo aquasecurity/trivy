@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 )
@@ -47,12 +47,12 @@ func Test_adaptGroups(t *testing.T) {
 			  `,
 			expected: []iam.Group{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("developers", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("developers", iacTypes.NewTestMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("my_developer_policy", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Name:     iacTypes.String("my_developer_policy", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(false),
 						},
 					},
@@ -90,12 +90,12 @@ resource "aws_iam_group_policy_attachment" "test-attach" {
 `,
 			expected: []iam.Group{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-group", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("test-group", iacTypes.NewTestMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-policy", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Name:     iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(false),
 						},
 					},

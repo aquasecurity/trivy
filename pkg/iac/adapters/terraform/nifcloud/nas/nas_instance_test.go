@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/nas"
 )
@@ -24,8 +24,8 @@ func Test_adaptNASInstances(t *testing.T) {
 			}
 `,
 			expected: []nas.NASInstance{{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				NetworkID: defsecTypes.String("example-network", defsecTypes.NewTestMetadata()),
+				Metadata:  iacTypes.NewTestMetadata(),
+				NetworkID: iacTypes.String("example-network", iacTypes.NewTestMetadata()),
 			}},
 		},
 		{
@@ -36,8 +36,8 @@ func Test_adaptNASInstances(t *testing.T) {
 `,
 
 			expected: []nas.NASInstance{{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				NetworkID: defsecTypes.String("net-COMMON_PRIVATE", defsecTypes.NewTestMetadata()),
+				Metadata:  iacTypes.NewTestMetadata(),
+				NetworkID: iacTypes.String("net-COMMON_PRIVATE", iacTypes.NewTestMetadata()),
 			}},
 		},
 	}

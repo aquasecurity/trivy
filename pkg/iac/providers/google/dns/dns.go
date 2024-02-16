@@ -1,7 +1,7 @@
 package dns
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type DNS struct {
@@ -9,23 +9,23 @@ type DNS struct {
 }
 
 type ManagedZone struct {
-	Metadata   defsecTypes.Metadata
+	Metadata   iacTypes.Metadata
 	DNSSec     DNSSec
-	Visibility defsecTypes.StringValue
+	Visibility iacTypes.StringValue
 }
 
 func (m ManagedZone) IsPrivate() bool {
-	return m.Visibility.EqualTo("private", defsecTypes.IgnoreCase)
+	return m.Visibility.EqualTo("private", iacTypes.IgnoreCase)
 }
 
 type DNSSec struct {
-	Metadata        defsecTypes.Metadata
-	Enabled         defsecTypes.BoolValue
+	Metadata        iacTypes.Metadata
+	Enabled         iacTypes.BoolValue
 	DefaultKeySpecs []KeySpecs
 }
 
 type KeySpecs struct {
-	Metadata  defsecTypes.Metadata
-	Algorithm defsecTypes.StringValue
-	KeyType   defsecTypes.StringValue
+	Metadata  iacTypes.Metadata
+	Algorithm iacTypes.StringValue
+	KeyType   iacTypes.StringValue
 }

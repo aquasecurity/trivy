@@ -3,7 +3,7 @@ package msk
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/msk"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getClusters(ctx parser.FileContext) (clusters []msk.Cluster) {
@@ -13,12 +13,12 @@ func getClusters(ctx parser.FileContext) (clusters []msk.Cluster) {
 			Metadata: r.Metadata(),
 			EncryptionInTransit: msk.EncryptionInTransit{
 				Metadata:     r.Metadata(),
-				ClientBroker: defsecTypes.StringDefault("TLS", r.Metadata()),
+				ClientBroker: iacTypes.StringDefault("TLS", r.Metadata()),
 			},
 			EncryptionAtRest: msk.EncryptionAtRest{
 				Metadata:  r.Metadata(),
-				KMSKeyARN: defsecTypes.StringDefault("", r.Metadata()),
-				Enabled:   defsecTypes.BoolDefault(false, r.Metadata()),
+				KMSKeyARN: iacTypes.StringDefault("", r.Metadata()),
+				Enabled:   iacTypes.BoolDefault(false, r.Metadata()),
 			},
 			Logging: msk.Logging{
 				Metadata: r.Metadata(),
@@ -26,15 +26,15 @@ func getClusters(ctx parser.FileContext) (clusters []msk.Cluster) {
 					Metadata: r.Metadata(),
 					S3: msk.S3Logging{
 						Metadata: r.Metadata(),
-						Enabled:  defsecTypes.BoolDefault(false, r.Metadata()),
+						Enabled:  iacTypes.BoolDefault(false, r.Metadata()),
 					},
 					Cloudwatch: msk.CloudwatchLogging{
 						Metadata: r.Metadata(),
-						Enabled:  defsecTypes.BoolDefault(false, r.Metadata()),
+						Enabled:  iacTypes.BoolDefault(false, r.Metadata()),
 					},
 					Firehose: msk.FirehoseLogging{
 						Metadata: r.Metadata(),
-						Enabled:  defsecTypes.BoolDefault(false, r.Metadata()),
+						Enabled:  iacTypes.BoolDefault(false, r.Metadata()),
 					},
 				},
 			},
@@ -51,7 +51,7 @@ func getClusters(ctx parser.FileContext) (clusters []msk.Cluster) {
 			cluster.EncryptionAtRest = msk.EncryptionAtRest{
 				Metadata:  encAtRestProp.Metadata(),
 				KMSKeyARN: encAtRestProp.GetStringProperty("DataVolumeKMSKeyId", ""),
-				Enabled:   defsecTypes.BoolDefault(true, encAtRestProp.Metadata()),
+				Enabled:   iacTypes.BoolDefault(true, encAtRestProp.Metadata()),
 			}
 		}
 

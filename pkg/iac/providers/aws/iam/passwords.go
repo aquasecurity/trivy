@@ -1,16 +1,16 @@
 package iam
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type PasswordPolicy struct {
-	Metadata             defsecTypes.Metadata
-	ReusePreventionCount defsecTypes.IntValue
-	RequireLowercase     defsecTypes.BoolValue
-	RequireUppercase     defsecTypes.BoolValue
-	RequireNumbers       defsecTypes.BoolValue
-	RequireSymbols       defsecTypes.BoolValue
-	MaxAgeDays           defsecTypes.IntValue
-	MinimumLength        defsecTypes.IntValue
+	Metadata             iacTypes.Metadata
+	ReusePreventionCount iacTypes.IntValue
+	RequireLowercase     iacTypes.BoolValue
+	RequireUppercase     iacTypes.BoolValue
+	RequireNumbers       iacTypes.BoolValue
+	RequireSymbols       iacTypes.BoolValue
+	MaxAgeDays           iacTypes.IntValue
+	MinimumLength        iacTypes.IntValue
 }

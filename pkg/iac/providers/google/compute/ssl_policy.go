@@ -1,12 +1,12 @@
 package compute
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type SSLPolicy struct {
-	Metadata          defsecTypes.Metadata
-	Name              defsecTypes.StringValue
-	Profile           defsecTypes.StringValue
-	MinimumTLSVersion defsecTypes.StringValue
+	Metadata          iacTypes.Metadata
+	Name              iacTypes.StringValue
+	Profile           iacTypes.StringValue
+	MinimumTLSVersion iacTypes.StringValue
 }

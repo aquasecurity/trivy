@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudwatch"
 
@@ -32,11 +32,11 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Metadata:        defsecTypes.NewTestMetadata(),
-					Arn:             defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					Name:            defsecTypes.String("my-group", defsecTypes.NewTestMetadata()),
-					KMSKeyID:        defsecTypes.String("aws_kms_key.log_key", defsecTypes.NewTestMetadata()),
-					RetentionInDays: defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
+					Metadata:        iacTypes.NewTestMetadata(),
+					Arn:             iacTypes.String("", iacTypes.NewTestMetadata()),
+					Name:            iacTypes.String("my-group", iacTypes.NewTestMetadata()),
+					KMSKeyID:        iacTypes.String("aws_kms_key.log_key", iacTypes.NewTestMetadata()),
+					RetentionInDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
 					MetricFilters:   nil,
 				},
 			},
@@ -51,11 +51,11 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Metadata:        defsecTypes.NewTestMetadata(),
-					Arn:             defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					Name:            defsecTypes.String("my-group", defsecTypes.NewTestMetadata()),
-					KMSKeyID:        defsecTypes.String("key-as-string", defsecTypes.NewTestMetadata()),
-					RetentionInDays: defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
+					Metadata:        iacTypes.NewTestMetadata(),
+					Arn:             iacTypes.String("", iacTypes.NewTestMetadata()),
+					Name:            iacTypes.String("my-group", iacTypes.NewTestMetadata()),
+					KMSKeyID:        iacTypes.String("key-as-string", iacTypes.NewTestMetadata()),
+					RetentionInDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -69,11 +69,11 @@ func Test_adaptLogGroups(t *testing.T) {
 `,
 			expected: []cloudwatch.LogGroup{
 				{
-					Metadata:        defsecTypes.NewTestMetadata(),
-					Arn:             defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					Name:            defsecTypes.String("my-group", defsecTypes.NewTestMetadata()),
-					KMSKeyID:        defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					RetentionInDays: defsecTypes.Int(3, defsecTypes.NewTestMetadata()),
+					Metadata:        iacTypes.NewTestMetadata(),
+					Arn:             iacTypes.String("", iacTypes.NewTestMetadata()),
+					Name:            iacTypes.String("my-group", iacTypes.NewTestMetadata()),
+					KMSKeyID:        iacTypes.String("", iacTypes.NewTestMetadata()),
+					RetentionInDays: iacTypes.Int(3, iacTypes.NewTestMetadata()),
 				},
 			},
 		},

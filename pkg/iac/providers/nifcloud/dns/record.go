@@ -1,13 +1,13 @@
 package dns
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 const ZoneRegistrationAuthTxt = "nifty-dns-verify="
 
 type Record struct {
-	Metadata defsecTypes.Metadata
-	Type     defsecTypes.StringValue
-	Record   defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Type     iacTypes.StringValue
+	Record   iacTypes.StringValue
 }

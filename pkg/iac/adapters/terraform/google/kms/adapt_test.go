@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/kms"
 
@@ -34,11 +34,11 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Keys: []kms.Key{
 						{
-							Metadata:              defsecTypes.NewTestMetadata(),
-							RotationPeriodSeconds: defsecTypes.Int(7776000, defsecTypes.NewTestMetadata()),
+							Metadata:              iacTypes.NewTestMetadata(),
+							RotationPeriodSeconds: iacTypes.Int(7776000, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -54,7 +54,7 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 				},
 			},
 		},
@@ -72,11 +72,11 @@ func Test_adaptKeyRings(t *testing.T) {
 `,
 			expected: []kms.KeyRing{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Keys: []kms.Key{
 						{
-							Metadata:              defsecTypes.NewTestMetadata(),
-							RotationPeriodSeconds: defsecTypes.Int(-1, defsecTypes.NewTestMetadata()),
+							Metadata:              iacTypes.NewTestMetadata(),
+							RotationPeriodSeconds: iacTypes.Int(-1, iacTypes.NewTestMetadata()),
 						},
 					},
 				},

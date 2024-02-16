@@ -3,7 +3,7 @@ package elasticsearch
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elasticsearch"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getDomains(ctx parser.FileContext) (domains []elasticsearch.Domain) {
@@ -17,32 +17,32 @@ func getDomains(ctx parser.FileContext) (domains []elasticsearch.Domain) {
 			DomainName:             r.GetStringProperty("DomainName"),
 			AccessPolicies:         r.GetStringProperty("AccessPolicies"),
 			DedicatedMasterEnabled: r.GetBoolProperty("ElasticsearchClusterConfig.DedicatedMasterEnabled"),
-			VpcId:                  defsecTypes.String("", r.Metadata()),
+			VpcId:                  iacTypes.String("", r.Metadata()),
 			LogPublishing: elasticsearch.LogPublishing{
 				Metadata:              r.Metadata(),
-				AuditEnabled:          defsecTypes.BoolDefault(false, r.Metadata()),
-				CloudWatchLogGroupArn: defsecTypes.String("", r.Metadata()),
+				AuditEnabled:          iacTypes.BoolDefault(false, r.Metadata()),
+				CloudWatchLogGroupArn: iacTypes.String("", r.Metadata()),
 			},
 			TransitEncryption: elasticsearch.TransitEncryption{
 				Metadata: r.Metadata(),
-				Enabled:  defsecTypes.BoolDefault(false, r.Metadata()),
+				Enabled:  iacTypes.BoolDefault(false, r.Metadata()),
 			},
 			AtRestEncryption: elasticsearch.AtRestEncryption{
 				Metadata: r.Metadata(),
-				Enabled:  defsecTypes.BoolDefault(false, r.Metadata()),
-				KmsKeyId: defsecTypes.String("", r.Metadata()),
+				Enabled:  iacTypes.BoolDefault(false, r.Metadata()),
+				KmsKeyId: iacTypes.String("", r.Metadata()),
 			},
 			Endpoint: elasticsearch.Endpoint{
 				Metadata:     r.Metadata(),
-				EnforceHTTPS: defsecTypes.BoolDefault(false, r.Metadata()),
-				TLSPolicy:    defsecTypes.StringDefault("Policy-Min-TLS-1-0-2019-07", r.Metadata()),
+				EnforceHTTPS: iacTypes.BoolDefault(false, r.Metadata()),
+				TLSPolicy:    iacTypes.StringDefault("Policy-Min-TLS-1-0-2019-07", r.Metadata()),
 			},
 			ServiceSoftwareOptions: elasticsearch.ServiceSoftwareOptions{
 				Metadata:        r.Metadata(),
-				CurrentVersion:  defsecTypes.String("", r.Metadata()),
-				NewVersion:      defsecTypes.String("", r.Metadata()),
-				UpdateStatus:    defsecTypes.String("", r.Metadata()),
-				UpdateAvailable: defsecTypes.Bool(false, r.Metadata()),
+				CurrentVersion:  iacTypes.String("", r.Metadata()),
+				NewVersion:      iacTypes.String("", r.Metadata()),
+				UpdateStatus:    iacTypes.String("", r.Metadata()),
+				UpdateAvailable: iacTypes.Bool(false, r.Metadata()),
 			},
 		}
 

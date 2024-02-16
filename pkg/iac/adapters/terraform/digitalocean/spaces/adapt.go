@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/digitalocean/spaces"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) spaces.Spaces {
@@ -28,7 +28,7 @@ func adaptBuckets(modules terraform.Modules) []spaces.Bucket {
 				ForceDestroy: block.GetAttribute("force_destroy").AsBoolValueOrDefault(false, block),
 				Versioning: spaces.Versioning{
 					Metadata: block.GetMetadata(),
-					Enabled:  defsecTypes.BoolDefault(false, block.GetMetadata()),
+					Enabled:  iacTypes.BoolDefault(false, block.GetMetadata()),
 				},
 			}
 
@@ -69,16 +69,16 @@ func adaptBuckets(modules terraform.Modules) []spaces.Bucket {
 				}
 			}
 			bucketMap[uuid.NewString()] = spaces.Bucket{
-				Metadata: defsecTypes.NewUnmanagedMetadata(),
-				Name:     defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata: iacTypes.NewUnmanagedMetadata(),
+				Name:     iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 				Objects: []spaces.Object{
 					object,
 				},
-				ACL:          defsecTypes.StringDefault("private", defsecTypes.NewUnmanagedMetadata()),
-				ForceDestroy: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				ACL:          iacTypes.StringDefault("private", iacTypes.NewUnmanagedMetadata()),
+				ForceDestroy: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 				Versioning: spaces.Versioning{
 					Metadata: block.GetMetadata(),
-					Enabled:  defsecTypes.BoolDefault(false, block.GetMetadata()),
+					Enabled:  iacTypes.BoolDefault(false, block.GetMetadata()),
 				},
 			}
 		}

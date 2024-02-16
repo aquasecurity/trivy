@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 )
@@ -37,20 +37,20 @@ func Test_adaptDisks(t *testing.T) {
 `,
 			expected: []compute.Disk{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("disk #1", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("disk #1", iacTypes.NewTestMetadata()),
 					Encryption: compute.DiskEncryption{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						KMSKeyLink: defsecTypes.String("something", defsecTypes.NewTestMetadata()),
+						Metadata:   iacTypes.NewTestMetadata(),
+						KMSKeyLink: iacTypes.String("something", iacTypes.NewTestMetadata()),
 					},
 				},
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("disk #2", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("disk #2", iacTypes.NewTestMetadata()),
 					Encryption: compute.DiskEncryption{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						KMSKeyLink: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						RawKey:     defsecTypes.Bytes([]byte("b2ggbm8gdGhpcyBpcyBiYWQ"), defsecTypes.NewTestMetadata()),
+						Metadata:   iacTypes.NewTestMetadata(),
+						KMSKeyLink: iacTypes.String("", iacTypes.NewTestMetadata()),
+						RawKey:     iacTypes.Bytes([]byte("b2ggbm8gdGhpcyBpcyBiYWQ"), iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -71,11 +71,11 @@ func Test_adaptDisks(t *testing.T) {
 			  }`,
 			expected: []compute.Disk{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("disk #3", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("disk #3", iacTypes.NewTestMetadata()),
 					Encryption: compute.DiskEncryption{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						KMSKeyLink: defsecTypes.String("google_kms_crypto_key.my_crypto_key", defsecTypes.NewTestMetadata()),
+						Metadata:   iacTypes.NewTestMetadata(),
+						KMSKeyLink: iacTypes.String("google_kms_crypto_key.my_crypto_key", iacTypes.NewTestMetadata()),
 					},
 				},
 			},

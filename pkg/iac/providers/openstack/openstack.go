@@ -1,7 +1,7 @@
 package openstack
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type OpenStack struct {
@@ -20,15 +20,15 @@ type Firewall struct {
 }
 
 type FirewallRule struct {
-	Metadata        defsecTypes.Metadata
-	Source          defsecTypes.StringValue
-	Destination     defsecTypes.StringValue
-	SourcePort      defsecTypes.StringValue
-	DestinationPort defsecTypes.StringValue
-	Enabled         defsecTypes.BoolValue
+	Metadata        iacTypes.Metadata
+	Source          iacTypes.StringValue
+	Destination     iacTypes.StringValue
+	SourcePort      iacTypes.StringValue
+	DestinationPort iacTypes.StringValue
+	Enabled         iacTypes.BoolValue
 }
 
 type Instance struct {
-	Metadata      defsecTypes.Metadata
-	AdminPassword defsecTypes.StringValue
+	Metadata      iacTypes.Metadata
+	AdminPassword iacTypes.StringValue
 }

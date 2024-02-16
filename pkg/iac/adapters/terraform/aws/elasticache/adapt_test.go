@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elasticache"
 
@@ -35,10 +35,10 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: elasticache.Cluster{
-				Metadata:               defsecTypes.NewTestMetadata(),
-				Engine:                 defsecTypes.String("redis", defsecTypes.NewTestMetadata()),
-				NodeType:               defsecTypes.String("cache.m4.large", defsecTypes.NewTestMetadata()),
-				SnapshotRetentionLimit: defsecTypes.Int(5, defsecTypes.NewTestMetadata()),
+				Metadata:               iacTypes.NewTestMetadata(),
+				Engine:                 iacTypes.String("redis", iacTypes.NewTestMetadata()),
+				NodeType:               iacTypes.String("cache.m4.large", iacTypes.NewTestMetadata()),
+				SnapshotRetentionLimit: iacTypes.Int(5, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -47,10 +47,10 @@ func Test_adaptCluster(t *testing.T) {
 			resource "aws_elasticache_cluster" "example" {
 			}`,
 			expected: elasticache.Cluster{
-				Metadata:               defsecTypes.NewTestMetadata(),
-				Engine:                 defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				NodeType:               defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				SnapshotRetentionLimit: defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
+				Metadata:               iacTypes.NewTestMetadata(),
+				Engine:                 iacTypes.String("", iacTypes.NewTestMetadata()),
+				NodeType:               iacTypes.String("", iacTypes.NewTestMetadata()),
+				SnapshotRetentionLimit: iacTypes.Int(0, iacTypes.NewTestMetadata()),
 			},
 		},
 	}
@@ -81,9 +81,9 @@ func Test_adaptReplicationGroup(t *testing.T) {
 		}
 `,
 			expected: elasticache.ReplicationGroup{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				TransitEncryptionEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				AtRestEncryptionEnabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:                 iacTypes.NewTestMetadata(),
+				TransitEncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				AtRestEncryptionEnabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -93,9 +93,9 @@ func Test_adaptReplicationGroup(t *testing.T) {
 		}
 `,
 			expected: elasticache.ReplicationGroup{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				TransitEncryptionEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				AtRestEncryptionEnabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                 iacTypes.NewTestMetadata(),
+				TransitEncryptionEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				AtRestEncryptionEnabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}
@@ -129,8 +129,8 @@ func Test_adaptSecurityGroup(t *testing.T) {
 			}			
 `,
 			expected: elasticache.SecurityGroup{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				Description: defsecTypes.String("something", defsecTypes.NewTestMetadata()),
+				Metadata:    iacTypes.NewTestMetadata(),
+				Description: iacTypes.String("something", iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -145,8 +145,8 @@ func Test_adaptSecurityGroup(t *testing.T) {
 			}
 `,
 			expected: elasticache.SecurityGroup{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				Description: defsecTypes.String("Managed by Terraform", defsecTypes.NewTestMetadata()),
+				Metadata:    iacTypes.NewTestMetadata(),
+				Description: iacTypes.String("Managed by Terraform", iacTypes.NewTestMetadata()),
 			},
 		},
 	}

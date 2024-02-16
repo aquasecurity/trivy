@@ -1,10 +1,10 @@
 package nas
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type NASInstance struct {
-	Metadata  defsecTypes.Metadata
-	NetworkID defsecTypes.StringValue
+	Metadata  iacTypes.Metadata
+	NetworkID iacTypes.StringValue
 }

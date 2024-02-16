@@ -6,7 +6,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/network"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptLoadBalancers(t *testing.T) {
@@ -32,17 +32,17 @@ func Test_adaptLoadBalancers(t *testing.T) {
 
 `,
 			expected: []network.LoadBalancer{{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Listeners: []network.LoadBalancerListener{
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						TLSPolicy: defsecTypes.String("example-ssl-policy-id", defsecTypes.NewTestMetadata()),
-						Protocol:  defsecTypes.String("HTTP", defsecTypes.NewTestMetadata()),
+						Metadata:  iacTypes.NewTestMetadata(),
+						TLSPolicy: iacTypes.String("example-ssl-policy-id", iacTypes.NewTestMetadata()),
+						Protocol:  iacTypes.String("HTTP", iacTypes.NewTestMetadata()),
 					},
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						TLSPolicy: defsecTypes.String("example-ssl-policy-name", defsecTypes.NewTestMetadata()),
-						Protocol:  defsecTypes.String("HTTPS", defsecTypes.NewTestMetadata()),
+						Metadata:  iacTypes.NewTestMetadata(),
+						TLSPolicy: iacTypes.String("example-ssl-policy-name", iacTypes.NewTestMetadata()),
+						Protocol:  iacTypes.String("HTTPS", iacTypes.NewTestMetadata()),
 					},
 				},
 			}},
@@ -55,9 +55,9 @@ func Test_adaptLoadBalancers(t *testing.T) {
 `,
 
 			expected: []network.LoadBalancer{{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Listeners: []network.LoadBalancerListener{{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 				}},
 			}},
 		},

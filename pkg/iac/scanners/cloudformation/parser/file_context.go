@@ -1,7 +1,7 @@
 package parser
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type SourceFormat string
@@ -46,10 +46,10 @@ func (t *FileContext) GetResourcesByType(names ...string) []*Resource {
 	return resources
 }
 
-func (t *FileContext) Metadata() defsecTypes.Metadata {
-	rng := defsecTypes.NewRange(t.filepath, 1, len(t.lines), "", nil)
+func (t *FileContext) Metadata() iacTypes.Metadata {
+	rng := iacTypes.NewRange(t.filepath, 1, len(t.lines), "", nil)
 
-	return defsecTypes.NewMetadata(rng, NewCFReference("Template", rng).String())
+	return iacTypes.NewMetadata(rng, NewCFReference("Template", rng).String())
 }
 
 func (t *FileContext) OverrideParameters(params map[string]any) {

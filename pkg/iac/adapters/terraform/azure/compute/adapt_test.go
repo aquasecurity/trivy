@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
 
@@ -28,10 +28,10 @@ resource "azurerm_managed_disk" "example" {
 	}
 }`,
 			expected: compute.ManagedDisk{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: compute.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -41,10 +41,10 @@ resource "azurerm_managed_disk" "example" {
 resource "azurerm_managed_disk" "example" {
 }`,
 			expected: compute.ManagedDisk{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: compute.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -85,14 +85,14 @@ resource "azurerm_virtual_machine" "example" {
 }
 `,
 			expected: compute.LinuxVirtualMachine{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					CustomData: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:   iacTypes.NewTestMetadata(),
+					CustomData: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      defsecTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:                      iacTypes.NewTestMetadata(),
+					DisablePasswordAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -111,16 +111,16 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 	}
 }`,
 			expected: compute.LinuxVirtualMachine{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata: defsecTypes.NewTestMetadata(),
-					CustomData: defsecTypes.String(
+					Metadata: iacTypes.NewTestMetadata(),
+					CustomData: iacTypes.String(
 						`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
-`, defsecTypes.NewTestMetadata()),
+`, iacTypes.NewTestMetadata()),
 				},
 				OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
-					Metadata:                      defsecTypes.NewTestMetadata(),
-					DisablePasswordAuthentication: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata:                      iacTypes.NewTestMetadata(),
+					DisablePasswordAuthentication: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -155,11 +155,11 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 	}
 }`,
 			expected: compute.WindowsVirtualMachine{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata: defsecTypes.NewTestMetadata(),
-					CustomData: defsecTypes.String(`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
-`, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					CustomData: iacTypes.String(`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
+`, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -173,11 +173,11 @@ export GREETING="Hello there"
 	EOF
 	}`,
 			expected: compute.WindowsVirtualMachine{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				VirtualMachine: compute.VirtualMachine{
-					Metadata: defsecTypes.NewTestMetadata(),
-					CustomData: defsecTypes.String(`export GREETING="Hello there"
-`, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					CustomData: iacTypes.String(`export GREETING="Hello there"
+`, iacTypes.NewTestMetadata()),
 				},
 			},
 		},

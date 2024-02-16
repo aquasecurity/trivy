@@ -1,7 +1,7 @@
 package datafactory
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type DataFactory struct {
@@ -9,6 +9,6 @@ type DataFactory struct {
 }
 
 type Factory struct {
-	Metadata            defsecTypes.Metadata
-	EnablePublicNetwork defsecTypes.BoolValue
+	Metadata            iacTypes.Metadata
+	EnablePublicNetwork iacTypes.BoolValue
 }

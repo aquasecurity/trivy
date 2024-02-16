@@ -1,14 +1,14 @@
 package rdb
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type DBInstance struct {
-	Metadata                  defsecTypes.Metadata
-	BackupRetentionPeriodDays defsecTypes.IntValue
-	Engine                    defsecTypes.StringValue
-	EngineVersion             defsecTypes.StringValue
-	NetworkID                 defsecTypes.StringValue
-	PublicAccess              defsecTypes.BoolValue
+	Metadata                  iacTypes.Metadata
+	BackupRetentionPeriodDays iacTypes.IntValue
+	Engine                    iacTypes.StringValue
+	EngineVersion             iacTypes.StringValue
+	NetworkID                 iacTypes.StringValue
+	PublicAccess              iacTypes.BoolValue
 }

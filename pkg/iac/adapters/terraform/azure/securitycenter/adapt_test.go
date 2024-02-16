@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/securitycenter"
 
@@ -28,9 +28,9 @@ func Test_adaptContact(t *testing.T) {
 			}
 `,
 			expected: securitycenter.Contact{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				EnableAlertNotifications: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				Phone:                    defsecTypes.String("+1-555-555-5555", defsecTypes.NewTestMetadata()),
+				Metadata:                 iacTypes.NewTestMetadata(),
+				EnableAlertNotifications: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				Phone:                    iacTypes.String("+1-555-555-5555", iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -40,9 +40,9 @@ func Test_adaptContact(t *testing.T) {
 			}
 `,
 			expected: securitycenter.Contact{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				EnableAlertNotifications: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				Phone:                    defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:                 iacTypes.NewTestMetadata(),
+				EnableAlertNotifications: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				Phone:                    iacTypes.String("", iacTypes.NewTestMetadata()),
 			},
 		},
 	}
@@ -69,8 +69,8 @@ func Test_adaptSubscription(t *testing.T) {
 				tier          = "Free"
 			}`,
 			expected: securitycenter.SubscriptionPricing{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Tier:     defsecTypes.String("Free", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Tier:     iacTypes.String("Free", iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -79,8 +79,8 @@ func Test_adaptSubscription(t *testing.T) {
 			resource "azurerm_security_center_subscription_pricing" "example" {
 			}`,
 			expected: securitycenter.SubscriptionPricing{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Tier:     defsecTypes.String("Free", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Tier:     iacTypes.String("Free", iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -90,8 +90,8 @@ func Test_adaptSubscription(t *testing.T) {
 				tier          = "Standard"
 			}`,
 			expected: securitycenter.SubscriptionPricing{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Tier:     defsecTypes.String("Standard", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Tier:     iacTypes.String("Standard", iacTypes.NewTestMetadata()),
 			},
 		},
 	}

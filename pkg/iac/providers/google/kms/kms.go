@@ -1,7 +1,7 @@
 package kms
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type KMS struct {
@@ -9,11 +9,11 @@ type KMS struct {
 }
 
 type KeyRing struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Keys     []Key
 }
 
 type Key struct {
-	Metadata              defsecTypes.Metadata
-	RotationPeriodSeconds defsecTypes.IntValue
+	Metadata              iacTypes.Metadata
+	RotationPeriodSeconds iacTypes.IntValue
 }

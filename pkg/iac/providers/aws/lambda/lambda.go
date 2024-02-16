@@ -1,7 +1,7 @@
 package lambda
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Lambda struct {
@@ -9,7 +9,7 @@ type Lambda struct {
 }
 
 type Function struct {
-	Metadata    defsecTypes.Metadata
+	Metadata    iacTypes.Metadata
 	Tracing     Tracing
 	Permissions []Permission
 }
@@ -20,12 +20,12 @@ const (
 )
 
 type Tracing struct {
-	Metadata defsecTypes.Metadata
-	Mode     defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Mode     iacTypes.StringValue
 }
 
 type Permission struct {
-	Metadata  defsecTypes.Metadata
-	Principal defsecTypes.StringValue
-	SourceARN defsecTypes.StringValue
+	Metadata  iacTypes.Metadata
+	Principal iacTypes.StringValue
+	SourceARN iacTypes.StringValue
 }

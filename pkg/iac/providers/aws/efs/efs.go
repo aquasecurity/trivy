@@ -1,7 +1,7 @@
 package efs
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type EFS struct {
@@ -9,6 +9,6 @@ type EFS struct {
 }
 
 type FileSystem struct {
-	Metadata  defsecTypes.Metadata
-	Encrypted defsecTypes.BoolValue
+	Metadata  iacTypes.Metadata
+	Encrypted iacTypes.BoolValue
 }

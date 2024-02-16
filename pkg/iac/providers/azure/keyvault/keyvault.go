@@ -1,7 +1,7 @@
 package keyvault
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type KeyVault struct {
@@ -9,26 +9,26 @@ type KeyVault struct {
 }
 
 type Vault struct {
-	Metadata                defsecTypes.Metadata
+	Metadata                iacTypes.Metadata
 	Secrets                 []Secret
 	Keys                    []Key
-	EnablePurgeProtection   defsecTypes.BoolValue
-	SoftDeleteRetentionDays defsecTypes.IntValue
+	EnablePurgeProtection   iacTypes.BoolValue
+	SoftDeleteRetentionDays iacTypes.IntValue
 	NetworkACLs             NetworkACLs
 }
 
 type NetworkACLs struct {
-	Metadata      defsecTypes.Metadata
-	DefaultAction defsecTypes.StringValue
+	Metadata      iacTypes.Metadata
+	DefaultAction iacTypes.StringValue
 }
 
 type Key struct {
-	Metadata   defsecTypes.Metadata
-	ExpiryDate defsecTypes.TimeValue
+	Metadata   iacTypes.Metadata
+	ExpiryDate iacTypes.TimeValue
 }
 
 type Secret struct {
-	Metadata    defsecTypes.Metadata
-	ContentType defsecTypes.StringValue
-	ExpiryDate  defsecTypes.TimeValue
+	Metadata    iacTypes.Metadata
+	ContentType iacTypes.StringValue
+	ExpiryDate  iacTypes.TimeValue
 }

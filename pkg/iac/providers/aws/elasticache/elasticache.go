@@ -1,7 +1,7 @@
 package elasticache
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type ElastiCache struct {
@@ -11,19 +11,19 @@ type ElastiCache struct {
 }
 
 type Cluster struct {
-	Metadata               defsecTypes.Metadata
-	Engine                 defsecTypes.StringValue
-	NodeType               defsecTypes.StringValue
-	SnapshotRetentionLimit defsecTypes.IntValue // days
+	Metadata               iacTypes.Metadata
+	Engine                 iacTypes.StringValue
+	NodeType               iacTypes.StringValue
+	SnapshotRetentionLimit iacTypes.IntValue // days
 }
 
 type ReplicationGroup struct {
-	Metadata                 defsecTypes.Metadata
-	TransitEncryptionEnabled defsecTypes.BoolValue
-	AtRestEncryptionEnabled  defsecTypes.BoolValue
+	Metadata                 iacTypes.Metadata
+	TransitEncryptionEnabled iacTypes.BoolValue
+	AtRestEncryptionEnabled  iacTypes.BoolValue
 }
 
 type SecurityGroup struct {
-	Metadata    defsecTypes.Metadata
-	Description defsecTypes.StringValue
+	Metadata    iacTypes.Metadata
+	Description iacTypes.StringValue
 }

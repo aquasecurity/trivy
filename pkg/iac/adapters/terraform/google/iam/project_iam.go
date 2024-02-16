@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 // see https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam
@@ -26,13 +26,13 @@ func AdaptMember(iamBlock *terraform.Block, modules terraform.Modules) iam.Membe
 		Metadata:              iamBlock.GetMetadata(),
 		Member:                iamBlock.GetAttribute("member").AsStringValueOrDefault("", iamBlock),
 		Role:                  iamBlock.GetAttribute("role").AsStringValueOrDefault("", iamBlock),
-		DefaultServiceAccount: defsecTypes.BoolDefault(false, iamBlock.GetMetadata()),
+		DefaultServiceAccount: iacTypes.BoolDefault(false, iamBlock.GetMetadata()),
 	}
 
 	memberAttr := iamBlock.GetAttribute("member")
 	if referencedBlock, err := modules.GetReferencedBlock(memberAttr, iamBlock); err == nil {
 		if strings.HasSuffix(referencedBlock.TypeLabel(), "_default_service_account") {
-			member.DefaultServiceAccount = defsecTypes.Bool(true, memberAttr.GetMetadata())
+			member.DefaultServiceAccount = iacTypes.Bool(true, memberAttr.GetMetadata())
 		}
 	}
 
@@ -110,8 +110,8 @@ func (a *adapter) adaptProjectMembers() {
 
 			a.projects = append(a.projects, parentedProject{
 				project: iam.Project{
-					Metadata:          defsecTypes.NewUnmanagedMetadata(),
-					AutoCreateNetwork: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+					Metadata:          iacTypes.NewUnmanagedMetadata(),
+					AutoCreateNetwork: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 					Members:           []iam.Member{member},
 					Bindings:          nil,
 				},
@@ -129,16 +129,16 @@ func AdaptBinding(iamBlock *terraform.Block, modules terraform.Modules) iam.Bind
 		Metadata:                      iamBlock.GetMetadata(),
 		Members:                       nil,
 		Role:                          iamBlock.GetAttribute("role").AsStringValueOrDefault("", iamBlock),
-		IncludesDefaultServiceAccount: defsecTypes.BoolDefault(false, iamBlock.GetMetadata()),
+		IncludesDefaultServiceAccount: iacTypes.BoolDefault(false, iamBlock.GetMetadata()),
 	}
 	membersAttr := iamBlock.GetAttribute("members")
 	members := membersAttr.AsStringValues().AsStrings()
 	for _, member := range members {
-		binding.Members = append(binding.Members, defsecTypes.String(member, membersAttr.GetMetadata()))
+		binding.Members = append(binding.Members, iacTypes.String(member, membersAttr.GetMetadata()))
 	}
 	if referencedBlock, err := modules.GetReferencedBlock(membersAttr, iamBlock); err == nil {
 		if strings.HasSuffix(referencedBlock.TypeLabel(), "_default_service_account") {
-			binding.IncludesDefaultServiceAccount = defsecTypes.Bool(true, membersAttr.GetMetadata())
+			binding.IncludesDefaultServiceAccount = iacTypes.Bool(true, membersAttr.GetMetadata())
 		}
 	}
 	return binding
@@ -209,8 +209,8 @@ func (a *adapter) adaptProjectDataBindings() {
 		// we didn't find the project - add an unmanaged one
 		a.projects = append(a.projects, parentedProject{
 			project: iam.Project{
-				Metadata:          defsecTypes.NewUnmanagedMetadata(),
-				AutoCreateNetwork: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+				Metadata:          iacTypes.NewUnmanagedMetadata(),
+				AutoCreateNetwork: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 				Members:           nil,
 				Bindings:          bindings,
 			},
@@ -276,8 +276,8 @@ func (a *adapter) adaptProjectBindings() {
 			}
 			a.projects = append(a.projects, parentedProject{
 				project: iam.Project{
-					Metadata:          defsecTypes.NewUnmanagedMetadata(),
-					AutoCreateNetwork: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+					Metadata:          iacTypes.NewUnmanagedMetadata(),
+					AutoCreateNetwork: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 					Members:           nil,
 					Bindings:          []iam.Binding{binding},
 				},

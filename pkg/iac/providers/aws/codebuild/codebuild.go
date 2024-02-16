@@ -1,7 +1,7 @@
 package codebuild
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type CodeBuild struct {
@@ -9,12 +9,12 @@ type CodeBuild struct {
 }
 
 type Project struct {
-	Metadata                  defsecTypes.Metadata
+	Metadata                  iacTypes.Metadata
 	ArtifactSettings          ArtifactSettings
 	SecondaryArtifactSettings []ArtifactSettings
 }
 
 type ArtifactSettings struct {
-	Metadata          defsecTypes.Metadata
-	EncryptionEnabled defsecTypes.BoolValue
+	Metadata          iacTypes.Metadata
+	EncryptionEnabled iacTypes.BoolValue
 }

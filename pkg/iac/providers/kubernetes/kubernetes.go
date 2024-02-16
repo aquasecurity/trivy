@@ -1,7 +1,7 @@
 package kubernetes
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Kubernetes struct {
@@ -9,30 +9,30 @@ type Kubernetes struct {
 }
 
 type NetworkPolicy struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Spec     NetworkPolicySpec
 }
 
 type NetworkPolicySpec struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Egress   Egress
 	Ingress  Ingress
 }
 
 type Egress struct {
-	Metadata         defsecTypes.Metadata
+	Metadata         iacTypes.Metadata
 	Ports            []Port
-	DestinationCIDRs []defsecTypes.StringValue
+	DestinationCIDRs []iacTypes.StringValue
 }
 
 type Ingress struct {
-	Metadata    defsecTypes.Metadata
+	Metadata    iacTypes.Metadata
 	Ports       []Port
-	SourceCIDRs []defsecTypes.StringValue
+	SourceCIDRs []iacTypes.StringValue
 }
 
 type Port struct {
-	Metadata defsecTypes.Metadata
-	Number   defsecTypes.StringValue // e.g. "http" or "80"
-	Protocol defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Number   iacTypes.StringValue // e.g. "http" or "80"
+	Protocol iacTypes.StringValue
 }

@@ -3,7 +3,7 @@ package iam
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func ParsePolicyBlock(block *terraform.Block) []iam.Binding {
@@ -13,12 +13,12 @@ func ParsePolicyBlock(block *terraform.Block) []iam.Binding {
 			Metadata:                      bindingBlock.GetMetadata(),
 			Members:                       nil,
 			Role:                          bindingBlock.GetAttribute("role").AsStringValueOrDefault("", bindingBlock),
-			IncludesDefaultServiceAccount: defsecTypes.BoolDefault(false, bindingBlock.GetMetadata()),
+			IncludesDefaultServiceAccount: iacTypes.BoolDefault(false, bindingBlock.GetMetadata()),
 		}
 		membersAttr := bindingBlock.GetAttribute("members")
 		members := membersAttr.AsStringValues().AsStrings()
 		for _, member := range members {
-			binding.Members = append(binding.Members, defsecTypes.String(member, membersAttr.GetMetadata()))
+			binding.Members = append(binding.Members, iacTypes.String(member, membersAttr.GetMetadata()))
 		}
 		bindings = append(bindings, binding)
 	}

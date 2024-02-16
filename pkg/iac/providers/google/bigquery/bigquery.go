@@ -1,7 +1,7 @@
 package bigquery
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type BigQuery struct {
@@ -9,8 +9,8 @@ type BigQuery struct {
 }
 
 type Dataset struct {
-	Metadata     defsecTypes.Metadata
-	ID           defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	ID           iacTypes.StringValue
 	AccessGrants []AccessGrant
 }
 
@@ -19,8 +19,8 @@ const (
 )
 
 type AccessGrant struct {
-	Metadata     defsecTypes.Metadata
-	Role         defsecTypes.StringValue
-	Domain       defsecTypes.StringValue
-	SpecialGroup defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	Role         iacTypes.StringValue
+	Domain       iacTypes.StringValue
+	SpecialGroup iacTypes.StringValue
 }

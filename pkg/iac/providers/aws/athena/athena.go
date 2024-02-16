@@ -1,7 +1,7 @@
 package athena
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Athena struct {
@@ -10,16 +10,16 @@ type Athena struct {
 }
 
 type Database struct {
-	Metadata   defsecTypes.Metadata
-	Name       defsecTypes.StringValue
+	Metadata   iacTypes.Metadata
+	Name       iacTypes.StringValue
 	Encryption EncryptionConfiguration
 }
 
 type Workgroup struct {
-	Metadata             defsecTypes.Metadata
-	Name                 defsecTypes.StringValue
+	Metadata             iacTypes.Metadata
+	Name                 iacTypes.StringValue
 	Encryption           EncryptionConfiguration
-	EnforceConfiguration defsecTypes.BoolValue
+	EnforceConfiguration iacTypes.BoolValue
 }
 
 const (
@@ -30,6 +30,6 @@ const (
 )
 
 type EncryptionConfiguration struct {
-	Metadata defsecTypes.Metadata
-	Type     defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Type     iacTypes.StringValue
 }

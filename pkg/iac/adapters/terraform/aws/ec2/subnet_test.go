@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 
@@ -28,8 +28,8 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				MapPublicIpOnLaunch: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -41,8 +41,8 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				MapPublicIpOnLaunch: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -53,8 +53,8 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				MapPublicIpOnLaunch: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

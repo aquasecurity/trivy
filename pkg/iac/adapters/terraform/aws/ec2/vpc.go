@@ -3,7 +3,7 @@ package ec2
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type naclAdapter struct {
@@ -48,10 +48,10 @@ func adaptVPC(modules terraform.Modules, block *terraform.Block, def bool) ec2.V
 	}
 	return ec2.VPC{
 		Metadata:        block.GetMetadata(),
-		ID:              defsecTypes.StringUnresolvable(block.GetMetadata()),
-		IsDefault:       defsecTypes.Bool(def, block.GetMetadata()),
+		ID:              iacTypes.StringUnresolvable(block.GetMetadata()),
+		IsDefault:       iacTypes.Bool(def, block.GetMetadata()),
 		SecurityGroups:  nil,
-		FlowLogsEnabled: defsecTypes.BoolDefault(hasFlowLogs, block.GetMetadata()),
+		FlowLogsEnabled: iacTypes.BoolDefault(hasFlowLogs, block.GetMetadata()),
 	}
 }
 
@@ -63,12 +63,12 @@ func (a *sgAdapter) adaptSecurityGroups(modules terraform.Modules) []ec2.Securit
 	orphanResources := modules.GetResourceByIDs(a.sgRuleIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := ec2.SecurityGroup{
-			Metadata:     defsecTypes.NewUnmanagedMetadata(),
-			Description:  defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata:     iacTypes.NewUnmanagedMetadata(),
+			Description:  iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			IngressRules: nil,
 			EgressRules:  nil,
-			IsDefault:    defsecTypes.BoolUnresolvable(defsecTypes.NewUnmanagedMetadata()),
-			VPCID:        defsecTypes.StringUnresolvable(defsecTypes.NewUnmanagedMetadata()),
+			IsDefault:    iacTypes.BoolUnresolvable(iacTypes.NewUnmanagedMetadata()),
+			VPCID:        iacTypes.StringUnresolvable(iacTypes.NewUnmanagedMetadata()),
 		}
 		for _, sgRule := range orphanResources {
 			if sgRule.GetAttribute("type").Equals("ingress") {
@@ -94,9 +94,9 @@ func (a *naclAdapter) adaptNetworkACLs(modules terraform.Modules) []ec2.NetworkA
 	orphanResources := modules.GetResourceByIDs(a.naclRuleIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := ec2.NetworkACL{
-			Metadata:      defsecTypes.NewUnmanagedMetadata(),
+			Metadata:      iacTypes.NewUnmanagedMetadata(),
 			Rules:         nil,
-			IsDefaultRule: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			IsDefaultRule: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 		}
 		for _, naclRule := range orphanResources {
 			orphanage.Rules = append(orphanage.Rules, adaptNetworkACLRule(naclRule))
@@ -139,7 +139,7 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 		Description:  descriptionVal,
 		IngressRules: ingressRules,
 		EgressRules:  egressRules,
-		IsDefault:    defsecTypes.Bool(false, defsecTypes.NewUnmanagedMetadata()),
+		IsDefault:    iacTypes.Bool(false, iacTypes.NewUnmanagedMetadata()),
 		VPCID:        resource.GetAttribute("vpc_id").AsStringValueOrDefault("", resource),
 	}
 }
@@ -148,7 +148,7 @@ func adaptSGRule(resource *terraform.Block, modules terraform.Modules) ec2.Secur
 	ruleDescAttr := resource.GetAttribute("description")
 	ruleDescVal := ruleDescAttr.AsStringValueOrDefault("", resource)
 
-	var cidrs []defsecTypes.StringValue
+	var cidrs []iacTypes.StringValue
 
 	cidrBlocks := resource.GetAttribute("cidr_blocks")
 	ipv6cidrBlocks := resource.GetAttribute("ipv6_cidr_blocks")
@@ -188,20 +188,20 @@ func (a *naclAdapter) adaptNetworkACL(resource *terraform.Block, module *terrafo
 	return ec2.NetworkACL{
 		Metadata:      resource.GetMetadata(),
 		Rules:         networkRules,
-		IsDefaultRule: defsecTypes.BoolDefault(false, resource.GetMetadata()),
+		IsDefaultRule: iacTypes.BoolDefault(false, resource.GetMetadata()),
 	}
 }
 
 func adaptNetworkACLRule(resource *terraform.Block) ec2.NetworkACLRule {
-	var cidrs []defsecTypes.StringValue
+	var cidrs []iacTypes.StringValue
 
-	typeVal := defsecTypes.StringDefault("ingress", resource.GetMetadata())
+	typeVal := iacTypes.StringDefault("ingress", resource.GetMetadata())
 
 	egressAtrr := resource.GetAttribute("egress")
 	if egressAtrr.IsTrue() {
-		typeVal = defsecTypes.String("egress", egressAtrr.GetMetadata())
+		typeVal = iacTypes.String("egress", egressAtrr.GetMetadata())
 	} else if egressAtrr.IsNotNil() {
-		typeVal = defsecTypes.String("ingress", egressAtrr.GetMetadata())
+		typeVal = iacTypes.String("ingress", egressAtrr.GetMetadata())
 	}
 
 	actionAttr := resource.GetAttribute("rule_action")

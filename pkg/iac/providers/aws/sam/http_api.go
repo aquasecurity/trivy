@@ -1,20 +1,20 @@
 package sam
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type HttpAPI struct {
-	Metadata             defsecTypes.Metadata
-	Name                 defsecTypes.StringValue
+	Metadata             iacTypes.Metadata
+	Name                 iacTypes.StringValue
 	AccessLogging        AccessLogging
 	DefaultRouteSettings RouteSettings
 	DomainConfiguration  DomainConfiguration
 }
 
 type RouteSettings struct {
-	Metadata               defsecTypes.Metadata
-	LoggingEnabled         defsecTypes.BoolValue
-	DataTraceEnabled       defsecTypes.BoolValue
-	DetailedMetricsEnabled defsecTypes.BoolValue
+	Metadata               iacTypes.Metadata
+	LoggingEnabled         iacTypes.BoolValue
+	DataTraceEnabled       iacTypes.BoolValue
+	DetailedMetricsEnabled iacTypes.BoolValue
 }

@@ -1,7 +1,7 @@
 package config
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Config struct {
@@ -9,6 +9,6 @@ type Config struct {
 }
 
 type ConfigurationAggregrator struct {
-	Metadata         defsecTypes.Metadata
-	SourceAllRegions defsecTypes.BoolValue
+	Metadata         iacTypes.Metadata
+	SourceAllRegions iacTypes.BoolValue
 }

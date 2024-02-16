@@ -3,7 +3,7 @@ package ec2
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getInstances(ctx parser2.FileContext) (instances []ec2.Instance) {
@@ -16,8 +16,8 @@ func getInstances(ctx parser2.FileContext) (instances []ec2.Instance) {
 			// https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/655
 			MetadataOptions: ec2.MetadataOptions{
 				Metadata:     r.Metadata(),
-				HttpTokens:   defsecTypes.StringDefault("optional", r.Metadata()),
-				HttpEndpoint: defsecTypes.StringDefault("enabled", r.Metadata()),
+				HttpTokens:   iacTypes.StringDefault("optional", r.Metadata()),
+				HttpEndpoint: iacTypes.StringDefault("enabled", r.Metadata()),
 			},
 			UserData: r.GetStringProperty("UserData"),
 		}
@@ -29,7 +29,7 @@ func getInstances(ctx parser2.FileContext) (instances []ec2.Instance) {
 		if instance.RootBlockDevice == nil {
 			instance.RootBlockDevice = &ec2.BlockDevice{
 				Metadata:  r.Metadata(),
-				Encrypted: defsecTypes.BoolDefault(false, r.Metadata()),
+				Encrypted: iacTypes.BoolDefault(false, r.Metadata()),
 			}
 		}
 

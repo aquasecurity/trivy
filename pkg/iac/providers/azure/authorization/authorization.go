@@ -1,7 +1,7 @@
 package authorization
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Authorization struct {
@@ -9,12 +9,12 @@ type Authorization struct {
 }
 
 type RoleDefinition struct {
-	Metadata         defsecTypes.Metadata
+	Metadata         iacTypes.Metadata
 	Permissions      []Permission
-	AssignableScopes []defsecTypes.StringValue
+	AssignableScopes []iacTypes.StringValue
 }
 
 type Permission struct {
-	Metadata defsecTypes.Metadata
-	Actions  []defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Actions  []iacTypes.StringValue
 }

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Storage struct {
@@ -9,29 +9,29 @@ type Storage struct {
 }
 
 type Account struct {
-	Metadata          defsecTypes.Metadata
+	Metadata          iacTypes.Metadata
 	NetworkRules      []NetworkRule
-	EnforceHTTPS      defsecTypes.BoolValue
+	EnforceHTTPS      iacTypes.BoolValue
 	Containers        []Container
 	QueueProperties   QueueProperties
-	MinimumTLSVersion defsecTypes.StringValue
+	MinimumTLSVersion iacTypes.StringValue
 	Queues            []Queue
 }
 
 type Queue struct {
-	Metadata defsecTypes.Metadata
-	Name     defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Name     iacTypes.StringValue
 }
 
 type QueueProperties struct {
-	Metadata      defsecTypes.Metadata
-	EnableLogging defsecTypes.BoolValue
+	Metadata      iacTypes.Metadata
+	EnableLogging iacTypes.BoolValue
 }
 
 type NetworkRule struct {
-	Metadata       defsecTypes.Metadata
-	Bypass         []defsecTypes.StringValue
-	AllowByDefault defsecTypes.BoolValue
+	Metadata       iacTypes.Metadata
+	Bypass         []iacTypes.StringValue
+	AllowByDefault iacTypes.BoolValue
 }
 
 const (
@@ -41,6 +41,6 @@ const (
 )
 
 type Container struct {
-	Metadata     defsecTypes.Metadata
-	PublicAccess defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	PublicAccess iacTypes.StringValue
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/storage"
 	"github.com/stretchr/testify/assert"
@@ -65,45 +65,45 @@ func Test_Adapt(t *testing.T) {
 				Accounts: []storage.Account{
 
 					{
-						Metadata:          defsecTypes.NewTestMetadata(),
-						EnforceHTTPS:      defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						MinimumTLSVersion: defsecTypes.String("TLS1_2", defsecTypes.NewTestMetadata()),
+						Metadata:          iacTypes.NewTestMetadata(),
+						EnforceHTTPS:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						MinimumTLSVersion: iacTypes.String("TLS1_2", iacTypes.NewTestMetadata()),
 						NetworkRules: []storage.NetworkRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Bypass: []defsecTypes.StringValue{
-									defsecTypes.String("Metrics", defsecTypes.NewTestMetadata()),
-									defsecTypes.String("AzureServices", defsecTypes.NewTestMetadata()),
+								Metadata: iacTypes.NewTestMetadata(),
+								Bypass: []iacTypes.StringValue{
+									iacTypes.String("Metrics", iacTypes.NewTestMetadata()),
+									iacTypes.String("AzureServices", iacTypes.NewTestMetadata()),
 								},
-								AllowByDefault: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								AllowByDefault: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 							},
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Bypass: []defsecTypes.StringValue{
-									defsecTypes.String("Metrics", defsecTypes.NewTestMetadata()),
+								Metadata: iacTypes.NewTestMetadata(),
+								Bypass: []iacTypes.StringValue{
+									iacTypes.String("Metrics", iacTypes.NewTestMetadata()),
 								},
-								AllowByDefault: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+								AllowByDefault: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							},
 						},
 						QueueProperties: storage.QueueProperties{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							EnableLogging: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata:      iacTypes.NewTestMetadata(),
+							EnableLogging: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 						Containers: []storage.Container{
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								PublicAccess: defsecTypes.String("blob", defsecTypes.NewTestMetadata()),
+								Metadata:     iacTypes.NewTestMetadata(),
+								PublicAccess: iacTypes.String("blob", iacTypes.NewTestMetadata()),
 							},
 						},
 					},
 					{
-						Metadata:     defsecTypes.NewUnmanagedMetadata(),
-						EnforceHTTPS: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+						Metadata:     iacTypes.NewUnmanagedMetadata(),
+						EnforceHTTPS: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						QueueProperties: storage.QueueProperties{
-							Metadata:      defsecTypes.NewUnmanagedMetadata(),
-							EnableLogging: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+							Metadata:      iacTypes.NewUnmanagedMetadata(),
+							EnableLogging: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						},
-						MinimumTLSVersion: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+						MinimumTLSVersion: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 					},
 				},
 			},
@@ -123,26 +123,26 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Accounts: []storage.Account{
 					{
-						Metadata:     defsecTypes.NewUnmanagedMetadata(),
-						EnforceHTTPS: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+						Metadata:     iacTypes.NewUnmanagedMetadata(),
+						EnforceHTTPS: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						NetworkRules: []storage.NetworkRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Bypass: []defsecTypes.StringValue{
-									defsecTypes.String("Metrics", defsecTypes.NewTestMetadata()),
+								Metadata: iacTypes.NewTestMetadata(),
+								Bypass: []iacTypes.StringValue{
+									iacTypes.String("Metrics", iacTypes.NewTestMetadata()),
 								},
-								AllowByDefault: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+								AllowByDefault: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							},
 						},
 						QueueProperties: storage.QueueProperties{
-							Metadata:      defsecTypes.NewUnmanagedMetadata(),
-							EnableLogging: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+							Metadata:      iacTypes.NewUnmanagedMetadata(),
+							EnableLogging: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 						},
-						MinimumTLSVersion: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+						MinimumTLSVersion: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 						Containers: []storage.Container{
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								PublicAccess: defsecTypes.String("blob", defsecTypes.NewTestMetadata()),
+								Metadata:     iacTypes.NewTestMetadata(),
+								PublicAccess: iacTypes.String("blob", iacTypes.NewTestMetadata()),
 							},
 						},
 					},

@@ -1,41 +1,41 @@
 package compute
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Instance struct {
-	Metadata                    defsecTypes.Metadata
-	Name                        defsecTypes.StringValue
+	Metadata                    iacTypes.Metadata
+	Name                        iacTypes.StringValue
 	NetworkInterfaces           []NetworkInterface
 	ShieldedVM                  ShieldedVMConfig
 	ServiceAccount              ServiceAccount
-	CanIPForward                defsecTypes.BoolValue
-	OSLoginEnabled              defsecTypes.BoolValue
-	EnableProjectSSHKeyBlocking defsecTypes.BoolValue
-	EnableSerialPort            defsecTypes.BoolValue
+	CanIPForward                iacTypes.BoolValue
+	OSLoginEnabled              iacTypes.BoolValue
+	EnableProjectSSHKeyBlocking iacTypes.BoolValue
+	EnableSerialPort            iacTypes.BoolValue
 	BootDisks                   []Disk
 	AttachedDisks               []Disk
 }
 
 type ServiceAccount struct {
-	Metadata  defsecTypes.Metadata
-	Email     defsecTypes.StringValue
-	IsDefault defsecTypes.BoolValue
-	Scopes    []defsecTypes.StringValue
+	Metadata  iacTypes.Metadata
+	Email     iacTypes.StringValue
+	IsDefault iacTypes.BoolValue
+	Scopes    []iacTypes.StringValue
 }
 
 type NetworkInterface struct {
-	Metadata    defsecTypes.Metadata
+	Metadata    iacTypes.Metadata
 	Network     *Network
 	SubNetwork  *SubNetwork
-	HasPublicIP defsecTypes.BoolValue
-	NATIP       defsecTypes.StringValue
+	HasPublicIP iacTypes.BoolValue
+	NATIP       iacTypes.StringValue
 }
 
 type ShieldedVMConfig struct {
-	Metadata                   defsecTypes.Metadata
-	SecureBootEnabled          defsecTypes.BoolValue
-	IntegrityMonitoringEnabled defsecTypes.BoolValue
-	VTPMEnabled                defsecTypes.BoolValue
+	Metadata                   iacTypes.Metadata
+	SecureBootEnabled          iacTypes.BoolValue
+	IntegrityMonitoringEnabled iacTypes.BoolValue
+	VTPMEnabled                iacTypes.BoolValue
 }

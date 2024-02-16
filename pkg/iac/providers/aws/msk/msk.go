@@ -1,7 +1,7 @@
 package msk
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type MSK struct {
@@ -9,7 +9,7 @@ type MSK struct {
 }
 
 type Cluster struct {
-	Metadata            defsecTypes.Metadata
+	Metadata            iacTypes.Metadata
 	EncryptionInTransit EncryptionInTransit
 	EncryptionAtRest    EncryptionAtRest
 	Logging             Logging
@@ -22,39 +22,39 @@ const (
 )
 
 type EncryptionInTransit struct {
-	Metadata     defsecTypes.Metadata
-	ClientBroker defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	ClientBroker iacTypes.StringValue
 }
 
 type EncryptionAtRest struct {
-	Metadata  defsecTypes.Metadata
-	KMSKeyARN defsecTypes.StringValue
-	Enabled   defsecTypes.BoolValue
+	Metadata  iacTypes.Metadata
+	KMSKeyARN iacTypes.StringValue
+	Enabled   iacTypes.BoolValue
 }
 
 type Logging struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Broker   BrokerLogging
 }
 
 type BrokerLogging struct {
-	Metadata   defsecTypes.Metadata
+	Metadata   iacTypes.Metadata
 	S3         S3Logging
 	Cloudwatch CloudwatchLogging
 	Firehose   FirehoseLogging
 }
 
 type S3Logging struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type CloudwatchLogging struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type FirehoseLogging struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }

@@ -1,19 +1,19 @@
 package github
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Action struct {
-	Metadata           defsecTypes.Metadata
+	Metadata           iacTypes.Metadata
 	EnvironmentSecrets []EnvironmentSecret
 }
 
 type EnvironmentSecret struct {
-	Metadata       defsecTypes.Metadata
-	Repository     defsecTypes.StringValue
-	Environment    defsecTypes.StringValue
-	SecretName     defsecTypes.StringValue
-	PlainTextValue defsecTypes.StringValue
-	EncryptedValue defsecTypes.StringValue
+	Metadata       iacTypes.Metadata
+	Repository     iacTypes.StringValue
+	Environment    iacTypes.StringValue
+	SecretName     iacTypes.StringValue
+	PlainTextValue iacTypes.StringValue
+	EncryptedValue iacTypes.StringValue
 }

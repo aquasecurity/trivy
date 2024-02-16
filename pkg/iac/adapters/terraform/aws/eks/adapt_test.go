@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/eks"
 
@@ -41,23 +41,23 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: eks.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Logging: eks.Logging{
-					Metadata:          defsecTypes.NewTestMetadata(),
-					API:               defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Authenticator:     defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Audit:             defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Scheduler:         defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					ControllerManager: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:          iacTypes.NewTestMetadata(),
+					API:               iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Authenticator:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Audit:             iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Scheduler:         iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					ControllerManager: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 				Encryption: eks.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Secrets:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("key-arn", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Secrets:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("key-arn", iacTypes.NewTestMetadata()),
 				},
-				PublicAccessEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				PublicAccessCIDRs: []defsecTypes.StringValue{
-					defsecTypes.String("10.2.0.0/8", defsecTypes.NewTestMetadata()),
+				PublicAccessEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				PublicAccessCIDRs: []iacTypes.StringValue{
+					iacTypes.String("10.2.0.0/8", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -68,21 +68,21 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: eks.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Logging: eks.Logging{
-					Metadata:          defsecTypes.NewTestMetadata(),
-					API:               defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Authenticator:     defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Audit:             defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Scheduler:         defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					ControllerManager: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata:          iacTypes.NewTestMetadata(),
+					API:               iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Authenticator:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Audit:             iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Scheduler:         iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					ControllerManager: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 				Encryption: eks.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Secrets:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Secrets:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
-				PublicAccessEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				PublicAccessEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				PublicAccessCIDRs:   nil,
 			},
 		},

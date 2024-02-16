@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type StaticMetadata struct {
@@ -367,8 +367,8 @@ func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.M
 					if rawType, ok := selectorMap["type"]; ok {
 						selector.Type = fmt.Sprintf("%s", rawType)
 						// handle backward compatibility for "defsec" source type which is now "cloud"
-						if selector.Type == string(defsecTypes.SourceDefsec) {
-							selector.Type = string(defsecTypes.SourceCloud)
+						if selector.Type == string(iacTypes.SourceDefsec) {
+							selector.Type = string(iacTypes.SourceCloud)
 						}
 					}
 					if subType, ok := selectorMap["subtypes"].([]interface{}); ok {

@@ -1,17 +1,17 @@
 package compute
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Disk struct {
-	Metadata   defsecTypes.Metadata
-	Name       defsecTypes.StringValue
+	Metadata   iacTypes.Metadata
+	Name       iacTypes.StringValue
 	Encryption DiskEncryption
 }
 
 type DiskEncryption struct {
-	Metadata   defsecTypes.Metadata
-	RawKey     defsecTypes.BytesValue
-	KMSKeyLink defsecTypes.StringValue
+	Metadata   iacTypes.Metadata
+	RawKey     iacTypes.BytesValue
+	KMSKeyLink iacTypes.StringValue
 }

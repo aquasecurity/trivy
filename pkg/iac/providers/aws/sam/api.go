@@ -1,38 +1,38 @@
 package sam
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type API struct {
-	Metadata            defsecTypes.Metadata
-	Name                defsecTypes.StringValue
-	TracingEnabled      defsecTypes.BoolValue
+	Metadata            iacTypes.Metadata
+	Name                iacTypes.StringValue
+	TracingEnabled      iacTypes.BoolValue
 	DomainConfiguration DomainConfiguration
 	AccessLogging       AccessLogging
 	RESTMethodSettings  RESTMethodSettings
 }
 
 type ApiAuth struct {
-	Metadata       defsecTypes.Metadata
-	ApiKeyRequired defsecTypes.BoolValue
+	Metadata       iacTypes.Metadata
+	ApiKeyRequired iacTypes.BoolValue
 }
 
 type AccessLogging struct {
-	Metadata              defsecTypes.Metadata
-	CloudwatchLogGroupARN defsecTypes.StringValue
+	Metadata              iacTypes.Metadata
+	CloudwatchLogGroupARN iacTypes.StringValue
 }
 
 type DomainConfiguration struct {
-	Metadata       defsecTypes.Metadata
-	Name           defsecTypes.StringValue
-	SecurityPolicy defsecTypes.StringValue
+	Metadata       iacTypes.Metadata
+	Name           iacTypes.StringValue
+	SecurityPolicy iacTypes.StringValue
 }
 
 type RESTMethodSettings struct {
-	Metadata           defsecTypes.Metadata
-	CacheDataEncrypted defsecTypes.BoolValue
-	LoggingEnabled     defsecTypes.BoolValue
-	DataTraceEnabled   defsecTypes.BoolValue
-	MetricsEnabled     defsecTypes.BoolValue
+	Metadata           iacTypes.Metadata
+	CacheDataEncrypted iacTypes.BoolValue
+	LoggingEnabled     iacTypes.BoolValue
+	DataTraceEnabled   iacTypes.BoolValue
+	MetricsEnabled     iacTypes.BoolValue
 }

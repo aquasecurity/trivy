@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/dns"
 
@@ -45,20 +45,20 @@ resource "google_dns_managed_zone" "example" {
 			expected: dns.DNS{
 				ManagedZones: []dns.ManagedZone{
 					{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						Visibility: defsecTypes.String("public", defsecTypes.NewTestMetadata()),
+						Metadata:   iacTypes.NewTestMetadata(),
+						Visibility: iacTypes.String("public", iacTypes.NewTestMetadata()),
 						DNSSec: dns.DNSSec{
-							Enabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Enabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							DefaultKeySpecs: []dns.KeySpecs{
 								{
-									Metadata:  defsecTypes.NewTestMetadata(),
-									Algorithm: defsecTypes.String("rsasha1", defsecTypes.NewTestMetadata()),
-									KeyType:   defsecTypes.String("keySigning", defsecTypes.NewTestMetadata()),
+									Metadata:  iacTypes.NewTestMetadata(),
+									Algorithm: iacTypes.String("rsasha1", iacTypes.NewTestMetadata()),
+									KeyType:   iacTypes.String("keySigning", iacTypes.NewTestMetadata()),
 								},
 								{
-									Metadata:  defsecTypes.NewTestMetadata(),
-									Algorithm: defsecTypes.String("rsasha1", defsecTypes.NewTestMetadata()),
-									KeyType:   defsecTypes.String("zoneSigning", defsecTypes.NewTestMetadata()),
+									Metadata:  iacTypes.NewTestMetadata(),
+									Algorithm: iacTypes.String("rsasha1", iacTypes.NewTestMetadata()),
+									KeyType:   iacTypes.String("zoneSigning", iacTypes.NewTestMetadata()),
 								},
 							},
 						},

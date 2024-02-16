@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
@@ -17,20 +17,20 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 			Name:     instanceBlock.GetAttribute("name").AsStringValueOrDefault("", instanceBlock),
 			ShieldedVM: compute.ShieldedVMConfig{
 				Metadata:                   instanceBlock.GetMetadata(),
-				SecureBootEnabled:          defsecTypes.BoolDefault(false, instanceBlock.GetMetadata()),
-				IntegrityMonitoringEnabled: defsecTypes.BoolDefault(false, instanceBlock.GetMetadata()),
-				VTPMEnabled:                defsecTypes.BoolDefault(false, instanceBlock.GetMetadata()),
+				SecureBootEnabled:          iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
+				IntegrityMonitoringEnabled: iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
+				VTPMEnabled:                iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
 			},
 			ServiceAccount: compute.ServiceAccount{
 				Metadata:  instanceBlock.GetMetadata(),
-				Email:     defsecTypes.StringDefault("", instanceBlock.GetMetadata()),
-				IsDefault: defsecTypes.BoolDefault(false, instanceBlock.GetMetadata()),
+				Email:     iacTypes.StringDefault("", instanceBlock.GetMetadata()),
+				IsDefault: iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
 				Scopes:    nil,
 			},
 			CanIPForward:                instanceBlock.GetAttribute("can_ip_forward").AsBoolValueOrDefault(false, instanceBlock),
-			OSLoginEnabled:              defsecTypes.BoolDefault(true, instanceBlock.GetMetadata()),
-			EnableProjectSSHKeyBlocking: defsecTypes.BoolDefault(false, instanceBlock.GetMetadata()),
-			EnableSerialPort:            defsecTypes.BoolDefault(false, instanceBlock.GetMetadata()),
+			OSLoginEnabled:              iacTypes.BoolDefault(true, instanceBlock.GetMetadata()),
+			EnableProjectSSHKeyBlocking: iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
+			EnableSerialPort:            iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
 			NetworkInterfaces:           nil,
 			BootDisks:                   nil,
 			AttachedDisks:               nil,
@@ -42,11 +42,11 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 				Metadata:    networkInterfaceBlock.GetMetadata(),
 				Network:     nil,
 				SubNetwork:  nil,
-				HasPublicIP: defsecTypes.BoolDefault(false, networkInterfaceBlock.GetMetadata()),
-				NATIP:       defsecTypes.StringDefault("", networkInterfaceBlock.GetMetadata()),
+				HasPublicIP: iacTypes.BoolDefault(false, networkInterfaceBlock.GetMetadata()),
+				NATIP:       iacTypes.StringDefault("", networkInterfaceBlock.GetMetadata()),
 			}
 			if accessConfigBlock := networkInterfaceBlock.GetBlock("access_config"); accessConfigBlock.IsNotNil() {
-				ni.HasPublicIP = defsecTypes.Bool(true, accessConfigBlock.GetMetadata())
+				ni.HasPublicIP = iacTypes.Bool(true, accessConfigBlock.GetMetadata())
 			}
 			instance.NetworkInterfaces = append(instance.NetworkInterfaces, ni)
 		}
@@ -62,13 +62,13 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 		// metadata
 		if metadataAttr := instanceBlock.GetAttribute("metadata"); metadataAttr.IsNotNil() {
 			if val := metadataAttr.MapValue("enable-oslogin"); val.Type() == cty.Bool {
-				instance.OSLoginEnabled = defsecTypes.BoolExplicit(val.True(), metadataAttr.GetMetadata())
+				instance.OSLoginEnabled = iacTypes.BoolExplicit(val.True(), metadataAttr.GetMetadata())
 			}
 			if val := metadataAttr.MapValue("block-project-ssh-keys"); val.Type() == cty.Bool {
-				instance.EnableProjectSSHKeyBlocking = defsecTypes.BoolExplicit(val.True(), metadataAttr.GetMetadata())
+				instance.EnableProjectSSHKeyBlocking = iacTypes.BoolExplicit(val.True(), metadataAttr.GetMetadata())
 			}
 			if val := metadataAttr.MapValue("serial-port-enable"); val.Type() == cty.Bool {
-				instance.EnableSerialPort = defsecTypes.BoolExplicit(val.True(), metadataAttr.GetMetadata())
+				instance.EnableSerialPort = iacTypes.BoolExplicit(val.True(), metadataAttr.GetMetadata())
 			}
 		}
 
@@ -103,12 +103,12 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 			instance.ServiceAccount.Email = emailAttr.AsStringValueOrDefault("", serviceAccountBlock)
 
 			if instance.ServiceAccount.Email.IsEmpty() || instance.ServiceAccount.Email.EndsWith("-compute@developer.gserviceaccount.com") {
-				instance.ServiceAccount.IsDefault = defsecTypes.Bool(true, serviceAccountBlock.GetMetadata())
+				instance.ServiceAccount.IsDefault = iacTypes.Bool(true, serviceAccountBlock.GetMetadata())
 			}
 
 			if emailAttr.IsResourceBlockReference("google_service_account") {
 				if accBlock, err := modules.GetReferencedBlock(emailAttr, instanceBlock); err == nil {
-					instance.ServiceAccount.IsDefault = defsecTypes.Bool(false, serviceAccountBlock.GetMetadata())
+					instance.ServiceAccount.IsDefault = iacTypes.Bool(false, serviceAccountBlock.GetMetadata())
 					instance.ServiceAccount.Email = accBlock.GetAttribute("email").AsStringValueOrDefault("", accBlock)
 				}
 			}

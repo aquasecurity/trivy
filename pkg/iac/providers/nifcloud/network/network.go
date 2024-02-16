@@ -1,6 +1,6 @@
 package network
 
-import defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+import iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 type Network struct {
 	ElasticLoadBalancers []ElasticLoadBalancer
@@ -10,7 +10,7 @@ type Network struct {
 }
 
 type NetworkInterface struct {
-	Metadata     defsecTypes.Metadata
-	NetworkID    defsecTypes.StringValue
-	IsVipNetwork defsecTypes.BoolValue
+	Metadata     iacTypes.Metadata
+	NetworkID    iacTypes.StringValue
+	IsVipNetwork iacTypes.BoolValue
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptPostgreSQLServers(deployment azure.Deployment) (databases []database.PostgreSQLServer) {
@@ -37,9 +37,9 @@ func adaptPostgreSQLConfiguration(resource azure.Resource, deployment azure.Depl
 
 	config := database.PostgresSQLConfig{
 		Metadata:             resource.Metadata,
-		LogCheckpoints:       defsecTypes.BoolDefault(false, resource.Metadata),
-		ConnectionThrottling: defsecTypes.BoolDefault(false, resource.Metadata),
-		LogConnections:       defsecTypes.BoolDefault(false, resource.Metadata),
+		LogCheckpoints:       iacTypes.BoolDefault(false, resource.Metadata),
+		ConnectionThrottling: iacTypes.BoolDefault(false, resource.Metadata),
+		LogConnections:       iacTypes.BoolDefault(false, resource.Metadata),
 	}
 
 	for _, configuration := range deployment.GetResourcesByType("Microsoft.DBforPostgreSQL/servers/configurations") {

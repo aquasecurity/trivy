@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
@@ -28,19 +28,19 @@ func Test_Merging(t *testing.T) {
 					RDS: rds.RDS{
 						Instances: []rds.Instance{
 							{
-								BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.Metadata{}),
-								ReplicationSourceARN:      defsecTypes.String("arn:whatever", defsecTypes.Metadata{}),
+								BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.Metadata{}),
+								ReplicationSourceARN:      iacTypes.String("arn:whatever", iacTypes.Metadata{}),
 								PerformanceInsights: rds.PerformanceInsights{
-									Metadata: defsecTypes.Metadata{},
-									Enabled:  defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID: defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata: iacTypes.Metadata{},
+									Enabled:  iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID: iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
 								Encryption: rds.Encryption{
-									Metadata:       defsecTypes.Metadata{},
-									EncryptStorage: defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID:       defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata:       iacTypes.Metadata{},
+									EncryptStorage: iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID:       iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
-								PublicAccess: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+								PublicAccess: iacTypes.Bool(true, iacTypes.Metadata{}),
 							},
 						},
 					},
@@ -51,19 +51,19 @@ func Test_Merging(t *testing.T) {
 					RDS: rds.RDS{
 						Instances: []rds.Instance{
 							{
-								BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.Metadata{}),
-								ReplicationSourceARN:      defsecTypes.String("arn:whatever", defsecTypes.Metadata{}),
+								BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.Metadata{}),
+								ReplicationSourceARN:      iacTypes.String("arn:whatever", iacTypes.Metadata{}),
 								PerformanceInsights: rds.PerformanceInsights{
-									Metadata: defsecTypes.Metadata{},
-									Enabled:  defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID: defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata: iacTypes.Metadata{},
+									Enabled:  iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID: iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
 								Encryption: rds.Encryption{
-									Metadata:       defsecTypes.Metadata{},
-									EncryptStorage: defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID:       defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata:       iacTypes.Metadata{},
+									EncryptStorage: iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID:       iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
-								PublicAccess: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+								PublicAccess: iacTypes.Bool(true, iacTypes.Metadata{}),
 							},
 						},
 					},
@@ -77,19 +77,19 @@ func Test_Merging(t *testing.T) {
 					RDS: rds.RDS{
 						Instances: []rds.Instance{
 							{
-								BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.Metadata{}),
-								ReplicationSourceARN:      defsecTypes.String("arn:whatever", defsecTypes.Metadata{}),
+								BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.Metadata{}),
+								ReplicationSourceARN:      iacTypes.String("arn:whatever", iacTypes.Metadata{}),
 								PerformanceInsights: rds.PerformanceInsights{
-									Metadata: defsecTypes.Metadata{},
-									Enabled:  defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID: defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata: iacTypes.Metadata{},
+									Enabled:  iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID: iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
 								Encryption: rds.Encryption{
-									Metadata:       defsecTypes.Metadata{},
-									EncryptStorage: defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID:       defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata:       iacTypes.Metadata{},
+									EncryptStorage: iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID:       iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
-								PublicAccess: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+								PublicAccess: iacTypes.Bool(true, iacTypes.Metadata{}),
 							},
 						},
 					},
@@ -100,19 +100,19 @@ func Test_Merging(t *testing.T) {
 					RDS: rds.RDS{
 						Instances: []rds.Instance{
 							{
-								BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.Metadata{}),
-								ReplicationSourceARN:      defsecTypes.String("arn:whatever", defsecTypes.Metadata{}),
+								BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.Metadata{}),
+								ReplicationSourceARN:      iacTypes.String("arn:whatever", iacTypes.Metadata{}),
 								PerformanceInsights: rds.PerformanceInsights{
-									Metadata: defsecTypes.Metadata{},
-									Enabled:  defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID: defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata: iacTypes.Metadata{},
+									Enabled:  iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID: iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
 								Encryption: rds.Encryption{
-									Metadata:       defsecTypes.Metadata{},
-									EncryptStorage: defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID:       defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata:       iacTypes.Metadata{},
+									EncryptStorage: iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID:       iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
-								PublicAccess: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+								PublicAccess: iacTypes.Bool(true, iacTypes.Metadata{}),
 							},
 						},
 					},
@@ -126,19 +126,19 @@ func Test_Merging(t *testing.T) {
 					RDS: rds.RDS{
 						Instances: []rds.Instance{
 							{
-								BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.Metadata{}),
-								ReplicationSourceARN:      defsecTypes.String("arn:whatever", defsecTypes.Metadata{}),
+								BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.Metadata{}),
+								ReplicationSourceARN:      iacTypes.String("arn:whatever", iacTypes.Metadata{}),
 								PerformanceInsights: rds.PerformanceInsights{
-									Metadata: defsecTypes.Metadata{},
-									Enabled:  defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID: defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata: iacTypes.Metadata{},
+									Enabled:  iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID: iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
 								Encryption: rds.Encryption{
-									Metadata:       defsecTypes.Metadata{},
-									EncryptStorage: defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID:       defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata:       iacTypes.Metadata{},
+									EncryptStorage: iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID:       iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
-								PublicAccess: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+								PublicAccess: iacTypes.Bool(true, iacTypes.Metadata{}),
 							},
 						},
 					},
@@ -149,19 +149,19 @@ func Test_Merging(t *testing.T) {
 					RDS: rds.RDS{
 						Instances: []rds.Instance{
 							{
-								BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.Metadata{}),
-								ReplicationSourceARN:      defsecTypes.String("arn:whatever:B", defsecTypes.Metadata{}),
+								BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.Metadata{}),
+								ReplicationSourceARN:      iacTypes.String("arn:whatever:B", iacTypes.Metadata{}),
 								PerformanceInsights: rds.PerformanceInsights{
-									Metadata: defsecTypes.Metadata{},
-									Enabled:  defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID: defsecTypes.String("keyidhere:B", defsecTypes.Metadata{}),
+									Metadata: iacTypes.Metadata{},
+									Enabled:  iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID: iacTypes.String("keyidhere:B", iacTypes.Metadata{}),
 								},
 								Encryption: rds.Encryption{
-									Metadata:       defsecTypes.Metadata{},
-									EncryptStorage: defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID:       defsecTypes.String("keyidhere:B", defsecTypes.Metadata{}),
+									Metadata:       iacTypes.Metadata{},
+									EncryptStorage: iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID:       iacTypes.String("keyidhere:B", iacTypes.Metadata{}),
 								},
-								PublicAccess: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+								PublicAccess: iacTypes.Bool(true, iacTypes.Metadata{}),
 							},
 						},
 					},
@@ -172,19 +172,19 @@ func Test_Merging(t *testing.T) {
 					RDS: rds.RDS{
 						Instances: []rds.Instance{
 							{
-								BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.Metadata{}),
-								ReplicationSourceARN:      defsecTypes.String("arn:whatever:B", defsecTypes.Metadata{}),
+								BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.Metadata{}),
+								ReplicationSourceARN:      iacTypes.String("arn:whatever:B", iacTypes.Metadata{}),
 								PerformanceInsights: rds.PerformanceInsights{
-									Metadata: defsecTypes.Metadata{},
-									Enabled:  defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID: defsecTypes.String("keyidhere:B", defsecTypes.Metadata{}),
+									Metadata: iacTypes.Metadata{},
+									Enabled:  iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID: iacTypes.String("keyidhere:B", iacTypes.Metadata{}),
 								},
 								Encryption: rds.Encryption{
-									Metadata:       defsecTypes.Metadata{},
-									EncryptStorage: defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID:       defsecTypes.String("keyidhere:B", defsecTypes.Metadata{}),
+									Metadata:       iacTypes.Metadata{},
+									EncryptStorage: iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID:       iacTypes.String("keyidhere:B", iacTypes.Metadata{}),
 								},
-								PublicAccess: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+								PublicAccess: iacTypes.Bool(true, iacTypes.Metadata{}),
 							},
 						},
 					},
@@ -198,19 +198,19 @@ func Test_Merging(t *testing.T) {
 					RDS: rds.RDS{
 						Instances: []rds.Instance{
 							{
-								BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.Metadata{}),
-								ReplicationSourceARN:      defsecTypes.String("arn:whatever", defsecTypes.Metadata{}),
+								BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.Metadata{}),
+								ReplicationSourceARN:      iacTypes.String("arn:whatever", iacTypes.Metadata{}),
 								PerformanceInsights: rds.PerformanceInsights{
-									Metadata: defsecTypes.Metadata{},
-									Enabled:  defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID: defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata: iacTypes.Metadata{},
+									Enabled:  iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID: iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
 								Encryption: rds.Encryption{
-									Metadata:       defsecTypes.Metadata{},
-									EncryptStorage: defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID:       defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata:       iacTypes.Metadata{},
+									EncryptStorage: iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID:       iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
-								PublicAccess: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+								PublicAccess: iacTypes.Bool(true, iacTypes.Metadata{}),
 							},
 						},
 					},
@@ -221,39 +221,39 @@ func Test_Merging(t *testing.T) {
 					EC2: ec2.EC2{
 						Instances: []ec2.Instance{
 							{
-								Metadata: defsecTypes.Metadata{},
+								Metadata: iacTypes.Metadata{},
 								MetadataOptions: ec2.MetadataOptions{
-									Metadata:     defsecTypes.Metadata{},
-									HttpTokens:   defsecTypes.String("something", defsecTypes.Metadata{}),
-									HttpEndpoint: defsecTypes.String("something", defsecTypes.Metadata{}),
+									Metadata:     iacTypes.Metadata{},
+									HttpTokens:   iacTypes.String("something", iacTypes.Metadata{}),
+									HttpEndpoint: iacTypes.String("something", iacTypes.Metadata{}),
 								},
-								UserData: defsecTypes.String("something", defsecTypes.Metadata{}),
+								UserData: iacTypes.String("something", iacTypes.Metadata{}),
 								SecurityGroups: []ec2.SecurityGroup{
 									{
-										Metadata:    defsecTypes.Metadata{},
-										IsDefault:   defsecTypes.Bool(true, defsecTypes.Metadata{}),
-										Description: defsecTypes.String("something", defsecTypes.Metadata{}),
+										Metadata:    iacTypes.Metadata{},
+										IsDefault:   iacTypes.Bool(true, iacTypes.Metadata{}),
+										Description: iacTypes.String("something", iacTypes.Metadata{}),
 										IngressRules: []ec2.SecurityGroupRule{
 											{
-												Metadata:    defsecTypes.Metadata{},
-												Description: defsecTypes.String("something", defsecTypes.Metadata{}),
-												CIDRs: []defsecTypes.StringValue{
-													defsecTypes.String("something", defsecTypes.Metadata{}),
+												Metadata:    iacTypes.Metadata{},
+												Description: iacTypes.String("something", iacTypes.Metadata{}),
+												CIDRs: []iacTypes.StringValue{
+													iacTypes.String("something", iacTypes.Metadata{}),
 												},
 											},
 										},
 										EgressRules: nil,
-										VPCID:       defsecTypes.String("something", defsecTypes.Metadata{}),
+										VPCID:       iacTypes.String("something", iacTypes.Metadata{}),
 									},
 								},
 								RootBlockDevice: &ec2.BlockDevice{
-									Metadata:  defsecTypes.Metadata{},
-									Encrypted: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+									Metadata:  iacTypes.Metadata{},
+									Encrypted: iacTypes.Bool(true, iacTypes.Metadata{}),
 								},
 								EBSBlockDevices: []*ec2.BlockDevice{
 									{
-										Metadata:  defsecTypes.Metadata{},
-										Encrypted: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+										Metadata:  iacTypes.Metadata{},
+										Encrypted: iacTypes.Bool(true, iacTypes.Metadata{}),
 									},
 								},
 							},
@@ -266,39 +266,39 @@ func Test_Merging(t *testing.T) {
 					EC2: ec2.EC2{
 						Instances: []ec2.Instance{
 							{
-								Metadata: defsecTypes.Metadata{},
+								Metadata: iacTypes.Metadata{},
 								MetadataOptions: ec2.MetadataOptions{
-									Metadata:     defsecTypes.Metadata{},
-									HttpTokens:   defsecTypes.String("something", defsecTypes.Metadata{}),
-									HttpEndpoint: defsecTypes.String("something", defsecTypes.Metadata{}),
+									Metadata:     iacTypes.Metadata{},
+									HttpTokens:   iacTypes.String("something", iacTypes.Metadata{}),
+									HttpEndpoint: iacTypes.String("something", iacTypes.Metadata{}),
 								},
-								UserData: defsecTypes.String("something", defsecTypes.Metadata{}),
+								UserData: iacTypes.String("something", iacTypes.Metadata{}),
 								SecurityGroups: []ec2.SecurityGroup{
 									{
-										Metadata:    defsecTypes.Metadata{},
-										IsDefault:   defsecTypes.Bool(true, defsecTypes.Metadata{}),
-										Description: defsecTypes.String("something", defsecTypes.Metadata{}),
+										Metadata:    iacTypes.Metadata{},
+										IsDefault:   iacTypes.Bool(true, iacTypes.Metadata{}),
+										Description: iacTypes.String("something", iacTypes.Metadata{}),
 										IngressRules: []ec2.SecurityGroupRule{
 											{
-												Metadata:    defsecTypes.Metadata{},
-												Description: defsecTypes.String("something", defsecTypes.Metadata{}),
-												CIDRs: []defsecTypes.StringValue{
-													defsecTypes.String("something", defsecTypes.Metadata{}),
+												Metadata:    iacTypes.Metadata{},
+												Description: iacTypes.String("something", iacTypes.Metadata{}),
+												CIDRs: []iacTypes.StringValue{
+													iacTypes.String("something", iacTypes.Metadata{}),
 												},
 											},
 										},
 										EgressRules: nil,
-										VPCID:       defsecTypes.String("something", defsecTypes.Metadata{}),
+										VPCID:       iacTypes.String("something", iacTypes.Metadata{}),
 									},
 								},
 								RootBlockDevice: &ec2.BlockDevice{
-									Metadata:  defsecTypes.Metadata{},
-									Encrypted: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+									Metadata:  iacTypes.Metadata{},
+									Encrypted: iacTypes.Bool(true, iacTypes.Metadata{}),
 								},
 								EBSBlockDevices: []*ec2.BlockDevice{
 									{
-										Metadata:  defsecTypes.Metadata{},
-										Encrypted: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+										Metadata:  iacTypes.Metadata{},
+										Encrypted: iacTypes.Bool(true, iacTypes.Metadata{}),
 									},
 								},
 							},
@@ -307,19 +307,19 @@ func Test_Merging(t *testing.T) {
 					RDS: rds.RDS{
 						Instances: []rds.Instance{
 							{
-								BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.Metadata{}),
-								ReplicationSourceARN:      defsecTypes.String("arn:whatever", defsecTypes.Metadata{}),
+								BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.Metadata{}),
+								ReplicationSourceARN:      iacTypes.String("arn:whatever", iacTypes.Metadata{}),
 								PerformanceInsights: rds.PerformanceInsights{
-									Metadata: defsecTypes.Metadata{},
-									Enabled:  defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID: defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata: iacTypes.Metadata{},
+									Enabled:  iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID: iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
 								Encryption: rds.Encryption{
-									Metadata:       defsecTypes.Metadata{},
-									EncryptStorage: defsecTypes.Bool(true, defsecTypes.Metadata{}),
-									KMSKeyID:       defsecTypes.String("keyidhere", defsecTypes.Metadata{}),
+									Metadata:       iacTypes.Metadata{},
+									EncryptStorage: iacTypes.Bool(true, iacTypes.Metadata{}),
+									KMSKeyID:       iacTypes.String("keyidhere", iacTypes.Metadata{}),
 								},
-								PublicAccess: defsecTypes.Bool(true, defsecTypes.Metadata{}),
+								PublicAccess: iacTypes.Bool(true, iacTypes.Metadata{}),
 							},
 						},
 					},

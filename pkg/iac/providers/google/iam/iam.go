@@ -1,7 +1,7 @@
 package iam
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type IAM struct {
@@ -10,7 +10,7 @@ type IAM struct {
 }
 
 type Organization struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Folders  []Folder
 	Projects []Project
 	Members  []Member
@@ -18,7 +18,7 @@ type Organization struct {
 }
 
 type Folder struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Folders  []Folder
 	Projects []Project
 	Members  []Member
@@ -26,31 +26,31 @@ type Folder struct {
 }
 
 type Project struct {
-	Metadata          defsecTypes.Metadata
-	AutoCreateNetwork defsecTypes.BoolValue
+	Metadata          iacTypes.Metadata
+	AutoCreateNetwork iacTypes.BoolValue
 	Members           []Member
 	Bindings          []Binding
 }
 
 type Binding struct {
-	Metadata                      defsecTypes.Metadata
-	Members                       []defsecTypes.StringValue
-	Role                          defsecTypes.StringValue
-	IncludesDefaultServiceAccount defsecTypes.BoolValue
+	Metadata                      iacTypes.Metadata
+	Members                       []iacTypes.StringValue
+	Role                          iacTypes.StringValue
+	IncludesDefaultServiceAccount iacTypes.BoolValue
 }
 
 type Member struct {
-	Metadata              defsecTypes.Metadata
-	Member                defsecTypes.StringValue
-	Role                  defsecTypes.StringValue
-	DefaultServiceAccount defsecTypes.BoolValue
+	Metadata              iacTypes.Metadata
+	Member                iacTypes.StringValue
+	Role                  iacTypes.StringValue
+	DefaultServiceAccount iacTypes.BoolValue
 }
 
 type WorkloadIdentityPoolProvider struct {
-	Metadata                       defsecTypes.Metadata
-	WorkloadIdentityPoolId         defsecTypes.StringValue
-	WorkloadIdentityPoolProviderId defsecTypes.StringValue
-	AttributeCondition             defsecTypes.StringValue
+	Metadata                       iacTypes.Metadata
+	WorkloadIdentityPoolId         iacTypes.StringValue
+	WorkloadIdentityPoolProviderId iacTypes.StringValue
+	AttributeCondition             iacTypes.StringValue
 }
 
 func (p *IAM) AllProjects() []Project {

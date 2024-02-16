@@ -1,16 +1,16 @@
 package ec2
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Volume struct {
-	Metadata   defsecTypes.Metadata
+	Metadata   iacTypes.Metadata
 	Encryption Encryption
 }
 
 type Encryption struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+	KMSKeyID iacTypes.StringValue
 }

@@ -1,17 +1,17 @@
 package sam
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Application struct {
-	Metadata     defsecTypes.Metadata
-	LocationPath defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	LocationPath iacTypes.StringValue
 	Location     Location
 }
 
 type Location struct {
-	Metadata        defsecTypes.Metadata
-	ApplicationID   defsecTypes.StringValue
-	SemanticVersion defsecTypes.StringValue
+	Metadata        iacTypes.Metadata
+	ApplicationID   iacTypes.StringValue
+	SemanticVersion iacTypes.StringValue
 }

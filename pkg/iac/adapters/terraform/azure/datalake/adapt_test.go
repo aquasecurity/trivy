@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datalake"
 
@@ -27,8 +27,8 @@ func Test_adaptStore(t *testing.T) {
 			}
 `,
 			expected: datalake.Store{
-				Metadata:         defsecTypes.NewTestMetadata(),
-				EnableEncryption: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:         iacTypes.NewTestMetadata(),
+				EnableEncryption: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -39,8 +39,8 @@ func Test_adaptStore(t *testing.T) {
 			}
 `,
 			expected: datalake.Store{
-				Metadata:         defsecTypes.NewTestMetadata(),
-				EnableEncryption: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:         iacTypes.NewTestMetadata(),
+				EnableEncryption: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -50,8 +50,8 @@ func Test_adaptStore(t *testing.T) {
 			}
 `,
 			expected: datalake.Store{
-				Metadata:         defsecTypes.NewTestMetadata(),
-				EnableEncryption: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:         iacTypes.NewTestMetadata(),
+				EnableEncryption: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

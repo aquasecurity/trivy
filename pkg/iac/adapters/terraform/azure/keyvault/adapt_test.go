@@ -6,7 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/keyvault"
 
@@ -38,12 +38,12 @@ func Test_Adapt(t *testing.T) {
 			expected: keyvault.KeyVault{
 				Vaults: []keyvault.Vault{
 					{
-						Metadata:                defsecTypes.NewTestMetadata(),
-						EnablePurgeProtection:   defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						SoftDeleteRetentionDays: defsecTypes.Int(7, defsecTypes.NewTestMetadata()),
+						Metadata:                iacTypes.NewTestMetadata(),
+						EnablePurgeProtection:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						SoftDeleteRetentionDays: iacTypes.Int(7, iacTypes.NewTestMetadata()),
 						NetworkACLs: keyvault.NetworkACLs{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							DefaultAction: defsecTypes.String("Deny", defsecTypes.NewTestMetadata()),
+							Metadata:      iacTypes.NewTestMetadata(),
+							DefaultAction: iacTypes.String("Deny", iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -58,12 +58,12 @@ func Test_Adapt(t *testing.T) {
 			expected: keyvault.KeyVault{
 				Vaults: []keyvault.Vault{
 					{
-						Metadata:                defsecTypes.NewTestMetadata(),
-						EnablePurgeProtection:   defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						SoftDeleteRetentionDays: defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
+						Metadata:                iacTypes.NewTestMetadata(),
+						EnablePurgeProtection:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						SoftDeleteRetentionDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
 						NetworkACLs: keyvault.NetworkACLs{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							DefaultAction: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:      iacTypes.NewTestMetadata(),
+							DefaultAction: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -93,9 +93,9 @@ func Test_adaptSecret(t *testing.T) {
 			}
 `,
 			expected: keyvault.Secret{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				ContentType: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				ExpiryDate:  defsecTypes.Time(time.Time{}, defsecTypes.NewTestMetadata()),
+				Metadata:    iacTypes.NewTestMetadata(),
+				ContentType: iacTypes.String("", iacTypes.NewTestMetadata()),
+				ExpiryDate:  iacTypes.Time(time.Time{}, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -107,12 +107,12 @@ func Test_adaptSecret(t *testing.T) {
 			}
 `,
 			expected: keyvault.Secret{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				ContentType: defsecTypes.String("password", defsecTypes.NewTestMetadata()),
-				ExpiryDate: defsecTypes.Time(func(timeVal string) time.Time {
+				Metadata:    iacTypes.NewTestMetadata(),
+				ContentType: iacTypes.String("password", iacTypes.NewTestMetadata()),
+				ExpiryDate: iacTypes.Time(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("1982-12-31T00:00:00Z"), defsecTypes.NewTestMetadata())},
+				}("1982-12-31T00:00:00Z"), iacTypes.NewTestMetadata())},
 		},
 	}
 
@@ -140,11 +140,11 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: keyvault.Key{
-				Metadata: defsecTypes.NewTestMetadata(),
-				ExpiryDate: defsecTypes.Time(func(timeVal string) time.Time {
+				Metadata: iacTypes.NewTestMetadata(),
+				ExpiryDate: iacTypes.Time(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("1982-12-31T00:00:00Z"), defsecTypes.NewTestMetadata()),
+				}("1982-12-31T00:00:00Z"), iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -154,8 +154,8 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: keyvault.Key{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				ExpiryDate: defsecTypes.Time(time.Time{}, defsecTypes.NewTestMetadata()),
+				Metadata:   iacTypes.NewTestMetadata(),
+				ExpiryDate: iacTypes.Time(time.Time{}, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -198,8 +198,8 @@ resource "azurerm_key_vault_key" "this" {
 }
 `,
 			expected: keyvault.Key{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				ExpiryDate: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+				Metadata:   iacTypes.NewTestMetadata(),
+				ExpiryDate: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
 			},
 		},
 	}

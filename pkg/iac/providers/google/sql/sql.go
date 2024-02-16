@@ -3,7 +3,7 @@ package sql
 import (
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type SQL struct {
@@ -32,44 +32,44 @@ const (
 )
 
 type DatabaseInstance struct {
-	Metadata        defsecTypes.Metadata
-	DatabaseVersion defsecTypes.StringValue
+	Metadata        iacTypes.Metadata
+	DatabaseVersion iacTypes.StringValue
 	Settings        Settings
-	IsReplica       defsecTypes.BoolValue
+	IsReplica       iacTypes.BoolValue
 }
 
 type Settings struct {
-	Metadata        defsecTypes.Metadata
+	Metadata        iacTypes.Metadata
 	Flags           Flags
 	Backups         Backups
 	IPConfiguration IPConfiguration
 }
 type Flags struct {
-	Metadata                        defsecTypes.Metadata
-	LogTempFileSize                 defsecTypes.IntValue
-	LocalInFile                     defsecTypes.BoolValue
-	ContainedDatabaseAuthentication defsecTypes.BoolValue
-	CrossDBOwnershipChaining        defsecTypes.BoolValue
-	LogCheckpoints                  defsecTypes.BoolValue
-	LogConnections                  defsecTypes.BoolValue
-	LogDisconnections               defsecTypes.BoolValue
-	LogLockWaits                    defsecTypes.BoolValue
-	LogMinMessages                  defsecTypes.StringValue // FATAL, PANIC, LOG, ERROR, WARN
-	LogMinDurationStatement         defsecTypes.IntValue
+	Metadata                        iacTypes.Metadata
+	LogTempFileSize                 iacTypes.IntValue
+	LocalInFile                     iacTypes.BoolValue
+	ContainedDatabaseAuthentication iacTypes.BoolValue
+	CrossDBOwnershipChaining        iacTypes.BoolValue
+	LogCheckpoints                  iacTypes.BoolValue
+	LogConnections                  iacTypes.BoolValue
+	LogDisconnections               iacTypes.BoolValue
+	LogLockWaits                    iacTypes.BoolValue
+	LogMinMessages                  iacTypes.StringValue // FATAL, PANIC, LOG, ERROR, WARN
+	LogMinDurationStatement         iacTypes.IntValue
 }
 
 type Backups struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type IPConfiguration struct {
-	Metadata           defsecTypes.Metadata
-	RequireTLS         defsecTypes.BoolValue
-	EnableIPv4         defsecTypes.BoolValue
+	Metadata           iacTypes.Metadata
+	RequireTLS         iacTypes.BoolValue
+	EnableIPv4         iacTypes.BoolValue
 	AuthorizedNetworks []struct {
-		Name defsecTypes.StringValue
-		CIDR defsecTypes.StringValue
+		Name iacTypes.StringValue
+		CIDR iacTypes.StringValue
 	}
 }
 

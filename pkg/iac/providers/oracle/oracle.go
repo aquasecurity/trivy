@@ -1,7 +1,7 @@
 package oracle
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Oracle struct {
@@ -13,6 +13,6 @@ type Compute struct {
 }
 
 type AddressReservation struct {
-	Metadata defsecTypes.Metadata
-	Pool     defsecTypes.StringValue // e.g. public-pool
+	Metadata iacTypes.Metadata
+	Pool     iacTypes.StringValue // e.g. public-pool
 }

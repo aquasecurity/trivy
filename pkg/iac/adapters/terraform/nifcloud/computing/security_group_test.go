@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/computing"
 )
@@ -35,13 +35,13 @@ func Test_adaptSecurityGroups(t *testing.T) {
 			}
 `,
 			expected: []computing.SecurityGroup{{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				Description: defsecTypes.String("memo", defsecTypes.NewTestMetadata()),
+				Metadata:    iacTypes.NewTestMetadata(),
+				Description: iacTypes.String("memo", iacTypes.NewTestMetadata()),
 				IngressRules: []computing.SecurityGroupRule{
 					{
-						Metadata:    defsecTypes.NewTestMetadata(),
-						CIDR:        defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMetadata()),
-						Description: defsecTypes.String("memo", defsecTypes.NewTestMetadata()),
+						Metadata:    iacTypes.NewTestMetadata(),
+						CIDR:        iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
+						Description: iacTypes.String("memo", iacTypes.NewTestMetadata()),
 					},
 				},
 			}},
@@ -60,13 +60,13 @@ func Test_adaptSecurityGroups(t *testing.T) {
 `,
 
 			expected: []computing.SecurityGroup{{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				Description: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:    iacTypes.NewTestMetadata(),
+				Description: iacTypes.String("", iacTypes.NewTestMetadata()),
 				IngressRules: []computing.SecurityGroupRule{
 					{
-						Metadata:    defsecTypes.NewTestMetadata(),
-						CIDR:        defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						Description: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata:    iacTypes.NewTestMetadata(),
+						CIDR:        iacTypes.String("", iacTypes.NewTestMetadata()),
+						Description: iacTypes.String("", iacTypes.NewTestMetadata()),
 					},
 				},
 			}},

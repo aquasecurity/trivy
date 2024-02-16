@@ -15,14 +15,14 @@ import (
 	"github.com/zclconf/go-cty/cty/gocty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Attribute struct {
 	hclAttribute *hcl.Attribute
 	module       string
 	ctx          *context.Context
-	metadata     defsecTypes.Metadata
+	metadata     iacTypes.Metadata
 	reference    Reference
 }
 
@@ -34,8 +34,8 @@ func (a *Attribute) DecodeVarType() (cty.Type, *typeexpr.Defaults, error) {
 	return t, def, nil
 }
 
-func NewAttribute(attr *hcl.Attribute, ctx *context.Context, module string, parent defsecTypes.Metadata, parentRef Reference, moduleSource string, moduleFS fs.FS) *Attribute {
-	rng := defsecTypes.NewRange(
+func NewAttribute(attr *hcl.Attribute, ctx *context.Context, module string, parent iacTypes.Metadata, parentRef Reference, moduleSource string, moduleFS fs.FS) *Attribute {
+	rng := iacTypes.NewRange(
 		attr.Range.Filename,
 		attr.Range.Start.Line,
 		attr.Range.End.Line,
@@ -43,7 +43,7 @@ func NewAttribute(attr *hcl.Attribute, ctx *context.Context, module string, pare
 		moduleFS,
 	)
 	reference := extendReference(parentRef, attr.Name)
-	metadata := defsecTypes.NewMetadata(rng, reference.String())
+	metadata := iacTypes.NewMetadata(rng, reference.String())
 	return &Attribute{
 		hclAttribute: attr,
 		ctx:          ctx,
@@ -53,7 +53,7 @@ func NewAttribute(attr *hcl.Attribute, ctx *context.Context, module string, pare
 	}
 }
 
-func (a *Attribute) GetMetadata() defsecTypes.Metadata {
+func (a *Attribute) GetMetadata() iacTypes.Metadata {
 	return a.metadata
 }
 
@@ -100,72 +100,72 @@ func (a *Attribute) GetRawValue() interface{} {
 	return nil
 }
 
-func (a *Attribute) AsBytesValueOrDefault(defaultValue []byte, parent *Block) defsecTypes.BytesValue {
+func (a *Attribute) AsBytesValueOrDefault(defaultValue []byte, parent *Block) iacTypes.BytesValue {
 	if a.IsNil() {
-		return defsecTypes.BytesDefault(defaultValue, parent.GetMetadata())
+		return iacTypes.BytesDefault(defaultValue, parent.GetMetadata())
 	}
 	if a.IsNotResolvable() || !a.IsString() {
-		return defsecTypes.BytesUnresolvable(a.GetMetadata())
+		return iacTypes.BytesUnresolvable(a.GetMetadata())
 	}
-	return defsecTypes.BytesExplicit(
+	return iacTypes.BytesExplicit(
 		[]byte(a.Value().AsString()),
 		a.GetMetadata(),
 	)
 }
 
-func (a *Attribute) AsStringValueOrDefault(defaultValue string, parent *Block) defsecTypes.StringValue {
+func (a *Attribute) AsStringValueOrDefault(defaultValue string, parent *Block) iacTypes.StringValue {
 	if a.IsNil() {
-		return defsecTypes.StringDefault(defaultValue, parent.GetMetadata())
+		return iacTypes.StringDefault(defaultValue, parent.GetMetadata())
 	}
 	if a.IsNotResolvable() || !a.IsString() {
-		return defsecTypes.StringUnresolvable(a.GetMetadata())
+		return iacTypes.StringUnresolvable(a.GetMetadata())
 	}
-	return defsecTypes.StringExplicit(
+	return iacTypes.StringExplicit(
 		a.Value().AsString(),
 		a.GetMetadata(),
 	)
 }
 
-func (a *Attribute) AsStringValueSliceOrEmpty() (stringValues []defsecTypes.StringValue) {
+func (a *Attribute) AsStringValueSliceOrEmpty() (stringValues []iacTypes.StringValue) {
 	if a.IsNil() {
 		return stringValues
 	}
 	return a.AsStringValues()
 }
 
-func (a *Attribute) AsStringValuesOrDefault(parent *Block, defaults ...string) []defsecTypes.StringValue {
+func (a *Attribute) AsStringValuesOrDefault(parent *Block, defaults ...string) []iacTypes.StringValue {
 	if a.IsNil() {
-		res := make(defsecTypes.StringValueList, 0, len(defaults))
+		res := make(iacTypes.StringValueList, 0, len(defaults))
 		for _, def := range defaults {
-			res = append(res, defsecTypes.StringDefault(def, parent.GetMetadata()))
+			res = append(res, iacTypes.StringDefault(def, parent.GetMetadata()))
 		}
 		return res
 	}
 	return a.AsStringValues()
 }
 
-func (a *Attribute) AsBoolValueOrDefault(defaultValue bool, parent *Block) defsecTypes.BoolValue {
+func (a *Attribute) AsBoolValueOrDefault(defaultValue bool, parent *Block) iacTypes.BoolValue {
 	if a.IsNil() {
-		return defsecTypes.BoolDefault(defaultValue, parent.GetMetadata())
+		return iacTypes.BoolDefault(defaultValue, parent.GetMetadata())
 	}
 	if a.IsNotResolvable() || !a.IsBool() {
-		return defsecTypes.BoolUnresolvable(a.GetMetadata())
+		return iacTypes.BoolUnresolvable(a.GetMetadata())
 	}
-	return defsecTypes.BoolExplicit(
+	return iacTypes.BoolExplicit(
 		a.IsTrue(),
 		a.GetMetadata(),
 	)
 }
 
-func (a *Attribute) AsIntValueOrDefault(defaultValue int, parent *Block) defsecTypes.IntValue {
+func (a *Attribute) AsIntValueOrDefault(defaultValue int, parent *Block) iacTypes.IntValue {
 	if a.IsNil() {
-		return defsecTypes.IntDefault(defaultValue, parent.GetMetadata())
+		return iacTypes.IntDefault(defaultValue, parent.GetMetadata())
 	}
 	if a.IsNotResolvable() || !a.IsNumber() {
-		return defsecTypes.IntUnresolvable(a.GetMetadata())
+		return iacTypes.IntUnresolvable(a.GetMetadata())
 	}
 	flt := a.AsNumber()
-	return defsecTypes.IntExplicit(
+	return iacTypes.IntExplicit(
 		int(flt),
 		a.GetMetadata(),
 	)
@@ -305,7 +305,7 @@ func (a *Attribute) Name() string {
 	return a.hclAttribute.Name
 }
 
-func (a *Attribute) AsStringValues() defsecTypes.StringValueList {
+func (a *Attribute) AsStringValues() iacTypes.StringValueList {
 	if a == nil {
 		return nil
 	}
@@ -313,11 +313,11 @@ func (a *Attribute) AsStringValues() defsecTypes.StringValueList {
 }
 
 // nolint
-func (a *Attribute) getStringValues(expr hcl.Expression, ctx *hcl.EvalContext) (results []defsecTypes.StringValue) {
+func (a *Attribute) getStringValues(expr hcl.Expression, ctx *hcl.EvalContext) (results []iacTypes.StringValue) {
 
 	defer func() {
 		if err := recover(); err != nil {
-			results = []defsecTypes.StringValue{defsecTypes.StringUnresolvable(a.metadata)}
+			results = []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
 		}
 	}()
 
@@ -326,7 +326,7 @@ func (a *Attribute) getStringValues(expr hcl.Expression, ctx *hcl.EvalContext) (
 		for _, expr := range t.Exprs {
 			val, err := expr.Value(a.ctx.Inner())
 			if err != nil {
-				results = append(results, defsecTypes.StringUnresolvable(a.metadata))
+				results = append(results, iacTypes.StringUnresolvable(a.metadata))
 				continue
 			}
 			results = append(results, a.valueToString(val))
@@ -334,7 +334,7 @@ func (a *Attribute) getStringValues(expr hcl.Expression, ctx *hcl.EvalContext) (
 	case *hclsyntax.FunctionCallExpr, *hclsyntax.ConditionalExpr:
 		subVal, err := t.Value(ctx)
 		if err != nil {
-			return append(results, defsecTypes.StringUnresolvable(a.metadata))
+			return append(results, iacTypes.StringUnresolvable(a.metadata))
 		}
 		return a.valueToStrings(subVal)
 	case *hclsyntax.LiteralValueExpr:
@@ -344,7 +344,7 @@ func (a *Attribute) getStringValues(expr hcl.Expression, ctx *hcl.EvalContext) (
 		for _, p := range t.Parts {
 			val, err := p.Value(a.ctx.Inner())
 			if err != nil {
-				results = append(results, defsecTypes.StringUnresolvable(a.metadata))
+				results = append(results, iacTypes.StringUnresolvable(a.metadata))
 				continue
 			}
 			value := a.valueToString(val)
@@ -355,35 +355,35 @@ func (a *Attribute) getStringValues(expr hcl.Expression, ctx *hcl.EvalContext) (
 		if len(t.Variables()) > 0 {
 			if t.Variables()[0].RootName() == "data" {
 				// we can't resolve data lookups at this time, so make unresolvable
-				return append(results, defsecTypes.StringUnresolvable(a.metadata))
+				return append(results, iacTypes.StringUnresolvable(a.metadata))
 			}
 		}
 		subVal, err := t.Value(ctx)
 		if err != nil {
-			return append(results, defsecTypes.StringUnresolvable(a.metadata))
+			return append(results, iacTypes.StringUnresolvable(a.metadata))
 		}
 		return a.valueToStrings(subVal)
 	default:
 		val, err := t.Value(a.ctx.Inner())
 		if err != nil {
-			return append(results, defsecTypes.StringUnresolvable(a.metadata))
+			return append(results, iacTypes.StringUnresolvable(a.metadata))
 		}
 		results = a.valueToStrings(val)
 	}
 	return results
 }
 
-func (a *Attribute) valueToStrings(value cty.Value) (results []defsecTypes.StringValue) {
+func (a *Attribute) valueToStrings(value cty.Value) (results []iacTypes.StringValue) {
 	defer func() {
 		if err := recover(); err != nil {
-			results = []defsecTypes.StringValue{defsecTypes.StringUnresolvable(a.metadata)}
+			results = []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
 		}
 	}()
 	if value.IsNull() {
-		return []defsecTypes.StringValue{defsecTypes.StringUnresolvable(a.metadata)}
+		return []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
 	}
 	if !value.IsKnown() {
-		return []defsecTypes.StringValue{defsecTypes.StringUnresolvable(a.metadata)}
+		return []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
 	}
 	if value.Type().IsListType() || value.Type().IsTupleType() || value.Type().IsSetType() {
 		for _, val := range value.AsValueSlice() {
@@ -393,14 +393,14 @@ func (a *Attribute) valueToStrings(value cty.Value) (results []defsecTypes.Strin
 	return results
 }
 
-func (a *Attribute) valueToString(value cty.Value) (result defsecTypes.StringValue) {
+func (a *Attribute) valueToString(value cty.Value) (result iacTypes.StringValue) {
 	defer func() {
 		if err := recover(); err != nil {
-			result = defsecTypes.StringUnresolvable(a.metadata)
+			result = iacTypes.StringUnresolvable(a.metadata)
 		}
 	}()
 
-	result = defsecTypes.StringUnresolvable(a.metadata)
+	result = iacTypes.StringUnresolvable(a.metadata)
 
 	if value.IsNull() || !value.IsKnown() {
 		return result
@@ -408,7 +408,7 @@ func (a *Attribute) valueToString(value cty.Value) (result defsecTypes.StringVal
 
 	switch value.Type() {
 	case cty.String:
-		return defsecTypes.String(value.AsString(), a.metadata)
+		return iacTypes.String(value.AsString(), a.metadata)
 	default:
 		return result
 	}
@@ -821,9 +821,9 @@ func (a *Attribute) MapValue(mapKey string) cty.Value {
 	return cty.NilVal
 }
 
-func (a *Attribute) AsMapValue() defsecTypes.MapValue {
+func (a *Attribute) AsMapValue() iacTypes.MapValue {
 	if a.IsNil() || a.IsNotResolvable() || !a.IsMapOrObject() {
-		return defsecTypes.MapValue{}
+		return iacTypes.MapValue{}
 	}
 
 	values := make(map[string]string)
@@ -833,7 +833,7 @@ func (a *Attribute) AsMapValue() defsecTypes.MapValue {
 		}
 	})
 
-	return defsecTypes.Map(values, a.GetMetadata())
+	return iacTypes.Map(values, a.GetMetadata())
 }
 
 func (a *Attribute) LessThan(checkValue interface{}) bool {

@@ -3,7 +3,7 @@ package compute
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptDisks(modules terraform.Modules) (disks []compute.Disk) {
@@ -14,8 +14,8 @@ func adaptDisks(modules terraform.Modules) (disks []compute.Disk) {
 			Name:     diskBlock.GetAttribute("name").AsStringValueOrDefault("", diskBlock),
 			Encryption: compute.DiskEncryption{
 				Metadata:   diskBlock.GetMetadata(),
-				RawKey:     defsecTypes.BytesDefault(nil, diskBlock.GetMetadata()),
-				KMSKeyLink: defsecTypes.StringDefault("", diskBlock.GetMetadata()),
+				RawKey:     iacTypes.BytesDefault(nil, diskBlock.GetMetadata()),
+				KMSKeyLink: iacTypes.StringDefault("", diskBlock.GetMetadata()),
 			},
 		}
 		if encBlock := diskBlock.GetBlock("disk_encryption_key"); encBlock.IsNotNil() {
@@ -25,7 +25,7 @@ func adaptDisks(modules terraform.Modules) (disks []compute.Disk) {
 
 			if kmsKeyAttr.IsResourceBlockReference("google_kms_crypto_key") {
 				if kmsKeyBlock, err := modules.GetReferencedBlock(kmsKeyAttr, encBlock); err == nil {
-					disk.Encryption.KMSKeyLink = defsecTypes.String(kmsKeyBlock.FullName(), kmsKeyAttr.GetMetadata())
+					disk.Encryption.KMSKeyLink = iacTypes.String(kmsKeyBlock.FullName(), kmsKeyAttr.GetMetadata())
 				}
 			}
 

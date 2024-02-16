@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
@@ -20,12 +20,12 @@ func Test_RegoConversion(t *testing.T) {
 			S3: s3.S3{
 				Buckets: []s3.Bucket{
 					{
-						Metadata: defsecTypes.NewMetadata(
-							defsecTypes.NewRange("main.tf", 2, 4, "", nil),
+						Metadata: iacTypes.NewMetadata(
+							iacTypes.NewRange("main.tf", 2, 4, "", nil),
 							"aws_s3_bucket.example",
 						),
-						Name: defsecTypes.String("my-bucket", defsecTypes.NewMetadata(
-							defsecTypes.NewRange("main.tf", 3, 3, "", nil),
+						Name: iacTypes.String("my-bucket", iacTypes.NewMetadata(
+							iacTypes.NewRange("main.tf", 3, 3, "", nil),
 							"aws_s3_bucket.example.bucket",
 						)),
 					},
@@ -73,12 +73,12 @@ func Test_JSONPersistenceOfData(t *testing.T) {
 			S3: s3.S3{
 				Buckets: []s3.Bucket{
 					{
-						Metadata: defsecTypes.NewMetadata(
-							defsecTypes.NewRange("main.tf", 2, 4, "", nil),
+						Metadata: iacTypes.NewMetadata(
+							iacTypes.NewRange("main.tf", 2, 4, "", nil),
 							"aws_s3_bucket.example",
 						),
-						Name: defsecTypes.String("my-bucket", defsecTypes.NewMetadata(
-							defsecTypes.NewRange("main.tf", 3, 3, "", nil),
+						Name: iacTypes.String("my-bucket", iacTypes.NewMetadata(
+							iacTypes.NewRange("main.tf", 3, 3, "", nil),
 							"aws_s3_bucket.example.bucket",
 						)),
 					},

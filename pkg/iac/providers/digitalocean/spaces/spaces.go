@@ -1,7 +1,7 @@
 package spaces
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Spaces struct {
@@ -9,20 +9,20 @@ type Spaces struct {
 }
 
 type Bucket struct {
-	Metadata     defsecTypes.Metadata
-	Name         defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	Name         iacTypes.StringValue
 	Objects      []Object
-	ACL          defsecTypes.StringValue
-	ForceDestroy defsecTypes.BoolValue
+	ACL          iacTypes.StringValue
+	ForceDestroy iacTypes.BoolValue
 	Versioning   Versioning
 }
 
 type Versioning struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type Object struct {
-	Metadata defsecTypes.Metadata
-	ACL      defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	ACL      iacTypes.StringValue
 }

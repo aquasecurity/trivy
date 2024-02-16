@@ -3,23 +3,23 @@ package parser
 import (
 	"fmt"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type CFReference struct {
 	logicalId     string
-	resourceRange defsecTypes.Range
+	resourceRange iacTypes.Range
 	resolvedValue Property
 }
 
-func NewCFReference(id string, resourceRange defsecTypes.Range) CFReference {
+func NewCFReference(id string, resourceRange iacTypes.Range) CFReference {
 	return CFReference{
 		logicalId:     id,
 		resourceRange: resourceRange,
 	}
 }
 
-func NewCFReferenceWithValue(resourceRange defsecTypes.Range, resolvedValue Property, logicalId string) CFReference {
+func NewCFReferenceWithValue(resourceRange iacTypes.Range, resolvedValue Property, logicalId string) CFReference {
 	return CFReference{
 		resourceRange: resourceRange,
 		resolvedValue: resolvedValue,
@@ -35,15 +35,15 @@ func (cf CFReference) LogicalID() string {
 	return cf.logicalId
 }
 
-func (cf CFReference) ResourceRange() defsecTypes.Range {
+func (cf CFReference) ResourceRange() iacTypes.Range {
 	return cf.resourceRange
 }
 
-func (cf CFReference) PropertyRange() defsecTypes.Range {
+func (cf CFReference) PropertyRange() iacTypes.Range {
 	if cf.resolvedValue.IsNotNil() {
 		return cf.resolvedValue.Range()
 	}
-	return defsecTypes.Range{}
+	return iacTypes.Range{}
 }
 
 func (cf CFReference) DisplayValue() string {

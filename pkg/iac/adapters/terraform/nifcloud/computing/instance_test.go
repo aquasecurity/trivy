@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/computing"
 )
@@ -27,12 +27,12 @@ func Test_adaptInstances(t *testing.T) {
 			}
 `,
 			expected: []computing.Instance{{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				SecurityGroup: defsecTypes.String("example-security-group", defsecTypes.NewTestMetadata()),
+				Metadata:      iacTypes.NewTestMetadata(),
+				SecurityGroup: iacTypes.String("example-security-group", iacTypes.NewTestMetadata()),
 				NetworkInterfaces: []computing.NetworkInterface{
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						NetworkID: defsecTypes.String("net-COMMON_PRIVATE", defsecTypes.NewTestMetadata()),
+						Metadata:  iacTypes.NewTestMetadata(),
+						NetworkID: iacTypes.String("net-COMMON_PRIVATE", iacTypes.NewTestMetadata()),
 					},
 				},
 			}},
@@ -47,12 +47,12 @@ func Test_adaptInstances(t *testing.T) {
 `,
 
 			expected: []computing.Instance{{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				SecurityGroup: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:      iacTypes.NewTestMetadata(),
+				SecurityGroup: iacTypes.String("", iacTypes.NewTestMetadata()),
 				NetworkInterfaces: []computing.NetworkInterface{
 					{
-						Metadata:  defsecTypes.NewTestMetadata(),
-						NetworkID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata:  iacTypes.NewTestMetadata(),
+						NetworkID: iacTypes.String("", iacTypes.NewTestMetadata()),
 					},
 				},
 			}},

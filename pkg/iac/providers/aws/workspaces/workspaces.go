@@ -1,7 +1,7 @@
 package workspaces
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type WorkSpaces struct {
@@ -9,17 +9,17 @@ type WorkSpaces struct {
 }
 
 type WorkSpace struct {
-	Metadata   defsecTypes.Metadata
+	Metadata   iacTypes.Metadata
 	RootVolume Volume
 	UserVolume Volume
 }
 
 type Volume struct {
-	Metadata   defsecTypes.Metadata
+	Metadata   iacTypes.Metadata
 	Encryption Encryption
 }
 
 type Encryption struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }

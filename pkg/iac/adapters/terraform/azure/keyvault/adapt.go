@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/keyvault"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) keyvault.KeyVault {
@@ -38,14 +38,14 @@ func (a *adapter) adaptVaults(modules terraform.Modules) []keyvault.Vault {
 
 	if len(orphanResources) > 0 {
 		orphanage := keyvault.Vault{
-			Metadata:                defsecTypes.NewUnmanagedMetadata(),
+			Metadata:                iacTypes.NewUnmanagedMetadata(),
 			Secrets:                 nil,
 			Keys:                    nil,
-			EnablePurgeProtection:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-			SoftDeleteRetentionDays: defsecTypes.IntDefault(0, defsecTypes.NewUnmanagedMetadata()),
+			EnablePurgeProtection:   iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			SoftDeleteRetentionDays: iacTypes.IntDefault(0, iacTypes.NewUnmanagedMetadata()),
 			NetworkACLs: keyvault.NetworkACLs{
-				Metadata:      defsecTypes.NewUnmanagedMetadata(),
-				DefaultAction: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata:      iacTypes.NewUnmanagedMetadata(),
+				DefaultAction: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			},
 		}
 		for _, secretResource := range orphanResources {
@@ -58,14 +58,14 @@ func (a *adapter) adaptVaults(modules terraform.Modules) []keyvault.Vault {
 
 	if len(orphanResources) > 0 {
 		orphanage := keyvault.Vault{
-			Metadata:                defsecTypes.NewUnmanagedMetadata(),
+			Metadata:                iacTypes.NewUnmanagedMetadata(),
 			Secrets:                 nil,
 			Keys:                    nil,
-			EnablePurgeProtection:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-			SoftDeleteRetentionDays: defsecTypes.IntDefault(0, defsecTypes.NewUnmanagedMetadata()),
+			EnablePurgeProtection:   iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			SoftDeleteRetentionDays: iacTypes.IntDefault(0, iacTypes.NewUnmanagedMetadata()),
 			NetworkACLs: keyvault.NetworkACLs{
-				Metadata:      defsecTypes.NewUnmanagedMetadata(),
-				DefaultAction: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata:      iacTypes.NewUnmanagedMetadata(),
+				DefaultAction: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			},
 		}
 		for _, secretResource := range orphanResources {
@@ -81,7 +81,7 @@ func (a *adapter) adaptVault(resource *terraform.Block, module *terraform.Module
 	var keys []keyvault.Key
 	var secrets []keyvault.Secret
 
-	defaultActionVal := defsecTypes.StringDefault("", resource.GetMetadata())
+	defaultActionVal := iacTypes.StringDefault("", resource.GetMetadata())
 
 	secretBlocks := module.GetReferencingResources(resource, "azurerm_key_vault_secret", "key_vault_id")
 	for _, secretBlock := range secretBlocks {
@@ -101,7 +101,7 @@ func (a *adapter) adaptVault(resource *terraform.Block, module *terraform.Module
 	softDeleteRetentionDaysAttr := resource.GetAttribute("soft_delete_retention_days")
 	softDeleteRetentionDaysVal := softDeleteRetentionDaysAttr.AsIntValueOrDefault(0, resource)
 
-	aclMetadata := defsecTypes.NewUnmanagedMetadata()
+	aclMetadata := iacTypes.NewUnmanagedMetadata()
 	if aclBlock := resource.GetBlock("network_acls"); aclBlock.IsNotNil() {
 		aclMetadata = aclBlock.GetMetadata()
 		defaultActionAttr := aclBlock.GetAttribute("default_action")
@@ -140,17 +140,17 @@ func adaptKey(resource *terraform.Block) keyvault.Key {
 	}
 }
 
-func resolveExpiryDate(resource *terraform.Block) defsecTypes.TimeValue {
+func resolveExpiryDate(resource *terraform.Block) iacTypes.TimeValue {
 	expiryDateAttr := resource.GetAttribute("expiration_date")
-	expiryDateVal := defsecTypes.TimeDefault(time.Time{}, resource.GetMetadata())
+	expiryDateVal := iacTypes.TimeDefault(time.Time{}, resource.GetMetadata())
 
 	if expiryDateAttr.IsString() {
 		expiryDateString := expiryDateAttr.Value().AsString()
 		if expiryDate, err := time.Parse(time.RFC3339, expiryDateString); err == nil {
-			expiryDateVal = defsecTypes.Time(expiryDate, expiryDateAttr.GetMetadata())
+			expiryDateVal = iacTypes.Time(expiryDate, expiryDateAttr.GetMetadata())
 		}
 	} else if expiryDateAttr.IsNotNil() {
-		expiryDateVal = defsecTypes.TimeUnresolvable(expiryDateAttr.GetMetadata())
+		expiryDateVal = iacTypes.TimeUnresolvable(expiryDateAttr.GetMetadata())
 	}
 
 	return expiryDateVal

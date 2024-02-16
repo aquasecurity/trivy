@@ -1,7 +1,7 @@
 package elb
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type ELB struct {
@@ -16,21 +16,21 @@ const (
 )
 
 type LoadBalancer struct {
-	Metadata                defsecTypes.Metadata
-	Type                    defsecTypes.StringValue
-	DropInvalidHeaderFields defsecTypes.BoolValue
-	Internal                defsecTypes.BoolValue
+	Metadata                iacTypes.Metadata
+	Type                    iacTypes.StringValue
+	DropInvalidHeaderFields iacTypes.BoolValue
+	Internal                iacTypes.BoolValue
 	Listeners               []Listener
 }
 
 type Listener struct {
-	Metadata       defsecTypes.Metadata
-	Protocol       defsecTypes.StringValue
-	TLSPolicy      defsecTypes.StringValue
+	Metadata       iacTypes.Metadata
+	Protocol       iacTypes.StringValue
+	TLSPolicy      iacTypes.StringValue
 	DefaultActions []Action
 }
 
 type Action struct {
-	Metadata defsecTypes.Metadata
-	Type     defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Type     iacTypes.StringValue
 }

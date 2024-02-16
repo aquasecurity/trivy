@@ -1,18 +1,18 @@
 package sam
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type SimpleTable struct {
-	Metadata         defsecTypes.Metadata
-	TableName        defsecTypes.StringValue
+	Metadata         iacTypes.Metadata
+	TableName        iacTypes.StringValue
 	SSESpecification SSESpecification
 }
 
 type SSESpecification struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 
-	Enabled        defsecTypes.BoolValue
-	KMSMasterKeyID defsecTypes.StringValue
+	Enabled        iacTypes.BoolValue
+	KMSMasterKeyID iacTypes.StringValue
 }

@@ -6,11 +6,11 @@ import (
 
 	"github.com/zclconf/go-cty/cty"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Ignore struct {
-	Range     defsecTypes.Range
+	Range     iacTypes.Range
 	RuleID    string
 	Expiry    *time.Time
 	Workspace string
@@ -20,7 +20,7 @@ type Ignore struct {
 
 type Ignores []Ignore
 
-func (ignores Ignores) Covering(modules Modules, m defsecTypes.Metadata, workspace string, ids ...string) *Ignore {
+func (ignores Ignores) Covering(modules Modules, m iacTypes.Metadata, workspace string, ids ...string) *Ignore {
 	for _, ignore := range ignores {
 		if ignore.Covering(modules, m, workspace, ids...) {
 			return &ignore
@@ -29,7 +29,7 @@ func (ignores Ignores) Covering(modules Modules, m defsecTypes.Metadata, workspa
 	return nil
 }
 
-func (ignore Ignore) Covering(modules Modules, m defsecTypes.Metadata, workspace string, ids ...string) bool {
+func (ignore Ignore) Covering(modules Modules, m iacTypes.Metadata, workspace string, ids ...string) bool {
 	if ignore.Expiry != nil && time.Now().After(*ignore.Expiry) {
 		return false
 	}
@@ -62,7 +62,7 @@ func (ignore Ignore) Covering(modules Modules, m defsecTypes.Metadata, workspace
 
 }
 
-func (ignore Ignore) MatchParams(modules Modules, blockMetadata *defsecTypes.Metadata) bool {
+func (ignore Ignore) MatchParams(modules Modules, blockMetadata *iacTypes.Metadata) bool {
 	if len(ignore.Params) == 0 {
 		return true
 	}

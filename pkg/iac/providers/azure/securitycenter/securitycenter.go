@@ -1,7 +1,7 @@
 package securitycenter
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type SecurityCenter struct {
@@ -10,9 +10,9 @@ type SecurityCenter struct {
 }
 
 type Contact struct {
-	Metadata                 defsecTypes.Metadata
-	EnableAlertNotifications defsecTypes.BoolValue
-	Phone                    defsecTypes.StringValue
+	Metadata                 iacTypes.Metadata
+	EnableAlertNotifications iacTypes.BoolValue
+	Phone                    iacTypes.StringValue
 }
 
 const (
@@ -21,6 +21,6 @@ const (
 )
 
 type SubscriptionPricing struct {
-	Metadata defsecTypes.Metadata
-	Tier     defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Tier     iacTypes.StringValue
 }

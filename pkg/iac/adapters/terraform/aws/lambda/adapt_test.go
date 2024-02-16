@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/lambda"
 	"github.com/stretchr/testify/assert"
@@ -43,16 +43,16 @@ func Test_Adapt(t *testing.T) {
 			expected: lambda.Lambda{
 				Functions: []lambda.Function{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						Tracing: lambda.Tracing{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Mode:     defsecTypes.String("Passthrough", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Mode:     iacTypes.String("Passthrough", iacTypes.NewTestMetadata()),
 						},
 						Permissions: []lambda.Permission{
 							{
-								Metadata:  defsecTypes.NewTestMetadata(),
-								Principal: defsecTypes.String("sns.amazonaws.com", defsecTypes.NewTestMetadata()),
-								SourceARN: defsecTypes.String("default", defsecTypes.NewTestMetadata()),
+								Metadata:  iacTypes.NewTestMetadata(),
+								Principal: iacTypes.String("sns.amazonaws.com", iacTypes.NewTestMetadata()),
+								SourceARN: iacTypes.String("default", iacTypes.NewTestMetadata()),
 							},
 						},
 					},
@@ -73,23 +73,23 @@ func Test_Adapt(t *testing.T) {
 			expected: lambda.Lambda{
 				Functions: []lambda.Function{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						Tracing: lambda.Tracing{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Mode:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Mode:     iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 					},
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						Tracing: lambda.Tracing{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Mode:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Mode:     iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Permissions: []lambda.Permission{
 							{
-								Metadata:  defsecTypes.NewTestMetadata(),
-								Principal: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								SourceARN: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:  iacTypes.NewTestMetadata(),
+								Principal: iacTypes.String("", iacTypes.NewTestMetadata()),
+								SourceARN: iacTypes.String("", iacTypes.NewTestMetadata()),
 							},
 						},
 					},

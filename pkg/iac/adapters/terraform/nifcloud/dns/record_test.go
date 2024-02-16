@@ -6,7 +6,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/dns"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptRecords(t *testing.T) {
@@ -24,9 +24,9 @@ func Test_adaptRecords(t *testing.T) {
 			}
 `,
 			expected: []dns.Record{{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Type:     defsecTypes.String("A", defsecTypes.NewTestMetadata()),
-				Record:   defsecTypes.String("example-record", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Type:     iacTypes.String("A", iacTypes.NewTestMetadata()),
+				Record:   iacTypes.String("example-record", iacTypes.NewTestMetadata()),
 			}},
 		},
 		{
@@ -37,9 +37,9 @@ func Test_adaptRecords(t *testing.T) {
 `,
 
 			expected: []dns.Record{{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Type:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				Record:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Type:     iacTypes.String("", iacTypes.NewTestMetadata()),
+				Record:   iacTypes.String("", iacTypes.NewTestMetadata()),
 			}},
 		},
 	}

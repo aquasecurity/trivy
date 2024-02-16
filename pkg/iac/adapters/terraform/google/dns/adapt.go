@@ -3,7 +3,7 @@ package dns
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/dns"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) dns.DNS {
@@ -36,7 +36,7 @@ func adaptDNSSec(b *terraform.Block) dns.DNSSec {
 	if DNSSecBlock.IsNil() {
 		return dns.DNSSec{
 			Metadata: b.GetMetadata(),
-			Enabled:  defsecTypes.BoolDefault(false, b.GetMetadata()),
+			Enabled:  iacTypes.BoolDefault(false, b.GetMetadata()),
 		}
 	}
 
@@ -44,7 +44,7 @@ func adaptDNSSec(b *terraform.Block) dns.DNSSec {
 
 	DNSSec := dns.DNSSec{
 		Metadata:        DNSSecBlock.GetMetadata(),
-		Enabled:         defsecTypes.Bool(stateAttr.Equals("on"), stateAttr.GetMetadata()),
+		Enabled:         iacTypes.Bool(stateAttr.Equals("on"), stateAttr.GetMetadata()),
 		DefaultKeySpecs: adaptKeySpecs(DNSSecBlock),
 	}
 

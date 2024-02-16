@@ -2,20 +2,20 @@ package s3
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Bucket struct {
-	Metadata                      defsecTypes.Metadata
-	Name                          defsecTypes.StringValue
+	Metadata                      iacTypes.Metadata
+	Name                          iacTypes.StringValue
 	PublicAccessBlock             *PublicAccessBlock
 	BucketPolicies                []iam.Policy
 	Encryption                    Encryption
 	Versioning                    Versioning
 	Logging                       Logging
-	ACL                           defsecTypes.StringValue
-	BucketLocation                defsecTypes.StringValue
-	AccelerateConfigurationStatus defsecTypes.StringValue
+	ACL                           iacTypes.StringValue
+	BucketLocation                iacTypes.StringValue
+	AccelerateConfigurationStatus iacTypes.StringValue
 	LifecycleConfiguration        []Rules
 	Objects                       []Contents
 	Website                       *Website
@@ -35,33 +35,33 @@ func (b *Bucket) HasPublicExposureACL() bool {
 }
 
 type Logging struct {
-	Metadata     defsecTypes.Metadata
-	Enabled      defsecTypes.BoolValue
-	TargetBucket defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	Enabled      iacTypes.BoolValue
+	TargetBucket iacTypes.StringValue
 }
 
 type Versioning struct {
-	Metadata  defsecTypes.Metadata
-	Enabled   defsecTypes.BoolValue
-	MFADelete defsecTypes.BoolValue
+	Metadata  iacTypes.Metadata
+	Enabled   iacTypes.BoolValue
+	MFADelete iacTypes.BoolValue
 }
 
 type Encryption struct {
-	Metadata  defsecTypes.Metadata
-	Enabled   defsecTypes.BoolValue
-	Algorithm defsecTypes.StringValue
-	KMSKeyId  defsecTypes.StringValue
+	Metadata  iacTypes.Metadata
+	Enabled   iacTypes.BoolValue
+	Algorithm iacTypes.StringValue
+	KMSKeyId  iacTypes.StringValue
 }
 
 type Rules struct {
-	Metadata defsecTypes.Metadata
-	Status   defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Status   iacTypes.StringValue
 }
 
 type Contents struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 }
 
 type Website struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 }

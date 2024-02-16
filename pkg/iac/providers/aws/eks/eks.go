@@ -1,7 +1,7 @@
 package eks
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type EKS struct {
@@ -9,24 +9,24 @@ type EKS struct {
 }
 
 type Cluster struct {
-	Metadata            defsecTypes.Metadata
+	Metadata            iacTypes.Metadata
 	Logging             Logging
 	Encryption          Encryption
-	PublicAccessEnabled defsecTypes.BoolValue
-	PublicAccessCIDRs   []defsecTypes.StringValue
+	PublicAccessEnabled iacTypes.BoolValue
+	PublicAccessCIDRs   []iacTypes.StringValue
 }
 
 type Logging struct {
-	Metadata          defsecTypes.Metadata
-	API               defsecTypes.BoolValue
-	Audit             defsecTypes.BoolValue
-	Authenticator     defsecTypes.BoolValue
-	ControllerManager defsecTypes.BoolValue
-	Scheduler         defsecTypes.BoolValue
+	Metadata          iacTypes.Metadata
+	API               iacTypes.BoolValue
+	Audit             iacTypes.BoolValue
+	Authenticator     iacTypes.BoolValue
+	ControllerManager iacTypes.BoolValue
+	Scheduler         iacTypes.BoolValue
 }
 
 type Encryption struct {
-	Metadata defsecTypes.Metadata
-	Secrets  defsecTypes.BoolValue
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Secrets  iacTypes.BoolValue
+	KMSKeyID iacTypes.StringValue
 }

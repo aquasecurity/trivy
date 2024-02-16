@@ -1,7 +1,7 @@
 package elasticsearch
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Elasticsearch struct {
@@ -9,11 +9,11 @@ type Elasticsearch struct {
 }
 
 type Domain struct {
-	Metadata               defsecTypes.Metadata
-	DomainName             defsecTypes.StringValue
-	AccessPolicies         defsecTypes.StringValue
-	DedicatedMasterEnabled defsecTypes.BoolValue
-	VpcId                  defsecTypes.StringValue
+	Metadata               iacTypes.Metadata
+	DomainName             iacTypes.StringValue
+	AccessPolicies         iacTypes.StringValue
+	DedicatedMasterEnabled iacTypes.BoolValue
+	VpcId                  iacTypes.StringValue
 	LogPublishing          LogPublishing
 	TransitEncryption      TransitEncryption
 	AtRestEncryption       AtRestEncryption
@@ -22,32 +22,32 @@ type Domain struct {
 }
 
 type ServiceSoftwareOptions struct {
-	Metadata        defsecTypes.Metadata
-	CurrentVersion  defsecTypes.StringValue
-	NewVersion      defsecTypes.StringValue
-	UpdateAvailable defsecTypes.BoolValue
-	UpdateStatus    defsecTypes.StringValue
+	Metadata        iacTypes.Metadata
+	CurrentVersion  iacTypes.StringValue
+	NewVersion      iacTypes.StringValue
+	UpdateAvailable iacTypes.BoolValue
+	UpdateStatus    iacTypes.StringValue
 }
 
 type Endpoint struct {
-	Metadata     defsecTypes.Metadata
-	EnforceHTTPS defsecTypes.BoolValue
-	TLSPolicy    defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	EnforceHTTPS iacTypes.BoolValue
+	TLSPolicy    iacTypes.StringValue
 }
 
 type LogPublishing struct {
-	Metadata              defsecTypes.Metadata
-	AuditEnabled          defsecTypes.BoolValue
-	CloudWatchLogGroupArn defsecTypes.StringValue
+	Metadata              iacTypes.Metadata
+	AuditEnabled          iacTypes.BoolValue
+	CloudWatchLogGroupArn iacTypes.StringValue
 }
 
 type TransitEncryption struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type AtRestEncryption struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
-	KmsKeyId defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+	KmsKeyId iacTypes.StringValue
 }

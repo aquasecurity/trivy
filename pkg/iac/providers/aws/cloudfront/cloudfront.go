@@ -1,7 +1,7 @@
 package cloudfront
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Cloudfront struct {
@@ -9,8 +9,8 @@ type Cloudfront struct {
 }
 
 type Distribution struct {
-	Metadata               defsecTypes.Metadata
-	WAFID                  defsecTypes.StringValue
+	Metadata               iacTypes.Metadata
+	WAFID                  iacTypes.StringValue
 	Logging                Logging
 	DefaultCacheBehaviour  CacheBehaviour
 	OrdererCacheBehaviours []CacheBehaviour
@@ -18,13 +18,13 @@ type Distribution struct {
 }
 
 type Logging struct {
-	Metadata defsecTypes.Metadata
-	Bucket   defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Bucket   iacTypes.StringValue
 }
 
 type CacheBehaviour struct {
-	Metadata             defsecTypes.Metadata
-	ViewerProtocolPolicy defsecTypes.StringValue
+	Metadata             iacTypes.Metadata
+	ViewerProtocolPolicy iacTypes.StringValue
 }
 
 const (
@@ -38,8 +38,8 @@ const (
 )
 
 type ViewerCertificate struct {
-	Metadata                     defsecTypes.Metadata
-	CloudfrontDefaultCertificate defsecTypes.BoolValue
-	SSLSupportMethod             defsecTypes.StringValue
-	MinimumProtocolVersion       defsecTypes.StringValue
+	Metadata                     iacTypes.Metadata
+	CloudfrontDefaultCertificate iacTypes.BoolValue
+	SSLSupportMethod             iacTypes.StringValue
+	MinimumProtocolVersion       iacTypes.StringValue
 }

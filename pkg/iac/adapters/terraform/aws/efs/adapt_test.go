@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/efs"
 
@@ -29,8 +29,8 @@ func Test_adaptFileSystem(t *testing.T) {
 			  }
 `,
 			expected: efs.FileSystem{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:  iacTypes.NewTestMetadata(),
+				Encrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -40,8 +40,8 @@ func Test_adaptFileSystem(t *testing.T) {
 			  }
 `,
 			expected: efs.FileSystem{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				Encrypted: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:  iacTypes.NewTestMetadata(),
+				Encrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

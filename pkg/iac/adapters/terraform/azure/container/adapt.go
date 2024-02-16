@@ -3,7 +3,7 @@ package container
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/container"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) container.Container {
@@ -29,19 +29,19 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		Metadata: resource.GetMetadata(),
 		NetworkProfile: container.NetworkProfile{
 			Metadata:      resource.GetMetadata(),
-			NetworkPolicy: defsecTypes.StringDefault("", resource.GetMetadata()),
+			NetworkPolicy: iacTypes.StringDefault("", resource.GetMetadata()),
 		},
-		EnablePrivateCluster:        defsecTypes.BoolDefault(false, resource.GetMetadata()),
+		EnablePrivateCluster:        iacTypes.BoolDefault(false, resource.GetMetadata()),
 		APIServerAuthorizedIPRanges: nil,
 		RoleBasedAccessControl: container.RoleBasedAccessControl{
 			Metadata: resource.GetMetadata(),
-			Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
+			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
 		AddonProfile: container.AddonProfile{
 			Metadata: resource.GetMetadata(),
 			OMSAgent: container.OMSAgent{
 				Metadata: resource.GetMetadata(),
-				Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
+				Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 			},
 		},
 	}
@@ -75,7 +75,7 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 	// >= azurerm 2.97.0
 	if omsAgentBlock := resource.GetBlock("oms_agent"); omsAgentBlock.IsNotNil() {
 		cluster.AddonProfile.OMSAgent.Metadata = omsAgentBlock.GetMetadata()
-		cluster.AddonProfile.OMSAgent.Enabled = defsecTypes.Bool(true, omsAgentBlock.GetMetadata())
+		cluster.AddonProfile.OMSAgent.Enabled = iacTypes.Bool(true, omsAgentBlock.GetMetadata())
 	}
 
 	// azurerm < 2.99.0

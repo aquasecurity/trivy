@@ -1,7 +1,7 @@
 package network
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Network struct {
@@ -10,23 +10,23 @@ type Network struct {
 }
 
 type SecurityGroup struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Rules    []SecurityGroupRule
 }
 
 type SecurityGroupRule struct {
-	Metadata             defsecTypes.Metadata
-	Outbound             defsecTypes.BoolValue
-	Allow                defsecTypes.BoolValue
-	SourceAddresses      []defsecTypes.StringValue
+	Metadata             iacTypes.Metadata
+	Outbound             iacTypes.BoolValue
+	Allow                iacTypes.BoolValue
+	SourceAddresses      []iacTypes.StringValue
 	SourcePorts          []PortRange
-	DestinationAddresses []defsecTypes.StringValue
+	DestinationAddresses []iacTypes.StringValue
 	DestinationPorts     []PortRange
-	Protocol             defsecTypes.StringValue
+	Protocol             iacTypes.StringValue
 }
 
 type PortRange struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Start    int
 	End      int
 }
@@ -36,12 +36,12 @@ func (r PortRange) Includes(port int) bool {
 }
 
 type NetworkWatcherFlowLog struct {
-	Metadata        defsecTypes.Metadata
+	Metadata        iacTypes.Metadata
 	RetentionPolicy RetentionPolicy
 }
 
 type RetentionPolicy struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
-	Days     defsecTypes.IntValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+	Days     iacTypes.IntValue
 }

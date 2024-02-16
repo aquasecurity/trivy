@@ -3,7 +3,7 @@ package resolver
 import (
 	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/expressions"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Resolver interface {
@@ -40,7 +40,7 @@ func (r *resolver) ResolveExpression(expression azure2.Value) azure2.Value {
 	return resolved
 }
 
-func (r *resolver) resolveExpressionString(code string, metadata defsecTypes.Metadata) (azure2.Value, error) {
+func (r *resolver) resolveExpressionString(code string, metadata iacTypes.Metadata) (azure2.Value, error) {
 	et, err := expressions.NewExpressionTree(code)
 	if err != nil {
 		return azure2.NullValue, err

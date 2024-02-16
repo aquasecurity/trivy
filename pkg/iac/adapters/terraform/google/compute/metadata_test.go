@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 )
@@ -26,8 +26,8 @@ func Test_adaptProjectMetadata(t *testing.T) {
 			  }
 `,
 			expected: compute.ProjectMetadata{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				EnableOSLogin: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:      iacTypes.NewTestMetadata(),
+				EnableOSLogin: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -39,8 +39,8 @@ func Test_adaptProjectMetadata(t *testing.T) {
 			  }
 `,
 			expected: compute.ProjectMetadata{
-				Metadata:      defsecTypes.NewTestMetadata(),
-				EnableOSLogin: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:      iacTypes.NewTestMetadata(),
+				EnableOSLogin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

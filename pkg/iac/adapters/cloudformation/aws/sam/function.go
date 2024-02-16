@@ -6,7 +6,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getFunctions(cfFile parser2.FileContext) (functions []sam.Function) {
@@ -42,12 +42,12 @@ func setFunctionPolicies(r *parser2.Resource, function *sam.Function) {
 					}
 					policy := iam.Policy{
 						Metadata: property.Metadata(),
-						Name:     defsecTypes.StringDefault("", property.Metadata()),
+						Name:     iacTypes.StringDefault("", property.Metadata()),
 						Document: iam.Document{
 							Metadata: property.Metadata(),
 							Parsed:   *parsed,
 						},
-						Builtin: defsecTypes.Bool(false, property.Metadata()),
+						Builtin: iacTypes.Bool(false, property.Metadata()),
 					}
 					function.Policies = append(function.Policies, policy)
 				} else if property.IsString() {

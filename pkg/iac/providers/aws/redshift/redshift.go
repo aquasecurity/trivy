@@ -1,7 +1,7 @@
 package redshift
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Redshift struct {
@@ -12,44 +12,44 @@ type Redshift struct {
 }
 
 type SecurityGroup struct {
-	Metadata    defsecTypes.Metadata
-	Description defsecTypes.StringValue
+	Metadata    iacTypes.Metadata
+	Description iacTypes.StringValue
 }
 
 type ReservedNode struct {
-	Metadata defsecTypes.Metadata
-	NodeType defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	NodeType iacTypes.StringValue
 }
 
 type ClusterParameter struct {
-	Metadata       defsecTypes.Metadata
-	ParameterName  defsecTypes.StringValue
-	ParameterValue defsecTypes.StringValue
+	Metadata       iacTypes.Metadata
+	ParameterName  iacTypes.StringValue
+	ParameterValue iacTypes.StringValue
 }
 
 type Cluster struct {
-	Metadata                         defsecTypes.Metadata
-	ClusterIdentifier                defsecTypes.StringValue
-	NodeType                         defsecTypes.StringValue
-	VpcId                            defsecTypes.StringValue
-	NumberOfNodes                    defsecTypes.IntValue
-	PubliclyAccessible               defsecTypes.BoolValue
-	AllowVersionUpgrade              defsecTypes.BoolValue
-	MasterUsername                   defsecTypes.StringValue
-	AutomatedSnapshotRetentionPeriod defsecTypes.IntValue
-	LoggingEnabled                   defsecTypes.BoolValue
+	Metadata                         iacTypes.Metadata
+	ClusterIdentifier                iacTypes.StringValue
+	NodeType                         iacTypes.StringValue
+	VpcId                            iacTypes.StringValue
+	NumberOfNodes                    iacTypes.IntValue
+	PubliclyAccessible               iacTypes.BoolValue
+	AllowVersionUpgrade              iacTypes.BoolValue
+	MasterUsername                   iacTypes.StringValue
+	AutomatedSnapshotRetentionPeriod iacTypes.IntValue
+	LoggingEnabled                   iacTypes.BoolValue
 	EndPoint                         EndPoint
 	Encryption                       Encryption
-	SubnetGroupName                  defsecTypes.StringValue
+	SubnetGroupName                  iacTypes.StringValue
 }
 
 type EndPoint struct {
-	Metadata defsecTypes.Metadata
-	Port     defsecTypes.IntValue
+	Metadata iacTypes.Metadata
+	Port     iacTypes.IntValue
 }
 
 type Encryption struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+	KMSKeyID iacTypes.StringValue
 }

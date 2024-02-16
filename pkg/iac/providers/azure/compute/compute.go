@@ -1,7 +1,7 @@
 package compute
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Compute struct {
@@ -11,32 +11,32 @@ type Compute struct {
 }
 
 type VirtualMachine struct {
-	Metadata   defsecTypes.Metadata
-	CustomData defsecTypes.StringValue // NOT base64 encoded
+	Metadata   iacTypes.Metadata
+	CustomData iacTypes.StringValue // NOT base64 encoded
 }
 
 type LinuxVirtualMachine struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	VirtualMachine
 	OSProfileLinuxConfig OSProfileLinuxConfig
 }
 
 type WindowsVirtualMachine struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	VirtualMachine
 }
 
 type OSProfileLinuxConfig struct {
-	Metadata                      defsecTypes.Metadata
-	DisablePasswordAuthentication defsecTypes.BoolValue
+	Metadata                      iacTypes.Metadata
+	DisablePasswordAuthentication iacTypes.BoolValue
 }
 
 type ManagedDisk struct {
-	Metadata   defsecTypes.Metadata
+	Metadata   iacTypes.Metadata
 	Encryption Encryption
 }
 
 type Encryption struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }

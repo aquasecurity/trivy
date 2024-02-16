@@ -1,7 +1,7 @@
 package synapse
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Synapse struct {
@@ -9,6 +9,6 @@ type Synapse struct {
 }
 
 type Workspace struct {
-	Metadata                    defsecTypes.Metadata
-	EnableManagedVirtualNetwork defsecTypes.BoolValue
+	Metadata                    iacTypes.Metadata
+	EnableManagedVirtualNetwork iacTypes.BoolValue
 }

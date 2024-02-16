@@ -1,7 +1,7 @@
 package datalake
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type DataLake struct {
@@ -9,6 +9,6 @@ type DataLake struct {
 }
 
 type Store struct {
-	Metadata         defsecTypes.Metadata
-	EnableEncryption defsecTypes.BoolValue
+	Metadata         iacTypes.Metadata
+	EnableEncryption iacTypes.BoolValue
 }

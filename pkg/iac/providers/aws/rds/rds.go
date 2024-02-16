@@ -1,7 +1,7 @@
 package rds
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type RDS struct {
@@ -13,69 +13,69 @@ type RDS struct {
 }
 
 type Instance struct {
-	Metadata                         defsecTypes.Metadata
-	BackupRetentionPeriodDays        defsecTypes.IntValue
-	ReplicationSourceARN             defsecTypes.StringValue
+	Metadata                         iacTypes.Metadata
+	BackupRetentionPeriodDays        iacTypes.IntValue
+	ReplicationSourceARN             iacTypes.StringValue
 	PerformanceInsights              PerformanceInsights
 	Encryption                       Encryption
-	PublicAccess                     defsecTypes.BoolValue
-	Engine                           defsecTypes.StringValue
-	IAMAuthEnabled                   defsecTypes.BoolValue
-	DeletionProtection               defsecTypes.BoolValue
-	DBInstanceArn                    defsecTypes.StringValue
-	StorageEncrypted                 defsecTypes.BoolValue
-	DBInstanceIdentifier             defsecTypes.StringValue
+	PublicAccess                     iacTypes.BoolValue
+	Engine                           iacTypes.StringValue
+	IAMAuthEnabled                   iacTypes.BoolValue
+	DeletionProtection               iacTypes.BoolValue
+	DBInstanceArn                    iacTypes.StringValue
+	StorageEncrypted                 iacTypes.BoolValue
+	DBInstanceIdentifier             iacTypes.StringValue
 	DBParameterGroups                []DBParameterGroupsList
 	TagList                          []TagList
-	EnabledCloudwatchLogsExports     []defsecTypes.StringValue
-	EngineVersion                    defsecTypes.StringValue
-	AutoMinorVersionUpgrade          defsecTypes.BoolValue
-	MultiAZ                          defsecTypes.BoolValue
-	PubliclyAccessible               defsecTypes.BoolValue
-	LatestRestorableTime             defsecTypes.TimeValue
-	ReadReplicaDBInstanceIdentifiers []defsecTypes.StringValue
+	EnabledCloudwatchLogsExports     []iacTypes.StringValue
+	EngineVersion                    iacTypes.StringValue
+	AutoMinorVersionUpgrade          iacTypes.BoolValue
+	MultiAZ                          iacTypes.BoolValue
+	PubliclyAccessible               iacTypes.BoolValue
+	LatestRestorableTime             iacTypes.TimeValue
+	ReadReplicaDBInstanceIdentifiers []iacTypes.StringValue
 }
 
 type Cluster struct {
-	Metadata                  defsecTypes.Metadata
-	BackupRetentionPeriodDays defsecTypes.IntValue
-	ReplicationSourceARN      defsecTypes.StringValue
+	Metadata                  iacTypes.Metadata
+	BackupRetentionPeriodDays iacTypes.IntValue
+	ReplicationSourceARN      iacTypes.StringValue
 	PerformanceInsights       PerformanceInsights
 	Instances                 []ClusterInstance
 	Encryption                Encryption
-	PublicAccess              defsecTypes.BoolValue
-	Engine                    defsecTypes.StringValue
-	LatestRestorableTime      defsecTypes.TimeValue
-	AvailabilityZones         []defsecTypes.StringValue
-	DeletionProtection        defsecTypes.BoolValue
-	SkipFinalSnapshot         defsecTypes.BoolValue
+	PublicAccess              iacTypes.BoolValue
+	Engine                    iacTypes.StringValue
+	LatestRestorableTime      iacTypes.TimeValue
+	AvailabilityZones         []iacTypes.StringValue
+	DeletionProtection        iacTypes.BoolValue
+	SkipFinalSnapshot         iacTypes.BoolValue
 }
 
 type Snapshots struct {
-	Metadata             defsecTypes.Metadata
-	DBSnapshotIdentifier defsecTypes.StringValue
-	DBSnapshotArn        defsecTypes.StringValue
-	Encrypted            defsecTypes.BoolValue
-	KmsKeyId             defsecTypes.StringValue
+	Metadata             iacTypes.Metadata
+	DBSnapshotIdentifier iacTypes.StringValue
+	DBSnapshotArn        iacTypes.StringValue
+	Encrypted            iacTypes.BoolValue
+	KmsKeyId             iacTypes.StringValue
 	SnapshotAttributes   []DBSnapshotAttributes
 }
 
 type Parameters struct {
-	Metadata       defsecTypes.Metadata
-	ParameterName  defsecTypes.StringValue
-	ParameterValue defsecTypes.StringValue
+	Metadata       iacTypes.Metadata
+	ParameterName  iacTypes.StringValue
+	ParameterValue iacTypes.StringValue
 }
 
 type ParameterGroups struct {
-	Metadata               defsecTypes.Metadata
-	DBParameterGroupName   defsecTypes.StringValue
-	DBParameterGroupFamily defsecTypes.StringValue
+	Metadata               iacTypes.Metadata
+	DBParameterGroupName   iacTypes.StringValue
+	DBParameterGroupFamily iacTypes.StringValue
 	Parameters             []Parameters
 }
 
 type DBSnapshotAttributes struct {
-	Metadata        defsecTypes.Metadata
-	AttributeValues []defsecTypes.StringValue
+	Metadata        iacTypes.Metadata
+	AttributeValues []iacTypes.StringValue
 }
 
 const (
@@ -100,28 +100,28 @@ const (
 )
 
 type Encryption struct {
-	Metadata       defsecTypes.Metadata
-	EncryptStorage defsecTypes.BoolValue
-	KMSKeyID       defsecTypes.StringValue
+	Metadata       iacTypes.Metadata
+	EncryptStorage iacTypes.BoolValue
+	KMSKeyID       iacTypes.StringValue
 }
 
 type ClusterInstance struct {
 	Instance
-	ClusterIdentifier defsecTypes.StringValue
+	ClusterIdentifier iacTypes.StringValue
 }
 
 type PerformanceInsights struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+	KMSKeyID iacTypes.StringValue
 }
 
 type DBParameterGroupsList struct {
-	Metadata             defsecTypes.Metadata
-	DBParameterGroupName defsecTypes.StringValue
-	KMSKeyID             defsecTypes.StringValue
+	Metadata             iacTypes.Metadata
+	DBParameterGroupName iacTypes.StringValue
+	KMSKeyID             iacTypes.StringValue
 }
 
 type TagList struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 }

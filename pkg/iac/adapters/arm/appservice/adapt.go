@@ -3,7 +3,7 @@ package appservice
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/appservice"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) appservice.AppService {
@@ -41,15 +41,15 @@ func adaptService(resource azure.Resource) appservice.Service {
 	return appservice.Service{
 		Metadata:         resource.Metadata,
 		EnableClientCert: resource.Properties.GetMapValue("clientCertEnabled").AsBoolValue(false, resource.Properties.GetMetadata()),
-		Identity: struct{ Type defsecTypes.StringValue }{
+		Identity: struct{ Type iacTypes.StringValue }{
 			Type: resource.Properties.GetMapValue("identity").GetMapValue("type").AsStringValue("", resource.Properties.GetMetadata()),
 		},
-		Authentication: struct{ Enabled defsecTypes.BoolValue }{
+		Authentication: struct{ Enabled iacTypes.BoolValue }{
 			Enabled: resource.Properties.GetMapValue("siteAuthSettings").GetMapValue("enabled").AsBoolValue(false, resource.Properties.GetMetadata()),
 		},
 		Site: struct {
-			EnableHTTP2       defsecTypes.BoolValue
-			MinimumTLSVersion defsecTypes.StringValue
+			EnableHTTP2       iacTypes.BoolValue
+			MinimumTLSVersion iacTypes.StringValue
 		}{
 			EnableHTTP2:       resource.Properties.GetMapValue("httpsOnly").AsBoolValue(false, resource.Properties.GetMetadata()),
 			MinimumTLSVersion: resource.Properties.GetMapValue("minTlsVersion").AsStringValue("", resource.Properties.GetMetadata()),

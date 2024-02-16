@@ -2,7 +2,7 @@ package ecr
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type ECR struct {
@@ -10,16 +10,16 @@ type ECR struct {
 }
 
 type Repository struct {
-	Metadata           defsecTypes.Metadata
+	Metadata           iacTypes.Metadata
 	ImageScanning      ImageScanning
-	ImageTagsImmutable defsecTypes.BoolValue
+	ImageTagsImmutable iacTypes.BoolValue
 	Policies           []iam.Policy
 	Encryption         Encryption
 }
 
 type ImageScanning struct {
-	Metadata   defsecTypes.Metadata
-	ScanOnPush defsecTypes.BoolValue
+	Metadata   iacTypes.Metadata
+	ScanOnPush iacTypes.BoolValue
 }
 
 const (
@@ -28,7 +28,7 @@ const (
 )
 
 type Encryption struct {
-	Metadata defsecTypes.Metadata
-	Type     defsecTypes.StringValue
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Type     iacTypes.StringValue
+	KMSKeyID iacTypes.StringValue
 }

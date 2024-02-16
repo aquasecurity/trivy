@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 )
@@ -27,10 +27,10 @@ func Test_adaptSSLPolicies(t *testing.T) {
 `,
 			expected: []compute.SSLPolicy{
 				{
-					Metadata:          defsecTypes.NewTestMetadata(),
-					Name:              defsecTypes.String("production-ssl-policy", defsecTypes.NewTestMetadata()),
-					Profile:           defsecTypes.String("MODERN", defsecTypes.NewTestMetadata()),
-					MinimumTLSVersion: defsecTypes.String("TLS_1_2", defsecTypes.NewTestMetadata()),
+					Metadata:          iacTypes.NewTestMetadata(),
+					Name:              iacTypes.String("production-ssl-policy", iacTypes.NewTestMetadata()),
+					Profile:           iacTypes.String("MODERN", iacTypes.NewTestMetadata()),
+					MinimumTLSVersion: iacTypes.String("TLS_1_2", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -42,10 +42,10 @@ func Test_adaptSSLPolicies(t *testing.T) {
 `,
 			expected: []compute.SSLPolicy{
 				{
-					Metadata:          defsecTypes.NewTestMetadata(),
-					Name:              defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					Profile:           defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					MinimumTLSVersion: defsecTypes.String("TLS_1_0", defsecTypes.NewTestMetadata()),
+					Metadata:          iacTypes.NewTestMetadata(),
+					Name:              iacTypes.String("", iacTypes.NewTestMetadata()),
+					Profile:           iacTypes.String("", iacTypes.NewTestMetadata()),
+					MinimumTLSVersion: iacTypes.String("TLS_1_0", iacTypes.NewTestMetadata()),
 				},
 			},
 		},

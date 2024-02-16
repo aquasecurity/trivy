@@ -1,12 +1,12 @@
 package github
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type BranchProtection struct {
-	Metadata             defsecTypes.Metadata
-	RequireSignedCommits defsecTypes.BoolValue
+	Metadata             iacTypes.Metadata
+	RequireSignedCommits iacTypes.BoolValue
 }
 
 func (b BranchProtection) RequiresSignedCommits() bool {

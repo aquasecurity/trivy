@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Code struct {
@@ -94,7 +94,7 @@ func OptionCodeWithHighlighted(include bool) CodeOption {
 	}
 }
 
-func validateRange(r defsecTypes.Range) error {
+func validateRange(r iacTypes.Range) error {
 	if r.GetStartLine() < 0 || r.GetStartLine() > r.GetEndLine() || r.GetEndLine() < 0 {
 		return fmt.Errorf("invalid range: %s", r.String())
 	}
@@ -153,7 +153,7 @@ func (r *Result) GetCode(opts ...CodeOption) (*Code, error) {
 
 	var highlightedLines []string
 	if settings.includeHighlighted {
-		highlightedLines = highlight(defsecTypes.CreateFSKey(innerRange.GetFS()), innerRange.GetLocalFilename(), content, settings.theme)
+		highlightedLines = highlight(iacTypes.CreateFSKey(innerRange.GetFS()), innerRange.GetLocalFilename(), content, settings.theme)
 		if len(highlightedLines) < len(rawLines) {
 			highlightedLines = rawLines
 		}

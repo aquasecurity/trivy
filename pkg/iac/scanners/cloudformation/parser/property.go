@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type EqualityOptions = int
@@ -23,8 +23,8 @@ type Property struct {
 	ctx         *FileContext
 	name        string
 	comment     string
-	rng         defsecTypes.Range
-	parentRange defsecTypes.Range
+	rng         iacTypes.Range
+	parentRange iacTypes.Range
 	Inner       PropertyInner
 	logicalId   string
 	unresolved  bool
@@ -70,8 +70,8 @@ func (p *Property) setContext(ctx *FileContext) {
 	}
 }
 
-func (p *Property) setFileAndParentRange(target fs.FS, filepath string, parentRange defsecTypes.Range) {
-	p.rng = defsecTypes.NewRange(filepath, p.rng.GetStartLine(), p.rng.GetEndLine(), p.rng.GetSourcePrefix(), target)
+func (p *Property) setFileAndParentRange(target fs.FS, filepath string, parentRange iacTypes.Range) {
+	p.rng = iacTypes.NewRange(filepath, p.rng.GetStartLine(), p.rng.GetEndLine(), p.rng.GetSourcePrefix(), target)
 	p.parentRange = parentRange
 
 	switch p.Type() {
@@ -93,14 +93,14 @@ func (p *Property) setFileAndParentRange(target fs.FS, filepath string, parentRa
 }
 
 func (p *Property) UnmarshalYAML(node *yaml.Node) error {
-	p.rng = defsecTypes.NewRange("", node.Line, calculateEndLine(node), "", nil)
+	p.rng = iacTypes.NewRange("", node.Line, calculateEndLine(node), "", nil)
 
 	p.comment = node.LineComment
 	return setPropertyValueFromYaml(node, &p.Inner)
 }
 
 func (p *Property) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	p.rng = defsecTypes.NewRange("", node.Range().Start.Line, node.Range().End.Line, "", nil)
+	p.rng = iacTypes.NewRange("", node.Range().Start.Line, node.Range().End.Line, "", nil)
 	return setPropertyValueFromJson(node, &p.Inner)
 }
 
@@ -108,11 +108,11 @@ func (p *Property) Type() cftypes.CfType {
 	return p.Inner.Type
 }
 
-func (p *Property) Range() defsecTypes.Range {
+func (p *Property) Range() iacTypes.Range {
 	return p.rng
 }
 
-func (p *Property) Metadata() defsecTypes.Metadata {
+func (p *Property) Metadata() iacTypes.Metadata {
 	base := p
 	if p.isFunction() {
 		if resolved, ok := p.resolveValue(); ok {
@@ -120,12 +120,12 @@ func (p *Property) Metadata() defsecTypes.Metadata {
 		}
 	}
 	ref := NewCFReferenceWithValue(p.parentRange, *base, p.logicalId)
-	return defsecTypes.NewMetadata(p.Range(), ref.String())
+	return iacTypes.NewMetadata(p.Range(), ref.String())
 }
 
-func (p *Property) MetadataWithValue(resolvedValue *Property) defsecTypes.Metadata {
+func (p *Property) MetadataWithValue(resolvedValue *Property) iacTypes.Metadata {
 	ref := NewCFReferenceWithValue(p.parentRange, *resolvedValue, p.logicalId)
-	return defsecTypes.NewMetadata(p.Range(), ref.String())
+	return iacTypes.NewMetadata(p.Range(), ref.String())
 }
 
 func (p *Property) isFunction() bool {
@@ -166,14 +166,14 @@ func (p *Property) resolveValue() (*Property, bool) {
 	return p, false
 }
 
-func (p *Property) GetStringProperty(path string, defaultValue ...string) defsecTypes.StringValue {
+func (p *Property) GetStringProperty(path string, defaultValue ...string) iacTypes.StringValue {
 	defVal := ""
 	if len(defaultValue) > 0 {
 		defVal = defaultValue[0]
 	}
 
 	if p.IsUnresolved() {
-		return defsecTypes.StringUnresolvable(p.Metadata())
+		return iacTypes.StringUnresolvable(p.Metadata())
 	}
 
 	prop := p.GetProperty(path)
@@ -183,18 +183,18 @@ func (p *Property) GetStringProperty(path string, defaultValue ...string) defsec
 	return prop.AsStringValue()
 }
 
-func (p *Property) StringDefault(defaultValue string) defsecTypes.StringValue {
-	return defsecTypes.StringDefault(defaultValue, p.Metadata())
+func (p *Property) StringDefault(defaultValue string) iacTypes.StringValue {
+	return iacTypes.StringDefault(defaultValue, p.Metadata())
 }
 
-func (p *Property) GetBoolProperty(path string, defaultValue ...bool) defsecTypes.BoolValue {
+func (p *Property) GetBoolProperty(path string, defaultValue ...bool) iacTypes.BoolValue {
 	defVal := false
 	if len(defaultValue) > 0 {
 		defVal = defaultValue[0]
 	}
 
 	if p.IsUnresolved() {
-		return defsecTypes.BoolUnresolvable(p.Metadata())
+		return iacTypes.BoolUnresolvable(p.Metadata())
 	}
 
 	prop := p.GetProperty(path)
@@ -209,14 +209,14 @@ func (p *Property) GetBoolProperty(path string, defaultValue ...bool) defsecType
 	return prop.AsBoolValue()
 }
 
-func (p *Property) GetIntProperty(path string, defaultValue ...int) defsecTypes.IntValue {
+func (p *Property) GetIntProperty(path string, defaultValue ...int) iacTypes.IntValue {
 	defVal := 0
 	if len(defaultValue) > 0 {
 		defVal = defaultValue[0]
 	}
 
 	if p.IsUnresolved() {
-		return defsecTypes.IntUnresolvable(p.Metadata())
+		return iacTypes.IntUnresolvable(p.Metadata())
 	}
 
 	prop := p.GetProperty(path)
@@ -227,12 +227,12 @@ func (p *Property) GetIntProperty(path string, defaultValue ...int) defsecTypes.
 	return prop.AsIntValue()
 }
 
-func (p *Property) BoolDefault(defaultValue bool) defsecTypes.BoolValue {
-	return defsecTypes.BoolDefault(defaultValue, p.Metadata())
+func (p *Property) BoolDefault(defaultValue bool) iacTypes.BoolValue {
+	return iacTypes.BoolDefault(defaultValue, p.Metadata())
 }
 
-func (p *Property) IntDefault(defaultValue int) defsecTypes.IntValue {
-	return defsecTypes.IntDefault(defaultValue, p.Metadata())
+func (p *Property) IntDefault(defaultValue int) iacTypes.IntValue {
+	return iacTypes.IntDefault(defaultValue, p.Metadata())
 }
 
 func (p *Property) GetProperty(path string) *Property {
@@ -288,38 +288,38 @@ func (p *Property) deriveResolved(propType cftypes.CfType, propValue interface{}
 	}
 }
 
-func (p *Property) ParentRange() defsecTypes.Range {
+func (p *Property) ParentRange() iacTypes.Range {
 	return p.parentRange
 }
 
-func (p *Property) inferBool(prop *Property, defaultValue bool) defsecTypes.BoolValue {
+func (p *Property) inferBool(prop *Property, defaultValue bool) iacTypes.BoolValue {
 	if prop.IsString() {
 		if prop.EqualTo("true", IgnoreCase) {
-			return defsecTypes.Bool(true, prop.Metadata())
+			return iacTypes.Bool(true, prop.Metadata())
 		}
 		if prop.EqualTo("yes", IgnoreCase) {
-			return defsecTypes.Bool(true, prop.Metadata())
+			return iacTypes.Bool(true, prop.Metadata())
 		}
 		if prop.EqualTo("1", IgnoreCase) {
-			return defsecTypes.Bool(true, prop.Metadata())
+			return iacTypes.Bool(true, prop.Metadata())
 		}
 		if prop.EqualTo("false", IgnoreCase) {
-			return defsecTypes.Bool(false, prop.Metadata())
+			return iacTypes.Bool(false, prop.Metadata())
 		}
 		if prop.EqualTo("no", IgnoreCase) {
-			return defsecTypes.Bool(false, prop.Metadata())
+			return iacTypes.Bool(false, prop.Metadata())
 		}
 		if prop.EqualTo("0", IgnoreCase) {
-			return defsecTypes.Bool(false, prop.Metadata())
+			return iacTypes.Bool(false, prop.Metadata())
 		}
 	}
 
 	if prop.IsInt() {
 		if prop.EqualTo(0) {
-			return defsecTypes.Bool(false, prop.Metadata())
+			return iacTypes.Bool(false, prop.Metadata())
 		}
 		if prop.EqualTo(1) {
-			return defsecTypes.Bool(true, prop.Metadata())
+			return iacTypes.Bool(true, prop.Metadata())
 		}
 	}
 

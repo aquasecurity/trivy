@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/stretchr/testify/assert"
 
@@ -238,13 +238,13 @@ func TestResult_GetCode(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			system := memoryfs.New()
 			require.NoError(t, system.WriteFile(test.filename, []byte(test.source), os.ModePerm))
-			meta := defsecTypes.NewMetadata(
-				defsecTypes.NewRange(test.filename, test.start, test.end, "", system),
+			meta := iacTypes.NewMetadata(
+				iacTypes.NewRange(test.filename, test.start, test.end, "", system),
 				"",
 			)
 			if test.outerStart > 0 {
-				meta = meta.WithParent(defsecTypes.NewMetadata(
-					defsecTypes.NewRange(test.filename, test.outerStart, test.outerEnd, "", system),
+				meta = meta.WithParent(iacTypes.NewMetadata(
+					iacTypes.NewRange(test.filename, test.outerStart, test.outerEnd, "", system),
 					"",
 				))
 			}

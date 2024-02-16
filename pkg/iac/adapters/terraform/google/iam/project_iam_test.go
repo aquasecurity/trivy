@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 )
@@ -28,11 +28,11 @@ func Test_AdaptBinding(t *testing.T) {
 			]
 		}`,
 			expected: iam.Binding{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Members: []defsecTypes.StringValue{
-					defsecTypes.String("user:alice@gmail.com", defsecTypes.NewTestMetadata())},
-				Role:                          defsecTypes.String("roles/browser", defsecTypes.NewTestMetadata()),
-				IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Members: []iacTypes.StringValue{
+					iacTypes.String("user:alice@gmail.com", iacTypes.NewTestMetadata())},
+				Role:                          iacTypes.String("roles/browser", iacTypes.NewTestMetadata()),
+				IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -41,9 +41,9 @@ func Test_AdaptBinding(t *testing.T) {
 		resource "google_organization_iam_binding" "binding" {
 		}`,
 			expected: iam.Binding{
-				Metadata:                      defsecTypes.NewTestMetadata(),
-				Role:                          defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                      iacTypes.NewTestMetadata(),
+				Role:                          iacTypes.String("", iacTypes.NewTestMetadata()),
+				IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

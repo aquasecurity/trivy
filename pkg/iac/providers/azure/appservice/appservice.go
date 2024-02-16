@@ -1,7 +1,7 @@
 package appservice
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type AppService struct {
@@ -10,21 +10,21 @@ type AppService struct {
 }
 
 type Service struct {
-	Metadata         defsecTypes.Metadata
-	EnableClientCert defsecTypes.BoolValue
+	Metadata         iacTypes.Metadata
+	EnableClientCert iacTypes.BoolValue
 	Identity         struct {
-		Type defsecTypes.StringValue
+		Type iacTypes.StringValue
 	}
 	Authentication struct {
-		Enabled defsecTypes.BoolValue
+		Enabled iacTypes.BoolValue
 	}
 	Site struct {
-		EnableHTTP2       defsecTypes.BoolValue
-		MinimumTLSVersion defsecTypes.StringValue
+		EnableHTTP2       iacTypes.BoolValue
+		MinimumTLSVersion iacTypes.StringValue
 	}
 }
 
 type FunctionApp struct {
-	Metadata  defsecTypes.Metadata
-	HTTPSOnly defsecTypes.BoolValue
+	Metadata  iacTypes.Metadata
+	HTTPSOnly iacTypes.BoolValue
 }

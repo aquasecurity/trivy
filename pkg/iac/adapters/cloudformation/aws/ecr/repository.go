@@ -8,7 +8,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecr"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getRepositories(ctx parser2.FileContext) (repositories []ecr.Repository) {
@@ -21,14 +21,14 @@ func getRepositories(ctx parser2.FileContext) (repositories []ecr.Repository) {
 			Metadata: r.Metadata(),
 			ImageScanning: ecr.ImageScanning{
 				Metadata:   r.Metadata(),
-				ScanOnPush: defsecTypes.BoolDefault(false, r.Metadata()),
+				ScanOnPush: iacTypes.BoolDefault(false, r.Metadata()),
 			},
 			ImageTagsImmutable: hasImmutableImageTags(r),
 			Policies:           nil,
 			Encryption: ecr.Encryption{
 				Metadata: r.Metadata(),
-				Type:     defsecTypes.StringDefault(ecr.EncryptionTypeAES256, r.Metadata()),
-				KMSKeyID: defsecTypes.StringDefault("", r.Metadata()),
+				Type:     iacTypes.StringDefault(ecr.EncryptionTypeAES256, r.Metadata()),
+				KMSKeyID: iacTypes.StringDefault("", r.Metadata()),
 			},
 		}
 
@@ -70,22 +70,22 @@ func getPolicy(r *parser2.Resource) (*iam.Policy, error) {
 
 	return &iam.Policy{
 		Metadata: policyProp.Metadata(),
-		Name:     defsecTypes.StringDefault("", policyProp.Metadata()),
+		Name:     iacTypes.StringDefault("", policyProp.Metadata()),
 		Document: iam.Document{
 			Metadata: policyProp.Metadata(),
 			Parsed:   *parsed,
 		},
-		Builtin: defsecTypes.Bool(false, policyProp.Metadata()),
+		Builtin: iacTypes.Bool(false, policyProp.Metadata()),
 	}, nil
 }
 
-func hasImmutableImageTags(r *parser2.Resource) defsecTypes.BoolValue {
+func hasImmutableImageTags(r *parser2.Resource) iacTypes.BoolValue {
 	mutabilityProp := r.GetProperty("ImageTagMutability")
 	if mutabilityProp.IsNil() {
-		return defsecTypes.BoolDefault(false, r.Metadata())
+		return iacTypes.BoolDefault(false, r.Metadata())
 	}
 	if !mutabilityProp.EqualTo("IMMUTABLE") {
-		return defsecTypes.Bool(false, mutabilityProp.Metadata())
+		return iacTypes.Bool(false, mutabilityProp.Metadata())
 	}
-	return defsecTypes.Bool(true, mutabilityProp.Metadata())
+	return iacTypes.Bool(true, mutabilityProp.Metadata())
 }

@@ -8,17 +8,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sqs"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getQueues(ctx parser.FileContext) (queues []sqs.Queue) {
 	for _, r := range ctx.GetResourcesByType("AWS::SQS::Queue") {
 		queue := sqs.Queue{
 			Metadata: r.Metadata(),
-			QueueURL: defsecTypes.StringDefault("", r.Metadata()),
+			QueueURL: iacTypes.StringDefault("", r.Metadata()),
 			Encryption: sqs.Encryption{
 				Metadata:          r.Metadata(),
-				ManagedEncryption: defsecTypes.Bool(false, r.Metadata()),
+				ManagedEncryption: iacTypes.Bool(false, r.Metadata()),
 				KMSKeyID:          r.GetStringProperty("KmsMasterKeyId"),
 			},
 			Policies: []iam.Policy{},
@@ -50,12 +50,12 @@ func getPolicy(id string, ctx parser.FileContext) (*iam.Policy, error) {
 				}
 				return &iam.Policy{
 					Metadata: documentProp.Metadata(),
-					Name:     defsecTypes.StringDefault("", documentProp.Metadata()),
+					Name:     iacTypes.StringDefault("", documentProp.Metadata()),
 					Document: iam.Document{
 						Metadata: documentProp.Metadata(),
 						Parsed:   *parsed,
 					},
-					Builtin: defsecTypes.Bool(false, documentProp.Metadata()),
+					Builtin: iacTypes.Bool(false, documentProp.Metadata()),
 				}, nil
 			}
 		}

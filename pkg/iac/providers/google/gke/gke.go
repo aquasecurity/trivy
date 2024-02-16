@@ -1,7 +1,7 @@
 package gke
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type GKE struct {
@@ -9,78 +9,78 @@ type GKE struct {
 }
 
 type Cluster struct {
-	Metadata                 defsecTypes.Metadata
+	Metadata                 iacTypes.Metadata
 	NodePools                []NodePool
 	IPAllocationPolicy       IPAllocationPolicy
 	MasterAuthorizedNetworks MasterAuthorizedNetworks
 	NetworkPolicy            NetworkPolicy
 	PrivateCluster           PrivateCluster
-	LoggingService           defsecTypes.StringValue
-	MonitoringService        defsecTypes.StringValue
+	LoggingService           iacTypes.StringValue
+	MonitoringService        iacTypes.StringValue
 	MasterAuth               MasterAuth
 	NodeConfig               NodeConfig
-	EnableShieldedNodes      defsecTypes.BoolValue
-	EnableLegacyABAC         defsecTypes.BoolValue
-	ResourceLabels           defsecTypes.MapValue
-	RemoveDefaultNodePool    defsecTypes.BoolValue
-	EnableAutpilot           defsecTypes.BoolValue
-	DatapathProvider         defsecTypes.StringValue
+	EnableShieldedNodes      iacTypes.BoolValue
+	EnableLegacyABAC         iacTypes.BoolValue
+	ResourceLabels           iacTypes.MapValue
+	RemoveDefaultNodePool    iacTypes.BoolValue
+	EnableAutpilot           iacTypes.BoolValue
+	DatapathProvider         iacTypes.StringValue
 }
 
 type NodeConfig struct {
-	Metadata               defsecTypes.Metadata
-	ImageType              defsecTypes.StringValue
+	Metadata               iacTypes.Metadata
+	ImageType              iacTypes.StringValue
 	WorkloadMetadataConfig WorkloadMetadataConfig
-	ServiceAccount         defsecTypes.StringValue
-	EnableLegacyEndpoints  defsecTypes.BoolValue
+	ServiceAccount         iacTypes.StringValue
+	EnableLegacyEndpoints  iacTypes.BoolValue
 }
 
 type WorkloadMetadataConfig struct {
-	Metadata     defsecTypes.Metadata
-	NodeMetadata defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	NodeMetadata iacTypes.StringValue
 }
 
 type MasterAuth struct {
-	Metadata          defsecTypes.Metadata
+	Metadata          iacTypes.Metadata
 	ClientCertificate ClientCertificate
-	Username          defsecTypes.StringValue
-	Password          defsecTypes.StringValue
+	Username          iacTypes.StringValue
+	Password          iacTypes.StringValue
 }
 
 type ClientCertificate struct {
-	Metadata         defsecTypes.Metadata
-	IssueCertificate defsecTypes.BoolValue
+	Metadata         iacTypes.Metadata
+	IssueCertificate iacTypes.BoolValue
 }
 
 type PrivateCluster struct {
-	Metadata           defsecTypes.Metadata
-	EnablePrivateNodes defsecTypes.BoolValue
+	Metadata           iacTypes.Metadata
+	EnablePrivateNodes iacTypes.BoolValue
 }
 
 type NetworkPolicy struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type MasterAuthorizedNetworks struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
-	CIDRs    []defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+	CIDRs    []iacTypes.StringValue
 }
 
 type IPAllocationPolicy struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type NodePool struct {
-	Metadata   defsecTypes.Metadata
+	Metadata   iacTypes.Metadata
 	Management Management
 	NodeConfig NodeConfig
 }
 
 type Management struct {
-	Metadata          defsecTypes.Metadata
-	EnableAutoRepair  defsecTypes.BoolValue
-	EnableAutoUpgrade defsecTypes.BoolValue
+	Metadata          iacTypes.Metadata
+	EnableAutoRepair  iacTypes.BoolValue
+	EnableAutoUpgrade iacTypes.BoolValue
 }

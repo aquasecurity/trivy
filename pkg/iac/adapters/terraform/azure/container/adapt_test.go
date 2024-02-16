@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/container"
 
@@ -49,25 +49,25 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: container.KubernetesCluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				NetworkProfile: container.NetworkProfile{
-					Metadata:      defsecTypes.NewTestMetadata(),
-					NetworkPolicy: defsecTypes.String("calico", defsecTypes.NewTestMetadata()),
+					Metadata:      iacTypes.NewTestMetadata(),
+					NetworkPolicy: iacTypes.String("calico", iacTypes.NewTestMetadata()),
 				},
-				EnablePrivateCluster: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				APIServerAuthorizedIPRanges: []defsecTypes.StringValue{
-					defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMetadata()),
+				EnablePrivateCluster: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				APIServerAuthorizedIPRanges: []iacTypes.StringValue{
+					iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
 				},
 				AddonProfile: container.AddonProfile{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 				},
 				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -79,22 +79,22 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: container.KubernetesCluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				NetworkProfile: container.NetworkProfile{
-					Metadata:      defsecTypes.NewTestMetadata(),
-					NetworkPolicy: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:      iacTypes.NewTestMetadata(),
+					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
-				EnablePrivateCluster: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -105,22 +105,22 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: container.KubernetesCluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				NetworkProfile: container.NetworkProfile{
-					Metadata:      defsecTypes.NewTestMetadata(),
-					NetworkPolicy: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:      iacTypes.NewTestMetadata(),
+					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
-				EnablePrivateCluster: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -136,22 +136,22 @@ resource "azurerm_kubernetes_cluster" "misreporting_example" {
  }
 `,
 			expected: container.KubernetesCluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				NetworkProfile: container.NetworkProfile{
-					Metadata:      defsecTypes.NewTestMetadata(),
-					NetworkPolicy: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:      iacTypes.NewTestMetadata(),
+					NetworkPolicy: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
-				EnablePrivateCluster: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				EnablePrivateCluster: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				AddonProfile: container.AddonProfile{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					OMSAgent: container.OMSAgent{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 				RoleBasedAccessControl: container.RoleBasedAccessControl{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 			},
 		},

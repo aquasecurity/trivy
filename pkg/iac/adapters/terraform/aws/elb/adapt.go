@@ -3,7 +3,7 @@ package elb
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elb"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) elb.ELB {
@@ -36,10 +36,10 @@ func (a *adapter) adaptLoadBalancers(modules terraform.Modules) []elb.LoadBalanc
 	orphanResources := modules.GetResourceByIDs(a.listenerIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := elb.LoadBalancer{
-			Metadata:                defsecTypes.NewUnmanagedMetadata(),
-			Type:                    defsecTypes.StringDefault(elb.TypeApplication, defsecTypes.NewUnmanagedMetadata()),
-			DropInvalidHeaderFields: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-			Internal:                defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			Metadata:                iacTypes.NewUnmanagedMetadata(),
+			Type:                    iacTypes.StringDefault(elb.TypeApplication, iacTypes.NewUnmanagedMetadata()),
+			DropInvalidHeaderFields: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			Internal:                iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 			Listeners:               nil,
 		}
 		for _, listenerResource := range orphanResources {
@@ -85,8 +85,8 @@ func (a *adapter) adaptClassicLoadBalancer(resource *terraform.Block, module ter
 
 	return elb.LoadBalancer{
 		Metadata:                resource.GetMetadata(),
-		Type:                    defsecTypes.String("classic", resource.GetMetadata()),
-		DropInvalidHeaderFields: defsecTypes.BoolDefault(false, resource.GetMetadata()),
+		Type:                    iacTypes.String("classic", resource.GetMetadata()),
+		DropInvalidHeaderFields: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		Internal:                internalVal,
 		Listeners:               nil,
 	}
@@ -95,8 +95,8 @@ func (a *adapter) adaptClassicLoadBalancer(resource *terraform.Block, module ter
 func adaptListener(listenerBlock *terraform.Block, typeVal string) elb.Listener {
 	listener := elb.Listener{
 		Metadata:       listenerBlock.GetMetadata(),
-		Protocol:       defsecTypes.StringDefault("", listenerBlock.GetMetadata()),
-		TLSPolicy:      defsecTypes.StringDefault("", listenerBlock.GetMetadata()),
+		Protocol:       iacTypes.StringDefault("", listenerBlock.GetMetadata()),
+		TLSPolicy:      iacTypes.StringDefault("", listenerBlock.GetMetadata()),
 		DefaultActions: nil,
 	}
 

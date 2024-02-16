@@ -1,7 +1,7 @@
 package documentdb
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type DocumentDB struct {
@@ -14,16 +14,16 @@ const (
 )
 
 type Cluster struct {
-	Metadata              defsecTypes.Metadata
-	Identifier            defsecTypes.StringValue
-	EnabledLogExports     []defsecTypes.StringValue
-	BackupRetentionPeriod defsecTypes.IntValue
+	Metadata              iacTypes.Metadata
+	Identifier            iacTypes.StringValue
+	EnabledLogExports     []iacTypes.StringValue
+	BackupRetentionPeriod iacTypes.IntValue
 	Instances             []Instance
-	StorageEncrypted      defsecTypes.BoolValue
-	KMSKeyID              defsecTypes.StringValue
+	StorageEncrypted      iacTypes.BoolValue
+	KMSKeyID              iacTypes.StringValue
 }
 
 type Instance struct {
-	Metadata defsecTypes.Metadata
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	KMSKeyID iacTypes.StringValue
 }

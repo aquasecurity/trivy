@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Status uint8
@@ -24,7 +24,7 @@ type Result struct {
 	description      string
 	annotation       string
 	status           Status
-	metadata         defsecTypes.Metadata
+	metadata         iacTypes.Metadata
 	severityOverride *severity.Severity
 	regoNamespace    string
 	regoRule         string
@@ -60,7 +60,7 @@ func (r *Result) OverrideDescription(description string) {
 	r.description = description
 }
 
-func (r *Result) OverrideMetadata(metadata defsecTypes.Metadata) {
+func (r *Result) OverrideMetadata(metadata iacTypes.Metadata) {
 	r.metadata = metadata
 }
 
@@ -92,11 +92,11 @@ func (r Result) Annotation() string {
 	return r.annotation
 }
 
-func (r Result) Metadata() defsecTypes.Metadata {
+func (r Result) Metadata() iacTypes.Metadata {
 	return r.metadata
 }
 
-func (r Result) Range() defsecTypes.Range {
+func (r Result) Range() iacTypes.Range {
 	return r.metadata.Range()
 }
 
@@ -104,7 +104,7 @@ func (r Result) Traces() []string {
 	return r.traces
 }
 
-func (r *Result) AbsolutePath(fsRoot string, metadata defsecTypes.Metadata) string {
+func (r *Result) AbsolutePath(fsRoot string, metadata iacTypes.Metadata) string {
 	if strings.HasSuffix(fsRoot, ":") {
 		fsRoot += "/"
 	}
@@ -119,7 +119,7 @@ func (r *Result) AbsolutePath(fsRoot string, metadata defsecTypes.Metadata) stri
 	return filepath.Join(fsRoot, rng.GetLocalFilename())
 }
 
-func (r *Result) RelativePathTo(fsRoot, to string, metadata defsecTypes.Metadata) string {
+func (r *Result) RelativePathTo(fsRoot, to string, metadata iacTypes.Metadata) string {
 
 	absolute := r.AbsolutePath(fsRoot, metadata)
 
@@ -147,7 +147,7 @@ func (r *Result) RelativePathTo(fsRoot, to string, metadata defsecTypes.Metadata
 type Results []Result
 
 type MetadataProvider interface {
-	GetMetadata() defsecTypes.Metadata
+	GetMetadata() iacTypes.Metadata
 	GetRawValue() interface{}
 }
 
@@ -217,7 +217,7 @@ func (r *Results) AddPassed(source interface{}, descriptions ...string) {
 	*r = append(*r, res)
 }
 
-func getMetadataFromSource(source interface{}) defsecTypes.Metadata {
+func getMetadataFromSource(source interface{}) iacTypes.Metadata {
 	if provider, ok := source.(MetadataProvider); ok {
 		return provider.GetMetadata()
 	}
@@ -227,7 +227,7 @@ func getMetadataFromSource(source interface{}) defsecTypes.Metadata {
 		metaValue = metaValue.Elem()
 	}
 	metaVal := metaValue.FieldByName("Metadata")
-	return metaVal.Interface().(defsecTypes.Metadata)
+	return metaVal.Interface().(iacTypes.Metadata)
 }
 
 func getAnnotation(source interface{}) string {
@@ -275,17 +275,17 @@ func (r *Results) SetSourceAndFilesystem(source string, f fs.FS, logicalSource b
 		}
 		rng := m.Range()
 
-		newrng := defsecTypes.NewRange(rng.GetLocalFilename(), rng.GetStartLine(), rng.GetEndLine(), source, f)
+		newrng := iacTypes.NewRange(rng.GetLocalFilename(), rng.GetStartLine(), rng.GetEndLine(), source, f)
 		if logicalSource {
-			newrng = defsecTypes.NewRangeWithLogicalSource(rng.GetLocalFilename(), rng.GetStartLine(), rng.GetEndLine(),
+			newrng = iacTypes.NewRangeWithLogicalSource(rng.GetLocalFilename(), rng.GetStartLine(), rng.GetEndLine(),
 				source, f)
 		}
 		parent := m.Parent()
 		switch {
 		case m.IsExplicit():
-			m = defsecTypes.NewExplicitMetadata(newrng, m.Reference())
+			m = iacTypes.NewExplicitMetadata(newrng, m.Reference())
 		default:
-			m = defsecTypes.NewMetadata(newrng, m.Reference())
+			m = iacTypes.NewMetadata(newrng, m.Reference())
 		}
 		if parent != nil {
 			m.SetParentPtr(parent)

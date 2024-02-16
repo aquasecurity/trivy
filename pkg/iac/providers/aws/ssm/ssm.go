@@ -1,7 +1,7 @@
 package ssm
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type SSM struct {
@@ -9,8 +9,8 @@ type SSM struct {
 }
 
 type Secret struct {
-	Metadata defsecTypes.Metadata
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	KMSKeyID iacTypes.StringValue
 }
 
 const DefaultKMSKeyID = "alias/aws/secretsmanager"

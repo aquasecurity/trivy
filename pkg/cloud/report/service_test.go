@@ -15,7 +15,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_ServiceReport(t *testing.T) {
@@ -365,7 +365,7 @@ func createTestResults() scan.Results {
 	var s3Results scan.Results
 	s3Results.Add(
 		"something failed",
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "s3",
 			Region:    "us-east-1",
@@ -375,7 +375,7 @@ func createTestResults() scan.Results {
 	)
 	s3Results.Add(
 		"something else failed",
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "s3",
 			Region:    "us-east-1",
@@ -385,7 +385,7 @@ func createTestResults() scan.Results {
 	)
 	s3Results.Add(
 		"something else failed again",
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "s3",
 			Region:    "us-east-1",
@@ -394,7 +394,7 @@ func createTestResults() scan.Results {
 		}).String()),
 	)
 	s3Results.AddPassed(
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "s3",
 			Region:    "us-east-1",
@@ -407,7 +407,7 @@ func createTestResults() scan.Results {
 	var ec2Results scan.Results
 	ec2Results.Add(
 		"instance is bad",
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "ec2",
 			Region:    "us-east-1",

@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/codebuild"
 
@@ -37,19 +37,19 @@ func Test_adaptProject(t *testing.T) {
 			}
 `,
 			expected: codebuild.Project{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				ArtifactSettings: codebuild.ArtifactSettings{
-					Metadata:          defsecTypes.NewTestMetadata(),
-					EncryptionEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:          iacTypes.NewTestMetadata(),
+					EncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 				SecondaryArtifactSettings: []codebuild.ArtifactSettings{
 					{
-						Metadata:          defsecTypes.NewTestMetadata(),
-						EncryptionEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:          iacTypes.NewTestMetadata(),
+						EncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 					{
-						Metadata:          defsecTypes.NewTestMetadata(),
-						EncryptionEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:          iacTypes.NewTestMetadata(),
+						EncryptionEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -61,10 +61,10 @@ func Test_adaptProject(t *testing.T) {
 			}
 `,
 			expected: codebuild.Project{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				ArtifactSettings: codebuild.ArtifactSettings{
-					Metadata:          defsecTypes.NewTestMetadata(),
-					EncryptionEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:          iacTypes.NewTestMetadata(),
+					EncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 			},
 		},

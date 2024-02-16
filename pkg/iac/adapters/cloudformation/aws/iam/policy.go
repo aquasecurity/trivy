@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getPolicies(ctx parser2.FileContext) (policies []iam.Policy) {
@@ -18,7 +18,7 @@ func getPolicies(ctx parser2.FileContext) (policies []iam.Policy) {
 				Metadata: policyResource.Metadata(),
 				Parsed:   iamgo.Document{},
 			},
-			Builtin: defsecTypes.Bool(false, policyResource.Metadata()),
+			Builtin: iacTypes.Bool(false, policyResource.Metadata()),
 		}
 
 		if policyProp := policyResource.GetProperty("PolicyDocument"); policyProp.IsNotNil() {
@@ -56,7 +56,7 @@ func getUsers(ctx parser2.FileContext) (users []iam.User) {
 		users = append(users, iam.User{
 			Metadata:   userResource.Metadata(),
 			Name:       userName,
-			LastAccess: defsecTypes.TimeUnresolvable(userResource.Metadata()),
+			LastAccess: iacTypes.TimeUnresolvable(userResource.Metadata()),
 			Policies:   getPoliciesDocs(policyProp),
 			AccessKeys: getAccessKeys(ctx, userName.Value()),
 		})
@@ -70,16 +70,16 @@ func getAccessKeys(ctx parser2.FileContext, username string) (accessKeys []iam.A
 		if !keyUsername.EqualTo(username) {
 			continue
 		}
-		active := defsecTypes.BoolDefault(false, keyResource.Metadata())
+		active := iacTypes.BoolDefault(false, keyResource.Metadata())
 		if statusProp := keyResource.GetProperty("Status"); statusProp.IsString() {
-			active = defsecTypes.Bool(statusProp.AsString() == "Active", statusProp.Metadata())
+			active = iacTypes.Bool(statusProp.AsString() == "Active", statusProp.Metadata())
 		}
 
 		accessKeys = append(accessKeys, iam.AccessKey{
 			Metadata:     keyResource.Metadata(),
-			AccessKeyId:  defsecTypes.StringUnresolvable(keyResource.Metadata()),
-			CreationDate: defsecTypes.TimeUnresolvable(keyResource.Metadata()),
-			LastAccess:   defsecTypes.TimeUnresolvable(keyResource.Metadata()),
+			AccessKeyId:  iacTypes.StringUnresolvable(keyResource.Metadata()),
+			CreationDate: iacTypes.TimeUnresolvable(keyResource.Metadata()),
+			LastAccess:   iacTypes.TimeUnresolvable(keyResource.Metadata()),
 			Active:       active,
 		})
 	}
@@ -119,7 +119,7 @@ func getPoliciesDocs(policiesProp *parser2.Property) []iam.Policy {
 				Metadata: policyProp.Metadata(),
 				Parsed:   *doc,
 			},
-			Builtin: defsecTypes.Bool(false, policyProp.Metadata()),
+			Builtin: iacTypes.Bool(false, policyProp.Metadata()),
 		})
 	}
 	return policies

@@ -3,7 +3,7 @@ package ecs
 import (
 	"encoding/json"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type ECS struct {
@@ -12,22 +12,22 @@ type ECS struct {
 }
 
 type Cluster struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Settings ClusterSettings
 }
 
 type ClusterSettings struct {
-	Metadata                 defsecTypes.Metadata
-	ContainerInsightsEnabled defsecTypes.BoolValue
+	Metadata                 iacTypes.Metadata
+	ContainerInsightsEnabled iacTypes.BoolValue
 }
 
 type TaskDefinition struct {
-	Metadata             defsecTypes.Metadata
+	Metadata             iacTypes.Metadata
 	Volumes              []Volume
 	ContainerDefinitions []ContainerDefinition
 }
 
-func CreateDefinitionsFromString(metadata defsecTypes.Metadata, str string) ([]ContainerDefinition, error) {
+func CreateDefinitionsFromString(metadata iacTypes.Metadata, str string) ([]ContainerDefinition, error) {
 	var containerDefinitionsJSON []containerDefinitionJSON
 	if err := json.Unmarshal([]byte(str), &containerDefinitionsJSON); err != nil {
 		return nil, err
@@ -61,12 +61,12 @@ type portMappingJSON struct {
 	HostPort      int `json:"hostPort"`
 }
 
-func (j containerDefinitionJSON) convert(metadata defsecTypes.Metadata) ContainerDefinition {
+func (j containerDefinitionJSON) convert(metadata iacTypes.Metadata) ContainerDefinition {
 	var mappings []PortMapping
 	for _, jMapping := range j.PortMappings {
 		mappings = append(mappings, PortMapping{
-			ContainerPort: defsecTypes.Int(jMapping.ContainerPort, metadata),
-			HostPort:      defsecTypes.Int(jMapping.HostPort, metadata),
+			ContainerPort: iacTypes.Int(jMapping.ContainerPort, metadata),
+			HostPort:      iacTypes.Int(jMapping.HostPort, metadata),
 		})
 	}
 	var envVars []EnvVar
@@ -75,27 +75,27 @@ func (j containerDefinitionJSON) convert(metadata defsecTypes.Metadata) Containe
 	}
 	return ContainerDefinition{
 		Metadata:     metadata,
-		Name:         defsecTypes.String(j.Name, metadata),
-		Image:        defsecTypes.String(j.Image, metadata),
-		CPU:          defsecTypes.Int(j.CPU, metadata),
-		Memory:       defsecTypes.Int(j.Memory, metadata),
-		Essential:    defsecTypes.Bool(j.Essential, metadata),
+		Name:         iacTypes.String(j.Name, metadata),
+		Image:        iacTypes.String(j.Image, metadata),
+		CPU:          iacTypes.Int(j.CPU, metadata),
+		Memory:       iacTypes.Int(j.Memory, metadata),
+		Essential:    iacTypes.Bool(j.Essential, metadata),
 		PortMappings: mappings,
 		Environment:  envVars,
-		Privileged:   defsecTypes.Bool(j.Privileged, metadata),
+		Privileged:   iacTypes.Bool(j.Privileged, metadata),
 	}
 }
 
 type ContainerDefinition struct {
-	Metadata     defsecTypes.Metadata
-	Name         defsecTypes.StringValue
-	Image        defsecTypes.StringValue
-	CPU          defsecTypes.IntValue
-	Memory       defsecTypes.IntValue
-	Essential    defsecTypes.BoolValue
+	Metadata     iacTypes.Metadata
+	Name         iacTypes.StringValue
+	Image        iacTypes.StringValue
+	CPU          iacTypes.IntValue
+	Memory       iacTypes.IntValue
+	Essential    iacTypes.BoolValue
 	PortMappings []PortMapping
 	Environment  []EnvVar
-	Privileged   defsecTypes.BoolValue
+	Privileged   iacTypes.BoolValue
 }
 
 type EnvVar struct {
@@ -104,16 +104,16 @@ type EnvVar struct {
 }
 
 type PortMapping struct {
-	ContainerPort defsecTypes.IntValue
-	HostPort      defsecTypes.IntValue
+	ContainerPort iacTypes.IntValue
+	HostPort      iacTypes.IntValue
 }
 
 type Volume struct {
-	Metadata               defsecTypes.Metadata
+	Metadata               iacTypes.Metadata
 	EFSVolumeConfiguration EFSVolumeConfiguration
 }
 
 type EFSVolumeConfiguration struct {
-	Metadata                 defsecTypes.Metadata
-	TransitEncryptionEnabled defsecTypes.BoolValue
+	Metadata                 iacTypes.Metadata
+	TransitEncryptionEnabled iacTypes.BoolValue
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ssm"
 
@@ -34,8 +34,8 @@ func Test_Adapt(t *testing.T) {
 			expected: ssm.SSM{
 				Secrets: []ssm.Secret{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						KMSKeyID: defsecTypes.String("aws_kms_key.secrets", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						KMSKeyID: iacTypes.String("aws_kms_key.secrets", iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -51,8 +51,8 @@ func Test_Adapt(t *testing.T) {
 			expected: ssm.SSM{
 				Secrets: []ssm.Secret{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						KMSKeyID: defsecTypes.String("key_id", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						KMSKeyID: iacTypes.String("key_id", iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -66,8 +66,8 @@ func Test_Adapt(t *testing.T) {
 			expected: ssm.SSM{
 				Secrets: []ssm.Secret{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						KMSKeyID: defsecTypes.String("alias/aws/secretsmanager", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						KMSKeyID: iacTypes.String("alias/aws/secretsmanager", iacTypes.NewTestMetadata()),
 					},
 				},
 			},

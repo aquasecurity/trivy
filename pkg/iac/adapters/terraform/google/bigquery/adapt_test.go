@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/bigquery"
 
@@ -37,20 +37,20 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						ID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						ID:       iacTypes.String("", iacTypes.NewTestMetadata()),
 						AccessGrants: []bigquery.AccessGrant{
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								Role:         defsecTypes.String("OWNER", defsecTypes.NewTestMetadata()),
-								Domain:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								SpecialGroup: defsecTypes.String(bigquery.SpecialGroupAllAuthenticatedUsers, defsecTypes.NewTestMetadata()),
+								Metadata:     iacTypes.NewTestMetadata(),
+								Role:         iacTypes.String("OWNER", iacTypes.NewTestMetadata()),
+								Domain:       iacTypes.String("", iacTypes.NewTestMetadata()),
+								SpecialGroup: iacTypes.String(bigquery.SpecialGroupAllAuthenticatedUsers, iacTypes.NewTestMetadata()),
 							},
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								Role:         defsecTypes.String("READER", defsecTypes.NewTestMetadata()),
-								Domain:       defsecTypes.String("hashicorp.com", defsecTypes.NewTestMetadata()),
-								SpecialGroup: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:     iacTypes.NewTestMetadata(),
+								Role:         iacTypes.String("READER", iacTypes.NewTestMetadata()),
+								Domain:       iacTypes.String("hashicorp.com", iacTypes.NewTestMetadata()),
+								SpecialGroup: iacTypes.String("", iacTypes.NewTestMetadata()),
 							},
 						},
 					},
@@ -67,8 +67,8 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						ID:       defsecTypes.String("example_dataset", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						ID:       iacTypes.String("example_dataset", iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -84,14 +84,14 @@ func Test_Adapt(t *testing.T) {
 			expected: bigquery.BigQuery{
 				Datasets: []bigquery.Dataset{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						ID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						ID:       iacTypes.String("", iacTypes.NewTestMetadata()),
 						AccessGrants: []bigquery.AccessGrant{
 							{
-								Metadata:     defsecTypes.NewTestMetadata(),
-								Role:         defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								Domain:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								SpecialGroup: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:     iacTypes.NewTestMetadata(),
+								Role:         iacTypes.String("", iacTypes.NewTestMetadata()),
+								Domain:       iacTypes.String("", iacTypes.NewTestMetadata()),
+								SpecialGroup: iacTypes.String("", iacTypes.NewTestMetadata()),
 							},
 						},
 					},

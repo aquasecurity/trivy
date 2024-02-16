@@ -2,7 +2,7 @@ package storage
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Storage struct {
@@ -10,16 +10,16 @@ type Storage struct {
 }
 
 type Bucket struct {
-	Metadata                       defsecTypes.Metadata
-	Name                           defsecTypes.StringValue
-	Location                       defsecTypes.StringValue
-	EnableUniformBucketLevelAccess defsecTypes.BoolValue
+	Metadata                       iacTypes.Metadata
+	Name                           iacTypes.StringValue
+	Location                       iacTypes.StringValue
+	EnableUniformBucketLevelAccess iacTypes.BoolValue
 	Members                        []iam.Member
 	Bindings                       []iam.Binding
 	Encryption                     BucketEncryption
 }
 
 type BucketEncryption struct {
-	Metadata          defsecTypes.Metadata
-	DefaultKMSKeyName defsecTypes.StringValue
+	Metadata          iacTypes.Metadata
+	DefaultKMSKeyName iacTypes.StringValue
 }

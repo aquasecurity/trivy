@@ -1,34 +1,34 @@
 package compute
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Firewall struct {
-	Metadata     defsecTypes.Metadata
-	Name         defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	Name         iacTypes.StringValue
 	IngressRules []IngressRule
 	EgressRules  []EgressRule
-	SourceTags   []defsecTypes.StringValue
-	TargetTags   []defsecTypes.StringValue
+	SourceTags   []iacTypes.StringValue
+	TargetTags   []iacTypes.StringValue
 }
 
 type FirewallRule struct {
-	Metadata defsecTypes.Metadata
-	Enforced defsecTypes.BoolValue
-	IsAllow  defsecTypes.BoolValue
-	Protocol defsecTypes.StringValue
-	Ports    []defsecTypes.IntValue
+	Metadata iacTypes.Metadata
+	Enforced iacTypes.BoolValue
+	IsAllow  iacTypes.BoolValue
+	Protocol iacTypes.StringValue
+	Ports    []iacTypes.IntValue
 }
 
 type IngressRule struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	FirewallRule
-	SourceRanges []defsecTypes.StringValue
+	SourceRanges []iacTypes.StringValue
 }
 
 type EgressRule struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	FirewallRule
-	DestinationRanges []defsecTypes.StringValue
+	DestinationRanges []iacTypes.StringValue
 }

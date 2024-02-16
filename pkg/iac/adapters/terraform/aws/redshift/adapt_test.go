@@ -6,7 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/redshift"
 	"github.com/stretchr/testify/assert"
@@ -45,27 +45,27 @@ func Test_Adapt(t *testing.T) {
 			expected: redshift.Redshift{
 				Clusters: []redshift.Cluster{
 					{
-						Metadata:            defsecTypes.NewTestMetadata(),
-						ClusterIdentifier:   defsecTypes.String("tf-redshift-cluster", defsecTypes.NewTestMetadata()),
-						PubliclyAccessible:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						NumberOfNodes:       defsecTypes.Int(1, defsecTypes.NewTestMetadata()),
-						AllowVersionUpgrade: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:            iacTypes.NewTestMetadata(),
+						ClusterIdentifier:   iacTypes.String("tf-redshift-cluster", iacTypes.NewTestMetadata()),
+						PubliclyAccessible:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						NumberOfNodes:       iacTypes.Int(1, iacTypes.NewTestMetadata()),
+						AllowVersionUpgrade: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						EndPoint: redshift.EndPoint{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Port:     defsecTypes.Int(5440, defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Port:     iacTypes.Int(5440, iacTypes.NewTestMetadata()),
 						},
 						Encryption: redshift.Encryption{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-							KMSKeyID: defsecTypes.String("aws_kms_key.redshift", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							KMSKeyID: iacTypes.String("aws_kms_key.redshift", iacTypes.NewTestMetadata()),
 						},
-						SubnetGroupName: defsecTypes.String("redshift_subnet", defsecTypes.NewTestMetadata()),
+						SubnetGroupName: iacTypes.String("redshift_subnet", iacTypes.NewTestMetadata()),
 					},
 				},
 				SecurityGroups: []redshift.SecurityGroup{
 					{
-						Metadata:    defsecTypes.NewTestMetadata(),
-						Description: defsecTypes.String("some description", defsecTypes.NewTestMetadata()),
+						Metadata:    iacTypes.NewTestMetadata(),
+						Description: iacTypes.String("some description", iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -103,21 +103,21 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: redshift.Cluster{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				ClusterIdentifier:   defsecTypes.String("tf-redshift-cluster", defsecTypes.NewTestMetadata()),
-				PubliclyAccessible:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				NumberOfNodes:       defsecTypes.Int(1, defsecTypes.NewTestMetadata()),
-				AllowVersionUpgrade: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				ClusterIdentifier:   iacTypes.String("tf-redshift-cluster", iacTypes.NewTestMetadata()),
+				PubliclyAccessible:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				NumberOfNodes:       iacTypes.Int(1, iacTypes.NewTestMetadata()),
+				AllowVersionUpgrade: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				EndPoint: redshift.EndPoint{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Port:     defsecTypes.Int(5440, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Port:     iacTypes.Int(5440, iacTypes.NewTestMetadata()),
 				},
 				Encryption: redshift.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("key-id", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("key-id", iacTypes.NewTestMetadata()),
 				},
-				SubnetGroupName: defsecTypes.String("redshift_subnet", defsecTypes.NewTestMetadata()),
+				SubnetGroupName: iacTypes.String("redshift_subnet", iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -127,21 +127,21 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: redshift.Cluster{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				ClusterIdentifier:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				PubliclyAccessible:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				NumberOfNodes:       defsecTypes.Int(1, defsecTypes.NewTestMetadata()),
-				AllowVersionUpgrade: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				ClusterIdentifier:   iacTypes.String("", iacTypes.NewTestMetadata()),
+				PubliclyAccessible:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				NumberOfNodes:       iacTypes.Int(1, iacTypes.NewTestMetadata()),
+				AllowVersionUpgrade: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				EndPoint: redshift.EndPoint{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Port:     defsecTypes.Int(5439, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Port:     iacTypes.Int(5439, iacTypes.NewTestMetadata()),
 				},
 				Encryption: redshift.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
-				SubnetGroupName: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				SubnetGroupName: iacTypes.String("", iacTypes.NewTestMetadata()),
 			},
 		},
 	}
@@ -168,8 +168,8 @@ resource "" "example" {
 }
 `,
 			expected: redshift.SecurityGroup{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				Description: defsecTypes.String("Managed by Terraform", defsecTypes.NewTestMetadata()),
+				Metadata:    iacTypes.NewTestMetadata(),
+				Description: iacTypes.String("Managed by Terraform", iacTypes.NewTestMetadata()),
 			},
 		},
 	}

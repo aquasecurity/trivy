@@ -1,16 +1,16 @@
 package computing
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Instance struct {
-	Metadata          defsecTypes.Metadata
-	SecurityGroup     defsecTypes.StringValue
+	Metadata          iacTypes.Metadata
+	SecurityGroup     iacTypes.StringValue
 	NetworkInterfaces []NetworkInterface
 }
 
 type NetworkInterface struct {
-	Metadata  defsecTypes.Metadata
-	NetworkID defsecTypes.StringValue
+	Metadata  iacTypes.Metadata
+	NetworkID iacTypes.StringValue
 }

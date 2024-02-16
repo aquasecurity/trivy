@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/digitalocean/spaces"
 
@@ -41,19 +41,19 @@ func Test_adaptBuckets(t *testing.T) {
 `,
 			expected: []spaces.Bucket{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("public_space", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("public_space", iacTypes.NewTestMetadata()),
 					Objects: []spaces.Object{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							ACL:      defsecTypes.String("private", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							ACL:      iacTypes.String("private", iacTypes.NewTestMetadata()),
 						},
 					},
-					ACL:          defsecTypes.String("private", defsecTypes.NewTestMetadata()),
-					ForceDestroy: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					ACL:          iacTypes.String("private", iacTypes.NewTestMetadata()),
+					ForceDestroy: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					Versioning: spaces.Versioning{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -67,14 +67,14 @@ func Test_adaptBuckets(t *testing.T) {
 `,
 			expected: []spaces.Bucket{
 				{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					Name:         defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:     iacTypes.NewTestMetadata(),
+					Name:         iacTypes.String("", iacTypes.NewTestMetadata()),
 					Objects:      nil,
-					ACL:          defsecTypes.String("public-read", defsecTypes.NewTestMetadata()),
-					ForceDestroy: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					ACL:          iacTypes.String("public-read", iacTypes.NewTestMetadata()),
+					ForceDestroy: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					Versioning: spaces.Versioning{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},

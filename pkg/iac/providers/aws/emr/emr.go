@@ -1,7 +1,7 @@
 package emr
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type EMR struct {
@@ -10,19 +10,19 @@ type EMR struct {
 }
 
 type Cluster struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Settings ClusterSettings
 }
 
 type ClusterSettings struct {
-	Metadata     defsecTypes.Metadata
-	Name         defsecTypes.StringValue
-	ReleaseLabel defsecTypes.StringValue
-	ServiceRole  defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	Name         iacTypes.StringValue
+	ReleaseLabel iacTypes.StringValue
+	ServiceRole  iacTypes.StringValue
 }
 
 type SecurityConfiguration struct {
-	Metadata      defsecTypes.Metadata
-	Name          defsecTypes.StringValue
-	Configuration defsecTypes.StringValue
+	Metadata      iacTypes.Metadata
+	Name          iacTypes.StringValue
+	Configuration iacTypes.StringValue
 }

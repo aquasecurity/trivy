@@ -1,7 +1,7 @@
 package kms
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type KMS struct {
@@ -13,7 +13,7 @@ const (
 )
 
 type Key struct {
-	Metadata        defsecTypes.Metadata
-	Usage           defsecTypes.StringValue
-	RotationEnabled defsecTypes.BoolValue
+	Metadata        iacTypes.Metadata
+	Usage           iacTypes.StringValue
+	RotationEnabled iacTypes.BoolValue
 }

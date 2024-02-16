@@ -1,7 +1,7 @@
 package database
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Database struct {
@@ -12,57 +12,57 @@ type Database struct {
 }
 
 type MariaDBServer struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Server
 }
 
 type MySQLServer struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Server
 }
 
 type PostgreSQLServer struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Server
 	Config PostgresSQLConfig
 }
 
 type PostgresSQLConfig struct {
-	Metadata             defsecTypes.Metadata
-	LogCheckpoints       defsecTypes.BoolValue
-	ConnectionThrottling defsecTypes.BoolValue
-	LogConnections       defsecTypes.BoolValue
+	Metadata             iacTypes.Metadata
+	LogCheckpoints       iacTypes.BoolValue
+	ConnectionThrottling iacTypes.BoolValue
+	LogConnections       iacTypes.BoolValue
 }
 
 type Server struct {
-	Metadata                  defsecTypes.Metadata
-	EnableSSLEnforcement      defsecTypes.BoolValue
-	MinimumTLSVersion         defsecTypes.StringValue
-	EnablePublicNetworkAccess defsecTypes.BoolValue
+	Metadata                  iacTypes.Metadata
+	EnableSSLEnforcement      iacTypes.BoolValue
+	MinimumTLSVersion         iacTypes.StringValue
+	EnablePublicNetworkAccess iacTypes.BoolValue
 	FirewallRules             []FirewallRule
 }
 
 type MSSQLServer struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Server
 	ExtendedAuditingPolicies []ExtendedAuditingPolicy
 	SecurityAlertPolicies    []SecurityAlertPolicy
 }
 
 type SecurityAlertPolicy struct {
-	Metadata           defsecTypes.Metadata
-	EmailAddresses     []defsecTypes.StringValue
-	DisabledAlerts     []defsecTypes.StringValue
-	EmailAccountAdmins defsecTypes.BoolValue
+	Metadata           iacTypes.Metadata
+	EmailAddresses     []iacTypes.StringValue
+	DisabledAlerts     []iacTypes.StringValue
+	EmailAccountAdmins iacTypes.BoolValue
 }
 
 type ExtendedAuditingPolicy struct {
-	Metadata        defsecTypes.Metadata
-	RetentionInDays defsecTypes.IntValue
+	Metadata        iacTypes.Metadata
+	RetentionInDays iacTypes.IntValue
 }
 
 type FirewallRule struct {
-	Metadata defsecTypes.Metadata
-	StartIP  defsecTypes.StringValue
-	EndIP    defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	StartIP  iacTypes.StringValue
+	EndIP    iacTypes.StringValue
 }

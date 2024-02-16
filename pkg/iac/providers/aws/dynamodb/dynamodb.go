@@ -1,7 +1,7 @@
 package dynamodb
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type DynamoDB struct {
@@ -10,21 +10,21 @@ type DynamoDB struct {
 }
 
 type DAXCluster struct {
-	Metadata             defsecTypes.Metadata
+	Metadata             iacTypes.Metadata
 	ServerSideEncryption ServerSideEncryption
-	PointInTimeRecovery  defsecTypes.BoolValue
+	PointInTimeRecovery  iacTypes.BoolValue
 }
 
 type Table struct {
-	Metadata             defsecTypes.Metadata
+	Metadata             iacTypes.Metadata
 	ServerSideEncryption ServerSideEncryption
-	PointInTimeRecovery  defsecTypes.BoolValue
+	PointInTimeRecovery  iacTypes.BoolValue
 }
 
 type ServerSideEncryption struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+	KMSKeyID iacTypes.StringValue
 }
 
 const DefaultKMSKeyID = "alias/aws/dynamodb"

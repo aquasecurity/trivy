@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/config"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) config.Config {
@@ -14,15 +14,15 @@ func Adapt(modules terraform.Modules) config.Config {
 
 func adaptConfigurationAggregrator(modules terraform.Modules) config.ConfigurationAggregrator {
 	configurationAggregrator := config.ConfigurationAggregrator{
-		Metadata:         defsecTypes.NewUnmanagedMetadata(),
-		SourceAllRegions: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+		Metadata:         iacTypes.NewUnmanagedMetadata(),
+		SourceAllRegions: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 	}
 
 	for _, resource := range modules.GetResourcesByType("aws_config_configuration_aggregator") {
 		configurationAggregrator.Metadata = resource.GetMetadata()
 		aggregationBlock := resource.GetFirstMatchingBlock("account_aggregation_source", "organization_aggregation_source")
 		if aggregationBlock.IsNil() {
-			configurationAggregrator.SourceAllRegions = defsecTypes.Bool(false, resource.GetMetadata())
+			configurationAggregrator.SourceAllRegions = iacTypes.Bool(false, resource.GetMetadata())
 		} else {
 			allRegionsAttr := aggregationBlock.GetAttribute("all_regions")
 			allRegionsVal := allRegionsAttr.AsBoolValueOrDefault(false, aggregationBlock)

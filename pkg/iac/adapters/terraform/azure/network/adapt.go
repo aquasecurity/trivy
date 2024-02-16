@@ -8,7 +8,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) network.Network {
@@ -50,7 +50,7 @@ func (a *adapter) adaptSecurityGroups() []network.SecurityGroup {
 		}
 
 		a.groups[uuid.NewString()] = network.SecurityGroup{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: iacTypes.NewUnmanagedMetadata(),
 			Rules:    []network.SecurityGroupRule{rule},
 		}
 	}
@@ -89,8 +89,8 @@ func (a *adapter) adaptSGRule(ruleBlock *terraform.Block) network.SecurityGroupR
 
 	rule := network.SecurityGroupRule{
 		Metadata:             ruleBlock.GetMetadata(),
-		Outbound:             defsecTypes.BoolDefault(false, ruleBlock.GetMetadata()),
-		Allow:                defsecTypes.BoolDefault(true, ruleBlock.GetMetadata()),
+		Outbound:             iacTypes.BoolDefault(false, ruleBlock.GetMetadata()),
+		Allow:                iacTypes.BoolDefault(true, ruleBlock.GetMetadata()),
 		SourceAddresses:      nil,
 		SourcePorts:          nil,
 		DestinationAddresses: nil,
@@ -100,16 +100,16 @@ func (a *adapter) adaptSGRule(ruleBlock *terraform.Block) network.SecurityGroupR
 
 	accessAttr := ruleBlock.GetAttribute("access")
 	if accessAttr.Equals("Allow") {
-		rule.Allow = defsecTypes.Bool(true, accessAttr.GetMetadata())
+		rule.Allow = iacTypes.Bool(true, accessAttr.GetMetadata())
 	} else if accessAttr.Equals("Deny") {
-		rule.Allow = defsecTypes.Bool(false, accessAttr.GetMetadata())
+		rule.Allow = iacTypes.Bool(false, accessAttr.GetMetadata())
 	}
 
 	directionAttr := ruleBlock.GetAttribute("direction")
 	if directionAttr.Equals("Inbound") {
-		rule.Outbound = defsecTypes.Bool(false, directionAttr.GetMetadata())
+		rule.Outbound = iacTypes.Bool(false, directionAttr.GetMetadata())
 	} else if directionAttr.Equals("Outbound") {
-		rule.Outbound = defsecTypes.Bool(true, directionAttr.GetMetadata())
+		rule.Outbound = iacTypes.Bool(true, directionAttr.GetMetadata())
 	}
 
 	a.adaptSource(ruleBlock, &rule)
@@ -166,7 +166,7 @@ func (a *adapter) adaptDestination(ruleBlock *terraform.Block, rule *network.Sec
 	}
 }
 
-func expandRange(r string, m defsecTypes.Metadata) network.PortRange {
+func expandRange(r string, m iacTypes.Metadata) network.PortRange {
 	start := 0
 	end := 65535
 	switch {
@@ -199,8 +199,8 @@ func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 		Metadata: resource.GetMetadata(),
 		RetentionPolicy: network.RetentionPolicy{
 			Metadata: resource.GetMetadata(),
-			Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
-			Days:     defsecTypes.IntDefault(0, resource.GetMetadata()),
+			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
+			Days:     iacTypes.IntDefault(0, resource.GetMetadata()),
 		},
 	}
 

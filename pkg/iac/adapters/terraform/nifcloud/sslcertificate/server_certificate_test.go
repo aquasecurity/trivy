@@ -7,7 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/sslcertificate"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 const certificate = `
@@ -39,11 +39,11 @@ func Test_adaptServerCertificates(t *testing.T) {
 			}
 `,
 			expected: []sslcertificate.ServerCertificate{{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Expiration: defsecTypes.Time(func(timeVal string) time.Time {
+				Metadata: iacTypes.NewTestMetadata(),
+				Expiration: iacTypes.Time(func(timeVal string) time.Time {
 					parsed, _ := time.Parse(time.RFC3339, timeVal)
 					return parsed
-				}("2015-09-12T21:52:02Z"), defsecTypes.NewTestMetadata()),
+				}("2015-09-12T21:52:02Z"), iacTypes.NewTestMetadata()),
 			}},
 		},
 		{
@@ -54,8 +54,8 @@ func Test_adaptServerCertificates(t *testing.T) {
 `,
 
 			expected: []sslcertificate.ServerCertificate{{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				Expiration: defsecTypes.Time(time.Time{}, defsecTypes.NewTestMetadata()),
+				Metadata:   iacTypes.NewTestMetadata(),
+				Expiration: iacTypes.Time(time.Time{}, iacTypes.NewTestMetadata()),
 			}},
 		},
 	}

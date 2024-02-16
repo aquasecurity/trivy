@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 )
@@ -46,35 +46,35 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Firewall: &compute.Firewall{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Name:     defsecTypes.String("my-firewall-rule", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Name:     iacTypes.String("my-firewall-rule", iacTypes.NewTestMetadata()),
 						IngressRules: []compute.IngressRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: iacTypes.NewTestMetadata(),
 								FirewallRule: compute.FirewallRule{
-									Metadata: defsecTypes.NewTestMetadata(),
-									IsAllow:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-									Protocol: defsecTypes.String("icmp", defsecTypes.NewTestMetadata()),
-									Enforced: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-									Ports: []defsecTypes.IntValue{
-										defsecTypes.Int(80, defsecTypes.NewTestMetadata()),
-										defsecTypes.Int(8080, defsecTypes.NewTestMetadata()),
+									Metadata: iacTypes.NewTestMetadata(),
+									IsAllow:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+									Protocol: iacTypes.String("icmp", iacTypes.NewTestMetadata()),
+									Enforced: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+									Ports: []iacTypes.IntValue{
+										iacTypes.Int(80, iacTypes.NewTestMetadata()),
+										iacTypes.Int(8080, iacTypes.NewTestMetadata()),
 									},
 								},
-								SourceRanges: []defsecTypes.StringValue{
-									defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMetadata()),
+								SourceRanges: []iacTypes.StringValue{
+									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
 								},
 							},
 						},
 					},
 					Subnetworks: []compute.SubNetwork{
 						{
-							Metadata:       defsecTypes.NewTestMetadata(),
-							Name:           defsecTypes.String("test-subnetwork", defsecTypes.NewTestMetadata()),
-							EnableFlowLogs: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-							Purpose:        defsecTypes.StringDefault("PRIVATE_RFC_1918", defsecTypes.NewTestMetadata()),
+							Metadata:       iacTypes.NewTestMetadata(),
+							Name:           iacTypes.String("test-subnetwork", iacTypes.NewTestMetadata()),
+							EnableFlowLogs: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Purpose:        iacTypes.StringDefault("PRIVATE_RFC_1918", iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -97,17 +97,17 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Firewall: &compute.Firewall{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Name:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Name:     iacTypes.String("", iacTypes.NewTestMetadata()),
 					},
 					Subnetworks: []compute.SubNetwork{
 						{
-							Metadata:       defsecTypes.NewTestMetadata(),
-							Name:           defsecTypes.String("", defsecTypes.NewTestMetadata()),
-							EnableFlowLogs: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-							Purpose:        defsecTypes.String("REGIONAL_MANAGED_PROXY", defsecTypes.NewTestMetadata()),
+							Metadata:       iacTypes.NewTestMetadata(),
+							Name:           iacTypes.String("", iacTypes.NewTestMetadata()),
+							EnableFlowLogs: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Purpose:        iacTypes.String("REGIONAL_MANAGED_PROXY", iacTypes.NewTestMetadata()),
 						},
 					},
 				},

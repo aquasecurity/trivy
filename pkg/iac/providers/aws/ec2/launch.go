@@ -1,22 +1,22 @@
 package ec2
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type LaunchConfiguration struct {
-	Metadata          defsecTypes.Metadata
-	Name              defsecTypes.StringValue
-	AssociatePublicIP defsecTypes.BoolValue
+	Metadata          iacTypes.Metadata
+	Name              iacTypes.StringValue
+	AssociatePublicIP iacTypes.BoolValue
 	RootBlockDevice   *BlockDevice
 	EBSBlockDevices   []*BlockDevice
 	MetadataOptions   MetadataOptions
-	UserData          defsecTypes.StringValue
+	UserData          iacTypes.StringValue
 }
 
 type LaunchTemplate struct {
-	Metadata defsecTypes.Metadata
-	Name     defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Name     iacTypes.StringValue
 	Instance
 }
 

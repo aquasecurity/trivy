@@ -1,7 +1,7 @@
 package kinesis
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Kinesis struct {
@@ -9,7 +9,7 @@ type Kinesis struct {
 }
 
 type Stream struct {
-	Metadata   defsecTypes.Metadata
+	Metadata   iacTypes.Metadata
 	Encryption Encryption
 }
 
@@ -18,7 +18,7 @@ const (
 )
 
 type Encryption struct {
-	Metadata defsecTypes.Metadata
-	Type     defsecTypes.StringValue
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Type     iacTypes.StringValue
+	KMSKeyID iacTypes.StringValue
 }

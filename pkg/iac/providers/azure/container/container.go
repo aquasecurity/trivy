@@ -1,7 +1,7 @@
 package container
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Container struct {
@@ -9,30 +9,30 @@ type Container struct {
 }
 
 type KubernetesCluster struct {
-	Metadata                    defsecTypes.Metadata
+	Metadata                    iacTypes.Metadata
 	NetworkProfile              NetworkProfile
-	EnablePrivateCluster        defsecTypes.BoolValue
-	APIServerAuthorizedIPRanges []defsecTypes.StringValue
+	EnablePrivateCluster        iacTypes.BoolValue
+	APIServerAuthorizedIPRanges []iacTypes.StringValue
 	AddonProfile                AddonProfile
 	RoleBasedAccessControl      RoleBasedAccessControl
 }
 
 type RoleBasedAccessControl struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type AddonProfile struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	OMSAgent OMSAgent
 }
 
 type OMSAgent struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type NetworkProfile struct {
-	Metadata      defsecTypes.Metadata
-	NetworkPolicy defsecTypes.StringValue // "", "calico", "azure"
+	Metadata      iacTypes.Metadata
+	NetworkPolicy iacTypes.StringValue // "", "calico", "azure"
 }

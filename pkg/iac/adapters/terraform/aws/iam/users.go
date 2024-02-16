@@ -3,7 +3,7 @@ package iam
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptUsers(modules terraform.Modules) []iam.User {
@@ -13,7 +13,7 @@ func adaptUsers(modules terraform.Modules) []iam.User {
 		user := iam.User{
 			Metadata:   userBlock.GetMetadata(),
 			Name:       userBlock.GetAttribute("name").AsStringValueOrDefault("", userBlock),
-			LastAccess: defsecTypes.TimeUnresolvable(userBlock.GetMetadata()),
+			LastAccess: iacTypes.TimeUnresolvable(userBlock.GetMetadata()),
 		}
 
 		if policy, ok := applyForDependentResource(
@@ -42,15 +42,15 @@ func adaptUsers(modules terraform.Modules) []iam.User {
 
 func adaptAccessKey(block *terraform.Block) iam.AccessKey {
 
-	active := defsecTypes.BoolDefault(true, block.GetMetadata())
+	active := iacTypes.BoolDefault(true, block.GetMetadata())
 	if activeAttr := block.GetAttribute("status"); activeAttr.IsString() {
-		active = defsecTypes.Bool(activeAttr.Equals("Active"), activeAttr.GetMetadata())
+		active = iacTypes.Bool(activeAttr.Equals("Active"), activeAttr.GetMetadata())
 	}
 	return iam.AccessKey{
 		Metadata:     block.GetMetadata(),
-		AccessKeyId:  defsecTypes.StringUnresolvable(block.GetMetadata()),
-		CreationDate: defsecTypes.TimeUnresolvable(block.GetMetadata()),
-		LastAccess:   defsecTypes.TimeUnresolvable(block.GetMetadata()),
+		AccessKeyId:  iacTypes.StringUnresolvable(block.GetMetadata()),
+		CreationDate: iacTypes.TimeUnresolvable(block.GetMetadata()),
+		LastAccess:   iacTypes.TimeUnresolvable(block.GetMetadata()),
 		Active:       active,
 	}
 }

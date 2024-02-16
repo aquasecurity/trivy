@@ -3,38 +3,38 @@ package ec2
 import (
 	"github.com/owenrumney/squealer/pkg/squealer"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Instance struct {
-	Metadata        defsecTypes.Metadata
+	Metadata        iacTypes.Metadata
 	MetadataOptions MetadataOptions
-	UserData        defsecTypes.StringValue
+	UserData        iacTypes.StringValue
 	SecurityGroups  []SecurityGroup
 	RootBlockDevice *BlockDevice
 	EBSBlockDevices []*BlockDevice
 }
 
 type BlockDevice struct {
-	Metadata  defsecTypes.Metadata
-	Encrypted defsecTypes.BoolValue
+	Metadata  iacTypes.Metadata
+	Encrypted iacTypes.BoolValue
 }
 
 type MetadataOptions struct {
-	Metadata     defsecTypes.Metadata
-	HttpTokens   defsecTypes.StringValue
-	HttpEndpoint defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	HttpTokens   iacTypes.StringValue
+	HttpEndpoint iacTypes.StringValue
 }
 
-func NewInstance(metadata defsecTypes.Metadata) *Instance {
+func NewInstance(metadata iacTypes.Metadata) *Instance {
 	return &Instance{
 		Metadata: metadata,
 		MetadataOptions: MetadataOptions{
 			Metadata:     metadata,
-			HttpTokens:   defsecTypes.StringDefault("optional", metadata),
-			HttpEndpoint: defsecTypes.StringDefault("enabled", metadata),
+			HttpTokens:   iacTypes.StringDefault("optional", metadata),
+			HttpEndpoint: iacTypes.StringDefault("enabled", metadata),
 		},
-		UserData:        defsecTypes.StringDefault("", metadata),
+		UserData:        iacTypes.StringDefault("", metadata),
 		SecurityGroups:  []SecurityGroup{},
 		RootBlockDevice: nil,
 		EBSBlockDevices: nil,

@@ -1,7 +1,7 @@
 package neptune
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Neptune struct {
@@ -9,13 +9,13 @@ type Neptune struct {
 }
 
 type Cluster struct {
-	Metadata         defsecTypes.Metadata
+	Metadata         iacTypes.Metadata
 	Logging          Logging
-	StorageEncrypted defsecTypes.BoolValue
-	KMSKeyID         defsecTypes.StringValue
+	StorageEncrypted iacTypes.BoolValue
+	KMSKeyID         iacTypes.StringValue
 }
 
 type Logging struct {
-	Metadata defsecTypes.Metadata
-	Audit    defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Audit    iacTypes.BoolValue
 }

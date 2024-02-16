@@ -2,7 +2,7 @@ package sqs
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type SQS struct {
@@ -10,14 +10,14 @@ type SQS struct {
 }
 
 type Queue struct {
-	Metadata   defsecTypes.Metadata
-	QueueURL   defsecTypes.StringValue
+	Metadata   iacTypes.Metadata
+	QueueURL   iacTypes.StringValue
 	Encryption Encryption
 	Policies   []iam.Policy
 }
 
 type Encryption struct {
-	Metadata          defsecTypes.Metadata
-	KMSKeyID          defsecTypes.StringValue
-	ManagedEncryption defsecTypes.BoolValue
+	Metadata          iacTypes.Metadata
+	KMSKeyID          iacTypes.StringValue
+	ManagedEncryption iacTypes.BoolValue
 }

@@ -1,31 +1,31 @@
 package sns
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type SNS struct {
 	Topics []Topic
 }
 
-func NewTopic(arn string, metadata defsecTypes.Metadata) *Topic {
+func NewTopic(arn string, metadata iacTypes.Metadata) *Topic {
 	return &Topic{
 		Metadata: metadata,
-		ARN:      defsecTypes.String(arn, metadata),
+		ARN:      iacTypes.String(arn, metadata),
 		Encryption: Encryption{
 			Metadata: metadata,
-			KMSKeyID: defsecTypes.StringDefault("", metadata),
+			KMSKeyID: iacTypes.StringDefault("", metadata),
 		},
 	}
 }
 
 type Topic struct {
-	Metadata   defsecTypes.Metadata
-	ARN        defsecTypes.StringValue
+	Metadata   iacTypes.Metadata
+	ARN        iacTypes.StringValue
 	Encryption Encryption
 }
 
 type Encryption struct {
-	Metadata defsecTypes.Metadata
-	KMSKeyID defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	KMSKeyID iacTypes.StringValue
 }

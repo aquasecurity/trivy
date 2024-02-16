@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/sql"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) sql.SQL {
@@ -29,37 +29,37 @@ func adaptInstance(resource *terraform.Block) sql.DatabaseInstance {
 	instance := sql.DatabaseInstance{
 		Metadata:        resource.GetMetadata(),
 		DatabaseVersion: resource.GetAttribute("database_version").AsStringValueOrDefault("", resource),
-		IsReplica:       defsecTypes.BoolDefault(false, resource.GetMetadata()),
+		IsReplica:       iacTypes.BoolDefault(false, resource.GetMetadata()),
 		Settings: sql.Settings{
 			Metadata: resource.GetMetadata(),
 			Flags: sql.Flags{
 				Metadata:                        resource.GetMetadata(),
-				LogTempFileSize:                 defsecTypes.IntDefault(-1, resource.GetMetadata()),
-				LocalInFile:                     defsecTypes.BoolDefault(false, resource.GetMetadata()),
-				ContainedDatabaseAuthentication: defsecTypes.BoolDefault(true, resource.GetMetadata()),
-				CrossDBOwnershipChaining:        defsecTypes.BoolDefault(true, resource.GetMetadata()),
-				LogCheckpoints:                  defsecTypes.BoolDefault(false, resource.GetMetadata()),
-				LogConnections:                  defsecTypes.BoolDefault(false, resource.GetMetadata()),
-				LogDisconnections:               defsecTypes.BoolDefault(false, resource.GetMetadata()),
-				LogLockWaits:                    defsecTypes.BoolDefault(false, resource.GetMetadata()),
-				LogMinMessages:                  defsecTypes.StringDefault("", resource.GetMetadata()),
-				LogMinDurationStatement:         defsecTypes.IntDefault(-1, resource.GetMetadata()),
+				LogTempFileSize:                 iacTypes.IntDefault(-1, resource.GetMetadata()),
+				LocalInFile:                     iacTypes.BoolDefault(false, resource.GetMetadata()),
+				ContainedDatabaseAuthentication: iacTypes.BoolDefault(true, resource.GetMetadata()),
+				CrossDBOwnershipChaining:        iacTypes.BoolDefault(true, resource.GetMetadata()),
+				LogCheckpoints:                  iacTypes.BoolDefault(false, resource.GetMetadata()),
+				LogConnections:                  iacTypes.BoolDefault(false, resource.GetMetadata()),
+				LogDisconnections:               iacTypes.BoolDefault(false, resource.GetMetadata()),
+				LogLockWaits:                    iacTypes.BoolDefault(false, resource.GetMetadata()),
+				LogMinMessages:                  iacTypes.StringDefault("", resource.GetMetadata()),
+				LogMinDurationStatement:         iacTypes.IntDefault(-1, resource.GetMetadata()),
 			},
 			Backups: sql.Backups{
 				Metadata: resource.GetMetadata(),
-				Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
+				Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 			},
 			IPConfiguration: sql.IPConfiguration{
 				Metadata:           resource.GetMetadata(),
-				RequireTLS:         defsecTypes.BoolDefault(false, resource.GetMetadata()),
-				EnableIPv4:         defsecTypes.BoolDefault(true, resource.GetMetadata()),
+				RequireTLS:         iacTypes.BoolDefault(false, resource.GetMetadata()),
+				EnableIPv4:         iacTypes.BoolDefault(true, resource.GetMetadata()),
 				AuthorizedNetworks: nil,
 			},
 		},
 	}
 
 	if attr := resource.GetAttribute("master_instance_name"); attr.IsNotNil() {
-		instance.IsReplica = defsecTypes.Bool(true, attr.GetMetadata())
+		instance.IsReplica = iacTypes.Bool(true, attr.GetMetadata())
 	}
 
 	if settingsBlock := resource.GetBlock("settings"); settingsBlock.IsNotNil() {
@@ -93,36 +93,36 @@ func adaptFlags(resources terraform.Blocks, flags *sql.Flags) {
 		switch nameAttr.Value().AsString() {
 		case "log_temp_files":
 			if logTempInt, err := strconv.Atoi(valueAttr.Value().AsString()); err == nil {
-				flags.LogTempFileSize = defsecTypes.Int(logTempInt, nameAttr.GetMetadata())
+				flags.LogTempFileSize = iacTypes.Int(logTempInt, nameAttr.GetMetadata())
 			}
 		case "log_min_messages":
 			flags.LogMinMessages = valueAttr.AsStringValueOrDefault("", resource)
 		case "log_min_duration_statement":
 			if logMinDS, err := strconv.Atoi(valueAttr.Value().AsString()); err == nil {
-				flags.LogMinDurationStatement = defsecTypes.Int(logMinDS, nameAttr.GetMetadata())
+				flags.LogMinDurationStatement = iacTypes.Int(logMinDS, nameAttr.GetMetadata())
 			}
 		case "local_infile":
-			flags.LocalInFile = defsecTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
+			flags.LocalInFile = iacTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
 		case "log_checkpoints":
-			flags.LogCheckpoints = defsecTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
+			flags.LogCheckpoints = iacTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
 		case "log_connections":
-			flags.LogConnections = defsecTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
+			flags.LogConnections = iacTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
 		case "log_disconnections":
-			flags.LogDisconnections = defsecTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
+			flags.LogDisconnections = iacTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
 		case "log_lock_waits":
-			flags.LogLockWaits = defsecTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
+			flags.LogLockWaits = iacTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
 		case "contained database authentication":
-			flags.ContainedDatabaseAuthentication = defsecTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
+			flags.ContainedDatabaseAuthentication = iacTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
 		case "cross db ownership chaining":
-			flags.CrossDBOwnershipChaining = defsecTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
+			flags.CrossDBOwnershipChaining = iacTypes.Bool(valueAttr.Equals("on"), valueAttr.GetMetadata())
 		}
 	}
 }
 
 func adaptIPConfig(resource *terraform.Block) sql.IPConfiguration {
 	var authorizedNetworks []struct {
-		Name defsecTypes.StringValue
-		CIDR defsecTypes.StringValue
+		Name iacTypes.StringValue
+		CIDR iacTypes.StringValue
 	}
 
 	tlsRequiredAttr := resource.GetAttribute("require_ssl")
@@ -137,8 +137,8 @@ func adaptIPConfig(resource *terraform.Block) sql.IPConfiguration {
 		cidrVal := authBlock.GetAttribute("value").AsStringValueOrDefault("", authBlock)
 
 		authorizedNetworks = append(authorizedNetworks, struct {
-			Name defsecTypes.StringValue
-			CIDR defsecTypes.StringValue
+			Name iacTypes.StringValue
+			CIDR iacTypes.StringValue
 		}{
 			Name: nameVal,
 			CIDR: cidrVal,

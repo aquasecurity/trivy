@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecs"
 
@@ -32,8 +32,8 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:                 iacTypes.NewTestMetadata(),
+				ContainerInsightsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -49,8 +49,8 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                 iacTypes.NewTestMetadata(),
+				ContainerInsightsEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -60,8 +60,8 @@ func Test_adaptClusterSettings(t *testing.T) {
 			}
 `,
 			expected: ecs.ClusterSettings{
-				Metadata:                 defsecTypes.NewTestMetadata(),
-				ContainerInsightsEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                 iacTypes.NewTestMetadata(),
+				ContainerInsightsEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}
@@ -111,25 +111,25 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 			  }
 `,
 			expected: ecs.TaskDefinition{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Volumes: []ecs.Volume{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						EFSVolumeConfiguration: ecs.EFSVolumeConfiguration{
-							Metadata:                 defsecTypes.NewTestMetadata(),
-							TransitEncryptionEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata:                 iacTypes.NewTestMetadata(),
+							TransitEncryptionEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
 				ContainerDefinitions: []ecs.ContainerDefinition{
 					{
-						Metadata:   defsecTypes.NewTestMetadata(),
-						Name:       defsecTypes.String("my_service", defsecTypes.NewTestMetadata()),
-						Image:      defsecTypes.String("my_image", defsecTypes.NewTestMetadata()),
-						CPU:        defsecTypes.Int(2, defsecTypes.NewTestMetadata()),
-						Memory:     defsecTypes.Int(256, defsecTypes.NewTestMetadata()),
-						Essential:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						Privileged: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:   iacTypes.NewTestMetadata(),
+						Name:       iacTypes.String("my_service", iacTypes.NewTestMetadata()),
+						Image:      iacTypes.String("my_image", iacTypes.NewTestMetadata()),
+						CPU:        iacTypes.Int(2, iacTypes.NewTestMetadata()),
+						Memory:     iacTypes.Int(256, iacTypes.NewTestMetadata()),
+						Essential:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Privileged: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						Environment: []ecs.EnvVar{
 							{
 								Name:  "ENVIRONMENT",
@@ -153,14 +153,14 @@ func Test_adaptTaskDefinitionResource(t *testing.T) {
 			  }
 `,
 			expected: ecs.TaskDefinition{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Volumes: []ecs.Volume{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						EFSVolumeConfiguration: ecs.EFSVolumeConfiguration{
 
-							Metadata:                 defsecTypes.NewTestMetadata(),
-							TransitEncryptionEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata:                 iacTypes.NewTestMetadata(),
+							TransitEncryptionEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},

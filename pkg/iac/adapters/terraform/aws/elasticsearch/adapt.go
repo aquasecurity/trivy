@@ -3,7 +3,7 @@ package elasticsearch
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elasticsearch"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) elasticsearch.Elasticsearch {
@@ -25,35 +25,35 @@ func adaptDomains(modules terraform.Modules) []elasticsearch.Domain {
 func adaptDomain(resource *terraform.Block) elasticsearch.Domain {
 	domain := elasticsearch.Domain{
 		Metadata:               resource.GetMetadata(),
-		DomainName:             defsecTypes.StringDefault("", resource.GetMetadata()),
+		DomainName:             iacTypes.StringDefault("", resource.GetMetadata()),
 		AccessPolicies:         resource.GetAttribute("access_policies").AsStringValueOrDefault("", resource),
 		VpcId:                  resource.GetAttribute("vpc_options.0.vpc_id").AsStringValueOrDefault("", resource),
-		DedicatedMasterEnabled: defsecTypes.Bool(false, resource.GetMetadata()),
+		DedicatedMasterEnabled: iacTypes.Bool(false, resource.GetMetadata()),
 		LogPublishing: elasticsearch.LogPublishing{
 			Metadata:              resource.GetMetadata(),
-			AuditEnabled:          defsecTypes.BoolDefault(false, resource.GetMetadata()),
-			CloudWatchLogGroupArn: defsecTypes.String("", resource.GetMetadata()),
+			AuditEnabled:          iacTypes.BoolDefault(false, resource.GetMetadata()),
+			CloudWatchLogGroupArn: iacTypes.String("", resource.GetMetadata()),
 		},
 		TransitEncryption: elasticsearch.TransitEncryption{
 			Metadata: resource.GetMetadata(),
-			Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
+			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
 		AtRestEncryption: elasticsearch.AtRestEncryption{
 			Metadata: resource.GetMetadata(),
-			Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
-			KmsKeyId: defsecTypes.String("", resource.GetMetadata()),
+			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
+			KmsKeyId: iacTypes.String("", resource.GetMetadata()),
 		},
 		Endpoint: elasticsearch.Endpoint{
 			Metadata:     resource.GetMetadata(),
-			EnforceHTTPS: defsecTypes.BoolDefault(false, resource.GetMetadata()),
-			TLSPolicy:    defsecTypes.StringDefault("", resource.GetMetadata()),
+			EnforceHTTPS: iacTypes.BoolDefault(false, resource.GetMetadata()),
+			TLSPolicy:    iacTypes.StringDefault("", resource.GetMetadata()),
 		},
 		ServiceSoftwareOptions: elasticsearch.ServiceSoftwareOptions{
 			Metadata:        resource.GetMetadata(),
-			CurrentVersion:  defsecTypes.String("", resource.GetMetadata()),
-			NewVersion:      defsecTypes.String("", resource.GetMetadata()),
-			UpdateAvailable: defsecTypes.Bool(false, resource.GetMetadata()),
-			UpdateStatus:    defsecTypes.String("", resource.GetMetadata()),
+			CurrentVersion:  iacTypes.String("", resource.GetMetadata()),
+			NewVersion:      iacTypes.String("", resource.GetMetadata()),
+			UpdateAvailable: iacTypes.Bool(false, resource.GetMetadata()),
+			UpdateStatus:    iacTypes.String("", resource.GetMetadata()),
 		},
 	}
 

@@ -3,7 +3,7 @@ package athena
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/athena"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) athena.Athena {
@@ -39,7 +39,7 @@ func adaptDatabase(resource *terraform.Block) athena.Database {
 		Name:     resource.GetAttribute("name").AsStringValueOrDefault("", resource),
 		Encryption: athena.EncryptionConfiguration{
 			Metadata: resource.GetMetadata(),
-			Type:     defsecTypes.StringDefault("", resource.GetMetadata()),
+			Type:     iacTypes.StringDefault("", resource.GetMetadata()),
 		},
 	}
 	if encryptionConfigBlock := resource.GetBlock("encryption_configuration"); encryptionConfigBlock.IsNotNil() {
@@ -57,9 +57,9 @@ func adaptWorkgroup(resource *terraform.Block) athena.Workgroup {
 		Name:     resource.GetAttribute("name").AsStringValueOrDefault("", resource),
 		Encryption: athena.EncryptionConfiguration{
 			Metadata: resource.GetMetadata(),
-			Type:     defsecTypes.StringDefault("", resource.GetMetadata()),
+			Type:     iacTypes.StringDefault("", resource.GetMetadata()),
 		},
-		EnforceConfiguration: defsecTypes.BoolDefault(false, resource.GetMetadata()),
+		EnforceConfiguration: iacTypes.BoolDefault(false, resource.GetMetadata()),
 	}
 
 	if configBlock := resource.GetBlock("configuration"); configBlock.IsNotNil() {

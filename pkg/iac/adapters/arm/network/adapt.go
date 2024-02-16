@@ -6,7 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) network.Network {
@@ -57,14 +57,14 @@ func adaptSecurityGroupRule(resource azure.Resource) network.SecurityGroupRule {
 	}
 	destinationPortRanges = append(destinationPortRanges, expandRange(resource.Properties.GetMapValue("destinationPortRange").AsString(), resource.Metadata))
 
-	allow := defsecTypes.BoolDefault(false, resource.Metadata)
+	allow := iacTypes.BoolDefault(false, resource.Metadata)
 	if resource.Properties.GetMapValue("access").AsString() == "Allow" {
-		allow = defsecTypes.Bool(true, resource.Metadata)
+		allow = iacTypes.Bool(true, resource.Metadata)
 	}
 
-	outbound := defsecTypes.BoolDefault(false, resource.Metadata)
+	outbound := iacTypes.BoolDefault(false, resource.Metadata)
 	if resource.Properties.GetMapValue("direction").AsString() == "Outbound" {
-		outbound = defsecTypes.Bool(true, resource.Metadata)
+		outbound = iacTypes.Bool(true, resource.Metadata)
 	}
 
 	return network.SecurityGroupRule{
@@ -97,7 +97,7 @@ func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherF
 	}
 }
 
-func expandRange(r string, m defsecTypes.Metadata) network.PortRange {
+func expandRange(r string, m iacTypes.Metadata) network.PortRange {
 	start := 0
 	end := 65535
 	switch {

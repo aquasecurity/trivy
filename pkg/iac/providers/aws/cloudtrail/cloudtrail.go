@@ -1,7 +1,7 @@
 package cloudtrail
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type CloudTrail struct {
@@ -18,25 +18,25 @@ func (c CloudTrail) MultiRegionTrails() (multiRegionTrails []Trail) {
 }
 
 type Trail struct {
-	Metadata                  defsecTypes.Metadata
-	Name                      defsecTypes.StringValue
-	EnableLogFileValidation   defsecTypes.BoolValue
-	IsMultiRegion             defsecTypes.BoolValue
-	KMSKeyID                  defsecTypes.StringValue
-	CloudWatchLogsLogGroupArn defsecTypes.StringValue
-	IsLogging                 defsecTypes.BoolValue
-	BucketName                defsecTypes.StringValue
+	Metadata                  iacTypes.Metadata
+	Name                      iacTypes.StringValue
+	EnableLogFileValidation   iacTypes.BoolValue
+	IsMultiRegion             iacTypes.BoolValue
+	KMSKeyID                  iacTypes.StringValue
+	CloudWatchLogsLogGroupArn iacTypes.StringValue
+	IsLogging                 iacTypes.BoolValue
+	BucketName                iacTypes.StringValue
 	EventSelectors            []EventSelector
 }
 
 type EventSelector struct {
-	Metadata      defsecTypes.Metadata
+	Metadata      iacTypes.Metadata
 	DataResources []DataResource
-	ReadWriteType defsecTypes.StringValue // ReadOnly, WriteOnly, All. Default value is All for TF.
+	ReadWriteType iacTypes.StringValue // ReadOnly, WriteOnly, All. Default value is All for TF.
 }
 
 type DataResource struct {
-	Metadata defsecTypes.Metadata
-	Type     defsecTypes.StringValue   //  You can specify only the following value: "AWS::S3::Object", "AWS::Lambda::Function" and "AWS::DynamoDB::Table".
-	Values   []defsecTypes.StringValue // List of ARNs/partial ARNs - e.g. arn:aws:s3:::<bucket name>/ for all objects in a bucket, arn:aws:s3:::<bucket name>/key for specific objects
+	Metadata iacTypes.Metadata
+	Type     iacTypes.StringValue   //  You can specify only the following value: "AWS::S3::Object", "AWS::Lambda::Function" and "AWS::DynamoDB::Table".
+	Values   []iacTypes.StringValue // List of ARNs/partial ARNs - e.g. arn:aws:s3:::<bucket name>/ for all objects in a bucket, arn:aws:s3:::<bucket name>/key for specific objects
 }

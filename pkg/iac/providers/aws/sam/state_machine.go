@@ -2,24 +2,24 @@ package sam
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type StateMachine struct {
-	Metadata             defsecTypes.Metadata
-	Name                 defsecTypes.StringValue
+	Metadata             iacTypes.Metadata
+	Name                 iacTypes.StringValue
 	LoggingConfiguration LoggingConfiguration
-	ManagedPolicies      []defsecTypes.StringValue
+	ManagedPolicies      []iacTypes.StringValue
 	Policies             []iam.Policy
 	Tracing              TracingConfiguration
 }
 
 type LoggingConfiguration struct {
-	Metadata       defsecTypes.Metadata
-	LoggingEnabled defsecTypes.BoolValue
+	Metadata       iacTypes.Metadata
+	LoggingEnabled iacTypes.BoolValue
 }
 
 type TracingConfiguration struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }

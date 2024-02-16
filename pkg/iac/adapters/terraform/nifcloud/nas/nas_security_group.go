@@ -3,7 +3,7 @@ package nas
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/nas"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptNASSecurityGroups(modules terraform.Modules) []nas.NASSecurityGroup {
@@ -16,7 +16,7 @@ func adaptNASSecurityGroups(modules terraform.Modules) []nas.NASSecurityGroup {
 }
 
 func adaptNASSecurityGroup(resource *terraform.Block) nas.NASSecurityGroup {
-	var cidrs []defsecTypes.StringValue
+	var cidrs []iacTypes.StringValue
 
 	for _, rule := range resource.GetBlocks("rule") {
 		cidrs = append(cidrs, rule.GetAttribute("cidr_ip").AsStringValueOrDefault("", resource))

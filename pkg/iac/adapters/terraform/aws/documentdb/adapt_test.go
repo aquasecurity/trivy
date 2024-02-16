@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/documentdb"
 
@@ -37,19 +37,19 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: documentdb.Cluster{
-				Metadata:   defsecTypes.NewTestMetadata(),
-				Identifier: defsecTypes.String("my-docdb-cluster", defsecTypes.NewTestMetadata()),
-				KMSKeyID:   defsecTypes.String("kms-key", defsecTypes.NewTestMetadata()),
-				EnabledLogExports: []defsecTypes.StringValue{
-					defsecTypes.String("audit", defsecTypes.NewTestMetadata()),
+				Metadata:   iacTypes.NewTestMetadata(),
+				Identifier: iacTypes.String("my-docdb-cluster", iacTypes.NewTestMetadata()),
+				KMSKeyID:   iacTypes.String("kms-key", iacTypes.NewTestMetadata()),
+				EnabledLogExports: []iacTypes.StringValue{
+					iacTypes.String("audit", iacTypes.NewTestMetadata()),
 				},
 				Instances: []documentdb.Instance{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						KMSKeyID: defsecTypes.String("kms-key#1", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						KMSKeyID: iacTypes.String("kms-key#1", iacTypes.NewTestMetadata()),
 					},
 				},
-				StorageEncrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -59,10 +59,10 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: documentdb.Cluster{
-				Metadata:         defsecTypes.NewTestMetadata(),
-				Identifier:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				StorageEncrypted: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				KMSKeyID:         defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:         iacTypes.NewTestMetadata(),
+				Identifier:       iacTypes.String("", iacTypes.NewTestMetadata()),
+				StorageEncrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				KMSKeyID:         iacTypes.String("", iacTypes.NewTestMetadata()),
 			},
 		},
 	}

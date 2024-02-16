@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 const AzureVirtualMachine = "azurerm_virtual_machine"
@@ -54,7 +54,7 @@ func adaptManagedDisk(resource *terraform.Block) compute.ManagedDisk {
 		Encryption: compute.Encryption{
 			Metadata: resource.GetMetadata(),
 			// encryption is enabled by default - https://github.com/hashicorp/terraform-provider-azurerm/blob/baf55926fe813011003ee4fb0e8e6134fcfcca87/internal/services/compute/managed_disk_resource.go#L288
-			Enabled: defsecTypes.BoolDefault(true, resource.GetMetadata()),
+			Enabled: iacTypes.BoolDefault(true, resource.GetMetadata()),
 		},
 	}
 
@@ -77,13 +77,13 @@ func adaptLinuxVM(resource *terraform.Block) compute.LinuxVirtualMachine {
 		}
 	}
 	customDataAttr := workingBlock.GetAttribute("custom_data")
-	customDataVal := defsecTypes.StringDefault("", workingBlock.GetMetadata())
+	customDataVal := iacTypes.StringDefault("", workingBlock.GetMetadata())
 	if customDataAttr.IsResolvable() && customDataAttr.IsString() {
 		encoded, err := base64.StdEncoding.DecodeString(customDataAttr.Value().AsString())
 		if err != nil {
 			encoded = []byte(customDataAttr.Value().AsString())
 		}
-		customDataVal = defsecTypes.String(string(encoded), customDataAttr.GetMetadata())
+		customDataVal = iacTypes.String(string(encoded), customDataAttr.GetMetadata())
 	}
 
 	if resource.TypeLabel() == AzureVirtualMachine {
@@ -115,14 +115,14 @@ func adaptWindowsVM(resource *terraform.Block) compute.WindowsVirtualMachine {
 	}
 
 	customDataAttr := workingBlock.GetAttribute("custom_data")
-	customDataVal := defsecTypes.StringDefault("", workingBlock.GetMetadata())
+	customDataVal := iacTypes.StringDefault("", workingBlock.GetMetadata())
 
 	if customDataAttr.IsResolvable() && customDataAttr.IsString() {
 		encoded, err := base64.StdEncoding.DecodeString(customDataAttr.Value().AsString())
 		if err != nil {
 			encoded = []byte(customDataAttr.Value().AsString())
 		}
-		customDataVal = defsecTypes.String(string(encoded), customDataAttr.GetMetadata())
+		customDataVal = iacTypes.String(string(encoded), customDataAttr.GetMetadata())
 	}
 
 	return compute.WindowsVirtualMachine{

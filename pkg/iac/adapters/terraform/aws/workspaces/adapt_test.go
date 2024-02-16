@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/workspaces"
 
@@ -28,19 +28,19 @@ func Test_adaptWorkspace(t *testing.T) {
 		}
 `,
 			expected: workspaces.WorkSpace{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				RootVolume: workspaces.Volume{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 				},
 				UserVolume: workspaces.Volume{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -52,19 +52,19 @@ func Test_adaptWorkspace(t *testing.T) {
 		}
 `,
 			expected: workspaces.WorkSpace{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				RootVolume: workspaces.Volume{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 				UserVolume: workspaces.Volume{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Encryption: workspaces.Encryption{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},

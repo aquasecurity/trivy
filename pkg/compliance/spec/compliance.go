@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	sp "github.com/aquasecurity/trivy-policies/pkg/spec"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,13 +18,13 @@ type Severity string
 
 // ComplianceSpec represent the compliance specification
 type ComplianceSpec struct {
-	Spec defsecTypes.Spec `yaml:"spec"`
+	Spec iacTypes.Spec `yaml:"spec"`
 }
 
 const (
-	FailStatus defsecTypes.ControlStatus = "FAIL"
-	PassStatus defsecTypes.ControlStatus = "PASS"
-	WarnStatus defsecTypes.ControlStatus = "WARN"
+	FailStatus iacTypes.ControlStatus = "FAIL"
+	PassStatus iacTypes.ControlStatus = "PASS"
+	WarnStatus iacTypes.ControlStatus = "WARN"
 )
 
 // Scanners reads spec control and determines the scanners by check ID prefix

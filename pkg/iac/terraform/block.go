@@ -12,7 +12,7 @@ import (
 	"github.com/zclconf/go-cty/cty/gocty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Block struct {
@@ -25,7 +25,7 @@ type Block struct {
 	cloneIndex   int
 	childBlocks  []*Block
 	attributes   []*Attribute
-	metadata     defsecTypes.Metadata
+	metadata     iacTypes.Metadata
 	moduleSource string
 	moduleFS     fs.FS
 	reference    Reference
@@ -49,7 +49,7 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	if moduleBlock != nil {
 		moduleName = moduleBlock.FullName()
 	}
-	rng := defsecTypes.NewRange(
+	rng := iacTypes.NewRange(
 		r.Filename,
 		r.Start.Line,
 		r.End.Line,
@@ -76,7 +76,7 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 		ref.SetKey(key)
 	}
 
-	metadata := defsecTypes.NewMetadata(rng, ref.String())
+	metadata := iacTypes.NewMetadata(rng, ref.String())
 
 	if parentBlock != nil {
 		metadata = metadata.WithParent(parentBlock.metadata)
@@ -128,7 +128,7 @@ func (b *Block) Reference() Reference {
 	return b.reference
 }
 
-func (b *Block) GetMetadata() defsecTypes.Metadata {
+func (b *Block) GetMetadata() iacTypes.Metadata {
 	return b.metadata
 }
 

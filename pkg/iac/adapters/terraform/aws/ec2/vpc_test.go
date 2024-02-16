@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 
@@ -77,50 +77,50 @@ func Test_AdaptVPC(t *testing.T) {
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
 					{
-						Metadata:        defsecTypes.NewTestMetadata(),
-						IsDefault:       defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						ID:              defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						FlowLogsEnabled: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:        iacTypes.NewTestMetadata(),
+						IsDefault:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						ID:              iacTypes.String("", iacTypes.NewTestMetadata()),
+						FlowLogsEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 					{
-						Metadata:        defsecTypes.NewTestMetadata(),
-						IsDefault:       defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						ID:              defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						FlowLogsEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:        iacTypes.NewTestMetadata(),
+						IsDefault:       iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						ID:              iacTypes.String("", iacTypes.NewTestMetadata()),
+						FlowLogsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 				},
 				SecurityGroups: []ec2.SecurityGroup{
 					{
-						Metadata:    defsecTypes.NewTestMetadata(),
-						Description: defsecTypes.String("Allow inbound HTTP traffic", defsecTypes.NewTestMetadata()),
-						IsDefault:   defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						VPCID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata:    iacTypes.NewTestMetadata(),
+						Description: iacTypes.String("Allow inbound HTTP traffic", iacTypes.NewTestMetadata()),
+						IsDefault:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						VPCID:       iacTypes.String("", iacTypes.NewTestMetadata()),
 						IngressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: iacTypes.NewTestMetadata(),
 
-								Description: defsecTypes.String("Rule #1", defsecTypes.NewTestMetadata()),
-								CIDRs: []defsecTypes.StringValue{
-									defsecTypes.String("4.5.6.7/32", defsecTypes.NewTestMetadata()),
+								Description: iacTypes.String("Rule #1", iacTypes.NewTestMetadata()),
+								CIDRs: []iacTypes.StringValue{
+									iacTypes.String("4.5.6.7/32", iacTypes.NewTestMetadata()),
 								},
 							},
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: iacTypes.NewTestMetadata(),
 
-								Description: defsecTypes.String("Rule #2", defsecTypes.NewTestMetadata()),
-								CIDRs: []defsecTypes.StringValue{
-									defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMetadata()),
-									defsecTypes.String("4.5.6.7/32", defsecTypes.NewTestMetadata()),
+								Description: iacTypes.String("Rule #2", iacTypes.NewTestMetadata()),
+								CIDRs: []iacTypes.StringValue{
+									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
+									iacTypes.String("4.5.6.7/32", iacTypes.NewTestMetadata()),
 								},
 							},
 						},
 
 						EgressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata:    defsecTypes.NewTestMetadata(),
-								Description: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								CIDRs: []defsecTypes.StringValue{
-									defsecTypes.String("1.2.3.4/32", defsecTypes.NewTestMetadata()),
+								Metadata:    iacTypes.NewTestMetadata(),
+								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
+								CIDRs: []iacTypes.StringValue{
+									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
 								},
 							},
 						},
@@ -128,19 +128,19 @@ func Test_AdaptVPC(t *testing.T) {
 				},
 				NetworkACLs: []ec2.NetworkACL{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						Rules: []ec2.NetworkACLRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Type:     defsecTypes.String("ingress", defsecTypes.NewTestMetadata()),
-								Action:   defsecTypes.String("allow", defsecTypes.NewTestMetadata()),
-								Protocol: defsecTypes.String("tcp", defsecTypes.NewTestMetadata()),
-								CIDRs: []defsecTypes.StringValue{
-									defsecTypes.String("10.0.0.0/16", defsecTypes.NewTestMetadata()),
+								Metadata: iacTypes.NewTestMetadata(),
+								Type:     iacTypes.String("ingress", iacTypes.NewTestMetadata()),
+								Action:   iacTypes.String("allow", iacTypes.NewTestMetadata()),
+								Protocol: iacTypes.String("tcp", iacTypes.NewTestMetadata()),
+								CIDRs: []iacTypes.StringValue{
+									iacTypes.String("10.0.0.0/16", iacTypes.NewTestMetadata()),
 								},
 							},
 						},
-						IsDefaultRule: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						IsDefaultRule: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -162,37 +162,37 @@ func Test_AdaptVPC(t *testing.T) {
 			expected: ec2.EC2{
 				SecurityGroups: []ec2.SecurityGroup{
 					{
-						Metadata:    defsecTypes.NewTestMetadata(),
-						Description: defsecTypes.String("Managed by Terraform", defsecTypes.NewTestMetadata()),
-						IsDefault:   defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						VPCID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata:    iacTypes.NewTestMetadata(),
+						Description: iacTypes.String("Managed by Terraform", iacTypes.NewTestMetadata()),
+						IsDefault:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						VPCID:       iacTypes.String("", iacTypes.NewTestMetadata()),
 						IngressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata:    defsecTypes.NewTestMetadata(),
-								Description: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:    iacTypes.NewTestMetadata(),
+								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
 							},
 						},
 
 						EgressRules: []ec2.SecurityGroupRule{
 							{
-								Metadata:    defsecTypes.NewTestMetadata(),
-								Description: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:    iacTypes.NewTestMetadata(),
+								Description: iacTypes.String("", iacTypes.NewTestMetadata()),
 							},
 						},
 					},
 				},
 				NetworkACLs: []ec2.NetworkACL{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						Rules: []ec2.NetworkACLRule{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Type:     defsecTypes.String("ingress", defsecTypes.NewTestMetadata()),
-								Action:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								Protocol: defsecTypes.String("-1", defsecTypes.NewTestMetadata()),
+								Metadata: iacTypes.NewTestMetadata(),
+								Type:     iacTypes.String("ingress", iacTypes.NewTestMetadata()),
+								Action:   iacTypes.String("", iacTypes.NewTestMetadata()),
+								Protocol: iacTypes.String("-1", iacTypes.NewTestMetadata()),
 							},
 						},
-						IsDefaultRule: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						IsDefaultRule: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -214,10 +214,10 @@ resource "aws_flow_log" "this" {
 			expected: ec2.EC2{
 				VPCs: []ec2.VPC{
 					{
-						Metadata:        defsecTypes.NewTestMetadata(),
-						IsDefault:       defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						ID:              defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						FlowLogsEnabled: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:        iacTypes.NewTestMetadata(),
+						IsDefault:       iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						ID:              iacTypes.String("", iacTypes.NewTestMetadata()),
+						FlowLogsEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 				},
 			},

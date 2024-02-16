@@ -1,7 +1,7 @@
 package monitor
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Monitor struct {
@@ -9,14 +9,14 @@ type Monitor struct {
 }
 
 type LogProfile struct {
-	Metadata        defsecTypes.Metadata
+	Metadata        iacTypes.Metadata
 	RetentionPolicy RetentionPolicy
-	Categories      []defsecTypes.StringValue
-	Locations       []defsecTypes.StringValue
+	Categories      []iacTypes.StringValue
+	Locations       []iacTypes.StringValue
 }
 
 type RetentionPolicy struct {
-	Metadata defsecTypes.Metadata
-	Enabled  defsecTypes.BoolValue
-	Days     defsecTypes.IntValue
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+	Days     iacTypes.IntValue
 }

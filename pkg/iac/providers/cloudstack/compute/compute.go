@@ -1,7 +1,7 @@
 package compute
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Compute struct {
@@ -9,6 +9,6 @@ type Compute struct {
 }
 
 type Instance struct {
-	Metadata defsecTypes.Metadata
-	UserData defsecTypes.StringValue // not b64 encoded pls
+	Metadata iacTypes.Metadata
+	UserData iacTypes.StringValue // not b64 encoded pls
 }

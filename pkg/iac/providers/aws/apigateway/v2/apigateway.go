@@ -1,7 +1,7 @@
 package v2
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type APIGateway struct {
@@ -17,25 +17,25 @@ const (
 )
 
 type API struct {
-	Metadata     defsecTypes.Metadata
-	Name         defsecTypes.StringValue
-	ProtocolType defsecTypes.StringValue
+	Metadata     iacTypes.Metadata
+	Name         iacTypes.StringValue
+	ProtocolType iacTypes.StringValue
 	Stages       []Stage
 }
 
 type Stage struct {
-	Metadata      defsecTypes.Metadata
-	Name          defsecTypes.StringValue
+	Metadata      iacTypes.Metadata
+	Name          iacTypes.StringValue
 	AccessLogging AccessLogging
 }
 
 type AccessLogging struct {
-	Metadata              defsecTypes.Metadata
-	CloudwatchLogGroupARN defsecTypes.StringValue
+	Metadata              iacTypes.Metadata
+	CloudwatchLogGroupARN iacTypes.StringValue
 }
 
 type DomainName struct {
-	Metadata       defsecTypes.Metadata
-	Name           defsecTypes.StringValue
-	SecurityPolicy defsecTypes.StringValue
+	Metadata       iacTypes.Metadata
+	Name           iacTypes.StringValue
+	SecurityPolicy iacTypes.StringValue
 }

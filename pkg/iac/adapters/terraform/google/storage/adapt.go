@@ -3,7 +3,7 @@ package storage
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/storage"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) storage.Storage {
@@ -36,10 +36,10 @@ func (a *adapter) adaptBuckets() []storage.Bucket {
 	}
 
 	orphanage := storage.Bucket{
-		Metadata:                       defsecTypes.NewUnmanagedMetadata(),
-		Name:                           defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-		Location:                       defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-		EnableUniformBucketLevelAccess: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+		Metadata:                       iacTypes.NewUnmanagedMetadata(),
+		Name:                           iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+		Location:                       iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+		EnableUniformBucketLevelAccess: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 		Members:                        nil,
 		Bindings:                       nil,
 	}
@@ -87,7 +87,7 @@ func (a *adapter) adaptBucketResource(resourceBlock *terraform.Block) storage.Bu
 		Bindings:                       nil,
 		Encryption: storage.BucketEncryption{
 			Metadata:          resourceBlock.GetMetadata(),
-			DefaultKMSKeyName: defsecTypes.StringDefault("", resourceBlock.GetMetadata()),
+			DefaultKMSKeyName: iacTypes.StringDefault("", resourceBlock.GetMetadata()),
 		},
 	}
 

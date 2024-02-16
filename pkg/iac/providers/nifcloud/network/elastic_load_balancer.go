@@ -1,16 +1,16 @@
 package network
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type ElasticLoadBalancer struct {
-	Metadata          defsecTypes.Metadata
+	Metadata          iacTypes.Metadata
 	NetworkInterfaces []NetworkInterface
 	Listeners         []ElasticLoadBalancerListener
 }
 
 type ElasticLoadBalancerListener struct {
-	Metadata defsecTypes.Metadata
-	Protocol defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Protocol iacTypes.StringValue
 }

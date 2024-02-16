@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/mq"
 
@@ -31,12 +31,12 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				Metadata:     defsecTypes.NewTestMetadata(),
-				PublicAccess: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:     iacTypes.NewTestMetadata(),
+				PublicAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				Logging: mq.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					General:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Audit:    defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					General:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Audit:    iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -52,12 +52,12 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				Metadata:     defsecTypes.NewTestMetadata(),
-				PublicAccess: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:     iacTypes.NewTestMetadata(),
+				PublicAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				Logging: mq.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					General:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Audit:    defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					General:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Audit:    iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -68,12 +68,12 @@ func Test_adaptBroker(t *testing.T) {
 			  }
 `,
 			expected: mq.Broker{
-				Metadata:     defsecTypes.NewTestMetadata(),
-				PublicAccess: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:     iacTypes.NewTestMetadata(),
+				PublicAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				Logging: mq.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					General:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Audit:    defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					General:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Audit:    iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},

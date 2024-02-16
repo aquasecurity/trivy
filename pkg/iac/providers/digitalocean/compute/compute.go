@@ -1,7 +1,7 @@
 package compute
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Compute struct {
@@ -12,39 +12,39 @@ type Compute struct {
 }
 
 type Firewall struct {
-	Metadata      defsecTypes.Metadata
+	Metadata      iacTypes.Metadata
 	OutboundRules []OutboundFirewallRule
 	InboundRules  []InboundFirewallRule
 }
 
 type KubernetesCluster struct {
-	Metadata     defsecTypes.Metadata
-	SurgeUpgrade defsecTypes.BoolValue
-	AutoUpgrade  defsecTypes.BoolValue
+	Metadata     iacTypes.Metadata
+	SurgeUpgrade iacTypes.BoolValue
+	AutoUpgrade  iacTypes.BoolValue
 }
 
 type LoadBalancer struct {
-	Metadata            defsecTypes.Metadata
+	Metadata            iacTypes.Metadata
 	ForwardingRules     []ForwardingRule
-	RedirectHttpToHttps defsecTypes.BoolValue
+	RedirectHttpToHttps iacTypes.BoolValue
 }
 
 type ForwardingRule struct {
-	Metadata      defsecTypes.Metadata
-	EntryProtocol defsecTypes.StringValue
+	Metadata      iacTypes.Metadata
+	EntryProtocol iacTypes.StringValue
 }
 
 type OutboundFirewallRule struct {
-	Metadata             defsecTypes.Metadata
-	DestinationAddresses []defsecTypes.StringValue
+	Metadata             iacTypes.Metadata
+	DestinationAddresses []iacTypes.StringValue
 }
 
 type InboundFirewallRule struct {
-	Metadata        defsecTypes.Metadata
-	SourceAddresses []defsecTypes.StringValue
+	Metadata        iacTypes.Metadata
+	SourceAddresses []iacTypes.StringValue
 }
 
 type Droplet struct {
-	Metadata defsecTypes.Metadata
-	SSHKeys  []defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	SSHKeys  []iacTypes.StringValue
 }

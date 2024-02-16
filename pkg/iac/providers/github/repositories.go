@@ -1,14 +1,14 @@
 package github
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Repository struct {
-	Metadata            defsecTypes.Metadata
-	Public              defsecTypes.BoolValue
-	VulnerabilityAlerts defsecTypes.BoolValue
-	Archived            defsecTypes.BoolValue
+	Metadata            iacTypes.Metadata
+	Public              iacTypes.BoolValue
+	VulnerabilityAlerts iacTypes.BoolValue
+	Archived            iacTypes.BoolValue
 }
 
 func (r Repository) IsArchived() bool {

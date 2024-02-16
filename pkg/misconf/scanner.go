@@ -33,7 +33,7 @@ import (
 	_ "embed"
 )
 
-var enabledDefsecTypes = map[detection.FileType]types.ConfigType{
+var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeAzureARM:       types.AzureARM,
 	detection.FileTypeCloudFormation: types.CloudFormation,
 	detection.FileTypeTerraform:      types.Terraform,
@@ -154,7 +154,7 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, xerrors.Errorf("scan config error: %w", err)
 	}
 
-	configType := enabledDefsecTypes[s.fileType]
+	configType := enablediacTypes[s.fileType]
 	misconfs := ResultsToMisconf(configType, s.scanner.Name(), results)
 
 	// Sort misconfigurations

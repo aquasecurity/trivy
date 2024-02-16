@@ -1,7 +1,7 @@
 package v1
 
 import (
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type APIGateway struct {
@@ -10,35 +10,35 @@ type APIGateway struct {
 }
 
 type API struct {
-	Metadata  defsecTypes.Metadata
-	Name      defsecTypes.StringValue
+	Metadata  iacTypes.Metadata
+	Name      iacTypes.StringValue
 	Stages    []Stage
 	Resources []Resource
 }
 
 type Stage struct {
-	Metadata           defsecTypes.Metadata
-	Name               defsecTypes.StringValue
+	Metadata           iacTypes.Metadata
+	Name               iacTypes.StringValue
 	AccessLogging      AccessLogging
-	XRayTracingEnabled defsecTypes.BoolValue
+	XRayTracingEnabled iacTypes.BoolValue
 	RESTMethodSettings []RESTMethodSettings
 }
 
 type Resource struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Methods  []Method
 }
 
 type AccessLogging struct {
-	Metadata              defsecTypes.Metadata
-	CloudwatchLogGroupARN defsecTypes.StringValue
+	Metadata              iacTypes.Metadata
+	CloudwatchLogGroupARN iacTypes.StringValue
 }
 
 type RESTMethodSettings struct {
-	Metadata           defsecTypes.Metadata
-	Method             defsecTypes.StringValue
-	CacheDataEncrypted defsecTypes.BoolValue
-	CacheEnabled       defsecTypes.BoolValue
+	Metadata           iacTypes.Metadata
+	Method             iacTypes.StringValue
+	CacheDataEncrypted iacTypes.BoolValue
+	CacheEnabled       iacTypes.BoolValue
 }
 
 const (
@@ -49,14 +49,14 @@ const (
 )
 
 type Method struct {
-	Metadata          defsecTypes.Metadata
-	HTTPMethod        defsecTypes.StringValue
-	AuthorizationType defsecTypes.StringValue
-	APIKeyRequired    defsecTypes.BoolValue
+	Metadata          iacTypes.Metadata
+	HTTPMethod        iacTypes.StringValue
+	AuthorizationType iacTypes.StringValue
+	APIKeyRequired    iacTypes.BoolValue
 }
 
 type DomainName struct {
-	Metadata       defsecTypes.Metadata
-	Name           defsecTypes.StringValue
-	SecurityPolicy defsecTypes.StringValue
+	Metadata       iacTypes.Metadata
+	Name           iacTypes.StringValue
+	SecurityPolicy iacTypes.StringValue
 }

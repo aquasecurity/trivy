@@ -8,7 +8,7 @@ import (
 	"github.com/open-policy-agent/opa/rego"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type regoResult struct {
@@ -25,16 +25,16 @@ type regoResult struct {
 	Parent       *regoResult
 }
 
-func (r regoResult) GetMetadata() defsecTypes.Metadata {
-	var m defsecTypes.Metadata
+func (r regoResult) GetMetadata() iacTypes.Metadata {
+	var m iacTypes.Metadata
 	if !r.Managed {
-		m = defsecTypes.NewUnmanagedMetadata()
+		m = iacTypes.NewUnmanagedMetadata()
 	} else {
-		rng := defsecTypes.NewRangeWithFSKey(r.Filepath, r.StartLine, r.EndLine, r.SourcePrefix, r.FSKey, r.FS)
+		rng := iacTypes.NewRangeWithFSKey(r.Filepath, r.StartLine, r.EndLine, r.SourcePrefix, r.FSKey, r.FS)
 		if r.Explicit {
-			m = defsecTypes.NewExplicitMetadata(rng, r.Resource)
+			m = iacTypes.NewExplicitMetadata(rng, r.Resource)
 		} else {
-			m = defsecTypes.NewMetadata(rng, r.Resource)
+			m = iacTypes.NewMetadata(rng, r.Resource)
 		}
 	}
 	if r.Parent != nil {

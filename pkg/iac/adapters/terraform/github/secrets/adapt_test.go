@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/github"
 )
@@ -24,12 +24,12 @@ resource "github_actions_environment_secret" "example" {
 `,
 			expected: []github.EnvironmentSecret{
 				{
-					Metadata:       defsecTypes.NewTestMetadata(),
-					Environment:    defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					SecretName:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					PlainTextValue: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					EncryptedValue: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-					Repository:     defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:       iacTypes.NewTestMetadata(),
+					Environment:    iacTypes.String("", iacTypes.NewTestMetadata()),
+					SecretName:     iacTypes.String("", iacTypes.NewTestMetadata()),
+					PlainTextValue: iacTypes.String("", iacTypes.NewTestMetadata()),
+					EncryptedValue: iacTypes.String("", iacTypes.NewTestMetadata()),
+					Repository:     iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -46,12 +46,12 @@ resource "github_actions_environment_secret" "example" {
 `,
 			expected: []github.EnvironmentSecret{
 				{
-					Metadata:       defsecTypes.NewTestMetadata(),
-					SecretName:     defsecTypes.String("a", defsecTypes.NewTestMetadata()),
-					PlainTextValue: defsecTypes.String("b", defsecTypes.NewTestMetadata()),
-					Environment:    defsecTypes.String("c", defsecTypes.NewTestMetadata()),
-					EncryptedValue: defsecTypes.String("d", defsecTypes.NewTestMetadata()),
-					Repository:     defsecTypes.String("e", defsecTypes.NewTestMetadata()),
+					Metadata:       iacTypes.NewTestMetadata(),
+					SecretName:     iacTypes.String("a", iacTypes.NewTestMetadata()),
+					PlainTextValue: iacTypes.String("b", iacTypes.NewTestMetadata()),
+					Environment:    iacTypes.String("c", iacTypes.NewTestMetadata()),
+					EncryptedValue: iacTypes.String("d", iacTypes.NewTestMetadata()),
+					Repository:     iacTypes.String("e", iacTypes.NewTestMetadata()),
 				},
 			},
 		},

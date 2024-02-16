@@ -3,7 +3,7 @@ package rds
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) rds.RDS {
@@ -55,24 +55,24 @@ func getClusters(modules terraform.Modules) (clusters []rds.Cluster) {
 
 	if len(orphanResources) > 0 {
 		orphanage := rds.Cluster{
-			Metadata:                  defsecTypes.NewUnmanagedMetadata(),
-			BackupRetentionPeriodDays: defsecTypes.IntDefault(1, defsecTypes.NewUnmanagedMetadata()),
-			ReplicationSourceARN:      defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata:                  iacTypes.NewUnmanagedMetadata(),
+			BackupRetentionPeriodDays: iacTypes.IntDefault(1, iacTypes.NewUnmanagedMetadata()),
+			ReplicationSourceARN:      iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			PerformanceInsights: rds.PerformanceInsights{
-				Metadata: defsecTypes.NewUnmanagedMetadata(),
-				Enabled:  defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				KMSKeyID: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata: iacTypes.NewUnmanagedMetadata(),
+				Enabled:  iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+				KMSKeyID: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			},
 			Instances: nil,
 			Encryption: rds.Encryption{
-				Metadata:       defsecTypes.NewUnmanagedMetadata(),
-				EncryptStorage: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				KMSKeyID:       defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata:       iacTypes.NewUnmanagedMetadata(),
+				EncryptStorage: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+				KMSKeyID:       iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			},
-			PublicAccess:         defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-			Engine:               defsecTypes.StringUnresolvable(defsecTypes.NewUnmanagedMetadata()),
-			LatestRestorableTime: defsecTypes.TimeUnresolvable(defsecTypes.NewUnmanagedMetadata()),
-			DeletionProtection:   defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			PublicAccess:         iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			Engine:               iacTypes.StringUnresolvable(iacTypes.NewUnmanagedMetadata()),
+			LatestRestorableTime: iacTypes.TimeUnresolvable(iacTypes.NewUnmanagedMetadata()),
+			DeletionProtection:   iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 		}
 		for _, orphan := range orphanResources {
 			orphanage.Instances = append(orphanage.Instances, adaptClusterInstance(orphan, modules))
@@ -99,7 +99,7 @@ func adaptClusterInstance(resource *terraform.Block, modules terraform.Modules) 
 
 	if clusterIdAttr.IsResourceBlockReference("aws_rds_cluster") {
 		if referenced, err := modules.GetReferencedBlock(clusterIdAttr, resource); err == nil {
-			clusterId = defsecTypes.String(referenced.FullName(), referenced.GetMetadata())
+			clusterId = iacTypes.String(referenced.FullName(), referenced.GetMetadata())
 		}
 	}
 
@@ -117,7 +117,7 @@ func adaptClassicDBSecurityGroup(resource *terraform.Block) rds.DBSecurityGroup 
 
 func adaptInstance(resource *terraform.Block, modules terraform.Modules) rds.Instance {
 
-	var ReadReplicaDBInstanceIdentifiers []defsecTypes.StringValue
+	var ReadReplicaDBInstanceIdentifiers []iacTypes.StringValue
 	rrdiAttr := resource.GetAttribute("replicate_source_db")
 	for _, rrdi := range rrdiAttr.AsStringValues() {
 		ReadReplicaDBInstanceIdentifiers = append(ReadReplicaDBInstanceIdentifiers, rrdi)
@@ -132,7 +132,7 @@ func adaptInstance(resource *terraform.Block, modules terraform.Modules) rds.Ins
 		})
 	}
 
-	var EnabledCloudwatchLogsExports []defsecTypes.StringValue
+	var EnabledCloudwatchLogsExports []iacTypes.StringValue
 	ecweAttr := resource.GetAttribute("enabled_cloudwatch_logs_exports")
 	for _, ecwe := range ecweAttr.AsStringValues() {
 		EnabledCloudwatchLogsExports = append(EnabledCloudwatchLogsExports, ecwe)
@@ -148,7 +148,7 @@ func adaptInstance(resource *terraform.Block, modules terraform.Modules) rds.Ins
 	return rds.Instance{
 		Metadata:                         resource.GetMetadata(),
 		BackupRetentionPeriodDays:        resource.GetAttribute("backup_retention_period").AsIntValueOrDefault(0, resource),
-		ReplicationSourceARN:             defsecTypes.StringExplicit(replicaSourceValue, resource.GetMetadata()),
+		ReplicationSourceARN:             iacTypes.StringExplicit(replicaSourceValue, resource.GetMetadata()),
 		PerformanceInsights:              adaptPerformanceInsights(resource),
 		Encryption:                       adaptEncryption(resource),
 		PublicAccess:                     resource.GetAttribute("publicly_accessible").AsBoolValueOrDefault(false, resource),
@@ -162,7 +162,7 @@ func adaptInstance(resource *terraform.Block, modules terraform.Modules) rds.Ins
 		AutoMinorVersionUpgrade:          resource.GetAttribute("auto_minor_version_upgrade").AsBoolValueOrDefault(false, resource),
 		MultiAZ:                          resource.GetAttribute("multi_az").AsBoolValueOrDefault(false, resource),
 		PubliclyAccessible:               resource.GetAttribute("publicly_accessible").AsBoolValueOrDefault(false, resource),
-		LatestRestorableTime:             defsecTypes.TimeUnresolvable(resource.GetMetadata()),
+		LatestRestorableTime:             iacTypes.TimeUnresolvable(resource.GetMetadata()),
 		ReadReplicaDBInstanceIdentifiers: ReadReplicaDBInstanceIdentifiers,
 		TagList:                          TagList,
 		EnabledCloudwatchLogsExports:     EnabledCloudwatchLogsExports,
@@ -177,8 +177,8 @@ func adaptDBParameterGroups(resource *terraform.Block, modules terraform.Modules
 
 		Parameters = append(Parameters, rds.Parameters{
 			Metadata:       paramres.GetMetadata(),
-			ParameterName:  defsecTypes.StringDefault("", paramres.GetMetadata()),
-			ParameterValue: defsecTypes.StringDefault("", paramres.GetMetadata()),
+			ParameterName:  iacTypes.StringDefault("", paramres.GetMetadata()),
+			ParameterValue: iacTypes.StringDefault("", paramres.GetMetadata()),
 		})
 	}
 
@@ -221,9 +221,9 @@ func adaptCluster(resource *terraform.Block, modules terraform.Modules) (rds.Clu
 		PerformanceInsights:       adaptPerformanceInsights(resource),
 		Instances:                 clusterInstances,
 		Encryption:                adaptEncryption(resource),
-		PublicAccess:              defsecTypes.Bool(public, resource.GetMetadata()),
+		PublicAccess:              iacTypes.Bool(public, resource.GetMetadata()),
 		Engine:                    resource.GetAttribute("engine").AsStringValueOrDefault(rds.EngineAurora, resource),
-		LatestRestorableTime:      defsecTypes.TimeUnresolvable(resource.GetMetadata()),
+		LatestRestorableTime:      iacTypes.TimeUnresolvable(resource.GetMetadata()),
 		AvailabilityZones:         resource.GetAttribute("availability_zones").AsStringValueSliceOrEmpty(),
 		DeletionProtection:        resource.GetAttribute("deletion_protection").AsBoolValueOrDefault(false, resource),
 	}, ids

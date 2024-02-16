@@ -3,7 +3,7 @@ package iam
 import (
 	"github.com/liamg/iamgo"
 
-	defsecTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type IAM struct {
@@ -16,19 +16,19 @@ type IAM struct {
 }
 
 type ServerCertificate struct {
-	Metadata   defsecTypes.Metadata
-	Expiration defsecTypes.TimeValue
+	Metadata   iacTypes.Metadata
+	Expiration iacTypes.TimeValue
 }
 
 type Policy struct {
-	Metadata defsecTypes.Metadata
-	Name     defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Name     iacTypes.StringValue
 	Document Document
-	Builtin  defsecTypes.BoolValue
+	Builtin  iacTypes.BoolValue
 }
 
 type Document struct {
-	Metadata defsecTypes.Metadata
+	Metadata iacTypes.Metadata
 	Parsed   iamgo.Document
 	IsOffset bool
 	HasRefs  bool
@@ -45,7 +45,7 @@ func (d Document) ToRego() interface{} {
 		"explicit":     m.IsExplicit(),
 		"value":        string(doc),
 		"sourceprefix": m.Range().GetSourcePrefix(),
-		"fskey":        defsecTypes.CreateFSKey(m.Range().GetFS()),
+		"fskey":        iacTypes.CreateFSKey(m.Range().GetFS()),
 		"resource":     m.Reference(),
 	}
 
@@ -57,20 +57,20 @@ func (d Document) ToRego() interface{} {
 }
 
 type Group struct {
-	Metadata defsecTypes.Metadata
-	Name     defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Name     iacTypes.StringValue
 	Users    []User
 	Policies []Policy
 }
 
 type User struct {
-	Metadata   defsecTypes.Metadata
-	Name       defsecTypes.StringValue
+	Metadata   iacTypes.Metadata
+	Name       iacTypes.StringValue
 	Groups     []Group
 	Policies   []Policy
 	AccessKeys []AccessKey
 	MFADevices []MFADevice
-	LastAccess defsecTypes.TimeValue
+	LastAccess iacTypes.TimeValue
 }
 
 func (u *User) HasLoggedIn() bool {
@@ -78,25 +78,25 @@ func (u *User) HasLoggedIn() bool {
 }
 
 type MFADevice struct {
-	Metadata  defsecTypes.Metadata
-	IsVirtual defsecTypes.BoolValue
+	Metadata  iacTypes.Metadata
+	IsVirtual iacTypes.BoolValue
 }
 
 type AccessKey struct {
-	Metadata     defsecTypes.Metadata
-	AccessKeyId  defsecTypes.StringValue
-	Active       defsecTypes.BoolValue
-	CreationDate defsecTypes.TimeValue
-	LastAccess   defsecTypes.TimeValue
+	Metadata     iacTypes.Metadata
+	AccessKeyId  iacTypes.StringValue
+	Active       iacTypes.BoolValue
+	CreationDate iacTypes.TimeValue
+	LastAccess   iacTypes.TimeValue
 }
 
 type Role struct {
-	Metadata defsecTypes.Metadata
-	Name     defsecTypes.StringValue
+	Metadata iacTypes.Metadata
+	Name     iacTypes.StringValue
 	Policies []Policy
 }
 
-func (d Document) MetadataFromIamGo(r ...iamgo.Range) defsecTypes.Metadata {
+func (d Document) MetadataFromIamGo(r ...iamgo.Range) iacTypes.Metadata {
 	m := d.Metadata
 	if d.HasRefs {
 		return m
@@ -107,14 +107,14 @@ func (d Document) MetadataFromIamGo(r ...iamgo.Range) defsecTypes.Metadata {
 		start = newRange.GetStartLine()
 	}
 	for _, rng := range r {
-		newRange := defsecTypes.NewRange(
+		newRange := iacTypes.NewRange(
 			newRange.GetLocalFilename(),
 			start+rng.StartLine,
 			start+rng.EndLine,
 			newRange.GetSourcePrefix(),
 			newRange.GetFS(),
 		)
-		m = defsecTypes.NewMetadata(newRange, m.Reference()).WithParent(m)
+		m = iacTypes.NewMetadata(newRange, m.Reference()).WithParent(m)
 	}
 	return m
 }
