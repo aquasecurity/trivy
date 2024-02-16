@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -20,8 +18,6 @@ import (
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
 	"golang.org/x/sync/errgroup"
-
-	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
 )
 
 const (
@@ -440,42 +436,14 @@ func installed(cmd string) bool {
 	return err == nil
 }
 
-// GenSchema generates the Trivy IaC schema
-func GenSchema() error {
-	schema, err := schemas.Build()
-	if err != nil {
-		return err
-	}
-	data, err := json.MarshalIndent(schema, "", "  ")
-	if err != nil {
-		return err
-	}
-	if err := os.WriteFile(schemaPath, data, 0600); err != nil {
-		return err
-	}
-	fmt.Println("schema generated")
-	return nil
+type Schema mg.Namespace
+
+func (Schema) Generate() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "generate")
 }
 
-// VerifySchema verifies a generated schema for validity
-func VerifySchema() error {
-	schema, err := schemas.Build()
-	if err != nil {
-		return err
-	}
-	data, err := json.MarshalIndent(schema, "", "  ")
-	if err != nil {
-		return err
-	}
-	existing, err := os.ReadFile(schemaPath)
-	if err != nil {
-		return err
-	}
-	if !bytes.Equal(data, existing) {
-		return fmt.Errorf("schema is out of date:\n\nplease run 'mage genschema' and commit the changes\n")
-	}
-	fmt.Println("schema is valid")
-	return nil
+func (Schema) Verify() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "verify")
 }
 
 // GenAllowedActions generates the list of valid actions for wildcard support
