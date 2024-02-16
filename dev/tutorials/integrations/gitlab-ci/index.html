@@ -3651,7 +3651,7 @@ You're not viewing the latest version.
 <span class="w">    </span><span class="c1"># Build image</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker build -t $IMAGE .</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Build report</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy image --exit-code 0 --format template --template &quot;@contrib/gitlab.tpl&quot; -o gl-container-scanning-report.json $IMAGE</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy image --exit-code 0 --format template --template &quot;@/contrib/gitlab.tpl&quot; -o gl-container-scanning-report.json $IMAGE</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Print report</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy image --exit-code 0 --severity HIGH $IMAGE</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Fail on severe vulnerabilities</span><span class="w"></span>
@@ -3746,9 +3746,9 @@ the <code>template</code> and <code>report</code> type. An updated example is be
 <span class="w">    </span><span class="c1"># Build image</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker build -t $IMAGE .</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Image report</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy image --exit-code 0 --format template --template &quot;@contrib/gitlab-codequality.tpl&quot; -o gl-codeclimate-image.json $IMAGE</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy image --exit-code 0 --format template --template &quot;@/contrib/gitlab-codequality.tpl&quot; -o gl-codeclimate-image.json $IMAGE</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Filesystem report</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy filesystem --scanners misconfig,vuln --exit-code 0 --format template --template &quot;@contrib/gitlab-codequality.tpl&quot; -o gl-codeclimate-fs.json .</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy filesystem --scanners misconfig,vuln --exit-code 0 --format template --template &quot;@/contrib/gitlab-codequality.tpl&quot; -o gl-codeclimate-fs.json .</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Combine report</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apk update &amp;&amp; apk add jq</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jq -s &#39;add&#39; gl-codeclimate-image.json gl-codeclimate-fs.json &gt; gl-codeclimate.json</span><span class="w"></span>

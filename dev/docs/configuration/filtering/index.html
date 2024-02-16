@@ -4255,11 +4255,11 @@ Total: <span class="m">0</span> <span class="o">(</span>UNKNOWN: <span class="m"
 </tr>
 <tr>
 <td align="center">Secret</td>
-<td align="center"></td>
+<td align="center">✓</td>
 </tr>
 <tr>
 <td align="center">License</td>
-<td align="center"></td>
+<td align="center">✓</td>
 </tr>
 </tbody>
 </table>
@@ -4302,7 +4302,8 @@ The <code>input</code> for the evaluation is each <a href="https://github.com/aq
           <span class="o">]</span>,
 ...
 </code></pre></div>
-<p>Each individual vulnerability (under <code>Results.Vulnerabilities</code>) or Misconfiguration (under <code>Results.Misconfigurations</code>) is evaluated for exclusion or inclusion by the <code>ignore</code> rule.</p>
+<p>Each individual Vulnerability, Misconfiguration, License and Secret (under <code>Results.Vulnerabilities</code>, <code>Results.Misconfigurations</code>, 
+<code>Results.Licenses</code>, <code>Results.Secrets</code>) is evaluated for exclusion or inclusion by the <code>ignore</code> rule.</p>
 <p>The following is a Rego ignore policy that filters out every vulnerability with a specific CWE ID (as seen in the JSON example above):</p>
 <div class="highlight"><pre><span></span><code>package trivy
 
