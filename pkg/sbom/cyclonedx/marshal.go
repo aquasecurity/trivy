@@ -402,15 +402,28 @@ func filterProperties(props []core.Property) []core.Property {
 func toCoreComponent(c ftypes.Component) (*core.Component, error) {
 	var props []core.Property
 	for _, prop := range c.Properties {
+		var namespace string
+		name := prop.Name
+		// Separate the Trivy namespace to avoid double spelling of namespaces.
+		if strings.HasPrefix(name, core.Namespace) {
+			name = strings.TrimPrefix(name, core.Namespace)
+			namespace = core.Namespace
+		}
 		props = append(props, core.Property{
-			Name:  prop.Name,
-			Value: prop.Value,
+			Namespace: namespace,
+			Name:      name,
+			Value:     prop.Value,
 		})
 	}
-	p, err := purl.FromString(c.PackageURL)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to parse purl: %w", err)
+	var p *purl.PackageURL
+	if c.PackageURL != "" {
+		var err error
+		p, err = purl.FromString(c.PackageURL)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse purl: %w", err)
+		}
 	}
+
 	return &core.Component{
 		Name:       c.Name,
 		Group:      c.Group,
