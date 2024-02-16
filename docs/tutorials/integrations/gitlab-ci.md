@@ -41,7 +41,7 @@ trivy:
     # Build image
     - docker build -t $IMAGE .
     # Build report
-    - ./trivy image --exit-code 0 --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
+    - ./trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
     # Print report
     - ./trivy image --exit-code 0 --severity HIGH $IMAGE
     # Fail on severe vulnerabilities
@@ -148,9 +148,9 @@ trivy:
     # Build image
     - docker build -t $IMAGE .
     # Image report
-    - ./trivy image --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate-image.json $IMAGE
+    - ./trivy image --exit-code 0 --format template --template "@/contrib/gitlab-codequality.tpl" -o gl-codeclimate-image.json $IMAGE
     # Filesystem report
-    - ./trivy filesystem --scanners misconfig,vuln --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate-fs.json .
+    - ./trivy filesystem --scanners misconfig,vuln --exit-code 0 --format template --template "@/contrib/gitlab-codequality.tpl" -o gl-codeclimate-fs.json .
     # Combine report
     - apk update && apk add jq
     - jq -s 'add' gl-codeclimate-image.json gl-codeclimate-fs.json > gl-codeclimate.json
