@@ -981,7 +981,7 @@ func TestScanner_Scan(t *testing.T) {
 							Message:   "something bad",
 							Namespace: "main.kubernetes.id100",
 							Severity:  "HIGH",
-							Status:    types.StatusFailure,
+							Status:    types.MisconfStatusFailure,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -997,7 +997,7 @@ func TestScanner_Scan(t *testing.T) {
 							References: []string{
 								"https://avd.aquasec.com/misconfig/id200",
 							},
-							Status: types.StatusPassed,
+							Status: types.MisconfStatusPassed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -1016,7 +1016,7 @@ func TestScanner_Scan(t *testing.T) {
 							Message:   "No issues found",
 							Namespace: "main.kubernetes.id300",
 							Severity:  "MEDIUM",
-							Status:    types.StatusFailure,
+							Status:    types.MisconfStatusFailure,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -1028,7 +1028,7 @@ func TestScanner_Scan(t *testing.T) {
 							Message:   "No issues found",
 							Namespace: "main.kubernetes.id100",
 							Severity:  "HIGH",
-							Status:    types.StatusException,
+							Status:    types.MisconfStatusException,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -1199,7 +1199,7 @@ func TestScanner_Scan(t *testing.T) {
 							Description: "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
 							Severity:    "HIGH",
 							Resolution:  "Add 'USER <non root user name>' line to the Dockerfile",
-							Status:      types.StatusFailure,
+							Status:      types.MisconfStatusFailure,
 							PrimaryURL:  "https://avd.aquasec.com/misconfig/ds002",
 							References:  []string{"https://avd.aquasec.com/misconfig/ds002"},
 							CauseMetadata: ftypes.CauseMetadata{
@@ -1219,7 +1219,7 @@ func TestScanner_Scan(t *testing.T) {
 							Description: "When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.",
 							Severity:    "MEDIUM",
 							Resolution:  "Add a tag to the image in the 'FROM' statement",
-							Status:      types.StatusPassed,
+							Status:      types.MisconfStatusPassed,
 							CauseMetadata: ftypes.CauseMetadata{
 								Provider: "Dockerfile",
 								Service:  "general",
