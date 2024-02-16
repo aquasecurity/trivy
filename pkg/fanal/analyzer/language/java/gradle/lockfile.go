@@ -2,7 +2,6 @@ package gradle
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -44,7 +43,7 @@ func newGradleLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 }
 
 func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	licenses, err := findLicenses()
+	poms, err := parsePoms()
 	if err != nil {
 		log.Logger.Warnf("Unable to get licenses: %s", err)
 	}
@@ -64,8 +63,23 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		if app == nil {
 			return nil
 		}
+
+		libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, types.Package) {
+			return lib.ID, lib
+		})
+
 		for i, lib := range app.Libraries {
-			app.Libraries[i].Licenses = licenses[lib.ID]
+			pom := poms[lib.ID]
+			app.Libraries[i].Licenses = pom.Licenses.toStringArray()
+
+			var deps []string
+			for _, dep := range pom.Dependencies.Dependency {
+				id := packageID(dep.GroupID, dep.ArtifactID, dep.Version)
+				if _, ok := libs[id]; ok {
+					deps = append(deps, id)
+				}
+			}
+			app.Libraries[i].DependsOn = deps
 		}
 
 		sort.Sort(app.Libraries)
@@ -93,7 +107,7 @@ func (a gradleLockAnalyzer) Version() int {
 	return version
 }
 
-func findLicenses() (map[string][]string, error) {
+func parsePoms() (map[string]pomXML, error) {
 	// https://docs.gradle.org/current/userguide/directory_layout.html
 	cacheDir := os.Getenv("GRADLE_USER_HOME")
 	if cacheDir == "" {
@@ -114,15 +128,15 @@ func findLicenses() (map[string][]string, error) {
 		return filepath.Ext(path) == ".pom"
 	}
 
-	var licenses = make(map[string][]string)
+	var poms = make(map[string]pomXML)
 	err := fsutils.WalkDir(os.DirFS(cacheDir), ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
 		pom, err := parsePom(r)
 		if err != nil {
 			log.Logger.Debugf("Unable to get licenes for %q: %s", path, err)
 		}
 
-		// Skip if pom file doesn't contain licenses
-		if len(pom.Licenses.License) == 0 {
+		// Skip if pom file doesn't contain licenses or dependencies
+		if len(pom.Licenses.License) == 0 && len(pom.Dependencies.Dependency) == 0 {
 			return nil
 		}
 
@@ -130,24 +144,34 @@ func findLicenses() (map[string][]string, error) {
 		// find these values from filepath
 		// e.g. caches/modules-2/files-2.1/com.google.code.gson/gson/2.9.1/f0cf3edcef8dcb74d27cb427544a309eb718d772/gson-2.9.1.pom
 		dirs := strings.Split(filepath.ToSlash(path), "/")
-		groupID := pom.GroupId
-		if groupID == "" {
-			groupID = dirs[len(dirs)-5]
+		if pom.GroupId == "" {
+			pom.GroupId = dirs[len(dirs)-5]
 		}
-		ver := pom.Version
-		if ver == "" {
-			ver = dirs[len(dirs)-3]
+		if pom.Version == "" {
+			pom.Version = dirs[len(dirs)-3]
 		}
-		id := fmt.Sprintf("%s:%s:%s", groupID, pom.ArtifactId, ver)
 
-		licenses[id] = lo.Map(pom.Licenses.License, func(l License, _ int) string {
-			return l.Name
-		})
+		for i, dep := range pom.Dependencies.Dependency {
+			if strings.HasPrefix(dep.Version, "${") && strings.HasSuffix(dep.Version, "}") {
+				dep.Version = strings.TrimPrefix(strings.TrimSuffix(dep.Version, "}"), "${")
+				if resolvedVer, ok := pom.Properties[dep.Version]; ok {
+					pom.Dependencies.Dependency[i].Version = resolvedVer
+				} else if dep.Version == "${project.version}" {
+					pom.Dependencies.Dependency[i].Version = dep.Version
+				} else {
+					// We use simplified logic to resolve properties.
+					// If necessary, update and use the logic for maven pom's
+					log.Logger.Warnf("Unable to resolve version for %q. Please open a new discussion to update the Trivy logic.", path)
+				}
+			}
+		}
+
+		poms[packageID(pom.GroupId, pom.ArtifactId, pom.Version)] = pom
 		return nil
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("gradle licenses walk error: %w", err)
 	}
 
-	return licenses, nil
+	return poms, nil
 }
