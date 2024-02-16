@@ -1,7 +1,7 @@
 package datalake
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/datalake"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datalake"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 )
 

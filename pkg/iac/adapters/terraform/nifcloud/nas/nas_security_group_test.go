@@ -3,11 +3,11 @@ package nas
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/nas"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/nas"
 )
 
 func Test_adaptNASSecurityGroups(t *testing.T) {
@@ -28,10 +28,10 @@ func Test_adaptNASSecurityGroups(t *testing.T) {
 			}
 `,
 			expected: []nas.NASSecurityGroup{{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				Description: defsecTypes.String("memo", defsecTypes.NewTestMetadata()),
-				CIDRs: []defsecTypes.StringValue{
-					defsecTypes.String("0.0.0.0/0", defsecTypes.NewTestMetadata()),
+				Metadata:    iacTypes.NewTestMetadata(),
+				Description: iacTypes.String("memo", iacTypes.NewTestMetadata()),
+				CIDRs: []iacTypes.StringValue{
+					iacTypes.String("0.0.0.0/0", iacTypes.NewTestMetadata()),
 				},
 			}},
 		},
@@ -45,10 +45,10 @@ func Test_adaptNASSecurityGroups(t *testing.T) {
 `,
 
 			expected: []nas.NASSecurityGroup{{
-				Metadata:    defsecTypes.NewTestMetadata(),
-				Description: defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				CIDRs: []defsecTypes.StringValue{
-					defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:    iacTypes.NewTestMetadata(),
+				Description: iacTypes.String("", iacTypes.NewTestMetadata()),
+				CIDRs: []iacTypes.StringValue{
+					iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 			}},
 		},

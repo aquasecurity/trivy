@@ -1,9 +1,9 @@
 package msk
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/msk"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/msk"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) msk.MSK {
@@ -27,12 +27,12 @@ func adaptCluster(resource *terraform.Block) msk.Cluster {
 		Metadata: resource.GetMetadata(),
 		EncryptionInTransit: msk.EncryptionInTransit{
 			Metadata:     resource.GetMetadata(),
-			ClientBroker: defsecTypes.StringDefault("TLS_PLAINTEXT", resource.GetMetadata()),
+			ClientBroker: iacTypes.StringDefault("TLS_PLAINTEXT", resource.GetMetadata()),
 		},
 		EncryptionAtRest: msk.EncryptionAtRest{
 			Metadata:  resource.GetMetadata(),
-			KMSKeyARN: defsecTypes.StringDefault("", resource.GetMetadata()),
-			Enabled:   defsecTypes.BoolDefault(false, resource.GetMetadata()),
+			KMSKeyARN: iacTypes.StringDefault("", resource.GetMetadata()),
+			Enabled:   iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
 		Logging: msk.Logging{
 			Metadata: resource.GetMetadata(),
@@ -40,15 +40,15 @@ func adaptCluster(resource *terraform.Block) msk.Cluster {
 				Metadata: resource.GetMetadata(),
 				S3: msk.S3Logging{
 					Metadata: resource.GetMetadata(),
-					Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
+					Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 				},
 				Cloudwatch: msk.CloudwatchLogging{
 					Metadata: resource.GetMetadata(),
-					Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
+					Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 				},
 				Firehose: msk.FirehoseLogging{
 					Metadata: resource.GetMetadata(),
-					Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
+					Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 				},
 			},
 		},
@@ -65,7 +65,7 @@ func adaptCluster(resource *terraform.Block) msk.Cluster {
 		if encryptionAtRestAttr := encryptBlock.GetAttribute("encryption_at_rest_kms_key_arn"); encryptionAtRestAttr.IsNotNil() {
 			cluster.EncryptionAtRest.Metadata = encryptionAtRestAttr.GetMetadata()
 			cluster.EncryptionAtRest.KMSKeyARN = encryptionAtRestAttr.AsStringValueOrDefault("", encryptBlock)
-			cluster.EncryptionAtRest.Enabled = defsecTypes.Bool(true, encryptionAtRestAttr.GetMetadata())
+			cluster.EncryptionAtRest.Enabled = iacTypes.Bool(true, encryptionAtRestAttr.GetMetadata())
 		}
 	}
 

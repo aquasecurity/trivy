@@ -7,9 +7,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	fanaltypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -57,7 +57,7 @@ func Test_ResultConversion(t *testing.T) {
 				var s3Results scan.Results
 				s3Results.Add(
 					"something failed",
-					defsecTypes.NewRemoteMetadata((arn.ARN{
+					iacTypes.NewRemoteMetadata((arn.ARN{
 						Partition: "aws",
 						Service:   "s3",
 						Region:    "us-east-1",
@@ -67,7 +67,7 @@ func Test_ResultConversion(t *testing.T) {
 				)
 				s3Results.Add(
 					"something else failed",
-					defsecTypes.NewRemoteMetadata((arn.ARN{
+					iacTypes.NewRemoteMetadata((arn.ARN{
 						Partition: "aws",
 						Service:   "s3",
 						Region:    "us-east-1",
@@ -77,7 +77,7 @@ func Test_ResultConversion(t *testing.T) {
 				)
 				s3Results.Add(
 					"something else failed again",
-					defsecTypes.NewRemoteMetadata((arn.ARN{
+					iacTypes.NewRemoteMetadata((arn.ARN{
 						Partition: "aws",
 						Service:   "s3",
 						Region:    "us-east-1",
@@ -90,7 +90,7 @@ func Test_ResultConversion(t *testing.T) {
 				var ec2Results scan.Results
 				ec2Results.Add(
 					"instance is bad",
-					defsecTypes.NewRemoteMetadata((arn.ARN{
+					iacTypes.NewRemoteMetadata((arn.ARN{
 						Partition: "aws",
 						Service:   "ec2",
 						Region:    "us-east-1",

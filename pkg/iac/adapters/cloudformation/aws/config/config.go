@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/config"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/config"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 

@@ -3,11 +3,11 @@ package openstack
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/openstack"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/openstack"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -30,8 +30,8 @@ func TestFields(t *testing.T) {
 				Compute: openstack.Compute{
 					Instances: []openstack.Instance{
 						{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							AdminPassword: defsecTypes.String("N0tSoS3cretP4ssw0rd", defsecTypes.NewTestMetadata()),
+							Metadata:      iacTypes.NewTestMetadata(),
+							AdminPassword: iacTypes.String("N0tSoS3cretP4ssw0rd", iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -46,8 +46,8 @@ func TestFields(t *testing.T) {
 				Compute: openstack.Compute{
 					Instances: []openstack.Instance{
 						{
-							Metadata:      defsecTypes.NewTestMetadata(),
-							AdminPassword: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:      iacTypes.NewTestMetadata(),
+							AdminPassword: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -69,12 +69,12 @@ func TestFields(t *testing.T) {
 					Firewall: openstack.Firewall{
 						AllowRules: []openstack.FirewallRule{
 							{
-								Metadata:        defsecTypes.NewTestMetadata(),
-								Enabled:         defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-								Destination:     defsecTypes.String("10.10.10.1", defsecTypes.NewTestMetadata()),
-								Source:          defsecTypes.String("10.10.10.2", defsecTypes.NewTestMetadata()),
-								DestinationPort: defsecTypes.String("22", defsecTypes.NewTestMetadata()),
-								SourcePort:      defsecTypes.String("", defsecTypes.NewTestMetadata()),
+								Metadata:        iacTypes.NewTestMetadata(),
+								Enabled:         iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								Destination:     iacTypes.String("10.10.10.1", iacTypes.NewTestMetadata()),
+								Source:          iacTypes.String("10.10.10.2", iacTypes.NewTestMetadata()),
+								DestinationPort: iacTypes.String("22", iacTypes.NewTestMetadata()),
+								SourcePort:      iacTypes.String("", iacTypes.NewTestMetadata()),
 							},
 						},
 					},

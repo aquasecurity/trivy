@@ -1,9 +1,9 @@
 package apigateway
 
 import (
-	v2 "github.com/aquasecurity/defsec/pkg/providers/aws/apigateway/v2"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptAPIsV2(modules terraform.Modules) []v2.API {
@@ -35,9 +35,9 @@ func adaptAPIsV2(modules terraform.Modules) []v2.API {
 	orphanResources := modules.GetResourceByIDs(apiStageIDs.Orphans()...)
 	if len(orphanResources) > 0 {
 		orphanage := v2.API{
-			Metadata:     defsecTypes.NewUnmanagedMetadata(),
-			Name:         defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-			ProtocolType: defsecTypes.StringUnresolvable(defsecTypes.NewUnmanagedMetadata()),
+			Metadata:     iacTypes.NewUnmanagedMetadata(),
+			Name:         iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+			ProtocolType: iacTypes.StringUnresolvable(iacTypes.NewUnmanagedMetadata()),
 			Stages:       nil,
 		}
 		for _, stage := range orphanResources {
@@ -55,7 +55,7 @@ func adaptStageV2(stageBlock *terraform.Block) v2.Stage {
 		Name:     stageBlock.GetAttribute("name").AsStringValueOrDefault("", stageBlock),
 		AccessLogging: v2.AccessLogging{
 			Metadata:              stageBlock.GetMetadata(),
-			CloudwatchLogGroupARN: defsecTypes.StringDefault("", stageBlock.GetMetadata()),
+			CloudwatchLogGroupARN: iacTypes.StringDefault("", stageBlock.GetMetadata()),
 		},
 	}
 	if accessLogging := stageBlock.GetBlock("access_log_settings"); accessLogging.IsNotNil() {
@@ -63,7 +63,7 @@ func adaptStageV2(stageBlock *terraform.Block) v2.Stage {
 		stage.AccessLogging.CloudwatchLogGroupARN = accessLogging.GetAttribute("destination_arn").AsStringValueOrDefault("", accessLogging)
 	} else {
 		stage.AccessLogging.Metadata = stageBlock.GetMetadata()
-		stage.AccessLogging.CloudwatchLogGroupARN = defsecTypes.StringDefault("", stageBlock.GetMetadata())
+		stage.AccessLogging.CloudwatchLogGroupARN = iacTypes.StringDefault("", stageBlock.GetMetadata())
 	}
 	return stage
 }

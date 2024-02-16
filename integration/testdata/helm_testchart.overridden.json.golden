@@ -416,7 +416,7 @@
           "AVDID": "AVD-KSV-0104",
           "Title": "Seccomp policies disabled",
           "Description": "A program inside the container can bypass Seccomp protection policies.",
-          "Message": "container testchart of deployment testchart in default namespace should specify a seccomp profile",
+          "Message": "container \"testchart\" of deployment \"testchart\" in \"default\" namespace should specify a seccomp profile",
           "Namespace": "builtin.kubernetes.KSV104",
           "Query": "data.builtin.kubernetes.KSV104.deny",
           "Resolution": "Specify seccomp either by annotation or by seccomp profile type having allowed values as per pod security standards",

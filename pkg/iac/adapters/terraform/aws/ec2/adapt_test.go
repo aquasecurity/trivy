@@ -3,11 +3,11 @@ package ec2
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -47,24 +47,24 @@ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 			expected: ec2.EC2{
 				Instances: []ec2.Instance{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							Metadata:     defsecTypes.NewTestMetadata(),
-							HttpTokens:   defsecTypes.String("required", defsecTypes.NewTestMetadata()),
-							HttpEndpoint: defsecTypes.String("disabled", defsecTypes.NewTestMetadata()),
+							Metadata:     iacTypes.NewTestMetadata(),
+							HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
+							HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
 						},
-						UserData: defsecTypes.String(
+						UserData: iacTypes.String(
 							`export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 `,
-							defsecTypes.NewTestMetadata()),
+							iacTypes.NewTestMetadata()),
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  defsecTypes.NewTestMetadata(),
-							Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata:  iacTypes.NewTestMetadata(),
+							Encrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 						EBSBlockDevices: []*ec2.BlockDevice{
 							{
-								Metadata:  defsecTypes.NewTestMetadata(),
-								Encrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+								Metadata:  iacTypes.NewTestMetadata(),
+								Encrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							},
 						},
 					},
@@ -80,16 +80,16 @@ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 			expected: ec2.EC2{
 				Instances: []ec2.Instance{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							Metadata:     defsecTypes.NewTestMetadata(),
-							HttpTokens:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
-							HttpEndpoint: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:     iacTypes.NewTestMetadata(),
+							HttpTokens:   iacTypes.String("", iacTypes.NewTestMetadata()),
+							HttpEndpoint: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
-						UserData: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						UserData: iacTypes.String("", iacTypes.NewTestMetadata()),
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  defsecTypes.NewTestMetadata(),
-							Encrypted: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata:  iacTypes.NewTestMetadata(),
+							Encrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -114,26 +114,26 @@ resource "aws_instance" "this" {
 			expected: ec2.EC2{
 				LaunchTemplates: []ec2.LaunchTemplate{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						Instance: ec2.Instance{
-							Metadata: defsecTypes.NewTestMetadata(),
+							Metadata: iacTypes.NewTestMetadata(),
 							MetadataOptions: ec2.MetadataOptions{
-								HttpEndpoint: defsecTypes.String("disabled", defsecTypes.NewTestMetadata()),
-								HttpTokens:   defsecTypes.String("required", defsecTypes.NewTestMetadata()),
+								HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
+								HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
 							},
 						},
 					},
 				},
 				Instances: []ec2.Instance{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							HttpEndpoint: defsecTypes.String("disabled", defsecTypes.NewTestMetadata()),
-							HttpTokens:   defsecTypes.String("required", defsecTypes.NewTestMetadata()),
+							HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
+							HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
 						},
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  defsecTypes.NewTestMetadata(),
-							Encrypted: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata:  iacTypes.NewTestMetadata(),
+							Encrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -159,26 +159,26 @@ resource "aws_instance" "this" {
 			expected: ec2.EC2{
 				LaunchTemplates: []ec2.LaunchTemplate{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						Instance: ec2.Instance{
-							Metadata: defsecTypes.NewTestMetadata(),
+							Metadata: iacTypes.NewTestMetadata(),
 							MetadataOptions: ec2.MetadataOptions{
-								HttpEndpoint: defsecTypes.String("disabled", defsecTypes.NewTestMetadata()),
-								HttpTokens:   defsecTypes.String("required", defsecTypes.NewTestMetadata()),
+								HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
+								HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
 							},
 						},
 					},
 				},
 				Instances: []ec2.Instance{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							HttpEndpoint: defsecTypes.String("disabled", defsecTypes.NewTestMetadata()),
-							HttpTokens:   defsecTypes.String("required", defsecTypes.NewTestMetadata()),
+							HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
+							HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
 						},
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  defsecTypes.NewTestMetadata(),
-							Encrypted: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata:  iacTypes.NewTestMetadata(),
+							Encrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},

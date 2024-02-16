@@ -4,9 +4,9 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/sslcertificate"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/sslcertificate"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptServerCertificates(modules terraform.Modules) []sslcertificate.ServerCertificate {
@@ -20,15 +20,15 @@ func adaptServerCertificates(modules terraform.Modules) []sslcertificate.ServerC
 
 func adaptServerCertificate(resource *terraform.Block) sslcertificate.ServerCertificate {
 	certificateAttr := resource.GetAttribute("certificate")
-	expiryDateVal := defsecTypes.TimeUnresolvable(resource.GetMetadata())
+	expiryDateVal := iacTypes.TimeUnresolvable(resource.GetMetadata())
 
 	if certificateAttr.IsNotNil() {
-		expiryDateVal = defsecTypes.TimeUnresolvable(certificateAttr.GetMetadata())
+		expiryDateVal = iacTypes.TimeUnresolvable(certificateAttr.GetMetadata())
 		if certificateAttr.IsString() {
 			certificateString := certificateAttr.Value().AsString()
 			if block, _ := pem.Decode([]byte(certificateString)); block != nil {
 				if cert, err := x509.ParseCertificate(block.Bytes); err == nil {
-					expiryDateVal = defsecTypes.Time(cert.NotAfter, certificateAttr.GetMetadata())
+					expiryDateVal = iacTypes.Time(cert.NotAfter, certificateAttr.GetMetadata())
 				}
 			}
 		}

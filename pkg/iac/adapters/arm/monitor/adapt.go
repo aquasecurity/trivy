@@ -1,9 +1,9 @@
 package monitor
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/monitor"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/monitor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) monitor.Monitor {

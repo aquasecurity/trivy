@@ -3,12 +3,12 @@ package ecr
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ecr"
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecr"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 
 	"github.com/liamg/iamgo"
 	"github.com/stretchr/testify/assert"
@@ -76,21 +76,21 @@ func Test_adaptRepository(t *testing.T) {
 			  }
 `,
 			expected: ecr.Repository{
-				Metadata:           defsecTypes.NewTestMetadata(),
-				ImageTagsImmutable: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:           iacTypes.NewTestMetadata(),
+				ImageTagsImmutable: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				ImageScanning: ecr.ImageScanning{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					ScanOnPush: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:   iacTypes.NewTestMetadata(),
+					ScanOnPush: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 				Encryption: ecr.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String("KMS", defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("aws_kms_key.ecr_kms", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Type:     iacTypes.String("KMS", iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("aws_kms_key.ecr_kms", iacTypes.NewTestMetadata()),
 				},
 				Policies: []iam.Policy{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Name:     defsecTypes.StringDefault("", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Name:     iacTypes.StringDefault("", iacTypes.NewTestMetadata()),
 						Document: func() iam.Document {
 
 							builder := iamgo.NewPolicyBuilder()
@@ -120,10 +120,10 @@ func Test_adaptRepository(t *testing.T) {
 
 							return iam.Document{
 								Parsed:   builder.Build(),
-								Metadata: defsecTypes.NewTestMetadata(),
+								Metadata: iacTypes.NewTestMetadata(),
 							}
 						}(),
-						Builtin: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Builtin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 			},
@@ -135,16 +135,16 @@ func Test_adaptRepository(t *testing.T) {
 			}
 `,
 			expected: ecr.Repository{
-				Metadata:           defsecTypes.NewTestMetadata(),
-				ImageTagsImmutable: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:           iacTypes.NewTestMetadata(),
+				ImageTagsImmutable: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				ImageScanning: ecr.ImageScanning{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					ScanOnPush: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata:   iacTypes.NewTestMetadata(),
+					ScanOnPush: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 				Encryption: ecr.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String("AES256", defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Type:     iacTypes.String("AES256", iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 			},
 		},

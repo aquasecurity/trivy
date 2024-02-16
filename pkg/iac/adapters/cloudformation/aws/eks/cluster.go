@@ -1,9 +1,9 @@
 package eks
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/eks"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/eks"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getClusters(ctx parser2.FileContext) (clusters []eks.Cluster) {
@@ -16,15 +16,15 @@ func getClusters(ctx parser2.FileContext) (clusters []eks.Cluster) {
 			// Logging not supported for cloudformation https://github.com/aws/containers-roadmap/issues/242
 			Logging: eks.Logging{
 				Metadata:          r.Metadata(),
-				API:               defsecTypes.BoolUnresolvable(r.Metadata()),
-				Audit:             defsecTypes.BoolUnresolvable(r.Metadata()),
-				Authenticator:     defsecTypes.BoolUnresolvable(r.Metadata()),
-				ControllerManager: defsecTypes.BoolUnresolvable(r.Metadata()),
-				Scheduler:         defsecTypes.BoolUnresolvable(r.Metadata()),
+				API:               iacTypes.BoolUnresolvable(r.Metadata()),
+				Audit:             iacTypes.BoolUnresolvable(r.Metadata()),
+				Authenticator:     iacTypes.BoolUnresolvable(r.Metadata()),
+				ControllerManager: iacTypes.BoolUnresolvable(r.Metadata()),
+				Scheduler:         iacTypes.BoolUnresolvable(r.Metadata()),
 			},
 			Encryption: getEncryptionConfig(r),
 			// endpoint protection not supported - https://github.com/aws/containers-roadmap/issues/242
-			PublicAccessEnabled: defsecTypes.BoolUnresolvable(r.Metadata()),
+			PublicAccessEnabled: iacTypes.BoolUnresolvable(r.Metadata()),
 			PublicAccessCIDRs:   nil,
 		}
 
@@ -37,8 +37,8 @@ func getEncryptionConfig(r *parser2.Resource) eks.Encryption {
 
 	encryption := eks.Encryption{
 		Metadata: r.Metadata(),
-		Secrets:  defsecTypes.BoolDefault(false, r.Metadata()),
-		KMSKeyID: defsecTypes.StringDefault("", r.Metadata()),
+		Secrets:  iacTypes.BoolDefault(false, r.Metadata()),
+		KMSKeyID: iacTypes.StringDefault("", r.Metadata()),
 	}
 
 	if encProp := r.GetProperty("EncryptionConfig"); encProp.IsNotNil() {
@@ -47,7 +47,7 @@ func getEncryptionConfig(r *parser2.Resource) eks.Encryption {
 		resourcesProp := encProp.GetProperty("Resources")
 		if resourcesProp.IsList() {
 			if resourcesProp.Contains("secrets") {
-				encryption.Secrets = defsecTypes.Bool(true, resourcesProp.Metadata())
+				encryption.Secrets = iacTypes.Bool(true, resourcesProp.Metadata())
 			}
 		}
 	}

@@ -3,7 +3,7 @@ package terraform
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/stretchr/testify/assert"
 )
 

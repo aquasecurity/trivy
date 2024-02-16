@@ -1,7 +1,7 @@
 package securitycenter
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/securitycenter"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/securitycenter"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 )
 

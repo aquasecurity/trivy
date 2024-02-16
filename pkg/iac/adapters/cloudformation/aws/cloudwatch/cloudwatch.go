@@ -1,7 +1,7 @@
 package cloudwatch
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/cloudwatch"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudwatch"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 

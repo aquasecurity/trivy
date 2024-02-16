@@ -1,7 +1,7 @@
 package iam
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
 )
 
 const GoogleOrganization = "google_organization"

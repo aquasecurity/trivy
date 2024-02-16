@@ -1,9 +1,9 @@
 package appservice
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/appservice"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/appservice"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) appservice.AppService {
@@ -40,22 +40,22 @@ func adaptService(resource *terraform.Block) appservice.Service {
 	enableClientCertVal := enableClientCertAttr.AsBoolValueOrDefault(false, resource)
 
 	identityBlock := resource.GetBlock("identity")
-	typeVal := defsecTypes.String("", resource.GetMetadata())
+	typeVal := iacTypes.String("", resource.GetMetadata())
 	if identityBlock.IsNotNil() {
 		typeAttr := identityBlock.GetAttribute("type")
 		typeVal = typeAttr.AsStringValueOrDefault("", identityBlock)
 	}
 
 	authBlock := resource.GetBlock("auth_settings")
-	enabledVal := defsecTypes.Bool(false, resource.GetMetadata())
+	enabledVal := iacTypes.Bool(false, resource.GetMetadata())
 	if authBlock.IsNotNil() {
 		enabledAttr := authBlock.GetAttribute("enabled")
 		enabledVal = enabledAttr.AsBoolValueOrDefault(false, authBlock)
 	}
 
 	siteBlock := resource.GetBlock("site_config")
-	enableHTTP2Val := defsecTypes.Bool(false, resource.GetMetadata())
-	minTLSVersionVal := defsecTypes.String("1.2", resource.GetMetadata())
+	enableHTTP2Val := iacTypes.Bool(false, resource.GetMetadata())
+	minTLSVersionVal := iacTypes.String("1.2", resource.GetMetadata())
 	if siteBlock.IsNotNil() {
 		enableHTTP2Attr := siteBlock.GetAttribute("http2_enabled")
 		enableHTTP2Val = enableHTTP2Attr.AsBoolValueOrDefault(false, siteBlock)
@@ -67,15 +67,15 @@ func adaptService(resource *terraform.Block) appservice.Service {
 	return appservice.Service{
 		Metadata:         resource.GetMetadata(),
 		EnableClientCert: enableClientCertVal,
-		Identity: struct{ Type defsecTypes.StringValue }{
+		Identity: struct{ Type iacTypes.StringValue }{
 			Type: typeVal,
 		},
-		Authentication: struct{ Enabled defsecTypes.BoolValue }{
+		Authentication: struct{ Enabled iacTypes.BoolValue }{
 			Enabled: enabledVal,
 		},
 		Site: struct {
-			EnableHTTP2       defsecTypes.BoolValue
-			MinimumTLSVersion defsecTypes.StringValue
+			EnableHTTP2       iacTypes.BoolValue
+			MinimumTLSVersion iacTypes.StringValue
 		}{
 			EnableHTTP2:       enableHTTP2Val,
 			MinimumTLSVersion: minTLSVersionVal,

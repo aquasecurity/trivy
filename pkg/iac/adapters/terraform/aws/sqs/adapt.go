@@ -4,11 +4,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/liamg/iamgo"
 
-	iamp "github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	"github.com/aquasecurity/defsec/pkg/providers/aws/sqs"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/iam"
+	iamp "github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sqs"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) sqs.SQS {
@@ -34,11 +34,11 @@ func (a *adapter) adaptQueues() []sqs.Queue {
 
 		policy := iamp.Policy{
 			Metadata: policyBlock.GetMetadata(),
-			Name:     defsecTypes.StringDefault("", policyBlock.GetMetadata()),
+			Name:     iacTypes.StringDefault("", policyBlock.GetMetadata()),
 			Document: iamp.Document{
 				Metadata: policyBlock.GetMetadata(),
 			},
-			Builtin: defsecTypes.Bool(false, policyBlock.GetMetadata()),
+			Builtin: iacTypes.Bool(false, policyBlock.GetMetadata()),
 		}
 		if attr := policyBlock.GetAttribute("policy"); attr.IsString() {
 			dataBlock, err := a.modules.GetBlockById(attr.Value().AsString())
@@ -76,12 +76,12 @@ func (a *adapter) adaptQueues() []sqs.Queue {
 		}
 
 		a.queues[uuid.NewString()] = sqs.Queue{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
-			QueueURL: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			QueueURL: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			Encryption: sqs.Encryption{
-				Metadata:          defsecTypes.NewUnmanagedMetadata(),
-				ManagedEncryption: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-				KMSKeyID:          defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata:          iacTypes.NewUnmanagedMetadata(),
+				ManagedEncryption: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+				KMSKeyID:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			},
 			Policies: []iamp.Policy{policy},
 		}
@@ -107,11 +107,11 @@ func (a *adapter) adaptQueue(resource *terraform.Block) {
 		if err != nil {
 			policy := iamp.Policy{
 				Metadata: attr.GetMetadata(),
-				Name:     defsecTypes.StringDefault("", attr.GetMetadata()),
+				Name:     iacTypes.StringDefault("", attr.GetMetadata()),
 				Document: iamp.Document{
 					Metadata: attr.GetMetadata(),
 				},
-				Builtin: defsecTypes.Bool(false, attr.GetMetadata()),
+				Builtin: iacTypes.Bool(false, attr.GetMetadata()),
 			}
 			parsed, err := iamgo.ParseString(attr.Value().AsString())
 			if err == nil {
@@ -124,14 +124,14 @@ func (a *adapter) adaptQueue(resource *terraform.Block) {
 			if doc, err := iam.ConvertTerraformDocument(a.modules, dataBlock); err == nil {
 				policy := iamp.Policy{
 					Metadata: attr.GetMetadata(),
-					Name:     defsecTypes.StringDefault("", attr.GetMetadata()),
+					Name:     iacTypes.StringDefault("", attr.GetMetadata()),
 					Document: iamp.Document{
 						Metadata: doc.Source.GetMetadata(),
 						Parsed:   doc.Document,
 						IsOffset: true,
 						HasRefs:  false,
 					},
-					Builtin: defsecTypes.Bool(false, attr.GetMetadata()),
+					Builtin: iacTypes.Bool(false, attr.GetMetadata()),
 				}
 				policies = append(policies, policy)
 			}
@@ -142,12 +142,12 @@ func (a *adapter) adaptQueue(resource *terraform.Block) {
 			if doc, err := iam.ConvertTerraformDocument(a.modules, refBlock); err == nil {
 				policy := iamp.Policy{
 					Metadata: doc.Source.GetMetadata(),
-					Name:     defsecTypes.StringDefault("", doc.Source.GetMetadata()),
+					Name:     iacTypes.StringDefault("", doc.Source.GetMetadata()),
 					Document: iamp.Document{
 						Metadata: doc.Source.GetMetadata(),
 						Parsed:   doc.Document,
 					},
-					Builtin: defsecTypes.Bool(false, refBlock.GetMetadata()),
+					Builtin: iacTypes.Bool(false, refBlock.GetMetadata()),
 				}
 				policies = append(policies, policy)
 			}
@@ -156,7 +156,7 @@ func (a *adapter) adaptQueue(resource *terraform.Block) {
 
 	a.queues[resource.ID()] = sqs.Queue{
 		Metadata: resource.GetMetadata(),
-		QueueURL: defsecTypes.StringDefault("", resource.GetMetadata()),
+		QueueURL: iacTypes.StringDefault("", resource.GetMetadata()),
 		Encryption: sqs.Encryption{
 			Metadata:          resource.GetMetadata(),
 			ManagedEncryption: managedEncryption.AsBoolValueOrDefault(false, resource),

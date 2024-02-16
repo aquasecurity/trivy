@@ -3,10 +3,10 @@ package network
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/network"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/network"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptElasticLoadBalancers(t *testing.T) {
@@ -33,22 +33,22 @@ func Test_adaptElasticLoadBalancers(t *testing.T) {
             }
 `,
 			expected: []network.ElasticLoadBalancer{{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						Metadata:     defsecTypes.NewTestMetadata(),
-						NetworkID:    defsecTypes.String("net-COMMON_PRIVATE", defsecTypes.NewTestMetadata()),
-						IsVipNetwork: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:     iacTypes.NewTestMetadata(),
+						NetworkID:    iacTypes.String("net-COMMON_PRIVATE", iacTypes.NewTestMetadata()),
+						IsVipNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					},
 				},
 				Listeners: []network.ElasticLoadBalancerListener{
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Protocol: defsecTypes.String("HTTP", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Protocol: iacTypes.String("HTTP", iacTypes.NewTestMetadata()),
 					},
 					{
-						Metadata: defsecTypes.NewTestMetadata(),
-						Protocol: defsecTypes.String("HTTPS", defsecTypes.NewTestMetadata()),
+						Metadata: iacTypes.NewTestMetadata(),
+						Protocol: iacTypes.String("HTTPS", iacTypes.NewTestMetadata()),
 					},
 				},
 			}},
@@ -63,16 +63,16 @@ func Test_adaptElasticLoadBalancers(t *testing.T) {
 `,
 
 			expected: []network.ElasticLoadBalancer{{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						Metadata:     defsecTypes.NewTestMetadata(),
-						NetworkID:    defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						IsVipNetwork: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:     iacTypes.NewTestMetadata(),
+						NetworkID:    iacTypes.String("", iacTypes.NewTestMetadata()),
+						IsVipNetwork: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 				},
 				Listeners: []network.ElasticLoadBalancerListener{{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 				}},
 			}},
 		},

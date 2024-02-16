@@ -3,11 +3,11 @@ package cloudfront
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/cloudfront"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -45,27 +45,27 @@ func Test_adaptDistribution(t *testing.T) {
 			}
 `,
 			expected: cloudfront.Distribution{
-				Metadata: defsecTypes.NewTestMetadata(),
-				WAFID:    defsecTypes.String("waf_id", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				WAFID:    iacTypes.String("waf_id", iacTypes.NewTestMetadata()),
 				Logging: cloudfront.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Bucket:   defsecTypes.String("mylogs.s3.amazonaws.com", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Bucket:   iacTypes.String("mylogs.s3.amazonaws.com", iacTypes.NewTestMetadata()),
 				},
 				DefaultCacheBehaviour: cloudfront.CacheBehaviour{
-					Metadata:             defsecTypes.NewTestMetadata(),
-					ViewerProtocolPolicy: defsecTypes.String("redirect-to-https", defsecTypes.NewTestMetadata()),
+					Metadata:             iacTypes.NewTestMetadata(),
+					ViewerProtocolPolicy: iacTypes.String("redirect-to-https", iacTypes.NewTestMetadata()),
 				},
 				OrdererCacheBehaviours: []cloudfront.CacheBehaviour{
 					{
-						Metadata:             defsecTypes.NewTestMetadata(),
-						ViewerProtocolPolicy: defsecTypes.String("redirect-to-https", defsecTypes.NewTestMetadata()),
+						Metadata:             iacTypes.NewTestMetadata(),
+						ViewerProtocolPolicy: iacTypes.String("redirect-to-https", iacTypes.NewTestMetadata()),
 					},
 				},
 				ViewerCertificate: cloudfront.ViewerCertificate{
-					Metadata:                     defsecTypes.NewTestMetadata(),
-					MinimumProtocolVersion:       defsecTypes.String("TLSv1.2_2021", defsecTypes.NewTestMetadata()),
-					CloudfrontDefaultCertificate: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					SSLSupportMethod:             defsecTypes.String("sni-only", defsecTypes.NewTestMetadata()),
+					Metadata:                     iacTypes.NewTestMetadata(),
+					MinimumProtocolVersion:       iacTypes.String("TLSv1.2_2021", iacTypes.NewTestMetadata()),
+					CloudfrontDefaultCertificate: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					SSLSupportMethod:             iacTypes.String("sni-only", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -76,20 +76,20 @@ func Test_adaptDistribution(t *testing.T) {
 			}
 `,
 			expected: cloudfront.Distribution{
-				Metadata: defsecTypes.NewTestMetadata(),
-				WAFID:    defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				WAFID:    iacTypes.String("", iacTypes.NewTestMetadata()),
 				Logging: cloudfront.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Bucket:   defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Bucket:   iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 				DefaultCacheBehaviour: cloudfront.CacheBehaviour{
-					Metadata:             defsecTypes.NewTestMetadata(),
-					ViewerProtocolPolicy: defsecTypes.String("allow-all", defsecTypes.NewTestMetadata()),
+					Metadata:             iacTypes.NewTestMetadata(),
+					ViewerProtocolPolicy: iacTypes.String("allow-all", iacTypes.NewTestMetadata()),
 				},
 
 				ViewerCertificate: cloudfront.ViewerCertificate{
-					Metadata:               defsecTypes.NewTestMetadata(),
-					MinimumProtocolVersion: defsecTypes.String("TLSv1", defsecTypes.NewTestMetadata()),
+					Metadata:               iacTypes.NewTestMetadata(),
+					MinimumProtocolVersion: iacTypes.String("TLSv1", iacTypes.NewTestMetadata()),
 				},
 			},
 		},

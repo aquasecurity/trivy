@@ -3,11 +3,11 @@ package monitor
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/monitor"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/monitor"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -42,21 +42,21 @@ func Test_adaptLogProfile(t *testing.T) {
 			  }
 `,
 			expected: monitor.LogProfile{
-				Metadata: defsecTypes.NewTestMetadata(),
-				Categories: []defsecTypes.StringValue{
-					defsecTypes.String("Action", defsecTypes.NewTestMetadata()),
-					defsecTypes.String("Delete", defsecTypes.NewTestMetadata()),
-					defsecTypes.String("Write", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				Categories: []iacTypes.StringValue{
+					iacTypes.String("Action", iacTypes.NewTestMetadata()),
+					iacTypes.String("Delete", iacTypes.NewTestMetadata()),
+					iacTypes.String("Write", iacTypes.NewTestMetadata()),
 				},
 				RetentionPolicy: monitor.RetentionPolicy{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					Days:     defsecTypes.Int(365, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					Days:     iacTypes.Int(365, iacTypes.NewTestMetadata()),
 				},
-				Locations: []defsecTypes.StringValue{
-					defsecTypes.String("eastus", defsecTypes.NewTestMetadata()),
-					defsecTypes.String("eastus2", defsecTypes.NewTestMetadata()),
-					defsecTypes.String("southcentralus", defsecTypes.NewTestMetadata()),
+				Locations: []iacTypes.StringValue{
+					iacTypes.String("eastus", iacTypes.NewTestMetadata()),
+					iacTypes.String("eastus2", iacTypes.NewTestMetadata()),
+					iacTypes.String("southcentralus", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -67,11 +67,11 @@ func Test_adaptLogProfile(t *testing.T) {
 			  }
 `,
 			expected: monitor.LogProfile{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				RetentionPolicy: monitor.RetentionPolicy{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					Days:     defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Days:     iacTypes.Int(0, iacTypes.NewTestMetadata()),
 				},
 			},
 		},

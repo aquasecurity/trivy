@@ -10,7 +10,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 )
 
 type StatisticsItem struct {

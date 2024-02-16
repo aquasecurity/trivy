@@ -14,10 +14,10 @@ import (
 	"github.com/zclconf/go-cty/cty/convert"
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	tfcontext "github.com/aquasecurity/defsec/pkg/terraform/context"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 const (

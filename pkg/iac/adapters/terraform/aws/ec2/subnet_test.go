@@ -3,11 +3,11 @@ package ec2
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -28,8 +28,8 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				MapPublicIpOnLaunch: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -41,8 +41,8 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				MapPublicIpOnLaunch: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -53,8 +53,8 @@ func Test_adaptSubnet(t *testing.T) {
 			}
 `,
 			expected: ec2.Subnet{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				MapPublicIpOnLaunch: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				MapPublicIpOnLaunch: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

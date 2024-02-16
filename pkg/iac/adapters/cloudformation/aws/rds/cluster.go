@@ -1,9 +1,9 @@
 package rds
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/rds"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getClusters(ctx parser.FileContext) (clusters map[string]rds.Cluster) {
@@ -22,9 +22,9 @@ func getClusters(ctx parser.FileContext) (clusters map[string]rds.Cluster) {
 				EncryptStorage: clusterResource.GetBoolProperty("StorageEncrypted"),
 				KMSKeyID:       clusterResource.GetStringProperty("KmsKeyId"),
 			},
-			PublicAccess:         defsecTypes.BoolDefault(false, clusterResource.Metadata()),
+			PublicAccess:         iacTypes.BoolDefault(false, clusterResource.Metadata()),
 			Engine:               clusterResource.GetStringProperty("Engine", rds.EngineAurora),
-			LatestRestorableTime: defsecTypes.TimeUnresolvable(clusterResource.Metadata()),
+			LatestRestorableTime: iacTypes.TimeUnresolvable(clusterResource.Metadata()),
 			DeletionProtection:   clusterResource.GetBoolProperty("DeletionProtection"),
 		}
 	}

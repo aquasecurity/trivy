@@ -3,11 +3,11 @@ package kinesis
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/kinesis"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/kinesis"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -28,11 +28,11 @@ func Test_adaptStream(t *testing.T) {
 			}
 `,
 			expected: kinesis.Stream{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: kinesis.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String("KMS", defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("my/special/key", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Type:     iacTypes.String("KMS", iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("my/special/key", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -43,11 +43,11 @@ func Test_adaptStream(t *testing.T) {
 			}
 `,
 			expected: kinesis.Stream{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: kinesis.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Type:     defsecTypes.String("NONE", defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Type:     iacTypes.String("NONE", iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 			},
 		},

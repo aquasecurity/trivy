@@ -3,7 +3,7 @@ package azure
 import (
 	"os"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Deployment struct {

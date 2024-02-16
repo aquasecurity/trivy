@@ -3,9 +3,9 @@ package openstack
 import (
 	"github.com/google/uuid"
 
-	"github.com/aquasecurity/defsec/pkg/providers/openstack"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/openstack"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptNetworking(modules terraform.Modules) openstack.Networking {
@@ -29,8 +29,8 @@ func adaptSecurityGroups(modules terraform.Modules) []openstack.SecurityGroup {
 	for _, ruleBlock := range modules.GetResourcesByType("openstack_networking_secgroup_rule_v2") {
 		rule := openstack.SecurityGroupRule{
 			Metadata:  ruleBlock.GetMetadata(),
-			IsIngress: defsecTypes.Bool(true, ruleBlock.GetMetadata()),
-			EtherType: defsecTypes.IntDefault(4, ruleBlock.GetMetadata()),
+			IsIngress: iacTypes.Bool(true, ruleBlock.GetMetadata()),
+			EtherType: iacTypes.IntDefault(4, ruleBlock.GetMetadata()),
 			Protocol:  ruleBlock.GetAttribute("protocol").AsStringValueOrDefault("tcp", ruleBlock),
 			PortMin:   ruleBlock.GetAttribute("port_range_min").AsIntValueOrDefault(0, ruleBlock),
 			PortMax:   ruleBlock.GetAttribute("port_range_max").AsIntValueOrDefault(0, ruleBlock),
@@ -39,16 +39,16 @@ func adaptSecurityGroups(modules terraform.Modules) []openstack.SecurityGroup {
 
 		switch etherType := ruleBlock.GetAttribute("ethertype"); {
 		case etherType.Equals("IPv4"):
-			rule.EtherType = defsecTypes.Int(4, etherType.GetMetadata())
+			rule.EtherType = iacTypes.Int(4, etherType.GetMetadata())
 		case etherType.Equals("IPv6"):
-			rule.EtherType = defsecTypes.Int(6, etherType.GetMetadata())
+			rule.EtherType = iacTypes.Int(6, etherType.GetMetadata())
 		}
 
 		switch direction := ruleBlock.GetAttribute("direction"); {
 		case direction.Equals("egress"):
-			rule.IsIngress = defsecTypes.Bool(false, direction.GetMetadata())
+			rule.IsIngress = iacTypes.Bool(false, direction.GetMetadata())
 		case direction.Equals("ingress"):
-			rule.IsIngress = defsecTypes.Bool(true, direction.GetMetadata())
+			rule.IsIngress = iacTypes.Bool(true, direction.GetMetadata())
 		}
 
 		groupID := ruleBlock.GetAttribute("security_group_id")
@@ -61,9 +61,9 @@ func adaptSecurityGroups(modules terraform.Modules) []openstack.SecurityGroup {
 		}
 
 		group := openstack.SecurityGroup{
-			Metadata:    defsecTypes.NewUnmanagedMetadata(),
-			Name:        defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
-			Description: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+			Metadata:    iacTypes.NewUnmanagedMetadata(),
+			Name:        iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
+			Description: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			Rules:       []openstack.SecurityGroupRule{rule},
 		}
 		groupMap[uuid.NewString()] = group

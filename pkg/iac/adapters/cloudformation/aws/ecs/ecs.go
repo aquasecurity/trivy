@@ -1,7 +1,7 @@
 package ecs
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ecs"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecs"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
