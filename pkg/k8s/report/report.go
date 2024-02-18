@@ -137,25 +137,21 @@ func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 
 	var workloadMisconfig, infraMisconfig, rbacAssessment, workloadVulnerabilities, infraVulnerabilities, workloadResource []Resource
 	for _, resource := range k8sReport.Resources {
-		if vulnerabilitiesOrSecretResource(resource) {
+		switch {
+		case vulnerabilitiesOrSecretResource(resource):
 			if resource.Namespace == infraNamespace || nodeInfoResource(resource) {
 				infraVulnerabilities = append(infraVulnerabilities, nodeKind(resource))
 			} else {
 				workloadVulnerabilities = append(workloadVulnerabilities, resource)
 			}
-			continue
-		}
-
-		switch {
 		case scanners.Enabled(types.RBACScanner) && rbacResource(resource):
 			rbacAssessment = append(rbacAssessment, resource)
 		case infraResource(resource):
 			infraMisconfig = append(infraMisconfig, nodeKind(resource))
-
-		case scanners.Enabled(types.MisconfigScanner) && !rbacResource(resource):
-			if slices.Contains(components, workloadComponent) {
-				workloadMisconfig = append(workloadMisconfig, resource)
-			}
+		case scanners.Enabled(types.MisconfigScanner) &&
+			!rbacResource(resource) &&
+			slices.Contains(components, workloadComponent):
+			workloadMisconfig = append(workloadMisconfig, resource)
 		}
 	}
 
@@ -169,7 +165,6 @@ func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 			Resources:     workloadResource,
 			name:          "Workload Assessment",
 		}
-
 		if slices.Contains(components, workloadComponent) {
 			r = append(r, reports{
 				Report:  workloadReport,
