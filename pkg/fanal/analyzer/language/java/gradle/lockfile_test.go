@@ -21,7 +21,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			dir:      "testdata/happy",
+			dir:      "testdata/lockfiles/happy",
 			cacheDir: "testdata/cache",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -64,7 +64,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "happy path without cache",
-			dir:  "testdata/happy",
+			dir:  "testdata/lockfiles/happy",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -100,7 +100,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "empty file",
-			dir:  "testdata/empty",
+			dir:  "testdata/lockfiles/empty",
 			want: &analyzer.AnalysisResult{},
 		},
 	}
