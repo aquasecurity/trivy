@@ -2,10 +2,16 @@ package gradle
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
-	"io"
+	"io/fs"
+	"path"
 	"regexp"
 	"strings"
+
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/log"
 )
 
 const (
@@ -16,8 +22,17 @@ const (
 var pkgRegexp = regexp.MustCompile(fmt.Sprintf(`%s(?P<id>(%s:%s:%s))%s|group: ?%s(?P<group>(%s))%s|name: ?%s(?P<name>(%s))%s|version: ?%s(?P<version>(%s))%s`,
 	quotes, text, text, text, quotes, quotes, text, quotes, quotes, text, quotes, quotes, text, quotes))
 
-func parseBuildGradle(r io.Reader) []string {
-	scanner := bufio.NewScanner(r)
+func parseBuildGradle(fsys fs.FS, dir string) ([]string, bool, error) {
+	f, err := fsys.Open(path.Join(dir, buildGradle))
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			log.Logger.Warnf("Unable to detect direct dependencies: build.gradle file doesn't exist.")
+			return nil, false, nil
+		}
+		return nil, false, xerrors.Errorf("unable to open build.gradle file: %w", err)
+	}
+
+	scanner := bufio.NewScanner(f)
 	var depBlockStarted bool
 	var deps []string
 	for scanner.Scan() {
@@ -35,7 +50,7 @@ func parseBuildGradle(r io.Reader) []string {
 			depBlockStarted = true
 		}
 	}
-	return deps
+	return deps, true, nil
 }
 
 func parseDepLine(line string) string {

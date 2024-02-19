@@ -3,9 +3,11 @@ package gradle
 import (
 	"context"
 	"fmt"
+	"golang.org/x/exp/slices"
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -54,15 +56,22 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 	}
 
 	var apps []types.Application
-	err = fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
+	err = fsutils.WalkDir(input.FS, ".", required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
 		var app *types.Application
-		app, err = language.Parse(types.Gradle, path, r, a.parser)
+		app, err = language.Parse(types.Gradle, filePath, r, a.parser)
 		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", path, err)
+
 		}
 
 		if app == nil {
 			return nil
+		}
+
+		var directDeps []string
+		var buildGradleFound bool
+		directDeps, buildGradleFound, err = parseBuildGradle(input.FS, path.Dir(filePath))
+		if err != nil {
+			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 		}
 
 		libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, types.Package) {
@@ -70,6 +79,13 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		})
 
 		for i, lib := range app.Libraries {
+			if buildGradleFound {
+				app.Libraries[i].Indirect = true
+				if slices.Contains(directDeps, lib.ID) {
+					app.Libraries[i].Indirect = false
+				}
+			}
+
 			pom := poms[lib.ID]
 
 			if len(pom.Licenses.License) > 0 {
