@@ -3,11 +3,11 @@ package rdb
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/rdb"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/rdb"
 )
 
 func Test_adaptDBInstances(t *testing.T) {
@@ -28,12 +28,12 @@ func Test_adaptDBInstances(t *testing.T) {
 			}
 `,
 			expected: []rdb.DBInstance{{
-				Metadata:                  defsecTypes.NewTestMetadata(),
-				BackupRetentionPeriodDays: defsecTypes.Int(2, defsecTypes.NewTestMetadata()),
-				Engine:                    defsecTypes.String("MySQL", defsecTypes.NewTestMetadata()),
-				EngineVersion:             defsecTypes.String("5.7.15", defsecTypes.NewTestMetadata()),
-				NetworkID:                 defsecTypes.String("example-network", defsecTypes.NewTestMetadata()),
-				PublicAccess:              defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                  iacTypes.NewTestMetadata(),
+				BackupRetentionPeriodDays: iacTypes.Int(2, iacTypes.NewTestMetadata()),
+				Engine:                    iacTypes.String("MySQL", iacTypes.NewTestMetadata()),
+				EngineVersion:             iacTypes.String("5.7.15", iacTypes.NewTestMetadata()),
+				NetworkID:                 iacTypes.String("example-network", iacTypes.NewTestMetadata()),
+				PublicAccess:              iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			}},
 		},
 		{
@@ -44,12 +44,12 @@ func Test_adaptDBInstances(t *testing.T) {
 `,
 
 			expected: []rdb.DBInstance{{
-				Metadata:                  defsecTypes.NewTestMetadata(),
-				BackupRetentionPeriodDays: defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
-				Engine:                    defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				EngineVersion:             defsecTypes.String("", defsecTypes.NewTestMetadata()),
-				NetworkID:                 defsecTypes.String("net-COMMON_PRIVATE", defsecTypes.NewTestMetadata()),
-				PublicAccess:              defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:                  iacTypes.NewTestMetadata(),
+				BackupRetentionPeriodDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
+				Engine:                    iacTypes.String("", iacTypes.NewTestMetadata()),
+				EngineVersion:             iacTypes.String("", iacTypes.NewTestMetadata()),
+				NetworkID:                 iacTypes.String("net-COMMON_PRIVATE", iacTypes.NewTestMetadata()),
+				PublicAccess:              iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			}},
 		},
 	}

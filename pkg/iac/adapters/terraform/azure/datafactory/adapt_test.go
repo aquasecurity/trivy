@@ -3,11 +3,11 @@ package datafactory
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/datafactory"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/datafactory"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -30,8 +30,8 @@ func Test_adaptFactory(t *testing.T) {
 			  }
 `,
 			expected: datafactory.Factory{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				EnablePublicNetwork: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				EnablePublicNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -42,8 +42,8 @@ func Test_adaptFactory(t *testing.T) {
 			  }
 `,
 			expected: datafactory.Factory{
-				Metadata:            defsecTypes.NewTestMetadata(),
-				EnablePublicNetwork: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:            iacTypes.NewTestMetadata(),
+				EnablePublicNetwork: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

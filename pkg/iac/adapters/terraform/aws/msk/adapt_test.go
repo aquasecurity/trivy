@@ -3,11 +3,11 @@ package msk
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/msk"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/msk"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -53,31 +53,31 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: msk.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				EncryptionInTransit: msk.EncryptionInTransit{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					ClientBroker: defsecTypes.String("TLS", defsecTypes.NewTestMetadata()),
+					Metadata:     iacTypes.NewTestMetadata(),
+					ClientBroker: iacTypes.String("TLS", iacTypes.NewTestMetadata()),
 				},
 				EncryptionAtRest: msk.EncryptionAtRest{
-					Metadata:  defsecTypes.NewTestMetadata(),
-					KMSKeyARN: defsecTypes.String("foo-bar-key", defsecTypes.NewTestMetadata()),
-					Enabled:   defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata:  iacTypes.NewTestMetadata(),
+					KMSKeyARN: iacTypes.String("foo-bar-key", iacTypes.NewTestMetadata()),
+					Enabled:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
 				Logging: msk.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Broker: msk.BrokerLogging{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						S3: msk.S3Logging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 						Cloudwatch: msk.CloudwatchLogging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 						Firehose: msk.FirehoseLogging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -90,26 +90,26 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: msk.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				EncryptionInTransit: msk.EncryptionInTransit{
-					Metadata:     defsecTypes.NewTestMetadata(),
-					ClientBroker: defsecTypes.String("TLS_PLAINTEXT", defsecTypes.NewTestMetadata()),
+					Metadata:     iacTypes.NewTestMetadata(),
+					ClientBroker: iacTypes.String("TLS_PLAINTEXT", iacTypes.NewTestMetadata()),
 				},
 				Logging: msk.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
+					Metadata: iacTypes.NewTestMetadata(),
 					Broker: msk.BrokerLogging{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						S3: msk.S3Logging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 						Cloudwatch: msk.CloudwatchLogging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 						Firehose: msk.FirehoseLogging{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},

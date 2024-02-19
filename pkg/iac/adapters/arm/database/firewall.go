@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/database"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 )
 

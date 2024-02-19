@@ -3,11 +3,11 @@ package compute
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/cloudstack/compute"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/cloudstack/compute"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -30,9 +30,9 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 			}
 `,
 			expected: compute.Instance{
-				Metadata: defsecTypes.NewTestMetadata(),
-				UserData: defsecTypes.String(`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
-`, defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				UserData: iacTypes.String(`export DATABASE_PASSWORD=\"SomeSortOfPassword\"
+`, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -44,8 +44,8 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 			}
 `,
 			expected: compute.Instance{
-				Metadata: defsecTypes.NewTestMetadata(),
-				UserData: defsecTypes.String(`export DATABASE_PASSWORD="SomeSortOfPassword"`, defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				UserData: iacTypes.String(`export DATABASE_PASSWORD="SomeSortOfPassword"`, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -55,8 +55,8 @@ export DATABASE_PASSWORD=\"SomeSortOfPassword\"
 			}
 `,
 			expected: compute.Instance{
-				Metadata: defsecTypes.NewTestMetadata(),
-				UserData: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				UserData: iacTypes.String("", iacTypes.NewTestMetadata()),
 			},
 		},
 	}

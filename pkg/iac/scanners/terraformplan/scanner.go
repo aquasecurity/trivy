@@ -8,10 +8,10 @@ import (
 
 	"github.com/bmatcuk/doublestar/v4"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	terraformScanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/parser"

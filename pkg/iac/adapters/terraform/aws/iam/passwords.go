@@ -3,22 +3,22 @@ package iam
 import (
 	"math"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptPasswordPolicy(modules terraform.Modules) iam.PasswordPolicy {
 
 	policy := iam.PasswordPolicy{
-		Metadata:             defsecTypes.NewUnmanagedMetadata(),
-		ReusePreventionCount: defsecTypes.IntDefault(0, defsecTypes.NewUnmanagedMetadata()),
-		RequireLowercase:     defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-		RequireUppercase:     defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-		RequireNumbers:       defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-		RequireSymbols:       defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
-		MaxAgeDays:           defsecTypes.IntDefault(math.MaxInt, defsecTypes.NewUnmanagedMetadata()),
-		MinimumLength:        defsecTypes.IntDefault(0, defsecTypes.NewUnmanagedMetadata()),
+		Metadata:             iacTypes.NewUnmanagedMetadata(),
+		ReusePreventionCount: iacTypes.IntDefault(0, iacTypes.NewUnmanagedMetadata()),
+		RequireLowercase:     iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+		RequireUppercase:     iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+		RequireNumbers:       iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+		RequireSymbols:       iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+		MaxAgeDays:           iacTypes.IntDefault(math.MaxInt, iacTypes.NewUnmanagedMetadata()),
+		MinimumLength:        iacTypes.IntDefault(0, iacTypes.NewUnmanagedMetadata()),
 	}
 
 	passwordPolicies := modules.GetResourcesByType("aws_iam_account_password_policy")
@@ -32,42 +32,42 @@ func adaptPasswordPolicy(modules terraform.Modules) iam.PasswordPolicy {
 	policy.Metadata = policyBlock.GetMetadata()
 
 	if attr := policyBlock.GetAttribute("require_lowercase_characters"); attr.IsNotNil() {
-		policy.RequireLowercase = defsecTypes.BoolExplicit(attr.IsTrue(), attr.GetMetadata())
+		policy.RequireLowercase = iacTypes.BoolExplicit(attr.IsTrue(), attr.GetMetadata())
 	} else {
-		policy.RequireLowercase = defsecTypes.BoolDefault(false, policyBlock.GetMetadata())
+		policy.RequireLowercase = iacTypes.BoolDefault(false, policyBlock.GetMetadata())
 	}
 	if attr := policyBlock.GetAttribute("require_uppercase_characters"); attr.IsNotNil() {
-		policy.RequireUppercase = defsecTypes.BoolExplicit(attr.IsTrue(), attr.GetMetadata())
+		policy.RequireUppercase = iacTypes.BoolExplicit(attr.IsTrue(), attr.GetMetadata())
 	} else {
-		policy.RequireUppercase = defsecTypes.BoolDefault(false, policyBlock.GetMetadata())
+		policy.RequireUppercase = iacTypes.BoolDefault(false, policyBlock.GetMetadata())
 	}
 	if attr := policyBlock.GetAttribute("require_numbers"); attr.IsNotNil() {
-		policy.RequireNumbers = defsecTypes.BoolExplicit(attr.IsTrue(), attr.GetMetadata())
+		policy.RequireNumbers = iacTypes.BoolExplicit(attr.IsTrue(), attr.GetMetadata())
 	} else {
-		policy.RequireNumbers = defsecTypes.BoolDefault(false, policyBlock.GetMetadata())
+		policy.RequireNumbers = iacTypes.BoolDefault(false, policyBlock.GetMetadata())
 	}
 	if attr := policyBlock.GetAttribute("require_symbols"); attr.IsNotNil() {
-		policy.RequireSymbols = defsecTypes.BoolExplicit(attr.IsTrue(), attr.GetMetadata())
+		policy.RequireSymbols = iacTypes.BoolExplicit(attr.IsTrue(), attr.GetMetadata())
 	} else {
-		policy.RequireSymbols = defsecTypes.BoolDefault(false, policyBlock.GetMetadata())
+		policy.RequireSymbols = iacTypes.BoolDefault(false, policyBlock.GetMetadata())
 	}
 	if attr := policyBlock.GetAttribute("password_reuse_prevention"); attr.IsNumber() {
 		value := attr.AsNumber()
-		policy.ReusePreventionCount = defsecTypes.IntExplicit(int(value), attr.GetMetadata())
+		policy.ReusePreventionCount = iacTypes.IntExplicit(int(value), attr.GetMetadata())
 	} else {
-		policy.ReusePreventionCount = defsecTypes.IntDefault(0, policyBlock.GetMetadata())
+		policy.ReusePreventionCount = iacTypes.IntDefault(0, policyBlock.GetMetadata())
 	}
 	if attr := policyBlock.GetAttribute("max_password_age"); attr.IsNumber() {
 		value := attr.AsNumber()
-		policy.MaxAgeDays = defsecTypes.IntExplicit(int(value), attr.GetMetadata())
+		policy.MaxAgeDays = iacTypes.IntExplicit(int(value), attr.GetMetadata())
 	} else {
-		policy.MaxAgeDays = defsecTypes.IntDefault(math.MaxInt, policyBlock.GetMetadata())
+		policy.MaxAgeDays = iacTypes.IntDefault(math.MaxInt, policyBlock.GetMetadata())
 	}
 	if attr := policyBlock.GetAttribute("minimum_password_length"); attr.IsNumber() {
 		value := attr.AsNumber()
-		policy.MinimumLength = defsecTypes.IntExplicit(int(value), attr.GetMetadata())
+		policy.MinimumLength = iacTypes.IntExplicit(int(value), attr.GetMetadata())
 	} else {
-		policy.MinimumLength = defsecTypes.IntDefault(0, policyBlock.GetMetadata())
+		policy.MinimumLength = iacTypes.IntDefault(0, policyBlock.GetMetadata())
 	}
 
 	return policy

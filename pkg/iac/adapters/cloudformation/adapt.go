@@ -1,9 +1,9 @@
 package cloudformation
 
 import (
-	"github.com/aquasecurity/defsec/pkg/state"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/aws"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/state"
 )
 
 // Adapt adapts the Cloudformation instance

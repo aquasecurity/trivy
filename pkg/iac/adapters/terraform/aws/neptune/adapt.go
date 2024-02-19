@@ -1,9 +1,9 @@
 package neptune
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/neptune"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/neptune"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) neptune.Neptune {
@@ -27,16 +27,16 @@ func adaptCluster(resource *terraform.Block) neptune.Cluster {
 		Metadata: resource.GetMetadata(),
 		Logging: neptune.Logging{
 			Metadata: resource.GetMetadata(),
-			Audit:    defsecTypes.BoolDefault(false, resource.GetMetadata()),
+			Audit:    iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
-		StorageEncrypted: defsecTypes.BoolDefault(false, resource.GetMetadata()),
-		KMSKeyID:         defsecTypes.StringDefault("", resource.GetMetadata()),
+		StorageEncrypted: iacTypes.BoolDefault(false, resource.GetMetadata()),
+		KMSKeyID:         iacTypes.StringDefault("", resource.GetMetadata()),
 	}
 
 	if enableLogExportsAttr := resource.GetAttribute("enable_cloudwatch_logs_exports"); enableLogExportsAttr.IsNotNil() {
 		cluster.Logging.Metadata = enableLogExportsAttr.GetMetadata()
 		if enableLogExportsAttr.Contains("audit") {
-			cluster.Logging.Audit = defsecTypes.Bool(true, enableLogExportsAttr.GetMetadata())
+			cluster.Logging.Audit = iacTypes.Bool(true, enableLogExportsAttr.GetMetadata())
 		}
 	}
 

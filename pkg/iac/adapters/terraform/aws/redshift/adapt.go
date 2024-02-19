@@ -1,9 +1,9 @@
 package redshift
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/redshift"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/redshift"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) redshift.Redshift {
@@ -55,20 +55,20 @@ func adaptCluster(resource *terraform.Block, module *terraform.Module) redshift.
 		MasterUsername:                   resource.GetAttribute("master_username").AsStringValueOrDefault("", resource),
 		NumberOfNodes:                    resource.GetAttribute("number_of_nodes").AsIntValueOrDefault(1, resource),
 		PubliclyAccessible:               resource.GetAttribute("publicly_accessible").AsBoolValueOrDefault(true, resource),
-		LoggingEnabled:                   defsecTypes.Bool(false, resource.GetMetadata()),
-		AutomatedSnapshotRetentionPeriod: defsecTypes.Int(0, resource.GetMetadata()),
+		LoggingEnabled:                   iacTypes.Bool(false, resource.GetMetadata()),
+		AutomatedSnapshotRetentionPeriod: iacTypes.Int(0, resource.GetMetadata()),
 		AllowVersionUpgrade:              resource.GetAttribute("allow_version_upgrade").AsBoolValueOrDefault(true, resource),
-		VpcId:                            defsecTypes.String("", resource.GetMetadata()),
+		VpcId:                            iacTypes.String("", resource.GetMetadata()),
 		Encryption: redshift.Encryption{
 			Metadata: resource.GetMetadata(),
-			Enabled:  defsecTypes.BoolDefault(false, resource.GetMetadata()),
-			KMSKeyID: defsecTypes.StringDefault("", resource.GetMetadata()),
+			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
+			KMSKeyID: iacTypes.StringDefault("", resource.GetMetadata()),
 		},
 		EndPoint: redshift.EndPoint{
 			Metadata: resource.GetMetadata(),
 			Port:     resource.GetAttribute("port").AsIntValueOrDefault(5439, resource),
 		},
-		SubnetGroupName: defsecTypes.StringDefault("", resource.GetMetadata()),
+		SubnetGroupName: iacTypes.StringDefault("", resource.GetMetadata()),
 	}
 
 	encryptedAttr := resource.GetAttribute("encrypted")
@@ -87,7 +87,7 @@ func adaptCluster(resource *terraform.Block, module *terraform.Module) redshift.
 	cluster.Encryption.KMSKeyID = KMSKeyIDAttr.AsStringValueOrDefault("", resource)
 	if KMSKeyIDAttr.IsResourceBlockReference("aws_kms_key") {
 		if kmsKeyBlock, err := module.GetReferencedBlock(KMSKeyIDAttr, resource); err == nil {
-			cluster.Encryption.KMSKeyID = defsecTypes.String(kmsKeyBlock.FullName(), kmsKeyBlock.GetMetadata())
+			cluster.Encryption.KMSKeyID = iacTypes.String(kmsKeyBlock.FullName(), kmsKeyBlock.GetMetadata())
 		}
 	}
 

@@ -1,9 +1,9 @@
 package database
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/database"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	azure2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptMSSQLServers(deployment azure2.Deployment) (msSQlServers []database.MSSQLServer) {
@@ -52,8 +52,8 @@ func adaptSecurityAlertPolicies(resource azure2.Resource, deployment azure2.Depl
 	return policies
 }
 
-func adaptStringList(value azure2.Value) []defsecTypes.StringValue {
-	var list []defsecTypes.StringValue
+func adaptStringList(value azure2.Value) []iacTypes.StringValue {
+	var list []iacTypes.StringValue
 	for _, v := range value.AsList() {
 		list = append(list, v.AsStringValue("", value.Metadata))
 	}

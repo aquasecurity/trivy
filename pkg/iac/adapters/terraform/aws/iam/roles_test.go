@@ -4,10 +4,10 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptRoles(t *testing.T) {
@@ -53,12 +53,12 @@ data "aws_iam_policy_document" "policy" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test_role", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("test_role", iacTypes.NewTestMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test_policy", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Name:     iacTypes.String("test_policy", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
@@ -95,12 +95,12 @@ resource "aws_iam_role_policy_attachment" "test-attach" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-role", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("test-role", iacTypes.NewTestMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-policy", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Name:     iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
@@ -131,12 +131,12 @@ resource "aws_iam_role" "example" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-role", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("test-role", iacTypes.NewTestMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("my_inline_policy", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Name:     iacTypes.String("my_inline_policy", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(false),
 						},
 					},
@@ -181,23 +181,23 @@ resource "aws_iam_role_policy_attachment" "this" {
 `,
 			expected: []iam.Role{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-role1", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("test-role1", iacTypes.NewTestMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-role1-policy", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Name:     iacTypes.String("test-role1-policy", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},
 				},
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-role2", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("test-role2", iacTypes.NewTestMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-role2-policy", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Name:     iacTypes.String("test-role2-policy", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(true),
 						},
 					},

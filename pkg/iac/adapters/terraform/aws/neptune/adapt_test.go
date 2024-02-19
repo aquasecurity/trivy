@@ -3,11 +3,11 @@ package neptune
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/neptune"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/neptune"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -29,13 +29,13 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: neptune.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Logging: neptune.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Audit:    defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Audit:    iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 				},
-				StorageEncrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				KMSKeyID:         defsecTypes.String("kms-key", defsecTypes.NewTestMetadata()),
+				StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				KMSKeyID:         iacTypes.String("kms-key", iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -45,13 +45,13 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: neptune.Cluster{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Logging: neptune.Logging{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Audit:    defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Audit:    iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
-				StorageEncrypted: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				KMSKeyID:         defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				StorageEncrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				KMSKeyID:         iacTypes.String("", iacTypes.NewTestMetadata()),
 			},
 		},
 	}

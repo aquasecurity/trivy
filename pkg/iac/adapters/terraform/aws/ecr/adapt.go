@@ -3,11 +3,11 @@ package ecr
 import (
 	"github.com/liamg/iamgo"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ecr"
-	iamp "github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecr"
+	iamp "github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) ecr.ECR {
@@ -31,14 +31,14 @@ func adaptRepository(resource *terraform.Block, module *terraform.Module, module
 		Metadata: resource.GetMetadata(),
 		ImageScanning: ecr.ImageScanning{
 			Metadata:   resource.GetMetadata(),
-			ScanOnPush: defsecTypes.BoolDefault(false, resource.GetMetadata()),
+			ScanOnPush: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
-		ImageTagsImmutable: defsecTypes.BoolDefault(false, resource.GetMetadata()),
+		ImageTagsImmutable: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		Policies:           nil,
 		Encryption: ecr.Encryption{
 			Metadata: resource.GetMetadata(),
-			Type:     defsecTypes.StringDefault("AES256", resource.GetMetadata()),
-			KMSKeyID: defsecTypes.StringDefault("", resource.GetMetadata()),
+			Type:     iacTypes.StringDefault("AES256", resource.GetMetadata()),
+			KMSKeyID: iacTypes.StringDefault("", resource.GetMetadata()),
 		},
 	}
 
@@ -50,9 +50,9 @@ func adaptRepository(resource *terraform.Block, module *terraform.Module, module
 
 	mutabilityAttr := resource.GetAttribute("image_tag_mutability")
 	if mutabilityAttr.Equals("IMMUTABLE") {
-		repo.ImageTagsImmutable = defsecTypes.Bool(true, mutabilityAttr.GetMetadata())
+		repo.ImageTagsImmutable = iacTypes.Bool(true, mutabilityAttr.GetMetadata())
 	} else if mutabilityAttr.Equals("MUTABLE") {
-		repo.ImageTagsImmutable = defsecTypes.Bool(false, mutabilityAttr.GetMetadata())
+		repo.ImageTagsImmutable = iacTypes.Bool(false, mutabilityAttr.GetMetadata())
 	}
 
 	policyBlocks := module.GetReferencingResources(resource, "aws_ecr_repository_policy", "repository")
@@ -69,12 +69,12 @@ func adaptRepository(resource *terraform.Block, module *terraform.Module, module
 
 				policy := iamp.Policy{
 					Metadata: policyRes.GetMetadata(),
-					Name:     defsecTypes.StringDefault("", policyRes.GetMetadata()),
+					Name:     iacTypes.StringDefault("", policyRes.GetMetadata()),
 					Document: iamp.Document{
 						Parsed:   *parsed,
 						Metadata: policyAttr.GetMetadata(),
 					},
-					Builtin: defsecTypes.Bool(false, policyRes.GetMetadata()),
+					Builtin: iacTypes.Bool(false, policyRes.GetMetadata()),
 				}
 
 				repo.Policies = append(repo.Policies, policy)
@@ -82,13 +82,13 @@ func adaptRepository(resource *terraform.Block, module *terraform.Module, module
 				if doc, err := iam.ConvertTerraformDocument(modules, dataBlock); err == nil {
 					policy := iamp.Policy{
 						Metadata: policyRes.GetMetadata(),
-						Name:     defsecTypes.StringDefault("", policyRes.GetMetadata()),
+						Name:     iacTypes.StringDefault("", policyRes.GetMetadata()),
 						Document: iamp.Document{
 							Parsed:   doc.Document,
 							Metadata: doc.Source.GetMetadata(),
 							IsOffset: true,
 						},
-						Builtin: defsecTypes.Bool(false, policyRes.GetMetadata()),
+						Builtin: iacTypes.Bool(false, policyRes.GetMetadata()),
 					}
 					repo.Policies = append(repo.Policies, policy)
 				}
@@ -105,7 +105,7 @@ func adaptRepository(resource *terraform.Block, module *terraform.Module, module
 		repo.Encryption.KMSKeyID = kmsKeyAttr.AsStringValueOrDefault("", encryptBlock)
 		if kmsKeyAttr.IsResourceBlockReference("aws_kms_key") {
 			if keyBlock, err := module.GetReferencedBlock(kmsKeyAttr, encryptBlock); err == nil {
-				repo.Encryption.KMSKeyID = defsecTypes.String(keyBlock.FullName(), keyBlock.GetMetadata())
+				repo.Encryption.KMSKeyID = iacTypes.String(keyBlock.FullName(), keyBlock.GetMetadata())
 			}
 		}
 	}

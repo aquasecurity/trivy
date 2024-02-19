@@ -3,11 +3,11 @@ package ec2
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -32,11 +32,11 @@ func Test_adaptVolume(t *testing.T) {
 			}
 `,
 			expected: ec2.Volume{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: ec2.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("aws_kms_key.ebs_encryption", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("aws_kms_key.ebs_encryption", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -49,11 +49,11 @@ func Test_adaptVolume(t *testing.T) {
 			}
 `,
 			expected: ec2.Volume{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: ec2.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("string-key", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("string-key", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -64,11 +64,11 @@ func Test_adaptVolume(t *testing.T) {
 			}
 `,
 			expected: ec2.Volume{
-				Metadata: defsecTypes.NewTestMetadata(),
+				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: ec2.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 			},
 		},

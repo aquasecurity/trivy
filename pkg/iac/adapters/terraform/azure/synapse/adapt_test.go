@@ -3,11 +3,11 @@ package synapse
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure/synapse"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/synapse"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,8 +27,8 @@ func Test_adaptWorkspace(t *testing.T) {
 			}
 `,
 			expected: synapse.Workspace{
-				Metadata:                    defsecTypes.NewTestMetadata(),
-				EnableManagedVirtualNetwork: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:                    iacTypes.NewTestMetadata(),
+				EnableManagedVirtualNetwork: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -39,8 +39,8 @@ func Test_adaptWorkspace(t *testing.T) {
 			}
 `,
 			expected: synapse.Workspace{
-				Metadata:                    defsecTypes.NewTestMetadata(),
-				EnableManagedVirtualNetwork: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                    iacTypes.NewTestMetadata(),
+				EnableManagedVirtualNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -50,8 +50,8 @@ func Test_adaptWorkspace(t *testing.T) {
 			}
 `,
 			expected: synapse.Workspace{
-				Metadata:                    defsecTypes.NewTestMetadata(),
-				EnableManagedVirtualNetwork: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:                    iacTypes.NewTestMetadata(),
+				EnableManagedVirtualNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

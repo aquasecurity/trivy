@@ -1,9 +1,9 @@
 package compute
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/compute"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) compute.Compute {
@@ -30,7 +30,7 @@ func adaptManagedDisk(resource azure.Resource) compute.ManagedDisk {
 		Metadata: resource.Metadata,
 		Encryption: compute.Encryption{
 			Metadata: resource.Metadata,
-			Enabled:  defsecTypes.Bool(hasEncryption, resource.Metadata),
+			Enabled:  iacTypes.Bool(hasEncryption, resource.Metadata),
 		},
 	}
 }

@@ -1,7 +1,7 @@
 package cloudfront
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/cloudfront"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 

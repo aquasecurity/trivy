@@ -13,9 +13,9 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
 var _ options.ConfigurableParser = (*Parser)(nil)

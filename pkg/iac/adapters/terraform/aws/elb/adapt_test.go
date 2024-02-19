@@ -3,11 +3,11 @@ package elb
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/elb"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elb"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -49,19 +49,19 @@ func Test_Adapt(t *testing.T) {
 			expected: elb.ELB{
 				LoadBalancers: []elb.LoadBalancer{
 					{
-						Metadata:                defsecTypes.NewTestMetadata(),
-						Type:                    defsecTypes.String("application", defsecTypes.NewTestMetadata()),
-						DropInvalidHeaderFields: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-						Internal:                defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:                iacTypes.NewTestMetadata(),
+						Type:                    iacTypes.String("application", iacTypes.NewTestMetadata()),
+						DropInvalidHeaderFields: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Internal:                iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						Listeners: []elb.Listener{
 							{
-								Metadata:  defsecTypes.NewTestMetadata(),
-								Protocol:  defsecTypes.String("HTTPS", defsecTypes.NewTestMetadata()),
-								TLSPolicy: defsecTypes.String("ELBSecurityPolicy-TLS-1-1-2017-01", defsecTypes.NewTestMetadata()),
+								Metadata:  iacTypes.NewTestMetadata(),
+								Protocol:  iacTypes.String("HTTPS", iacTypes.NewTestMetadata()),
+								TLSPolicy: iacTypes.String("ELBSecurityPolicy-TLS-1-1-2017-01", iacTypes.NewTestMetadata()),
 								DefaultActions: []elb.Action{
 									{
-										Metadata: defsecTypes.NewTestMetadata(),
-										Type:     defsecTypes.String("forward", defsecTypes.NewTestMetadata()),
+										Metadata: iacTypes.NewTestMetadata(),
+										Type:     iacTypes.String("forward", iacTypes.NewTestMetadata()),
 									},
 								},
 							},
@@ -79,10 +79,10 @@ func Test_Adapt(t *testing.T) {
 			expected: elb.ELB{
 				LoadBalancers: []elb.LoadBalancer{
 					{
-						Metadata:                defsecTypes.NewTestMetadata(),
-						Type:                    defsecTypes.String("application", defsecTypes.NewTestMetadata()),
-						DropInvalidHeaderFields: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						Internal:                defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:                iacTypes.NewTestMetadata(),
+						Type:                    iacTypes.String("application", iacTypes.NewTestMetadata()),
+						DropInvalidHeaderFields: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Internal:                iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						Listeners:               nil,
 					},
 				},

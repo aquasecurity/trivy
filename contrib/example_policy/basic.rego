@@ -56,3 +56,21 @@ ignore {
 	# https://cwe.mitre.org/data/definitions/352.html
 	input.CweIDs[_] == "CWE-352"
 }
+
+# Ignore a license
+ignore {
+    input.PkgName == "alpine-baselayout"
+    input.Name == "GPL-2.0"
+}
+
+# Ignore loose file license
+ignore {
+	input.Name == "AGPL-3.0"
+	input.FilePath == "/usr/share/grafana/LICENSE"
+}
+
+# Ignore secret
+ignore {
+	input.RuleID == "aws-access-key-id"
+	input.Match == "AWS_ACCESS_KEY_ID=\"********************\""
+}

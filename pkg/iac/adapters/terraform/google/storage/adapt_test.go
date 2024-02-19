@@ -3,12 +3,12 @@ package storage
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/google/iam"
-	"github.com/aquasecurity/defsec/pkg/providers/google/storage"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -48,31 +48,31 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       defsecTypes.NewTestMetadata(),
-						Name:                           defsecTypes.String("image-store.com", defsecTypes.NewTestMetadata()),
-						Location:                       defsecTypes.String("EU", defsecTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						Metadata:                       iacTypes.NewTestMetadata(),
+						Name:                           iacTypes.String("image-store.com", iacTypes.NewTestMetadata()),
+						Location:                       iacTypes.String("EU", iacTypes.NewTestMetadata()),
+						EnableUniformBucketLevelAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						Bindings: []iam.Binding{
 							{
-								Metadata: defsecTypes.NewTestMetadata(),
-								Members: []defsecTypes.StringValue{
-									defsecTypes.String("group:test@example.com", defsecTypes.NewTestMetadata()),
+								Metadata: iacTypes.NewTestMetadata(),
+								Members: []iacTypes.StringValue{
+									iacTypes.String("group:test@example.com", iacTypes.NewTestMetadata()),
 								},
-								Role:                          defsecTypes.String("roles/storage.admin #1", defsecTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Role:                          iacTypes.String("roles/storage.admin #1", iacTypes.NewTestMetadata()),
+								IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 							},
 						},
 						Members: []iam.Member{
 							{
-								Metadata:              defsecTypes.NewTestMetadata(),
-								Member:                defsecTypes.String("serviceAccount:test@example.com", defsecTypes.NewTestMetadata()),
-								Role:                  defsecTypes.String("roles/storage.admin #2", defsecTypes.NewTestMetadata()),
-								DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Metadata:              iacTypes.NewTestMetadata(),
+								Member:                iacTypes.String("serviceAccount:test@example.com", iacTypes.NewTestMetadata()),
+								Role:                  iacTypes.String("roles/storage.admin #2", iacTypes.NewTestMetadata()),
+								DefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 							},
 						},
 						Encryption: storage.BucketEncryption{
-							Metadata:          defsecTypes.NewTestMetadata(),
-							DefaultKMSKeyName: defsecTypes.String("default-kms-key-name", defsecTypes.NewTestMetadata()),
+							Metadata:          iacTypes.NewTestMetadata(),
+							DefaultKMSKeyName: iacTypes.String("default-kms-key-name", iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -94,28 +94,28 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       defsecTypes.NewTestMetadata(),
-						Name:                           defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						Location:                       defsecTypes.String("", defsecTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+						Metadata:                       iacTypes.NewTestMetadata(),
+						Name:                           iacTypes.String("", iacTypes.NewTestMetadata()),
+						Location:                       iacTypes.String("", iacTypes.NewTestMetadata()),
+						EnableUniformBucketLevelAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						Bindings: []iam.Binding{
 							{
-								Metadata:                      defsecTypes.NewTestMetadata(),
-								Role:                          defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Metadata:                      iacTypes.NewTestMetadata(),
+								Role:                          iacTypes.String("", iacTypes.NewTestMetadata()),
+								IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 							},
 						},
 						Members: []iam.Member{
 							{
-								Metadata:              defsecTypes.NewTestMetadata(),
-								Member:                defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								Role:                  defsecTypes.String("", defsecTypes.NewTestMetadata()),
-								DefaultServiceAccount: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+								Metadata:              iacTypes.NewTestMetadata(),
+								Member:                iacTypes.String("", iacTypes.NewTestMetadata()),
+								Role:                  iacTypes.String("", iacTypes.NewTestMetadata()),
+								DefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 							},
 						},
 						Encryption: storage.BucketEncryption{
-							Metadata:          defsecTypes.NewTestMetadata(),
-							DefaultKMSKeyName: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata:          iacTypes.NewTestMetadata(),
+							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 					},
 				},

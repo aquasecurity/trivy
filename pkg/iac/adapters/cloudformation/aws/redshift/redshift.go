@@ -1,7 +1,7 @@
 package redshift
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/redshift"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/redshift"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 

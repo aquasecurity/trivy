@@ -3,11 +3,11 @@ package iam
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/liamg/iamgo"
 )
 
@@ -25,7 +25,7 @@ func defaultPolicyDocuemnt(offset bool) iam.Document {
 
 	return iam.Document{
 		Parsed:   builder.Build(),
-		Metadata: defsecTypes.NewTestMetadata(),
+		Metadata: iacTypes.NewTestMetadata(),
 		IsOffset: offset,
 		HasRefs:  false,
 	}
@@ -59,10 +59,10 @@ func Test_adaptPolicies(t *testing.T) {
 `,
 			expected: []iam.Policy{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("test", iacTypes.NewTestMetadata()),
 					Document: defaultPolicyDocuemnt(false),
-					Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -95,11 +95,11 @@ resource "aws_iam_policy" "this" {
 `,
 			expected: []iam.Policy{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-0", defsecTypes.NewTestMetadata()),
-					Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("test-0", iacTypes.NewTestMetadata()),
+					Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					Document: iam.Document{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						IsOffset: true,
 						HasRefs:  false,
 						Parsed: func() iamgo.Document {
@@ -146,11 +146,11 @@ resource "aws_iam_policy" "this" {
 }`,
 			expected: []iam.Policy{
 				{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Name:     defsecTypes.String("test-sqs1", defsecTypes.NewTestMetadata()),
-					Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Name:     iacTypes.String("test-sqs1", iacTypes.NewTestMetadata()),
+					Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 					Document: iam.Document{
-						Metadata: defsecTypes.NewTestMetadata(),
+						Metadata: iacTypes.NewTestMetadata(),
 						IsOffset: true,
 						HasRefs:  false,
 						Parsed: func() iamgo.Document {

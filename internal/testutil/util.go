@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 )
 
 func AssertRuleFound(t *testing.T, ruleID string, results scan.Results, message string, args ...interface{}) {

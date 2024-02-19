@@ -3,11 +3,11 @@ package iam
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 )
 
 func Test_adaptPasswordPolicy(t *testing.T) {
@@ -31,14 +31,14 @@ func Test_adaptPasswordPolicy(t *testing.T) {
 			  }
 `,
 			expected: iam.PasswordPolicy{
-				Metadata:             defsecTypes.NewTestMetadata(),
-				ReusePreventionCount: defsecTypes.Int(3, defsecTypes.NewTestMetadata()),
-				RequireLowercase:     defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				RequireUppercase:     defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				RequireNumbers:       defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				RequireSymbols:       defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				MaxAgeDays:           defsecTypes.Int(90, defsecTypes.NewTestMetadata()),
-				MinimumLength:        defsecTypes.Int(8, defsecTypes.NewTestMetadata()),
+				Metadata:             iacTypes.NewTestMetadata(),
+				ReusePreventionCount: iacTypes.Int(3, iacTypes.NewTestMetadata()),
+				RequireLowercase:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				RequireUppercase:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				RequireNumbers:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				RequireSymbols:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				MaxAgeDays:           iacTypes.Int(90, iacTypes.NewTestMetadata()),
+				MinimumLength:        iacTypes.Int(8, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

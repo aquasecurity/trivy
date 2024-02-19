@@ -19,3 +19,8 @@ A Trivy plugin that scans and outputs the results to an interactive html file.
 Trivy-Streamlit is a Streamlit application that allows you to quickly parse the results from a Trivy JSON report.
 
 👉 Get it at: <https://github.com/mfreeman451/trivy-streamlit>
+
+## SecObserve (Community)
+SecObserve can parse Trivy results as CycloneDX reports and provides an unified overview of vulnerabilities from different sources. Vulnerabilities can be evaluated with manual and rule based assessments.
+
+👉 Get it at: <https://github.com/MaibornWolff/SecObserve>

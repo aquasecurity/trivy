@@ -8,8 +8,8 @@ import (
 
 	"github.com/hashicorp/hcl/v2"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func loadBlocksFromFile(file sourceFile, moduleSource string) (hcl.Blocks, []terraform.Ignore, error) {

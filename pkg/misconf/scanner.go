@@ -14,10 +14,9 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm"
 	cfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
@@ -25,6 +24,7 @@ import (
 	dfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile"
 	helm2 "github.com/aquasecurity/trivy/pkg/iac/scanners/helm"
 	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	tfpscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -33,7 +33,7 @@ import (
 	_ "embed"
 )
 
-var enabledDefsecTypes = map[detection.FileType]types.ConfigType{
+var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeAzureARM:       types.AzureARM,
 	detection.FileTypeCloudFormation: types.CloudFormation,
 	detection.FileTypeTerraform:      types.Terraform,
@@ -154,7 +154,7 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, xerrors.Errorf("scan config error: %w", err)
 	}
 
-	configType := enabledDefsecTypes[s.fileType]
+	configType := enablediacTypes[s.fileType]
 	misconfs := ResultsToMisconf(configType, s.scanner.Name(), results)
 
 	// Sort misconfigurations

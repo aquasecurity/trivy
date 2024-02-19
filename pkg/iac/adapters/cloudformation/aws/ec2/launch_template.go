@@ -1,9 +1,9 @@
 package ec2
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getLaunchTemplates(file parser2.FileContext) (templates []ec2.LaunchTemplate) {

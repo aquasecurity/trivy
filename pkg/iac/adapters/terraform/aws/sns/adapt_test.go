@@ -3,11 +3,11 @@ package sns
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/sns"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sns"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,11 +27,11 @@ func Test_adaptTopic(t *testing.T) {
 			}
 `,
 			expected: sns.Topic{
-				Metadata: defsecTypes.NewTestMetadata(),
-				ARN:      defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				ARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
 				Encryption: sns.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					KMSKeyID: defsecTypes.String("/blah", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					KMSKeyID: iacTypes.String("/blah", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
@@ -42,11 +42,11 @@ func Test_adaptTopic(t *testing.T) {
 			}
 `,
 			expected: sns.Topic{
-				Metadata: defsecTypes.NewTestMetadata(),
-				ARN:      defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata: iacTypes.NewTestMetadata(),
+				ARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
 				Encryption: sns.Encryption{
-					Metadata: defsecTypes.NewTestMetadata(),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 			},
 		},
