@@ -26,8 +26,12 @@ func parseBuildGradle(fsys fs.FS, dir string) ([]string, bool, error) {
 	f, err := fsys.Open(path.Join(dir, buildGradle))
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
-			log.Logger.Warnf("Unable to detect direct dependencies: build.gradle file doesn't exist.")
-			return nil, false, nil
+			f, err = fsys.Open(path.Join(dir, buildGradleKts))
+			if errors.Is(err, fs.ErrNotExist) {
+				log.Logger.Warnf("Unable to detect direct dependencies: build.gradle/build.gradle.kts file doesn't exist.")
+				return nil, false, nil
+			}
+			return nil, false, xerrors.Errorf("unable to open build.gradle.kts file: %w", err)
 		}
 		return nil, false, xerrors.Errorf("unable to open build.gradle file: %w", err)
 	}

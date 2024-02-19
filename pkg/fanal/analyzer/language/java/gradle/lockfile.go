@@ -3,7 +3,6 @@ package gradle
 import (
 	"context"
 	"fmt"
-	"golang.org/x/exp/slices"
 	"io"
 	"io/fs"
 	"os"
@@ -13,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/gradle/lockfile"
@@ -32,6 +32,7 @@ const (
 	version        = 2
 	fileNameSuffix = "gradle.lockfile"
 	buildGradle    = "build.gradle"
+	buildGradleKts = "build.gradle.kts"
 )
 
 // gradleLockAnalyzer analyzes '*gradle.lockfile'
@@ -118,7 +119,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 }
 
 func (a gradleLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasSuffix(filePath, fileNameSuffix) || filepath.Base(filePath) == buildGradle
+	return strings.HasSuffix(filePath, fileNameSuffix) || filepath.Base(filePath) == buildGradle || filepath.Base(filePath) == buildGradleKts
 }
 
 func (a gradleLockAnalyzer) Type() analyzer.Type {
