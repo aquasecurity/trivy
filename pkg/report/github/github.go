@@ -109,7 +109,7 @@ func (w Writer) Write(ctx context.Context, report types.Report) error {
 				// `RepoDigests` ~= <registry>/<image_name>@sha256:<image_hash>
 				// `RepoTag` ~= <registry>/<image_name>:<image_tag>
 				// By concatenating the hash from `RepoDigests` at the end of `RepoTag` we get all the information
-				image_reference := strings.Join(report.Metadata.RepoTags, ", ")
+				imageReference := strings.Join(report.Metadata.RepoTags, ", ")
 				image_with_hash := strings.Join(report.Metadata.RepoDigests, ", ")
 				_, image_hash, found := strings.Cut(image_with_hash, "@")
 				if found {

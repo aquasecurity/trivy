@@ -165,7 +165,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 		},
 		{
-			name: "pypi",
+			name: "pypi from image",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "fake_repo.azurecr.io/image_name",
