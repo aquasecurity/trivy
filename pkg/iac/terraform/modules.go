@@ -8,16 +8,6 @@ import (
 
 type Modules []*Module
 
-func (m Modules) ChildModulesPaths() []string {
-	var result []string
-	for _, module := range m {
-		if module.parent != nil && module.local {
-			result = append(result, module.modulePath)
-		}
-	}
-	return result
-}
-
 type ResourceIDResolutions map[string]bool
 
 func (r ResourceIDResolutions) Resolve(id string) {

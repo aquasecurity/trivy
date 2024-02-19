@@ -1321,3 +1321,72 @@ deny[res] {
 		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
 	}
 }
+
+func TestScanModuleWithCount(t *testing.T) {
+	fs := testutil.CreateFS(t, map[string]string{
+		"code/main.tf": `
+module "this" {
+  count = 0
+  source = "./modules/s3"
+}`,
+		"code/modules/s3/main.tf": `
+module "this" {
+  source = "./modules/logging"
+}
+resource "aws_s3_bucket" "this" {
+  bucket = "test"
+}`,
+		"code/modules/s3/modules/logging/main.tf": `
+resource "aws_s3_bucket" "this" {
+  bucket = "test1"
+}`,
+		"code/example/main.tf": `
+module "this" {
+  source = "../modules/s3"
+}`,
+		"rules/region.rego": `
+# METADATA
+# schemas:
+# - input: schema.input
+# custom:
+#   avd_id: AVD-AWS-0001
+#   input:
+#     selector:
+#     - type: cloud
+#       subtypes:
+#         - service: s3
+#           provider: aws
+package user.test.aws1
+deny[res] {
+	bucket := input.aws.s3.buckets[_]
+	bucket.name.value == "test"
+  res := result.new("bucket with test name is not allowed!", bucket)
+}
+`,
+	})
+
+	debugLog := bytes.NewBuffer([]byte{})
+	scanner := New(
+		options.ScannerWithDebug(debugLog),
+		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithPolicyFilesystem(fs),
+		options.ScannerWithRegoOnly(true),
+		options.ScannerWithPolicyNamespaces("user"),
+		options.ScannerWithEmbeddedLibraries(false),
+		options.ScannerWithEmbeddedPolicies(false),
+		options.ScannerWithRegoErrorLimits(0),
+		ScannerWithAllDirectories(true),
+	)
+
+	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	require.NoError(t, err)
+
+	require.Len(t, results, 1)
+
+	failed := results.GetFailed()
+
+	assert.Len(t, failed, 1)
+
+	occurrences := failed[0].Occurrences()
+	assert.Equal(t, "code/example/main.tf", occurrences[len(occurrences)-1].Filename)
+}

@@ -1139,3 +1139,84 @@ func TestForEachWithObjectsOfDifferentTypes(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, modules, 1)
 }
+
+func TestCountMetaArgument(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected int
+	}{
+		{
+			name: "zero resources",
+			src: `resource "test" "this" {
+  count = 0
+}`,
+			expected: 0,
+		},
+		{
+			name: "several resources",
+			src: `resource "test" "this" {
+  count = 2
+}`,
+			expected: 2,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(t, map[string]string{
+				"main.tf": tt.src,
+			})
+			parser := New(fsys, "", OptionStopOnHCLError(true))
+			require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+			modules, _, err := parser.EvaluateAll(context.TODO())
+			require.NoError(t, err)
+			assert.Len(t, modules, 1)
+
+			resources := modules.GetResourcesByType("test")
+			assert.Len(t, resources, tt.expected)
+		})
+	}
+}
+
+func TestCountMetaArgumentInModule(t *testing.T) {
+	t.Run("zero modules", func(t *testing.T) {
+		fsys := testutil.CreateFS(t, map[string]string{
+			"main.tf": `module "this" {
+count = 0
+source = "./modules/test"
+}`,
+			"modules/test/main.tf": `resource "test" "this" {}`,
+		})
+		parser := New(fsys, "", OptionStopOnHCLError(true))
+		require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+		modules, _, err := parser.EvaluateAll(context.TODO())
+		require.NoError(t, err)
+
+		assert.Len(t, modules, 1)
+
+		resources := modules.GetResourcesByType("test")
+		assert.Len(t, resources, 0)
+	})
+
+	t.Run("several modules", func(t *testing.T) {
+		fsys := testutil.CreateFS(t, map[string]string{
+			"main.tf": `module "this" {
+count = 2
+source = "./modules/test"
+}`,
+			"modules/test/main.tf": `resource "test" "this" {}`,
+		})
+		parser := New(fsys, "", OptionStopOnHCLError(true))
+		require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+		modules, _, err := parser.EvaluateAll(context.TODO())
+		assert.NoError(t, err)
+		assert.Len(t, modules, 3)
+
+		resources := modules.GetResourcesByType("test")
+		assert.Len(t, resources, 2)
+	})
+}
