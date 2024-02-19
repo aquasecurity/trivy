@@ -51,6 +51,11 @@ func parseBuildGradle(fsys fs.FS, dir string) ([]string, bool, error) {
 		}
 
 		if strings.HasPrefix(line, "dependencies {") {
+			// Dependencies as 1 line.
+			// e.g. dependencies {implementation 'junit:junit:4.13'}
+			if strings.HasSuffix(line, "}") {
+				return []string{parseDepLine(strings.TrimLeft(strings.TrimRight(line, "}"), "}"))}, true, nil
+			}
 			depBlockStarted = true
 		}
 	}

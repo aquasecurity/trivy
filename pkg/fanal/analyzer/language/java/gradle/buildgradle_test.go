@@ -26,7 +26,14 @@ func Test_parseBuildGradle(t *testing.T) {
 			},
 		},
 		{
-			name: "there are no dependencies",
+			name: "happy path. Single line.",
+			dir:  "single-line",
+			want: []string{
+				"junit:junit:4.13",
+			},
+		},
+		{
+			name: "happy path. There are no dependencies",
 			dir:  "empty",
 			want: nil,
 		},
