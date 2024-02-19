@@ -25,6 +25,11 @@ func Test_parseBuildGradle(t *testing.T) {
 				"com.googlecode.jsontoken:jsontoken:1.1",
 			},
 		},
+		{
+			name: "there are no dependencies",
+			dir:  "empty",
+			want: nil,
+		},
 	}
 
 	for _, tt := range tests {

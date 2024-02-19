@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+repositories {
+	mavenCentral()
+}
+
+dependencyLocking {
+    lockAllConfigurations()
+}
+
