@@ -2,11 +2,10 @@ package gradle
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
-	"path/filepath"
-	"runtime"
 	"sort"
 	"strings"
 
@@ -70,7 +69,12 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 
 		for i, lib := range app.Libraries {
 			pom := poms[lib.ID]
-			app.Libraries[i].Licenses = pom.Licenses.toStringArray()
+
+			if len(pom.Licenses.License) > 0 {
+				app.Libraries[i].Licenses = lo.Map(pom.Licenses.License, func(license License, _ int) string {
+					return license.Name
+				})
+			}
 
 			var deps []string
 			for _, dep := range pom.Dependencies.Dependency {
@@ -107,58 +111,6 @@ func (a gradleLockAnalyzer) Version() int {
 	return version
 }
 
-func parsePoms() (map[string]pomXML, error) {
-	// https://docs.gradle.org/current/userguide/directory_layout.html
-	cacheDir := os.Getenv("GRADLE_USER_HOME")
-	if cacheDir == "" {
-		if runtime.GOOS == "windows" {
-			cacheDir = filepath.Join(os.Getenv("%HOMEPATH%"), ".gradle")
-		} else {
-			cacheDir = filepath.Join(os.Getenv("HOME"), ".gradle")
-		}
-	}
-	cacheDir = filepath.Join(cacheDir, "caches")
-
-	if !fsutils.DirExists(cacheDir) {
-		log.Logger.Warnf("Unable to get licanses. Gradle cache dir doesn't exist.")
-		return nil, nil
-	}
-
-	required := func(path string, d fs.DirEntry) bool {
-		return filepath.Ext(path) == ".pom"
-	}
-
-	var poms = make(map[string]pomXML)
-	err := fsutils.WalkDir(os.DirFS(cacheDir), ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
-		pom, err := parsePom(r)
-		if err != nil {
-			log.Logger.Debugf("Unable to get licenes for %q: %s", path, err)
-		}
-
-		// Skip if pom file doesn't contain licenses or dependencies
-		if len(pom.Licenses.License) == 0 && len(pom.Dependencies.Dependency) == 0 {
-			return nil
-		}
-
-		// If pom file doesn't contain GroupID or Version:
-		// find these values from filepath
-		// e.g. caches/modules-2/files-2.1/com.google.code.gson/gson/2.9.1/f0cf3edcef8dcb74d27cb427544a309eb718d772/gson-2.9.1.pom
-		dirs := strings.Split(filepath.ToSlash(path), "/")
-		if pom.GroupId == "" {
-			pom.GroupId = dirs[len(dirs)-5]
-		}
-		if pom.Version == "" {
-			pom.Version = dirs[len(dirs)-3]
-		}
-
-		pom.resolveDependencyVersions(path)
-
-		poms[packageID(pom.GroupId, pom.ArtifactId, pom.Version)] = pom
-		return nil
-	})
-	if err != nil {
-		return nil, xerrors.Errorf("gradle licenses walk error: %w", err)
-	}
-
-	return poms, nil
+func packageID(groupId, artifactId, ver string) string {
+	return fmt.Sprintf("%s:%s:%s", groupId, artifactId, ver)
 }
