@@ -5,9 +5,9 @@ package integration
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -40,18 +40,24 @@ func TestDockerEngine(t *testing.T) {
 			golden:   "testdata/alpine-39.json.golden",
 		},
 		{
-			name:     "alpine:3.9, with high and critical severity",
-			severity: []string{"HIGH", "CRITICAL"},
+			name: "alpine:3.9, with high and critical severity",
+			severity: []string{
+				"HIGH",
+				"CRITICAL",
+			},
 			imageTag: "ghcr.io/aquasecurity/trivy-test-images:alpine-39",
 			input:    "testdata/fixtures/images/alpine-39.tar.gz",
 			golden:   "testdata/alpine-39-high-critical.json.golden",
 		},
 		{
-			name:      "alpine:3.9, with .trivyignore",
-			imageTag:  "ghcr.io/aquasecurity/trivy-test-images:alpine-39",
-			ignoreIDs: []string{"CVE-2019-1549", "CVE-2019-14697"},
-			input:     "testdata/fixtures/images/alpine-39.tar.gz",
-			golden:    "testdata/alpine-39-ignore-cveids.json.golden",
+			name:     "alpine:3.9, with .trivyignore",
+			imageTag: "ghcr.io/aquasecurity/trivy-test-images:alpine-39",
+			ignoreIDs: []string{
+				"CVE-2019-1549",
+				"CVE-2019-14697",
+			},
+			input:  "testdata/fixtures/images/alpine-39.tar.gz",
+			golden: "testdata/alpine-39-ignore-cveids.json.golden",
 		},
 		{
 			name:     "alpine:3.10",
@@ -239,18 +245,35 @@ func TestDockerEngine(t *testing.T) {
 				// load image into docker engine
 				res, err := cli.ImageLoad(ctx, testfile, true)
 				require.NoError(t, err, tt.name)
-				io.Copy(io.Discard, res.Body)
+				if _, err := io.Copy(io.Discard, res.Body); err != nil {
+					require.NoError(t, err, tt.name)
+				}
+				defer res.Body.Close()
 
 				// tag our image to something unique
 				err = cli.ImageTag(ctx, tt.imageTag, tt.input)
 				require.NoError(t, err, tt.name)
+
+				// cleanup
+				t.Cleanup(func() {
+					_, _ = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
+						Force:         true,
+						PruneChildren: true,
+					})
+					_, _ = cli.ImageRemove(ctx, tt.imageTag, api.ImageRemoveOptions{
+						Force:         true,
+						PruneChildren: true,
+					})
+				})
 			}
 
-			tmpDir := t.TempDir()
-			output := filepath.Join(tmpDir, "result.json")
-
-			osArgs := []string{"--cache-dir", cacheDir, "image",
-				"--skip-update", "--format=json", "--output", output}
+			osArgs := []string{
+				"--cache-dir",
+				cacheDir,
+				"image",
+				"--skip-update",
+				"--format=json",
+			}
 
 			if tt.ignoreUnfixed {
 				osArgs = append(osArgs, "--ignore-unfixed")
@@ -258,12 +281,18 @@ func TestDockerEngine(t *testing.T) {
 
 			if len(tt.ignoreStatus) != 0 {
 				osArgs = append(osArgs,
-					[]string{"--ignore-status", strings.Join(tt.ignoreStatus, ",")}...,
+					[]string{
+						"--ignore-status",
+						strings.Join(tt.ignoreStatus, ","),
+					}...,
 				)
 			}
 			if len(tt.severity) != 0 {
 				osArgs = append(osArgs,
-					[]string{"--severity", strings.Join(tt.severity, ",")}...,
+					[]string{
+						"--severity",
+						strings.Join(tt.severity, ","),
+					}...,
 				)
 			}
 			if len(tt.ignoreIDs) != 0 {
@@ -275,28 +304,7 @@ func TestDockerEngine(t *testing.T) {
 			osArgs = append(osArgs, tt.input)
 
 			// Run Trivy
-			err = execute(osArgs)
-			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
-				return
-			}
-
-			assert.NoError(t, err, tt.name)
-
-			// check for vulnerability output info
-			compareReports(t, tt.golden, output, nil)
-
-			// cleanup
-			_, err = cli.ImageRemove(ctx, tt.input, api.ImageRemoveOptions{
-				Force:         true,
-				PruneChildren: true,
-			})
-			_, err = cli.ImageRemove(ctx, tt.imageTag, api.ImageRemoveOptions{
-				Force:         true,
-				PruneChildren: true,
-			})
-			assert.NoError(t, err, tt.name)
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{wantErr: tt.wantErr})
 		})
 	}
 }

@@ -76,6 +76,7 @@ trivy rootfs [flags] ROOTDIR
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
       --server string                     server address in client mode
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
+      --show-suppressed                   [EXPERIMENTAL] show suppressed vulnerabilities
       --skip-db-update                    skip updating vulnerability database
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
@@ -88,6 +89,7 @@ trivy rootfs [flags] ROOTDIR
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
       --trace                             enable more verbose trace output for custom queries
       --username strings                  username. Comma-separated usernames allowed.
+      --vex string                        [EXPERIMENTAL] file path to VEX
       --vuln-type strings                 comma-separated list of vulnerability types (os,library) (default [os,library])
 ```
 

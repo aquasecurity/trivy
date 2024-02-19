@@ -27,8 +27,15 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy.lockfile",
 						Libraries: types.Packages{
 							{
+								ID:      "com.example:example:0.0.1",
 								Name:    "com.example:example",
 								Version: "0.0.1",
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   4,
+									},
+								},
 							},
 						},
 					},

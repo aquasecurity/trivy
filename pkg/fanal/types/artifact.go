@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -156,6 +157,13 @@ func (id *PkgIdentifier) Empty() bool {
 }
 
 func (id *PkgIdentifier) Match(s string) bool {
+	// Encode string as PURL
+	if strings.HasPrefix(s, "pkg:") {
+		if p, err := packageurl.FromString(s); err == nil {
+			s = p.String()
+		}
+	}
+
 	switch {
 	case id.BOMRef == s:
 		return true

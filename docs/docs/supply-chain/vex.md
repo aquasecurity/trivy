@@ -4,7 +4,7 @@
     This feature might change without preserving backwards compatibility.
 
 Trivy supports filtering detected vulnerabilities using [the Vulnerability Exploitability Exchange (VEX)](https://www.ntia.gov/files/ntia/publications/vex_one-page_summary.pdf), a standardized format for sharing and exchanging information about vulnerabilities.
-By providing VEX alongside the Software Bill of Materials (SBOM) during scanning, it is possible to filter vulnerabilities based on their status.
+By providing VEX during scanning, it is possible to filter vulnerabilities based on their status.
 Currently, Trivy supports the following three formats:
 
 - [CycloneDX](https://cyclonedx.org/capabilities/vex/)
@@ -14,6 +14,15 @@ Currently, Trivy supports the following three formats:
 This is still an experimental implementation, with only minimal functionality added.
 
 ## CycloneDX
+|     Target      | Supported |
+|:---------------:|:---------:|
+| Container Image |           |
+|   Filesystem    |           |
+| Code Repository |           |
+|    VM Image     |           |
+|   Kubernetes    |           |
+|      SBOM       |     ✅     |
+
 There are [two VEX formats](https://cyclonedx.org/capabilities/vex/) for CycloneDX:
 
 - Independent BOM and VEX BOM
@@ -28,7 +37,7 @@ The following steps are required:
 2. Create a VEX based on the SBOM generated in step 1
 3. Provide the VEX when scanning the CycloneDX SBOM
 
-### Generating the SBOM
+### Generate the SBOM
 You can generate a CycloneDX SBOM with Trivy as follows:
 
 ```shell
@@ -117,23 +126,24 @@ Total: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 CVE-2020-8911 is no longer shown as it is filtered out according to the given CycloneDX VEX document.
 
 ## OpenVEX
+|     Target      | Supported |
+|:---------------:|:---------:|
+| Container Image |     ✅     |
+|   Filesystem    |     ✅     |
+| Code Repository |     ✅     |
+|    VM Image     |     ✅     |
+|   Kubernetes    |     ✅     |
+|      SBOM       |     ✅     |
+
 Trivy also supports [OpenVEX][openvex] that is designed to be minimal, compliant, interoperable, and embeddable.
-Since OpenVEX aims to be SBOM format agnostic, both CycloneDX and SPDX formats are available for use as input SBOMs in Trivy.
+OpenVEX can be used in all Trivy targets, unlike CycloneDX VEX.
 
 The following steps are required:
 
-1. Generate a SBOM (CycloneDX or SPDX)
-2. Create a VEX based on the SBOM generated in step 1
-3. Provide the VEX when scanning the SBOM
+1. Create a VEX document
+2. Provide the VEX when scanning your target
 
-### Generating the SBOM
-You can generate a CycloneDX or SPDX SBOM with Trivy as follows:
-
-```shell
-$ trivy image --format spdx-json --output debian11.spdx.json debian:11
-```
-
-### Create the VEX
+### Create the VEX document
 Please see also [the example](https://github.com/openvex/examples).
 In Trivy, [the Package URL (PURL)][purl] is used as the product identifier.
 
@@ -167,11 +177,11 @@ In the above example, PURLs, located in `packages.externalRefs.referenceLocator`
     `pkg:deb/debian/curl@7.50.3-1` in OpenVEX matches `pkg:deb/debian/curl@7.50.3-1?arch=i386`, 
     while `pkg:deb/debian/curl@7.50.3-1?arch=amd64` does not match `pkg:deb/debian/curl@7.50.3-1?arch=i386`.
 
-### Scan SBOM with VEX
-Provide the VEX when scanning the SBOM.
+### Scan with VEX
+Provide the VEX when scanning your target.
 
 ```
-$ trivy sbom debian11.spdx.json --vex debian11.openvex
+$ trivy image debian:11 --vex debian11.openvex
 ...
 2023-04-26T17:56:05.358+0300    INFO    Filtered out the detected vulnerability {"VEX format": "OpenVEX", "vulnerability-id": "CVE-2019-8457", "status": "not_affected", "justification": "vulnerable_code_not_in_execute_path"}
 
@@ -182,25 +192,25 @@ Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
 
 CVE-2019-8457 is no longer shown as it is filtered out according to the given OpenVEX document.
 
-[openvex]: https://github.com/openvex/spec
-[purl]: https://github.com/package-url/purl-spec
 
 ## CSAF
+|     Target      | Supported |
+|:---------------:|:---------:|
+| Container Image |     ✅     |
+|   Filesystem    |     ✅     |
+| Code Repository |     ✅     |
+|    VM Image     |     ✅     |
+|   Kubernetes    |     ✅     |
+|      SBOM       |     ✅     |
+
 Trivy also supports [CSAF][csaf] format for VEX.
 Since CSAF aims to be SBOM format agnostic, both CycloneDX and SPDX formats are available for use as input SBOMs in Trivy.
 
 The following steps are required:
 
-1. Generate a SBOM (CycloneDX or SPDX)
-2. Create a CSAF document based on the SBOM generated in step 1
-3. Provide the CSAF document when scanning the SBOM
+1. Create a CSAF document
+2. Provide the CSAF when scanning your target
 
-### Generating the SBOM
-You can generate a CycloneDX or SPDX SBOM with Trivy as follows:
-
-```shell
-$ trivy image --format spdx-json --output debian11.spdx.json debian:11
-```
 
 ### Create the CSAF document
 Create a CSAF document in JSON format as follows:
@@ -303,11 +313,11 @@ $ cat <<EOF > debian11.vex.csaf
 EOF
 ```
 
-### Scan SBOM with CSAF document
-Provide the CSAF document when scanning the SBOM.
+### Scan with CSAF VEX
+Provide the CSAF document when scanning your target.
 
 ```console
-$ trivy sbom debian11.spdx.json --vex debian11.vex.csaf
+$ trivy image debian:11 --vex debian11.vex.csaf
 ...
 2024-01-02T10:28:26.704+0100	INFO	Filtered out the detected vulnerability	{"VEX format": "CSAF", "vulnerability-id": "CVE-2019-8457", "status": "not_affected"}
 
@@ -318,4 +328,51 @@ Total: 80 (UNKNOWN: 0, LOW: 58, MEDIUM: 6, HIGH: 16, CRITICAL: 0)
 
 CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.
 
+## Appendix
+### PURL matching
+In the context of VEX, Package URLs (PURLs) are utilized to identify specific software packages and their versions.
+The PURL matching specification outlines how PURLs are interpreted for vulnerability exception processing, ensuring precise identification and broad coverage of software packages.
+
+!!! note
+    The following PURL matching rules are not formally defined within the current official PURL specification.
+    Instead, they represent [a community consensus][purl-matching] on how to interpret PURLs.
+
+Below are the key aspects of the PURL matching rules:
+
+#### Matching Without Version
+A PURL without a specified version (e.g., `pkg:maven/com.google.guava/guava`) matches all versions of that package.
+This rule simplifies the application of vulnerability exceptions to all versions of a package.
+
+**Example**: `pkg:maven/com.google.guava/guava` matches:
+
+- All versions of `guava`, such as `com.google.guava:guava:24.1.1`, `com.google.guava:guava:30.0`.
+ 
+#### Matching Without Qualifiers
+A PURL without any qualifiers (e.g., `pkg:maven/com.google.guava/guava@24.1.1`) matches any variation of that package, irrespective of qualifiers.
+This approach ensures broad matching capabilities, covering all architectural or platform-specific variations of a package version.
+
+**Example**: `pkg:maven/com.google.guava/guava@24.1.1` matches:
+
+- `pkg:maven/com.google.guava/guava@24.1.1?classifier=x86`
+- `pkg:maven/com.google.guava/guava@24.1.1?type=pom`
+
+#### Matching With Specific Qualifiers
+A PURL that includes specific qualifiers (e.g., `pkg:maven/com.google.guava/guava@24.1.1?classifier=x86`) matches only those package versions that include the same qualifiers.
+
+**Example**: `pkg:maven/com.google.guava/guava@24.1.1?classifier=x86` matches:
+
+- `pkg:maven/com.google.guava/guava@24.1.1?classifier=x86&type=dll`
+    - Extra qualifiers (e.g., `type=dll`) are ignored.
+
+does not match:
+
+- `pkg:maven/com.google.guava/guava@24.1.1`
+    - `classifier=x86` is missing.
+- `pkg:maven/com.google.guava/guava@24.1.1?classifier=sources`
+    - `classifier` must have the same value.
+
+
 [csaf]: https://oasis-open.github.io/csaf-documentation/specification.html
+[openvex]: https://github.com/openvex/spec
+[purl]: https://github.com/package-url/purl-spec
+[purl-matching]: https://github.com/openvex/spec/issues/27

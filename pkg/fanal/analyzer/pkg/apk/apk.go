@@ -147,6 +147,8 @@ func (a alpinePkgAnalyzer) parseLicense(line string) []string {
 	for i, s := range strings.Fields(line) {
 		s = strings.Trim(s, "()")
 		switch {
+		case s == "":
+			continue
 		case s == "AND" || s == "OR":
 			continue
 		case i > 0 && (s == "1.0" || s == "2.0" || s == "3.0"):

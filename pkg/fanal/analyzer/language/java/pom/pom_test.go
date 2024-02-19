@@ -30,10 +30,24 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy/pom.xml",
 						Libraries: types.Packages{
 							{
+								ID:      "com.example:example-api:2.0.0",
+								Name:    "com.example:example-api",
+								Version: "2.0.0",
+								Locations: []types.Location{
+									{
+										StartLine: 28,
+										EndLine:   32,
+									},
+								},
+							},
+							{
 								ID:       "com.example:example:1.0.0",
 								Name:     "com.example:example",
 								Version:  "1.0.0",
 								Licenses: []string{"Apache-2.0"},
+								DependsOn: []string{
+									"com.example:example-api:2.0.0",
+								},
 							},
 						},
 					},
@@ -51,10 +65,24 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "pom.xml",
 						Libraries: types.Packages{
 							{
+								ID:      "com.example:example-api:2.0.0",
+								Name:    "com.example:example-api",
+								Version: "2.0.0",
+								Locations: []types.Location{
+									{
+										StartLine: 28,
+										EndLine:   32,
+									},
+								},
+							},
+							{
 								ID:       "com.example:example:1.0.0",
 								Name:     "com.example:example",
 								Version:  "1.0.0",
 								Licenses: []string{"Apache-2.0"},
+								DependsOn: []string{
+									"com.example:example-api:2.0.0",
+								},
 							},
 						},
 					},
@@ -104,6 +132,9 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 				Dir:      tt.inputDir,
 				FilePath: tt.inputFile,
 				Content:  f,
+				Options: analyzer.AnalysisOptions{
+					Offline: true,
+				},
 			})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)

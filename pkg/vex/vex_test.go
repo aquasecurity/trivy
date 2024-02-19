@@ -149,6 +149,31 @@ func TestVEX_Filter(t *testing.T) {
 							},
 						},
 					},
+					{
+						VulnerabilityID:  "CVE-2022-27943",
+						PkgID:            "libstdc++6@12.3.0-1ubuntu1~22.04",
+						PkgName:          "libstdc++6",
+						InstalledVersion: "12.3.0-1ubuntu1~22.04",
+						PkgIdentifier: ftypes.PkgIdentifier{
+							BOMRef: "pkg:deb/ubuntu/libstdc%2B%2B6@12.3.0-1ubuntu1~22.04?distro=ubuntu-22.04&arch=amd64",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeDebian,
+								Namespace: "ubuntu",
+								Name:      "libstdc++6",
+								Version:   "12.3.0-1ubuntu1~22.04",
+								Qualifiers: []packageurl.Qualifier{
+									{
+										Key:   "arch",
+										Value: "amd64",
+									},
+									{
+										Key:   "distro",
+										Value: "ubuntu-22.04",
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 			want: []types.DetectedVulnerability{
@@ -315,7 +340,12 @@ func TestVEX_Filter(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, v.Filter(tt.args.vulns))
+
+			got := &types.Result{
+				Vulnerabilities: tt.args.vulns,
+			}
+			v.Filter(got)
+			assert.Equal(t, tt.want, got.Vulnerabilities)
 		})
 	}
 }

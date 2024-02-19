@@ -23,8 +23,8 @@ func newCSAF(advisory csaf.Advisory) VEX {
 	}
 }
 
-func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulnerability {
-	return lo.Filter(vulns, func(vuln types.DetectedVulnerability, _ int) bool {
+func (v *CSAF) Filter(result *types.Result) {
+	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
 		found, ok := lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
 			return string(*item.CVE) == vuln.VulnerabilityID
 		})
@@ -32,13 +32,18 @@ func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulne
 			return true
 		}
 
-		return v.affected(found, vuln.PkgIdentifier.PURL)
+		if status := v.match(found, vuln.PkgIdentifier.PURL); status != "" {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(vuln, status, statement(found), "CSAF VEX"))
+			return false
+		}
+		return true
 	})
 }
 
-func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL) bool {
+func (v *CSAF) match(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL) types.FindingStatus {
 	if pkgURL == nil || vuln.ProductStatus == nil {
-		return true
+		return ""
 	}
 
 	matchProduct := func(purls []*purl.PackageURL, pkgURL *packageurl.PackageURL) bool {
@@ -50,31 +55,31 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL)
 		return false
 	}
 
-	productStatusMap := map[string]csaf.Products{
-		string(StatusNotAffected): lo.FromPtr(vuln.ProductStatus.KnownNotAffected),
-		string(StatusFixed):       lo.FromPtr(vuln.ProductStatus.Fixed),
+	productStatusMap := map[types.FindingStatus]csaf.Products{
+		types.FindingStatusNotAffected: lo.FromPtr(vuln.ProductStatus.KnownNotAffected),
+		types.FindingStatusFixed:       lo.FromPtr(vuln.ProductStatus.Fixed),
 	}
 	for status, productRange := range productStatusMap {
 		for _, product := range productRange {
 			if matchProduct(v.getProductPurls(lo.FromPtr(product)), pkgURL) {
 				v.logger.Infow("Filtered out the detected vulnerability",
 					zap.String("vulnerability-id", string(*vuln.CVE)),
-					zap.String("status", status))
-				return false
+					zap.String("status", string(status)))
+				return status
 			}
 			for relationship, purls := range v.inspectProductRelationships(lo.FromPtr(product)) {
 				if matchProduct(purls, pkgURL) {
 					v.logger.Warnw("Filtered out the detected vulnerability",
 						zap.String("vulnerability-id", string(*vuln.CVE)),
-						zap.String("status", status),
+						zap.String("status", string(status)),
 						zap.String("relationship", string(relationship)))
-					return false
+					return status
 				}
 			}
 		}
 	}
 
-	return true
+	return ""
 }
 
 // getProductPurls returns a slice of PackageURLs associated to a given product
@@ -129,4 +134,14 @@ func purlsFromProductIdentificationHelpers(helpers []*csaf.ProductIdentification
 		}
 		return p, true
 	})
+}
+
+func statement(vuln *csaf.Vulnerability) string {
+	threat, ok := lo.Find(vuln.Threats, func(threat *csaf.Threat) bool {
+		return lo.FromPtr(threat.Category) == csaf.CSAFThreatCategoryImpact
+	})
+	if !ok {
+		return ""
+	}
+	return lo.FromPtr(threat.Details)
 }

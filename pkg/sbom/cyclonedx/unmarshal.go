@@ -408,13 +408,22 @@ func fillSrcPkg(pkg *ftypes.Package) {
 }
 
 func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
+	var props []ftypes.Property
+	for _, prop := range lo.FromPtr(component.Properties) {
+		props = append(props, ftypes.Property{
+			Name:  prop.Name,
+			Value: prop.Value,
+		})
+	}
 	return ftypes.Component{
 		BOMRef:     component.BOMRef,
 		MIMEType:   component.MIMEType,
 		Type:       ftypes.ComponentType(component.Type),
 		Name:       component.Name,
+		Group:      component.Group,
 		Version:    component.Version,
 		PackageURL: component.PackageURL,
+		Properties: props,
 	}
 }
 

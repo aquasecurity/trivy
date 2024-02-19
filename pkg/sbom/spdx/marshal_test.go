@@ -885,7 +885,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "key.pem",
 						Class:  types.ClassSecret,
-						Secrets: []ftypes.SecretFinding{
+						Secrets: []types.DetectedSecret{
 							{
 								RuleID:    "private-key",
 								Category:  "AsymmetricPrivateKey",

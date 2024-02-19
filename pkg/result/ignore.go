@@ -43,7 +43,7 @@ type IgnoreFinding struct {
 
 type IgnoreFindings []IgnoreFinding
 
-func (f *IgnoreFindings) Match(path, id string) bool {
+func (f *IgnoreFindings) Match(id, path string) *IgnoreFinding {
 	for _, finding := range *f {
 		if id != finding.ID {
 			continue
@@ -53,10 +53,10 @@ func (f *IgnoreFindings) Match(path, id string) bool {
 			continue
 		}
 		log.Logger.Debugw("Ignored", log.String("id", id), log.String("path", path))
-		return true
+		return &finding
 
 	}
-	return false
+	return nil
 }
 
 func pathMatch(path string, patterns []string) bool {
@@ -96,13 +96,48 @@ func (f *IgnoreFindings) Filter(ctx context.Context) {
 
 // IgnoreConfig represents the structure of .trivyignore.yaml.
 type IgnoreConfig struct {
+	FilePath          string
 	Vulnerabilities   IgnoreFindings `yaml:"vulnerabilities"`
 	Misconfigurations IgnoreFindings `yaml:"misconfigurations"`
 	Secrets           IgnoreFindings `yaml:"secrets"`
 	Licenses          IgnoreFindings `yaml:"licenses"`
 }
 
-func getIgnoredFindings(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
+func (c *IgnoreConfig) MatchVulnerability(vulnID, filePath, pkgPath string) *IgnoreFinding {
+	paths := []string{
+		filePath,
+		pkgPath,
+	}
+	for _, p := range paths {
+		if f := c.Vulnerabilities.Match(vulnID, p); f != nil {
+			return f
+		}
+	}
+	return nil
+}
+
+func (c *IgnoreConfig) MatchMisconfiguration(misconfID, avdID, filePath string) *IgnoreFinding {
+	ids := []string{
+		misconfID,
+		avdID,
+	}
+	for _, id := range ids {
+		if f := c.Misconfigurations.Match(id, filePath); f != nil {
+			return f
+		}
+	}
+	return nil
+}
+
+func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {
+	return c.Secrets.Match(secretID, filePath)
+}
+
+func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
+	return c.Licenses.Match(licenseID, filePath)
+}
+
+func parseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
 	var conf IgnoreConfig
 	if _, err := os.Stat(ignoreFile); errors.Is(err, fs.ErrNotExist) {
 		// .trivyignore doesn't necessarily exist
@@ -132,6 +167,7 @@ func getIgnoredFindings(ctx context.Context, ignoreFile string) (IgnoreConfig, e
 	conf.Misconfigurations.Filter(ctx)
 	conf.Secrets.Filter(ctx)
 	conf.Licenses.Filter(ctx)
+	conf.FilePath = filepath.ToSlash(filepath.Clean(ignoreFile))
 
 	return conf, nil
 }

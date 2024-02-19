@@ -1,0 +1,6 @@
+apiVersion: v2
+name: test-license-manager
+version: 1.10.0
+type: application
+appVersion: 1.10.0
+deprecated: false
