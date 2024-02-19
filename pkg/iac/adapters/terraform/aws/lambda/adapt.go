@@ -1,9 +1,9 @@
 package lambda
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/lambda"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/lambda"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) lambda.Lambda {
@@ -34,10 +34,10 @@ func (a *adapter) adaptFunctions(modules terraform.Modules) []lambda.Function {
 
 	if len(orphanResources) > 0 {
 		orphanage := lambda.Function{
-			Metadata: defsecTypes.NewUnmanagedMetadata(),
+			Metadata: iacTypes.NewUnmanagedMetadata(),
 			Tracing: lambda.Tracing{
-				Metadata: defsecTypes.NewUnmanagedMetadata(),
-				Mode:     defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+				Metadata: iacTypes.NewUnmanagedMetadata(),
+				Mode:     iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 			},
 			Permissions: nil,
 		}
@@ -78,7 +78,7 @@ func (a *adapter) adaptTracing(function *terraform.Block) lambda.Tracing {
 
 	return lambda.Tracing{
 		Metadata: function.GetMetadata(),
-		Mode:     defsecTypes.StringDefault("", function.GetMetadata()),
+		Mode:     iacTypes.StringDefault("", function.GetMetadata()),
 	}
 }
 
@@ -87,7 +87,7 @@ func (a *adapter) adaptPermission(permission *terraform.Block) lambda.Permission
 	sourceARN := sourceARNAttr.AsStringValueOrDefault("", permission)
 
 	if len(sourceARNAttr.AllReferences()) > 0 {
-		sourceARN = defsecTypes.String(sourceARNAttr.AllReferences()[0].NameLabel(), sourceARNAttr.GetMetadata())
+		sourceARN = iacTypes.String(sourceARNAttr.AllReferences()[0].NameLabel(), sourceARNAttr.GetMetadata())
 	}
 
 	return lambda.Permission{

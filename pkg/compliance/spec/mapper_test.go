@@ -42,15 +42,15 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						AVDID:  "AVD-KSV012",
-						Status: types.StatusFailure,
+						Status: types.MisconfStatusFailure,
 					},
 					{
 						AVDID:  "AVD-KSV013",
-						Status: types.StatusFailure,
+						Status: types.MisconfStatusFailure,
 					},
 					{
 						AVDID:  "AVD-1.2.31",
-						Status: types.StatusFailure,
+						Status: types.MisconfStatusFailure,
 					},
 				},
 			},
@@ -68,7 +68,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								AVDID:  "AVD-KSV012",
-								Status: types.StatusFailure,
+								Status: types.MisconfStatusFailure,
 							},
 						},
 					},
@@ -86,7 +86,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
 								AVDID:  "AVD-1.2.31",
-								Status: types.StatusFailure,
+								Status: types.MisconfStatusFailure,
 							},
 						},
 					},
@@ -99,7 +99,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 			result: types.Result{
 				Target: "target",
 				Class:  types.ClassSecret,
-				Secrets: []ftypes.SecretFinding{
+				Secrets: []types.DetectedSecret{
 					{
 						RuleID:   "aws-access-key-id",
 						Category: secret.CategoryAWS,
@@ -135,7 +135,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 					{
 						Target: "target",
 						Class:  types.ClassSecret,
-						Secrets: []ftypes.SecretFinding{
+						Secrets: []types.DetectedSecret{
 							{
 								RuleID:   "aws-access-key-id",
 								Category: secret.CategoryAWS,

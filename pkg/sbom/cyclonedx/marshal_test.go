@@ -1402,6 +1402,209 @@ func TestMarshaler_Marshal(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path for sbom (cyclonedx) scan",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "./report.cdx.json",
+				ArtifactType:  ftypes.ArtifactCycloneDX,
+				CycloneDX: &ftypes.CycloneDX{
+					BOMFormat:    "CycloneDX",
+					SpecVersion:  6,
+					SerialNumber: "urn:uuid:ea7360be-19a5-4f61-98dd-d4e170eb6737",
+					Version:      1,
+					Metadata: ftypes.Metadata{
+						Timestamp: "2024-02-16T06:05:53+00:00",
+						Component: ftypes.Component{
+							BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8",
+							Type:   "application",
+							Name:   "jackson-databind-2.13.4.1.jar",
+							Properties: []ftypes.Property{
+								{
+									Name:  "aquasecurity:trivy:SchemaVersion",
+									Value: "2",
+								},
+							},
+						},
+					},
+				},
+				Results: types.Results{
+					{
+						Target: "Java",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.Jar,
+						Packages: []ftypes.Package{
+							{
+								Name:    "com.fasterxml.jackson.core:jackson-databind",
+								Version: "2.13.4.1",
+								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.fasterxml.jackson.core",
+										Name:      "jackson-databind",
+										Version:   "2.13.4.1",
+									},
+								},
+								FilePath: "jackson-databind-2.13.4.1.jar",
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID: "CVE-2022-42003",
+								PkgName:         "com.fasterxml.jackson.core:jackson-databind",
+								PkgPath:         "jackson-databind-2.13.4.1.jar",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.fasterxml.jackson.core",
+										Name:      "jackson-databind",
+										Version:   "2.13.4.1",
+									},
+								},
+								InstalledVersion: "2.13.4.1",
+								FixedVersion:     "2.12.7.1, 2.13.4.2",
+								Status:           dtypes.StatusFixed,
+								SeveritySource:   "ghsa",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-42003",
+								DataSource: &dtypes.DataSource{
+									ID:   vulnerability.GHSA,
+									Name: "GitHub Security Advisory Maven",
+									URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+								},
+								Vulnerability: dtypes.Vulnerability{
+									Title:       "jackson-databind: deep wrapper array nesting wrt UNWRAP_SINGLE_VALUE_ARRAYS",
+									Description: "In FasterXML jackson-databind before versions 2.13.4.1 and 2.12.17.1, resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled.",
+									Severity:    dtypes.SeverityHigh.String(),
+									VendorSeverity: dtypes.VendorSeverity{
+										vulnerability.GHSA: dtypes.SeverityHigh,
+									},
+									CVSS: dtypes.VendorCVSS{
+										vulnerability.GHSA: dtypes.CVSS{
+											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+											V3Score:  7.5,
+										},
+									},
+									References: []string{
+										"https://access.redhat.com/security/cve/CVE-2022-42003",
+									},
+									PublishedDate:    lo.ToPtr(time.Date(2022, 10, 02, 05, 15, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2022, 12, 20, 10, 15, 0, 0, time.UTC)),
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				BOMFormat:    "CycloneDX",
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				Version:      1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30+00:00",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
+						},
+					},
+					Component: &cdx.Component{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "jackson-databind-2.13.4.1.jar",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:SchemaVersion",
+								Value: "2",
+							},
+						},
+					},
+				},
+				Components: &[]cdx.Component{
+					{
+						BOMRef:     "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+						Type:       cdx.ComponentTypeLibrary,
+						Group:      "com.fasterxml.jackson.core",
+						Name:       "jackson-databind",
+						Version:    "2.13.4.1",
+						PackageURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "jackson-databind-2.13.4.1.jar",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "jar",
+							},
+						},
+					},
+				},
+				Vulnerabilities: &[]cdx.Vulnerability{
+					{
+						ID: "CVE-2022-42003",
+						Source: &cdx.Source{
+							Name: string(vulnerability.GHSA),
+							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+						},
+						Recommendation: "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.12.7.1, 2.13.4.2",
+						Ratings: &[]cdx.VulnerabilityRating{
+							{
+								Source: &cdx.Source{
+									Name: string(vulnerability.GHSA),
+								},
+								Score:    lo.ToPtr(7.5),
+								Severity: cdx.SeverityHigh,
+								Method:   cdx.ScoringMethodCVSSv31,
+								Vector:   "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+							},
+						},
+						Description: "In FasterXML jackson-databind before versions 2.13.4.1 and 2.12.17.1, resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled.",
+						Advisories: &[]cdx.Advisory{
+							{
+								URL: "https://avd.aquasec.com/nvd/cve-2022-42003",
+							},
+							{
+								URL: "https://access.redhat.com/security/cve/CVE-2022-42003",
+							},
+						},
+						Published: "2022-10-02T05:15:00+00:00",
+						Updated:   "2022-12-20T10:15:00+00:00",
+						Affects: &[]cdx.Affects{
+							{
+								Ref: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+								Range: &[]cdx.AffectedVersions{
+									{
+										Version: "2.13.4.1",
+										Status:  cdx.VulnerabilityStatusAffected,
+									},
+								},
+							},
+						},
+					},
+				},
+				Dependencies: &[]cdx.Dependency{
+					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
+						Dependencies: &[]string{
+							"pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+						},
+					},
+					{
+						Ref:          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+						Dependencies: lo.ToPtr([]string{}),
+					},
+				},
+			},
+		},
+		{
 			name: "happy path. 2 packages for 1 CVE",
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,

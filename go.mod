@@ -13,7 +13,6 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.31.1
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/defsec v0.94.2-0.20240119001230-c2d65f49dfeb
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -22,11 +21,11 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-aws v0.7.1
+	github.com/aquasecurity/trivy-aws v0.7.2-0.20240212233003-6359c269e5d2
 	github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.6.3-0.20240118072219-c433b06f98e1
-	github.com/aquasecurity/trivy-policies v0.8.0
+	github.com/aquasecurity/trivy-policies v0.9.1-0.20240212232053-c450017d5624
 	github.com/aws/aws-sdk-go-v2 v1.24.1
 	github.com/aws/aws-sdk-go-v2/config v1.26.6
 	github.com/aws/aws-sdk-go-v2/credentials v1.16.16
@@ -41,7 +40,7 @@ require (
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/containerd/containerd v1.7.12
 	github.com/csaf-poc/csaf_distribution/v3 v3.0.0
-	github.com/docker/docker v25.0.1+incompatible
+	github.com/docker/docker v25.0.2+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/fatih/color v1.15.0
 	github.com/go-git/go-git/v5 v5.11.0
@@ -121,6 +120,8 @@ require (
 )
 
 require (
+	github.com/alecthomas/chroma v0.10.0
+	github.com/antchfx/htmlquery v1.3.0
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/aws/smithy-go v1.19.0
 	github.com/hashicorp/go-uuid v1.0.1
@@ -129,10 +130,11 @@ require (
 	github.com/liamg/memoryfs v1.6.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
+	github.com/owenrumney/squealer v1.2.1
 	github.com/zclconf/go-cty v1.13.0
 	github.com/zclconf/go-cty-yaml v1.0.3
 	golang.org/x/crypto v0.18.0
-	helm.sh/helm/v3 v3.14.0
+	helm.sh/helm/v3 v3.14.1
 )
 
 require (
@@ -166,9 +168,9 @@ require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
-	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/anchore/go-struct-converter v0.0.0-20221118182256-c68fdcfa2092 // indirect
+	github.com/antchfx/xpath v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
@@ -278,7 +280,6 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/btree v1.1.2 // indirect
-	github.com/google/flatbuffers v2.0.8+incompatible // indirect
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
@@ -341,7 +342,6 @@ require (
 	github.com/opencontainers/runtime-spec v1.1.0 // indirect
 	github.com/opencontainers/selinux v1.11.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
-	github.com/owenrumney/squealer v1.2.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
@@ -379,10 +379,10 @@ require (
 	go.mongodb.org/mongo-driver v1.13.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.46.1 // indirect
-	go.opentelemetry.io/otel v1.21.0 // indirect
-	go.opentelemetry.io/otel/metric v1.21.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.21.0 // indirect
-	go.opentelemetry.io/otel/trace v1.21.0 // indirect
+	go.opentelemetry.io/otel v1.23.1 // indirect
+	go.opentelemetry.io/otel/metric v1.23.1 // indirect
+	go.opentelemetry.io/otel/sdk v1.23.1 // indirect
+	go.opentelemetry.io/otel/trace v1.23.1 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
 	go.uber.org/goleak v1.3.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

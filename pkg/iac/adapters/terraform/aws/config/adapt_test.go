@@ -3,11 +3,11 @@ package config
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/config"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/config"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -31,8 +31,8 @@ func Test_adaptConfigurationAggregrator(t *testing.T) {
 			}
 `,
 			expected: config.ConfigurationAggregrator{
-				Metadata:         defsecTypes.NewTestMetadata(),
-				SourceAllRegions: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+				Metadata:         iacTypes.NewTestMetadata(),
+				SourceAllRegions: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 			},
 		},
 		{
@@ -42,8 +42,8 @@ func Test_adaptConfigurationAggregrator(t *testing.T) {
 			}
 `,
 			expected: config.ConfigurationAggregrator{
-				Metadata:         defsecTypes.NewTestMetadata(),
-				SourceAllRegions: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				Metadata:         iacTypes.NewTestMetadata(),
+				SourceAllRegions: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

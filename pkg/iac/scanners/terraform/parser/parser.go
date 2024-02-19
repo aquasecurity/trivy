@@ -14,11 +14,11 @@ import (
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	tfcontext "github.com/aquasecurity/defsec/pkg/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/extrafs"
+	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 )
 
 type sourceFile struct {

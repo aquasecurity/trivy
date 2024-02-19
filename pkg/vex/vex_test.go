@@ -316,7 +316,12 @@ func TestVEX_Filter(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, v.Filter(tt.args.vulns))
+
+			got := &types.Result{
+				Vulnerabilities: tt.args.vulns,
+			}
+			v.Filter(got)
+			assert.Equal(t, tt.want, got.Vulnerabilities)
 		})
 	}
 }

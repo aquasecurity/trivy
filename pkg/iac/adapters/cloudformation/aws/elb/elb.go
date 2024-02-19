@@ -1,7 +1,7 @@
 package elb
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/elb"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elb"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 

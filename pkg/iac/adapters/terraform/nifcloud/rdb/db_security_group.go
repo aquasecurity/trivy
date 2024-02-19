@@ -1,9 +1,9 @@
 package rdb
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/rdb"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/rdb"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptDBSecurityGroups(modules terraform.Modules) []rdb.DBSecurityGroup {
@@ -16,7 +16,7 @@ func adaptDBSecurityGroups(modules terraform.Modules) []rdb.DBSecurityGroup {
 }
 
 func adaptDBSecurityGroup(resource *terraform.Block) rdb.DBSecurityGroup {
-	var cidrs []defsecTypes.StringValue
+	var cidrs []iacTypes.StringValue
 
 	for _, rule := range resource.GetBlocks("rule") {
 		cidrs = append(cidrs, rule.GetAttribute("cidr_ip").AsStringValueOrDefault("", resource))

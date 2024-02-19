@@ -1,24 +1,24 @@
 package storage
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/storage"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/storage"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(modules terraform.Modules) storage.Storage {
 	accounts, containers, networkRules := adaptAccounts(modules)
 
 	orphanAccount := storage.Account{
-		Metadata:     defsecTypes.NewUnmanagedMetadata(),
+		Metadata:     iacTypes.NewUnmanagedMetadata(),
 		NetworkRules: adaptOrphanNetworkRules(modules, networkRules),
-		EnforceHTTPS: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+		EnforceHTTPS: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 		Containers:   adaptOrphanContainers(modules, containers),
 		QueueProperties: storage.QueueProperties{
-			Metadata:      defsecTypes.NewUnmanagedMetadata(),
-			EnableLogging: defsecTypes.BoolDefault(false, defsecTypes.NewUnmanagedMetadata()),
+			Metadata:      iacTypes.NewUnmanagedMetadata(),
+			EnableLogging: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 		},
-		MinimumTLSVersion: defsecTypes.StringDefault("", defsecTypes.NewUnmanagedMetadata()),
+		MinimumTLSVersion: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 	}
 
 	accounts = append(accounts, orphanAccount)
@@ -100,13 +100,13 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 	account := storage.Account{
 		Metadata:     resource.GetMetadata(),
 		NetworkRules: nil,
-		EnforceHTTPS: defsecTypes.BoolDefault(true, resource.GetMetadata()),
+		EnforceHTTPS: iacTypes.BoolDefault(true, resource.GetMetadata()),
 		Containers:   nil,
 		QueueProperties: storage.QueueProperties{
 			Metadata:      resource.GetMetadata(),
-			EnableLogging: defsecTypes.BoolDefault(false, resource.GetMetadata()),
+			EnableLogging: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
-		MinimumTLSVersion: defsecTypes.StringDefault("TLS1_2", resource.GetMetadata()),
+		MinimumTLSVersion: iacTypes.StringDefault("TLS1_2", resource.GetMetadata()),
 	}
 
 	networkRulesBlocks := resource.GetBlocks("network_rules")
@@ -122,7 +122,7 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 		account.QueueProperties.Metadata = queuePropertiesBlock.GetMetadata()
 		loggingBlock := queuePropertiesBlock.GetBlock("logging")
 		if loggingBlock.IsNotNil() {
-			account.QueueProperties.EnableLogging = defsecTypes.Bool(true, loggingBlock.GetMetadata())
+			account.QueueProperties.EnableLogging = iacTypes.Bool(true, loggingBlock.GetMetadata())
 		}
 	}
 
@@ -133,12 +133,12 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 
 func adaptContainer(resource *terraform.Block) storage.Container {
 	accessTypeAttr := resource.GetAttribute("container_access_type")
-	publicAccess := defsecTypes.StringDefault(storage.PublicAccessOff, resource.GetMetadata())
+	publicAccess := iacTypes.StringDefault(storage.PublicAccessOff, resource.GetMetadata())
 
 	if accessTypeAttr.Equals("blob") {
-		publicAccess = defsecTypes.String(storage.PublicAccessBlob, accessTypeAttr.GetMetadata())
+		publicAccess = iacTypes.String(storage.PublicAccessBlob, accessTypeAttr.GetMetadata())
 	} else if accessTypeAttr.Equals("container") {
-		publicAccess = defsecTypes.String(storage.PublicAccessContainer, accessTypeAttr.GetMetadata())
+		publicAccess = iacTypes.String(storage.PublicAccessContainer, accessTypeAttr.GetMetadata())
 	}
 
 	return storage.Container{
@@ -148,15 +148,15 @@ func adaptContainer(resource *terraform.Block) storage.Container {
 }
 
 func adaptNetworkRule(resource *terraform.Block) storage.NetworkRule {
-	var allowByDefault defsecTypes.BoolValue
-	var bypass []defsecTypes.StringValue
+	var allowByDefault iacTypes.BoolValue
+	var bypass []iacTypes.StringValue
 
 	defaultActionAttr := resource.GetAttribute("default_action")
 
 	if defaultActionAttr.IsNotNil() {
-		allowByDefault = defsecTypes.Bool(defaultActionAttr.Equals("Allow", terraform.IgnoreCase), defaultActionAttr.GetMetadata())
+		allowByDefault = iacTypes.Bool(defaultActionAttr.Equals("Allow", terraform.IgnoreCase), defaultActionAttr.GetMetadata())
 	} else {
-		allowByDefault = defsecTypes.BoolDefault(false, resource.GetMetadata())
+		allowByDefault = iacTypes.BoolDefault(false, resource.GetMetadata())
 	}
 
 	if resource.HasChild("bypass") {

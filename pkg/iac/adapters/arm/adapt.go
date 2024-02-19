@@ -3,8 +3,6 @@ package arm
 import (
 	"context"
 
-	"github.com/aquasecurity/defsec/pkg/providers/azure"
-	"github.com/aquasecurity/defsec/pkg/state"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/appservice"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/authorization"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/compute"
@@ -18,7 +16,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/securitycenter"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/storage"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/synapse"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure"
 	scanner "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/state"
 )
 
 // Adapt adapts an azure arm instance

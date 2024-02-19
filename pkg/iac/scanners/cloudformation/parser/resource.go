@@ -7,12 +7,12 @@ import (
 	"github.com/liamg/jfather"
 	"gopkg.in/yaml.v3"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type Resource struct {
 	ctx     *FileContext
-	rng     defsecTypes.Range
+	rng     iacTypes.Range
 	id      string
 	comment string
 	Inner   ResourceInner
@@ -38,7 +38,7 @@ func (r *Resource) setId(id string) {
 }
 
 func (r *Resource) setFile(target fs.FS, filepath string) {
-	r.rng = defsecTypes.NewRange(filepath, r.rng.GetStartLine(), r.rng.GetEndLine(), r.rng.GetSourcePrefix(), target)
+	r.rng = iacTypes.NewRange(filepath, r.rng.GetStartLine(), r.rng.GetEndLine(), r.rng.GetSourcePrefix(), target)
 
 	for _, p := range r.Inner.Properties {
 		p.setFileAndParentRange(target, filepath, r.rng)
@@ -55,13 +55,13 @@ func (r *Resource) setContext(ctx *FileContext) {
 }
 
 func (r *Resource) UnmarshalYAML(value *yaml.Node) error {
-	r.rng = defsecTypes.NewRange("", value.Line-1, calculateEndLine(value), "", nil)
+	r.rng = iacTypes.NewRange("", value.Line-1, calculateEndLine(value), "", nil)
 	r.comment = value.LineComment
 	return value.Decode(&r.Inner)
 }
 
 func (r *Resource) UnmarshalJSONWithMetadata(node jfather.Node) error {
-	r.rng = defsecTypes.NewRange("", node.Range().Start.Line, node.Range().End.Line, "", nil)
+	r.rng = iacTypes.NewRange("", node.Range().Start.Line, node.Range().End.Line, "", nil)
 	return node.Decode(&r.Inner)
 }
 
@@ -73,7 +73,7 @@ func (r *Resource) Type() string {
 	return r.Inner.Type
 }
 
-func (r *Resource) Range() defsecTypes.Range {
+func (r *Resource) Range() iacTypes.Range {
 	return r.rng
 }
 
@@ -81,8 +81,8 @@ func (r *Resource) SourceFormat() SourceFormat {
 	return r.ctx.SourceFormat
 }
 
-func (r *Resource) Metadata() defsecTypes.Metadata {
-	return defsecTypes.NewMetadata(r.Range(), NewCFReference(r.id, r.rng).String())
+func (r *Resource) Metadata() iacTypes.Metadata {
+	return iacTypes.NewMetadata(r.Range(), NewCFReference(r.id, r.rng).String())
 }
 
 func (r *Resource) properties() map[string]*Property {
@@ -122,7 +122,7 @@ func (r *Resource) GetProperty(path string) *Property {
 	return &Property{}
 }
 
-func (r *Resource) GetStringProperty(path string, defaultValue ...string) defsecTypes.StringValue {
+func (r *Resource) GetStringProperty(path string, defaultValue ...string) iacTypes.StringValue {
 	defVal := ""
 	if len(defaultValue) > 0 {
 		defVal = defaultValue[0]
@@ -136,7 +136,7 @@ func (r *Resource) GetStringProperty(path string, defaultValue ...string) defsec
 	return prop.AsStringValue()
 }
 
-func (r *Resource) GetBoolProperty(path string, defaultValue ...bool) defsecTypes.BoolValue {
+func (r *Resource) GetBoolProperty(path string, defaultValue ...bool) iacTypes.BoolValue {
 	defVal := false
 	if len(defaultValue) > 0 {
 		defVal = defaultValue[0]
@@ -150,7 +150,7 @@ func (r *Resource) GetBoolProperty(path string, defaultValue ...bool) defsecType
 	return prop.AsBoolValue()
 }
 
-func (r *Resource) GetIntProperty(path string, defaultValue ...int) defsecTypes.IntValue {
+func (r *Resource) GetIntProperty(path string, defaultValue ...int) iacTypes.IntValue {
 	defVal := 0
 	if len(defaultValue) > 0 {
 		defVal = defaultValue[0]
@@ -164,46 +164,46 @@ func (r *Resource) GetIntProperty(path string, defaultValue ...int) defsecTypes.
 	return prop.AsIntValue()
 }
 
-func (r *Resource) StringDefault(defaultValue string) defsecTypes.StringValue {
-	return defsecTypes.StringDefault(defaultValue, r.Metadata())
+func (r *Resource) StringDefault(defaultValue string) iacTypes.StringValue {
+	return iacTypes.StringDefault(defaultValue, r.Metadata())
 }
 
-func (r *Resource) BoolDefault(defaultValue bool) defsecTypes.BoolValue {
-	return defsecTypes.BoolDefault(defaultValue, r.Metadata())
+func (r *Resource) BoolDefault(defaultValue bool) iacTypes.BoolValue {
+	return iacTypes.BoolDefault(defaultValue, r.Metadata())
 }
 
-func (r *Resource) IntDefault(defaultValue int) defsecTypes.IntValue {
-	return defsecTypes.IntDefault(defaultValue, r.Metadata())
+func (r *Resource) IntDefault(defaultValue int) iacTypes.IntValue {
+	return iacTypes.IntDefault(defaultValue, r.Metadata())
 }
 
-func (r *Resource) inferBool(prop *Property, defaultValue bool) defsecTypes.BoolValue {
+func (r *Resource) inferBool(prop *Property, defaultValue bool) iacTypes.BoolValue {
 	if prop.IsString() {
 		if prop.EqualTo("true", IgnoreCase) {
-			return defsecTypes.Bool(true, prop.Metadata())
+			return iacTypes.Bool(true, prop.Metadata())
 		}
 		if prop.EqualTo("yes", IgnoreCase) {
-			return defsecTypes.Bool(true, prop.Metadata())
+			return iacTypes.Bool(true, prop.Metadata())
 		}
 		if prop.EqualTo("1", IgnoreCase) {
-			return defsecTypes.Bool(true, prop.Metadata())
+			return iacTypes.Bool(true, prop.Metadata())
 		}
 		if prop.EqualTo("false", IgnoreCase) {
-			return defsecTypes.Bool(false, prop.Metadata())
+			return iacTypes.Bool(false, prop.Metadata())
 		}
 		if prop.EqualTo("no", IgnoreCase) {
-			return defsecTypes.Bool(false, prop.Metadata())
+			return iacTypes.Bool(false, prop.Metadata())
 		}
 		if prop.EqualTo("0", IgnoreCase) {
-			return defsecTypes.Bool(false, prop.Metadata())
+			return iacTypes.Bool(false, prop.Metadata())
 		}
 	}
 
 	if prop.IsInt() {
 		if prop.EqualTo(0) {
-			return defsecTypes.Bool(false, prop.Metadata())
+			return iacTypes.Bool(false, prop.Metadata())
 		}
 		if prop.EqualTo(1) {
-			return defsecTypes.Bool(true, prop.Metadata())
+			return iacTypes.Bool(true, prop.Metadata())
 		}
 	}
 

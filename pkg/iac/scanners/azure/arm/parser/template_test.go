@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/types"
 	types2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

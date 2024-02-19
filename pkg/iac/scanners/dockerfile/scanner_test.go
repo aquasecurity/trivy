@@ -5,12 +5,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/rego"
-	"github.com/aquasecurity/defsec/pkg/rego/schemas"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
+	"github.com/aquasecurity/trivy/pkg/iac/rego/schemas"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -3,12 +3,12 @@ package apigateway
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/apigateway"
-	v1 "github.com/aquasecurity/defsec/pkg/providers/aws/apigateway/v1"
-	v2 "github.com/aquasecurity/defsec/pkg/providers/aws/apigateway/v2"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway"
+	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
+	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -65,7 +65,7 @@ resource "aws_apigatewayv2_domain_name" "example" {
 				V1: v1.APIGateway{
 					APIs: []v1.API{
 						{
-							Metadata: defsecTypes.Metadata{},
+							Metadata: iacTypes.Metadata{},
 							Name:     String("MyDemoAPI"),
 							Resources: []v1.Resource{
 								{
@@ -122,16 +122,16 @@ resource "aws_apigatewayv2_domain_name" "example" {
 	}
 }
 
-func Int(i int) defsecTypes.IntValue {
-	return defsecTypes.Int(i, defsecTypes.NewTestMetadata())
+func Int(i int) iacTypes.IntValue {
+	return iacTypes.Int(i, iacTypes.NewTestMetadata())
 }
 
-func Bool(b bool) defsecTypes.BoolValue {
-	return defsecTypes.Bool(b, defsecTypes.NewTestMetadata())
+func Bool(b bool) iacTypes.BoolValue {
+	return iacTypes.Bool(b, iacTypes.NewTestMetadata())
 }
 
-func String(s string) defsecTypes.StringValue {
-	return defsecTypes.String(s, defsecTypes.NewTestMetadata())
+func String(s string) iacTypes.StringValue {
+	return iacTypes.String(s, iacTypes.NewTestMetadata())
 }
 func TestLines(t *testing.T) {
 	src := `

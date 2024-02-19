@@ -3,9 +3,9 @@ package ec2
 import (
 	"encoding/base64"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ec2"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptLaunchTemplates(modules terraform.Modules) (templates []ec2.LaunchTemplate) {
@@ -38,10 +38,10 @@ func adaptLaunchConfigurations(modules terraform.Modules) []ec2.LaunchConfigurat
 			launchConfig := adaptLaunchConfiguration(resource)
 			for _, resource := range module.GetResourcesByType("aws_ebs_encryption_by_default") {
 				if resource.GetAttribute("enabled").NotEqual(false) {
-					launchConfig.RootBlockDevice.Encrypted = defsecTypes.BoolDefault(true, resource.GetMetadata())
+					launchConfig.RootBlockDevice.Encrypted = iacTypes.BoolDefault(true, resource.GetMetadata())
 					for i := 0; i < len(launchConfig.EBSBlockDevices); i++ {
 						ebs := launchConfig.EBSBlockDevices[i]
-						ebs.Encrypted = defsecTypes.BoolDefault(true, resource.GetMetadata())
+						ebs.Encrypted = iacTypes.BoolDefault(true, resource.GetMetadata())
 					}
 				}
 			}
@@ -54,15 +54,15 @@ func adaptLaunchConfigurations(modules terraform.Modules) []ec2.LaunchConfigurat
 func adaptLaunchConfiguration(resource *terraform.Block) ec2.LaunchConfiguration {
 	launchConfig := ec2.LaunchConfiguration{
 		Metadata:          resource.GetMetadata(),
-		Name:              defsecTypes.StringDefault("", resource.GetMetadata()),
+		Name:              iacTypes.StringDefault("", resource.GetMetadata()),
 		AssociatePublicIP: resource.GetAttribute("associate_public_ip_address").AsBoolValueOrDefault(false, resource),
 		RootBlockDevice: &ec2.BlockDevice{
 			Metadata:  resource.GetMetadata(),
-			Encrypted: defsecTypes.BoolDefault(false, resource.GetMetadata()),
+			Encrypted: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
 		EBSBlockDevices: nil,
 		MetadataOptions: getMetadataOptions(resource),
-		UserData:        defsecTypes.StringDefault("", resource.GetMetadata()),
+		UserData:        iacTypes.StringDefault("", resource.GetMetadata()),
 	}
 
 	//#nosec G101 -- False positive
@@ -92,7 +92,7 @@ func adaptLaunchConfiguration(resource *terraform.Block) ec2.LaunchConfiguration
 	} else if userDataBase64Attr := resource.GetAttribute("user_data_base64"); userDataBase64Attr.IsString() {
 		encoded, err := base64.StdEncoding.DecodeString(userDataBase64Attr.Value().AsString())
 		if err == nil {
-			launchConfig.UserData = defsecTypes.String(string(encoded), userDataBase64Attr.GetMetadata())
+			launchConfig.UserData = iacTypes.String(string(encoded), userDataBase64Attr.GetMetadata())
 		}
 	}
 
@@ -102,8 +102,8 @@ func adaptLaunchConfiguration(resource *terraform.Block) ec2.LaunchConfiguration
 func getMetadataOptions(b *terraform.Block) ec2.MetadataOptions {
 	options := ec2.MetadataOptions{
 		Metadata:     b.GetMetadata(),
-		HttpTokens:   defsecTypes.StringDefault("", b.GetMetadata()),
-		HttpEndpoint: defsecTypes.StringDefault("", b.GetMetadata()),
+		HttpTokens:   iacTypes.StringDefault("", b.GetMetadata()),
+		HttpEndpoint: iacTypes.StringDefault("", b.GetMetadata()),
 	}
 
 	if metadataOptions := b.GetBlock("metadata_options"); metadataOptions.IsNotNil() {

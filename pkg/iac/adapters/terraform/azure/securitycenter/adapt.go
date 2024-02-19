@@ -1,8 +1,8 @@
 package securitycenter
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/azure/securitycenter"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/securitycenter"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func Adapt(modules terraform.Modules) securitycenter.SecurityCenter {

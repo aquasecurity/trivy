@@ -1,7 +1,7 @@
 package dynamodb
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/dynamodb"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 

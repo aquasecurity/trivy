@@ -1,8 +1,6 @@
 package google
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/google"
-	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/google/bigquery"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/google/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/google/dns"
@@ -11,6 +9,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/google/kms"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/google/sql"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/google/storage"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/google"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func Adapt(modules terraform.Modules) google.Google {

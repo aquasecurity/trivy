@@ -3,10 +3,10 @@ package iam
 import (
 	"testing"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/iam"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_adaptUsers(t *testing.T) {
@@ -44,15 +44,15 @@ resource "aws_iam_user_policy" "policy" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					Name:       defsecTypes.String("loadbalancer", defsecTypes.NewTestMetadata()),
-					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+					Metadata:   iacTypes.NewTestMetadata(),
+					Name:       iacTypes.String("loadbalancer", iacTypes.NewTestMetadata()),
+					LastAccess: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Name:     iacTypes.String("test", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(false),
-							Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -89,15 +89,15 @@ resource "aws_iam_user_policy_attachment" "test-attach" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					Name:       defsecTypes.String("test-user", defsecTypes.NewTestMetadata()),
-					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+					Metadata:   iacTypes.NewTestMetadata(),
+					Name:       iacTypes.String("test-user", iacTypes.NewTestMetadata()),
+					LastAccess: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
 					Policies: []iam.Policy{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Name:     defsecTypes.String("test-policy", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Name:     iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(false),
-							Builtin:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+							Builtin:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -119,14 +119,14 @@ resource "aws_iam_user" "lb" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					Name:       defsecTypes.String("loadbalafncer", defsecTypes.NewTestMetadata()),
-					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+					Metadata:   iacTypes.NewTestMetadata(),
+					Name:       iacTypes.String("loadbalafncer", iacTypes.NewTestMetadata()),
+					LastAccess: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
 					Policies:   nil,
 					AccessKeys: []iam.AccessKey{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Active:   defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Active:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 						},
 					},
 				},
@@ -147,14 +147,14 @@ resource "aws_iam_user" "lb" {
 `,
 			expected: []iam.User{
 				{
-					Metadata:   defsecTypes.NewTestMetadata(),
-					Name:       defsecTypes.String("loadbalafncer", defsecTypes.NewTestMetadata()),
-					LastAccess: defsecTypes.TimeUnresolvable(defsecTypes.NewTestMetadata()),
+					Metadata:   iacTypes.NewTestMetadata(),
+					Name:       iacTypes.String("loadbalafncer", iacTypes.NewTestMetadata()),
+					LastAccess: iacTypes.TimeUnresolvable(iacTypes.NewTestMetadata()),
 					Policies:   nil,
 					AccessKeys: []iam.AccessKey{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Active:   defsecTypes.BoolDefault(true, defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Active:   iacTypes.BoolDefault(true, iacTypes.NewTestMetadata()),
 						},
 					},
 				},

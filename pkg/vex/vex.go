@@ -20,7 +20,7 @@ import (
 // Note: This is in the experimental stage and does not yet support many specifications.
 // The implementation may change significantly.
 type VEX interface {
-	Filter([]types.DetectedVulnerability) []types.DetectedVulnerability
+	Filter(*types.Result)
 }
 
 func New(filePath string, report types.Report) (VEX, error) {

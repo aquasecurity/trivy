@@ -3,11 +3,11 @@ package rds
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/rds"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -58,76 +58,76 @@ func Test_Adapt(t *testing.T) {
 			expected: rds.RDS{
 				Instances: []rds.Instance{
 					{
-						Metadata:                  defsecTypes.NewTestMetadata(),
-						BackupRetentionPeriodDays: defsecTypes.Int(5, defsecTypes.NewTestMetadata()),
-						ReplicationSourceARN:      defsecTypes.String("", defsecTypes.NewTestMetadata()),
+						Metadata:                  iacTypes.NewTestMetadata(),
+						BackupRetentionPeriodDays: iacTypes.Int(5, iacTypes.NewTestMetadata()),
+						ReplicationSourceARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
 						PerformanceInsights: rds.PerformanceInsights{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-							KMSKeyID: defsecTypes.String("performance_key_1", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							KMSKeyID: iacTypes.String("performance_key_1", iacTypes.NewTestMetadata()),
 						},
 						Encryption: rds.Encryption{
-							Metadata:       defsecTypes.NewTestMetadata(),
-							EncryptStorage: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-							KMSKeyID:       defsecTypes.String("kms_key_2", defsecTypes.NewTestMetadata()),
+							Metadata:       iacTypes.NewTestMetadata(),
+							EncryptStorage: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							KMSKeyID:       iacTypes.String("kms_key_2", iacTypes.NewTestMetadata()),
 						},
-						PublicAccess:     defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						Engine:           defsecTypes.String(rds.EngineAurora, defsecTypes.NewTestMetadata()),
-						StorageEncrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						PublicAccess:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Engine:           iacTypes.String(rds.EngineAurora, iacTypes.NewTestMetadata()),
+						StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 				},
 				Clusters: []rds.Cluster{
 					{
-						Metadata:                  defsecTypes.NewTestMetadata(),
-						BackupRetentionPeriodDays: defsecTypes.Int(7, defsecTypes.NewTestMetadata()),
-						ReplicationSourceARN:      defsecTypes.String("arn-of-a-source-db-cluster", defsecTypes.NewTestMetadata()),
+						Metadata:                  iacTypes.NewTestMetadata(),
+						BackupRetentionPeriodDays: iacTypes.Int(7, iacTypes.NewTestMetadata()),
+						ReplicationSourceARN:      iacTypes.String("arn-of-a-source-db-cluster", iacTypes.NewTestMetadata()),
 						PerformanceInsights: rds.PerformanceInsights{
-							Metadata: defsecTypes.NewTestMetadata(),
-							Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-							KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+							Metadata: iacTypes.NewTestMetadata(),
+							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
 						},
 						Encryption: rds.Encryption{
-							Metadata:       defsecTypes.NewTestMetadata(),
-							EncryptStorage: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-							KMSKeyID:       defsecTypes.String("kms_key_1", defsecTypes.NewTestMetadata()),
+							Metadata:       iacTypes.NewTestMetadata(),
+							EncryptStorage: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							KMSKeyID:       iacTypes.String("kms_key_1", iacTypes.NewTestMetadata()),
 						},
 						Instances: []rds.ClusterInstance{
 							{
 								Instance: rds.Instance{
-									Metadata:                  defsecTypes.NewTestMetadata(),
-									BackupRetentionPeriodDays: defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
-									ReplicationSourceARN:      defsecTypes.String("", defsecTypes.NewTestMetadata()),
+									Metadata:                  iacTypes.NewTestMetadata(),
+									BackupRetentionPeriodDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
+									ReplicationSourceARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
 									PerformanceInsights: rds.PerformanceInsights{
-										Metadata: defsecTypes.NewTestMetadata(),
-										Enabled:  defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-										KMSKeyID: defsecTypes.String("performance_key_0", defsecTypes.NewTestMetadata()),
+										Metadata: iacTypes.NewTestMetadata(),
+										Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+										KMSKeyID: iacTypes.String("performance_key_0", iacTypes.NewTestMetadata()),
 									},
 									Encryption: rds.Encryption{
-										Metadata:       defsecTypes.NewTestMetadata(),
-										EncryptStorage: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-										KMSKeyID:       defsecTypes.String("kms_key_0", defsecTypes.NewTestMetadata()),
+										Metadata:       iacTypes.NewTestMetadata(),
+										EncryptStorage: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+										KMSKeyID:       iacTypes.String("kms_key_0", iacTypes.NewTestMetadata()),
 									},
-									PublicAccess:     defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-									Engine:           defsecTypes.String(rds.EngineAurora, defsecTypes.NewTestMetadata()),
-									StorageEncrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+									PublicAccess:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+									Engine:           iacTypes.String(rds.EngineAurora, iacTypes.NewTestMetadata()),
+									StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 								},
-								ClusterIdentifier: defsecTypes.String("aws_rds_cluster.example", defsecTypes.NewTestMetadata()),
+								ClusterIdentifier: iacTypes.String("aws_rds_cluster.example", iacTypes.NewTestMetadata()),
 							},
 						},
-						PublicAccess: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-						Engine:       defsecTypes.String(rds.EngineAuroraMysql, defsecTypes.NewTestMetadata()),
-						AvailabilityZones: defsecTypes.StringValueList{
-							defsecTypes.String("us-west-2a", defsecTypes.NewTestMetadata()),
-							defsecTypes.String("us-west-2b", defsecTypes.NewTestMetadata()),
-							defsecTypes.String("us-west-2c", defsecTypes.NewTestMetadata()),
+						PublicAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						Engine:       iacTypes.String(rds.EngineAuroraMysql, iacTypes.NewTestMetadata()),
+						AvailabilityZones: iacTypes.StringValueList{
+							iacTypes.String("us-west-2a", iacTypes.NewTestMetadata()),
+							iacTypes.String("us-west-2b", iacTypes.NewTestMetadata()),
+							iacTypes.String("us-west-2c", iacTypes.NewTestMetadata()),
 						},
-						DeletionProtection: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
+						DeletionProtection: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 					},
 				},
 				Classic: rds.Classic{
 					DBSecurityGroups: []rds.DBSecurityGroup{
 						{
-							Metadata: defsecTypes.NewTestMetadata(),
+							Metadata: iacTypes.NewTestMetadata(),
 						},
 					},
 				},
@@ -157,23 +157,23 @@ func Test_adaptInstance(t *testing.T) {
 			}
 `,
 			expected: rds.Instance{
-				Metadata:                  defsecTypes.NewTestMetadata(),
-				BackupRetentionPeriodDays: defsecTypes.Int(0, defsecTypes.NewTestMetadata()),
-				ReplicationSourceARN:      defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:                  iacTypes.NewTestMetadata(),
+				BackupRetentionPeriodDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
+				ReplicationSourceARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
 				PerformanceInsights: rds.PerformanceInsights{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 				Encryption: rds.Encryption{
-					Metadata:       defsecTypes.NewTestMetadata(),
-					EncryptStorage: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					KMSKeyID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:       iacTypes.NewTestMetadata(),
+					EncryptStorage: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					KMSKeyID:       iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
-				PublicAccess:     defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				Engine:           defsecTypes.String(rds.EngineAurora, defsecTypes.NewTestMetadata()),
-				StorageEncrypted: defsecTypes.Bool(true, defsecTypes.NewTestMetadata()),
-				IAMAuthEnabled:   defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
+				PublicAccess:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				Engine:           iacTypes.String(rds.EngineAurora, iacTypes.NewTestMetadata()),
+				StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				IAMAuthEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 			},
 		},
 	}
@@ -200,21 +200,21 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: rds.Cluster{
-				Metadata:                  defsecTypes.NewTestMetadata(),
-				BackupRetentionPeriodDays: defsecTypes.Int(1, defsecTypes.NewTestMetadata()),
-				ReplicationSourceARN:      defsecTypes.String("", defsecTypes.NewTestMetadata()),
+				Metadata:                  iacTypes.NewTestMetadata(),
+				BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.NewTestMetadata()),
+				ReplicationSourceARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
 				PerformanceInsights: rds.PerformanceInsights{
-					Metadata: defsecTypes.NewTestMetadata(),
-					Enabled:  defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					KMSKeyID: defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata: iacTypes.NewTestMetadata(),
+					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
 				Encryption: rds.Encryption{
-					Metadata:       defsecTypes.NewTestMetadata(),
-					EncryptStorage: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-					KMSKeyID:       defsecTypes.String("", defsecTypes.NewTestMetadata()),
+					Metadata:       iacTypes.NewTestMetadata(),
+					EncryptStorage: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					KMSKeyID:       iacTypes.String("", iacTypes.NewTestMetadata()),
 				},
-				PublicAccess: defsecTypes.Bool(false, defsecTypes.NewTestMetadata()),
-				Engine:       defsecTypes.String(rds.EngineAurora, defsecTypes.NewTestMetadata()),
+				PublicAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				Engine:       iacTypes.String(rds.EngineAurora, iacTypes.NewTestMetadata()),
 			},
 		},
 	}

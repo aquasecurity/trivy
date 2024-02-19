@@ -1,7 +1,7 @@
 package ssm
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/ssm"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ssm"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 

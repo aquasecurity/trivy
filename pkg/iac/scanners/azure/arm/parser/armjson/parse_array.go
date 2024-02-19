@@ -3,7 +3,7 @@ package armjson
 import (
 	"fmt"
 
-	"github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func (p *parser) parseArray(parentMetadata *types.Metadata) (Node, error) {

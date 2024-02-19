@@ -425,3 +425,19 @@ func installed(cmd string) bool {
 	_, err := exec.LookPath(cmd)
 	return err == nil
 }
+
+type Schema mg.Namespace
+
+func (Schema) Generate() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "generate")
+}
+
+func (Schema) Verify() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_schema", "./magefiles", "--", "verify")
+}
+
+type CloudActions mg.Namespace
+
+func (CloudActions) Generate() error {
+	return sh.RunWith(ENV, "go", "run", "-tags=mage_cloudactions", "./magefiles")
+}
