@@ -50,38 +50,26 @@ func (v *CSAF) affected(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL)
 		return false
 	}
 
-	for _, product := range lo.FromPtr(vuln.ProductStatus.KnownNotAffected) {
-		if matchProduct(v.getProductPurls(lo.FromPtr(product)), pkgURL) {
-			v.logger.Infow("Filtered out the detected vulnerability",
-				zap.String("vulnerability-id", string(*vuln.CVE)),
-				zap.String("status", string(StatusNotAffected)))
-			return false
-		}
-		for relationship, purls := range v.inspectProductRelationships(lo.FromPtr(product)) {
-			if matchProduct(purls, pkgURL) {
-				v.logger.Warnw("Filtered out the detected vulnerability",
+	productStatusMap := map[string]csaf.Products{
+		string(StatusNotAffected): lo.FromPtr(vuln.ProductStatus.KnownNotAffected),
+		string(StatusFixed):       lo.FromPtr(vuln.ProductStatus.Fixed),
+	}
+	for status, productRange := range productStatusMap {
+		for _, product := range productRange {
+			if matchProduct(v.getProductPurls(lo.FromPtr(product)), pkgURL) {
+				v.logger.Infow("Filtered out the detected vulnerability",
 					zap.String("vulnerability-id", string(*vuln.CVE)),
-					zap.String("status", string(StatusNotAffected)),
-					zap.String("relationship", string(relationship)))
+					zap.String("status", status))
 				return false
 			}
-		}
-	}
-
-	for _, product := range lo.FromPtr(vuln.ProductStatus.Fixed) {
-		if matchProduct(v.getProductPurls(lo.FromPtr(product)), pkgURL) {
-			v.logger.Infow("Filtered out the detected vulnerability",
-				zap.String("vulnerability-id", string(*vuln.CVE)),
-				zap.String("status", string(StatusFixed)))
-			return false
-		}
-		for relationship, purls := range v.inspectProductRelationships(lo.FromPtr(product)) {
-			if matchProduct(purls, pkgURL) {
-				v.logger.Warnw("Filtered out the detected vulnerability",
-					zap.String("vulnerability-id", string(*vuln.CVE)),
-					zap.String("status", string(StatusFixed)),
-					zap.String("relationship", string(relationship)))
-				return false
+			for relationship, purls := range v.inspectProductRelationships(lo.FromPtr(product)) {
+				if matchProduct(purls, pkgURL) {
+					v.logger.Warnw("Filtered out the detected vulnerability",
+						zap.String("vulnerability-id", string(*vuln.CVE)),
+						zap.String("status", status),
+						zap.String("relationship", string(relationship)))
+					return false
+				}
 			}
 		}
 	}
