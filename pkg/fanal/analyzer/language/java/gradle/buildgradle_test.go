@@ -26,6 +26,13 @@ func Test_parseBuildGradle(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path. build.gradle.kts file",
+			dir:  "kts-file",
+			want: []string{
+				"org.eclipse.jgit:org.eclipse.jgit:4.9.2.201712150930-r",
+			},
+		},
+		{
 			name: "happy path. Single line.",
 			dir:  "single-line",
 			want: []string{

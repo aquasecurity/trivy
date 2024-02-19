@@ -27,13 +27,17 @@ func parseBuildGradle(fsys fs.FS, dir string) ([]string, bool, error) {
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			f, err = fsys.Open(path.Join(dir, buildGradleKts))
-			if errors.Is(err, fs.ErrNotExist) {
-				log.Logger.Warnf("Unable to detect direct dependencies: build.gradle/build.gradle.kts file doesn't exist.")
-				return nil, false, nil
+			if err != nil {
+				if errors.Is(err, fs.ErrNotExist) {
+					log.Logger.Warnf("Unable to detect direct dependencies: build.gradle/build.gradle.kts file doesn't exist.")
+					return nil, false, nil
+				} else {
+					return nil, false, xerrors.Errorf("unable to open build.gradle.kts file: %w", err)
+				}
 			}
-			return nil, false, xerrors.Errorf("unable to open build.gradle.kts file: %w", err)
+		} else {
+			return nil, false, xerrors.Errorf("unable to open build.gradle file: %w", err)
 		}
-		return nil, false, xerrors.Errorf("unable to open build.gradle file: %w", err)
 	}
 
 	scanner := bufio.NewScanner(f)
