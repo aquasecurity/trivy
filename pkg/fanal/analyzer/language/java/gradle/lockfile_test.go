@@ -47,6 +47,50 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
+								ID:       "org.hamcrest:hamcrest-core:1.3",
+								Name:     "org.hamcrest:hamcrest-core",
+								Version:  "1.3",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   5,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:     "happy path without `build.gradle` file",
+			dir:      "testdata/lockfiles/happy-without-build-gradle",
+			cacheDir: "testdata/cache",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Gradle,
+						FilePath: "gradle.lockfile",
+						Libraries: types.Packages{
+							{
+								ID:      "junit:junit:4.13",
+								Name:    "junit:junit",
+								Version: "4.13",
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   4,
+									},
+								},
+								Licenses: []string{
+									"Eclipse Public License 1.0",
+								},
+								DependsOn: []string{
+									"org.hamcrest:hamcrest-core:1.3",
+								},
+							},
+							{
 								ID:      "org.hamcrest:hamcrest-core:1.3",
 								Name:    "org.hamcrest:hamcrest-core",
 								Version: "1.3",
@@ -92,6 +136,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 										EndLine:   5,
 									},
 								},
+								Indirect: true,
 							},
 						},
 					},

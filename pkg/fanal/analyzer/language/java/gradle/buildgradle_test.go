@@ -1,21 +1,22 @@
 package gradle
 
 import (
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func Test_parseBuildGradle(t *testing.T) {
 	tests := []struct {
-		name     string
-		filePath string
-		want     []string
+		name string
+		dir  string
+		want []string
 	}{
 		{
-			name:     "happy path",
-			filePath: filepath.Join("testdata", "buildgradlefiles", "happy.build.gradle"),
+			name: "happy path",
+			dir:  "happy",
 			want: []string{
 				"junit:junit:4.13",
 				"org.eclipse.jgit:org.eclipse.jgit:4.9.2.201712150930-r",
@@ -28,10 +29,10 @@ func Test_parseBuildGradle(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.filePath)
-			require.NoError(t, err)
+			f := os.DirFS(filepath.Join("testdata", "buildgradlefiles"))
 
-			got := parseBuildGradle(f)
+			got, _, err := parseBuildGradle(f, tt.dir)
+			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
 		})
 	}
