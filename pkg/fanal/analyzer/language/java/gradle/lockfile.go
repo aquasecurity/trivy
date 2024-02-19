@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -28,6 +29,7 @@ func init() {
 const (
 	version        = 2
 	fileNameSuffix = "gradle.lockfile"
+	buildGradle    = "build.gradle"
 )
 
 // gradleLockAnalyzer analyzes '*gradle.lockfile'
@@ -48,7 +50,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
-		return a.Required(path, nil)
+		return strings.HasSuffix(path, fileNameSuffix)
 	}
 
 	var apps []types.Application
@@ -100,7 +102,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 }
 
 func (a gradleLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasSuffix(filePath, fileNameSuffix)
+	return strings.HasSuffix(filePath, fileNameSuffix) || filepath.Base(filePath) == buildGradle
 }
 
 func (a gradleLockAnalyzer) Type() analyzer.Type {
