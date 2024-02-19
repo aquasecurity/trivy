@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/ruby/gemspec"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/ruby/gemspec"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
