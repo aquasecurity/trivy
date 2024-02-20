@@ -26,6 +26,14 @@ func Test_parseBuildGradle(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with dependency excludes",
+			dir:  "with-excludes",
+			want: map[string]struct{}{
+				"com.google.guava:guava:32.1.3-jre":                  {},
+				"com.fasterxml.jackson.core:jackson-databind:2.16.1": {},
+			},
+		},
+		{
 			name: "happy path. build.gradle.kts file",
 			dir:  "kts-file",
 			want: map[string]struct{}{

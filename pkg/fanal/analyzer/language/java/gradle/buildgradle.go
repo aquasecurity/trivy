@@ -30,12 +30,22 @@ func parseBuildGradle(fsys fs.FS, dir string) map[string]struct{} {
 		return nil
 	}
 	scanner := bufio.NewScanner(f)
-	var depBlockStarted bool
+	var depBlockStarted, depExcludeBlockStarted bool
 	var deps = make(map[string]struct{})
 	for scanner.Scan() {
 		line := scanner.Text()
 
+		if depExcludeBlockStarted {
+			if strings.TrimSpace(line) == "}" {
+				depExcludeBlockStarted = false
+			}
+			continue
+		}
+
 		if depBlockStarted {
+			if strings.HasSuffix(line, "{") {
+				depExcludeBlockStarted = true
+			}
 			if !strings.HasPrefix(line, "}") {
 				dep := parseDepLine(line)
 				if dep != "" {
