@@ -110,14 +110,14 @@ func (w Writer) Write(ctx context.Context, report types.Report) error {
 				// `RepoTag` ~= <registry>/<image_name>:<image_tag>
 				// By concatenating the hash from `RepoDigests` at the end of `RepoTag` we get all the information
 				imageReference := strings.Join(report.Metadata.RepoTags, ", ")
-				image_with_hash := strings.Join(report.Metadata.RepoDigests, ", ")
-				_, image_hash, found := strings.Cut(image_with_hash, "@")
+				imageWithHash := strings.Join(report.Metadata.RepoDigests, ", ")
+				_, imageHash, found := strings.Cut(imageWithHash, "@")
 				if found {
-					image_reference += "@" + image_hash
+					imageReference += "@" + imageHash
 				}
 				// Replacing `source_location` in manifest by the image name, tag and hash
 				manifest.File = &File{
-					SrcLocation: image_reference,
+					SrcLocation: imageReference,
 				}
 
 			} else {
