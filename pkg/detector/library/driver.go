@@ -82,7 +82,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		ecosystem = vulnerability.Kubernetes
 		comparer = compare.GenericComparer{}
 	case ftypes.Julia:
-		log.Logger.Warn("Julia is supported for SBOM, not for vulnerability scanning")
+		log.Warn("Julia is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, false
 	default:
 		log.Warn("The library type is not supported for vulnerability scanning",

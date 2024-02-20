@@ -2,22 +2,20 @@ package cyclonedx_test
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/package-url/packageurl-go"
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/package-url/packageurl-go"
-
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"

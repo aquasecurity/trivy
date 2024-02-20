@@ -16,7 +16,6 @@ import (
 	"golang.org/x/xerrors"
 
 	julia "github.com/aquasecurity/trivy/pkg/dependency/parser/julia/manifest"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -36,7 +35,8 @@ var requiredFiles = []string{
 }
 
 type juliaAnalyzer struct {
-	lockParser godeptypes.Parser
+	lockParser language.Parser
+	logger     *log.Logger
 }
 
 type Project struct {
@@ -47,6 +47,7 @@ type Project struct {
 func newJuliaAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &juliaAnalyzer{
 		lockParser: julia.NewParser(),
+		logger:     log.WithPrefix("julia"),
 	}, nil
 }
 
@@ -67,11 +68,12 @@ func (a juliaAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 		}
 
 		// Parse Project.toml alongside Manifest.toml to identify the direct dependencies. This mutates `app`.
-		if err = analyzeDependencies(input.FS, filepath.Dir(path), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to analyze dependencies: %s", filepath.Join(filepath.Dir(path), types.JuliaProject), err)
+		if err = a.analyzeDependencies(input.FS, filepath.Dir(path), app); err != nil {
+			a.logger.Warn("Unable to parse file to analyze dependencies",
+				log.String("FILEPATH", filepath.Join(filepath.Dir(path), types.JuliaProject)), log.Err(err))
 		}
 
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	})
@@ -101,24 +103,24 @@ func (a juliaAnalyzer) parseJuliaManifest(path string, r io.Reader) (*types.Appl
 	return language.Parse(types.Julia, path, r, a.lockParser)
 }
 
-func analyzeDependencies(fsys fs.FS, dir string, app *types.Application) error {
-	deps, devDeps, err := getProjectDeps(fsys, dir)
+func (a juliaAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.Application) error {
+	deps, devDeps, err := a.getProjectDeps(fsys, dir)
 	if err != nil {
 		return err
 	}
 
-	pkgs := walkDependencies(deps, app.Libraries, false)
-	devPkgs := walkDependencies(devDeps, app.Libraries, true)
-	app.Libraries = append(pkgs, devPkgs...)
+	pkgs := walkDependencies(deps, app.Packages, false)
+	devPkgs := walkDependencies(devDeps, app.Packages, true)
+	app.Packages = append(pkgs, devPkgs...)
 	return nil
 }
 
 // getProjectDeps parses project.toml and returns root and dev dependencies.
-func getProjectDeps(fsys fs.FS, dir string) (map[string]string, map[string]string, error) {
+func (a juliaAnalyzer) getProjectDeps(fsys fs.FS, dir string) (map[string]string, map[string]string, error) {
 	projectPath := filepath.Join(dir, types.JuliaProject)
 	project, err := parseJuliaProject(fsys, projectPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Julia: %s not found", projectPath)
+		a.logger.Debug("Julia project not found", log.String("PROJECT_PATH", projectPath))
 		return nil, nil, nil
 	} else if err != nil {
 		return nil, nil, xerrors.Errorf("unable to parse %s: %w", projectPath, err)

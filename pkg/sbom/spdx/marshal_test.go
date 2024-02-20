@@ -2,13 +2,12 @@ package spdx_test
 
 import (
 	"context"
-	"hash/fnv"
-	"testing"
-	"time"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/package-url/packageurl-go"
+	"hash/fnv"
+	"testing"
+	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/mitchellh/hashstructure/v2"

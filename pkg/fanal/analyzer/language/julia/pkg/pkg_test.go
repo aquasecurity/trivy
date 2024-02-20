@@ -25,7 +25,7 @@ func Test_juliaAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Julia,
 						FilePath: "Manifest.toml",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
 								ID:        "ade2ca70-3891-5945-98fb-dc099432e06a",
 								Name:      "Dates",
@@ -170,51 +170,13 @@ func Test_juliaAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Julia,
 						FilePath: "Manifest.toml",
-						Libraries: []types.Package{
+						Packages: types.Packages{
 							{
 								ID:        "621f4979-c628-5d54-868e-fcf4e3e8185c",
 								Name:      "AbstractFFTs",
 								Version:   "1.3.1",
 								Indirect:  false,
 								Locations: []types.Location{{StartLine: 7, EndLine: 10}},
-								DependsOn: nil,
-							},
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "shadowed_dep_v1.9",
-			dir:  "testdata/shadowed_dep_v1.9",
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.Julia,
-						FilePath: "Manifest.toml",
-						Libraries: []types.Package{
-							{
-								ID:        "ead4f63c-334e-11e9-00e6-e7f0a5f21b60",
-								Name:      "A",
-								Version:   "1.9.0",
-								Indirect:  false,
-								Locations: []types.Location{{StartLine: 7, EndLine: 8}},
-								DependsOn: []string{"f41f7b98-334e-11e9-1257-49272045fb24"},
-							},
-							{
-								ID:        "edca9bc6-334e-11e9-3554-9595dbb4349c",
-								Name:      "B",
-								Version:   "1.9.0",
-								Indirect:  false,
-								Locations: []types.Location{{StartLine: 15, EndLine: 16}},
-								DependsOn: nil,
-							},
-							{
-								ID:        "f41f7b98-334e-11e9-1257-49272045fb24",
-								Name:      "B",
-								Version:   "1.9.0",
-								Indirect:  true,
-								Locations: []types.Location{{StartLine: 13, EndLine: 14}},
 								DependsOn: nil,
 							},
 						},

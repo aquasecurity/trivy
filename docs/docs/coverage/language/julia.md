@@ -20,6 +20,5 @@ If you want to see the dependency tree, please ensure that `Project.toml` is pre
 Scanning `Manifest.toml` and `Project.toml` together also removes developer dependencies.
 
 Dependency extensions are currently ignored.
-Shadowed dependencies are not supported and will overwrite each other in exported SBOMs.
 
 [^1]: When you scan `Manifest.toml` and `Project.toml` together.

@@ -2,19 +2,22 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000006",
   "version": 1,
   "metadata": {
     "timestamp": "2021-08-25T12:20:30+00:00",
-    "tools": [
-      {
-        "vendor": "aquasecurity",
-        "name": "trivy",
-        "version": "dev"
-      }
-    ],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
     "component": {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
       "type": "application",
       "name": "testdata/fixtures/repo/julia",
       "properties": [
@@ -27,7 +30,7 @@
   },
   "components": [
     {
-      "bom-ref": "98bde055-d07d-4cb8-91a7-cf00399e7169",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "type": "application",
       "name": "Manifest.toml",
       "properties": [
@@ -95,16 +98,17 @@
   ],
   "dependencies": [
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000001",
       "dependsOn": [
-        "3ff14136-e09f-4df9-80ea-000000000003"
+        "3ff14136-e09f-4df9-80ea-000000000002"
       ]
     },
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000003",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "dependsOn": [
         "pkg:julia/A@1.9.0?uuid=ead4f63c-334e-11e9-00e6-e7f0a5f21b60",
-        "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c"
+        "pkg:julia/B@1.9.0?uuid=edca9bc6-334e-11e9-3554-9595dbb4349c",
+        "pkg:julia/B@1.9.0?uuid=f41f7b98-334e-11e9-1257-49272045fb24"
       ]
     },
     {
