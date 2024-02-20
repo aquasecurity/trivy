@@ -9,7 +9,7 @@ dependencies {
     "scm"("org.eclipse.jgit:org.eclipse.jgit:4.9.2.201712150930-r")
 	compile "com.android.support:appcompat-v7:23.1.1"
 	compile group:'com.googlecode.jsontoken', name: 'jsontoken', version: '1.1'
-    compile  name: 'jsontoken', group: 'com.googlecode.jsontoken', version: '1.1'
+    compile  name: 'jsontoken', group: 'com.googlecode.jsontoken', version: '1.2'
 }
 
 dependencyLocking {

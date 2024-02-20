@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/gradle/lockfile"
@@ -68,33 +67,31 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 			return nil
 		}
 
-		var directDeps []string
-		var buildGradleFound bool
-		directDeps, buildGradleFound, err = parseBuildGradle(input.FS, path.Dir(filePath))
-		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
-		}
-
-		libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, types.Package) {
-			return lib.ID, lib
+		directDeps := parseBuildGradle(input.FS, path.Dir(filePath))
+		directDepsFound := len(directDeps) > 0
+		libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, struct{}) {
+			return lib.ID, struct{}{}
 		})
 
 		for i, lib := range app.Libraries {
-			if buildGradleFound {
+			// If Direct deps has been found - mark Indirect deps.
+			if directDepsFound {
 				app.Libraries[i].Indirect = true
-				if slices.Contains(directDeps, lib.ID) {
+				if _, ok := directDeps[lib.ID]; ok {
 					app.Libraries[i].Indirect = false
 				}
 			}
 
 			pom := poms[lib.ID]
 
+			// Fill licenses from pom file
 			if len(pom.Licenses.License) > 0 {
 				app.Libraries[i].Licenses = lo.Map(pom.Licenses.License, func(license License, _ int) string {
 					return license.Name
 				})
 			}
 
+			// File child deps from pom file
 			var deps []string
 			for _, dep := range pom.Dependencies.Dependency {
 				id := packageID(dep.GroupID, dep.ArtifactID, dep.Version)
@@ -102,6 +99,7 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 					deps = append(deps, id)
 				}
 			}
+			sort.Strings(deps)
 			app.Libraries[i].DependsOn = deps
 		}
 

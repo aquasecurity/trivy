@@ -12,31 +12,31 @@ func Test_parseBuildGradle(t *testing.T) {
 	tests := []struct {
 		name string
 		dir  string
-		want []string
+		want map[string]struct{}
 	}{
 		{
 			name: "happy path",
 			dir:  "happy",
-			want: []string{
-				"junit:junit:4.13",
-				"org.eclipse.jgit:org.eclipse.jgit:4.9.2.201712150930-r",
-				"com.android.support:appcompat-v7:23.1.1",
-				"com.googlecode.jsontoken:jsontoken:1.1",
-				"com.googlecode.jsontoken:jsontoken:1.1",
+			want: map[string]struct{}{
+				"junit:junit:4.13": {},
+				"org.eclipse.jgit:org.eclipse.jgit:4.9.2.201712150930-r": {},
+				"com.android.support:appcompat-v7:23.1.1":                {},
+				"com.googlecode.jsontoken:jsontoken:1.1":                 {},
+				"com.googlecode.jsontoken:jsontoken:1.2":                 {},
 			},
 		},
 		{
 			name: "happy path. build.gradle.kts file",
 			dir:  "kts-file",
-			want: []string{
-				"org.eclipse.jgit:org.eclipse.jgit:4.9.2.201712150930-r",
+			want: map[string]struct{}{
+				"org.eclipse.jgit:org.eclipse.jgit:4.9.2.201712150930-r": {},
 			},
 		},
 		{
 			name: "happy path. Single line.",
 			dir:  "single-line",
-			want: []string{
-				"junit:junit:4.13",
+			want: map[string]struct{}{
+				"junit:junit:4.13": {},
 			},
 		},
 		{
@@ -50,8 +50,7 @@ func Test_parseBuildGradle(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f := os.DirFS(filepath.Join("testdata", "buildgradlefiles"))
 
-			got, _, err := parseBuildGradle(f, tt.dir)
-			require.NoError(t, err)
+			got := parseBuildGradle(f, tt.dir)
 			require.Equal(t, tt.want, got)
 		})
 	}

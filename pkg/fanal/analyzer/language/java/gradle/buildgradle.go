@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"path"
 	"regexp"
@@ -22,48 +23,68 @@ const (
 var pkgRegexp = regexp.MustCompile(fmt.Sprintf(`%s(?P<id>(%s:%s:%s))%s|group: ?%s(?P<group>(%s))%s|name: ?%s(?P<name>(%s))%s|version: ?%s(?P<version>(%s))%s`,
 	quotes, text, text, text, quotes, quotes, text, quotes, quotes, text, quotes, quotes, text, quotes))
 
-func parseBuildGradle(fsys fs.FS, dir string) ([]string, bool, error) {
+func parseBuildGradle(fsys fs.FS, dir string) map[string]struct{} {
+	f, err := openBuildGradleFile(fsys, dir)
+	if err != nil {
+		log.Logger.Debugf("Unable to get direct dependencies: %s", err)
+		return nil
+	}
+	scanner := bufio.NewScanner(f)
+	var depBlockStarted bool
+	var deps = make(map[string]struct{})
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if depBlockStarted {
+			if !strings.HasPrefix(line, "}") {
+				dep := parseDepLine(line)
+				if dep != "" {
+					deps[dep] = struct{}{}
+				}
+			} else {
+				break
+			}
+		}
+
+		if strings.HasPrefix(line, "dependencies {") {
+			depBlockStarted = true
+
+			// Dependencies as 1 line.
+			// e.g. dependencies {implementation 'junit:junit:4.13'}
+			if strings.HasSuffix(line, "}") {
+				dep := parseDepLine(strings.TrimLeft(strings.TrimRight(line, "}"), "}"))
+				if dep != "" {
+					deps[dep] = struct{}{}
+				}
+				break
+			}
+		}
+	}
+
+	if len(deps) == 0 {
+		log.Logger.Debug("Unable to detect direct dependencies: `Dependencies` module is empty/missing.")
+		return nil
+	}
+	return deps
+}
+
+func openBuildGradleFile(fsys fs.FS, dir string) (io.Reader, error) {
 	f, err := fsys.Open(path.Join(dir, buildGradle))
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			f, err = fsys.Open(path.Join(dir, buildGradleKts))
 			if err != nil {
 				if errors.Is(err, fs.ErrNotExist) {
-					log.Logger.Warnf("Unable to detect direct dependencies: build.gradle/build.gradle.kts file doesn't exist.")
-					return nil, false, nil
+					return nil, xerrors.Errorf("build.gradle/build.gradle.kts file doesn't exist.")
 				} else {
-					return nil, false, xerrors.Errorf("unable to open build.gradle.kts file: %w", err)
+					return nil, xerrors.Errorf("unable to open build.gradle.kts file: %w", err)
 				}
 			}
 		} else {
-			return nil, false, xerrors.Errorf("unable to open build.gradle file: %w", err)
+			return nil, xerrors.Errorf("unable to open build.gradle file: %w", err)
 		}
 	}
-
-	scanner := bufio.NewScanner(f)
-	var depBlockStarted bool
-	var deps []string
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		if depBlockStarted {
-			if strings.HasPrefix(line, "}") {
-				break
-			} else {
-				deps = append(deps, parseDepLine(line))
-			}
-		}
-
-		if strings.HasPrefix(line, "dependencies {") {
-			// Dependencies as 1 line.
-			// e.g. dependencies {implementation 'junit:junit:4.13'}
-			if strings.HasSuffix(line, "}") {
-				return []string{parseDepLine(strings.TrimLeft(strings.TrimRight(line, "}"), "}"))}, true, nil
-			}
-			depBlockStarted = true
-		}
-	}
-	return deps, true, nil
+	return f, nil
 }
 
 func parseDepLine(line string) string {

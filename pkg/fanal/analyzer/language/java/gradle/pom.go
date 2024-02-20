@@ -159,7 +159,7 @@ func detectCacheDir() string {
 	dir = filepath.Join(dir, "caches")
 
 	if !fsutils.DirExists(dir) {
-		log.Logger.Warnf("Unable to get licanses. Gradle cache dir doesn't exist.")
+		log.Logger.Debug("Unable to get licenses. Gradle cache dir doesn't exist.")
 		return ""
 	}
 	return dir

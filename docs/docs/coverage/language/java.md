@@ -67,6 +67,9 @@ Trivy uses the following files to build the dependency tree:
 - *.pom files from cache[^8] directory - to detect child dependencies.
 - `build.gradle` file is presented next to `gradle.lock` file - to detect Direct dependencies ([Dependency module][gradle-dep-module] is currently support only).
 
+!!!warning
+    Trivy doesn't distinguish between `configuration` of dependencies. Currently, all dependencies from [Dependency module][gradle-dep-module] will be mark as Direct dependencies.
+
 ### Licenses
 Trity also can detect licenses for dependencies.
 
