@@ -21,14 +21,14 @@ func TestParse(t *testing.T) {
 		{
 			name:     "Manifest v1.6",
 			file:     "testdata/primary/Manifest_v1.6.toml",
-			want:     juliaV1_6Pkgs,
-			wantDeps: juliaV1_6Deps,
+			want:     juliaV16Libs,
+			wantDeps: juliaV16Deps,
 		},
 		{
 			name:     "Manifest v1.8",
 			file:     "testdata/primary/Manifest_v1.8.toml",
-			want:     juliaV1_8Pkgs,
-			wantDeps: juliaV1_8Deps,
+			want:     juliaV18Libs,
+			wantDeps: juliaV18Deps,
 		},
 		{
 			name:     "no deps v1.6",
@@ -45,14 +45,20 @@ func TestParse(t *testing.T) {
 		{
 			name:     "dep extensions v1.9",
 			file:     "testdata/dep_ext_v1.9/Manifest.toml",
-			want:     juliaV1_9DepExtPkgs,
+			want:     juliaV19DepExtLibs,
 			wantDeps: nil,
 		},
 		{
 			name:     "shadowed dep v1.9",
 			file:     "testdata/shadowed_dep_v1.9/Manifest.toml",
-			want:     juliaV1_9ShadowedDepPkgs,
-			wantDeps: juliaV1_9ShadowedDepDeps,
+			want:     juliaV19ShadowedDepLibs,
+			wantDeps: juliaV19ShadowedDepDeps,
+		},
+		{
+			name:     "julia v1.0 format",
+			file:     "testdata/julia_v1.0_format/Manifest.toml",
+			want:     juliaV10FormatLibs,
+			wantDeps: juliaV10FormatDeps,
 		},
 	}
 
