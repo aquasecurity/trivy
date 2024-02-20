@@ -165,11 +165,14 @@ func (p *Parser) traverseZip(filePath string, size int64, r dio.ReadSeekerAt, fi
 			if err != nil {
 				return nil, manifest{}, false, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
 			}
-			libs = append(libs, props.Library())
+			// Validation of props to avoid getting libs with empty Name/Version
+			if props.Valid() {
+				libs = append(libs, props.Library())
 
-			// Check if the pom.properties is for the original JAR/WAR/EAR
-			if fileProps.ArtifactID == props.ArtifactID && fileProps.Version == props.Version {
-				foundPomProps = true
+				// Check if the pom.properties is for the original JAR/WAR/EAR
+				if fileProps.ArtifactID == props.ArtifactID && fileProps.Version == props.Version {
+					foundPomProps = true
+				}
 			}
 		case filepath.Base(fileInJar.Name) == "MANIFEST.MF":
 			m, err = parseManifest(fileInJar)
