@@ -44,6 +44,15 @@
         "revision" : "40c465af19b993344e84355c00669ba2022ca3cd",
         "version" : "7.1.1"
       }
+    },
+    {
+          "identity" : "swift-ogg",
+          "kind" : "remoteSourceControl",
+          "location" : "https://github.com/element-hq/swift-ogg",
+          "state" : {
+            "branch" : "0.0.1",
+            "revision" : "e9a9e7601da662fd8b97d93781ff5c60b4becf88"
+          }
     }
   ],
   "version" : 2
