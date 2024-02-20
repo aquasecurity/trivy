@@ -1,7 +1,6 @@
 package swift
 
 import (
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"io"
 	"sort"
 	"strings"
@@ -10,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 )
