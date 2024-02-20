@@ -26,7 +26,8 @@ import (
 	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
-	tfpscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan"
+	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/json"
+	tfprawscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 
@@ -34,13 +35,14 @@ import (
 )
 
 var enablediacTypes = map[detection.FileType]types.ConfigType{
-	detection.FileTypeAzureARM:       types.AzureARM,
-	detection.FileTypeCloudFormation: types.CloudFormation,
-	detection.FileTypeTerraform:      types.Terraform,
-	detection.FileTypeDockerfile:     types.Dockerfile,
-	detection.FileTypeKubernetes:     types.Kubernetes,
-	detection.FileTypeHelm:           types.Helm,
-	detection.FileTypeTerraformPlan:  types.TerraformPlan,
+	detection.FileTypeAzureARM:              types.AzureARM,
+	detection.FileTypeCloudFormation:        types.CloudFormation,
+	detection.FileTypeTerraform:             types.Terraform,
+	detection.FileTypeDockerfile:            types.Dockerfile,
+	detection.FileTypeKubernetes:            types.Kubernetes,
+	detection.FileTypeHelm:                  types.Helm,
+	detection.FileTypeTerraformPlanJSON:     types.TerraformPlanJSON,
+	detection.FileTypeTerraformPlanSnapshot: types.TerraformPlanSnapshot,
 }
 
 type ScannerOption struct {
@@ -99,8 +101,12 @@ func NewTerraformScanner(filePatterns []string, opt ScannerOption) (*Scanner, er
 	return newScanner(detection.FileTypeTerraform, filePatterns, opt)
 }
 
-func NewTerraformPlanScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeTerraformPlan, filePatterns, opt)
+func NewTerraformPlanJSONScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
+	return newScanner(detection.FileTypeTerraformPlanJSON, filePatterns, opt)
+}
+
+func NewTerraformPlanSnapshotScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
+	return newScanner(detection.FileTypeTerraformPlanSnapshot, filePatterns, opt)
 }
 
 func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) (*Scanner, error) {
@@ -123,8 +129,10 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = k8sscanner.NewScanner(opts...)
 	case detection.FileTypeTerraform:
 		scanner = terraform.New(opts...)
-	case detection.FileTypeTerraformPlan:
-		scanner = tfpscanner.New(opts...)
+	case detection.FileTypeTerraformPlanJSON:
+		scanner = tfpjsonscanner.New(opts...)
+	case detection.FileTypeTerraformPlanSnapshot:
+		scanner = tfprawscanner.New(opts...)
 	}
 
 	return &Scanner{
@@ -253,7 +261,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	switch t {
 	case detection.FileTypeHelm:
 		return addHelmOpts(opts, opt), nil
-	case detection.FileTypeTerraform:
+	case detection.FileTypeTerraform, detection.FileTypeTerraformPlanSnapshot:
 		return addTFOpts(opts, opt)
 	case detection.FileTypeCloudFormation:
 		return addCFOpts(opts, opt)

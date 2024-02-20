@@ -104,20 +104,22 @@ The `trivy config` command is a sub-command of the `trivy fs` command. You can l
 
 ## Scanning Terraform Plan files
 
-Instead of scanning your different Terraform resources individually, you could also scan your terraform plan output before it is deployed for misconfiguration. This will give you insights into any misconfiguration of your resources as they would become deployed. [Here](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/examples/#terraform-plan) is the link to the documentation.
+Instead of scanning your different Terraform resources individually, you could also scan your Terraform Plan file before it is deployed for misconfiguration. This will give you insights into any misconfiguration of your resources as they would become deployed. [Here](https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/examples/#terraform-plan) is the link to the documentation.
 
 First, create a terraform plan and save it to a file:
-```
-terraform plan --out tfplan.binary
-```
-
-Next, convert the file into json format:
-```
-terraform show -json tfplan.binary > tfplan.json
+```bash
+terraform plan --out tfplan
 ```
 
-Lastly, scan the file with the `trivy config` command:
+Scan the file with the `trivy config` command:
+```bash
+trivy config ./tfplan
 ```
+
+You can also scan its JSON representation:
+```bash
+terraform show -json tfplan > tfplan.json
+
 trivy config ./tfplan.json
 ```
 

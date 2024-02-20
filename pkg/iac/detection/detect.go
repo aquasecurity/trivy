@@ -10,23 +10,25 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type FileType string
 
 const (
-	FileTypeCloudFormation FileType = "cloudformation"
-	FileTypeTerraform      FileType = "terraform"
-	FileTypeTerraformPlan  FileType = "terraformplan"
-	FileTypeDockerfile     FileType = "dockerfile"
-	FileTypeKubernetes     FileType = "kubernetes"
-	FileTypeRbac           FileType = "rbac"
-	FileTypeYAML           FileType = "yaml"
-	FileTypeTOML           FileType = "toml"
-	FileTypeJSON           FileType = "json"
-	FileTypeHelm           FileType = "helm"
-	FileTypeAzureARM       FileType = "azure-arm"
+	FileTypeCloudFormation        FileType = "cloudformation"
+	FileTypeTerraform             FileType = "terraform"
+	FileTypeTerraformPlanJSON     FileType = "terraformplan-json"
+	FileTypeTerraformPlanSnapshot FileType = "terraformplan-snapshot"
+	FileTypeDockerfile            FileType = "dockerfile"
+	FileTypeKubernetes            FileType = "kubernetes"
+	FileTypeRbac                  FileType = "rbac"
+	FileTypeYAML                  FileType = "yaml"
+	FileTypeTOML                  FileType = "toml"
+	FileTypeJSON                  FileType = "json"
+	FileTypeHelm                  FileType = "helm"
+	FileTypeAzureARM              FileType = "azure-arm"
 )
 
 var matchers = make(map[FileType]func(name string, r io.ReadSeeker) bool)
@@ -77,7 +79,7 @@ func init() {
 		return IsTerraformFile(name)
 	}
 
-	matchers[FileTypeTerraformPlan] = func(name string, r io.ReadSeeker) bool {
+	matchers[FileTypeTerraformPlanJSON] = func(name string, r io.ReadSeeker) bool {
 		if IsType(name, r, FileTypeJSON) {
 			if resetReader(r) == nil {
 				return false
@@ -93,6 +95,10 @@ func init() {
 			}
 		}
 		return false
+	}
+
+	matchers[FileTypeTerraformPlanSnapshot] = func(name string, r io.ReadSeeker) bool {
+		return snapshot.IsPlanSnapshot(r)
 	}
 
 	matchers[FileTypeCloudFormation] = func(name string, r io.ReadSeeker) bool {
