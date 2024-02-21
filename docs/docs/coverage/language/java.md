@@ -62,13 +62,10 @@ The vulnerability database will be downloaded anyway.
     All necessary files are checked locally. Gradle file scanning doesn't require internet access.
 
 ### Dependency-tree
-Trivy uses the following files to build the dependency tree:
+Trivy finds child dependencies from `*.pom` files in the cache[^8] directory.
 
-- *.pom files from cache[^8] directory - to detect child dependencies.
-- `build.gradle` file is presented next to `gradle.lock` file - to detect Direct dependencies ([Dependency module][gradle-dep-module] is currently support only).
-
-!!!warning
-    Trivy doesn't distinguish between `configuration` of dependencies. Currently, all dependencies from [Dependency module][gradle-dep-module] will be mark as Direct dependencies.
+But there is no reliable way to determine direct dependencies (even using other files).
+Therefore, we mark all dependencies as indirect to use logic to guess direct dependencies and build a dependency tree.
 
 ### Licenses
 Trity also can detect licenses for dependencies.
