@@ -959,7 +959,7 @@ resource "aws_s3_bucket" "this" {
 	t.Run("arg is map and ref to each.key", func(t *testing.T) {
 		src := `locals {
 	buckets = {
-		bucket1 = "bucket1"
+		bucket1key = "bucket1value"
 	}
 }
 
@@ -978,15 +978,15 @@ resource "aws_s3_bucket" "this" {
 
 		bucket := buckets[0]
 		bucketName := bucket.GetAttribute("bucket").Value().AsString()
-		assert.Equal(t, "bucket1", bucketName)
+		assert.Equal(t, "bucket1key", bucketName)
 
-		assert.Equal(t, `this["bucket1"]`, bucket.NameLabel())
+		assert.Equal(t, `this["bucket1key"]`, bucket.NameLabel())
 	})
 
 	t.Run("arg is map and ref to each.value", func(t *testing.T) {
 		src := `locals {
 	buckets = {
-		bucket1 = "bucket1"
+		bucket1key = "bucket1value"
 	}
 }
 
@@ -1005,9 +1005,9 @@ resource "aws_s3_bucket" "this" {
 
 		bucket := buckets[0]
 		bucketName := bucket.GetAttribute("bucket").Value().AsString()
-		assert.Equal(t, "bucket1", bucketName)
+		assert.Equal(t, "bucket1value", bucketName)
 
-		assert.Equal(t, `this["bucket1"]`, bucket.NameLabel())
+		assert.Equal(t, `this["bucket1key"]`, bucket.NameLabel())
 	})
 
 }
@@ -1034,13 +1034,15 @@ resource "aws_s3_bucket" "this" {
 		{
 			name: "arg is empty list",
 			source: `locals {
-		  buckets = []
-		}
-		resource "aws_s3_bucket" "this" {
-		  for_each = loca.buckets
-		  bucket   = each.value
-		}
-		`},
+  buckets = []
+}
+
+resource "aws_s3_bucket" "this" {
+  for_each = local.buckets
+  bucket   = each.value
+}`,
+			expectedCount: 0,
+		},
 		{
 			name: "arg is empty set",
 			source: `locals {
@@ -1048,7 +1050,7 @@ resource "aws_s3_bucket" "this" {
 }
 
 resource "aws_s3_bucket" "this" {
-  for_each = loca.buckets
+  for_each = local.buckets
   bucket = each.key
 }`,
 			expectedCount: 0,
@@ -1069,7 +1071,7 @@ resource "aws_s3_bucket" "this" {
 			name: "arg is non-valid set",
 			source: `locals {
   buckets = [{
-    bucket1 = "bucket1"
+    bucket1key = "bucket1value"
   }]
 }
 
