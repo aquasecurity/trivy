@@ -89,37 +89,14 @@ func (p *parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("failed to parse POM: %w", err)
 	}
 
-	var remoteRepositories []string
-	const disabled = "false"
-	for _, rep := range content.Repositories.Repository {
-		if rep.Releases.Enabled == disabled && rep.Snapshots.Enabled == disabled {
-			continue
-		}
-
-		repoURL, err := url.Parse(rep.URL)
-		if err != nil {
-			log.Logger.Debugf("Unable to parse remote repository url: %s", err)
-			continue
-		}
-
-		for _, server := range p.servers {
-			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
-				repoURL.User = url.UserPassword(server.Username, server.Password)
-				break
-			}
-		}
-
-		log.Logger.Debugf("Adding repository %s: %s", rep.ID, rep.URL)
-		remoteRepositories = append(remoteRepositories, repoURL.String())
-	}
-
-	// Add central maven repository or repositories obtained using `WithRemoteRepos` function.
-	p.remoteRepositories = append(remoteRepositories, p.remoteRepositories...)
-
 	root := &pom{
 		filePath: p.rootPath,
 		content:  content,
 	}
+
+	remoteRepositories := root.repositories(p.servers)
+	// Add central maven repository or repositories obtained using `WithRemoteRepos` function.
+	p.remoteRepositories = append(remoteRepositories, p.remoteRepositories...)
 
 	// Analyze root POM
 	result, err := p.analyze(root, analysisOptions{lineNumber: true})
@@ -341,7 +318,7 @@ func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	}
 
 	// Update remoteRepositories
-	p.remoteRepositories = utils.UniqueStrings(append(p.remoteRepositories, pom.repositories()...))
+	p.remoteRepositories = utils.UniqueStrings(append(p.remoteRepositories, pom.repositories(p.servers)...))
 
 	// Parent
 	parent, err := p.parseParent(pom.filePath, pom.content.Parent)

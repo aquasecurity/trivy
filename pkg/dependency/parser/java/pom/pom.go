@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"io"
 	"maps"
+	"net/url"
 	"reflect"
 	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 )
@@ -113,12 +115,29 @@ func (p pom) licenses() []string {
 	})
 }
 
-func (p pom) repositories() []string {
+func (p pom) repositories(servers []Server) []string {
 	var urls []string
 	for _, rep := range p.content.Repositories.Repository {
-		if rep.Releases.Enabled != "false" {
-			urls = append(urls, rep.URL)
+		// Add only enabled repositories
+		if rep.Releases.Enabled == "false" && rep.Snapshots.Enabled == "false" {
+			continue
 		}
+
+		repoURL, err := url.Parse(rep.URL)
+		if err != nil {
+			log.Logger.Debugf("Unable to parse remote repository url: %s", err)
+			continue
+		}
+
+		for _, server := range servers {
+			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
+				repoURL.User = url.UserPassword(server.Username, server.Password)
+				break
+			}
+		}
+
+		log.Logger.Debugf("Adding repository %s: %s", rep.ID, rep.URL)
+		urls = append(urls, repoURL.String())
 	}
 	return urls
 }
@@ -139,23 +158,7 @@ type pomXML struct {
 		Dependencies pomDependencies `xml:"dependencies"`
 	} `xml:"dependencyManagement"`
 	Dependencies pomDependencies `xml:"dependencies"`
-	Repositories struct {
-		Text       string `xml:",chardata"`
-		Repository []struct {
-			Text     string `xml:",chardata"`
-			ID       string `xml:"id"`
-			Name     string `xml:"name"`
-			URL      string `xml:"url"`
-			Releases struct {
-				Text    string `xml:",chardata"`
-				Enabled string `xml:"enabled"`
-			} `xml:"releases"`
-			Snapshots struct {
-				Text    string `xml:",chardata"`
-				Enabled string `xml:"enabled"`
-			} `xml:"snapshots"`
-		} `xml:"repository"`
-	} `xml:"repositories"`
+	Repositories pomRepositories `xml:"repositories"`
 }
 
 type pomParent struct {
@@ -349,4 +352,24 @@ func findDep(name string, depManagement []pomDependency) (pomDependency, bool) {
 	return lo.Find(depManagement, func(item pomDependency) bool {
 		return item.Name() == name
 	})
+}
+
+type pomRepositories struct {
+	Text       string          `xml:",chardata"`
+	Repository []pomRepository `xml:"repository"`
+}
+
+type pomRepository struct {
+	Text     string `xml:",chardata"`
+	ID       string `xml:"id"`
+	Name     string `xml:"name"`
+	URL      string `xml:"url"`
+	Releases struct {
+		Text    string `xml:",chardata"`
+		Enabled string `xml:"enabled"`
+	} `xml:"releases"`
+	Snapshots struct {
+		Text    string `xml:",chardata"`
+		Enabled string `xml:"enabled"`
+	} `xml:"snapshots"`
 }
