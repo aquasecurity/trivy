@@ -62,6 +62,8 @@ The vulnerability database will be downloaded anyway.
     All necessary files are checked locally. Gradle file scanning doesn't require internet access.
 
 ### Dependency-tree
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
 Trivy finds child dependencies from `*.pom` files in the cache[^8] directory.
 
 But there is no reliable way to determine direct dependencies (even using other files).
@@ -82,4 +84,3 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [^8]: The supported directories are `$GRADLE_USER_HOME/caches` and `$HOME/.gradle/caches` (`%HOMEPATH%\.gradle\caches` for Windows).
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
-[gradle-dep-module]: https://docs.gradle.org/current/userguide/declaring_dependencies.html#sub:module_dependencies
