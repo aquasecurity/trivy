@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -48,7 +47,7 @@ func newGradleLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, e
 func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	poms, err := parsePoms()
 	if err != nil {
-		log.Logger.Warnf("Unable to get licenses: %s", err)
+		log.Logger.Warnf("Unable to get licenses and dependsOn: %s", err)
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
@@ -60,28 +59,18 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		var app *types.Application
 		app, err = language.Parse(types.Gradle, filePath, r, a.parser)
 		if err != nil {
-
+			return xerrors.Errorf("%s parse error: %w", filePath, err)
 		}
 
 		if app == nil {
 			return nil
 		}
 
-		directDeps := parseBuildGradle(input.FS, path.Dir(filePath))
-		directDepsFound := len(directDeps) > 0
 		libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, struct{}) {
 			return lib.ID, struct{}{}
 		})
 
 		for i, lib := range app.Libraries {
-			// If Direct deps has been found - mark Indirect deps.
-			if directDepsFound {
-				app.Libraries[i].Indirect = true
-				if _, ok := directDeps[lib.ID]; ok {
-					app.Libraries[i].Indirect = false
-				}
-			}
-
 			pom := poms[lib.ID]
 
 			// Fill licenses from pom file
