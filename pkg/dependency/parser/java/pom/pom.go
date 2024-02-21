@@ -129,6 +129,8 @@ func (p pom) repositories(servers []Server) []string {
 			continue
 		}
 
+		// Get the credentials from settings.xml based on matching server id
+		// with the repository id from pom.xml and use it for accessing the repository url
 		for _, server := range servers {
 			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
 				repoURL.User = url.UserPassword(server.Username, server.Password)
