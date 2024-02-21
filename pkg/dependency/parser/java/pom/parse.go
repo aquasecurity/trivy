@@ -90,8 +90,9 @@ func (p *parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	var remoteRepositories []string
+	const disabled = "false"
 	for _, rep := range content.Repositories.Repository {
-		if rep.Releases.Enabled == "false" && rep.Snapshots.Enabled == "false" {
+		if rep.Releases.Enabled == disabled && rep.Snapshots.Enabled == disabled {
 			continue
 		}
 
@@ -673,7 +674,7 @@ func fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
 	repoURL.Path = path.Join(paths...)
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", repoURL.String(), nil)
+	req, err := http.NewRequest("GET", repoURL.String(), http.NoBody)
 	if err != nil {
 		log.Logger.Debugf("Request failed for %s/%s", repoURL.Host, repoURL.Path)
 		return nil, nil
