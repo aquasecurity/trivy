@@ -6,9 +6,11 @@ import (
 	"strings"
 
 	"github.com/liamg/jfather"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 )
@@ -37,10 +39,21 @@ func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 	}
 	for _, pin := range pins {
 		name := libraryName(pin, lockFile.Version)
+
+		// Skip packages for which we cannot resolve the version
+		if pin.State.Version == "" && pin.State.Branch == "" {
+			log.Logger.Warnf("Unable to resolve %q. Both the version and branch fields are empty.", name)
+			continue
+		}
+
+		// A Pin can be resolved using `branch` without `version`.
+		// e.g. https://github.com/element-hq/element-ios/blob/6a9bcc88ea37147efba8f0a7bcf3ec187f4a4011/Riot.xcworkspace/xcshareddata/swiftpm/Package.resolved#L84-L92
+		version := lo.Ternary(pin.State.Version != "", pin.State.Version, pin.State.Branch)
+
 		libs = append(libs, types.Library{
-			ID:      utils.PackageID(name, pin.State.Version),
+			ID:      utils.PackageID(name, version),
 			Name:    name,
-			Version: pin.State.Version,
+			Version: version,
 			Locations: []types.Location{
 				{
 					StartLine: pin.StartLine,
