@@ -3730,6 +3730,11 @@ Total: <span class="m">2</span> <span class="o">(</span>UNKNOWN: <span class="m"
 </code></pre></div>
 <h2 id="kbom">KBOM</h2>
 <p>To read more about KBOM, see the <a href="../kubernetes/#KBOM">documentation for Kubernetes scanning</a>.</p>
+<p>The supported Kubernetes distributions for core components vulnerability scanning are:</p>
+<ul>
+<li><a href="https://github.com/kubernetes/kubernetes">Kubernetes upstream</a></li>
+<li><a href="https://github.com/rancher/rke2">Rancher rke2</a></li>
+</ul>
 <div class="highlight"><pre><span></span><code>$ trivy k8s --format cyclonedx cluster -o kbom.json
 $ trivy sbom kbom.json
 <span class="m">2023</span>-09-28T22:52:25.707+0300    INFO    Vulnerability scanning is enabled
