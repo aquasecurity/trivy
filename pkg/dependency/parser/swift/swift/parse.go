@@ -1,6 +1,7 @@
 package swift
 
 import (
+	"github.com/samber/lo"
 	"io"
 	"sort"
 	"strings"
@@ -38,17 +39,16 @@ func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 	}
 	for _, pin := range pins {
 		name := libraryName(pin, lockFile.Version)
+
+		// Skip packages for which we cannot resolve the version
+		if pin.State.Version == "" && pin.State.Branch == "" {
+			log.Logger.Warnf("Unable to resolve %q. Both the version and branch fields are empty.", name)
+			continue
+		}
+
 		// A Pin can be resolved using `branch` without `version`.
 		// e.g. https://github.com/element-hq/element-ios/blob/6a9bcc88ea37147efba8f0a7bcf3ec187f4a4011/Riot.xcworkspace/xcshareddata/swiftpm/Package.resolved#L84-L92
-		version := pin.State.Version
-		if version == "" {
-			// Skip packages for which we cannot resolve the version
-			if pin.State.Branch == "" {
-				log.Logger.Warnf("Unable to resolve %q. Version/Branch field doesn't exist.", name)
-				continue
-			}
-			version = pin.State.Branch
-		}
+		version := lo.Ternary(pin.State.Version != "", pin.State.Version, pin.State.Branch)
 
 		libs = append(libs, types.Library{
 			ID:      utils.PackageID(name, version),
