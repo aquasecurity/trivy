@@ -1,12 +1,12 @@
 package swift
 
 import (
-	"github.com/samber/lo"
 	"io"
 	"sort"
 	"strings"
 
 	"github.com/liamg/jfather"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
