@@ -1226,7 +1226,7 @@ func TestPom_Parse(t *testing.T) {
 			var remoteRepos []string
 			if tt.local {
 				// for local repository
-				t.Setenv("MAVEN_HOME", "testdata")
+				t.Setenv("MAVEN_HOME", "testdata/settings/global")
 			} else {
 				// for remote repository
 				h := http.FileServer(http.Dir(filepath.Join("testdata", "repository")))

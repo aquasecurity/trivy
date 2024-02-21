@@ -53,6 +53,7 @@ type parser struct {
 	localRepository    string
 	remoteRepositories []string
 	offline            bool
+	servers            []Server
 }
 
 func NewParser(filePath string, opts ...option) types.Parser {
@@ -78,6 +79,7 @@ func NewParser(filePath string, opts ...option) types.Parser {
 		localRepository:    localRepository,
 		remoteRepositories: o.remoteRepos,
 		offline:            o.offline,
+		servers:            s.Servers,
 	}
 }
 
@@ -86,6 +88,32 @@ func (p *parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to parse POM: %w", err)
 	}
+
+	var remoteRepositories []string
+	for _, rep := range content.Repositories.Repository {
+		if rep.Releases.Enabled == "false" && rep.Snapshots.Enabled == "false" {
+			continue
+		}
+
+		repoURL, err := url.Parse(rep.URL)
+		if err != nil {
+			log.Logger.Debugf("Unable to parse remote repository url: %s", err)
+			continue
+		}
+
+		for _, server := range p.servers {
+			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
+				repoURL.User = url.UserPassword(server.Username, server.Password)
+				break
+			}
+		}
+
+		log.Logger.Debugf("Adding repository %s: %s", rep.ID, rep.URL)
+		remoteRepositories = append(remoteRepositories, repoURL.String())
+	}
+
+	// Add central maven repository or repositories obtained using `WithRemoteRepos` function.
+	p.remoteRepositories = append(remoteRepositories, p.remoteRepositories...)
 
 	root := &pom{
 		filePath: p.rootPath,
@@ -644,8 +672,20 @@ func fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
 	paths = append([]string{repoURL.Path}, paths...)
 	repoURL.Path = path.Join(paths...)
 
-	resp, err := http.Get(repoURL.String())
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", repoURL.String(), nil)
+	if err != nil {
+		log.Logger.Debugf("Request failed for %s/%s", repoURL.Host, repoURL.Path)
+		return nil, nil
+	}
+	if repoURL.User != nil {
+		password, _ := repoURL.User.Password()
+		req.SetBasicAuth(repoURL.User.Username(), password)
+	}
+
+	resp, err := client.Do(req)
 	if err != nil || resp.StatusCode != http.StatusOK {
+		log.Logger.Debugf("Failed to fetch from %s/%s", repoURL.Host, repoURL.Path)
 		return nil, nil
 	}
 	defer resp.Body.Close()
