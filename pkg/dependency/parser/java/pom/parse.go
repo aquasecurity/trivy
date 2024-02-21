@@ -94,10 +94,6 @@ func (p *parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		content:  content,
 	}
 
-	remoteRepositories := root.repositories(p.servers)
-	// Add central maven repository or repositories obtained using `WithRemoteRepos` function.
-	p.remoteRepositories = append(remoteRepositories, p.remoteRepositories...)
-
 	// Analyze root POM
 	result, err := p.analyze(root, analysisOptions{lineNumber: true})
 	if err != nil {
