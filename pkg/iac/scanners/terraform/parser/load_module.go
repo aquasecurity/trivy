@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"path/filepath"
+	"path"
 	"strings"
 
 	"github.com/zclconf/go-cty/cty"
@@ -112,7 +112,7 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 		name := b.ModuleName()
 		for _, module := range e.moduleMetadata.Modules {
 			if module.Key == name {
-				modulePath = filepath.Clean(filepath.Join(e.projectRootPath, module.Dir))
+				modulePath = path.Clean(path.Join(e.projectRootPath, module.Dir))
 				break
 			}
 		}
@@ -162,19 +162,19 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		SkipCache:       e.skipCachedModules,
 	}
 
-	filesystem, prefix, path, err := resolveModule(ctx, e.filesystem, opt)
+	filesystem, prefix, downloadPath, err := resolveModule(ctx, e.filesystem, opt)
 	if err != nil {
 		return nil, err
 	}
-	prefix = filepath.Join(e.parentParser.moduleSource, prefix)
-	e.debug.Log("Module '%s' resolved to path '%s' in filesystem '%s' with prefix '%s'", b.FullName(), path, filesystem, prefix)
-	moduleParser := e.parentParser.newModuleParser(filesystem, prefix, path, b.Label(), b)
-	if err := moduleParser.ParseFS(ctx, path); err != nil {
+	prefix = path.Join(e.parentParser.moduleSource, prefix)
+	e.debug.Log("Module '%s' resolved to path '%s' in filesystem '%s' with prefix '%s'", b.FullName(), downloadPath, filesystem, prefix)
+	moduleParser := e.parentParser.newModuleParser(filesystem, prefix, downloadPath, b.Label(), b)
+	if err := moduleParser.ParseFS(ctx, downloadPath); err != nil {
 		return nil, err
 	}
 	return &ModuleDefinition{
 		Name:       b.Label(),
-		Path:       path,
+		Path:       downloadPath,
 		Definition: b,
 		Parser:     moduleParser,
 		FileSystem: filesystem,

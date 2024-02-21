@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

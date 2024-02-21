@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -320,7 +321,7 @@ func (s *Scanner) findModules(target fs.FS, scanDir string, dirs ...string) []st
 			continue
 		}
 		for _, file := range files {
-			realPath := filepath.Join(dir, file.Name())
+			realPath := path.Join(dir, file.Name())
 			if symFS, ok := target.(extrafs.ReadLinkFS); ok {
 				realPath, err = symFS.ResolveSymlink(realPath, scanDir)
 				if err != nil {
