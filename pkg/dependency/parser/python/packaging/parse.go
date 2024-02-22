@@ -9,9 +9,9 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Parser struct{}
@@ -22,7 +22,7 @@ func NewParser() types.Parser {
 
 // Parse parses egg and wheel metadata.
 // e.g. .egg-info/PKG-INFO and dist-info/METADATA
-func (*Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (*Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	rd := textproto.NewReader(bufio.NewReader(r))
 	h, err := rd.ReadMIMEHeader()
 	if e := textproto.ProtocolError(""); errors.As(err, &e) {

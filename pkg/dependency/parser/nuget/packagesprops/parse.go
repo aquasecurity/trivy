@@ -6,9 +6,9 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type pkg struct {
@@ -66,7 +66,7 @@ func isVariable(s string) bool {
 	return strings.HasPrefix(s, "$(") && strings.HasSuffix(s, ")")
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var configData project
 	if err := xml.NewDecoder(r).Decode(&configData); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode '*.packages.props' file: %w", err)

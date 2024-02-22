@@ -7,8 +7,8 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 // memFS is a wrapper of mapfs.FS and can change its underlying file system
@@ -29,7 +29,7 @@ func (m *memFS) Open(name string) (fs.File, error) {
 //
 // Note: it is always to safe swap the underlying FS with this API since this is called only at the beginning of
 // Analyze interface call, which is not concurrently called per module instance.
-func (m *memFS) initialize(filePath string, content dio.ReadSeekerAt) error {
+func (m *memFS) initialize(filePath string, content xio.ReadSeekerAt) error {
 	mfs := mapfs.New()
 	if err := mfs.MkdirAll(filepath.Dir(filePath), fs.ModePerm); err != nil {
 		return xerrors.Errorf("mapfs mkdir error: %w", err)

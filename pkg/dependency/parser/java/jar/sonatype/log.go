@@ -1,6 +1,6 @@
 package sonatype
 
-import "github.com/aquasecurity/trivy/pkg/dependency/parser/log"
+import "github.com/aquasecurity/trivy/pkg/log"
 
 // logger implements LeveledLogger
 // https://github.com/hashicorp/go-retryablehttp/blob/991b9d0a42d13014e3689dd49a94c02be01f4237/client.go#L285-L290
