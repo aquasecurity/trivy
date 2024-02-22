@@ -2,6 +2,7 @@ package terraformplan
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
@@ -32,6 +33,5 @@ func newTerraformPlanSnapshotConfigAnalyzer(opts analyzer.AnalyzerOptions) (anal
 }
 
 func (*terraformPlanConfigAnalyzer) Required(filePath string, fi os.FileInfo) bool {
-	// Terraform Plan file can have any extension
-	return true
+	return filepath.Ext(filePath) == ".tfplan" || filepath.Base(filePath) == "tfplan"
 }
