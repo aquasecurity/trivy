@@ -164,6 +164,73 @@ func TestWriter_Write(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "pypi from image",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "fake_repo.azurecr.io/image_name",
+				ArtifactType:  "container_image",
+				Metadata: types.Metadata{
+					RepoDigests: []string{"fake_repo.azurecr.io/image_name@sha256:a7c92cdcb3d010f6edeb37ddcdbacab14981aa31e7f1140e0097dc1b8e834c49"},
+					RepoTags:    []string{"fake_repo.azurecr.io/image_name:latest"},
+				},
+				Results: types.Results{
+					{
+						Target: "Python",
+						Class:  "lang-pkgs",
+						Type:   "python-pkg",
+						Packages: []ftypes.Package{
+							{
+								Name:    "jwcrypto",
+								Version: "0.7",
+								Licenses: []string{
+									"LGPLv3+",
+								},
+								Layer: ftypes.Layer{
+									Digest: "sha256:ddc612ba4e74ea5633a93e19e7c32f61f5f230073b21a070302a61ef5eec5c50",
+									DiffID: "sha256:12935ef6ce21a266aef8df75d601cebf7e935edd01e9f19fab16ccb78fbb9a5e",
+								},
+								FilePath: "opt/pyenv/versions/3.11.2/lib/python3.11/site-packages/jwcrypto-0.7.dist-info/METADATA",
+							},
+							{
+								Name:    "matplotlib",
+								Version: "3.5.3",
+								Licenses: []string{
+									"PSF",
+								},
+								Layer: ftypes.Layer{
+									Digest: "sha256:ddc612ba4e74ea5633a93e19e7c32f61f5f230073b21a070302a61ef5eec5c50",
+									DiffID: "sha256:12935ef6ce21a266aef8df75d601cebf7e935edd01e9f19fab16ccb78fbb9a5e",
+								},
+								FilePath: "opt/pyenv/versions/3.11.2/lib/python3.11/site-packages/matplotlib-3.5.3.dist-info/METADATA",
+							},
+						},
+					},
+				},
+			},
+			want: map[string]github.Manifest{
+				"Python": {
+					Name: "python-pkg",
+					File: &github.File{
+						SrcLocation: "fake_repo.azurecr.io/image_name:latest@sha256:a7c92cdcb3d010f6edeb37ddcdbacab14981aa31e7f1140e0097dc1b8e834c49",
+					},
+					Resolved: map[string]github.Package{
+						"jwcrypto": {
+							PackageUrl:   "pkg:pypi/jwcrypto@0.7",
+							Relationship: "direct",
+							Scope:        "runtime",
+							Metadata:     github.Metadata{"source_location": "opt/pyenv/versions/3.11.2/lib/python3.11/site-packages/jwcrypto-0.7.dist-info/METADATA"},
+						},
+						"matplotlib": {
+							PackageUrl:   "pkg:pypi/matplotlib@3.5.3",
+							Relationship: "direct",
+							Scope:        "runtime",
+							Metadata:     github.Metadata{"source_location": "opt/pyenv/versions/3.11.2/lib/python3.11/site-packages/matplotlib-3.5.3.dist-info/METADATA"},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
