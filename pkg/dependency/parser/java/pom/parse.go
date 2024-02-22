@@ -588,7 +588,7 @@ func (p *parser) openPom(filePath string) (*pom, error) {
 	}, nil
 }
 func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error) {
-	if len(version) == 0 {
+	if version == "" {
 		return nil, xerrors.Errorf("Version missing for %s:%s", groupID, artifactID)
 	}
 
