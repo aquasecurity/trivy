@@ -39,7 +39,7 @@ func TestTableWriter_Write(t *testing.T) {
 								Misconfigurations: []types.DetectedMisconfiguration{
 									{
 										AVDID:  "AVD-KSV012",
-										Status: types.StatusFailure,
+										Status: types.MisconfStatusFailure,
 									},
 								},
 							},
@@ -54,7 +54,7 @@ func TestTableWriter_Write(t *testing.T) {
 								Misconfigurations: []types.DetectedMisconfiguration{
 									{
 										AVDID:  "AVD-KSV013",
-										Status: types.StatusFailure,
+										Status: types.MisconfStatusFailure,
 									},
 								},
 							},

@@ -178,7 +178,7 @@ nav:
     - Production and Clouds: ecosystem/prod.md
     - Reporting: ecosystem/reporting.md
   - Contributing:
-      - Governance: community/governance.md
+      - Principles: community/principles.md
       - How to contribute:
           - Issues: community/contribute/issue.md
           - Discussions: community/contribute/discussion.md
@@ -203,7 +203,11 @@ theme:
 
 markdown_extensions:
   - pymdownx.highlight
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - admonition
   - footnotes
   - attr_list
