@@ -11,8 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/go-version/pkg/semver"
 	"golang.org/x/net/idna"
+
+	"github.com/aquasecurity/go-version/pkg/semver"
 )
 
 type registryResolver struct {
