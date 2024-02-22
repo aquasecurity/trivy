@@ -623,8 +623,6 @@ func k8sNamespace(ver, nodeName string) string {
 		namespace = purl.NamespaceEKS
 	case strings.Contains(ver, "gke"):
 		namespace = purl.NamespaceGKE
-	case strings.Contains(ver, "rke2"):
-		namespace = purl.NamespaceRKE
 	case strings.Contains(ver, "hotfix"):
 		if !strings.Contains(nodeName, "aks") {
 			// Unknown k8s distribution
