@@ -177,10 +177,10 @@ func (s *snapshot) getOrCreateModuleSnapshot(key string) *snapshotModule {
 }
 
 func (s *snapshot) toFS() (fs.FS, error) {
-	rootFS := memoryfs.New()
+	fsys := memoryfs.New()
 
 	for _, module := range s.modules {
-		if err := rootFS.MkdirAll(module.dir, fs.ModePerm); err != nil && !errors.Is(err, os.ErrExist) {
+		if err := fsys.MkdirAll(module.dir, fs.ModePerm); err != nil && !errors.Is(err, os.ErrExist) {
 			return nil, err
 		}
 		for filename, file := range module.files {
@@ -188,10 +188,10 @@ func (s *snapshot) toFS() (fs.FS, error) {
 			if module.dir != "" {
 				filePath = path.Join(module.dir, filename)
 			}
-			if err := rootFS.WriteFile(filePath, file, fs.ModePerm); err != nil {
+			if err := fsys.WriteFile(filePath, file, fs.ModePerm); err != nil {
 				return nil, fmt.Errorf("failed to add file: %w", err)
 			}
 		}
 	}
-	return rootFS, nil
+	return fsys, nil
 }

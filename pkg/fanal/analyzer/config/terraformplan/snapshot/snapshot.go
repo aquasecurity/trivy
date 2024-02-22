@@ -31,8 +31,7 @@ func newTerraformPlanSnapshotConfigAnalyzer(opts analyzer.AnalyzerOptions) (anal
 	return &terraformPlanConfigAnalyzer{Analyzer: a}, nil
 }
 
-// TODO
-// Required overrides config.Analyzer.Required() and checks if the given file is a Terraform file.
 func (*terraformPlanConfigAnalyzer) Required(filePath string, fi os.FileInfo) bool {
+	// Terraform Plan file can have any extension
 	return true
 }

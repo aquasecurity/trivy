@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	//nolint:gomodguard // hc-install uses hashicorp/go-version
 	hversion "github.com/hashicorp/go-version"
 	"github.com/hashicorp/hc-install/product"
 	"github.com/hashicorp/hc-install/releases"
@@ -75,7 +76,9 @@ func fixtureTerraformPlanSnapshots(ctx context.Context) error {
 }
 
 func generatePlan(ctx context.Context, execPath, workingDir string) error {
-	cleanup(workingDir)
+	if err := cleanup(workingDir); err != nil {
+		return err
+	}
 	defer cleanup(workingDir)
 
 	tf, err := tfexec.NewTerraform(workingDir, execPath)

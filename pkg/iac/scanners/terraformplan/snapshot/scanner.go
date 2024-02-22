@@ -20,9 +20,9 @@ func (s *Scanner) Name() string {
 	return "Terraform Plan Snapshot"
 }
 
-func New(options ...options.ScannerOption) *Scanner {
+func New(opts ...options.ScannerOption) *Scanner {
 	scanner := &Scanner{
-		inner: terraformScanner.New(options...),
+		inner: terraformScanner.New(opts...),
 	}
 	return scanner
 }
