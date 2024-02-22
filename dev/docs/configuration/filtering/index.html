@@ -4167,7 +4167,13 @@ For the <code>.trivyignore.yaml</code> file, you can set ignored IDs separately 
 <td>paths<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
 <td align="center"></td>
 <td>string array</td>
-<td>The list of file paths to be ignored. If <code>paths</code> is not set, the ignore finding is applied to all files.</td>
+<td>The list of file paths to ignore. If <code>paths</code> is not set, the ignore finding is applied to all files.</td>
+</tr>
+<tr>
+<td>purls</td>
+<td align="center"></td>
+<td>string array</td>
+<td>The list of PURLs to ignore packages. If <code>purls</code> is not set, the ignore finding is applied to all packages. This field is currently available only for vulnerabilities.</td>
 </tr>
 <tr>
 <td>expired_at</td>
@@ -4192,6 +4198,8 @@ vulnerabilities:
   - id: CVE-2023-2650
   - id: CVE-2023-3446
   - id: CVE-2023-3817
+    purls:
+      - <span class="s2">&quot;pkg:deb/debian/libssl1.1&quot;</span>
   - id: CVE-2023-29491
     expired_at: <span class="m">2023</span>-09-01
 
