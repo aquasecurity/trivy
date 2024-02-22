@@ -141,23 +141,22 @@ func getPrivateRegistryTokenFromEnvVars(hostname string) (string, error) {
 	token := ""
 	asciiHostname, err := idna.ToASCII(hostname)
 	if err != nil {
-		return "", fmt.Errorf("Could not convert hostname %s to a punycode encoded ASCII string so cannot find token for this registry", hostname)
-	} else {
-		envVar := fmt.Sprintf("TF_TOKEN_%s", strings.ReplaceAll(asciiHostname, ".", "_"))
-		token = os.Getenv(envVar)
-
-		// Dashes in the hostname can optionally be converted to double underscores
-		if token == "" {
-			envVar = strings.ReplaceAll(envVar, "-", "__")
-			token = os.Getenv(envVar)
-		}
-
-		if token == "" {
-			return "", fmt.Errorf("No token was found for the registry at %s", hostname)
-		} else {
-			return token, nil
-		}
+		return "", fmt.Errorf("could not convert hostname %s to a punycode encoded ASCII string so cannot find token for this registry", hostname)
 	}
+
+	envVar := fmt.Sprintf("TF_TOKEN_%s", strings.ReplaceAll(asciiHostname, ".", "_"))
+	token = os.Getenv(envVar)
+
+	// Dashes in the hostname can optionally be converted to double underscores
+	if token == "" {
+		envVar = strings.ReplaceAll(envVar, "-", "__")
+		token = os.Getenv(envVar)
+	}
+
+	if token == "" {
+		return "", fmt.Errorf("no token was found for the registry at %s", hostname)
+	}
+	return token, nil
 }
 
 func resolveVersion(input string, versions moduleVersions) (string, error) {
