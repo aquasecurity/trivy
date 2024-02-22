@@ -117,6 +117,11 @@ Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
 
 To read more about KBOM, see the [documentation for Kubernetes scanning](./kubernetes.md#KBOM).
 
+The supported Kubernetes distributions for core components vulnerability scanning are:
+
+- [Kubernetes upstream](https://github.com/kubernetes/kubernetes)
+- [Rancher rke2](https://github.com/rancher/rke2)
+
 ```sh
 
 $ trivy k8s --format cyclonedx cluster -o kbom.json

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/defsec/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/iac/state"
 )
 
 type Cache struct {

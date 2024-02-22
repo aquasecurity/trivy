@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/xerrors"
 
-	dlog "github.com/aquasecurity/go-dep-parser/pkg/log"
+	dlog "github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	flog "github.com/aquasecurity/trivy/pkg/fanal/log"
 )
 
@@ -33,7 +33,7 @@ func InitLogger(debug, disable bool) (err error) {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
 
-	// Set logger for go-dep-parser
+	// Set logger for dependency/parser
 	dlog.SetLogger(Logger)
 
 	// Set logger for fanal

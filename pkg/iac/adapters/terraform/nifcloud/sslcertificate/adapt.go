@@ -1,8 +1,8 @@
 package sslcertificate
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/sslcertificate"
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/sslcertificate"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func Adapt(modules terraform.Modules) sslcertificate.SSLCertificate {

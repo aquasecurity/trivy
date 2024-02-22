@@ -6,8 +6,8 @@ import (
 
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/defsec/pkg/types"
 	armjson2 "github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 type EvalContext struct{}

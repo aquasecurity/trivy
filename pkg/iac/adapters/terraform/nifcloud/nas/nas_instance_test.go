@@ -3,11 +3,11 @@ package nas
 import (
 	"testing"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/nas"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/nas"
 )
 
 func Test_adaptNASInstances(t *testing.T) {
@@ -24,8 +24,8 @@ func Test_adaptNASInstances(t *testing.T) {
 			}
 `,
 			expected: []nas.NASInstance{{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				NetworkID: defsecTypes.String("example-network", defsecTypes.NewTestMetadata()),
+				Metadata:  iacTypes.NewTestMetadata(),
+				NetworkID: iacTypes.String("example-network", iacTypes.NewTestMetadata()),
 			}},
 		},
 		{
@@ -36,8 +36,8 @@ func Test_adaptNASInstances(t *testing.T) {
 `,
 
 			expected: []nas.NASInstance{{
-				Metadata:  defsecTypes.NewTestMetadata(),
-				NetworkID: defsecTypes.String("net-COMMON_PRIVATE", defsecTypes.NewTestMetadata()),
+				Metadata:  iacTypes.NewTestMetadata(),
+				NetworkID: iacTypes.String("net-COMMON_PRIVATE", iacTypes.NewTestMetadata()),
 			}},
 		},
 	}

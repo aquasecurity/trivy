@@ -3,7 +3,7 @@ package parser
 import (
 	"sort"
 
-	"github.com/aquasecurity/defsec/pkg/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func sortBlocksByHierarchy(blocks terraform.Blocks) {

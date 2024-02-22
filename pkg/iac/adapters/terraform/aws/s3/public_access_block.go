@@ -1,7 +1,7 @@
 package s3
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws/s3"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 )
 
 func (a *adapter) adaptPublicAccessBlocks() {

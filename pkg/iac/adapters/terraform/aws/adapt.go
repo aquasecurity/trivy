@@ -1,8 +1,6 @@
 package aws
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/aws"
-	"github.com/aquasecurity/defsec/pkg/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/apigateway"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/athena"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/cloudfront"
@@ -36,6 +34,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/sqs"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/ssm"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/aws/workspaces"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func Adapt(modules terraform.Modules) aws.AWS {

@@ -3,19 +3,20 @@ package commands
 import (
 	"bytes"
 	"context"
-	"github.com/aquasecurity/trivy/pkg/clock"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 const expectedS3ScanResult = `{
@@ -1002,18 +1003,17 @@ deny {
 				},
 				ReportOptions: flag.ReportOptions{
 					Compliance: spec.ComplianceSpec{
-						Spec: defsecTypes.Spec{
-							// TODO: refactor defsec so that the parsed spec can be passed
+						Spec: iacTypes.Spec{
 							ID:          "@testdata/example-spec.yaml",
 							Title:       "my-custom-spec",
 							Description: "My fancy spec",
 							Version:     "1.2",
-							Controls: []defsecTypes.Control{
+							Controls: []iacTypes.Control{
 								{
 									ID:          "1.1",
 									Name:        "Unencrypted S3 bucket",
 									Description: "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.",
-									Checks: []defsecTypes.SpecCheck{
+									Checks: []iacTypes.SpecCheck{
 										{ID: "AVD-AWS-0088"},
 									},
 									Severity: "HIGH",

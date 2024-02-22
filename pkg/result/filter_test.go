@@ -84,6 +84,31 @@ func TestFilter(t *testing.T) {
 			PkgName:          "foo",
 			InstalledVersion: "1.2.3",
 			FixedVersion:     "1.2.4",
+			PkgIdentifier: ftypes.PkgIdentifier{
+				PURL: &packageurl.PackageURL{
+					Type:      packageurl.TypeGolang,
+					Namespace: "github.com/aquasecurity",
+					Name:      "foo",
+					Version:   "1.2.3",
+				},
+			},
+			Vulnerability: dbTypes.Vulnerability{
+				Severity: dbTypes.SeverityLow.String(),
+			},
+		}
+		vuln7 = types.DetectedVulnerability{
+			VulnerabilityID:  "CVE-2019-0007",
+			PkgName:          "bar",
+			InstalledVersion: "2.3.4",
+			FixedVersion:     "2.3.5",
+			PkgIdentifier: ftypes.PkgIdentifier{
+				PURL: &packageurl.PackageURL{
+					Type:      packageurl.TypeGolang,
+					Namespace: "github.com/aquasecurity",
+					Name:      "bar",
+					Version:   "2.3.4",
+				},
+			},
 			Vulnerability: dbTypes.Vulnerability{
 				Severity: dbTypes.SeverityLow.String(),
 			},
@@ -117,7 +142,7 @@ func TestFilter(t *testing.T) {
 		}
 		secret1 = types.DetectedSecret{
 			RuleID:    "generic-wanted-rule",
-			Severity:  dbTypes.SeverityLow.String(),
+			Severity:  dbTypes.SeverityHigh.String(),
 			Title:     "Secret that should pass filter on rule id",
 			StartLine: 1,
 			EndLine:   2,
@@ -174,30 +199,16 @@ func TestFilter(t *testing.T) {
 					Results: []types.Result{
 						{
 							Vulnerabilities: []types.DetectedVulnerability{
-								vuln1,
+								vuln1, // filtered
 								vuln2,
 							},
 							Misconfigurations: []types.DetectedMisconfiguration{
 								misconf1,
-								misconf2,
+								misconf2, // filtered
 							},
 							Secrets: []types.DetectedSecret{
-								{
-									RuleID:    "generic-critical-rule",
-									Severity:  dbTypes.SeverityCritical.String(),
-									Title:     "Critical Secret should pass filter",
-									StartLine: 1,
-									EndLine:   2,
-									Match:     "*****",
-								},
-								{
-									RuleID:    "generic-low-rule",
-									Severity:  dbTypes.SeverityLow.String(),
-									Title:     "Low Secret should be ignored",
-									StartLine: 3,
-									EndLine:   4,
-									Match:     "*****",
-								},
+								secret1,
+								secret2, // filtered
 							},
 						},
 					},
@@ -222,14 +233,7 @@ func TestFilter(t *testing.T) {
 							misconf1,
 						},
 						Secrets: []types.DetectedSecret{
-							{
-								RuleID:    "generic-critical-rule",
-								Severity:  dbTypes.SeverityCritical.String(),
-								Title:     "Critical Secret should pass filter",
-								StartLine: 1,
-								EndLine:   2,
-								Match:     "*****",
-							},
+							secret1,
 						},
 					},
 				},
@@ -325,7 +329,7 @@ func TestFilter(t *testing.T) {
 							Target: "deployment.yaml",
 							Class:  types.ClassConfig,
 							Misconfigurations: []types.DetectedMisconfiguration{
-								misconf1, // filtered by severity
+								misconf1,
 								misconf2,
 								misconf3,
 							},
@@ -339,7 +343,10 @@ func TestFilter(t *testing.T) {
 						},
 					},
 				},
-				severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+					dbTypes.SeverityHigh,
+				},
 				ignoreFile: "testdata/.trivyignore",
 			},
 			want: types.Report{
@@ -377,8 +384,11 @@ func TestFilter(t *testing.T) {
 						Class:  types.ClassConfig,
 						MisconfSummary: &types.MisconfSummary{
 							Successes:  1,
-							Failures:   0,
+							Failures:   1,
 							Exceptions: 1,
+						},
+						Misconfigurations: []types.DetectedMisconfiguration{
+							misconf1,
 						},
 						ModifiedFindings: []types.ModifiedFinding{
 							{
@@ -420,12 +430,13 @@ func TestFilter(t *testing.T) {
 								vuln4,
 								vuln5, // ignored
 								vuln6,
+								vuln7, // filtered by PURL
 							},
 						},
 						{
 							Target: "app/Dockerfile",
 							Misconfigurations: []types.DetectedMisconfiguration{
-								misconf1, // filtered by severity
+								misconf1, // ignored
 								misconf2, // ignored
 								misconf3,
 							},
@@ -448,7 +459,10 @@ func TestFilter(t *testing.T) {
 					},
 				},
 				ignoreFile: "testdata/.trivyignore.yaml",
-				severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+					dbTypes.SeverityHigh,
+				},
 			},
 			want: types.Report{
 				Results: types.Results{
@@ -477,6 +491,12 @@ func TestFilter(t *testing.T) {
 								Source:  "testdata/.trivyignore.yaml",
 								Finding: vuln5,
 							},
+							{
+								Type:    types.FindingTypeVulnerability,
+								Status:  types.FindingStatusIgnored,
+								Source:  "testdata/.trivyignore.yaml",
+								Finding: vuln7,
+							},
 						},
 					},
 					{
@@ -484,12 +504,18 @@ func TestFilter(t *testing.T) {
 						MisconfSummary: &types.MisconfSummary{
 							Successes:  0,
 							Failures:   1,
-							Exceptions: 1,
+							Exceptions: 2,
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							misconf3,
 						},
 						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:    types.FindingTypeMisconfiguration,
+								Status:  types.FindingStatusIgnored,
+								Source:  "testdata/.trivyignore.yaml",
+								Finding: misconf1,
+							},
 							{
 								Type:    types.FindingTypeMisconfiguration,
 								Status:  types.FindingStatusIgnored,
@@ -609,6 +635,78 @@ func TestFilter(t *testing.T) {
 								Statement: "Filtered by Rego",
 								Source:    "testdata/ignore-misconf.rego",
 								Finding:   misconf3,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "ignore file for licenses and secrets",
+			args: args{
+				report: types.Report{
+					Results: types.Results{
+						{
+							Licenses: []types.DetectedLicense{
+								{
+									Name:       "GPL-3.0",
+									Severity:   dbTypes.SeverityLow.String(),
+									FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
+									Category:   "restricted",
+									Confidence: 1,
+								},
+								{
+									Name:       "GPL-3.0",
+									Severity:   dbTypes.SeverityLow.String(),
+									FilePath:   "usr/share/gcc/python/libstdcxx/v6/printers.py",
+									Category:   "restricted",
+									Confidence: 1,
+								},
+							},
+							Secrets: []types.DetectedSecret{
+								{
+									RuleID:    "generic-passed-rule",
+									Severity:  dbTypes.SeverityLow.String(),
+									Title:     "Secret should pass filter",
+									StartLine: 1,
+									EndLine:   2,
+									Match:     "*****",
+								},
+								{
+									RuleID:    "generic-ignored-rule",
+									Severity:  dbTypes.SeverityLow.String(),
+									Title:     "Secret should be ignored",
+									StartLine: 3,
+									EndLine:   4,
+									Match:     "*****",
+								},
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				policyFile: "./testdata/test-ignore-policy-licenses-and-secrets.rego",
+			},
+			want: types.Report{
+				Results: types.Results{
+					{
+						Licenses: []types.DetectedLicense{
+							{
+								Name:       "GPL-3.0",
+								Severity:   dbTypes.SeverityLow.String(),
+								FilePath:   "usr/share/gcc/python/libstdcxx/v6/__init__.py",
+								Category:   "restricted",
+								Confidence: 1,
+							},
+						},
+						Secrets: []types.DetectedSecret{
+							{
+								RuleID:    "generic-passed-rule",
+								Severity:  dbTypes.SeverityLow.String(),
+								Title:     "Secret should pass filter",
+								StartLine: 1,
+								EndLine:   2,
+								Match:     "*****",
 							},
 						},
 					},

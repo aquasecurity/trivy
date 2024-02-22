@@ -1,9 +1,9 @@
 package network
 
 import (
-	"github.com/aquasecurity/defsec/pkg/providers/nifcloud/network"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/nifcloud/network"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func adaptLoadBalancers(modules terraform.Modules) []network.LoadBalancer {
@@ -31,21 +31,21 @@ func adaptLoadBalancer(resource *terraform.Block, modules terraform.Modules) net
 }
 
 func adaptListener(resource *terraform.Block) network.LoadBalancerListener {
-	protocolVal := defsecTypes.String("", resource.GetMetadata())
-	policyVal := defsecTypes.String("", resource.GetMetadata())
+	protocolVal := iacTypes.String("", resource.GetMetadata())
+	policyVal := iacTypes.String("", resource.GetMetadata())
 
 	portAttr := resource.GetAttribute("load_balancer_port")
 	if portAttr.IsNotNil() && portAttr.IsNumber() {
 		port := portAttr.AsNumber()
 		switch port {
 		case 21:
-			protocolVal = defsecTypes.String("FTP", portAttr.GetMetadata())
+			protocolVal = iacTypes.String("FTP", portAttr.GetMetadata())
 		case 80:
-			protocolVal = defsecTypes.String("HTTP", portAttr.GetMetadata())
+			protocolVal = iacTypes.String("HTTP", portAttr.GetMetadata())
 		case 443:
-			protocolVal = defsecTypes.String("HTTPS", portAttr.GetMetadata())
+			protocolVal = iacTypes.String("HTTPS", portAttr.GetMetadata())
 		default:
-			protocolVal = defsecTypes.String("custom", portAttr.GetMetadata())
+			protocolVal = iacTypes.String("custom", portAttr.GetMetadata())
 		}
 	}
 

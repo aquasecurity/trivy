@@ -4,9 +4,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/providers/aws/s3"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
 	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 var aclConvertRegex = regexp.MustCompile(`[A-Z][^A-Z]*`)
@@ -24,14 +24,14 @@ func getBuckets(cfFile parser2.FileContext) []s3.Bucket {
 			Versioning: s3.Versioning{
 				Metadata:  r.Metadata(),
 				Enabled:   hasVersioning(r),
-				MFADelete: defsecTypes.BoolUnresolvable(r.Metadata()),
+				MFADelete: iacTypes.BoolUnresolvable(r.Metadata()),
 			},
 			Logging:                       getLogging(r),
 			ACL:                           convertAclValue(r.GetStringProperty("AccessControl", "private")),
 			LifecycleConfiguration:        getLifecycle(r),
 			AccelerateConfigurationStatus: r.GetStringProperty("AccelerateConfiguration.AccelerationStatus"),
 			Website:                       getWebsite(r),
-			BucketLocation:                defsecTypes.String("", r.Metadata()),
+			BucketLocation:                iacTypes.String("", r.Metadata()),
 			Objects:                       nil,
 		}
 
@@ -54,34 +54,34 @@ func getPublicAccessBlock(r *parser2.Resource) *s3.PublicAccessBlock {
 	}
 }
 
-func convertAclValue(aclValue defsecTypes.StringValue) defsecTypes.StringValue {
+func convertAclValue(aclValue iacTypes.StringValue) iacTypes.StringValue {
 	matches := aclConvertRegex.FindAllString(aclValue.Value(), -1)
 
-	return defsecTypes.String(strings.ToLower(strings.Join(matches, "-")), aclValue.GetMetadata())
+	return iacTypes.String(strings.ToLower(strings.Join(matches, "-")), aclValue.GetMetadata())
 }
 
 func getLogging(r *parser2.Resource) s3.Logging {
 
 	logging := s3.Logging{
 		Metadata:     r.Metadata(),
-		Enabled:      defsecTypes.BoolDefault(false, r.Metadata()),
-		TargetBucket: defsecTypes.StringDefault("", r.Metadata()),
+		Enabled:      iacTypes.BoolDefault(false, r.Metadata()),
+		TargetBucket: iacTypes.StringDefault("", r.Metadata()),
 	}
 
 	if config := r.GetProperty("LoggingConfiguration"); config.IsNotNil() {
 		logging.TargetBucket = config.GetStringProperty("DestinationBucketName")
 		if logging.TargetBucket.IsNotEmpty() || !logging.TargetBucket.GetMetadata().IsResolvable() {
-			logging.Enabled = defsecTypes.Bool(true, config.Metadata())
+			logging.Enabled = iacTypes.Bool(true, config.Metadata())
 		}
 	}
 	return logging
 }
 
-func hasVersioning(r *parser2.Resource) defsecTypes.BoolValue {
+func hasVersioning(r *parser2.Resource) iacTypes.BoolValue {
 	versioningProp := r.GetProperty("VersioningConfiguration.Status")
 
 	if versioningProp.IsNil() {
-		return defsecTypes.BoolDefault(false, r.Metadata())
+		return iacTypes.BoolDefault(false, r.Metadata())
 	}
 
 	versioningEnabled := false
@@ -89,22 +89,22 @@ func hasVersioning(r *parser2.Resource) defsecTypes.BoolValue {
 		versioningEnabled = true
 
 	}
-	return defsecTypes.Bool(versioningEnabled, versioningProp.Metadata())
+	return iacTypes.Bool(versioningEnabled, versioningProp.Metadata())
 }
 
 func getEncryption(r *parser2.Resource, _ parser2.FileContext) s3.Encryption {
 
 	encryption := s3.Encryption{
 		Metadata:  r.Metadata(),
-		Enabled:   defsecTypes.BoolDefault(false, r.Metadata()),
-		Algorithm: defsecTypes.StringDefault("", r.Metadata()),
-		KMSKeyId:  defsecTypes.StringDefault("", r.Metadata()),
+		Enabled:   iacTypes.BoolDefault(false, r.Metadata()),
+		Algorithm: iacTypes.StringDefault("", r.Metadata()),
+		KMSKeyId:  iacTypes.StringDefault("", r.Metadata()),
 	}
 
 	if encryptProps := r.GetProperty("BucketEncryption.ServerSideEncryptionConfiguration"); encryptProps.IsNotNil() {
 		for _, rule := range encryptProps.AsList() {
 			if algo := rule.GetProperty("ServerSideEncryptionByDefault.SSEAlgorithm"); algo.EqualTo("AES256") {
-				encryption.Enabled = defsecTypes.Bool(true, algo.Metadata())
+				encryption.Enabled = iacTypes.Bool(true, algo.Metadata())
 			} else if kmsKeyProp := rule.GetProperty("ServerSideEncryptionByDefault.KMSMasterKeyID"); !kmsKeyProp.IsEmpty() && kmsKeyProp.IsString() {
 				encryption.KMSKeyId = kmsKeyProp.AsStringValue()
 			}

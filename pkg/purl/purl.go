@@ -37,7 +37,6 @@ const (
 	NamespaceEKS = "eks"
 	NamespaceAKS = "aks"
 	NamespaceGKE = "gke"
-	NamespaceRKE = "rke"
 	NamespaceOCP = "ocp"
 
 	TypeUnknown = "unknown"
@@ -211,8 +210,6 @@ func (p *PackageURL) LangType() ftypes.LangType {
 			return ftypes.GKE
 		case NamespaceAKS:
 			return ftypes.AKS
-		case NamespaceRKE:
-			return ftypes.RKE
 		case NamespaceOCP:
 			return ftypes.OCP
 		case "":

@@ -5,7 +5,7 @@ import (
 	"io/fs"
 	"os"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 )
 
 type WriteFileFS interface {

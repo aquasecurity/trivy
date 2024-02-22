@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"io/fs"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -12,18 +13,18 @@ import (
 
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/rego"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	"github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/extrafs"
+	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	executor2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 var _ scanners.FSScanner = (*Scanner)(nil)
@@ -334,7 +335,7 @@ func (s *Scanner) findRootModules(target fs.FS, scanDir string, dirs ...string) 
 			continue
 		}
 		for _, file := range files {
-			realPath := filepath.Join(dir, file.Name())
+			realPath := path.Join(dir, file.Name())
 			if symFS, ok := target.(extrafs.ReadLinkFS); ok {
 				realPath, err = symFS.ResolveSymlink(realPath, scanDir)
 				if err != nil {

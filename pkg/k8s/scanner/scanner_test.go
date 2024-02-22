@@ -384,7 +384,7 @@ func TestGeneratePURL(t *testing.T) {
 			compName:    "k8s.io/kubelet",
 			compVersion: "1.24.11+rke2r1",
 			nodeName:    "ip-10-0-5-23",
-			want:        "pkg:k8s/rke/k8s.io%2Fkubelet@1.24.11%2Brke2r1",
+			want:        "pkg:k8s/k8s.io%2Fkubelet@1.24.11%2Brke2r1",
 		},
 		{
 			name:        "OCP",
@@ -438,7 +438,7 @@ func TestK8sNamespace(t *testing.T) {
 			name:        "Rancher",
 			compVersion: "1.24.11+rke2r1",
 			nodeName:    "ip-10-0-5-23",
-			want:        "rke",
+			want:        "kubernetes",
 		},
 		{
 			name:        "OCP",

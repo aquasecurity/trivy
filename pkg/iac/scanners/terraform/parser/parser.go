@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -14,11 +15,11 @@ import (
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/aquasecurity/defsec/pkg/debug"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/defsec/pkg/terraform"
-	tfcontext "github.com/aquasecurity/defsec/pkg/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/extrafs"
+	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 )
 
 type sourceFile struct {
@@ -164,7 +165,7 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 		return err
 	}
 	p.metrics.Timings.DiskIODuration += time.Since(diskStart)
-	if dir := filepath.Dir(fullPath); p.projectRoot == "" {
+	if dir := path.Dir(fullPath); p.projectRoot == "" {
 		p.debug.Log("Setting project/module root to '%s'", dir)
 		p.projectRoot = dir
 		p.modulePath = dir
@@ -195,7 +196,7 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
 func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 
-	dir = filepath.Clean(dir)
+	dir = path.Clean(dir)
 
 	if p.projectRoot == "" {
 		p.debug.Log("Setting project/module root to '%s'", dir)
@@ -212,7 +213,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 
 	var paths []string
 	for _, info := range fileInfos {
-		realPath := filepath.Join(dir, info.Name())
+		realPath := path.Join(dir, info.Name())
 		if info.Type()&os.ModeSymlink != 0 {
 			extra, ok := p.moduleFS.(extrafs.FS)
 			if !ok {
