@@ -2,6 +2,7 @@ package sbom
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"os"
 	"path"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func init() {

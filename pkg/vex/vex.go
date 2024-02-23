@@ -2,6 +2,7 @@ package vex
 
 import (
 	"encoding/json"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"io"
 	"os"
 
@@ -66,10 +67,10 @@ func decodeCycloneDXJSON(r io.ReadSeeker, report types.Report) (VEX, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("json decode error: %w", err)
 	}
-	if report.CycloneDX == nil {
+	if report.ArtifactType != ftypes.ArtifactCycloneDX {
 		return nil, xerrors.New("CycloneDX VEX can be used with CycloneDX SBOM")
 	}
-	return newCycloneDX(report.CycloneDX, vex), nil
+	return newCycloneDX(report.BOM, vex), nil
 }
 
 func decodeOpenVEX(r io.ReadSeeker) (VEX, error) {

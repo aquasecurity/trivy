@@ -2,12 +2,13 @@ package packagejson
 
 import (
 	"encoding/json"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"io"
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 type packageJSON struct {
@@ -44,7 +45,7 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	// Name and version fields are optional
 	// https://docs.npmjs.com/cli/v9/configuring-npm/package-json#name
 	if pkgJSON.Name != "" && pkgJSON.Version != "" {
-		id = utils.PackageID(pkgJSON.Name, pkgJSON.Version)
+		id = dependency.ID(ftypes.NodePkg, pkgJSON.Name, pkgJSON.Version)
 	}
 
 	return Package{

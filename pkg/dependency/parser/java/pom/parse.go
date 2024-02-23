@@ -3,6 +3,8 @@ package pom
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"io"
 	"net/http"
 	"net/url"
@@ -18,8 +20,8 @@ import (
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -205,14 +207,14 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 			dependsOn := lo.Map(result.dependencies, func(a artifact, _ int) string {
 				return a.Name()
 			})
-			uniqDeps[packageID(art.Name(), art.Version.String())] = dependsOn
+			uniqDeps[dependency.ID(ftypes.Pom, art.Name(), art.Version.String())] = dependsOn
 		}
 	}
 
 	// Convert to []types.Library and []types.Dependency
 	for name, art := range uniqArtifacts {
 		lib := types.Library{
-			ID:        packageID(name, art.Version.String()),
+			ID:        dependency.ID(ftypes.Pom, name, art.Version.String()),
 			Name:      name,
 			Version:   art.Version.String(),
 			License:   art.JoinLicenses(),
@@ -224,7 +226,7 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		// Convert dependency names into dependency IDs
 		dependsOn := lo.FilterMap(uniqDeps[lib.ID], func(dependOnName string, _ int) (string, bool) {
 			ver := depVersion(dependOnName, uniqArtifacts)
-			return packageID(dependOnName, ver), ver != ""
+			return dependency.ID(ftypes.Pom, dependOnName, ver), ver != ""
 		})
 
 		sort.Strings(dependsOn)

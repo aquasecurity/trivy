@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"github.com/samber/lo"
 	"os"
 	"path/filepath"
 
@@ -57,7 +58,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 
 	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
-		OS:            bom.OS,
+		OS:            lo.FromPtr(bom.Metadata.OS),
 		PackageInfos:  bom.Packages,
 		Applications:  bom.Applications,
 	}
@@ -87,7 +88,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		BlobIDs: []string{cacheKey},
 
 		// Keep an original report
-		CycloneDX: bom.CycloneDX,
+		BOM: bom.BOM,
 	}, nil
 }
 

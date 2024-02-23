@@ -2,6 +2,8 @@ package pnpm
 
 import (
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"strconv"
 	"strings"
 
@@ -9,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -41,7 +43,7 @@ func NewParser() types.Parser {
 }
 
 func (p *Parser) ID(name, version string) string {
-	return fmt.Sprintf("%s@%s", name, version)
+	return dependency.ID(ftypes.Pnpm, name, version)
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {

@@ -105,7 +105,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 		switch {
 		// Relationship: root package => OS
 		case isOperatingSystem(pkgB.PackageSPDXIdentifier):
-			s.SBOM.OS = parseOS(*pkgB)
+			s.SBOM.Metadata.OS = parseOS(*pkgB)
 			delete(orphanPkgs, pkgB.PackageSPDXIdentifier)
 		// Relationship: OS => OS package
 		case isOperatingSystem(pkgA.PackageSPDXIdentifier):
@@ -157,8 +157,6 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 		return err
 	}
 
-	// Keep the original document
-	s.SPDX = spdxDocument
 	return nil
 }
 
@@ -239,8 +237,8 @@ func initApplication(pkg spdx.Package) *ftypes.Application {
 	return app
 }
 
-func parseOS(pkg spdx.Package) ftypes.OS {
-	return ftypes.OS{
+func parseOS(pkg spdx.Package) *ftypes.OS {
+	return &ftypes.OS{
 		Family: ftypes.OSType(pkg.PackageName),
 		Name:   pkg.PackageVersion,
 	}

@@ -1,7 +1,8 @@
 package mod
 
 import (
-	"fmt"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"io"
 	"regexp"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 	"golang.org/x/mod/modfile"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -89,7 +90,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 		libs[require.Mod.Path] = types.Library{
-			ID:                 ModuleID(require.Mod.Path, require.Mod.Version[1:]),
+			ID:                 dependency.ID(ftypes.GoModule, require.Mod.Path, require.Mod.Version[1:]),
 			Name:               require.Mod.Path,
 			Version:            require.Mod.Version[1:],
 			Indirect:           require.Indirect,
@@ -124,7 +125,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 			// Add replaced library to library register.
 			libs[rep.New.Path] = types.Library{
-				ID:                 ModuleID(rep.New.Path, rep.New.Version[1:]),
+				ID:                 dependency.ID(ftypes.GoModule, rep.New.Path, rep.New.Version[1:]),
 				Name:               rep.New.Path,
 				Version:            rep.New.Version[1:],
 				Indirect:           old.Indirect,
@@ -152,11 +153,4 @@ func lessThan117(ver string) bool {
 	}
 
 	return major <= 1 && minor < 17
-}
-
-// ModuleID returns a module ID according the Go way.
-// Format: <module_name>@v<module_version>
-// e.g. github.com/aquasecurity/go-dep-parser@v0.0.0-20230130190635-5e31092b0621
-func ModuleID(name, version string) string {
-	return fmt.Sprintf("%s@v%s", name, version)
 }

@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"strings"
 	"time"
 
@@ -277,7 +278,7 @@ type ArtifactReference struct {
 	ImageMetadata ImageMetadata
 
 	// SBOM
-	CycloneDX *CycloneDX
+	BOM *core.BOM
 }
 
 type ImageMetadata struct {

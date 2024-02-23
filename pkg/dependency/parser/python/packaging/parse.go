@@ -3,13 +3,13 @@ package packaging
 import (
 	"bufio"
 	"errors"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"io"
 	"net/textproto"
 	"strings"
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )

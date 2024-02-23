@@ -7,7 +7,12 @@ import (
 	"github.com/google/uuid"
 )
 
-var newUUID func() uuid.UUID = uuid.New
+type UUID = uuid.UUID
+
+var (
+	newUUID func() uuid.UUID = uuid.New
+	Nil                      = uuid.Nil
+)
 
 // SetFakeUUID sets a fake UUID for testing.
 // The 'format' is used to generate a fake UUID and

@@ -1,6 +1,8 @@
 package swift
 
 import (
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"io"
 	"sort"
 	"strings"
@@ -9,8 +11,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -51,7 +52,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		version := lo.Ternary(pin.State.Version != "", pin.State.Version, pin.State.Branch)
 
 		libs = append(libs, types.Library{
-			ID:      utils.PackageID(name, version),
+			ID:      packageID(name, version),
 			Name:    name,
 			Version: version,
 			Locations: []types.Location{
@@ -90,4 +91,8 @@ func (p *Pin) UnmarshalJSONWithMetadata(node jfather.Node) error {
 	p.StartLine = node.Range().Start.Line
 	p.EndLine = node.Range().End.Line
 	return nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Swift, name, version)
 }
