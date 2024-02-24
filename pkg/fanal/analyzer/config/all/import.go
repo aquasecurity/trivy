@@ -1,6 +1,7 @@
 package all
 
 import (
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/ansible"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/azurearm"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/cloudformation"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/dockerfile"
