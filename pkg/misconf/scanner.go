@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm"
 	cfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
 	cfparser "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
@@ -50,6 +51,7 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeTerraformPlanSnapshot: types.TerraformPlanSnapshot,
 	detection.FileTypeJSON:                  types.JSON,
 	detection.FileTypeYAML:                  types.YAML,
+	detection.FileTypeAnsible:               types.Ansible,
 }
 
 type ScannerOption struct {
@@ -124,6 +126,8 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 		scanner = generic.NewYamlScanner(opts...)
 	case detection.FileTypeJSON:
 		scanner = generic.NewJsonScanner(opts...)
+	case detection.FileTypeAnsible:
+		scanner = ansible.New(opts...)
 	default:
 		return nil, xerrors.Errorf("unknown file type: %s", t)
 	}

@@ -133,6 +133,7 @@ func Test_Detection(t *testing.T) {
 			expected: []FileType{
 				FileTypeYAML,
 				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -185,6 +186,7 @@ Resources:
 				FileTypeCloudFormation,
 				FileTypeYAML,
 				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -235,6 +237,7 @@ Resources:
 			r:    nil,
 			expected: []FileType{
 				FileTypeYAML,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -264,6 +267,7 @@ spec:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeYAML,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -319,6 +323,7 @@ spec:
 			expected: []FileType{
 				FileTypeYAML,
 				FileTypeHelm,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -327,6 +332,7 @@ spec:
 			r:    nil,
 			expected: []FileType{
 				FileTypeYAML,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -367,6 +373,7 @@ data:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeYAML,
+				FileTypeAnsible,
 			},
 		},
 		{
@@ -395,6 +402,7 @@ rules:
 			expected: []FileType{
 				FileTypeKubernetes,
 				FileTypeYAML,
+				FileTypeAnsible,
 			},
 		},
 		{
