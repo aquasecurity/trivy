@@ -201,10 +201,7 @@ func SeparateMisconfigReports(k8sReport Report, scanners types.Scanners, compone
 }
 
 func rbacResource(misConfig Resource) bool {
-	return misConfig.Kind == "Role" ||
-		misConfig.Kind == "RoleBinding" ||
-		misConfig.Kind == "ClusterRole" ||
-		misConfig.Kind == "ClusterRoleBinding"
+	return slices.Contains([]string{"Role", "RoleBinding", "ClusterRole", "ClusterRoleBinding"}, misConfig.Kind)
 }
 
 func infraResource(misConfig Resource) bool {
