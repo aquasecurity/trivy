@@ -1181,42 +1181,51 @@ func TestCountMetaArgument(t *testing.T) {
 }
 
 func TestCountMetaArgumentInModule(t *testing.T) {
-	t.Run("zero modules", func(t *testing.T) {
-		fsys := testutil.CreateFS(t, map[string]string{
-			"main.tf": `module "this" {
-count = 0
-source = "./modules/test"
+	tests := []struct {
+		name                   string
+		files                  map[string]string
+		expectedCountModules   int
+		expectedCountResources int
+	}{
+		{
+			name: "zero modules",
+			files: map[string]string{
+				"main.tf": `module "this" {
+  count = 0
+  source = "./modules/test"
 }`,
-			"modules/test/main.tf": `resource "test" "this" {}`,
-		})
-		parser := New(fsys, "", OptionStopOnHCLError(true))
-		require.NoError(t, parser.ParseFS(context.TODO(), "."))
-
-		modules, _, err := parser.EvaluateAll(context.TODO())
-		require.NoError(t, err)
-
-		assert.Len(t, modules, 1)
-
-		resources := modules.GetResourcesByType("test")
-		assert.Len(t, resources, 0)
-	})
-
-	t.Run("several modules", func(t *testing.T) {
-		fsys := testutil.CreateFS(t, map[string]string{
-			"main.tf": `module "this" {
-count = 2
-source = "./modules/test"
+				"modules/test/main.tf": `resource "test" "this" {}`,
+			},
+			expectedCountModules:   1,
+			expectedCountResources: 0,
+		},
+		{
+			name: "several modules",
+			files: map[string]string{
+				"main.tf": `module "this" {
+  count = 2
+  source = "./modules/test"
 }`,
-			"modules/test/main.tf": `resource "test" "this" {}`,
+				"modules/test/main.tf": `resource "test" "this" {}`,
+			},
+			expectedCountModules:   3,
+			expectedCountResources: 2,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(t, tt.files)
+			parser := New(fsys, "", OptionStopOnHCLError(true))
+			require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+			modules, _, err := parser.EvaluateAll(context.TODO())
+			require.NoError(t, err)
+
+			assert.Len(t, modules, tt.expectedCountModules)
+
+			resources := modules.GetResourcesByType("test")
+			assert.Len(t, resources, tt.expectedCountResources)
 		})
-		parser := New(fsys, "", OptionStopOnHCLError(true))
-		require.NoError(t, parser.ParseFS(context.TODO(), "."))
-
-		modules, _, err := parser.EvaluateAll(context.TODO())
-		assert.NoError(t, err)
-		assert.Len(t, modules, 3)
-
-		resources := modules.GetResourcesByType("test")
-		assert.Len(t, resources, 2)
-	})
+	}
 }

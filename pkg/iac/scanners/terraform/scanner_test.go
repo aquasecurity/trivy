@@ -1388,5 +1388,5 @@ deny[res] {
 	assert.Len(t, failed, 1)
 
 	occurrences := failed[0].Occurrences()
-	assert.Equal(t, "code/example/main.tf", occurrences[len(occurrences)-1].Filename)
+	assert.Equal(t, "code/example/main.tf", occurrences[0].Filename)
 }

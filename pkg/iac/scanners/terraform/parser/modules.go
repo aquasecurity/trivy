@@ -50,7 +50,6 @@ func buildGraph(blocks terraform.Blocks, paths []string) modulesGraph {
 
 		source := sourceVal.AsString()
 		if strings.HasPrefix(source, ".") {
-			// sources = append(sources, source)
 			filename := block.GetMetadata().Range().GetFilename()
 			dir := path.Dir(filename)
 			graph[dir] = append(graph[dir], path.Join(dir, source))
