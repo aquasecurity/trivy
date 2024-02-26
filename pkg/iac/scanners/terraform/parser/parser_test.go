@@ -905,59 +905,41 @@ data "http" "example" {
 }
 
 func TestForEach(t *testing.T) {
-
-	t.Run("arg is set and ref to each.key", func(t *testing.T) {
-		src := `locals {
+	tests := []struct {
+		name               string
+		src                string
+		expectedBucketName string
+		expectedNameLabel  string
+	}{
+		{
+			name: "arg is set and ref to each.key",
+			src: `locals {
 	buckets = ["bucket1"]
 }
 
 resource "aws_s3_bucket" "this" {
 	for_each = toset(local.buckets)
 	bucket = each.key
-}`
-
-		modules := parse(t, map[string]string{
-			"main.tf": src,
-		})
-		require.Len(t, modules, 1)
-
-		buckets := modules.GetResourcesByType("aws_s3_bucket")
-		assert.Len(t, buckets, 1)
-
-		bucket := buckets[0]
-		bucketName := bucket.GetAttribute("bucket").Value().AsString()
-		assert.Equal(t, "bucket1", bucketName)
-
-		assert.Equal(t, `this["bucket1"]`, bucket.NameLabel())
-	})
-
-	t.Run("arg is set and ref to each.value", func(t *testing.T) {
-		src := `locals {
+}`,
+			expectedBucketName: "bucket1",
+			expectedNameLabel:  `this["bucket1"]`,
+		},
+		{
+			name: "arg is set and ref to each.value",
+			src: `locals {
 	buckets = ["bucket1"]
 }
 
 resource "aws_s3_bucket" "this" {
 	for_each = toset(local.buckets)
 	bucket = each.value
-}`
-
-		modules := parse(t, map[string]string{
-			"main.tf": src,
-		})
-		require.Len(t, modules, 1)
-
-		buckets := modules.GetResourcesByType("aws_s3_bucket")
-		assert.Len(t, buckets, 1)
-
-		bucket := buckets[0]
-		bucketName := bucket.GetAttribute("bucket").Value().AsString()
-		assert.Equal(t, "bucket1", bucketName)
-
-		assert.Equal(t, `this["bucket1"]`, bucket.NameLabel())
-	})
-
-	t.Run("arg is map and ref to each.key", func(t *testing.T) {
-		src := `locals {
+}`,
+			expectedBucketName: "bucket1",
+			expectedNameLabel:  `this["bucket1"]`,
+		},
+		{
+			name: "arg is map and ref to each.key",
+			src: `locals {
 	buckets = {
 		bucket1key = "bucket1value"
 	}
@@ -966,25 +948,13 @@ resource "aws_s3_bucket" "this" {
 resource "aws_s3_bucket" "this" {
 	for_each = local.buckets
 	bucket = each.key
-}`
-
-		modules := parse(t, map[string]string{
-			"main.tf": src,
-		})
-		require.Len(t, modules, 1)
-
-		buckets := modules.GetResourcesByType("aws_s3_bucket")
-		assert.Len(t, buckets, 1)
-
-		bucket := buckets[0]
-		bucketName := bucket.GetAttribute("bucket").Value().AsString()
-		assert.Equal(t, "bucket1key", bucketName)
-
-		assert.Equal(t, `this["bucket1key"]`, bucket.NameLabel())
-	})
-
-	t.Run("arg is map and ref to each.value", func(t *testing.T) {
-		src := `locals {
+}`,
+			expectedBucketName: "bucket1key",
+			expectedNameLabel:  `this["bucket1key"]`,
+		},
+		{
+			name: "arg is map and ref to each.value",
+			src: `locals {
 	buckets = {
 		bucket1key = "bucket1value"
 	}
@@ -993,22 +963,29 @@ resource "aws_s3_bucket" "this" {
 resource "aws_s3_bucket" "this" {
 	for_each = local.buckets
 	bucket = each.value
-}`
+}`,
+			expectedBucketName: "bucket1value",
+			expectedNameLabel:  `this["bucket1key"]`,
+		},
+	}
 
-		modules := parse(t, map[string]string{
-			"main.tf": src,
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modules := parse(t, map[string]string{
+				"main.tf": tt.src,
+			})
+			require.Len(t, modules, 1)
+
+			buckets := modules.GetResourcesByType("aws_s3_bucket")
+			assert.Len(t, buckets, 1)
+
+			bucket := buckets[0]
+			bucketName := bucket.GetAttribute("bucket").Value().AsString()
+			assert.Equal(t, tt.expectedBucketName, bucketName)
+
+			assert.Equal(t, tt.expectedNameLabel, bucket.NameLabel())
 		})
-		require.Len(t, modules, 1)
-
-		buckets := modules.GetResourcesByType("aws_s3_bucket")
-		assert.Len(t, buckets, 1)
-
-		bucket := buckets[0]
-		bucketName := bucket.GetAttribute("bucket").Value().AsString()
-		assert.Equal(t, "bucket1value", bucketName)
-
-		assert.Equal(t, `this["bucket1key"]`, bucket.NameLabel())
-	})
+	}
 
 }
 
