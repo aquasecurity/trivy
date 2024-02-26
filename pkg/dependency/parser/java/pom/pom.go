@@ -340,7 +340,7 @@ func (deps *pomDependencies) UnmarshalXML(d *xml.Decoder, _ xml.StartElement) er
 			// Decode the <dependency> element
 			err = d.DecodeElement(&dep, &t)
 			if err != nil {
-				return xerrors.Errorf("Error decoding dependency: %w")
+				return xerrors.Errorf("Error decoding dependency: %w", err)
 			}
 
 			dep.EndLine, _ = d.InputPos() // <dependency> tag ends
