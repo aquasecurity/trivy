@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Parser struct{}
@@ -16,7 +16,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var libs []types.Library
 	scanner := bufio.NewScanner(r)
 	var lineNum int

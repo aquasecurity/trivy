@@ -8,8 +8,8 @@ import (
 	swalker "github.com/saracen/walker"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type ErrorCallback func(pathname string, err error) error
@@ -114,8 +114,8 @@ func (w FS) walkSlow(root string, walkFn fastWalkFunc) error {
 }
 
 // fileOpener returns a function opening a file.
-func (w *walker) fileOpener(pathname string) func() (dio.ReadSeekCloserAt, error) {
-	return func() (dio.ReadSeekCloserAt, error) {
+func (w *walker) fileOpener(pathname string) func() (xio.ReadSeekCloserAt, error) {
+	return func() (xio.ReadSeekCloserAt, error) {
 		return os.Open(pathname)
 	}
 }

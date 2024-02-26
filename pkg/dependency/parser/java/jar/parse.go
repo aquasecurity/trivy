@@ -18,9 +18,9 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -73,7 +73,7 @@ func NewParser(c Client, opts ...Option) types.Parser {
 	return p
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	libs, deps, err := p.parseArtifact(p.rootFilePath, p.size, r)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("unable to parse %s: %w", p.rootFilePath, err)
@@ -81,7 +81,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	return removeLibraryDuplicates(libs), deps, nil
 }
 
-func (p *Parser) parseArtifact(filePath string, size int64, r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	log.Logger.Debugw("Parsing Java artifacts...", zap.String("file", filePath))
 
 	// Try to extract artifactId and version from the file name
@@ -147,7 +147,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r dio.ReadSeekerAt) 
 	return libs, nil, nil
 }
 
-func (p *Parser) traverseZip(filePath string, size int64, r dio.ReadSeekerAt, fileProps Properties) (
+func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fileProps Properties) (
 	[]types.Library, manifest, bool, error) {
 	var libs []types.Library
 	var m manifest

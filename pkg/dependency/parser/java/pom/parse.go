@@ -18,10 +18,10 @@ import (
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const (
@@ -83,7 +83,7 @@ func NewParser(filePath string, opts ...option) types.Parser {
 	}
 }
 
-func (p *parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	content, err := parsePom(r)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to parse POM: %w", err)

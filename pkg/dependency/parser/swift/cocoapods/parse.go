@@ -8,10 +8,10 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Parser struct{}
@@ -24,7 +24,7 @@ type lockFile struct {
 	Pods []any `yaml:"PODS"` // pod can be string or map[string]interface{}
 }
 
-func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	lock := &lockFile{}
 	decoder := yaml.NewDecoder(r)
 	if err := decoder.Decode(&lock); err != nil {

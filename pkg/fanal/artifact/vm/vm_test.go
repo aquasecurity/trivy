@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
@@ -48,7 +48,7 @@ func (m *mockWalker) Walk(_ *io.SectionReader, _ string, fn walker.WalkFunc) err
 		if err != nil {
 			return err
 		}
-		opener := func() (dio.ReadSeekCloserAt, error) {
+		opener := func() (xio.ReadSeekCloserAt, error) {
 			return os.Open(path)
 		}
 		relPath, err := filepath.Rel(m.root, path)

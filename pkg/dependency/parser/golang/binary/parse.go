@@ -6,8 +6,8 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -36,7 +36,7 @@ func NewParser() types.Parser {
 }
 
 // Parse scans file to try to report the Go and module versions.
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	info, err := buildinfo.Read(r)
 	if err != nil {
 		return nil, nil, convertError(err)

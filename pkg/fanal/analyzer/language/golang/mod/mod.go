@@ -19,7 +19,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/sum"
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -27,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -216,7 +216,7 @@ func parse(fsys fs.FS, path string, parser godeptypes.Parser) (*types.Applicatio
 	}
 	defer f.Close()
 
-	file, ok := f.(dio.ReadSeekCloserAt)
+	file, ok := f.(xio.ReadSeekCloserAt)
 	if !ok {
 		return nil, xerrors.Errorf("type assertion error: %w", err)
 	}
