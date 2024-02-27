@@ -1,9 +1,10 @@
 package language
 
 import (
-	"golang.org/x/xerrors"
 	"io"
 	"strings"
+
+	"golang.org/x/xerrors"
 
 	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
