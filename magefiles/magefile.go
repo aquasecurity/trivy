@@ -182,6 +182,7 @@ func (Test) FixtureVMImages() error {
 	return fixtureVMImages()
 }
 
+// FixtureTerraformPlanSnapshots generates Terraform Plan files in test folders
 func (Test) FixtureTerraformPlanSnapshots() error {
 	return fixtureTerraformPlanSnapshots(context.TODO())
 }

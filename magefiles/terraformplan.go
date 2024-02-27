@@ -8,12 +8,13 @@ import (
 	"os"
 	"path/filepath"
 
-	//nolint:gomodguard // hc-install uses hashicorp/go-version
-	hversion "github.com/hashicorp/go-version"
+	hversion "github.com/hashicorp/go-version" //nolint:gomodguard // hc-install uses hashicorp/go-version
 	"github.com/hashicorp/hc-install/product"
 	"github.com/hashicorp/hc-install/releases"
 	"github.com/hashicorp/terraform-exec/tfexec"
 	"golang.org/x/sync/errgroup"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
 )
 
 const (
@@ -24,6 +25,20 @@ const (
 )
 
 func fixtureTerraformPlanSnapshots(ctx context.Context) error {
+
+	if err := os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true"); err != nil {
+		return err
+	}
+
+	localstackC, addr, err := testutil.SetupLocalStack(ctx, "3.1.0")
+	if err != nil {
+		return err
+	}
+	defer localstackC.Terminate(ctx)
+
+	if err := os.Setenv("AWS_ENDPOINT_URL", addr); err != nil {
+		return err
+	}
 
 	dirs := []string{
 		"pkg/fanal/artifact/local/testdata/misconfig/terraformplan/snapshots",
@@ -103,7 +118,7 @@ func generatePlan(ctx context.Context, execPath, workingDir string) error {
 func cleanup(workingDir string) error {
 	for _, file := range []string{".terraform", ".terraform.lock.hcl"} {
 		path := filepath.Join(workingDir, file)
-		if err := os.RemoveAll(path); err != nil && errors.Is(err, os.ErrNotExist) {
+		if err := os.RemoveAll(path); err != nil && !errors.Is(err, os.ErrNotExist) {
 			return err
 		}
 	}
