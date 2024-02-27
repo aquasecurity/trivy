@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -23,12 +24,25 @@ const version = 1
 type pomAnalyzer struct{}
 
 func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	p := pom.NewParser(filepath.Join(input.Dir, input.FilePath), pom.WithOffline(input.Options.Offline))
-	res, err := language.Analyze(types.Pom, input.FilePath, input.Content, p)
+	filePath := filepath.Join(input.Dir, input.FilePath)
+	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline))
+	app, err := language.Parse(types.Pom, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}
-	return res, nil
+
+	if app == nil {
+		return nil, nil
+	}
+
+	// Mark integration test pom files for `maven-invoker-plugin` as Dev to skip them by default.
+	if isIntegrationTestDir(filePath) {
+		for i := range app.Libraries {
+			app.Libraries[i].Dev = true
+		}
+	}
+
+	return &analyzer.AnalysisResult{Applications: []types.Application{*app}}, nil
 }
 
 func (a pomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
@@ -41,4 +55,15 @@ func (a pomAnalyzer) Type() analyzer.Type {
 
 func (a pomAnalyzer) Version() int {
 	return version
+}
+
+// isIntegrationTestDir checks that pom file is in directory with integration tests of `maven-invoker-plugin`
+// https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
+func isIntegrationTestDir(filePath string) bool {
+	dirs := strings.Split(filepath.ToSlash(filePath), "/")
+	// filepath pattern: `**/[src|target]/it/*/pom.xml`
+	if len(dirs) < 5 {
+		return false
+	}
+	return (dirs[len(dirs)-4] == "src" || dirs[len(dirs)-4] == "target") && dirs[len(dirs)-3] == "it"
 }
