@@ -62,7 +62,7 @@ func (a pomAnalyzer) Version() int {
 func isIntegrationTestDir(filePath string) bool {
 	dirs := strings.Split(filepath.ToSlash(filePath), "/")
 	// filepath pattern: `**/[src|target]/it/*/pom.xml`
-	if len(dirs) < 5 {
+	if len(dirs) < 4 {
 		return false
 	}
 	return (dirs[len(dirs)-4] == "src" || dirs[len(dirs)-4] == "target") && dirs[len(dirs)-3] == "it"
