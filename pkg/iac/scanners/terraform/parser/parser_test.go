@@ -1359,6 +1359,7 @@ func TestCountMetaArgumentInModule(t *testing.T) {
 			assert.Len(t, resources, tt.expectedCountResources)
 		})
 	}
+}
 
 func TestDynamicBlocks(t *testing.T) {
 	t.Run("arg is list of int", func(t *testing.T) {
