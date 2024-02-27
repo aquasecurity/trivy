@@ -2,6 +2,7 @@ package pom
 
 import (
 	"context"
+	"github.com/samber/lo"
 	"os"
 	"path/filepath"
 	"strings"
@@ -26,23 +27,22 @@ type pomAnalyzer struct{}
 func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := filepath.Join(input.Dir, input.FilePath)
 	p := pom.NewParser(filePath, pom.WithOffline(input.Options.Offline))
-	app, err := language.Parse(types.Pom, input.FilePath, input.Content, p)
+	res, err := language.Analyze(types.Pom, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}
 
-	if app == nil {
-		return nil, nil
-	}
-
 	// Mark integration test pom files for `maven-invoker-plugin` as Dev to skip them by default.
 	if isIntegrationTestDir(filePath) {
-		for i := range app.Libraries {
-			app.Libraries[i].Dev = true
+		for i := range res.Applications {
+			res.Applications[i].Libraries = lo.Map(res.Applications[i].Libraries, func(lib types.Package, _ int) types.Package {
+				lib.Dev = true
+				return lib
+			})
 		}
 	}
 
-	return &analyzer.AnalysisResult{Applications: []types.Application{*app}}, nil
+	return res, nil
 }
 
 func (a pomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
