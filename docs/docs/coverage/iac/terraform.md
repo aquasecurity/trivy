@@ -12,8 +12,8 @@ It supports the following formats:
 |:-------------:|:---------:|
 |     JSON      |     ✓     |
 |      HCL      |     ✓     |
-|   Plan JSON   |     ✓     |
 | Plan Snapshot |     ✓     |
+|   Plan JSON   |     ✓     |
 
 Trivy can scan Terraform Plan files (snapshots) or their JSON representations. To create a Terraform Plan and scan it, run the following command:
 ```bash
