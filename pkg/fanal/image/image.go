@@ -17,6 +17,9 @@ import (
 
 type imageSourceFunc func(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error)
 
+var rustBaseImageLayerRegex = ".*(ENV RUSTUP_HOME).*(CARGO_HOME).*(RUST_VERSION).*(RUN).*(rustArch=).*(rustup --version).*(cargo --version).*"
+var golangBaseLayersRegex = ".*(ENV GOPATH).*(ENV PATH).*(/usr/local/go/bin).*(mkdir -p).*(GOPATH/src).*(WORKDIR).*"
+
 var imageSourceFuncs = map[types.ImageSource]imageSourceFunc{
 	types.ContainerdImageSource: tryContainerdDaemon,
 	types.PodmanImageSource:     tryPodmanDaemon,
@@ -141,7 +144,6 @@ func GuessBaseImageIndex(histories []v1.History) int {
 
 			// check if we have a subset of 5 layers available since WORKDIR is encountered
 			if (i-4) >= 0 && i+1 < len(histories) {
-				golangBaseLayersRegex := ".*(ENV GOPATH).*(ENV PATH).*(/usr/local/go/bin).*(mkdir -p).*(GOPATH/src).*(WORKDIR).*"
 				golangBaseLayer := ""
 				for _, cmd := range histories[i-4 : i+1] {
 					golangBaseLayer = golangBaseLayer + cmd.CreatedBy + " "
@@ -190,7 +192,6 @@ func GuessBaseImageIndex(histories []v1.History) int {
 
 			// check if we have a subset of 2 layers available since RUN is encountered
 			if (i-1) >= 0 && i+1 < len(histories) {
-				rustBaseImageLayerRegex := ".*(ENV RUSTUP_HOME).*(CARGO_HOME).*(RUST_VERSION).*(RUN).*(rustArch=).*(rustup --version).*(cargo --version).*"
 				rustBaseImageLayer := ""
 				for _, cmd := range histories[i-1 : i+1] {
 					rustBaseImageLayer = rustBaseImageLayer + cmd.CreatedBy + " "
