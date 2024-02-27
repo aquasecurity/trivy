@@ -51,7 +51,7 @@ func ColumnHeading(scanners types.Scanners, components, availableColumns []strin
 				securityOptions[MisconfigurationsColumn] = nil
 			}
 			if slices.Contains(components, infraComponent) {
-				securityOptions[InfraAssessmentColumn] = nil
+				securityOptions[MisconfigurationsColumn] = nil
 			}
 		case types.SecretScanner:
 			securityOptions[SecretsColumn] = nil
@@ -107,8 +107,7 @@ func (s SummaryWriter) Write(report Report) error {
 		}
 
 		if slices.Contains(s.ColumnsHeading, MisconfigurationsColumn) ||
-			slices.Contains(s.ColumnsHeading, RbacAssessmentColumn) ||
-			slices.Contains(s.ColumnsHeading, InfraAssessmentColumn) {
+			slices.Contains(s.ColumnsHeading, RbacAssessmentColumn) {
 			rowParts = append(rowParts, s.generateSummary(mCount)...)
 		}
 
