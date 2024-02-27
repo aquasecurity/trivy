@@ -6,7 +6,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -17,7 +16,7 @@ import (
 )
 
 // Analyze returns an analysis result of the lock file
-func Analyze(fileType types.LangType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
+func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
 	app, err := Parse(fileType, filePath, r, parser)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
@@ -31,7 +30,7 @@ func Analyze(fileType types.LangType, filePath string, r dio.ReadSeekerAt, parse
 }
 
 // AnalyzePackage returns an analysis result of the package file other than lock files
-func AnalyzePackage(fileType types.LangType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*analyzer.AnalysisResult, error) {
+func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*analyzer.AnalysisResult, error) {
 	app, err := ParsePackage(fileType, filePath, r, parser, checksum)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
@@ -61,7 +60,7 @@ func Parse(fileType types.LangType, filePath string, r io.Reader, parser godepty
 }
 
 // ParsePackage returns a parsed result of the package file
-func ParsePackage(fileType types.LangType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*types.Application, error) {
+func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser godeptypes.Parser, checksum bool) (*types.Application, error) {
 	parsedLibs, parsedDependencies, err := parser.Parse(r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
@@ -77,7 +76,7 @@ func ParsePackage(fileType types.LangType, filePath string, r dio.ReadSeekerAt, 
 	return toApplication(fileType, filePath, filePath, r, parsedLibs, parsedDependencies), nil
 }
 
-func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
+func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
 	if len(libs) == 0 {
 		return nil
 	}
@@ -139,7 +138,7 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r dio.
 	}
 }
 
-func calculateDigest(r dio.ReadSeekerAt) (digest.Digest, error) {
+func calculateDigest(r xio.ReadSeekerAt) (digest.Digest, error) {
 	if r == nil {
 		return "", nil
 	}

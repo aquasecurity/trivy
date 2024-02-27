@@ -18,10 +18,10 @@ import (
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const (
@@ -53,6 +53,7 @@ type parser struct {
 	localRepository    string
 	remoteRepositories []string
 	offline            bool
+	servers            []Server
 }
 
 func NewParser(filePath string, opts ...option) types.Parser {
@@ -78,10 +79,11 @@ func NewParser(filePath string, opts ...option) types.Parser {
 		localRepository:    localRepository,
 		remoteRepositories: o.remoteRepos,
 		offline:            o.offline,
+		servers:            s.Servers,
 	}
 }
 
-func (p *parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	content, err := parsePom(r)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to parse POM: %w", err)
@@ -312,7 +314,7 @@ func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	}
 
 	// Update remoteRepositories
-	p.remoteRepositories = utils.UniqueStrings(append(p.remoteRepositories, pom.repositories()...))
+	p.remoteRepositories = utils.UniqueStrings(append(pom.repositories(p.servers), p.remoteRepositories...))
 
 	// Parent
 	parent, err := p.parseParent(pom.filePath, pom.content.Parent)
@@ -586,6 +588,10 @@ func (p *parser) openPom(filePath string) (*pom, error) {
 	}, nil
 }
 func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error) {
+	if version == "" {
+		return nil, xerrors.Errorf("Version missing for %s:%s", groupID, artifactID)
+	}
+
 	// Generate a proper path to the pom.xml
 	// e.g. com.fasterxml.jackson.core, jackson-annotations, 2.10.0
 	//      => com/fasterxml/jackson/core/jackson-annotations/2.10.0/jackson-annotations-2.10.0.pom
@@ -644,8 +650,20 @@ func fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
 	paths = append([]string{repoURL.Path}, paths...)
 	repoURL.Path = path.Join(paths...)
 
-	resp, err := http.Get(repoURL.String())
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", repoURL.String(), http.NoBody)
+	if err != nil {
+		log.Logger.Debugf("Request failed for %s%s", repoURL.Host, repoURL.Path)
+		return nil, nil
+	}
+	if repoURL.User != nil {
+		password, _ := repoURL.User.Password()
+		req.SetBasicAuth(repoURL.User.Username(), password)
+	}
+
+	resp, err := client.Do(req)
 	if err != nil || resp.StatusCode != http.StatusOK {
+		log.Logger.Debugf("Failed to fetch from %s%s", repoURL.Host, repoURL.Path)
 		return nil, nil
 	}
 	defer resp.Body.Close()

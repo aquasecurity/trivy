@@ -6,8 +6,8 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const (
@@ -31,7 +31,7 @@ type Dep struct {
 	Version    string `yaml:"version"`
 }
 
-func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	l := &lock{}
 	if err := yaml.NewDecoder(r).Decode(&l); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode pubspec.lock: %w", err)

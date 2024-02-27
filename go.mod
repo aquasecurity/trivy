@@ -24,7 +24,7 @@ require (
 	github.com/aquasecurity/trivy-aws v0.7.2-0.20240212233003-6359c269e5d2
 	github.com/aquasecurity/trivy-db v0.0.0-20231005141211-4fc651f7ac8d
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
-	github.com/aquasecurity/trivy-kubernetes v0.6.3-0.20240118072219-c433b06f98e1
+	github.com/aquasecurity/trivy-kubernetes v0.6.3
 	github.com/aquasecurity/trivy-policies v0.9.1-0.20240212232053-c450017d5624
 	github.com/aws/aws-sdk-go-v2 v1.24.1
 	github.com/aws/aws-sdk-go-v2/config v1.26.6
@@ -134,7 +134,7 @@ require (
 	github.com/zclconf/go-cty v1.13.0
 	github.com/zclconf/go-cty-yaml v1.0.3
 	golang.org/x/crypto v0.18.0
-	helm.sh/helm/v3 v3.14.1
+	helm.sh/helm/v3 v3.14.2
 )
 
 require (

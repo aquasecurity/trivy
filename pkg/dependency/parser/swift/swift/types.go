@@ -20,7 +20,7 @@ type Pin struct {
 }
 
 type State struct {
-	Branch   any    `json:"branch"`
+	Branch   string `json:"branch"`
 	Revision string `json:"revision"`
 	Version  string `json:"version"`
 }

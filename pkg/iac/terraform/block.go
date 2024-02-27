@@ -145,11 +145,11 @@ func (b *Block) InjectBlock(block *Block, name string) {
 	b.childBlocks = append(b.childBlocks, block)
 }
 
-func (b *Block) MarkCountExpanded() {
+func (b *Block) MarkExpanded() {
 	b.expanded = true
 }
 
-func (b *Block) IsCountExpanded() bool {
+func (b *Block) IsExpanded() bool {
 	return b.expanded
 }
 
@@ -187,7 +187,7 @@ func (b *Block) Clone(index cty.Value) *Block {
 	}
 	indexVal, _ := gocty.ToCtyValue(index, cty.Number)
 	clone.context.SetByDot(indexVal, "count.index")
-	clone.MarkCountExpanded()
+	clone.MarkExpanded()
 	b.cloneIndex++
 	return clone
 }

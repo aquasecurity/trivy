@@ -37,12 +37,6 @@ func TestParser_Parse(t *testing.T) {
 				},
 			},
 		},
-		// docker run -it --rm swift@sha256:45e5e44ed4873063795f150182437f4dbe7d5527ba5655979d7d11e0829179a7
-		// mkdir app && cd app
-		// swift package init
-		// ## add new deps: ##
-		// sed -i 's/],/],\ndependencies: [\n.package(url: "https:\/\/github.com\/ReactiveCocoa\/ReactiveSwift", from: "7.0.0"),\n.package(url: "https:\/\/github.com\/Quick\/Quick.git", from: "7.0.0"),\n.package(url: "https:\/\/github.com\/Quick\/Nimble.git", .exact("9.2.1")),\n],/' Package.swift
-		// swift package update
 		{
 			name:      "happy path v2",
 			inputFile: "testdata/happy-v2-Package.resolved",
@@ -64,6 +58,12 @@ func TestParser_Parse(t *testing.T) {
 					Name:      "github.com/ReactiveCocoa/ReactiveSwift",
 					Version:   "7.1.1",
 					Locations: []types.Location{{StartLine: 39, EndLine: 47}},
+				},
+				{
+					ID:        "github.com/element-hq/swift-ogg@0.0.1",
+					Name:      "github.com/element-hq/swift-ogg",
+					Version:   "0.0.1",
+					Locations: []types.Location{{StartLine: 48, EndLine: 56}},
 				},
 				{
 					ID:        "github.com/mattgallagher/CwlCatchException@2.1.2",

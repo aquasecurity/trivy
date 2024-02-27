@@ -62,7 +62,9 @@ func TestReport_ColumnHeading(t *testing.T) {
 			want: []string{
 				NamespaceColumn,
 				ResourceColumn,
-				InfraAssessmentColumn,
+				VulnerabilitiesColumn,
+				MisconfigurationsColumn,
+				SecretsColumn,
 			},
 		},
 		{

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <localRepository>testdata/repository</localRepository>
+
+    <servers>
+        <server>
+            <id>global-server</id>
+        </server>
+        <server>
+            <id>server-with-credentials</id>
+            <username>test-user</username>
+            <password>test-password-from-global</password>
+        </server>
+        <server>
+            <id>server-with-name-only</id>
+            <username>test-user-only</username>
+        </server>
+    </servers>
+</settings>

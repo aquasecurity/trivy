@@ -9,9 +9,9 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -44,7 +44,7 @@ func (a rpmqaPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 	}, nil
 }
 
-func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package, error) {
+func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r xio.ReadSeekerAt) ([]types.Package, error) {
 	var pkgs []types.Package
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
