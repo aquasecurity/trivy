@@ -259,68 +259,26 @@ func TestParse(t *testing.T) {
 		wantDeps []types.Dependency
 	}{
 		{
-			name:     "normal",
-			file:     "testdata/yarn_normal.lock",
-			want:     yarnNormal,
-			wantDeps: yarnNormalDeps,
-		},
-		{
-			name:     "react",
-			file:     "testdata/yarn_react.lock",
-			want:     yarnReact,
-			wantDeps: yarnReactDeps,
-		},
-		{
-			name:     "yarn with dev",
-			file:     "testdata/yarn_with_dev.lock",
-			want:     yarnWithDev,
-			wantDeps: yarnWithDevDeps,
-		},
-		{
-			name:     "yarn many",
-			file:     "testdata/yarn_many.lock",
-			want:     yarnMany,
-			wantDeps: yarnManyDeps,
-		},
-		{
-			name:     "yarn real world",
-			file:     "testdata/yarn_realworld.lock",
-			want:     yarnRealWorld,
-			wantDeps: yarnRealWorldDeps,
+			name:     "happy",
+			file:     "testdata/yarn_happy.lock",
+			want:     yarnHappy,
+			wantDeps: yarnHappyDeps,
 		},
 		{
 			file: "testdata/yarn_with_npm.lock",
 			want: yarnWithNpm,
 		},
 		{
-			name:     "yarn v2 normal",
-			file:     "testdata/yarn_v2_normal.lock",
-			want:     yarnV2Normal,
-			wantDeps: yarnV2NormalDeps,
-		},
-		{
-			name:     "yarn v2 react",
-			file:     "testdata/yarn_v2_react.lock",
-			want:     yarnV2React,
-			wantDeps: yarnV2ReactDeps,
-		},
-		{
-			name:     "yarn v2 with dev",
-			file:     "testdata/yarn_v2_with_dev.lock",
-			want:     yarnV2WithDev,
-			wantDeps: yarnV2WithDevDeps,
-		},
-		{
-			name:     "yarn v2 many",
-			file:     "testdata/yarn_v2_many.lock",
-			want:     yarnV2Many,
-			wantDeps: yarnV2ManyDeps,
+			name:     "happy v2",
+			file:     "testdata/yarn_v2_happy.lock",
+			want:     yarnV2Happy,
+			wantDeps: yarnV2HappyDeps,
 		},
 		{
 			name:     "yarn with local dependency",
 			file:     "testdata/yarn_with_local.lock",
-			want:     yarnNormal,
-			wantDeps: yarnNormalDeps,
+			want:     yarnWithLocal,
+			wantDeps: yarnWithLocalDeps,
 		},
 		{
 			name:     "yarn v2 with protocols in dependency section",
