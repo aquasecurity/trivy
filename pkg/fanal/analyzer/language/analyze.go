@@ -3,6 +3,7 @@ package language
 import (
 	"io"
 	"strings"
+	"sync"
 
 	"golang.org/x/xerrors"
 
@@ -14,6 +15,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
+
+var devDepsInfoOnce sync.Once
 
 // Analyze returns an analysis result of the lock file
 func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
@@ -94,6 +97,13 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 
 	var pkgs []types.Package
 	for _, lib := range libs {
+		// By default, we suppress dev deps. Show log info about it.
+		if lib.Dev == true {
+			devDepsInfoOnce.Do(func() {
+				log.Logger.Info("Suppressing dependencies for development and testing. To display them, try '--include-dev-deps'")
+			})
+		}
+
 		var licenses []string
 		if lib.License != "" {
 			licenses = licensing.SplitLicenses(lib.License)
