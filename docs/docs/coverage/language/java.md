@@ -59,7 +59,7 @@ The vulnerability database will be downloaded anyway.
 ### maven-invoker-plugin
 Typically, the integration tests directory (`**/[src|target]/it/*/pom.xml`) of [maven-invoker-plugin](https://maven.apache.org/plugins/maven-invoker-plugin/usage.html) doesn't contain actual `pom.xml` files and should be skipped to avoid noise.
 
-Trivy marks dependencies from these files as `Dev`. If you need to show them, use `--include-dev-deps` flag.
+Trivy marks dependencies from these files as `Dev`. By default, we skip `Dev` dependencies. If you need to show them, use `--include-dev-deps` flag.
 
 
 ## Gradle.lock
