@@ -2,11 +2,11 @@ package pom
 
 import (
 	"context"
-	"github.com/samber/lo"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
