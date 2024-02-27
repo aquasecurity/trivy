@@ -338,7 +338,7 @@ Available fields:
 | Field      | Required | Type                | Description                                                                                                                                                             |
 |------------|:--------:|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | id         |    ✓     | string              | The identifier of the vulnerability, misconfiguration, secret, or license[^1].                                                                                          |
-| paths[^2]  |          | string array        | The list of file paths to ignore. If `paths` is not set, the ignore finding is applied to all files.                                                                    |
+| paths      |          | string array        | The list of file paths to ignore. If `paths` is not set, the ignore finding is applied to all files.                                                                    |
 | purls      |          | string array        | The list of PURLs to ignore packages. If `purls` is not set, the ignore finding is applied to all packages. This field is currently available only for vulnerabilities. |
 | expired_at |          | date (`yyyy-mm-dd`) | The expiration date of the ignore finding. If `expired_at` is not set, the ignore finding is always valid.                                                              |
 | statement  |          | string              | The reason for ignoring the finding. (This field is not used for filtering.)                                                                                            |
@@ -494,4 +494,4 @@ Please refer to the [VEX documentation](../supply-chain/vex.md) for the details.
 
 
 [^1]: license name is used as id for `.trivyignore.yaml` files.
-[^2]: This doesn't work for package licenses. The `path` field can only be used for license files (licenses obtained using the [--license-full flag](../scanner/license.md#full-scanning)).
+[^2]: This doesn't work for os package licenses (e.g. apk, dpkg, rpm).

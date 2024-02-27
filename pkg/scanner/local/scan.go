@@ -316,6 +316,7 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 					Category:   category,
 					PkgName:    lib.Name,
 					Name:       license,
+					FilePath:   lib.FilePath,
 					Confidence: 1.0,
 				})
 			}
