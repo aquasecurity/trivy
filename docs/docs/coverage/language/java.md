@@ -55,6 +55,13 @@ The vulnerability database will be downloaded anyway.
 !!! Warning
     Trivy may skip some dependencies (that were not found on your local machine) when the `--offline-scan` flag is passed.
 
+
+### maven-invoker-plugin
+Typically, the integration tests directory (`**/[src|target]/it/*/pom.xml`) of [maven-invoker-plugin](https://maven.apache.org/plugins/maven-invoker-plugin/usage.html) doesn't contain actual `pom.xml` files and should be skipped to avoid noise.
+
+Trivy marks dependencies from these files as `Dev`. If you need to show them, use `--include-dev-deps` flag.
+
+
 ## Gradle.lock
 `gradle.lock` files contain all necessary information about used dependencies.
 Trivy simply parses the file, extract dependencies, and finds vulnerabilities for them.
