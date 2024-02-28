@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"io/fs"
 	"path"
@@ -11,8 +12,6 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/exp/slices"
-
 	"github.com/aquasecurity/trivy/pkg/extrafs"
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
@@ -20,7 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	executor2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
@@ -35,7 +34,7 @@ type Scanner struct { // nolint: gocritic
 	sync.Mutex
 	options               []options.ScannerOption
 	parserOpt             []options.ParserOption
-	executorOpt           []executor2.Option
+	executorOpt           []executor.Option
 	dirs                  map[string]struct{}
 	forceAllDirs          bool
 	policyDirs            []string
@@ -54,7 +53,7 @@ func (s *Scanner) SetSpec(spec string) {
 }
 
 func (s *Scanner) SetRegoOnly(regoOnly bool) {
-	s.executorOpt = append(s.executorOpt, executor2.OptionWithRegoOnly(regoOnly))
+	s.executorOpt = append(s.executorOpt, executor.OptionWithRegoOnly(regoOnly))
 }
 
 func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
@@ -81,7 +80,7 @@ func (s *Scanner) AddParserOptions(opts ...options.ParserOption) {
 	s.parserOpt = append(s.parserOpt, opts...)
 }
 
-func (s *Scanner) AddExecutorOptions(opts ...executor2.Option) {
+func (s *Scanner) AddExecutorOptions(opts ...executor.Option) {
 	s.executorOpt = append(s.executorOpt, opts...)
 }
 
@@ -95,7 +94,7 @@ func (s *Scanner) SetSkipRequiredCheck(skip bool) {
 
 func (s *Scanner) SetDebugWriter(writer io.Writer) {
 	s.parserOpt = append(s.parserOpt, options.ParserWithDebug(writer))
-	s.executorOpt = append(s.executorOpt, executor2.OptionWithDebugWriter(writer))
+	s.executorOpt = append(s.executorOpt, executor.OptionWithDebugWriter(writer))
 	s.debug = debug.New(writer, "terraform", "scanner")
 }
 
@@ -123,7 +122,7 @@ func (s *Scanner) SetRegoErrorLimit(_ int) {}
 
 type Metrics struct {
 	Parser   parser.Metrics
-	Executor executor2.Metrics
+	Executor executor.Metrics
 	Timings  struct {
 		Total time.Duration
 	}
@@ -168,36 +167,17 @@ type terraformRootModule struct {
 	fsMap    map[string]fs.FS
 }
 
-func excludeNonRootModules(modules []terraformRootModule) []terraformRootModule {
-	var result []terraformRootModule
-	var childPaths []string
-
-	for _, module := range modules {
-		childPaths = append(childPaths, module.childs.ChildModulesPaths()...)
-	}
-
-	for _, module := range modules {
-		// if the path of the root module matches the path of the child module,
-		// then we should not scan it
-		if !slices.Contains(childPaths, module.rootPath) {
-			result = append(result, module)
-		}
-	}
-	return result
-}
-
 func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir string) (scan.Results, Metrics, error) {
-
 	var metrics Metrics
 
 	s.debug.Log("Scanning [%s] at '%s'...", target, dir)
 
-	// find directories which directly contain tf files (and have no parent containing tf files)
-	rootDirs := s.findRootModules(target, dir, dir)
-	sort.Strings(rootDirs)
+	// find directories which directly contain tf files
+	modulePaths := s.findModules(target, dir, dir)
+	sort.Strings(modulePaths)
 
-	if len(rootDirs) == 0 {
-		s.debug.Log("no root modules found")
+	if len(modulePaths) == 0 {
+		s.debug.Log("no modules found")
 		return nil, metrics, nil
 	}
 
@@ -207,13 +187,20 @@ func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir strin
 	}
 
 	s.execLock.Lock()
-	s.executorOpt = append(s.executorOpt, executor2.OptionWithRegoScanner(regoScanner), executor2.OptionWithFrameworks(s.frameworks...))
+	s.executorOpt = append(s.executorOpt, executor.OptionWithRegoScanner(regoScanner), executor.OptionWithFrameworks(s.frameworks...))
 	s.execLock.Unlock()
 
 	var allResults scan.Results
 
+	p := parser.New(target, "", s.parserOpt...)
+	rootDirs, err := p.FindRootModules(ctx, modulePaths)
+	if err != nil {
+		return nil, metrics, fmt.Errorf("failed to find root modules: %w", err)
+	}
+
+	rootModules := make([]terraformRootModule, 0, len(rootDirs))
+
 	// parse all root module directories
-	var rootModules []terraformRootModule
 	for _, dir := range rootDirs {
 
 		s.debug.Log("Scanning root module '%s'...", dir)
@@ -243,10 +230,9 @@ func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir strin
 		})
 	}
 
-	rootModules = excludeNonRootModules(rootModules)
 	for _, module := range rootModules {
 		s.execLock.RLock()
-		e := executor2.New(s.executorOpt...)
+		e := executor.New(s.executorOpt...)
 		s.execLock.RUnlock()
 		results, execMetrics, err := e.Execute(module.childs)
 		if err != nil {
@@ -316,7 +302,7 @@ func (s *Scanner) removeNestedDirs(dirs []string) []string {
 	return clean
 }
 
-func (s *Scanner) findRootModules(target fs.FS, scanDir string, dirs ...string) []string {
+func (s *Scanner) findModules(target fs.FS, scanDir string, dirs ...string) []string {
 
 	var roots []string
 	var others []string
@@ -358,7 +344,7 @@ func (s *Scanner) findRootModules(target fs.FS, scanDir string, dirs ...string) 
 	}
 
 	if (len(roots) == 0 || s.forceAllDirs) && len(others) > 0 {
-		roots = append(roots, s.findRootModules(target, scanDir, others...)...)
+		roots = append(roots, s.findModules(target, scanDir, others...)...)
 	}
 
 	return s.removeNestedDirs(roots)
