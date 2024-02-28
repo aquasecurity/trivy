@@ -14,13 +14,17 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-type Registry struct {
+type RegistryClient struct {
 	domain string
 	scope  string
 	cloud  cloud.Configuration
+}
+
+type Registry struct {
 }
 
 const (
@@ -31,23 +35,25 @@ const (
 	scheme        = "https"
 )
 
-func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) error {
+func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) (intf.RegistryClient, error) {
 	if strings.HasSuffix(domain, azureURL) {
-		r.domain = domain
-		r.scope = scope
-		r.cloud = cloud.AzurePublic
-		return nil
+		return &RegistryClient{
+			domain: domain,
+			scope:  scope,
+			cloud:  cloud.AzurePublic,
+		}, nil
 	} else if strings.HasSuffix(domain, chinaAzureURL) {
-		r.domain = domain
-		r.scope = chinaScope
-		r.cloud = cloud.AzureChina
-		return nil
+		return &RegistryClient{
+			domain: domain,
+			scope:  scope,
+			cloud:  cloud.AzureChina,
+		}, nil
 	}
 
-	return xerrors.Errorf("Azure registry: %w", types.InvalidURLPattern)
+	return nil, xerrors.Errorf("Azure registry: %w", types.InvalidURLPattern)
 }
 
-func (r *Registry) GetCredential(ctx context.Context) (string, string, error) {
+func (r *RegistryClient) GetCredential(ctx context.Context) (string, string, error) {
 	opts := azcore.ClientOptions{Cloud: r.cloud}
 	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{ClientOptions: opts})
 	if err != nil {
