@@ -26,11 +26,6 @@ const (
 )
 
 func fixtureTerraformPlanSnapshots(ctx context.Context) error {
-
-	if err := os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true"); err != nil {
-		return err
-	}
-
 	localstackC, addr, err := testutil.SetupLocalStack(ctx, "3.1.0")
 	if err != nil {
 		return err
@@ -100,7 +95,6 @@ func fixtureTerraformPlanSnapshots(ctx context.Context) error {
 	}
 
 	return g.Wait()
-
 }
 
 func generatePlan(ctx context.Context, execPath, workingDir string) error {

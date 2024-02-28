@@ -41,19 +41,14 @@ func NewReadSeekerAtWithSize(r io.Reader) (ReadSeekerAt, int64, error) {
 		return rsa, br.Size(), nil
 	}
 
-	size, err := getSize(r)
+	size, err := getSeekerSize(rsa)
 	if err != nil {
 		return nil, 0, xerrors.Errorf("get size error: %w", err)
 	}
 	return rsa, size, nil
 }
 
-func getSize(r io.Reader) (int64, error) {
-	s, ok := r.(io.Seeker)
-	if !ok {
-		return 0, xerrors.New("reader does not support seeking for size")
-	}
-
+func getSeekerSize(s io.Seeker) (int64, error) {
 	size, err := s.Seek(0, io.SeekEnd)
 	if err != nil {
 		return 0, xerrors.Errorf("seek error: %w", err)

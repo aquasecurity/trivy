@@ -3,6 +3,7 @@ package testutil
 import (
 	"context"
 	"fmt"
+	"os"
 
 	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/testcontainers/testcontainers-go"
@@ -10,6 +11,11 @@ import (
 )
 
 func SetupLocalStack(ctx context.Context, version string) (*localstack.LocalStackContainer, string, error) {
+
+	if err := os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true"); err != nil {
+		return nil, "", err
+	}
+
 	container, err := localstack.RunContainer(ctx, testcontainers.CustomizeRequest(
 		testcontainers.GenericContainerRequest{
 			ContainerRequest: testcontainers.ContainerRequest{
