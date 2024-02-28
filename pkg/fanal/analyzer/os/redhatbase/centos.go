@@ -32,10 +32,17 @@ func (a centOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 		}
 
 		switch strings.ToLower(result[1]) {
-		case "centos", "centos linux", "centos stream":
+		case "centos", "centos linux":
 			return &analyzer.AnalysisResult{
 				OS: types.OS{
 					Family: types.CentOS,
+					Name:   result[2],
+				},
+			}, nil
+		case "centos stream":
+			return &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CentOSStream,
 					Name:   result[2],
 				},
 			}, nil
