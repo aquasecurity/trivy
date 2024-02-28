@@ -5,8 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/GoogleCloudPlatform/docker-credential-gcr/store"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -23,21 +21,18 @@ func TestCheckOptions(t *testing.T) {
 		},
 		"NoOption": {
 			domain: "gcr.io",
-			gcr:    &Registry{domain: "gcr.io"},
+			gcr:    &Registry{},
 		},
 		"CredOption": {
 			domain: "gcr.io",
 			opt:    types.RegistryOptions{GCPCredPath: "/path/to/file.json"},
-			gcr: &Registry{
-				domain: "gcr.io",
-				Store:  store.NewGCRCredStore("/path/to/file.json"),
-			},
+			gcr:    &Registry{},
 		},
 	}
 
 	for testname, v := range tests {
 		g := &Registry{}
-		err := g.CheckOptions(v.domain, v.opt)
+		_, err := g.CheckOptions(v.domain, v.opt)
 		if v.wantErr != nil {
 			if err == nil {
 				t.Errorf("%s : expected error but no error", testname)
