@@ -30,6 +30,41 @@ func NewReadSeekerAt(r io.Reader) (ReadSeekerAt, error) {
 	return bytes.NewReader(buff.Bytes()), nil
 }
 
+func NewReadSeekerAtWithSize(r io.Reader) (ReadSeekerAt, int64, error) {
+	rsa, err := NewReadSeekerAt(r)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	br, ok := rsa.(*bytes.Reader)
+	if ok {
+		return rsa, br.Size(), nil
+	}
+
+	size, err := getSize(r)
+	if err != nil {
+		return nil, 0, xerrors.Errorf("get size error: %w", err)
+	}
+	return rsa, size, nil
+}
+
+func getSize(r io.Reader) (int64, error) {
+	s, ok := r.(io.Seeker)
+	if !ok {
+		return 0, xerrors.New("reader does not support seeking for size")
+	}
+
+	size, err := s.Seek(0, io.SeekEnd)
+	if err != nil {
+		return 0, xerrors.Errorf("seek error: %w", err)
+	}
+
+	if _, err = s.Seek(0, io.SeekStart); err != nil {
+		return 0, xerrors.Errorf("seek error: %w", err)
+	}
+	return size, nil
+}
+
 // NopCloser returns a ReadSeekCloserAt with a no-op Close method wrapping
 // the provided Reader r.
 func NopCloser(r ReadSeekerAt) ReadSeekCloserAt {

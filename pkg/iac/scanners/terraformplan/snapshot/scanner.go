@@ -63,7 +63,7 @@ func (s *Scanner) ScanFile(ctx context.Context, fsys fs.FS, filepath string) (sc
 }
 
 func (s *Scanner) Scan(ctx context.Context, reader io.Reader) (scan.Results, error) {
-	snap, err := readSnapshot(reader)
+	snap, err := parseSnapshot(reader)
 	if err != nil {
 		return nil, err
 	}

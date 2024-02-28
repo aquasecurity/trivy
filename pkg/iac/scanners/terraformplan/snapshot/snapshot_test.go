@@ -14,7 +14,6 @@ import (
 )
 
 func TestReadSnapshot(t *testing.T) {
-
 	tests := []struct {
 		name          string
 		dir           string
@@ -48,7 +47,7 @@ func TestReadSnapshot(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			snapshot, err := readSnapshot(f)
+			snapshot, err := parseSnapshot(f)
 			require.NoError(t, err)
 			require.NotNil(t, snapshot)
 

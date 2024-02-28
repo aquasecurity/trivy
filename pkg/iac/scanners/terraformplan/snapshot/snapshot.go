@@ -2,7 +2,6 @@ package snapshot
 
 import (
 	"archive/zip"
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +13,8 @@ import (
 	"strings"
 
 	"github.com/liamg/memoryfs"
+
+	iox "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const (
@@ -34,34 +35,36 @@ type (
 	configSnapshotModuleManifest []configSnapshotModuleRecord
 )
 
+var errNoTerraformPlan = errors.New("no terraform plan file")
+
 func IsPlanSnapshot(r io.Reader) bool {
-	if r == nil {
-		return false
-	}
-
-	buf, err := io.ReadAll(r)
+	zr, err := readSnapshot(r)
 	if err != nil {
 		return false
 	}
-
-	zr, err := zip.NewReader(bytes.NewReader(buf), int64(len(buf)))
-	if err != nil {
-		return false
-	}
-
 	return containsTfplanFile(zr)
 }
 
-var errNoTerraformPlan = errors.New("no terraform plan file")
+func readSnapshot(r io.Reader) (*zip.Reader, error) {
+	if r == nil {
+		return nil, errors.New("reader is nil")
+	}
 
-func readSnapshot(r io.Reader) (*snapshot, error) {
-	b, err := io.ReadAll(r)
+	rsa, size, err := iox.NewReadSeekerAtWithSize(r)
 	if err != nil {
 		return nil, err
 	}
 
-	br := bytes.NewReader(b)
-	zr, err := zip.NewReader(br, int64(len(b)))
+	zr, err := zip.NewReader(rsa, size)
+	if err != nil {
+		return nil, err
+	}
+
+	return zr, nil
+}
+
+func parseSnapshot(r io.Reader) (*snapshot, error) {
+	zr, err := readSnapshot(r)
 	if err != nil {
 		return nil, err
 	}
