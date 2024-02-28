@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	hversion "github.com/hashicorp/go-version" //nolint:gomodguard // hc-install uses hashicorp/go-version
 	"github.com/hashicorp/hc-install/product"
@@ -36,8 +37,20 @@ func fixtureTerraformPlanSnapshots(ctx context.Context) error {
 	}
 	defer localstackC.Terminate(ctx)
 
-	if err := os.Setenv("AWS_ENDPOINT_URL", addr); err != nil {
-		return err
+	envs := []struct {
+		key string
+		val string
+	}{
+		{"AWS_DEFAULT_REGION", "us-east-1"},
+		{"AWS_ACCESS_KEY_ID", "test"},
+		{"AWS_SECRET_ACCESS_KEY", "test"},
+		{"AWS_ENDPOINT_URL", addr},
+	}
+
+	for _, env := range envs {
+		if err := os.Setenv(env.key, env.val); err != nil {
+			return err
+		}
 	}
 
 	dirs := []string{
@@ -48,7 +61,7 @@ func fixtureTerraformPlanSnapshots(ctx context.Context) error {
 	var workingDirs []string
 
 	for _, dir := range dirs {
-		entries, err := os.ReadDir(dir)
+		entries, err := os.ReadDir(filepath.FromSlash(dir))
 		if err != nil {
 			return err
 		}
@@ -116,10 +129,17 @@ func generatePlan(ctx context.Context, execPath, workingDir string) error {
 }
 
 func cleanup(workingDir string) error {
-	for _, file := range []string{".terraform", ".terraform.lock.hcl"} {
-		path := filepath.Join(workingDir, file)
-		if err := os.RemoveAll(path); err != nil && !errors.Is(err, os.ErrNotExist) {
-			return err
+	entries, err := os.ReadDir(workingDir)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		if entry.Name() == "terraform.tfstate" || strings.HasPrefix(entry.Name(), ".terraform") {
+			path := filepath.Join(workingDir, entry.Name())
+			if err := os.RemoveAll(path); err != nil && !errors.Is(err, os.ErrNotExist) {
+				return err
+			}
 		}
 	}
 	return nil
