@@ -20,8 +20,6 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-// Parse parses egg and wheel metadata.
-// e.g. .egg-info/PKG-INFO and dist-info/METADATA
 func (*Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	rd := textproto.NewReader(bufio.NewReader(r))
 	h, err := rd.ReadMIMEHeader()
@@ -40,31 +38,43 @@ func (*Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, e
 		return nil, nil, xerrors.New("name or version is empty")
 	}
 
-	// "License-Expression" takes precedence as "License" is deprecated.
-	// cf. https://peps.python.org/pep-0639/#deprecate-license-field
-	var license string
+	// "License-Expression" takes precedence in accordance with https://peps.python.org/pep-0639/#deprecate-license-field
+	// Although keep in mind that pep-0639 is still in draft.
+	var licenses types.Libraries
 	if l := h.Get("License-Expression"); l != "" {
-		license = l
-	} else if l := h.Get("License"); l != "" {
-		license = l
+		licenses = types.Libraries{{Name: name, Version: version, License: l}}
 	} else {
+		// Get possible multiple occurrences of licenses from "Classifier: License" field
+		// When present it should define the license whereas "License" would define any additional exceptions or modifications
+		// ref. https://packaging.python.org/en/latest/specifications/core-metadata/#license
 		for _, classifier := range h.Values("Classifier") {
 			if strings.HasPrefix(classifier, "License :: ") {
 				values := strings.Split(classifier, " :: ")
-				license = values[len(values)-1]
-				break
+				licensename := values[len(values)-1]
+				// According to the classifier list https://pypi.org/classifiers/ there is one classifier which seems more like a grouping
+				// It has no specific license definition (Classifier: License :: OSI Approved) - it is skipped
+				if licensename != "OSI Approved" {
+					licenses = append(licenses, types.Library{Name: name, Version: version, License: values[len(values)-1]})
+				}
+			}
+		}
+
+		if l := h.Get("License"); l != "" {
+			if len(licenses) == 0 {
+				licenses = types.Libraries{{Name: name, Version: version, License: l}}
+			} else {
+				// Instead of warning would be probably better to pass the contents of "License" field to results
+				log.Logger.Warnf("License acquired from METADATA classifiers may be subject to additional terms for [%s]", name)
 			}
 		}
 	}
-	if license == "" && h.Get("License-File") != "" {
-		license = "file://" + h.Get("License-File")
+	if len(licenses) == 0 {
+		if lf := h.Get("License-File"); lf != "" {
+			licenses = types.Libraries{{Name: name, Version: version, License: "file://" + lf}}
+		} else {
+			licenses = append(licenses, types.Library{Name: name, Version: version})
+		}
 	}
 
-	return []types.Library{
-		{
-			Name:    name,
-			Version: version,
-			License: license,
-		},
-	}, nil, nil
+	return licenses, nil, nil
 }
