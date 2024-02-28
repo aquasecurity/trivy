@@ -1,7 +1,7 @@
 package types
 
 import (
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Library struct {
@@ -63,7 +63,7 @@ func (deps Dependencies) Swap(i, j int) { deps[i], deps[j] = deps[j], deps[i] }
 
 type Parser interface {
 	// Parse parses the dependency file
-	Parse(r dio.ReadSeekerAt) ([]Library, []Dependency, error)
+	Parse(r xio.ReadSeekerAt) ([]Library, []Dependency, error)
 }
 
 type RefType string

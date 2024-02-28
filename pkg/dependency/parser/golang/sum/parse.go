@@ -7,8 +7,8 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Parser struct{}
@@ -18,7 +18,7 @@ func NewParser() types.Parser {
 }
 
 // Parse parses a go.sum file
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var libs []types.Library
 	uniqueLibs := make(map[string]string)
 

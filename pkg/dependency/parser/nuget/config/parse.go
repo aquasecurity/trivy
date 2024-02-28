@@ -5,9 +5,9 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type cfgPackageReference struct {
@@ -29,7 +29,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var cfgData config
 	if err := xml.NewDecoder(r).Decode(&cfgData); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode .config file: %w", err)

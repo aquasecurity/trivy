@@ -5,9 +5,9 @@ import (
 	rustaudit "github.com/microsoft/go-rustaudit"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -36,7 +36,7 @@ func NewParser() types.Parser {
 
 // Parse scans files to try to report Rust crates and version injected into Rust binaries
 // via https://github.com/rust-secure-code/cargo-auditable
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	info, err := rustaudit.GetDependencyInfo(r)
 	if err != nil {
 		return nil, nil, convertError(err)

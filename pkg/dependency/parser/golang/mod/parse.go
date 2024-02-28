@@ -11,8 +11,8 @@ import (
 	"golang.org/x/mod/modfile"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -65,7 +65,7 @@ func resolveVCSUrl(modulePath string) string {
 }
 
 // Parse parses a go.mod file
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	libs := make(map[string]types.Library)
 
 	goModData, err := io.ReadAll(r)

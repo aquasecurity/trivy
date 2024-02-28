@@ -178,6 +178,7 @@ others:
 - helm
 - report
 - db
+- parser
 - deps
 
 The `<scope>` can be empty (e.g. if the change is a global or difficult to assign to a single component), in which case the parentheses are omitted.

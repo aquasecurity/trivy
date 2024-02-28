@@ -46,40 +46,94 @@ func (v *CSAF) match(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL) ty
 		return ""
 	}
 
-	var status types.FindingStatus
-	switch {
-	case v.matchPURL(vuln.ProductStatus.KnownNotAffected, pkgURL):
-		status = types.FindingStatusNotAffected
-	case v.matchPURL(vuln.ProductStatus.Fixed, pkgURL):
-		status = types.FindingStatusFixed
-	}
-
-	return status
-}
-
-// matchPURL returns true if the given PackageURL is found in the ProductTree.
-func (v *CSAF) matchPURL(products *csaf.Products, pkgURL *packageurl.PackageURL) bool {
-	for _, product := range lo.FromPtr(products) {
-		helpers := v.advisory.ProductTree.CollectProductIdentificationHelpers(lo.FromPtr(product))
-		purls := lo.FilterMap(helpers, func(helper *csaf.ProductIdentificationHelper, _ int) (*purl.PackageURL, bool) {
-			if helper == nil || helper.PURL == nil {
-				return nil, false
-			}
-			p, err := purl.FromString(string(*helper.PURL))
-			if err != nil {
-				v.logger.Errorw("Invalid PURL", zap.String("purl", string(*helper.PURL)), zap.Error(err))
-				return nil, false
-			}
-			return p, true
-		})
+	matchProduct := func(purls []*purl.PackageURL, pkgURL *packageurl.PackageURL) bool {
 		for _, p := range purls {
 			if p.Match(pkgURL) {
 				return true
 			}
 		}
+		return false
 	}
 
-	return false
+	productStatusMap := map[types.FindingStatus]csaf.Products{
+		types.FindingStatusNotAffected: lo.FromPtr(vuln.ProductStatus.KnownNotAffected),
+		types.FindingStatusFixed:       lo.FromPtr(vuln.ProductStatus.Fixed),
+	}
+	for status, productRange := range productStatusMap {
+		for _, product := range productRange {
+			if matchProduct(v.getProductPurls(lo.FromPtr(product)), pkgURL) {
+				v.logger.Infow("Filtered out the detected vulnerability",
+					zap.String("vulnerability-id", string(*vuln.CVE)),
+					zap.String("status", string(status)))
+				return status
+			}
+			for relationship, purls := range v.inspectProductRelationships(lo.FromPtr(product)) {
+				if matchProduct(purls, pkgURL) {
+					v.logger.Warnw("Filtered out the detected vulnerability",
+						zap.String("vulnerability-id", string(*vuln.CVE)),
+						zap.String("status", string(status)),
+						zap.String("relationship", string(relationship)))
+					return status
+				}
+			}
+		}
+	}
+
+	return ""
+}
+
+// getProductPurls returns a slice of PackageURLs associated to a given product
+func (v *CSAF) getProductPurls(product csaf.ProductID) []*purl.PackageURL {
+	return purlsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(product))
+}
+
+// inspectProductRelationships returns a map of PackageURLs associated to each relationship category
+// iterating over relationships looking for sub-products that might be part of the original product
+func (v *CSAF) inspectProductRelationships(product csaf.ProductID) map[csaf.RelationshipCategory][]*purl.PackageURL {
+	subProductsMap := make(map[csaf.RelationshipCategory]csaf.Products)
+	if v.advisory.ProductTree.RelationShips == nil {
+		return nil
+	}
+
+	for _, rel := range lo.FromPtr(v.advisory.ProductTree.RelationShips) {
+		if rel != nil {
+			relationship := lo.FromPtr(rel.Category)
+			switch relationship {
+			case csaf.CSAFRelationshipCategoryDefaultComponentOf,
+				csaf.CSAFRelationshipCategoryInstalledOn,
+				csaf.CSAFRelationshipCategoryInstalledWith:
+				if fpn := rel.FullProductName; fpn != nil && lo.FromPtr(fpn.ProductID) == product {
+					subProductsMap[relationship] = append(subProductsMap[relationship], rel.ProductReference)
+				}
+			}
+		}
+	}
+
+	purlsMap := make(map[csaf.RelationshipCategory][]*purl.PackageURL)
+	for relationship, subProducts := range subProductsMap {
+		var helpers []*csaf.ProductIdentificationHelper
+		for _, subProductRef := range subProducts {
+			helpers = append(helpers, v.advisory.ProductTree.CollectProductIdentificationHelpers(lo.FromPtr(subProductRef))...)
+		}
+		purlsMap[relationship] = purlsFromProductIdentificationHelpers(helpers)
+	}
+
+	return purlsMap
+}
+
+// purlsFromProductIdentificationHelpers returns a slice of PackageURLs given a slice of ProductIdentificationHelpers.
+func purlsFromProductIdentificationHelpers(helpers []*csaf.ProductIdentificationHelper) []*purl.PackageURL {
+	return lo.FilterMap(helpers, func(helper *csaf.ProductIdentificationHelper, _ int) (*purl.PackageURL, bool) {
+		if helper == nil || helper.PURL == nil {
+			return nil, false
+		}
+		p, err := purl.FromString(string(*helper.PURL))
+		if err != nil {
+			log.Logger.Errorw("Invalid PURL", zap.String("purl", string(*helper.PURL)), zap.Error(err))
+			return nil, false
+		}
+		return p, true
+	})
 }
 
 func statement(vuln *csaf.Vulnerability) string {

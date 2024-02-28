@@ -12,10 +12,9 @@ type Module struct {
 	modulePath string
 	ignores    Ignores
 	parent     *Module
-	local      bool
 }
 
-func NewModule(rootPath, modulePath string, blocks Blocks, ignores Ignores, local bool) *Module {
+func NewModule(rootPath, modulePath string, blocks Blocks, ignores Ignores) *Module {
 
 	blockMap := make(map[string]Blocks)
 
@@ -31,7 +30,6 @@ func NewModule(rootPath, modulePath string, blocks Blocks, ignores Ignores, loca
 		blockMap:   blockMap,
 		rootPath:   rootPath,
 		modulePath: modulePath,
-		local:      local,
 	}
 }
 

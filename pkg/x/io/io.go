@@ -5,12 +5,20 @@ import (
 	"io"
 
 	"golang.org/x/xerrors"
-
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 )
 
-func NewReadSeekerAt(r io.Reader) (dio.ReadSeekerAt, error) {
-	if rr, ok := r.(dio.ReadSeekerAt); ok {
+type ReadSeekerAt interface {
+	io.ReadSeeker
+	io.ReaderAt
+}
+
+type ReadSeekCloserAt interface {
+	io.ReadSeekCloser
+	io.ReaderAt
+}
+
+func NewReadSeekerAt(r io.Reader) (ReadSeekerAt, error) {
+	if rr, ok := r.(ReadSeekerAt); ok {
 		return rr, nil
 	}
 
@@ -21,3 +29,15 @@ func NewReadSeekerAt(r io.Reader) (dio.ReadSeekerAt, error) {
 
 	return bytes.NewReader(buff.Bytes()), nil
 }
+
+// NopCloser returns a ReadSeekCloserAt with a no-op Close method wrapping
+// the provided Reader r.
+func NopCloser(r ReadSeekerAt) ReadSeekCloserAt {
+	return nopCloser{r}
+}
+
+type nopCloser struct {
+	ReadSeekerAt
+}
+
+func (nopCloser) Close() error { return nil }

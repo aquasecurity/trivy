@@ -2,7 +2,9 @@ package report
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -24,7 +26,6 @@ const (
 	MisconfigurationsColumn = "Misconfigurations"
 	SecretsColumn           = "Secrets"
 	RbacAssessmentColumn    = "RBAC Assessment"
-	InfraAssessmentColumn   = "Kubernetes Infra Assessment"
 )
 
 func WorkloadColumns() []string {
@@ -40,7 +41,11 @@ func RoleColumns() []string {
 }
 
 func InfraColumns() []string {
-	return []string{InfraAssessmentColumn}
+	return []string{
+		VulnerabilitiesColumn,
+		MisconfigurationsColumn,
+		SecretsColumn,
+	}
 }
 
 func (tw TableWriter) Write(ctx context.Context, report Report) error {
@@ -50,8 +55,9 @@ func (tw TableWriter) Write(ctx context.Context, report Report) error {
 			Output:     tw.Output,
 			Severities: tw.Severities,
 		}
-		for _, r := range report.Resources {
+		for i, r := range report.Resources {
 			if r.Report.Results.Failed() {
+				updateTargetContext(&report.Resources[i])
 				err := t.Write(ctx, r.Report)
 				if err != nil {
 					return err
@@ -66,4 +72,15 @@ func (tw TableWriter) Write(ctx context.Context, report Report) error {
 	}
 
 	return nil
+}
+
+// updateTargetContext add context namespace, kind and name to the target
+func updateTargetContext(r *Resource) {
+	targetName := fmt.Sprintf("namespace: %s, %s: %s", r.Namespace, strings.ToLower(r.Kind), r.Name)
+	if r.Kind == "NodeComponents" || r.Kind == "NodeInfo" {
+		targetName = fmt.Sprintf("node: %s", r.Name)
+	}
+	for i := range r.Report.Results {
+		r.Report.Results[i].Target = targetName
+	}
 }

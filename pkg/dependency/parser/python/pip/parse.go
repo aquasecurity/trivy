@@ -10,8 +10,8 @@ import (
 	"golang.org/x/text/transform"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const (
@@ -28,7 +28,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	// `requirements.txt` can use byte order marks (BOM)
 	// e.g. on Windows `requirements.txt` can use UTF-16LE with BOM
 	// We need to override them to avoid the file being read incorrectly
