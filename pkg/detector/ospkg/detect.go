@@ -38,6 +38,7 @@ var (
 		ftypes.Ubuntu:       ubuntu.NewScanner(),
 		ftypes.RedHat:       redhat.NewScanner(),
 		ftypes.CentOS:       redhat.NewScanner(),
+		ftypes.CentOSStream: redhat.NewScanner(),
 		ftypes.Rocky:        rocky.NewScanner(),
 		ftypes.Oracle:       oracle.NewScanner(),
 		ftypes.OpenSUSELeap: suse.NewScanner(suse.OpenSUSE),
