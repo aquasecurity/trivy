@@ -83,6 +83,7 @@ func (w *Workspaces) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
+	// https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/package.json#L777
 	switch ws := workspaces.(type) {
 	// Workspace as object (map[string][]string)
 	// e.g. "workspaces": {"packages": ["packages/*", "plugins/*"]},
