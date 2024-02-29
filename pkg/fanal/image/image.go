@@ -3,7 +3,6 @@ package image
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -16,9 +15,6 @@ import (
 )
 
 type imageSourceFunc func(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error)
-
-var rustBaseImageLayerRegex = ".*(ENV RUSTUP_HOME).*(CARGO_HOME).*(RUST_VERSION).*(RUN).*(rustArch=).*(rustup --version).*(cargo --version).*"
-var golangBaseLayersRegex = ".*(ENV GOPATH).*(ENV PATH).*(/usr/local/go/bin).*(mkdir -p).*(GOPATH/src).*(WORKDIR).*"
 
 var imageSourceFuncs = map[types.ImageSource]imageSourceFunc{
 	types.ContainerdImageSource: tryContainerdDaemon,
@@ -125,83 +121,6 @@ func GuessBaseImageIndex(histories []v1.History) int {
 				continue
 			}
 			foundNonEmpty = true
-		}
-
-		// Hack to handle golang base images which don't have a CMD/Entrypoint instruction
-		// i != len(histories)-1 : is to handle scenarios where the golang base image itself is being scanned
-		/*
-			Go version 1.16-latest tend to have the following instructions in the last 5 layers
-
-			ENV GOPATH /go
-			ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
-			COPY --from=build --link /usr/local/go/ /usr/local/go/  ............ [not present in older versions]
-			RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 1777 "$GOPATH"
-			WORKDIR $GOPATH
-		*/
-		// We are looking for an occurence of the same
-		if i != len(histories)-1 && (strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop) WORKDIR ") ||
-			strings.HasPrefix(h.CreatedBy, "WORKDIR ")) {
-
-			// check if we have a subset of 5 layers available since WORKDIR is encountered
-			if (i-4) >= 0 && i+1 < len(histories) {
-				golangBaseLayer := ""
-				for _, cmd := range histories[i-4 : i+1] {
-					golangBaseLayer = golangBaseLayer + cmd.CreatedBy + " "
-				}
-				if match, _ := regexp.MatchString(golangBaseLayersRegex, golangBaseLayer); match {
-					baseImageIndex = i
-					break
-				}
-			}
-		}
-
-		// Hack to handle rust base images which don't have a CMD/Entrypoint instruction
-		// i != len(histories)-1 : is to handle scenarios where the rusts base image itself is being scanned
-		/*
-			Rust base image tend to have the following instructions in the last 2 layers
-
-			ENV RUSTUP_HOME=/usr/local/rustup \
-			CARGO_HOME=/usr/local/cargo \
-			PATH=/usr/local/cargo/bin:$PATH \
-			RUST_VERSION=1.76.0
-
-			RUN set -eux; \
-			    dpkgArch="$(dpkg --print-architecture)"; \
-			    case "${dpkgArch##*-}" in \
-			        amd64) rustArch='x86_64-unknown-linux-gnu'; rustupSha256='0b2f6c8f85a3d02fde2efc0ced4657869d73fccfce59defb4e8d29233116e6db' ;; \
-			        armhf) rustArch='armv7-unknown-linux-gnueabihf'; rustupSha256='f21c44b01678c645d8fbba1e55e4180a01ac5af2d38bcbd14aa665e0d96ed69a' ;; \
-			        arm64) rustArch='aarch64-unknown-linux-gnu'; rustupSha256='673e336c81c65e6b16dcdede33f4cc9ed0f08bde1dbe7a935f113605292dc800' ;; \
-			        i386) rustArch='i686-unknown-linux-gnu'; rustupSha256='e7b0f47557c1afcd86939b118cbcf7fb95a5d1d917bdd355157b63ca00fc4333' ;; \
-			        ppc64el) rustArch='powerpc64le-unknown-linux-gnu'; rustupSha256='1032934fb154ad2d365e02dcf770c6ecfaec6ab2987204c618c21ba841c97b44' ;; \
-			        *) echo >&2 "unsupported architecture: ${dpkgArch}"; exit 1 ;; \
-			    esac; \
-			    url="https://static.rust-lang.org/rustup/archive/1.26.0/${rustArch}/rustup-init"; \
-			    wget "$url"; \
-			    echo "${rustupSha256} *rustup-init" | sha256sum -c -; \
-			    chmod +x rustup-init; \
-			    ./rustup-init -y --no-modify-path --profile minimal --default-toolchain $RUST_VERSION --default-host ${rustArch}; \
-			    rm rustup-init; \
-			    chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
-			    rustup --version; \
-			    cargo --version; \
-			    rustc --version;
-		*/
-		// We are looking for an occurence of the same
-		if i != len(histories)-1 && (strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop) RUN ") ||
-			strings.HasPrefix(h.CreatedBy, "RUN ") && strings.Contains(h.CreatedBy, "RUST")) {
-
-			// check if we have a subset of 2 layers available since RUN is encountered
-			if (i-1) >= 0 && i+1 < len(histories) {
-				rustBaseImageLayer := ""
-				for _, cmd := range histories[i-1 : i+1] {
-					rustBaseImageLayer = rustBaseImageLayer + cmd.CreatedBy + " "
-				}
-
-				if match, _ := regexp.MatchString(rustBaseImageLayerRegex, rustBaseImageLayer); match {
-					baseImageIndex = i
-					break
-				}
-			}
 		}
 
 		if !h.EmptyLayer {
