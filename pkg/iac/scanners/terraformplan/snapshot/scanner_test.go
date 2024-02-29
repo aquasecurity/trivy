@@ -1,8 +1,10 @@
 package snapshot
 
 import (
+	"bytes"
 	"context"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"testing"
@@ -28,7 +30,6 @@ func initScanner(opts ...options.ScannerOption) *Scanner {
 }
 
 func TestScanner_Scan(t *testing.T) {
-
 	tests := []struct {
 		name        string
 		dir         string
@@ -75,4 +76,60 @@ func TestScanner_Scan(t *testing.T) {
 			assert.Equal(t, tt.expectedIDs, ids)
 		})
 	}
+}
+
+func Test_ScanFS(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		dir         string
+		expectedIDs []string
+		expectedDir string
+		expectedErr error
+	}{
+		{
+			dir:         "just-resource",
+			expectedIDs: []string{"ID001"},
+			expectedDir: "main.tf",
+		},
+		{
+			dir:         "with-local-module",
+			expectedIDs: []string{"ID001"},
+			expectedDir: path.Join("modules", "ec2", "main.tf"),
+		},
+		{
+			dir:         "with-remote-module",
+			expectedIDs: []string{"ID001"},
+			expectedDir: path.Join("terraform-aws-modules", "s3-bucket", "aws", "main.tf"),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.dir, func(t *testing.T) {
+			fs := os.DirFS("testdata")
+
+			debugLog := bytes.NewBuffer([]byte{})
+			scanner := New(
+				options.ScannerWithDebug(debugLog),
+				options.ScannerWithPolicyDirs(path.Join(tc.dir, "checks")),
+				options.ScannerWithPolicyFilesystem(fs),
+				options.ScannerWithRegoOnly(true),
+				options.ScannerWithPolicyNamespaces("user"),
+				options.ScannerWithEmbeddedLibraries(false),
+				options.ScannerWithEmbeddedPolicies(false),
+				options.ScannerWithRegoErrorLimits(0),
+			)
+
+			results, err := scanner.ScanFS(context.TODO(), fs, path.Join(tc.dir, "tfplan"))
+			require.NoError(t, err)
+			require.Len(t, results, 1)
+
+			failed := results.GetFailed()
+			assert.Len(t, failed, 1)
+
+			occurrences := failed[0].Occurrences()
+			assert.Equal(t, tc.expectedDir, occurrences[0].Filename, tc.dir)
+		})
+	}
+
 }
