@@ -83,23 +83,18 @@ func Test_ScanFS(t *testing.T) {
 
 	tests := []struct {
 		dir         string
-		expectedIDs []string
 		expectedDir string
-		expectedErr error
 	}{
 		{
 			dir:         "just-resource",
-			expectedIDs: []string{"ID001"},
 			expectedDir: "main.tf",
 		},
 		{
 			dir:         "with-local-module",
-			expectedIDs: []string{"ID001"},
 			expectedDir: path.Join("modules", "ec2", "main.tf"),
 		},
 		{
 			dir:         "with-remote-module",
-			expectedIDs: []string{"ID001"},
 			expectedDir: path.Join("terraform-aws-modules", "s3-bucket", "aws", "main.tf"),
 		},
 	}
