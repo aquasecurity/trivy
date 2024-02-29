@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
@@ -17,8 +18,10 @@ type packageJSON struct {
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
 	DevDependencies      map[string]string `json:"devDependencies"`
-	Workspaces           []string          `json:"workspaces"`
+	Workspaces           Workspaces        `json:"workspaces"`
 }
+
+type Workspaces []string
 
 type Package struct {
 	types.Library
@@ -72,4 +75,30 @@ func parseLicense(val interface{}) string {
 		}
 	}
 	return ""
+}
+
+func (w *Workspaces) UnmarshalJSON(b []byte) error {
+	var workspaces any
+	if err := json.Unmarshal(b, &workspaces); err != nil {
+		return err
+	}
+
+	switch ws := workspaces.(type) {
+	// Workspace as object (map[string][]string)
+	// e.g. "workspaces": {"packages": ["packages/*", "plugins/*"]},
+	case map[string]interface{}:
+		// Take only workspaces for `packages` - https://classic.yarnpkg.com/blog/2018/02/15/nohoist/
+		if pkgsWorkspaces, ok := ws["packages"]; ok {
+			*w = lo.Map(pkgsWorkspaces.([]interface{}), func(workspace interface{}, _ int) string {
+				return workspace.(string)
+			})
+		}
+	// Workspace as string array
+	// e.g.   "workspaces": ["packages/*", "backend"],
+	case []interface{}:
+		*w = lo.Map(ws, func(workspace interface{}, _ int) string {
+			return workspace.(string)
+		})
+	}
+	return nil
 }
