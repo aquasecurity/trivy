@@ -26,8 +26,8 @@ import (
 	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
-	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/json"
 	tfprawscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
+	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 

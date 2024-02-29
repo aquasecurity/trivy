@@ -6,7 +6,7 @@ import (
 	"testing/fstest"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/json"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -14,7 +14,7 @@ import (
 )
 
 func Test_Scanning_Plan(t *testing.T) {
-	scanner := json.New(
+	scanner := tfjson.New(
 		options.ScannerWithEmbeddedPolicies(true),
 		options.ScannerWithEmbeddedLibraries(true),
 	)

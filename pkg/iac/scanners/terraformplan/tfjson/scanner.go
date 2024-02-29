@@ -1,4 +1,4 @@
-package json
+package tfjson
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	terraformScanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/json/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson/parser"
 )
 
 var tfPlanExts = []string{

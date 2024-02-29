@@ -1,4 +1,4 @@
-package json
+package tfjson
 
 import (
 	"bytes"
