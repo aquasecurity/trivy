@@ -316,7 +316,9 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 					Category:   category,
 					PkgName:    lib.Name,
 					Name:       license,
-					FilePath:   lib.FilePath,
+					// Lock files use app.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
+					// Applications use lib.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
+					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
 					Confidence: 1.0,
 				})
 			}
