@@ -1,6 +1,6 @@
 # Add Service Support
 
-A service refers to a service by a cloud provider. This section details how to add a new service to an existing provider. All contributions need to be made to the [defsec repository](https://github.com/aquasecurity/defsec/).
+A service refers to a service by a cloud provider. This section details how to add a new service to an existing provider. All contributions need to be made to the [trivy repository](https://github.com/aquasecurity/trivy/).
 
 Before you begin, verify that the provider does not already have the service that you plan to add.
 
@@ -32,7 +32,7 @@ type Baz struct {
 }
 ```
 
-A `Baz` can have a name, and can optionally be encrypted. Instead of using raw string and bool types respectively, we use the defsec types `types.StringValue` and `types.BoolValue`. These types wrap the raw values and provide additional metadata about the value, such as whether it was set by the user or not, and the file and line number where the resource was defined. The `types.Metadata` struct is embedded in all of the defsec types, and provides a common set of metadata for all resources. This includes the file and line number where the resource was defined, and the name of the resource.
+A `Baz` can have a name, and can optionally be encrypted. Instead of using raw string and bool types respectively, we use the trivy types `types.StringValue` and `types.BoolValue`. These types wrap the raw values and provide additional metadata about the value, such as whether it was set by the user or not, and the file and line number where the resource was defined. The `types.Metadata` struct is embedded in all of the Trivy types, and provides a common set of metadata for all resources. This includes the file and line number where the resource was defined, and the name of the resource.
 
 Next you'll need to add a reference to your new service struct in the provider struct at `pkg/providers/foo/foo.go`:
 
