@@ -18,10 +18,8 @@ type packageJSON struct {
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
 	DevDependencies      map[string]string `json:"devDependencies"`
-	Workspaces           Workspaces        `json:"workspaces"`
+	Workspaces           any               `json:"workspaces"`
 }
-
-type Workspaces []string
 
 type Package struct {
 	types.Library
@@ -60,7 +58,7 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 		Dependencies:         pkgJSON.Dependencies,
 		OptionalDependencies: pkgJSON.OptionalDependencies,
 		DevDependencies:      pkgJSON.DevDependencies,
-		Workspaces:           pkgJSON.Workspaces,
+		Workspaces:           parseWorkspaces(pkgJSON.Workspaces),
 	}, nil
 }
 
@@ -77,27 +75,23 @@ func parseLicense(val interface{}) string {
 	return ""
 }
 
-func (w *Workspaces) UnmarshalJSON(b []byte) error {
-	var workspaces any
-	if err := json.Unmarshal(b, &workspaces); err != nil {
-		return err
-	}
-
-	// https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/package.json#L777
-	switch ws := workspaces.(type) {
+// parseWorkspaces return slice of workspaces
+// json schema - https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/package.json#L777
+func parseWorkspaces(val any) []string {
+	switch ws := val.(type) {
 	// Workspace as object (map[string][]string)
 	// e.g. "workspaces": {"packages": ["packages/*", "plugins/*"]},
 	case map[string]interface{}:
 		// Take only workspaces for `packages` - https://classic.yarnpkg.com/blog/2018/02/15/nohoist/
 		if pkgsWorkspaces, ok := ws["packages"]; ok {
-			*w = lo.Map(pkgsWorkspaces.([]interface{}), func(workspace interface{}, _ int) string {
+			return lo.Map(pkgsWorkspaces.([]interface{}), func(workspace interface{}, _ int) string {
 				return workspace.(string)
 			})
 		}
 	// Workspace as string array
 	// e.g.   "workspaces": ["packages/*", "backend"],
 	case []interface{}:
-		*w = lo.Map(ws, func(workspace interface{}, _ int) string {
+		return lo.Map(ws, func(workspace interface{}, _ int) string {
 			return workspace.(string)
 		})
 	}
