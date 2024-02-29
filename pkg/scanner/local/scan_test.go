@@ -149,6 +149,115 @@ func TestScanner_Scan(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path",
+			args: args{
+				target:   "alpine:latest",
+				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				options: types.ScanOptions{
+					Scanners: types.Scanners{types.LicenseScanner},
+				},
+			},
+			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				},
+				Returns: ApplierApplyLayersReturns{
+					Detail: ftypes.ArtifactDetail{
+						OS: ftypes.OS{
+							Family: ftypes.Alpine,
+							Name:   "3.11",
+						},
+						Packages: []ftypes.Package{
+							{
+								Name:       "musl",
+								Version:    "1.2.3",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
+							},
+						},
+						Applications: []ftypes.Application{
+							{
+								FilePath: "/app/go.mod",
+								Libraries: []ftypes.Package{
+									{
+										Name:     "github.com/google/uuid",
+										Version:  "1.6.0",
+										FilePath: "",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+										},
+										Licenses: []string{"LGPL"},
+									},
+								},
+							},
+							{
+								FilePath: "",
+								Libraries: []ftypes.Package{
+									{
+										Name:     "urllib3",
+										Version:  "3.2.1",
+										FilePath: "/usr/lib/python/site-packages/urllib3-3.2.1/METADATA",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+										},
+										Licenses: []string{"MIT"},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantResults: types.Results{
+				{
+					Target: "OS Packages",
+					Class:  types.ClassLicense,
+				},
+				{
+					Target: "/app/go.mod",
+					Class:  types.ClassLicense,
+					Licenses: []types.DetectedLicense{
+						{
+							Severity:   "UNKNOWN",
+							Category:   "unknown",
+							PkgName:    "github.com/google/uuid",
+							FilePath:   "/app/go.mod",
+							Name:       "LGPL",
+							Confidence: 1,
+							Link:       "",
+						},
+					},
+				},
+				{
+					Target: "",
+					Class:  types.ClassLicense,
+					Licenses: []types.DetectedLicense{
+						{
+							Severity:   "UNKNOWN",
+							Category:   "unknown",
+							PkgName:    "urllib3",
+							FilePath:   "/usr/lib/python/site-packages/urllib3-3.2.1/METADATA",
+							Name:       "MIT",
+							Confidence: 1,
+						},
+					},
+				},
+				{
+					Target: "Loose File License(s)",
+					Class:  types.ClassLicenseFile,
+				},
+			},
+			wantOS: ftypes.OS{
+				Family: "alpine",
+				Name:   "3.11",
+				Eosl:   false,
+			},
+		},
+		{
 			name: "happy path with list all packages",
 			args: args{
 				target:   "alpine:latest",
