@@ -91,9 +91,7 @@ func TestParse(t *testing.T) {
 			input: "testdata/pyphen-0.14.0.METADATA",
 
 			want: []types.Library{
-				{Name: "pyphen", Version: "0.14.0", License: "GNU General Public License v2 or later (GPLv2+)"},
-				{Name: "pyphen", Version: "0.14.0", License: "GNU Lesser General Public License v2 or later (LGPLv2+)"},
-				{Name: "pyphen", Version: "0.14.0", License: "Mozilla Public License 1.1 (MPL 1.1)"},
+				{Name: "pyphen", Version: "0.14.0", License: "GNU General Public License v2 or later (GPLv2+), GNU Lesser General Public License v2 or later (LGPLv2+), Mozilla Public License 1.1 (MPL 1.1)"},
 			},
 		},
 		{

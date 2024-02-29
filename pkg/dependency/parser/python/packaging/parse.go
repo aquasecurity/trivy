@@ -20,6 +20,8 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
+// Parse parses egg and wheel metadata.
+// e.g. .egg-info/PKG-INFO and dist-info/METADATA
 func (*Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	rd := textproto.NewReader(bufio.NewReader(r))
 	h, err := rd.ReadMIMEHeader()
