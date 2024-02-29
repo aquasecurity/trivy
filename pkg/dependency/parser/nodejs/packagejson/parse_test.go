@@ -2,7 +2,6 @@ package packagejson_test
 
 import (
 	"os"
-	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -78,6 +77,20 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path - workspace as struct",
+			inputFile: "testdata/workspace_as_map_package.json",
+			want: packagejson.Package{
+				Library: types.Library{
+					ID:      "example@1.0.0",
+					Name:    "example",
+					Version: "1.0.0",
+				},
+				Workspaces: []string{
+					"packages/*",
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/invalid_package.json",
 
@@ -99,7 +112,7 @@ func TestParse(t *testing.T) {
 	}
 
 	for _, v := range vectors {
-		t.Run(path.Base(v.name), func(t *testing.T) {
+		t.Run(v.name, func(t *testing.T) {
 			f, err := os.Open(v.inputFile)
 			require.NoError(t, err)
 			defer f.Close()
