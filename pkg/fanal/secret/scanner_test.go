@@ -609,6 +609,28 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingHF := types.SecretFinding{
+	    RuleID:    "hugging-face-access-token",
+	    Category:  secret.CategoryHuggingFace,
+	    Title:     "Hugging Face Access Token",
+	    Severity:  "CRITICAL",
+	    StartLine: 1,
+	    EndLine:   1,
+	    Match:     "HF_example_token=hf_********************",
+	    Code: types.Code{
+	        Lines: []types.Line{
+	            {
+	                Number:      1,
+	                Content:     "HF_example_token=hf_NzrNsiAaO3fsVypnimdKzUDMBmRnWNuQYE",
+	                Highlighted: "HF_example_token=hf_********************",
+	                IsCause:     true,
+	                FirstCause:  true,
+	                LastCause:   true,
+	            },
+	        },
+	    },
+	}
+
 	wantMultiLine := types.SecretFinding{
 		RuleID:    "multi-line-secret",
 		Category:  "general",
