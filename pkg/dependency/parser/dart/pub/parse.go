@@ -97,8 +97,7 @@ func (d *Description) UnmarshalYAML(value *yaml.Node) error {
 	}
 	// Description can be a string or a struct
 	// We only need a string value for SDK mapping
-	switch desc := tmp.(type) {
-	case string:
+	if desc, ok := tmp.(string); ok {
 		*d = Description(desc)
 	}
 	return nil
