@@ -45,7 +45,7 @@ require (
 	github.com/fatih/color v1.15.0
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/go-openapi/runtime v0.27.1
-	github.com/go-openapi/strfmt v0.22.0
+	github.com/go-openapi/strfmt v0.22.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.3
@@ -376,7 +376,7 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/yashtewari/glob-intersection v0.2.0 // indirect
 	github.com/yuin/gopher-lua v1.1.0 // indirect
-	go.mongodb.org/mongo-driver v1.13.1 // indirect
+	go.mongodb.org/mongo-driver v1.14.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.46.1 // indirect
 	go.opentelemetry.io/otel v1.23.1 // indirect
