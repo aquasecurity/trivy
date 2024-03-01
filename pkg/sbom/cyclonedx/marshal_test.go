@@ -24,11 +24,25 @@ import (
 )
 
 func TestMarshaler_MarshalReport(t *testing.T) {
+	testSBOM := core.NewBOM()
+	testSBOM.AddComponent(&core.Component{
+		Root: true,
+		Type: core.TypeApplication,
+		Name: "jackson-databind-2.13.4.1.jar",
+		PkgID: core.PkgID{
+			BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8",
+		},
+		Properties: []core.Property{
+			{
+				Name:  "SchemaVersion",
+				Value: "2",
+			},
+		},
+	})
 
 	tests := []struct {
 		name        string
 		inputReport types.Report
-		sbom        bool
 		want        *cdx.BOM
 	}{
 		{
@@ -1500,14 +1514,14 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						},
 					},
 				},
+				BOM: testSBOM,
 			},
-			sbom: true,
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_5,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000003",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -1522,7 +1536,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						},
 					},
 					Component: &cdx.Component{
-						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+						BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8", // The original bom-ref is used
 						Type:   cdx.ComponentTypeApplication,
 						Name:   "jackson-databind-2.13.4.1.jar",
 						Properties: &[]cdx.Property{
@@ -1598,7 +1612,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000001",
+						Ref: "aff65b54-6009-4c32-968d-748949ef46e8",
 						Dependencies: &[]string{
 							"pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
 						},
@@ -2076,32 +2090,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			if tt.sbom {
-				tt.inputReport.BOM = testsBOM()
-			}
 			marshaler := cyclonedx.NewMarshaler("dev")
 			got, err := marshaler.MarshalReport(ctx, tt.inputReport)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-
-func testsBOM() *core.BOM {
-	testSBOM := core.NewBOM()
-	testSBOM.AddComponent(&core.Component{
-		Root: true,
-		Type: core.TypeApplication,
-		Name: "jackson-databind-2.13.4.1.jar",
-		PkgID: core.PkgID{
-			BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8",
-		},
-		Properties: []core.Property{
-			{
-				Name:  "SchemaVersion",
-				Value: "2",
-			},
-		},
-	})
-	return testSBOM
 }

@@ -173,7 +173,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "child-project",
 										Version:   "1.0",
 									},
-									BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0",
+									BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 								},
 								Version: "1.0",
 								Layer: ftypes.Layer{
@@ -198,7 +198,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "bootstrap",
 										Version:   "5.0.2",
 									},
-									BOMRef: "pkg:npm/%40example/bootstrap@5.0.2",
+									BOMRef: "pkg:npm/@example/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
@@ -416,7 +416,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 											},
 										},
 									},
-									BOMRef: "pkg:deb/ubuntu/libcrypt1@4.4.27-1?distro=ubuntu-22.04&epoch=1",
+									BOMRef: "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1&distro=ubuntu-22.04",
 								},
 								DependsOn: []string{
 									"libc6@2.35-0ubuntu3.1",
@@ -658,7 +658,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "spring-web",
 										Version:   "5.3.22",
 									},
-									BOMRef: "pkg:maven/org.springframework/spring-web@5.3.22",
+									BOMRef: "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
 								},
 								FilePath: "spring-web-5.3.22.jar",
 							},

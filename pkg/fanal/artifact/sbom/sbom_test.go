@@ -30,7 +30,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:3de8fe6730ed2f43d18ee0189ed2d87fd99388f93f75a8dd6beb3dd35ce79cd1",
+					BlobID: "sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -152,7 +152,8 @@ func TestArtifact_Inspect(t *testing.T) {
 												Name:      "child-project",
 												Version:   "1.0",
 											},
-											BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0",
+											// Keep the original value
+											BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										},
 									},
 								},
@@ -176,7 +177,8 @@ func TestArtifact_Inspect(t *testing.T) {
 												Name:    "bootstrap",
 												Version: "5.0.2",
 											},
-											BOMRef: "pkg:npm/bootstrap@5.0.2",
+											// Keep the original value
+											BOMRef: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 										},
 									},
 								},
@@ -189,9 +191,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:3de8fe6730ed2f43d18ee0189ed2d87fd99388f93f75a8dd6beb3dd35ce79cd1",
+				ID:   "sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 				BlobIDs: []string{
-					"sha256:3de8fe6730ed2f43d18ee0189ed2d87fd99388f93f75a8dd6beb3dd35ce79cd1",
+					"sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 				},
 			},
 		},
@@ -200,7 +202,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:3de8fe6730ed2f43d18ee0189ed2d87fd99388f93f75a8dd6beb3dd35ce79cd1",
+					BlobID: "sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -318,7 +320,8 @@ func TestArtifact_Inspect(t *testing.T) {
 												Name:      "child-project",
 												Version:   "1.0",
 											},
-											BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0",
+											// Keep the original value
+											BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										},
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -341,7 +344,8 @@ func TestArtifact_Inspect(t *testing.T) {
 												Name:    "bootstrap",
 												Version: "5.0.2",
 											},
-											BOMRef: "pkg:npm/bootstrap@5.0.2",
+											// Keep the original value
+											BOMRef: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 										},
 										Licenses: []string{"MIT"},
 										Layer: types.Layer{
@@ -359,9 +363,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:3de8fe6730ed2f43d18ee0189ed2d87fd99388f93f75a8dd6beb3dd35ce79cd1",
+				ID:   "sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 				BlobIDs: []string{
-					"sha256:3de8fe6730ed2f43d18ee0189ed2d87fd99388f93f75a8dd6beb3dd35ce79cd1",
+					"sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 				},
 			},
 		},

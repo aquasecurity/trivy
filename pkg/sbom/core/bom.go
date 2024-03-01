@@ -271,6 +271,9 @@ func (b *BOM) NumComponents() int {
 // When multiple lock files have the same dependency with the same name and version, PURL in the BOM can conflict.
 // In that case, PURL cannot be used as a unique identifier, and UUIDv4 be used for BOMRef.
 func (b *BOM) bomRef(c *Component) string {
+	if c.PkgID.BOMRef != "" {
+		return c.PkgID.BOMRef
+	}
 	// Return the UUID of the component if the PURL is not present.
 	if c.PkgID.PURL == nil {
 		return c.id.String()
