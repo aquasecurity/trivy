@@ -86,7 +86,7 @@ require (
 	github.com/package-url/packageurl-go v0.1.2
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22
 	github.com/samber/lo v1.39.0
-	github.com/saracen/walker v0.1.3
+	github.com/saracen/walker v0.1.4
 	github.com/secure-systems-lab/go-securesystemslib v0.8.0
 	github.com/sigstore/rekor v1.2.2
 	github.com/sirupsen/logrus v1.9.3
