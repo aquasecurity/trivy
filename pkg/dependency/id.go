@@ -1,8 +1,9 @@
 package dependency
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"strings"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 // ID returns a unique ID for the given library.

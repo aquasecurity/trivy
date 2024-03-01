@@ -4,11 +4,11 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"github.com/samber/lo"
 	"os"
 	"path/filepath"
 
 	"github.com/opencontainers/go-digest"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"

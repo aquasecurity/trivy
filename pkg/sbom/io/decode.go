@@ -2,19 +2,20 @@ package io
 
 import (
 	"errors"
-	"fmt"
+	"sort"
+	"strconv"
+
+	"github.com/package-url/packageurl-go"
+	"go.uber.org/zap"
+	"golang.org/x/exp/maps"
+	"golang.org/x/xerrors"
+
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
-	"github.com/package-url/packageurl-go"
-	"go.uber.org/zap"
-	"golang.org/x/exp/maps"
-	"golang.org/x/xerrors"
-	"sort"
-	"strconv"
 )
 
 var (
@@ -33,8 +34,8 @@ type Decoder struct {
 func NewDecoder(bom *core.BOM) *Decoder {
 	return &Decoder{
 		bom:  bom,
-		pkgs: map[uuid.UUID]*ftypes.Package{},
-		apps: map[uuid.UUID]*ftypes.Application{},
+		pkgs: make(map[uuid.UUID]*ftypes.Package),
+		apps: make(map[uuid.UUID]*ftypes.Application),
 	}
 }
 
@@ -162,8 +163,7 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 		FilePath: c.Name,
 	}
 	for _, prop := range c.Properties {
-		switch prop.Name {
-		case core.PropertyType:
+		if prop.Name == core.PropertyType {
 			app.Type = ftypes.LangType(prop.Value)
 		}
 	}
@@ -184,6 +184,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 			zap.String("name", c.Name), zap.String("version", c.Version), zap.String("type", p.Type))
 		return nil, ErrUnsupportedType
 	}
+	pkg.Name = m.pkgName(pkg, c)
 
 	var err error
 	for _, prop := range c.Properties {
@@ -225,26 +226,23 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 	return pkg, nil
 }
 
-// pkgName returns the package name
-func (m *Decoder) pkgName(c *core.Component) string {
+// pkgName returns the package name.
+// PURL loses case-sensitivity (e.g. Go, Npm, PyPI), so we have to use an original package name.
+func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
 	p := c.PkgID.PURL
-	if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeNPM {
-		// Maven uses `group` field for `GroupID`
-		// npm uses `group` field for `Scope`
-		if c.Group != "" {
-			return fmt.Sprintf("%s%s%s", c.Group, m.pkgNameSeparator(p), c.Name)
+
+	// A name from PURL takes precedence for CocoaPods since it has subpath.
+	if c.PkgID.PURL.Type == packageurl.TypeCocoapods {
+		return pkg.Name
+	}
+
+	if c.Group != "" {
+		if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
+			return c.Group + ":" + c.Name
 		}
+		return c.Group + "/" + c.Name
 	}
-
-	// PURL loses case-sensitivity (e.g. Go, Npm, PyPI), so we have to use an original package name.
 	return c.Name
-}
-
-func (m *Decoder) pkgNameSeparator(p *packageurl.PackageURL) string {
-	if p.Type == packageurl.TypeMaven {
-		return ":"
-	}
-	return "/"
 }
 
 func (m *Decoder) fillSrcPkg(pkg *ftypes.Package) {

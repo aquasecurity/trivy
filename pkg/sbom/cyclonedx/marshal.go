@@ -3,7 +3,16 @@ package cyclonedx
 import (
 	"context"
 	"fmt"
+	"slices"
+	"sort"
+	"strconv"
+	"strings"
+
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
+
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
@@ -11,16 +20,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
-	"github.com/aquasecurity/trivy/pkg/uuid"
-	"github.com/package-url/packageurl-go"
-	"github.com/samber/lo"
-	"golang.org/x/xerrors"
-	"slices"
-	"sort"
-	"strconv"
-	"strings"
-
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 const (
@@ -119,47 +120,11 @@ func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component,
 	}
 	m.componentIDs[component.ID()] = cdxComponent.BOMRef
 
-	//for _, v := range component.Vulnerabilities {
-	//	// If the same vulnerability affects multiple packages, those packages will be aggregated into one vulnerability.
-	//	//   Vulnerability component (CVE-2020-26247)
-	//	//     -> Library component (nokogiri /srv/app1/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
-	//	//     -> Library component (nokogiri /srv/app2/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
-	//	if vuln, ok := vulns[v.VulnerabilityID]; ok {
-	//		*vuln.Affects = append(*vuln.Affects, m.affects(bomRef, v.InstalledVersion))
-	//		if v.FixedVersion != "" {
-	//			// new recommendation
-	//			rec := fmt.Sprintf("Upgrade %s to version %s", v.PkgName, v.FixedVersion)
-	//			// previous recommendations
-	//			recs := strings.Split(vuln.Recommendation, "; ")
-	//			if !slices.Contains(recs, rec) {
-	//				recs = append(recs, rec)
-	//				slices.Sort(recs)
-	//				vuln.Recommendation = strings.Join(recs, "; ")
-	//			}
-	//		}
-	//	} else {
-	//		vulns[v.VulnerabilityID] = m.marshalVulnerability(cdxComponent.BOMRef, v)
-	//	}
-	//}
-	//
-	//dependencies := make([]string, 0) // nolint:gocritic // Components that do not have their own dependencies must be declared as empty elements
-	//for _, child := range component.Components {
-	//	childComponent, err := m.MarshalComponent(child, components, deps, vulns)
-	//	if err != nil {
-	//		return nil, xerrors.Errorf("failed to marshal component: %w", err)
-	//	}
-	//	dependencies = append(dependencies, childComponent.BOMRef)
-	//}
-	//sort.Strings(dependencies)
-	//
-	//deps[cdxComponent.BOMRef] = &dependencies
-
 	return cdxComponent, nil
 }
 
 func (m *Marshaler) marshalComponents() (*[]cdx.Component, error) {
-	// CycloneDX requires an empty slice rather than a nil slice
-	cdxComponents := make([]cdx.Component, 0)
+	var cdxComponents []cdx.Component
 	for _, component := range m.bom.Components() {
 		if component.Root {
 			continue
@@ -169,6 +134,11 @@ func (m *Marshaler) marshalComponents() (*[]cdx.Component, error) {
 			return nil, xerrors.Errorf("failed to marshal component: %w", err)
 		}
 		cdxComponents = append(cdxComponents, *c)
+	}
+
+	// CycloneDX requires an empty slice rather than a nil slice
+	if len(cdxComponents) == 0 {
+		return &[]cdx.Component{}, nil
 	}
 
 	// Sort components by BOM-Ref

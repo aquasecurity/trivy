@@ -2,11 +2,11 @@ package vex
 
 import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

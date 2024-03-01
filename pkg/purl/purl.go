@@ -2,16 +2,16 @@ package purl
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/samber/lo"
 	"strconv"
 	"strings"
 
 	cn "github.com/google/go-containerregistry/pkg/name"
 	version "github.com/knqyf263/go-rpm-version"
 	packageurl "github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -46,7 +46,7 @@ const (
 
 type PackageURL packageurl.PackageURL
 
-//type PackageURL struct {
+// type PackageURL struct {
 //	packageurl.PackageURL
 //	FilePath string
 //}
@@ -118,35 +118,6 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 
 	return (*PackageURL)(packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, subpath)), nil
 }
-
-// WithPath wraps packageurl.PackageURL with the given file path
-//func WithPath(purl *packageurl.PackageURL, filePath string) *PackageURL {
-//	if purl == nil {
-//		return nil
-//	}
-//	return &PackageURL{
-//		PackageURL: *purl,
-//		FilePath:   filePath,
-//	}
-//}
-
-//func (p *PackageURL) BOMRef() string {
-//	// 'bom-ref' must be unique within BOM, but PURLs may conflict
-//	// when the same packages are installed in an artifact.
-//	// In that case, we prefer to make PURLs unique by adding file paths,
-//	// rather than using UUIDs, even if it is not PURL technically.
-//	// ref. https://cyclonedx.org/use-cases/#dependency-graph
-//	purl := p.PackageURL // so that it will not override the qualifiers below
-//	if p.FilePath != "" {
-//		purl.Qualifiers = append(purl.Qualifiers,
-//			packageurl.Qualifier{
-//				Key:   "file_path",
-//				Value: p.FilePath,
-//			},
-//		)
-//	}
-//	return purl.String()
-//}
 
 func (p *PackageURL) Unwrap() *packageurl.PackageURL {
 	if p == nil {

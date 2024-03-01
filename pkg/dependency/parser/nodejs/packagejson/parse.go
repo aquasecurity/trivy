@@ -2,13 +2,13 @@ package packagejson
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/dependency"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"io"
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type packageJSON struct {

@@ -2,15 +2,17 @@ package io
 
 import (
 	"fmt"
+	"strconv"
+
+	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/package-url/packageurl-go"
-	"github.com/samber/lo"
-	"golang.org/x/xerrors"
-	"strconv"
 )
 
 type Encoder struct {
@@ -164,7 +166,7 @@ func (m *Encoder) encodePackages(parent *core.Component, result types.Result) er
 	parents := ftypes.Packages(result.Packages).ParentDeps()
 
 	// Group vulnerabilities by package ID
-	vulns := map[string][]core.Vulnerability{}
+	vulns := make(map[string][]core.Vulnerability)
 	for _, vuln := range result.Vulnerabilities {
 		v := m.vulnerability(vuln)
 		vulns[v.PkgID] = append(vulns[v.PkgID], v)

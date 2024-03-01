@@ -2,7 +2,6 @@ package types
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"strings"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 type OS struct {

@@ -1,12 +1,12 @@
 package types
 
 import (
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 // Report represents a scan result

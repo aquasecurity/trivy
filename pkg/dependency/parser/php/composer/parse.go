@@ -1,8 +1,6 @@
 package composer
 
 import (
-	"github.com/aquasecurity/trivy/pkg/dependency"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"io"
 	"sort"
 	"strings"
@@ -11,7 +9,9 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )

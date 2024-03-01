@@ -2,12 +2,12 @@
 package binary
 
 import (
-	"github.com/aquasecurity/trivy/pkg/dependency"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	rustaudit "github.com/microsoft/go-rustaudit"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 

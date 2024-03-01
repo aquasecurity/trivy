@@ -2,12 +2,13 @@ package report
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-	"golang.org/x/xerrors"
 	"io"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 )
 
 // CycloneDXWriter implements types.Writer

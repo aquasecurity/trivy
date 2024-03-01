@@ -2,7 +2,6 @@ package vex
 
 import (
 	"encoding/json"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"io"
 	"os"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"

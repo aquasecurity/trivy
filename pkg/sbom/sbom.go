@@ -4,9 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"encoding/xml"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"io"
 	"strings"
 
@@ -14,8 +11,11 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Format string

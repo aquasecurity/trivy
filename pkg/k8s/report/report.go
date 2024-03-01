@@ -2,7 +2,6 @@ package report
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"io"
 	"strings"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

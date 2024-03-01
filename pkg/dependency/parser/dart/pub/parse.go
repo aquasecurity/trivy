@@ -1,13 +1,12 @@
 package pub
 
 import (
-	"github.com/aquasecurity/trivy/pkg/dependency"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 

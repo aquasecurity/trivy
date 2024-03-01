@@ -2,7 +2,6 @@ package pub
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/dependency"
 	"io"
 	"io/fs"
 	"os"
@@ -15,6 +14,7 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/dart/pub"
 	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"

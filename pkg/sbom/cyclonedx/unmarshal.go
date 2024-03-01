@@ -3,18 +3,18 @@ package cyclonedx
 import (
 	"bytes"
 	"errors"
-	"github.com/aquasecurity/trivy/pkg/digest"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	"github.com/package-url/packageurl-go"
-	"go.uber.org/zap"
 	"io"
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
+	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 var (
@@ -23,9 +23,6 @@ var (
 
 type BOM struct {
 	*core.BOM
-
-	dependencies map[string][]string
-	components   map[string]cdx.Component
 }
 
 func DecodeJSON(r io.Reader) (*cdx.BOM, error) {

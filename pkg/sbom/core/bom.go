@@ -1,11 +1,13 @@
 package core
 
 import (
+	"sort"
+
+	"github.com/package-url/packageurl-go"
+
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/uuid"
-	"github.com/package-url/packageurl-go"
-	"sort"
 )
 
 const (
@@ -128,12 +130,12 @@ type Component struct {
 	// Components is a list of sub-components
 	// CycloneDX: dependencies
 	// SPDX: relationships
-	//Components []*Component
+	// Components []*Component
 
 	// Vulnerabilities is a list of vulnerabilities that affect the component
 	// CycloneDX: vulnerabilities
 	// SPDX: N/A
-	//Vulnerabilities []types.DetectedVulnerability
+	// Vulnerabilities []types.DetectedVulnerability
 }
 
 func (c *Component) ID() uuid.UUID {
@@ -180,10 +182,10 @@ type Vulnerability struct {
 
 func NewBOM() *BOM {
 	return &BOM{
-		components:      map[uuid.UUID]*Component{},
-		relationships:   map[uuid.UUID][]Relationship{},
-		vulnerabilities: map[uuid.UUID][]Vulnerability{},
-		purls:           map[string][]uuid.UUID{},
+		components:      make(map[uuid.UUID]*Component),
+		relationships:   make(map[uuid.UUID][]Relationship),
+		vulnerabilities: make(map[uuid.UUID][]Vulnerability),
+		purls:           make(map[string][]uuid.UUID),
 	}
 }
 

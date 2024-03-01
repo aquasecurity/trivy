@@ -1,8 +1,6 @@
 package poetry
 
 import (
-	"github.com/aquasecurity/trivy/pkg/dependency"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"sort"
 	"strings"
 
@@ -10,7 +8,9 @@ import (
 	"golang.org/x/xerrors"
 
 	version "github.com/aquasecurity/go-pep440-version"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -155,6 +155,6 @@ func normalizePkgName(name string) string {
 	return name
 }
 
-func packageID(name, version string) string {
-	return dependency.ID(ftypes.Poetry, name, version)
+func packageID(name, ver string) string {
+	return dependency.ID(ftypes.Poetry, name, ver)
 }
