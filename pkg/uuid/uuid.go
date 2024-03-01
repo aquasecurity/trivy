@@ -1,3 +1,5 @@
+//go:build !tinygo.wasm
+
 package uuid
 
 import (
@@ -28,6 +30,6 @@ func SetFakeUUID(t *testing.T, format string) {
 	})
 }
 
-func New() uuid.UUID {
+func New() UUID {
 	return newUUID()
 }
