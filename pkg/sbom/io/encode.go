@@ -8,7 +8,6 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -308,6 +307,11 @@ func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.C
 		},
 	}
 
+	file := core.File{
+		Path: pkg.FilePath,
+		Hash: pkg.Digest,
+	}
+
 	return &core.Component{
 		Type:    core.TypeLibrary,
 		Name:    name,
@@ -318,7 +322,7 @@ func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.C
 		},
 		Supplier:   pkg.Maintainer,
 		Licenses:   pkg.Licenses,
-		Hashes:     lo.Ternary(pkg.Digest == "", nil, []digest.Digest{pkg.Digest}),
+		Files:      []core.File{file},
 		Properties: filterProperties(properties),
 	}
 }

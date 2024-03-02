@@ -215,8 +215,8 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 
 	pkg.Identifier.BOMRef = c.PkgID.BOMRef
 	pkg.Licenses = c.Licenses
-	if len(c.Hashes) > 0 {
-		pkg.Digest = c.Hashes[0]
+	if len(c.Files) > 0 {
+		pkg.Digest = c.Files[0].Hash
 	}
 
 	if p.Class() == types.ClassOSPkg {

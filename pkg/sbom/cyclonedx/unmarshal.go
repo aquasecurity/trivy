@@ -143,7 +143,9 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 		Group:    c.Group,
 		Version:  c.Version,
 		Licenses: b.unmarshalLicenses(c.Licenses),
-		Hashes:   b.unmarshalHashes(c.Hashes),
+		Files: lo.Map(b.unmarshalHashes(c.Hashes), func(d digest.Digest, _ int) core.File {
+			return core.File{Hash: d} // CycloneDX doesn't have a file path for the hash
+		}),
 		PkgID: core.PkgID{
 			PURL:   &purl,
 			BOMRef: c.BOMRef,

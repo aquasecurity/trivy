@@ -114,7 +114,7 @@ func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component,
 		Version:    component.Version,
 		PackageURL: m.PackageURL(component.PkgID.PURL),
 		Supplier:   m.Supplier(component.Supplier),
-		Hashes:     m.Hashes(component.Hashes),
+		Hashes:     m.Hashes(component.Files),
 		Licenses:   m.Licenses(component.Licenses),
 		Properties: m.Properties(component.Properties),
 	}
@@ -248,14 +248,18 @@ func (*Marshaler) Supplier(supplier string) *cdx.OrganizationalEntity {
 	}
 }
 
-func (*Marshaler) Hashes(hashes []digest.Digest) *[]cdx.Hash {
+func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
+	hashes := lo.FilterMap(files, func(f core.File, index int) (digest.Digest, bool) {
+		return f.Hash, f.Hash != ""
+	})
 	if len(hashes) == 0 {
 		return nil
 	}
+
 	var cdxHashes []cdx.Hash
-	for _, hash := range hashes {
+	for _, h := range hashes {
 		var alg cdx.HashAlgorithm
-		switch hash.Algorithm() {
+		switch h.Algorithm() {
 		case digest.SHA1:
 			alg = cdx.HashAlgoSHA1
 		case digest.SHA256:
@@ -263,13 +267,13 @@ func (*Marshaler) Hashes(hashes []digest.Digest) *[]cdx.Hash {
 		case digest.MD5:
 			alg = cdx.HashAlgoMD5
 		default:
-			log.Logger.Debugf("Unable to convert %q algorithm to CycloneDX format", hash.Algorithm())
+			log.Logger.Debugf("Unable to convert %q algorithm to CycloneDX format", h.Algorithm())
 			continue
 		}
 
 		cdxHashes = append(cdxHashes, cdx.Hash{
 			Algorithm: alg,
-			Value:     hash.Encoded(),
+			Value:     h.Encoded(),
 		})
 	}
 	return &cdxHashes

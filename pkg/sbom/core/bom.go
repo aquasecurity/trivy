@@ -103,11 +103,6 @@ type Component struct {
 	// SPDX: package.licenseConcluded, package.licenseDeclared
 	Licenses []string
 
-	// Hashes is a list of hashes that uniquely identify the component
-	// CycloneDX: component.hashes
-	// SPDX: package.files[].checksum
-	Hashes []digest.Digest
-
 	// PkgID has PURL and BOMRef for the component
 	// PURL:
 	//   CycloneDX: component.purl
@@ -122,24 +117,31 @@ type Component struct {
 	// SPDX: package.supplier
 	Supplier string
 
+	// Files is a list of files that are part of the component.
+	// CycloneDX: component.properties
+	// SPDX: files
+	Files []File
+
 	// Properties is a list of key-value pairs that provide additional information about the component
 	// CycloneDX: component.properties
 	// SPDX: package.attributionTexts
 	Properties Properties `hash:"set"`
-
-	// Components is a list of sub-components
-	// CycloneDX: dependencies
-	// SPDX: relationships
-	// Components []*Component
-
-	// Vulnerabilities is a list of vulnerabilities that affect the component
-	// CycloneDX: vulnerabilities
-	// SPDX: N/A
-	// Vulnerabilities []types.DetectedVulnerability
 }
 
 func (c *Component) ID() uuid.UUID {
 	return c.id
+}
+
+type File struct {
+	// Path is a path of the file.
+	// CycloneDX: N/A
+	// SPDX: package.files[].fileName
+	Path string
+
+	// Hash is a hash that uniquely identify the component.
+	// CycloneDX: component.hashes
+	// SPDX: package.files[].checksum
+	Hash digest.Digest
 }
 
 type Property struct {
