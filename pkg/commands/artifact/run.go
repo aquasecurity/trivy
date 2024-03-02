@@ -670,6 +670,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 				DockerOptions: ftypes.DockerOptions{
 					Host: opts.DockerHost,
 				},
+				PodmanOptions: ftypes.PodmanOptions{
+					Host: opts.PodmanHost,
+				},
 				ImageSources: opts.ImageSources,
 			},
 
