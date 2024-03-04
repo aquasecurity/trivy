@@ -38,7 +38,7 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.6.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.4
-	github.com/containerd/containerd v1.7.12
+	github.com/containerd/containerd v1.7.13
 	github.com/csaf-poc/csaf_distribution/v3 v3.0.0
 	github.com/docker/docker v25.0.3+incompatible
 	github.com/docker/go-connections v0.5.0
