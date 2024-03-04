@@ -104,7 +104,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xlab/treeprint v1.2.0
 	go.etcd.io/bbolt v1.3.8
-	go.uber.org/zap v1.26.0
+	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
 	golang.org/x/mod v0.15.0
 	golang.org/x/net v0.20.0
@@ -383,7 +383,6 @@ require (
 	go.opentelemetry.io/otel/sdk v1.23.1 // indirect
 	go.opentelemetry.io/otel/trace v1.23.1 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
-	go.uber.org/goleak v1.3.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/oauth2 v0.15.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
