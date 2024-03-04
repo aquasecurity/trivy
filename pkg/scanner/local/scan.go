@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/google/wire"
 	"github.com/samber/lo"
@@ -424,8 +425,15 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 	if include {
 		return
 	}
+
+	onceInfo := sync.OnceFunc(func() {
+		log.Logger.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
+	})
 	for i := range apps {
 		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
+			if lib.Dev {
+				onceInfo()
+			}
 			return !lib.Dev
 		})
 	}
