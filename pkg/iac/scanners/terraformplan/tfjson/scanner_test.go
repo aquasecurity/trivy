@@ -1,4 +1,4 @@
-package terraformplan
+package tfjson
 
 import (
 	"bytes"

@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	analyzerType = analyzer.TypeTerraformPlan
+	analyzerType = analyzer.TypeTerraformPlanJSON
 	version      = 1
 )
 
@@ -21,24 +21,24 @@ var requiredExts = []string{
 }
 
 func init() {
-	analyzer.RegisterPostAnalyzer(analyzerType, newTerraformPlanConfigAnalyzer)
+	analyzer.RegisterPostAnalyzer(analyzerType, newTerraformPlanJSONConfigAnalyzer)
 }
 
-// terraformPlanConfigAnalyzer is an analyzer for detecting misconfigurations in Terraform files.
+// terraformPlanConfigAnalyzer is an analyzer for detecting misconfigurations in Terraform Plan files in JSON format.
 // It embeds config.Analyzer so it can implement analyzer.PostAnalyzer.
 type terraformPlanConfigAnalyzer struct {
 	*config.Analyzer
 }
 
-func newTerraformPlanConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewTerraformPlanScanner, opts)
+func newTerraformPlanJSONConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewTerraformPlanJSONScanner, opts)
 	if err != nil {
 		return nil, err
 	}
 	return &terraformPlanConfigAnalyzer{Analyzer: a}, nil
 }
 
-// Required overrides config.Analyzer.Required() and checks if the given file is a Terraform file.
+// Required overrides config.Analyzer.Required() and checks if the given file is a Terraform Plan file in JSON format.
 func (*terraformPlanConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return slices.Contains(requiredExts, filepath.Ext(filePath))
 }

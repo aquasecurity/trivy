@@ -109,7 +109,7 @@ func Test_Detection(t *testing.T) {
 				"configuration": {}
 			}`),
 			expected: []FileType{
-				FileTypeTerraformPlan,
+				FileTypeTerraformPlanJSON,
 				FileTypeJSON,
 			},
 		},
