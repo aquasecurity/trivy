@@ -381,7 +381,7 @@ func (p *parser) parseDependencies(deps []pomDependency, props map[string]string
 		// Resolve dependencies
 		d = d.Resolve(props, depManagement, rootDepManagement)
 
-		if (d.Scope != "" && d.Scope != "compile") || d.Optional {
+		if (d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime") || d.Optional {
 			continue
 		}
 
