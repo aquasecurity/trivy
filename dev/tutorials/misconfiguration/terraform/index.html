@@ -3816,16 +3816,7 @@ In this case, the folder only containes Terraform configuration files. However, 
 </code></pre></div>
 <p>The <code>trivy config</code> command is a sub-command of the <code>trivy fs</code> command. You can learn more about this command in the <a href="https://aquasecurity.github.io/trivy/latest/docs/target/filesystem/">documentation.</a> </p>
 <h2 id="scanning-terraform-plan-files">Scanning Terraform Plan files</h2>
-<p>Instead of scanning your different Terraform resources individually, you could also scan your terraform plan output before it is deployed for misconfiguration. This will give you insights into any misconfiguration of your resources as they would become deployed. <a href="https://aquasecurity.github.io/trivy/latest/docs/scanner/misconfiguration/custom/examples/#terraform-plan">Here</a> is the link to the documentation.</p>
-<p>First, create a terraform plan and save it to a file:
-<div class="highlight"><pre><span></span><code>terraform plan --out tfplan.binary
-</code></pre></div></p>
-<p>Next, convert the file into json format:
-<div class="highlight"><pre><span></span><code>terraform show -json tfplan.binary &gt; tfplan.json
-</code></pre></div></p>
-<p>Lastly, scan the file with the <code>trivy config</code> command:
-<div class="highlight"><pre><span></span><code>trivy config ./tfplan.json
-</code></pre></div></p>
+<p>Instead of scanning your different Terraform resources individually, you could also scan your Terraform Plan file before it is deployed for misconfiguration. This will give you insights into any misconfiguration of your resources as they would become deployed. <a href="https://aquasecurity.github.io/trivy/latest/docs/coverage/iac/terraform/#terraform">Here</a> is the link to the documentation.</p>
 <p>Note that you need to be able to create a terraform init and plan without any errors. </p>
 <h2 id="using-trivy-in-your-cicd-pipeline">Using Trivy in your CI/CD pipeline</h2>
 <p>Similar to tfsec, Trivy can be used either on local developer machines or integrated into your CI/CD pipeline. There are several steps available for different pipelines, including GitHub Actions, Circle CI, GitLab, Travis and more in the tutorials section of the documentation: <a href="https://aquasecurity.github.io/trivy/latest/tutorials/integrations/">https://aquasecurity.github.io/trivy/latest/tutorials/integrations/</a> </p>

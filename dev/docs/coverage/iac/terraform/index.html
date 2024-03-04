@@ -3682,16 +3682,23 @@ You're not viewing the latest version.
 <td align="center">✓</td>
 </tr>
 <tr>
+<td align="center">Plan Snapshot</td>
+<td align="center">✓</td>
+</tr>
+<tr>
 <td align="center">Plan JSON</td>
 <td align="center">✓</td>
 </tr>
 </tbody>
 </table>
-<p>Trivy can scan the results of <code>terraform plan</code>.
-You can scan by passing the file generated as shown below to Trivy:</p>
-<div class="highlight"><pre><span></span><code>$ terraform plan --out tfplan.binary
-$ terraform show -json tfplan.binary &gt; tfplan.json
-</code></pre></div>
+<p>Trivy can scan Terraform Plan files (snapshots) or their JSON representations. To create a Terraform Plan and scan it, run the following command:
+<div class="highlight"><pre><span></span><code>terraform plan --out tfplan
+trivy conf tfplan
+</code></pre></div></p>
+<p>To scan a Terraform Plan representation in JSON format, run the following command:
+<div class="highlight"><pre><span></span><code>terraform show -json tfplan &gt; tfplan.json
+trivy conf tfplan.json
+</code></pre></div></p>
 <h2 id="misconfiguration">Misconfiguration</h2>
 <p>Trivy recursively searches directories and scans all found Terraform files.
 It also evaluates variables, imports, and other elements within Terraform files to detect misconfigurations.</p>
