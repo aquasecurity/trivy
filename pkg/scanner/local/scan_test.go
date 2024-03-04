@@ -149,7 +149,7 @@ func TestScanner_Scan(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path",
+			name: "happy path license scanner",
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -174,6 +174,7 @@ func TestScanner_Scan(t *testing.T) {
 								Version:    "1.2.3",
 								SrcName:    "musl",
 								SrcVersion: "1.2.3",
+								Licenses:   []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
 								},
@@ -181,6 +182,7 @@ func TestScanner_Scan(t *testing.T) {
 						},
 						Applications: []ftypes.Application{
 							{
+								Type:     ftypes.GoModule,
 								FilePath: "/app/go.mod",
 								Libraries: []ftypes.Package{
 									{
@@ -195,6 +197,7 @@ func TestScanner_Scan(t *testing.T) {
 								},
 							},
 							{
+								Type:     ftypes.PythonPkg,
 								FilePath: "",
 								Libraries: []ftypes.Package{
 									{
@@ -216,6 +219,15 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "OS Packages",
 					Class:  types.ClassLicense,
+					Licenses: []types.DetectedLicense{
+						{
+							Severity:   "UNKNOWN",
+							Category:   "unknown",
+							PkgName:    "musl",
+							Name:       "MIT",
+							Confidence: 1,
+						},
+					},
 				},
 				{
 					Target: "/app/go.mod",
@@ -233,7 +245,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 				{
-					Target: "",
+					Target: "Python",
 					Class:  types.ClassLicense,
 					Licenses: []types.DetectedLicense{
 						{
