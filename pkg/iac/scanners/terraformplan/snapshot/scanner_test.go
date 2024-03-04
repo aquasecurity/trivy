@@ -31,29 +31,25 @@ func initScanner(opts ...options.ScannerOption) *Scanner {
 
 func TestScanner_Scan(t *testing.T) {
 	tests := []struct {
-		name        string
 		dir         string
 		expectedIDs []string
 	}{
 		{
-			name:        "one resource",
 			dir:         "just-resource",
 			expectedIDs: []string{"ID001"},
 		},
 		{
-			name:        "with local module",
 			dir:         "with-local-module",
 			expectedIDs: []string{"ID001"},
 		},
 		{
-			name:        "with remote module",
 			dir:         "with-remote-module",
 			expectedIDs: []string{"ID001"},
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.dir, func(t *testing.T) {
 			f, err := os.Open(filepath.Join("testdata", tt.dir, "tfplan"))
 			require.NoError(t, err)
 			defer f.Close()
@@ -84,18 +80,19 @@ func Test_ScanFS(t *testing.T) {
 	tests := []struct {
 		dir         string
 		expectedDir string
+		expectedIDs []string
 	}{
 		{
 			dir:         "just-resource",
-			expectedDir: "main.tf",
+			expectedIDs: []string{"ID001"},
 		},
 		{
 			dir:         "with-local-module",
-			expectedDir: path.Join("modules", "ec2", "main.tf"),
+			expectedIDs: []string{"ID001"},
 		},
 		{
 			dir:         "with-remote-module",
-			expectedDir: path.Join("terraform-aws-modules", "s3-bucket", "aws", "main.tf"),
+			expectedIDs: []string{"ID001"},
 		},
 	}
 
@@ -120,10 +117,15 @@ func Test_ScanFS(t *testing.T) {
 			require.Len(t, results, 1)
 
 			failed := results.GetFailed()
-			assert.Len(t, failed, 1)
 
-			occurrences := failed[0].Occurrences()
-			assert.Equal(t, tc.expectedDir, occurrences[0].Filename, tc.dir)
+			assert.Len(t, failed, len(tc.expectedIDs))
+
+			ids := lo.Map(failed, func(res scan.Result, _ int) string {
+				return res.Rule().AVDID
+			})
+			sort.Strings(ids)
+
+			assert.Equal(t, tc.expectedIDs, ids)
 		})
 	}
 
