@@ -4361,7 +4361,7 @@ More info about the helper functions are in the library <a href="https://github.
 <p>license name is used as id for <code>.trivyignore.yaml</code> files.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>This doesn't work for package licenses. The <code>path</code> field can only be used for license files (licenses obtained using the <a href="../../scanner/license/#full-scanning">--license-full flag</a>).&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>This doesn't work for os package licenses (e.g. apk, dpkg, rpm). For projects which manage dependencies through a dependency file (e.g. go.mod, yarn.lock) <code>path</code> should point to that particular file.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
