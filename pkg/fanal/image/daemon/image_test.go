@@ -115,6 +115,52 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
+
+	ref, err := name.ParseReference("alpine:3.11")
+	require.NoError(t, err)
+
+	eo := engine.Option{
+		APIVersion: opt.APIVersion,
+		ImagePaths: map[string]string{
+			"index.docker.io/library/alpine:3.11": "../../test/testdata/alpine-311.tar.gz",
+		},
+	}
+
+	var podmanSocket string
+
+	if runtime.GOOS != "windows" {
+		runtimeDir, err := os.MkdirTemp("", "daemon")
+		require.NoError(t, err)
+
+		dir := filepath.Join(runtimeDir, "image")
+		err = os.MkdirAll(dir, os.ModePerm)
+		require.NoError(t, err)
+
+		customDockerHost := filepath.Join(dir, "image-test-podman-socket.sock")
+		eo.UnixDomainSocket = customDockerHost
+		podmanSocket = customDockerHost
+	}
+
+	te := engine.NewDockerEngine(eo)
+	defer te.Close()
+
+	if runtime.GOOS == "windows" {
+		podmanSocket = te.Listener.Addr().Network() + "://" + te.Listener.Addr().String()
+	}
+
+	img, cleanup, err := PodmanImage(ref.Name(), podmanSocket)
+	require.NoError(t, err)
+	defer cleanup()
+
+	conf, err := img.ConfigName()
+	assert.Equal(t, v1.Hash{
+		Algorithm: "sha256",
+		Hex:       "a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+	}, conf)
+	assert.Nil(t, err)
+}
+
 func Test_image_ConfigFile(t *testing.T) {
 	tests := []struct {
 		name      string
