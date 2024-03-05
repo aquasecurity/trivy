@@ -117,6 +117,10 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 
 func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
 
+	if runtime.GOOS == "windows" {
+		t.Skip("podman.sock is not available for Windows CI")
+	}
+
 	ref, err := name.ParseReference("alpine:3.11")
 	require.NoError(t, err)
 
@@ -144,10 +148,6 @@ func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
 
 	te := engine.NewDockerEngine(eo)
 	defer te.Close()
-
-	if runtime.GOOS == "windows" {
-		t.Skip("podman.sock is not available for Windows CI")
-	}
 
 	img, cleanup, err := PodmanImage(ref.Name(), podmanSocket)
 	require.NoError(t, err)
