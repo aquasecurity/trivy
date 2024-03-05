@@ -43,7 +43,7 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 		return Package{}, xerrors.Errorf("JSON decode error: %w", err)
 	}
 
-	if IsValidName(pkgJSON.Name) {
+	if !IsValidName(pkgJSON.Name) {
 		return Package{}, xerrors.Errorf("Name can only contain URL-friendly characters")
 	}
 
