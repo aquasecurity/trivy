@@ -146,7 +146,7 @@ func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
 	defer te.Close()
 
 	if runtime.GOOS == "windows" {
-		podmanSocket = te.Listener.Addr().Network() + "://" + te.Listener.Addr().String()
+		t.Skip("podman.sock is not available for Windows CI")
 	}
 
 	img, cleanup, err := PodmanImage(ref.Name(), podmanSocket)
