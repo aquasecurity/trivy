@@ -31,6 +31,8 @@ func newPodmanClient(host string) (podmanClient, error) {
 	socket := filepath.Join(sockDir, "podman", "podman.sock")
 	if host != "" {
 		socket = host
+	} else if s := os.Getenv("PODMAN_HOST"); s != "" {
+		socket = s
 	}
 
 	if _, err := os.Stat(socket); err != nil {
