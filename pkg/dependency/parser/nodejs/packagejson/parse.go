@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 )
 
-var nameRegexp = regexp.MustCompile(`(?m)^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
+var nameRegexp = regexp.MustCompile(`^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
 
 type packageJSON struct {
 	Name                 string            `json:"name"`
