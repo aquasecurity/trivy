@@ -17,14 +17,14 @@ type wrappedDocument struct {
 
 func ParsePolicyFromAttr(attr *terraform.Attribute, owner *terraform.Block, modules terraform.Modules) (*iam.Document, error) {
 
-	documents := findAllPolicies(modules, owner, attr)
-	if len(documents) > 0 {
-		return &iam.Document{
-			Parsed:   documents[0].Document,
-			Metadata: documents[0].Source.GetMetadata(),
-			IsOffset: true,
-		}, nil
-	}
+	// documents := findAllPolicies(modules, owner, attr)
+	// if len(documents) > 0 {
+	// 	return &iam.Document{
+	// 		Parsed:   documents[0].Document,
+	// 		Metadata: documents[0].Source.GetMetadata(),
+	// 		IsOffset: true,
+	// 	}, nil
+	// }
 
 	if attr.IsString() {
 
@@ -40,7 +40,9 @@ func ParsePolicyFromAttr(attr *terraform.Attribute, owner *terraform.Block, modu
 				IsOffset: false,
 				HasRefs:  len(attr.AllReferences()) > 0,
 			}, nil
-		} else if dataBlock.Type() == "data" && dataBlock.TypeLabel() == "aws_iam_policy_document" {
+		}
+
+		if dataBlock.Type() == "data" && dataBlock.TypeLabel() == "aws_iam_policy_document" {
 			if doc, err := ConvertTerraformDocument(modules, dataBlock); err == nil {
 				return &iam.Document{
 					Metadata: dataBlock.GetMetadata(),
@@ -210,6 +212,22 @@ func parseStatement(statementBlock *terraform.Block) iamgo.Statement {
 
 func findAllPolicies(modules terraform.Modules, parentBlock *terraform.Block, attr *terraform.Attribute) []wrappedDocument {
 	var documents []wrappedDocument
+
+	if attr.IsIterable() {
+		policyDocIDs := attr.AsStringValues().AsStrings()
+		// TODO: support raw json
+		policyDocs := modules.GetResourceByIDs(policyDocIDs...)
+		for _, policyDoc := range policyDocs {
+			document, err := ConvertTerraformDocument(modules, policyDoc)
+			if err != nil {
+				// TODO: logging
+				continue
+			}
+			documents = append(documents, *document)
+		}
+		return documents
+	}
+
 	for _, ref := range attr.AllReferences() {
 		for _, b := range modules.GetBlocks() {
 			if b.Type() != "data" || b.TypeLabel() != "aws_iam_policy_document" {
