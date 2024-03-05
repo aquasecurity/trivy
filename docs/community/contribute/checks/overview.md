@@ -50,7 +50,12 @@ deny[res] {
 
 ## Verify the provider and service exists
 
-Every check references a provider. The list of providers are found in the [trivy](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers) repository. 
+Every check for a cloud service references a cloud provider. The list of providers are found in the [trivy](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers) repository. 
+
+Before writing a new check for a cloud provider, you need to verify if the cloud provider your check targets is supported by Trivy. If it's not, you'll need to add support for it. Additionally, if the provider that you want to target exists, you need to check whether the service your policy will target is supported. As a reference you can take a look at the AWS provider [here](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/providers/aws/aws.go).
+
+???+ note
+    New Kubernetes and Dockerfile checks do not require any additional provider definitions. You can find an example of a Dockerfile check [here](https://github.com/aquasecurity/trivy-policies/blob/main/checks/docker/add_instead_of_copy.rego) and a Kubernetes check [here](https://github.com/aquasecurity/trivy-policies/blob/main/checks/kubernetes/general/CPU_not_limited.rego).
 
 Before writing a new check, you need to verify if the provider your check targets is supported by Trivy. If the provider that you want to target exists, you need to check whether the service your policy will target is supported. If the service is not support, please refer to the documentation on adding support for a new service in an existing provider.
 
