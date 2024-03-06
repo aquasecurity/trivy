@@ -78,6 +78,8 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 		opt(o)
 	}
 
+	o.dbRepository = fmt.Sprintf("%s:%d", o.dbRepository, db.SchemaVersion)
+
 	return &Client{
 		options:  o,
 		cacheDir: cacheDir,
@@ -188,8 +190,7 @@ func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, erro
 		return c.artifact, nil
 	}
 
-	repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
-	art, err := oci.NewArtifact(repo, c.quiet, opt)
+	art, err := oci.NewArtifact(c.dbRepository, c.quiet, opt)
 	if err != nil {
 		var terr *transport.Error
 		if errors.As(err, &terr) {
