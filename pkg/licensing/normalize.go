@@ -81,6 +81,14 @@ var mapping = map[string]string{
 	"PUBLIC DOMAIN": Unlicense,
 }
 
+// pythonLicenseExceptions contains licenses that we cannot separate correctly using our logic.
+// first word after separator (or/and) => license name
+var pythonLicenseExceptions = map[string]string{
+	"lesser":       "GNU Library or Lesser General Public License (LGPL)",
+	"distribution": "Common Development and Distribution License 1.0 (CDDL-1.0)",
+	"disclaimer":   "Historical Permission Notice and Disclaimer (HPND)",
+}
+
 // Split licenses without considering "and"/"or"
 // examples:
 // 'GPL-1+,GPL-2' => {"GPL-1+", "GPL-2"}
@@ -104,11 +112,25 @@ func SplitLicenses(str string) []string {
 	var licenses []string
 	for _, maybeLic := range licenseSplitRegexp.Split(str, -1) {
 		lower := strings.ToLower(maybeLic)
-		if (strings.HasPrefix(lower, "ver ") || strings.HasPrefix(lower, "version ")) && len(licenses) > 0 {
-			licenses[len(licenses)-1] += ", " + maybeLic
-		} else {
-			licenses = append(licenses, maybeLic)
+		firstWord, _, _ := strings.Cut(lower, " ")
+		if len(licenses) > 0 {
+			// e.g. `Apache License, Version 2.0`
+			if firstWord == "ver" || firstWord == "version" {
+				licenses[len(licenses)-1] += ", " + maybeLic
+				continue
+				// e.g. `GNU Lesser General Public License v2 or later (LGPLv2+)`
+			} else if firstWord == "later" {
+				licenses[len(licenses)-1] += " or " + maybeLic
+				continue
+			} else if lic, ok := pythonLicenseExceptions[firstWord]; ok {
+				// Check `or` and `and` separators
+				if lic == licenses[len(licenses)-1]+" or "+maybeLic || lic == licenses[len(licenses)-1]+" and "+maybeLic {
+					licenses[len(licenses)-1] = lic
+				}
+				continue
+			}
 		}
+		licenses = append(licenses, maybeLic)
 	}
 	return licenses
 }
