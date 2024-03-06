@@ -116,7 +116,6 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 }
 
 func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
-
 	if runtime.GOOS == "windows" {
 		t.Skip("podman.sock is not available for Windows CI")
 	}
@@ -131,20 +130,15 @@ func Test_image_ConfigNameWithCustomPodmanHost(t *testing.T) {
 		},
 	}
 
-	var podmanSocket string
+	runtimeDir, err := os.MkdirTemp("", "daemon")
+	require.NoError(t, err)
 
-	if runtime.GOOS != "windows" {
-		runtimeDir, err := os.MkdirTemp("", "daemon")
-		require.NoError(t, err)
+	dir := filepath.Join(runtimeDir, "image")
+	err = os.MkdirAll(dir, os.ModePerm)
+	require.NoError(t, err)
 
-		dir := filepath.Join(runtimeDir, "image")
-		err = os.MkdirAll(dir, os.ModePerm)
-		require.NoError(t, err)
-
-		customDockerHost := filepath.Join(dir, "image-test-podman-socket.sock")
-		eo.UnixDomainSocket = customDockerHost
-		podmanSocket = customDockerHost
-	}
+	podmanSocket := filepath.Join(dir, "image-test-podman-socket.sock")
+	eo.UnixDomainSocket = podmanSocket
 
 	te := engine.NewDockerEngine(eo)
 	defer te.Close()

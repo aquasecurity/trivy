@@ -116,9 +116,7 @@ func (p podmanClient) imageSave(_ context.Context, imageNames []string) (io.Read
 // The caller must call cleanup() to remove a temporary file.
 func PodmanImage(ref, host string) (Image, func(), error) {
 	cleanup := func() {}
-	if host == "" {
-		host = os.Getenv("PODMAN_HOST")
-	}
+
 	c, err := newPodmanClient(host)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("unable to initialize Podman client: %w", err)
