@@ -18,7 +18,7 @@ func TestAdapt(t *testing.T) {
 		expected s3.S3
 	}{
 		{
-			name: "s3 bucket",
+			name: "complete s3 bucket",
 			source: `AWSTemplateFormatVersion: 2010-09-09
 Resources:
   Key:
@@ -65,7 +65,9 @@ Resources:
 					{
 						Name: types.String("test-bucket", types.NewTestMetadata()),
 						Encryption: s3.Encryption{
-							Enabled: types.Bool(true, types.NewTestMetadata()),
+							Enabled:   types.Bool(true, types.NewTestMetadata()),
+							Algorithm: types.String("aws:kms", types.NewTestMetadata()),
+							KMSKeyId:  types.String("Key", types.NewTestMetadata()),
 						},
 						ACL: types.String("aws-exec-read", types.NewTestMetadata()),
 						PublicAccessBlock: &s3.PublicAccessBlock{
@@ -84,6 +86,52 @@ Resources:
 							},
 						},
 						AccelerateConfigurationStatus: types.String("Enabled", types.NewTestMetadata()),
+					},
+				},
+			},
+		},
+		{
+			name: "empty s3 bucket",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: test-bucket`,
+			expected: s3.S3{
+				Buckets: []s3.Bucket{
+					{
+						Name: types.String("test-bucket", types.NewTestMetadata()),
+						Encryption: s3.Encryption{
+							Enabled: types.BoolDefault(false, types.NewTestMetadata()),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "incorrect SSE algorithm",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: test-bucket
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              KMSMasterKeyID: alias/my-key
+              SSEAlgorithm: aes256
+`,
+			expected: s3.S3{
+				Buckets: []s3.Bucket{
+					{
+						Name: types.String("test-bucket", types.NewTestMetadata()),
+						Encryption: s3.Encryption{
+							Enabled:   types.BoolDefault(false, types.NewTestMetadata()),
+							KMSKeyId:  types.String("alias/my-key", types.NewTestMetadata()),
+							Algorithm: types.String("aes256", types.NewTestMetadata()),
+						},
 					},
 				},
 			},

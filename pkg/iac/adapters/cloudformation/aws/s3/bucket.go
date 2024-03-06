@@ -1,6 +1,7 @@
 package s3
 
 import (
+	"cmp"
 	"regexp"
 	"slices"
 	"strings"
@@ -40,6 +41,11 @@ func getBuckets(cfFile parser.FileContext) []s3.Bucket {
 
 		buckets = append(buckets, s3b)
 	}
+
+	slices.SortFunc(buckets, func(a, b s3.Bucket) int {
+		return cmp.Compare(a.Name.Value(), b.Name.Value())
+	})
+
 	return buckets
 }
 
@@ -104,15 +110,17 @@ func getEncryption(r *parser.Resource, _ parser.FileContext) s3.Encryption {
 
 	if encryptProps := r.GetProperty("BucketEncryption.ServerSideEncryptionConfiguration"); encryptProps.IsNotNil() {
 		for _, rule := range encryptProps.AsList() {
-			if algo := rule.GetProperty("ServerSideEncryptionByDefault.SSEAlgorithm"); algo.IsString() {
+			algo := rule.GetProperty("ServerSideEncryptionByDefault.SSEAlgorithm")
+			if algo.IsString() {
 				algoVal := algo.AsString()
 				isValidAlgo := slices.Contains(s3types.ServerSideEncryption("").Values(), s3types.ServerSideEncryption(algoVal))
 				encryption.Enabled = iacTypes.Bool(isValidAlgo, algo.Metadata())
-			} else if kmsKeyProp := rule.GetProperty("ServerSideEncryptionByDefault.KMSMasterKeyID"); !kmsKeyProp.IsEmpty() && kmsKeyProp.IsString() {
-				encryption.KMSKeyId = kmsKeyProp.AsStringValue()
+				encryption.Algorithm = algo.AsStringValue()
 			}
-			if encryption.Enabled.IsFalse() {
-				encryption.Enabled = rule.GetBoolProperty("BucketKeyEnabled", false)
+
+			kmsKeyProp := rule.GetProperty("ServerSideEncryptionByDefault.KMSMasterKeyID")
+			if !kmsKeyProp.IsEmpty() && kmsKeyProp.IsString() {
+				encryption.KMSKeyId = kmsKeyProp.AsStringValue()
 			}
 		}
 	}
