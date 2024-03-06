@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
@@ -78,7 +79,10 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 		opt(o)
 	}
 
-	o.dbRepository = fmt.Sprintf("%s:%d", o.dbRepository, db.SchemaVersion)
+	// Add the schema version as a tag if the tag doesn't exist.
+	if !strings.Contains(o.dbRepository, ":") {
+		o.dbRepository = fmt.Sprintf("%s:%d", o.dbRepository, db.SchemaVersion)
+	}
 
 	return &Client{
 		options:  o,
