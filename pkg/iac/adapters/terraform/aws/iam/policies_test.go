@@ -338,6 +338,52 @@ data "aws_iam_policy_document" "policy_source2" {
 				},
 			},
 		},
+		{
+			name: "raw source policy",
+			terraform: `resource "aws_iam_policy" "test_policy" {
+  name   = "test-policy"
+  policy = data.aws_iam_policy_document.policy.json
+}
+
+data "aws_iam_policy_document" "policy" {
+  source_policy_documents = [
+    jsonencode({
+      Statement = [
+        {
+          Action = [
+            "ec2:Describe*",
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+        },
+      ]
+    }),
+  ]
+}
+`,
+			expected: []iam.Policy{
+				{
+					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Document: func() iam.Document {
+						builder := iamgo.NewPolicyBuilder().
+							WithStatement(
+								iamgo.NewStatementBuilder().
+									WithActions([]string{"ec2:Describe*"}).
+									WithResources([]string{"*"}).
+									WithEffect("Allow").
+									Build(),
+							)
+
+						return iam.Document{
+							Parsed:   builder.Build(),
+							Metadata: iacTypes.NewTestMetadata(),
+							IsOffset: true,
+							HasRefs:  false,
+						}
+					}(),
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
