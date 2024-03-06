@@ -600,7 +600,7 @@ variable "group" {
     type = string
 }
 
-resource aws_iam_group_policy mfa {
+resource "aws_iam_group_policy" "mfa" {
   group = var.group
   policy = data.aws_iam_policy_document.policy.json
 }
