@@ -41,7 +41,7 @@ type ArtifactSettings struct {
 
 The `iacTypes.Metadata` struct is embedded in all of the Trivy types and provides a common set of metadata for all resources. This includes the file and line number where the resource was defined and the name of the resource.
 
-A resource, in this example `Project`, can have a name, and can optionally be encrypted. Instead of using raw string and bool types respectively, we use the trivy types `iacTypes.Metadata` and `iacTypes.BoolValue`. These types wrap the raw values and provide additional metadata about the value, such as whether it was set by the user or not, and the file and line number where the resource was defined. 
+A resource in this example `Project` can have a name and can optionally be encrypted. Instead of using raw string and bool types respectively, we use the trivy types `iacTypes.Metadata` and `iacTypes.BoolValue`. These types wrap the raw values and provide additional metadata about the value. For instance, whether it was set by the user and the file and line number where the resource was defined. 
 
 Have a look at the other providers and services in the [`iac/providers`](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/providers) directory in Trivy.
 
