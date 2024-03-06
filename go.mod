@@ -117,7 +117,7 @@ require (
 
 require (
 	github.com/bitnami/go-version v0.0.0-20231130084017-bb00604d650c
-	github.com/deepfactor-io/javadb v0.0.0-20231205070807-51b1ba56dfa1
+	github.com/deepfactor-io/javadb v0.0.0-20240226115518-0760fd74129c
 )
 
 require (
