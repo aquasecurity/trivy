@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
@@ -35,10 +34,9 @@ func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*
 	// Mark integration test pom files for `maven-invoker-plugin` as Dev to skip them by default.
 	if isIntegrationTestDir(filePath) {
 		for i := range res.Applications {
-			res.Applications[i].Libraries = lo.Map(res.Applications[i].Libraries, func(lib types.Package, _ int) types.Package {
-				lib.Dev = true
-				return lib
-			})
+			for j := range res.Applications[i].Libraries {
+				res.Applications[i].Libraries[j].Dev = true
+			}
 		}
 	}
 
