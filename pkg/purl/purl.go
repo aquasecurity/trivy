@@ -46,11 +46,6 @@ const (
 
 type PackageURL packageurl.PackageURL
 
-// type PackageURL struct {
-//	packageurl.PackageURL
-//	FilePath string
-//}
-
 func FromString(s string) (*PackageURL, error) {
 	p, err := packageurl.FromString(s)
 	if err != nil {
