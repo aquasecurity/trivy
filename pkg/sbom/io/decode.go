@@ -88,8 +88,7 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 		case core.PropertyImageID:
 			s.Metadata.ImageID = prop.Value
 		case core.PropertySize:
-			s.Metadata.Size, err = strconv.ParseInt(prop.Value, 10, 64)
-			if err != nil {
+			if s.Metadata.Size, err = strconv.ParseInt(prop.Value, 10, 64); err != nil {
 				return xerrors.Errorf("failed to convert size: %w", err)
 			}
 		case core.PropertyRepoDigest:
@@ -121,8 +120,6 @@ func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
 				m.apps[id] = app
 				continue
 			}
-		case core.TypeLibrary:
-			// Do nothing
 		}
 
 		// Third-party SBOMs may contain packages in types other than "Library"
@@ -200,8 +197,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 		case core.PropertySrcRelease:
 			pkg.SrcRelease = prop.Value
 		case core.PropertySrcEpoch:
-			pkg.SrcEpoch, err = strconv.Atoi(prop.Value)
-			if err != nil {
+			if pkg.SrcEpoch, err = strconv.Atoi(prop.Value); err != nil {
 				return nil, xerrors.Errorf("invalid src epoch: %w", err)
 			}
 		case core.PropertyModularitylabel:
