@@ -42,10 +42,6 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) ID(name, version string) string {
-	return dependency.ID(ftypes.Pnpm, name, version)
-}
-
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockFile LockFile
 	if err := yaml.NewDecoder(r).Decode(&lockFile); err != nil {
@@ -82,11 +78,11 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []t
 		if name == "" {
 			name, version = parsePackage(depPath, lockVer)
 		}
-		pkgID := p.ID(name, version)
+		pkgID := packageID(name, version)
 
 		dependencies := make([]string, 0, len(info.Dependencies))
 		for depName, depVer := range info.Dependencies {
-			dependencies = append(dependencies, p.ID(depName, depVer))
+			dependencies = append(dependencies, packageID(depName, depVer))
 		}
 
 		libs = append(libs, types.Library{
@@ -179,4 +175,8 @@ func parseDepPath(depPath, versionSep string) (string, string) {
 		return "", ""
 	}
 	return name, version
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Pnpm, name, version)
 }

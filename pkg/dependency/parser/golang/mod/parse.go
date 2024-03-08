@@ -90,7 +90,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 		libs[require.Mod.Path] = types.Library{
-			ID:                 dependency.ID(ftypes.GoModule, require.Mod.Path, require.Mod.Version[1:]),
+			ID:                 packageID(require.Mod.Path, require.Mod.Version[1:]),
 			Name:               require.Mod.Path,
 			Version:            require.Mod.Version[1:],
 			Indirect:           require.Indirect,
@@ -125,7 +125,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 			// Add replaced library to library register.
 			libs[rep.New.Path] = types.Library{
-				ID:                 dependency.ID(ftypes.GoModule, rep.New.Path, rep.New.Version[1:]),
+				ID:                 packageID(rep.New.Path, rep.New.Version[1:]),
 				Name:               rep.New.Path,
 				Version:            rep.New.Version[1:],
 				Indirect:           old.Indirect,
@@ -153,4 +153,8 @@ func lessThan117(ver string) bool {
 	}
 
 	return major <= 1 && minor < 17
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.GoModule, name, version)
 }
