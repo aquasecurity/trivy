@@ -73,18 +73,19 @@ func newEvaluator(
 	}
 
 	return &evaluator{
-		filesystem:      target,
-		parentParser:    parentParser,
-		modulePath:      modulePath,
-		moduleName:      moduleName,
-		projectRootPath: projectRootPath,
-		ctx:             ctx,
-		blocks:          blocks,
-		inputVars:       inputVars,
-		moduleMetadata:  moduleMetadata,
-		ignores:         ignores,
-		debug:           logger,
-		allowDownloads:  allowDownloads,
+		filesystem:        target,
+		parentParser:      parentParser,
+		modulePath:        modulePath,
+		moduleName:        moduleName,
+		projectRootPath:   projectRootPath,
+		ctx:               ctx,
+		blocks:            blocks,
+		inputVars:         inputVars,
+		moduleMetadata:    moduleMetadata,
+		ignores:           ignores,
+		debug:             logger,
+		allowDownloads:    allowDownloads,
+		skipCachedModules: skipCachedModules,
 	}
 }
 
