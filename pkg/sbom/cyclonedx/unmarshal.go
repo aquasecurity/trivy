@@ -35,7 +35,7 @@ func DecodeJSON(r io.Reader) (*cdx.BOM, error) {
 }
 
 func (b *BOM) UnmarshalJSON(data []byte) error {
-	log.Logger.Debug("Unmarshaling CycloneDX JSON...")
+	log.Logger.Debug("Unmarshalling CycloneDX JSON...")
 	if b.BOM == nil {
 		b.BOM = core.NewBOM()
 	}
