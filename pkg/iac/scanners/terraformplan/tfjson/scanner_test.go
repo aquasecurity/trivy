@@ -118,3 +118,53 @@ deny[cause] {
 	}
 
 }
+
+func Test_PlanWithTemplates(t *testing.T) {
+	b, _ := os.ReadFile("test/testdata/plan_with_template.json")
+	fs := testutil.CreateFS(t, map[string]string{
+		"/code/main.tfplan.json": string(b),
+		"/rules/test.rego": `
+# METADATA
+# title: Bad buckets are bad
+# description: Bad buckets are bad because they are not good.
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   avd_id: AVD-TEST-0123
+#   severity: CRITICAL
+#   short_code: very-bad-misconfig
+#   recommended_action: "Fix the s3 bucket"
+
+package user.foobar.ABC001
+
+deny[cause] {
+	bucket := input.aws.s3.buckets[_]
+	bucket.name.value == "${template-name-is-evil}"
+	cause := bucket.name
+}
+`,
+	})
+
+	debugLog := bytes.NewBuffer([]byte{})
+	scanner := New(
+		options.ScannerWithDebug(debugLog),
+		options.ScannerWithPolicyFilesystem(fs),
+		options.ScannerWithPolicyDirs("rules"),
+		options.ScannerWithRegoOnly(true),
+		options.ScannerWithPolicyNamespaces("user"),
+		options.ScannerWithEmbeddedPolicies(false),
+	)
+
+	results, err := scanner.ScanFS(context.TODO(), fs, "code")
+	require.NoError(t, err)
+
+	require.Len(t, results.GetFailed(), 1)
+
+	failure := results.GetFailed()[0]
+
+	assert.Equal(t, "AVD-TEST-0123", failure.Rule().AVDID)
+	if t.Failed() {
+		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
+	}
+}
