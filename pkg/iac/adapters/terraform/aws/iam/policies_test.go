@@ -384,6 +384,25 @@ data "aws_iam_policy_document" "policy" {
 				},
 			},
 		},
+		{
+			name: "invalid `override_policy_documents` attribute",
+			terraform: `resource "aws_iam_policy" "test_policy" {
+  name   = "test-policy"
+  policy = data.aws_iam_policy_document.policy.json
+}
+
+data "aws_iam_policy_document" "policy" {
+  source_policy_documents = data.aws_iam_policy_document.policy2.json
+}`,
+			expected: []iam.Policy{
+				{
+					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Document: iam.Document{
+						IsOffset: true,
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {

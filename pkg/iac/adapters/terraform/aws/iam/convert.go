@@ -208,20 +208,15 @@ func findAllPolicies(modules terraform.Modules, attr *terraform.Attribute) []wra
 
 	policyDocIDs := attr.AsStringValues().AsStrings()
 	for _, policyDocID := range policyDocIDs {
-		policyDoc, err := modules.GetBlockById(policyDocID)
-		if err == nil {
-			document, err := ConvertTerraformDocument(modules, policyDoc)
-			if err == nil {
+		if policyDoc, err := modules.GetBlockById(policyDocID); err == nil {
+			if document, err := ConvertTerraformDocument(modules, policyDoc); err == nil {
 				documents = append(documents, *document)
 			}
-		} else {
-			parsed, err := iamgo.Parse([]byte(unescapeVars(policyDocID)))
-			if err == nil {
-				documents = append(documents, wrappedDocument{
-					Document: *parsed,
-					Source:   attr,
-				})
-			}
+		} else if parsed, err := iamgo.Parse([]byte(unescapeVars(policyDocID))); err == nil {
+			documents = append(documents, wrappedDocument{
+				Document: *parsed,
+				Source:   attr,
+			})
 		}
 	}
 	return documents
