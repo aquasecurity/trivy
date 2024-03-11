@@ -77,7 +77,7 @@ func parseLicense(val interface{}) string {
 
 // parseWorkspaces returns slice of workspaces
 func parseWorkspaces(val any) []string {
-	// Workspaces support 2 types - https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/package.json#L777
+	// Workspaces support 2 types - https://github.com/SchemaStore/schemastore/blob/d9516961f8a5b0e65a457808070147b5a866f60b/src/schemas/json/package.json#L777
 	switch ws := val.(type) {
 	// Workspace as object (map[string][]string)
 	// e.g. "workspaces": {"packages": ["packages/*", "plugins/*"]},
