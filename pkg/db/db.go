@@ -80,6 +80,7 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 	}
 
 	// Add the schema version as a tag if the tag doesn't exist.
+	// This is required for backward compatibility.
 	if !strings.Contains(o.dbRepository, ":") {
 		o.dbRepository = fmt.Sprintf("%s:%d", o.dbRepository, db.SchemaVersion)
 	}
