@@ -383,9 +383,9 @@ If multiple variables evaluate to the same hostname, Trivy will choose the envir
 
 Trivy supports ignoring misconfigured resources by inline comments for Terraform configuration files only.
 
-In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` or `tfsec:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
+In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
 
-The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The `id` from metadata is not case sensitive, you can specify `AVD-AWS-0089` or `avd-aws-0089` and it will work the same way.
+The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The `id` from the metadata is not case-sensitive, so you can specify, for example, `AVD-AWS-0089` or `avd-aws-0089`.
 
 For example, to ignore a misconfiguration ID `AVD-GCP-0051` in a Terraform HCL file:
 
@@ -421,9 +421,6 @@ As an example, consider the following check metadata:
 ```
 
 Long ID would look like the following: `aws-s3-enable-logging`.
-
-!!! tip
-    Long ID is preferred because it is a readable format.
 
 #### Expiration Date
 
