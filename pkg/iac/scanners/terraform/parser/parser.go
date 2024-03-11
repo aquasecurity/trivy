@@ -64,6 +64,7 @@ type Parser struct {
 	fsMap             map[string]fs.FS
 	skipRequired      bool
 	configsFS         fs.FS
+	moduleVariables   cty.Value
 }
 
 func (p *Parser) SetDebugWriter(writer io.Writer) {
@@ -310,6 +311,7 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 		p.debug.Extend("evaluator"),
 		p.allowDownloads,
 		p.skipCachedModules,
+		p.moduleVariables,
 	)
 	modules, fsMap, parseDuration := evaluator.EvaluateAll(ctx)
 	p.metrics.Counts.Modules = len(modules)

@@ -1497,6 +1497,49 @@ resource "test_block" "this" {
 	})
 }
 
+func TestXxx(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+module "module1" {
+	source = "./modules/module1"
+}
+
+module "module2" {
+	source = "./modules/module2"
+	test_var = module.module1.test_out
+}
+`,
+		"modules/module1/main.tf": `
+output "test_out" {
+	value = "test_value"
+}
+`,
+		"modules/module2/main.tf": `
+variable "test_var" {}
+
+resource "test_resource" "this" {
+	dynamic "dynamic_block" {
+		for_each = [var.test_var]
+		content {
+			some_attr = dynamic_block.value
+		}
+	}
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, 3)
+
+	resources := modules.GetResourcesByType("test_resource")
+	require.Len(t, resources, 1)
+
+	attr, _ := resources[0].GetNestedAttribute("dynamic_block.some_attr")
+	require.NotNil(t, attr)
+
+	assert.Equal(t, "test_value", attr.GetRawValue())
+}
+
 func parse(t *testing.T, files map[string]string) terraform.Modules {
 	fs := testutil.CreateFS(t, files)
 	parser := New(fs, "", OptionStopOnHCLError(true))
