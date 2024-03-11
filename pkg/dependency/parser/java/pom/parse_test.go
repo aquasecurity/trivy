@@ -47,12 +47,24 @@ func TestPom_Parse(t *testing.T) {
 						},
 					},
 				},
+				{
+					ID:      "org.example:example-runtime:1.0.0",
+					Name:    "org.example:example-runtime",
+					Version: "1.0.0",
+					Locations: types.Locations{
+						{
+							StartLine: 37,
+							EndLine:   42,
+						},
+					},
+				},
 			},
 			wantDeps: []types.Dependency{
 				{
 					ID: "com.example:happy:1.0.0",
 					DependsOn: []string{
 						"org.example:example-api:1.7.30",
+						"org.example:example-runtime:1.0.0",
 					},
 				},
 			},
@@ -80,12 +92,24 @@ func TestPom_Parse(t *testing.T) {
 						},
 					},
 				},
+				{
+					ID:      "org.example:example-runtime:1.0.0",
+					Name:    "org.example:example-runtime",
+					Version: "1.0.0",
+					Locations: types.Locations{
+						{
+							StartLine: 37,
+							EndLine:   42,
+						},
+					},
+				},
 			},
 			wantDeps: []types.Dependency{
 				{
 					ID: "com.example:happy:1.0.0",
 					DependsOn: []string{
 						"org.example:example-api:1.7.30",
+						"org.example:example-runtime:1.0.0",
 					},
 				},
 			},

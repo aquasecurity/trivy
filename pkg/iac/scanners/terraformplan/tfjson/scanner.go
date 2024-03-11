@@ -1,4 +1,4 @@
-package terraformplan
+package tfjson
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	terraformScanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson/parser"
 )
 
 var tfPlanExts = []string{
@@ -99,7 +99,7 @@ func (s *Scanner) SetDataFilesystem(_ fs.FS) {
 func (s *Scanner) SetRegoErrorLimit(_ int) {}
 
 func (s *Scanner) Name() string {
-	return "Terraform Plan"
+	return "Terraform Plan JSON"
 }
 
 func (s *Scanner) ScanFS(ctx context.Context, inputFS fs.FS, dir string) (scan.Results, error) {

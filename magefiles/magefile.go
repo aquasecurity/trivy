@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -179,6 +180,11 @@ func (Test) FixtureContainerImages() error {
 // FixtureVMImages downloads and extracts required VM images
 func (Test) FixtureVMImages() error {
 	return fixtureVMImages()
+}
+
+// FixtureTerraformPlanSnapshots generates Terraform Plan files in test folders
+func (Test) FixtureTerraformPlanSnapshots() error {
+	return fixtureTerraformPlanSnapshots(context.TODO())
 }
 
 // GenerateModules compiles WASM modules for unit tests

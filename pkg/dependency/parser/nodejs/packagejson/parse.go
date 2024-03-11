@@ -3,6 +3,7 @@ package packagejson
 import (
 	"encoding/json"
 	"io"
+	"regexp"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -10,6 +11,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 )
+
+var nameRegexp = regexp.MustCompile(`^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
 
 type packageJSON struct {
 	Name                 string            `json:"name"`
@@ -39,6 +42,10 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	var pkgJSON packageJSON
 	if err := json.NewDecoder(r).Decode(&pkgJSON); err != nil {
 		return Package{}, xerrors.Errorf("JSON decode error: %w", err)
+	}
+
+	if !IsValidName(pkgJSON.Name) {
+		return Package{}, xerrors.Errorf("Name can only contain URL-friendly characters")
 	}
 
 	var id string
@@ -96,4 +103,13 @@ func parseWorkspaces(val any) []string {
 		})
 	}
 	return nil
+}
+
+func IsValidName(name string) bool {
+	// Name is optional field
+	// https://docs.npmjs.com/cli/v9/configuring-npm/package-json#name
+	if name == "" {
+		return true
+	}
+	return nameRegexp.MatchString(name)
 }

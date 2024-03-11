@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/google/wire"
 	"github.com/samber/lo"
@@ -297,7 +298,6 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 				Confidence: 1.0,
 			})
 		}
-
 	}
 	results = append(results, types.Result{
 		Target:   "OS Packages",
@@ -312,10 +312,13 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 			for _, license := range lib.Licenses {
 				category, severity := scanner.Scan(license)
 				langLicenses = append(langLicenses, types.DetectedLicense{
-					Severity:   severity,
-					Category:   category,
-					PkgName:    lib.Name,
-					Name:       license,
+					Severity: severity,
+					Category: category,
+					PkgName:  lib.Name,
+					Name:     license,
+					// Lock files use app.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
+					// Applications use lib.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
+					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
 					Confidence: 1.0,
 				})
 			}
@@ -424,8 +427,15 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 	if include {
 		return
 	}
+
+	onceInfo := sync.OnceFunc(func() {
+		log.Logger.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
+	})
 	for i := range apps {
 		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
+			if lib.Dev {
+				onceInfo()
+			}
 			return !lib.Dev
 		})
 	}
