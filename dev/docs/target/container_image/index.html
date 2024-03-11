@@ -1241,6 +1241,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#configure-podman-daemon-socket-to-connect-to" class="md-nav__link">
+    Configure Podman daemon socket to connect to.
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3973,6 +3980,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#configure-podman-daemon-socket-to-connect-to" class="md-nav__link">
+    Configure Podman daemon socket to connect to.
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4421,6 +4435,10 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 <h3 id="configure-docker-daemon-socket-to-connect-to">Configure Docker daemon socket to connect to.</h3>
 <p>You can configure Docker daemon socket with <code>DOCKER_HOST</code> or <code>--docker-host</code>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --docker-host tcp://127.0.0.1:2375 YOUR_IMAGE
+</code></pre></div>
+<h3 id="configure-podman-daemon-socket-to-connect-to">Configure Podman daemon socket to connect to.</h3>
+<p>You can configure Podman daemon socket with <code>--podman-host</code>.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --podman-host /run/user/1000/podman/podman.sock YOUR_IMAGE
 </code></pre></div>
 
               
