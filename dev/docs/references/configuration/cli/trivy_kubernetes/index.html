@@ -3685,7 +3685,7 @@ You're not viewing the latest version.
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
       --context string                    specify a context to scan
-      --db-repository string              OCI repository to retrieve trivy-db from (default &quot;ghcr.io/aquasecurity/trivy-db&quot;)
+      --db-repository string              OCI repository to retrieve trivy-db from (default &quot;ghcr.io/aquasecurity/trivy-db:2&quot;)
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --download-db-only                  download/update vulnerability database but don&#39;t run a scan
       --download-java-db-only             download/update Java index database but don&#39;t run a scan
@@ -3705,7 +3705,7 @@ You're not viewing the latest version.
       --ignorefile string                 specify .trivyignore file (default &quot;.trivyignore&quot;)
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-non-failures              include successes and exceptions, available with &#39;--scanners misconfig&#39;
-      --java-db-repository string         OCI repository to retrieve trivy-java-db from (default &quot;ghcr.io/aquasecurity/trivy-java-db&quot;)
+      --java-db-repository string         OCI repository to retrieve trivy-java-db from (default &quot;ghcr.io/aquasecurity/trivy-java-db:1&quot;)
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
