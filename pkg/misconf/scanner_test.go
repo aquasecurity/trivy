@@ -133,7 +133,7 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name:        "happy path. terraform plan file",
-			scannerFunc: NewTerraformPlanScanner,
+			scannerFunc: NewTerraformPlanJSONScanner,
 			files: []file{
 				{
 					path:    "main.tfplan.json",
@@ -141,7 +141,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 			},
 			wantFilePath:     "main.tf",
-			wantFileType:     types.TerraformPlan,
+			wantFileType:     types.TerraformPlanJSON,
 			misconfsExpected: 2,
 		},
 	}

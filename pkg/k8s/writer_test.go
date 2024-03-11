@@ -3,15 +3,15 @@ package k8s
 import (
 	"bytes"
 	"context"
-	"github.com/stretchr/testify/require"
 	"regexp"
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -38,7 +38,7 @@ var (
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:       "ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 				},
@@ -54,28 +54,28 @@ var (
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:       "KSV-ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "KSV-ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
 						ID:       "KSV-ID102",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 
 					{
 						ID:       "KCV-ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "KCV-ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 				},
@@ -88,7 +88,7 @@ var (
 		Name:      "lua",
 		Results: types.Results{
 			{
-				Secrets: []ftypes.SecretFinding{
+				Secrets: []types.DetectedSecret{
 					{
 						RuleID:   "secret1",
 						Severity: "CRITICAL",
@@ -110,37 +110,37 @@ var (
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:       "ID100",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "ID101",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "MEDIUM",
 					},
 					{
 						ID:       "ID102",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 					{
 						ID:       "ID103",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "CRITICAL",
 					},
 					{
 						ID:       "ID104",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "UNKNOWN",
 					},
 					{
 						ID:       "ID105",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "LOW",
 					},
 					{
 						ID:       "ID106",
-						Status:   types.StatusFailure,
+						Status:   types.MisconfStatusFailure,
 						Severity: "HIGH",
 					},
 				},
@@ -235,6 +235,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				Resources:   []report.Resource{deployOrionWithVulns},
 			},
 			scanners:   types.Scanners{types.VulnerabilityScanner},
+			components: []string{workloadComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
@@ -277,6 +278,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				Resources:   []report.Resource{deployLuaWithSecrets},
 			},
 			scanners:   types.Scanners{types.SecretScanner},
+			components: []string{workloadComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
@@ -304,13 +306,13 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 =======================
 
 Infra Assessment
-┌─────────────┬────────────────────┬─────────────────────────────┐
-│  Namespace  │      Resource      │ Kubernetes Infra Assessment │
-│             │                    ├─────┬─────┬─────┬─────┬─────┤
-│             │                    │  C  │  H  │  M  │  L  │  U  │
-├─────────────┼────────────────────┼─────┼─────┼─────┼─────┼─────┤
-│ kube-system │ Pod/kube-apiserver │     │     │ 1   │ 1   │     │
-└─────────────┴────────────────────┴─────┴─────┴─────┴─────┴─────┘
+┌─────────────┬────────────────────┬───────────────────┐
+│  Namespace  │      Resource      │ Misconfigurations │
+│             │                    ├───┬───┬───┬───┬───┤
+│             │                    │ C │ H │ M │ L │ U │
+├─────────────┼────────────────────┼───┼───┼───┼───┼───┤
+│ kube-system │ Pod/kube-apiserver │   │ 1 │ 2 │ 2 │   │
+└─────────────┴────────────────────┴───┴───┴───┴───┴───┘
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
@@ -324,23 +326,23 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				types.MisconfigScanner,
 				types.SecretScanner,
 			},
-			components: []string{workloadComponent},
+			components: []string{infraComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
 
-Workload Assessment
+Infra Assessment
 ┌─────────────┬────────────────────┬───────────────────┬───────────────────┬───────────────────┐
 │  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │      Secrets      │
 │             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
 │             │                    │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
 ├─────────────┼────────────────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
-│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 1 │ 1 │   │   │   │   │   │   │
+│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 2 │ 2 │   │   │   │   │   │   │
 └─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, all scanners and serverities",
+			name: "apiserver, all misconfig and vuln scanners and serverities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
@@ -348,8 +350,6 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			scanners: types.Scanners{
 				types.MisconfigScanner,
 				types.VulnerabilityScanner,
-				types.RBACScanner,
-				types.SecretScanner,
 			},
 			components: []string{
 				workloadComponent,
@@ -360,24 +360,22 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 =======================
 
 Workload Assessment
-┌─────────────┬────────────────────┬───────────────────┬───────────────────┬───────────────────┐
-│  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │      Secrets      │
-│             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
-│             │                    │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
-├─────────────┼────────────────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
-│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 1 │ 1 │   │   │   │   │   │   │
-└─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+┌───────────┬──────────┬───────────────────┬───────────────────┐
+│ Namespace │ Resource │  Vulnerabilities  │ Misconfigurations │
+│           │          ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
+│           │          │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
+└───────────┴──────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
 
 
 Infra Assessment
-┌─────────────┬────────────────────┬─────────────────────────────┐
-│  Namespace  │      Resource      │ Kubernetes Infra Assessment │
-│             │                    ├─────┬─────┬─────┬─────┬─────┤
-│             │                    │  C  │  H  │  M  │  L  │  U  │
-├─────────────┼────────────────────┼─────┼─────┼─────┼─────┼─────┤
-│ kube-system │ Pod/kube-apiserver │     │     │ 1   │ 1   │     │
-└─────────────┴────────────────────┴─────┴─────┴─────┴─────┴─────┘
+┌─────────────┬────────────────────┬───────────────────┬───────────────────┐
+│  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │
+│             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
+│             │                    │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
+├─────────────┼────────────────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
+│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 2 │ 2 │   │
+└─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 	}

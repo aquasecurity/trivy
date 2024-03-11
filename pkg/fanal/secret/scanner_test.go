@@ -429,7 +429,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 5,
 		EndLine:   5,
-		Match:     `aws_sec_key "****************************************"`,
+		Match:     `  "created_by": "ENV aws_sec_key "****************************************",`,
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -444,8 +444,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      5,
-					Content:     "aws_sec_key \"****************************************\"",
-					Highlighted: "aws_sec_key \"****************************************\"",
+					Content:     "  \"created_by\": \"ENV aws_sec_key \"****************************************\",",
+					Highlighted: "  \"created_by\": \"ENV aws_sec_key \"****************************************\",",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -609,6 +609,28 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingHuggingFace := types.SecretFinding{
+		RuleID:    "hugging-face-access-token",
+		Category:  secret.CategoryHuggingFace,
+		Title:     "Hugging Face Access Token",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "HF_example_token: ******************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "HF_example_token: ******************************************",
+					Highlighted: "HF_example_token: ******************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
+
 	wantMultiLine := types.SecretFinding{
 		RuleID:    "multi-line-secret",
 		Category:  "general",
@@ -662,7 +684,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: filepath.Join("testdata", "aws-secrets.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "aws-secrets.txt"),
-				Findings: []types.SecretFinding{wantFinding5, wantFinding9, wantFinding10},
+				Findings: []types.SecretFinding{wantFinding5, wantFinding10, wantFinding9},
 			},
 		},
 		{
@@ -699,6 +721,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "docker-secrets.txt"),
 				Findings: []types.SecretFinding{wantFindingDockerKey1, wantFindingDockerKey2},
+			},
+		},
+		{
+			name:          "find Hugging face secret",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "hugging-face-secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "hugging-face-secret.txt"),
+				Findings: []types.SecretFinding{wantFindingHuggingFace},
 			},
 		},
 		{

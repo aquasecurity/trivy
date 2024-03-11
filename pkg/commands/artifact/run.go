@@ -514,7 +514,8 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeHistoryDockerfile)
 	}
 
-	if len(opts.SBOMSources) == 0 {
+	// Skip executable file analysis if Rekor isn't a specified SBOM source.
+	if !slices.Contains(opts.SBOMSources, types.SBOMSourceRekor) {
 		analyzers = append(analyzers, analyzer.TypeExecutable)
 	}
 

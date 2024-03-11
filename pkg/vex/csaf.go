@@ -2,12 +2,12 @@ package vex
 
 import (
 	csaf "github.com/csaf-poc/csaf_distribution/v3/csaf"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
-	"golang.org/x/exp/slices"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -23,8 +23,8 @@ func newCSAF(advisory csaf.Advisory) VEX {
 	}
 }
 
-func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulnerability {
-	return lo.Filter(vulns, func(vuln types.DetectedVulnerability, _ int) bool {
+func (v *CSAF) Filter(result *types.Result) {
+	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
 		found, ok := lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
 			return string(*item.CVE) == vuln.VulnerabilityID
 		})
@@ -32,47 +32,116 @@ func (v *CSAF) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulne
 			return true
 		}
 
-		return v.affected(found, vuln.PkgIdentifier.PURL)
+		if status := v.match(found, vuln.PkgIdentifier.PURL); status != "" {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(vuln, status, statement(found), "CSAF VEX"))
+			return false
+		}
+		return true
 	})
 }
 
-func (v *CSAF) affected(vuln *csaf.Vulnerability, purl *ftypes.PackageURL) bool {
-	if purl == nil || vuln.ProductStatus == nil {
-		return true
+func (v *CSAF) match(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL) types.FindingStatus {
+	if pkgURL == nil || vuln.ProductStatus == nil {
+		return ""
 	}
 
-	var status Status
-	switch {
-	case v.matchPURL(purl, vuln.ProductStatus.KnownNotAffected):
-		status = StatusNotAffected
-	case v.matchPURL(purl, vuln.ProductStatus.Fixed):
-		status = StatusFixed
-	}
-
-	if status != "" {
-		v.logger.Infow("Filtered out the detected vulnerability",
-			zap.String("vulnerability-id", string(*vuln.CVE)),
-			zap.String("status", string(status)))
+	matchProduct := func(purls []*purl.PackageURL, pkgURL *packageurl.PackageURL) bool {
+		for _, p := range purls {
+			if p.Match(pkgURL) {
+				return true
+			}
+		}
 		return false
 	}
 
-	return true
-}
-
-// matchPURL returns true if the given PackageURL is found in the ProductTree.
-func (v *CSAF) matchPURL(purl *ftypes.PackageURL, products *csaf.Products) bool {
-	for _, product := range lo.FromPtr(products) {
-		helpers := v.advisory.ProductTree.CollectProductIdentificationHelpers(lo.FromPtr(product))
-		purls := lo.FilterMap(helpers, func(helper *csaf.ProductIdentificationHelper, _ int) (string, bool) {
-			if helper == nil || helper.PURL == nil {
-				return "", false
+	productStatusMap := map[types.FindingStatus]csaf.Products{
+		types.FindingStatusNotAffected: lo.FromPtr(vuln.ProductStatus.KnownNotAffected),
+		types.FindingStatusFixed:       lo.FromPtr(vuln.ProductStatus.Fixed),
+	}
+	for status, productRange := range productStatusMap {
+		for _, product := range productRange {
+			if matchProduct(v.getProductPurls(lo.FromPtr(product)), pkgURL) {
+				v.logger.Infow("Filtered out the detected vulnerability",
+					zap.String("vulnerability-id", string(*vuln.CVE)),
+					zap.String("status", string(status)))
+				return status
 			}
-			return string(*helper.PURL), true
-		})
-		if slices.Contains(purls, purl.String()) {
-			return true
+			for relationship, purls := range v.inspectProductRelationships(lo.FromPtr(product)) {
+				if matchProduct(purls, pkgURL) {
+					v.logger.Warnw("Filtered out the detected vulnerability",
+						zap.String("vulnerability-id", string(*vuln.CVE)),
+						zap.String("status", string(status)),
+						zap.String("relationship", string(relationship)))
+					return status
+				}
+			}
 		}
 	}
 
-	return false
+	return ""
+}
+
+// getProductPurls returns a slice of PackageURLs associated to a given product
+func (v *CSAF) getProductPurls(product csaf.ProductID) []*purl.PackageURL {
+	return purlsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(product))
+}
+
+// inspectProductRelationships returns a map of PackageURLs associated to each relationship category
+// iterating over relationships looking for sub-products that might be part of the original product
+func (v *CSAF) inspectProductRelationships(product csaf.ProductID) map[csaf.RelationshipCategory][]*purl.PackageURL {
+	subProductsMap := make(map[csaf.RelationshipCategory]csaf.Products)
+	if v.advisory.ProductTree.RelationShips == nil {
+		return nil
+	}
+
+	for _, rel := range lo.FromPtr(v.advisory.ProductTree.RelationShips) {
+		if rel != nil {
+			relationship := lo.FromPtr(rel.Category)
+			switch relationship {
+			case csaf.CSAFRelationshipCategoryDefaultComponentOf,
+				csaf.CSAFRelationshipCategoryInstalledOn,
+				csaf.CSAFRelationshipCategoryInstalledWith:
+				if fpn := rel.FullProductName; fpn != nil && lo.FromPtr(fpn.ProductID) == product {
+					subProductsMap[relationship] = append(subProductsMap[relationship], rel.ProductReference)
+				}
+			}
+		}
+	}
+
+	purlsMap := make(map[csaf.RelationshipCategory][]*purl.PackageURL)
+	for relationship, subProducts := range subProductsMap {
+		var helpers []*csaf.ProductIdentificationHelper
+		for _, subProductRef := range subProducts {
+			helpers = append(helpers, v.advisory.ProductTree.CollectProductIdentificationHelpers(lo.FromPtr(subProductRef))...)
+		}
+		purlsMap[relationship] = purlsFromProductIdentificationHelpers(helpers)
+	}
+
+	return purlsMap
+}
+
+// purlsFromProductIdentificationHelpers returns a slice of PackageURLs given a slice of ProductIdentificationHelpers.
+func purlsFromProductIdentificationHelpers(helpers []*csaf.ProductIdentificationHelper) []*purl.PackageURL {
+	return lo.FilterMap(helpers, func(helper *csaf.ProductIdentificationHelper, _ int) (*purl.PackageURL, bool) {
+		if helper == nil || helper.PURL == nil {
+			return nil, false
+		}
+		p, err := purl.FromString(string(*helper.PURL))
+		if err != nil {
+			log.Logger.Errorw("Invalid PURL", zap.String("purl", string(*helper.PURL)), zap.Error(err))
+			return nil, false
+		}
+		return p, true
+	})
+}
+
+func statement(vuln *csaf.Vulnerability) string {
+	threat, ok := lo.Find(vuln.Threats, func(threat *csaf.Threat) bool {
+		return lo.FromPtr(threat.Category) == csaf.CSAFThreatCategoryImpact
+	})
+	if !ok {
+		return ""
+	}
+	return lo.FromPtr(threat.Details)
 }

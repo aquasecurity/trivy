@@ -128,6 +128,31 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "Project with workspace placed in sub dir",
+			dir:  "testdata/project-with-workspace-in-subdir",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Yarn,
+						FilePath: "foo/yarn.lock",
+						Libraries: types.Packages{
+							{
+								ID:      "hoek@6.1.3",
+								Name:    "hoek",
+								Version: "6.1.3",
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   8,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "no package.json",
 			dir:  "testdata/no-packagejson",
 			want: &analyzer.AnalysisResult{

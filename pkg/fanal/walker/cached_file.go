@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 // cachedFile represents a file cached in memory or storage according to the file size.
@@ -36,7 +36,7 @@ func newCachedFile(size int64, r io.Reader, threshold int64) *cachedFile {
 // Open opens a file and cache the file.
 // If the file size is greater than or equal to threshold, it copies the content to a temp file and opens it next time.
 // If the file size is less than threshold, it opens the file once and the content will be shared so that others analyzers can use the same data.
-func (o *cachedFile) Open() (dio.ReadSeekCloserAt, error) {
+func (o *cachedFile) Open() (xio.ReadSeekCloserAt, error) {
 	o.once.Do(func() {
 		// When the file is large, it will be written down to a temp file.
 		if o.size >= o.threshold {
@@ -68,7 +68,7 @@ func (o *cachedFile) Open() (dio.ReadSeekCloserAt, error) {
 	return o.open()
 }
 
-func (o *cachedFile) open() (dio.ReadSeekCloserAt, error) {
+func (o *cachedFile) open() (xio.ReadSeekCloserAt, error) {
 	if o.filePath != "" {
 		f, err := os.Open(o.filePath)
 		if err != nil {
@@ -77,7 +77,7 @@ func (o *cachedFile) open() (dio.ReadSeekCloserAt, error) {
 		return f, nil
 	}
 
-	return dio.NopCloser(bytes.NewReader(o.content)), nil
+	return xio.NopCloser(bytes.NewReader(o.content)), nil
 }
 
 func (o *cachedFile) Clean() error {

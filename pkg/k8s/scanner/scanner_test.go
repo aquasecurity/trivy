@@ -2,7 +2,6 @@ package scanner
 
 import (
 	"context"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"sort"
 	"testing"
 
@@ -98,7 +97,7 @@ func TestScanner_Scan(t *testing.T) {
 						Namespace: k8sCoreComponentNamespace,
 					},
 				},
-				PackageURL: &ftypes.PackageURL{
+				PackageURL: &purl.PackageURL{
 					PackageURL: packageurl.PackageURL{
 						Type:    purl.TypeK8s,
 						Name:    "k8s.io/kubernetes",
@@ -110,7 +109,7 @@ func TestScanner_Scan(t *testing.T) {
 						Type:    cdx.ComponentTypeApplication,
 						Name:    "k8s.io/apiserver",
 						Version: "1.21.1",
-						PackageURL: &ftypes.PackageURL{
+						PackageURL: &purl.PackageURL{
 							PackageURL: packageurl.PackageURL{
 								Type:    purl.TypeK8s,
 								Name:    "k8s.io/apiserver",
@@ -123,7 +122,7 @@ func TestScanner_Scan(t *testing.T) {
 								Type:    cdx.ComponentTypeContainer,
 								Name:    "k8s.gcr.io/kube-apiserver",
 								Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-								PackageURL: &ftypes.PackageURL{
+								PackageURL: &purl.PackageURL{
 									PackageURL: packageurl.PackageURL{
 										Type:    "oci",
 										Name:    "kube-apiserver",
@@ -234,7 +233,7 @@ func TestScanner_Scan(t *testing.T) {
 												Namespace: k8sCoreComponentNamespace,
 											},
 										},
-										PackageURL: &ftypes.PackageURL{
+										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
 												Type:    "k8s",
 												Name:    "k8s.io/kubelet",
@@ -258,7 +257,7 @@ func TestScanner_Scan(t *testing.T) {
 												Namespace: k8sCoreComponentNamespace,
 											},
 										},
-										PackageURL: &ftypes.PackageURL{
+										PackageURL: &purl.PackageURL{
 											PackageURL: packageurl.PackageURL{
 												Type:       "golang",
 												Name:       "github.com/containerd/containerd",
@@ -385,7 +384,7 @@ func TestGeneratePURL(t *testing.T) {
 			compName:    "k8s.io/kubelet",
 			compVersion: "1.24.11+rke2r1",
 			nodeName:    "ip-10-0-5-23",
-			want:        "pkg:k8s/rke/k8s.io%2Fkubelet@1.24.11%2Brke2r1",
+			want:        "pkg:k8s/k8s.io%2Fkubelet@1.24.11%2Brke2r1",
 		},
 		{
 			name:        "OCP",
@@ -439,7 +438,7 @@ func TestK8sNamespace(t *testing.T) {
 			name:        "Rancher",
 			compVersion: "1.24.11+rke2r1",
 			nodeName:    "ip-10-0-5-23",
-			want:        "rke",
+			want:        "kubernetes",
 		},
 		{
 			name:        "OCP",

@@ -1,0 +1,126 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "vendor",
+      "name": "VMWare, Inc.",
+      "namespace": "https://tanzu.vmware.com/application-catalog"
+    },
+    "title": "ArgoCD 2.9.3-2 Amd64 Debian12 Advisory",
+    "tracking": {
+      "current_release_date": "2024-01-04T17:17:25+01:00",
+      "generator": {
+        "engine": {
+          "name": "Bitnami VEX CLI",
+          "version": "1.0.0"
+        }
+      },
+      "id": "fcf5bd33-41c3-45f9-885a-c2ee812f49c9",
+      "initial_release_date": "2024-01-04T17:17:25+01:00",
+      "revision_history": [
+        {
+          "date": "2024-01-04T17:17:25+01:00",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "2.9.3-2",
+                "product": {
+                  "name": "Argo CD 2.9.3-2",
+                  "product_id": "argo-cd-2.9.3-2-amd64-debian-12",
+                  "product_identification_helper": {
+                    "purl": "pkg:bitnami/argo-cd@2.9.3-2?arch=amd64\u0026distro=debian-12"
+                  }
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "Argo CD"
+          }
+        ],
+        "category": "vendor",
+        "name": "VMWare, Inc."
+      },
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "v1.24.2",
+                "product": {
+                  "name": "Kubernetes v1.24.2",
+                  "product_id": "kubernetes-v1.24.2",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/k8s.io/kubernetes@v1.24.2"
+                  }
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "kubernetes"
+          }
+        ],
+        "category": "vendor",
+        "name": "k8s.io"
+      }
+    ],
+    "relationships": [
+      {
+        "product_reference": "kubernetes-v1.24.2",
+        "category": "default_component_of",
+        "relates_to_product_reference": "argo-cd-2.9.3-2-amd64-debian-12",
+        "full_product_name": {
+          "product_id": "argo-cd-2.9.3-2-amd64-debian-12-kubernetes",
+          "name": "Argo CD uses kubernetes golang library"
+        }
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2023-2727",
+      "flags": [
+        {
+          "date": "2024-01-04T17:17:25+01:00",
+          "label": "vulnerable_code_cannot_be_controlled_by_adversary",
+          "product_ids": [
+            "argo-cd-2.9.3-2-amd64-debian-12-kubernetes"
+          ]
+        }
+      ],
+      "notes": [
+        {
+          "category": "description",
+          "text": "Users may be able to launch containers using images that are restricted by ImagePolicyWebhook when using ephemeral containers. Kubernetes clusters are only affected if the ImagePolicyWebhook admission plugin is used together with ephemeral containers.",
+          "title": "CVE description"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "argo-cd-2.9.3-2-amd64-debian-12-kubernetes"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "date": "2024-01-04T17:17:25+01:00",
+          "details": "The asset uses the component as a dependency in the code, but the vulnerability only affects Kubernetes clusters https://github.com/kubernetes/kubernetes/issues/118640"
+        }
+      ]
+    }
+  ]
+}

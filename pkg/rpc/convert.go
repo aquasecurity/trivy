@@ -3,6 +3,7 @@ package rpc
 import (
 	"time"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -11,7 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -82,7 +82,7 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 
 	var p string
 	if pkg.PURL != nil {
-		p = pkg.PURL.BOMRef() // Use BOMRef() instead of String() so that we won't lose file_path
+		p = pkg.PURL.String()
 	}
 	return &common.PkgIdentifier{
 		Purl:   p,
@@ -227,11 +227,11 @@ func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier
 	}
 
 	if pkg.Purl != "" {
-		pu, err := purl.FromString(pkg.Purl)
+		pu, err := packageurl.FromString(pkg.Purl)
 		if err != nil {
 			log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
 		}
-		pkgID.PURL = pu
+		pkgID.PURL = &pu
 	}
 
 	return pkgID
@@ -393,7 +393,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
 			Type:              ftypes.TargetType(result.Type),
 			Packages:          ConvertFromRPCPkgs(result.Packages),
 			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
-			Secrets:           ConvertFromRPCSecretFindings(result.Secrets),
+			Secrets:           ConvertFromRPCDetectedSecrets(result.Secrets),
 			Licenses:          ConvertFromRPCDetectedLicenses(result.Licenses),
 		})
 	}
@@ -459,6 +459,15 @@ func ConvertFromRPCCode(rpcCode *common.Code) ftypes.Code {
 	return ftypes.Code{
 		Lines: lines,
 	}
+}
+
+func ConvertFromRPCDetectedSecrets(rpcFindings []*common.SecretFinding) []types.DetectedSecret {
+	if len(rpcFindings) == 0 {
+		return nil
+	}
+	return lo.Map(ConvertFromRPCSecretFindings(rpcFindings), func(s ftypes.SecretFinding, _ int) types.DetectedSecret {
+		return types.DetectedSecret(s)
+	})
 }
 
 func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.SecretFinding {
@@ -913,16 +922,19 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 func ConvertToRPCScanResponse(results types.Results, fos ftypes.OS) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range results {
+		secretFindings := lo.Map(result.Secrets, func(s types.DetectedSecret, _ int) ftypes.SecretFinding {
+			return ftypes.SecretFinding(s)
+		})
 		rpcResults = append(rpcResults, &scanner.Result{
 			Target:            result.Target,
 			Class:             string(result.Class),
 			Type:              string(result.Type),
+			Packages:          ConvertToRPCPkgs(result.Packages),
 			Vulnerabilities:   ConvertToRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertToRPCMisconfs(result.Misconfigurations),
-			Packages:          ConvertToRPCPkgs(result.Packages),
-			CustomResources:   ConvertToRPCCustomResources(result.CustomResources),
-			Secrets:           ConvertToRPCSecretFindings(result.Secrets),
+			Secrets:           ConvertToRPCSecretFindings(secretFindings),
 			Licenses:          ConvertToRPCLicenses(result.Licenses),
+			CustomResources:   ConvertToRPCCustomResources(result.CustomResources),
 		})
 	}
 

@@ -1,6 +1,8 @@
 package analyzer
 
-import "github.com/aquasecurity/trivy-iac/pkg/detection"
+import (
+	"github.com/aquasecurity/trivy/pkg/iac/detection"
+)
 
 type Type string
 
@@ -108,13 +110,14 @@ const (
 	// =================
 	// Structured Config
 	// =================
-	TypeAzureARM       Type = Type(detection.FileTypeAzureARM)
-	TypeCloudFormation Type = Type(detection.FileTypeCloudFormation)
-	TypeDockerfile     Type = Type(detection.FileTypeDockerfile)
-	TypeHelm           Type = Type(detection.FileTypeHelm)
-	TypeKubernetes     Type = Type(detection.FileTypeKubernetes)
-	TypeTerraform      Type = Type(detection.FileTypeTerraform)
-	TypeTerraformPlan  Type = Type(detection.FileTypeTerraformPlan)
+	TypeAzureARM              Type = Type(detection.FileTypeAzureARM)
+	TypeCloudFormation        Type = Type(detection.FileTypeCloudFormation)
+	TypeDockerfile            Type = Type(detection.FileTypeDockerfile)
+	TypeHelm                  Type = Type(detection.FileTypeHelm)
+	TypeKubernetes            Type = Type(detection.FileTypeKubernetes)
+	TypeTerraform             Type = Type(detection.FileTypeTerraform)
+	TypeTerraformPlanJSON     Type = Type(detection.FileTypeTerraformPlanJSON)
+	TypeTerraformPlanSnapshot Type = Type(detection.FileTypeTerraformPlanSnapshot)
 
 	// ========
 	// License
@@ -229,6 +232,7 @@ var (
 		TypeHelm,
 		TypeKubernetes,
 		TypeTerraform,
-		TypeTerraformPlan,
+		TypeTerraformPlanJSON,
+		TypeTerraformPlanSnapshot,
 	}
 )

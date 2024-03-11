@@ -35,6 +35,19 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "package-lock.json",
 						Libraries: types.Packages{
 							{
+								ID:       "@babel/parser@7.23.6",
+								Name:     "@babel/parser",
+								Version:  "7.23.6",
+								Indirect: true,
+								Licenses: []string{"MIT"},
+								Locations: []types.Location{
+									{
+										StartLine: 6,
+										EndLine:   10,
+									},
+								},
+							},
+							{
 								ID:       "ansi-colors@3.2.3",
 								Name:     "ansi-colors",
 								Version:  "3.2.3",
@@ -42,8 +55,8 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Indirect: true,
 								Locations: []types.Location{
 									{
-										StartLine: 6,
-										EndLine:   11,
+										StartLine: 11,
+										EndLine:   16,
 									},
 								},
 							},
@@ -54,8 +67,8 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Indirect: true,
 								Locations: []types.Location{
 									{
-										StartLine: 12,
-										EndLine:   16,
+										StartLine: 17,
+										EndLine:   21,
 									},
 								},
 							},
@@ -68,8 +81,8 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Licenses:  []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 17,
-										EndLine:   39,
+										StartLine: 22,
+										EndLine:   44,
 									},
 								},
 							},
@@ -82,12 +95,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Licenses:  []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 25,
-										EndLine:   32,
+										StartLine: 30,
+										EndLine:   37,
 									},
 									{
-										StartLine: 48,
-										EndLine:   55,
+										StartLine: 53,
+										EndLine:   60,
 									},
 								},
 							},
@@ -100,8 +113,8 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Licenses:  []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 40,
-										EndLine:   62,
+										StartLine: 45,
+										EndLine:   67,
 									},
 								},
 							},
@@ -113,12 +126,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 33,
-										EndLine:   37,
+										StartLine: 38,
+										EndLine:   42,
 									},
 									{
-										StartLine: 56,
-										EndLine:   60,
+										StartLine: 61,
+										EndLine:   65,
 									},
 								},
 							},
@@ -130,8 +143,8 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
-										StartLine: 63,
-										EndLine:   67,
+										StartLine: 68,
+										EndLine:   72,
 									},
 								},
 							},
@@ -207,8 +220,13 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "package.json with `/` in name",
+			filePath: "npm/node_modules/@babel/parser/package.json",
+			want:     true,
+		},
+		{
 			name:     "sad path",
-			filePath: "npm/node_modules/package.json",
+			filePath: "npm/package.json",
 			want:     false,
 		},
 		{

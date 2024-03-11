@@ -229,7 +229,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 		return resources, nil
 	}
 
-	k8sScanner := k8s.NewKubenetesScanner()
+	k8sScanner := k8s.NewKubernetesScanner()
 	scanOptions := types.ScanOptions{
 		Scanners: s.opts.Scanners,
 		VulnType: s.opts.VulnType,
@@ -577,7 +577,7 @@ func nodeComponent(nf bom.NodeInfo) *core.Component {
 								Namespace: k8sCoreComponentNamespace,
 							},
 						},
-						PackageURL: &ftypes.PackageURL{
+						PackageURL: &purl.PackageURL{
 							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
 						},
 					},
@@ -601,7 +601,7 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 	return properties
 }
 
-func generatePURL(name, ver, nodeName string) *ftypes.PackageURL {
+func generatePURL(name, ver, nodeName string) *purl.PackageURL {
 
 	var namespace string
 	// Identify k8s distribution. An empty namespace means upstream.
@@ -611,7 +611,7 @@ func generatePURL(name, ver, nodeName string) *ftypes.PackageURL {
 		namespace = ""
 	}
 
-	return &ftypes.PackageURL{
+	return &purl.PackageURL{
 		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, ver, nil, ""),
 	}
 }
@@ -623,8 +623,6 @@ func k8sNamespace(ver, nodeName string) string {
 		namespace = purl.NamespaceEKS
 	case strings.Contains(ver, "gke"):
 		namespace = purl.NamespaceGKE
-	case strings.Contains(ver, "rke2"):
-		namespace = purl.NamespaceRKE
 	case strings.Contains(ver, "hotfix"):
 		if !strings.Contains(nodeName, "aks") {
 			// Unknown k8s distribution

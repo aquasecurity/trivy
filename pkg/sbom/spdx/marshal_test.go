@@ -62,21 +62,19 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Epoch:   0,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeRPM,
-											Namespace: "centos",
-											Name:      "binutils",
-											Version:   "2.30-93.el8",
-											Qualifiers: packageurl.Qualifiers{
-												{
-													Key:   "arch",
-													Value: "aarch64",
-												},
-												{
-													Key:   "distro",
-													Value: "centos-8.3.2011",
-												},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "binutils",
+										Version:   "2.30-93.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
 											},
 										},
 									},
@@ -101,12 +99,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
 									},
 								},
 							},
@@ -114,12 +110,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actioncontroller",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actioncontroller",
-											Version: "7.0.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actioncontroller",
+										Version: "7.0.1",
 									},
 								},
 							},
@@ -134,12 +128,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
 									},
 								},
 							},
@@ -351,25 +343,23 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Epoch:   1,
 								Arch:    "aarch64",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeRPM,
-											Namespace: "centos",
-											Name:      "acl",
-											Version:   "2.2.53-1.el8",
-											Qualifiers: packageurl.Qualifiers{
-												{
-													Key:   "arch",
-													Value: "aarch64",
-												},
-												{
-													Key:   "distro",
-													Value: "centos-8.3.2011",
-												},
-												{
-													Key:   "epoch",
-													Value: "1",
-												},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeRPM,
+										Namespace: "centos",
+										Name:      "acl",
+										Version:   "2.2.53-1.el8",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "aarch64",
+											},
+											{
+												Key:   "distro",
+												Value: "centos-8.3.2011",
+											},
+											{
+												Key:   "epoch",
+												Value: "1",
 											},
 										},
 									},
@@ -393,12 +383,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
 									},
 								},
 								Layer: ftypes.Layer{
@@ -411,12 +399,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actionpack",
-											Version: "7.0.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actionpack",
+										Version: "7.0.1",
 									},
 								},
 								Layer: ftypes.Layer{
@@ -634,12 +620,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "actioncable",
 								Version: "6.1.4.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeGem,
-											Name:    "actioncable",
-											Version: "6.1.4.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGem,
+										Name:    "actioncable",
+										Version: "6.1.4.1",
 									},
 								},
 							},
@@ -736,12 +720,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "ruby-typeprof",
 								Version: "0.20.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeNPM,
-											Name:    "ruby-typeprof",
-											Version: "0.20.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "ruby-typeprof",
+										Version: "0.20.1",
 									},
 								},
 								Licenses: []string{"MIT"},
@@ -903,7 +885,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Target: "key.pem",
 						Class:  types.ClassSecret,
-						Secrets: []ftypes.SecretFinding{
+						Secrets: []types.DetectedSecret{
 							{
 								RuleID:    "private-key",
 								Category:  "AsymmetricPrivateKey",
@@ -976,13 +958,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Name:    "golang.org/x/crypto",
 								Version: "v0.0.1",
 								Identifier: ftypes.PkgIdentifier{
-									PURL: &ftypes.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeGolang,
-											Namespace: "golang.org/x",
-											Name:      "crypto",
-											Version:   "v0.0.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "golang.org/x",
+										Name:      "crypto",
+										Version:   "v0.0.1",
 									},
 								},
 							},

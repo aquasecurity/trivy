@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -249,6 +250,8 @@ func (e *Marshaler) rootComponent(r types.Report) (*core.Component, error) {
 		root.Type = cdx.ComponentTypeContainer
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRepository:
 		root.Type = cdx.ComponentTypeApplication
+	case ftypes.ArtifactCycloneDX:
+		return toCoreComponent(r.CycloneDX.Metadata.Component)
 	}
 
 	if r.Metadata.Size != 0 {
@@ -323,8 +326,11 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 	// e.g. local Go packages
 	if pu := pkg.Identifier.PURL; pu != nil {
 		version = pu.Version
-		// use `group` field for GroupID and `name` for ArtifactID for jar files
-		if pkg.Type == ftypes.Jar {
+		// Use `group` field for GroupID and `name` for ArtifactID for java files
+		// https://github.com/aquasecurity/trivy/issues/4675
+		// Use `group` field for npm scopes
+		// https://github.com/aquasecurity/trivy/issues/5908
+		if pu.Type == packageurl.TypeMaven || pu.Type == packageurl.TypeNPM {
 			name = pu.Name
 			group = pu.Namespace
 		}
@@ -378,7 +384,7 @@ func pkgComponent(pkg Package) (*core.Component, error) {
 		Name:            name,
 		Group:           group,
 		Version:         version,
-		PackageURL:      pkg.Identifier.PURL,
+		PackageURL:      purl.WithPath(pkg.Identifier.PURL, pkg.FilePath),
 		Supplier:        pkg.Maintainer,
 		Licenses:        pkg.Licenses,
 		Hashes:          lo.Ternary(pkg.Digest == "", nil, []digest.Digest{pkg.Digest}),
@@ -391,4 +397,38 @@ func filterProperties(props []core.Property) []core.Property {
 	return lo.Filter(props, func(property core.Property, index int) bool {
 		return !(property.Value == "" || (property.Name == PropertySrcEpoch && property.Value == "0"))
 	})
+}
+
+func toCoreComponent(c ftypes.Component) (*core.Component, error) {
+	var props []core.Property
+	for _, prop := range c.Properties {
+		var namespace string
+		name := prop.Name
+		// Separate the Trivy namespace to avoid double spelling of namespaces.
+		if strings.HasPrefix(name, core.Namespace) {
+			name = strings.TrimPrefix(name, core.Namespace)
+			namespace = core.Namespace
+		}
+		props = append(props, core.Property{
+			Namespace: namespace,
+			Name:      name,
+			Value:     prop.Value,
+		})
+	}
+	var p *purl.PackageURL
+	if c.PackageURL != "" {
+		var err error
+		p, err = purl.FromString(c.PackageURL)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse purl: %w", err)
+		}
+	}
+
+	return &core.Component{
+		Name:       c.Name,
+		Group:      c.Group,
+		PackageURL: p,
+		Type:       cdx.ComponentType(c.Type),
+		Properties: props,
+	}, nil
 }

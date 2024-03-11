@@ -7,43 +7,32 @@ import (
 )
 
 var (
-	ArtifactTypeFlag = Flag{
+	ArtifactTypeFlag = Flag[string]{
 		Name:       "artifact-type",
 		ConfigName: "sbom.artifact-type",
-		Default:    "",
 		Usage:      "deprecated",
 		Deprecated: true,
 	}
-	SBOMFormatFlag = Flag{
+	SBOMFormatFlag = Flag[string]{
 		Name:       "sbom-format",
 		ConfigName: "sbom.format",
-		Default:    "",
 		Usage:      "deprecated",
 		Deprecated: true,
-	}
-	VEXFlag = Flag{
-		Name:       "vex",
-		ConfigName: "sbom.vex",
-		Default:    "",
-		Usage:      "[EXPERIMENTAL] file path to VEX",
 	}
 )
 
 type SBOMFlagGroup struct {
-	ArtifactType *Flag // deprecated
-	SBOMFormat   *Flag // deprecated
-	VEXPath      *Flag
+	ArtifactType *Flag[string] // deprecated
+	SBOMFormat   *Flag[string] // deprecated
 }
 
 type SBOMOptions struct {
-	VEXPath string
 }
 
 func NewSBOMFlagGroup() *SBOMFlagGroup {
 	return &SBOMFlagGroup{
-		ArtifactType: &ArtifactTypeFlag,
-		SBOMFormat:   &SBOMFormatFlag,
-		VEXPath:      &VEXFlag,
+		ArtifactType: ArtifactTypeFlag.Clone(),
+		SBOMFormat:   SBOMFormatFlag.Clone(),
 	}
 }
 
@@ -51,17 +40,20 @@ func (f *SBOMFlagGroup) Name() string {
 	return "SBOM"
 }
 
-func (f *SBOMFlagGroup) Flags() []*Flag {
-	return []*Flag{
+func (f *SBOMFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.ArtifactType,
 		f.SBOMFormat,
-		f.VEXPath,
 	}
 }
 
 func (f *SBOMFlagGroup) ToOptions() (SBOMOptions, error) {
-	artifactType := getString(f.ArtifactType)
-	sbomFormat := getString(f.SBOMFormat)
+	if err := parseFlags(f); err != nil {
+		return SBOMOptions{}, err
+	}
+
+	artifactType := f.ArtifactType.Value()
+	sbomFormat := f.SBOMFormat.Value()
 
 	if artifactType != "" || sbomFormat != "" {
 		log.Logger.Error("'trivy sbom' is now for scanning SBOM. " +
@@ -69,7 +61,5 @@ func (f *SBOMFlagGroup) ToOptions() (SBOMOptions, error) {
 		return SBOMOptions{}, xerrors.New("'--artifact-type' and '--sbom-format' are no longer available")
 	}
 
-	return SBOMOptions{
-		VEXPath: getString(f.VEXPath),
-	}, nil
+	return SBOMOptions{}, nil
 }

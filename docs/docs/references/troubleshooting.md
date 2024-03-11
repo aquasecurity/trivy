@@ -12,6 +12,61 @@
 
 Your scan may time out. Java takes a particularly long time to scan. Try increasing the value of the ---timeout option such as `--timeout 15m`.
 
+### Unable to initialize an image scanner
+
+!!! error
+    ```bash
+    $ trivy image ...
+    ...
+    2024-01-19T08:15:33.288Z	FATAL	image scan error: scan error: unable to initialize a scanner: unable to initialize an image scanner: 4 errors occurred:
+	* docker error: unable to inspect the image (ContainerImageName): Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+	* containerd error: containerd socket not found: /run/containerd/containerd.sock
+	* podman error: unable to initialize Podman client: no podman socket found: stat podman/podman.sock: no such file or directory
+	* remote error: GET https://index.docker.io/v2/ContainerImageName: MANIFEST_UNKNOWN: manifest unknown; unknown tag=0.1
+    ```
+    
+It means Trivy is unable to find the container image in the following places:
+
+* Docker Engine
+* containerd
+* Podman
+* A remote registry
+
+Please see error messages for details of each error.
+
+Common mistakes include the following, depending on where you are pulling images from:
+
+#### Common
+- Typos in the image name
+    - Common mistake :)
+- Forgetting to specify the registry
+    - By default, it is considered to be Docker Hub ( `index.docker.io` ).
+
+#### Docker Engine
+- Incorrect Docker host
+    - If the Docker daemon's socket path is not `/var/run/docker.sock`, you need to specify the `--docker-host` flag or the `DOCKER_HOST` environment variable.
+      The same applies when using TCP; you must specify the correct host address.
+
+#### containerd
+- Incorrect containerd address
+    - If you are using a non-default path, you need to specify the `CONTAINERD_ADDRESS` environment variable.
+      Please refer to [this documentation](../target/container_image.md#containerd).
+- Incorrect namespace
+    - If you are using a non-default namespace, you need to specify the `CONTAINERD_NAMESPACE` environment variable.
+      Please refer to [this documentation](../target/container_image.md#containerd).
+    - 
+#### Podman
+- Podman socket configuration
+    - You need to enable the Podman socket. Please refer to [this documentation](../target/container_image.md#podman).
+
+#### Container Registry
+- Unauthenticated
+    - If you are using a private container registry, you need to authenticate. Please refer to [this documentation](../advanced/private-registries/index.md).
+- Using a proxy
+    - If you are using a proxy within your network, you need to correctly set the `HTTP_PROXY`, `HTTPS_PROXY`, etc., environment variables.
+- Use of a self-signed certificate in the registry
+    - Because certificate verification will fail, you need to either trust that certificate or use the `--insecure` flag (not recommended in production).
+
 ### Certification
 
 !!! error

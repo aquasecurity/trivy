@@ -316,15 +316,17 @@ This section describes misconfiguration-specific configuration.
 Other common options are documented [here](../../configuration/index.md).
 
 ### Enabling a subset of misconfiguration scanners
-It's possible to only enable certain misconfiguration scanners if you prefer. You can do so by passing the `--misconfig-scanners` option.
+It's possible to only enable certain misconfiguration scanners if you prefer.
+You can do so by passing the `--misconfig-scanners` option.
 This flag takes a comma-separated list of configuration scanner types.
+
 ```bash
 trivy config --misconfig-scanners=terraform,dockerfile .
 ```
 
 Will only scan for misconfigurations that pertain to Terraform and Dockerfiles.
 
-### Pass custom policies
+### Passing custom policies
 You can pass policy files or directories including your custom policies through `--policy` option.
 This can be repeated for specifying multiple files or directories.
 
@@ -338,7 +340,7 @@ For more details, see [Custom Policies](./custom/index.md).
 !!! tip
 You also need to specify `--namespaces` option.
 
-### Pass custom data
+### Passing custom data
 You can pass directories including your custom data through `--data` option.
 This can be repeated for specifying multiple directories.
 
@@ -349,13 +351,60 @@ trivy conf --policy ./policy --data ./data --namespaces user ./configs
 
 For more details, see [Custom Data](./custom/data.md).
 
-### Pass namespaces
+### Passing namespaces
 By default, Trivy evaluates policies defined in `builtin.*`.
 If you want to evaluate custom policies in other packages, you have to specify package prefixes through `--namespaces` option.
 This can be repeated for specifying multiple packages.
 
 ``` bash
 trivy conf --policy ./policy --namespaces main --namespaces user ./configs
+```
+
+### Private terraform registries
+Trivy can download terraform code from private registries.
+To pass credentials you must use the `TF_TOKEN_` environment variables.
+You cannot use a `.terraformrc` or `terraform.rc` file, these are not supported by trivy yet.
+
+From the terraform docs:
+
+> Environment variable names should have the prefix TF_TOKEN_ added to the domain name, with periods encoded as underscores.
+> For example, the value of a variable named `TF_TOKEN_app_terraform_io` will be used as a bearer authorization token when the CLI makes service requests to the hostname `app.terraform.io`.
+>
+> You must convert domain names containing non-ASCII characters to their punycode equivalent with an ACE prefix.
+> For example, token credentials for `例えば.com` must be set in a variable called `TF_TOKEN_xn--r8j3dr99h_com`.
+>
+> Hyphens are also valid within host names but usually invalid as variable names and may be encoded as double underscores.
+> For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--caf-dma_fr or TF_TOKEN_xn____caf__dma_fr.
+
+If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.
+
+
+### Skipping resources by inline comments
+Some configuration file formats (e.g. Terraform) support inline comments.
+
+In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned).
+
+The format for these comments is `trivy:ignore:<Vulnerability ID>` immediately following the format-specific line-comment token.
+You can add multiple ignores on the same comment line.
+
+For example, to filter a misconfiguration ID "AVD-GCP-0051" in a Terraform HCL file:
+
+```terraform
+#trivy:ignore:AVD-GCP-0051
+resource "google_container_cluster" "one_off_test" {
+  name     = var.cluster_name
+  location = var.region
+}
+```
+
+For example, to filter misconfigurations "AVD-GCP-0051" and "AVD-GCP-0053" in a Terraform HCL file:
+
+```terraform
+#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053
+resource "google_container_cluster" "one_off_test" {
+  name     = var.cluster_name
+  location = var.region
+}
 ```
 
 [custom]: custom/index.md

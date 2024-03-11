@@ -1,0 +1,19 @@
+{
+    "version": 1,
+    "dependencies": {
+        ".NETCoreApp,Version=v5.0": {
+            "Newtonsoft.Json": {
+                "type": "Direct",
+                "requested": "[12.0.3, )",
+                "resolved": "12.0.3",
+                "contentHash": "6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg=="
+            },
+            "NuGet.Frameworks": {
+                "type": "Direct",
+                "requested": "[5.7.0, )",
+                "resolved": "5.7.0",
+                "contentHash": "7Q/wUoB3jCBcq9zoBOBGHFhe78C13jViPmvjvzTwthVV8DAjMfpXnqAYtgwdaRLJMkTXrtdLxfPBIFFhmlsnIQ=="
+            }
+        }
+    }
+}

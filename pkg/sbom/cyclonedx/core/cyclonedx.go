@@ -15,8 +15,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/digest"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
@@ -39,7 +39,7 @@ type Component struct {
 	Name       string
 	Group      string
 	Version    string
-	PackageURL *ftypes.PackageURL
+	PackageURL *purl.PackageURL
 	Licenses   []string
 	Hashes     []digest.Digest
 	Supplier   string
@@ -184,11 +184,14 @@ func (c *CycloneDX) BOMRef(component *Component) string {
 func (c *CycloneDX) Metadata(ctx context.Context) *cdx.Metadata {
 	return &cdx.Metadata{
 		Timestamp: clock.Now(ctx).UTC().Format(timeLayout),
-		Tools: &[]cdx.Tool{
-			{
-				Vendor:  ToolVendor,
-				Name:    ToolName,
-				Version: c.appVersion,
+		Tools: &cdx.ToolsChoice{
+			Components: &[]cdx.Component{
+				{
+					Type:    cdx.ComponentTypeApplication,
+					Group:   ToolVendor,
+					Name:    ToolName,
+					Version: c.appVersion,
+				},
 			},
 		},
 	}
@@ -227,12 +230,12 @@ func (c *CycloneDX) Vulnerabilities(uniq map[string]*cdx.Vulnerability) *[]cdx.V
 		return *value
 	})
 	sort.Slice(vulns, func(i, j int) bool {
-		return vulns[i].BOMRef < vulns[j].BOMRef
+		return vulns[i].ID < vulns[j].ID
 	})
 	return &vulns
 }
 
-func (c *CycloneDX) PackageURL(p *ftypes.PackageURL) string {
+func (c *CycloneDX) PackageURL(p *purl.PackageURL) string {
 	if p == nil {
 		return ""
 	}
@@ -313,11 +316,20 @@ func IsTrivySBOM(c *cdx.BOM) bool {
 		return false
 	}
 
-	for _, tool := range *c.Metadata.Tools {
+	for _, component := range lo.FromPtr(c.Metadata.Tools.Components) {
+		if component.Group == ToolVendor && component.Name == ToolName {
+			return true
+		}
+	}
+
+	// Metadata.Tools array is deprecated (as of CycloneDX v1.5). We check this field for backward compatibility.
+	// cf. https://github.com/CycloneDX/cyclonedx-go/blob/b9654ae9b4705645152d20eb9872b5f3d73eac49/cyclonedx.go#L988
+	for _, tool := range lo.FromPtr(c.Metadata.Tools.Tools) {
 		if tool.Vendor == ToolVendor && tool.Name == ToolName {
 			return true
 		}
 	}
+
 	return false
 }
 
