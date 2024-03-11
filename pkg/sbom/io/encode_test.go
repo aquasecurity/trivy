@@ -1,364 +1,339 @@
 package io_test
 
-//func TestMarshaler_CoreComponent(t *testing.T) {
-//	var noDepRefs []string
-//	tests := []struct {
-//		name          string
-//		rootComponent *component.Component
-//		want          *cdx.BOM
-//	}{
-//		{
-//			name: "marshal CoreComponent",
-//			rootComponent: &component.Component{
-//				Type: component.TypeContainer,
-//				Name: "test-cluster",
-//				Components: []*component.Component{
-//					{
-//						Type: component.TypeApplication,
-//						Name: "kube-apiserver-kind-control-plane",
-//						Properties: []component.Property{
-//							{
-//								Name:  "control_plane_components",
-//								Value: "kube-apiserver",
-//							},
-//						},
-//						Components: []*component.Component{
-//							{
-//								Type:    component.TypeContainer,
-//								Name:    "k8s.gcr.io/kube-apiserver",
-//								Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-//								PackageURL: &purl.PackageURL{
-//									PackageURL: packageurl.PackageURL{
-//										Type:    "oci",
-//										Name:    "kube-apiserver",
-//										Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-//										Qualifiers: packageurl.Qualifiers{
-//											{
-//												Key:   "repository_url",
-//												Value: "k8s.gcr.io/kube-apiserver",
-//											},
-//											{
-//												Key: "arch",
-//											},
-//										},
-//									},
-//								},
-//								Hashes: []digest.Digest{"sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f"},
-//								Properties: []component.Property{
-//									{
-//										Name:  "PkgID",
-//										Value: "k8s.gcr.io/kube-apiserver:1.21.1",
-//									},
-//									{
-//										Name:  "PkgType",
-//										Value: "oci",
-//									},
-//								},
-//							},
-//						},
-//					},
-//					{
-//						Type: component.TypeContainer,
-//						Name: "kind-control-plane",
-//						Properties: []component.Property{
-//							{
-//								Name:  "architecture",
-//								Value: "arm64",
-//							},
-//							{
-//								Name:  "host_name",
-//								Value: "kind-control-plane",
-//							},
-//							{
-//								Name:  "kernel_version",
-//								Value: "6.2.13-300.fc38.aarch64",
-//							},
-//							{
-//								Name:  "node_role",
-//								Value: "master",
-//							},
-//							{
-//								Name:  "operating_system",
-//								Value: "linux",
-//							},
-//						},
-//						Components: []*component.Component{
-//							{
-//								Type:    component.TypeOS,
-//								Name:    "ubuntu",
-//								Version: "21.04",
-//								Properties: []component.Property{
-//									{
-//										Name:  "Class",
-//										Value: "os-pkgs",
-//									},
-//									{
-//										Name:  "Type",
-//										Value: "ubuntu",
-//									},
-//								},
-//							},
-//							{
-//								Type: component.TypeApplication,
-//								Name: "node-component.Components",
-//								Properties: []component.Property{
-//									{
-//										Name:  "Class",
-//										Value: "lang-pkgs",
-//									},
-//									{
-//										Name:  "Type",
-//										Value: "golang",
-//									},
-//								},
-//								Components: []*component.Component{
-//									{
-//										Type:    component.TypeLibrary,
-//										Name:    "kubelet",
-//										Version: "1.21.1",
-//										Properties: []component.Property{
-//											{
-//												Name:  "PkgType",
-//												Value: "golang",
-//											},
-//										},
-//										PackageURL: &purl.PackageURL{
-//											PackageURL: packageurl.PackageURL{
-//												Type:       "golang",
-//												Name:       "kubelet",
-//												Version:    "1.21.1",
-//												Qualifiers: packageurl.Qualifiers{},
-//											},
-//										},
-//									},
-//									{
-//										Type:    component.TypeLibrary,
-//										Name:    "containerd",
-//										Version: "1.5.2",
-//										Properties: []component.Property{
-//											{
-//												Name:  "PkgType",
-//												Value: "golang",
-//											},
-//										},
-//										PackageURL: &purl.PackageURL{
-//											PackageURL: packageurl.PackageURL{
-//												Type:       "golang",
-//												Name:       "containerd",
-//												Version:    "1.5.2",
-//												Qualifiers: packageurl.Qualifiers{},
-//											},
-//										},
-//									},
-//								},
-//							},
-//						},
-//					},
-//				},
-//			},
-//
-//			want: &cdx.BOM{
-//				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
-//				BOMFormat:    "CycloneDX",
-//				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
-//				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
-//				SpecVersion:  cdx.SpecVersion1_5,
-//				Version:      1,
-//				Metadata: &cdx.Metadata{
-//					Timestamp: "2021-08-25T12:20:30+00:00",
-//					Tools: &cdx.ToolsChoice{
-//						Components: &[]cdx.Component{
-//							{
-//								Type:    cdx.ComponentTypeApplication,
-//								Name:    "trivy",
-//								Group:   "aquasecurity",
-//								Version: "dev",
-//							},
-//						},
-//					},
-//					Component: &cdx.Component{
-//						BOMRef:     "3ff14136-e09f-4df9-80ea-000000000002",
-//						Name:       "test-cluster",
-//						Properties: &[]cdx.Property{},
-//						Type:       cdx.ComponentTypeContainer,
-//					},
-//				},
-//				Vulnerabilities: &[]cdx.Vulnerability{},
-//				Components: &[]cdx.Component{
-//					{
-//						BOMRef: "3ff14136-e09f-4df9-80ea-000000000003",
-//						Type:   "application",
-//						Name:   "kube-apiserver-kind-control-plane",
-//						Properties: &[]cdx.Property{
-//							{
-//								Name:  "aquasecurity:trivy:control_plane_components",
-//								Value: "kube-apiserver",
-//							},
-//						},
-//					},
-//					{
-//						BOMRef: "3ff14136-e09f-4df9-80ea-000000000004",
-//						Type:   "container",
-//						Name:   "kind-control-plane",
-//						Properties: &[]cdx.Property{
-//							{
-//								Name:  "aquasecurity:trivy:architecture",
-//								Value: "arm64",
-//							},
-//							{
-//								Name:  "aquasecurity:trivy:host_name",
-//								Value: "kind-control-plane",
-//							},
-//							{
-//								Name:  "aquasecurity:trivy:kernel_version",
-//								Value: "6.2.13-300.fc38.aarch64",
-//							},
-//							{
-//								Name:  "aquasecurity:trivy:node_role",
-//								Value: "master",
-//							},
-//							{
-//								Name:  "aquasecurity:trivy:operating_system",
-//								Value: "linux",
-//							},
-//						},
-//					},
-//					{
-//						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000005",
-//						Type:    "operating-system",
-//						Name:    "ubuntu",
-//						Version: "21.04",
-//						Properties: &[]cdx.Property{
-//							{
-//								Name:  "aquasecurity:trivy:Class",
-//								Value: "os-pkgs",
-//							},
-//							{
-//								Name:  "aquasecurity:trivy:Type",
-//								Value: "ubuntu",
-//							},
-//						},
-//					},
-//					{
-//						BOMRef: "3ff14136-e09f-4df9-80ea-000000000006",
-//						Type:   "application",
-//						Name:   "node-component.Components",
-//						Properties: &[]cdx.Property{
-//							{
-//								Name:  "aquasecurity:trivy:Class",
-//								Value: "lang-pkgs",
-//							},
-//							{
-//								Name:  "aquasecurity:trivy:Type",
-//								Value: "golang",
-//							},
-//						},
-//					},
-//					{
-//						BOMRef:     "pkg:golang/containerd@1.5.2",
-//						Type:       "library",
-//						Name:       "containerd",
-//						Version:    "1.5.2",
-//						PackageURL: "pkg:golang/containerd@1.5.2",
-//						Properties: &[]cdx.Property{
-//							{
-//								Name:  "aquasecurity:trivy:PkgType",
-//								Value: "golang",
-//							},
-//						},
-//					},
-//					{
-//						BOMRef:     "pkg:golang/kubelet@1.21.1",
-//						Type:       "library",
-//						Name:       "kubelet",
-//						Version:    "1.21.1",
-//						PackageURL: "pkg:golang/kubelet@1.21.1",
-//						Properties: &[]cdx.Property{
-//							{
-//								Name:  "aquasecurity:trivy:PkgType",
-//								Value: "golang",
-//							},
-//						},
-//					},
-//					{
-//						BOMRef: "pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?arch=&repository_url=k8s.gcr.io%2Fkube-apiserver",
-//						Hashes: &[]cdx.Hash{
-//							{
-//								Algorithm: "SHA-256",
-//								Value:     "18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-//							},
-//						},
-//						Type:       "container",
-//						Name:       "k8s.gcr.io/kube-apiserver",
-//						Version:    "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-//						PackageURL: "pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?arch=&repository_url=k8s.gcr.io%2Fkube-apiserver",
-//						Properties: &[]cdx.Property{
-//							{
-//								Name:  "aquasecurity:trivy:PkgID",
-//								Value: "k8s.gcr.io/kube-apiserver:1.21.1",
-//							},
-//							{
-//								Name:  "aquasecurity:trivy:PkgType",
-//								Value: "oci",
-//							},
-//						},
-//					},
-//				},
-//				Dependencies: &[]cdx.Dependency{
-//					{
-//						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-//						Dependencies: &[]string{
-//							"3ff14136-e09f-4df9-80ea-000000000003",
-//							"3ff14136-e09f-4df9-80ea-000000000004",
-//						},
-//					},
-//					{
-//						Ref:          "3ff14136-e09f-4df9-80ea-000000000003",
-//						Dependencies: &[]string{"pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?arch=&repository_url=k8s.gcr.io%2Fkube-apiserver"},
-//					},
-//					{
-//						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
-//						Dependencies: &[]string{
-//							"3ff14136-e09f-4df9-80ea-000000000005",
-//							"3ff14136-e09f-4df9-80ea-000000000006",
-//						},
-//					},
-//					{
-//						Ref:          "3ff14136-e09f-4df9-80ea-000000000005",
-//						Dependencies: &noDepRefs,
-//					},
-//					{
-//						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
-//						Dependencies: &[]string{
-//							"pkg:golang/containerd@1.5.2",
-//							"pkg:golang/kubelet@1.21.1",
-//						},
-//					},
-//					{
-//						Ref:          "pkg:golang/containerd@1.5.2",
-//						Dependencies: &noDepRefs,
-//					},
-//					{
-//						Ref:          "pkg:golang/kubelet@1.21.1",
-//						Dependencies: &noDepRefs,
-//					},
-//					{
-//						Ref:          "pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?arch=&repository_url=k8s.gcr.io%2Fkube-apiserver",
-//						Dependencies: &noDepRefs,
-//					},
-//				},
-//			},
-//		},
-//	}
-//
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
-//			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-//
-//			got, err := component.NewMarshaler().Marshal(ctx, tt.rootComponent)
-//			require.NoError(t, err)
-//			assert.Equal(t, tt.want, got)
-//		})
-//	}
-//}
+import (
+	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
+	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/uuid"
+	"github.com/package-url/packageurl-go"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"testing"
+)
+
+func TestEncoder_Encode(t *testing.T) {
+	tests := []struct {
+		name           string
+		report         types.Report
+		wantComponents map[uuid.UUID]*core.Component
+		wantRels       map[uuid.UUID][]core.Relationship
+		wantVulns      map[uuid.UUID][]core.Vulnerability
+		wantErr        string
+	}{
+		{
+			name: "container image",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "debian:12",
+				ArtifactType:  ftypes.ArtifactContainerImage,
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: ftypes.Debian,
+						Name:   "12",
+					},
+					RepoTags: []string{
+						"debian:latest",
+						"debian:12",
+					},
+					RepoDigests: []string{
+						"debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+					},
+				},
+				Results: []types.Result{
+					{
+						Target: "debian:12",
+						Type:   ftypes.Debian,
+						Class:  types.ClassOSPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "libc6@2.37-15.1",
+								Name:    "libc6",
+								Version: "2.37-15.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeDebian,
+										Name:    "libc6",
+										Version: "2.37-15.1",
+									},
+								},
+							},
+							{
+								ID:      "curl@7.50.3-1",
+								Name:    "curl",
+								Version: "7.50.3-1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeDebian,
+										Name:    "curl",
+										Version: "7.50.3-1",
+									},
+								},
+								DependsOn: []string{
+									"libc6@2.37-15.1",
+								},
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								PkgName:          "curl",
+								PkgID:            "curl@7.50.3-1",
+								VulnerabilityID:  "CVE-2021-22876",
+								InstalledVersion: "7.50.3-1",
+								FixedVersion:     "7.50.3-1+deb9u1",
+								Vulnerability: dtypes.Vulnerability{
+									Severity: "HIGH",
+								},
+							},
+						},
+					},
+					{
+						Target: "Java",
+						Type:   ftypes.Jar,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:       "org.apache.xmlgraphics/batik-anim:1.9.1",
+								Name:     "org.apache.xmlgraphics/batik-anim",
+								Version:  "1.9.1",
+								FilePath: "/app/batik-anim-1.9.1.jar",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "org.apache.xmlgraphics",
+										Name:      "batik-anim",
+										Version:   "1.9.1",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeContainer,
+					Name: "debian:12",
+					Root: true,
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeOCI,
+							Name:    "debian",
+							Version: "sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+							Qualifiers: packageurl.Qualifiers{
+								{
+									Key:   "repository_url",
+									Value: "index.docker.io/library/debian",
+								},
+							},
+						},
+						BOMRef: "pkg:oci/debian@sha256%3A4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90?repository_url=index.docker.io%2Flibrary%2Fdebian",
+					},
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyRepoDigest,
+							Value: "debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+						},
+						{
+							Name:  core.PropertyRepoTag,
+							Value: "debian:12",
+						},
+						{
+							Name:  core.PropertyRepoTag,
+							Value: "debian:latest",
+						},
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type:    core.TypeOS,
+					Name:    "debian",
+					Version: "12",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "os-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "debian",
+						},
+					},
+					PkgID: core.PkgID{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Name:    "libc6",
+					Version: "2.37-15.1",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "libc6@2.37-15.1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "debian",
+						},
+					},
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeDebian,
+							Name:    "libc6",
+							Version: "2.37-15.1",
+						},
+						BOMRef: "pkg:deb/libc6@2.37-15.1",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type:    core.TypeLibrary,
+					Name:    "curl",
+					Version: "7.50.3-1",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "curl@7.50.3-1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "debian",
+						},
+					},
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeDebian,
+							Name:    "curl",
+							Version: "7.50.3-1",
+						},
+						BOMRef: "pkg:deb/curl@7.50.3-1",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
+					Type:    core.TypeLibrary,
+					Group:   "org.apache.xmlgraphics",
+					Name:    "batik-anim",
+					Version: "1.9.1",
+					Files: []core.File{
+						{
+							Path: "/app/batik-anim-1.9.1.jar",
+						},
+					},
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyFilePath,
+							Value: "/app/batik-anim-1.9.1.jar",
+						},
+						{
+							Name:  core.PropertyPkgID,
+							Value: "org.apache.xmlgraphics/batik-anim:1.9.1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "jar",
+						},
+					},
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:      packageurl.TypeMaven,
+							Namespace: "org.apache.xmlgraphics",
+							Name:      "batik-anim",
+							Version:   "1.9.1",
+						},
+						BOMRef: "pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1",
+					},
+				},
+			},
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): nil,
+			},
+			wantVulns: map[uuid.UUID][]core.Vulnerability{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						ID:               "CVE-2021-22876",
+						PkgID:            "curl@7.50.3-1",
+						PkgName:          "curl",
+						InstalledVersion: "7.50.3-1",
+						FixedVersion:     "7.50.3-1+deb9u1",
+						Vulnerability: dtypes.Vulnerability{
+							Severity: "HIGH",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "invalid digest",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "debian:12",
+				ArtifactType:  ftypes.ArtifactContainerImage,
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: ftypes.Debian,
+						Name:   "12",
+					},
+					RepoTags: []string{
+						"debian:12",
+					},
+					RepoDigests: []string{
+						"debian@sha256:123",
+					},
+				},
+			},
+			wantErr: "failed to parse digest",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+			got, err := sbomio.NewEncoder().Encode(tt.report)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+
+			require.Len(t, got.Components(), len(tt.wantComponents))
+			for id, want := range tt.wantComponents {
+				assert.EqualExportedValues(t, *want, *got.Components()[id])
+			}
+
+			assert.Equal(t, tt.wantRels, got.Relationships())
+			assert.Equal(t, tt.wantVulns, got.Vulnerabilities())
+		})
+	}
+}

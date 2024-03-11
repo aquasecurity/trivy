@@ -33,9 +33,7 @@ func (m *Encoder) Encode(report types.Report) (*core.BOM, error) {
 	m.bom.AddComponent(root)
 
 	for _, result := range report.Results {
-		if err := m.encodeResult(root, report.Metadata, result); err != nil {
-			return nil, xerrors.Errorf("failed to encode result: %w", err)
-		}
+		m.encodeResult(root, report.Metadata, result)
 	}
 
 	// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
@@ -115,7 +113,7 @@ func (m *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	return root, nil
 }
 
-func (m *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result) error {
+func (m *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result) {
 	if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
 		result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
 		// If a package is language-specific package that isn't associated with a lock file,
@@ -128,9 +126,7 @@ func (m *Encoder) encodeResult(root *core.Component, metadata types.Metadata, re
 		// ref. https://cyclonedx.org/use-cases/#inventory
 
 		// Dependency graph from #1 to #2
-		if err := m.encodePackages(root, result); err != nil {
-			return xerrors.Errorf("failed to encode packages: %w", err)
-		}
+		m.encodePackages(root, result)
 	} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
 		// If a package is OS package, it will be a dependency of "Operating System" component.
 		// e.g.
@@ -153,14 +149,11 @@ func (m *Encoder) encodeResult(root *core.Component, metadata types.Metadata, re
 		appComponent := m.resultComponent(root, result, metadata.OS)
 
 		// #3
-		if err := m.encodePackages(appComponent, result); err != nil {
-			return xerrors.Errorf("failed to encode packages: %w", err)
-		}
+		m.encodePackages(appComponent, result)
 	}
-	return nil
 }
 
-func (m *Encoder) encodePackages(parent *core.Component, result types.Result) error {
+func (m *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	// Get dependency parents first
 	parents := ftypes.Packages(result.Packages).ParentDeps()
 
@@ -185,7 +178,9 @@ func (m *Encoder) encodePackages(parent *core.Component, result types.Result) er
 		m.bom.AddComponent(c)
 
 		// Add vulnerabilities
-		m.bom.AddVulnerabilities(c, vulns[pkgID])
+		if vv := vulns[pkgID]; vv != nil {
+			m.bom.AddVulnerabilities(c, vv)
+		}
 	}
 
 	// Build a dependency graph
@@ -212,8 +207,6 @@ func (m *Encoder) encodePackages(parent *core.Component, result types.Result) er
 			m.bom.AddRelationship(directPkg, nil, "")
 		}
 	}
-
-	return nil
 }
 
 func (m *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
@@ -307,9 +300,12 @@ func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.C
 		},
 	}
 
-	file := core.File{
-		Path: pkg.FilePath,
-		Hash: pkg.Digest,
+	var files []core.File
+	if pkg.FilePath != "" || pkg.Digest != "" {
+		files = append(files, core.File{
+			Path: pkg.FilePath,
+			Hash: pkg.Digest,
+		})
 	}
 
 	return &core.Component{
@@ -322,7 +318,7 @@ func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.C
 		},
 		Supplier:   pkg.Maintainer,
 		Licenses:   pkg.Licenses,
-		Files:      []core.File{file},
+		Files:      files,
 		Properties: filterProperties(properties),
 	}
 }

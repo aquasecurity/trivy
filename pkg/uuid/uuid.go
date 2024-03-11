@@ -12,8 +12,9 @@ import (
 type UUID = uuid.UUID
 
 var (
-	newUUID func() uuid.UUID = uuid.New
-	Nil                      = uuid.Nil
+	newUUID   func() uuid.UUID = uuid.New
+	Nil                        = uuid.Nil
+	MustParse                  = uuid.MustParse
 )
 
 // SetFakeUUID sets a fake UUID for testing.
