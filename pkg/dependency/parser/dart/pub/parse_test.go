@@ -30,7 +30,7 @@ func TestParser_Parse(t *testing.T) {
 					Version: "3.0.2",
 				},
 				{
-					ID:      "flutter_test@0.0.0",
+					ID:      "flutter_test@3.3.0",
 					Name:    "flutter_test",
 					Version: "3.3.0",
 				},

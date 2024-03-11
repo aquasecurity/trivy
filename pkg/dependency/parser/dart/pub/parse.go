@@ -65,7 +65,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		// It will be confusing if we exclude direct dev dependencies and include transitive dev dependencies.
 		// We decided to keep all dev dependencies until Pub will add support for "transitive main" and "transitive dev".
 		lib := types.Library{
-			ID:       utils.PackageID(name, dep.Version),
+			ID:       utils.PackageID(name, version),
 			Name:     name,
 			Version:  version,
 			Indirect: dep.Dependency == transitiveDep,
