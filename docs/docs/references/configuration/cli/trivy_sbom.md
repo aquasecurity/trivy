@@ -25,7 +25,7 @@ trivy sbom [flags] SBOM_PATH
       --clear-cache                 clear image caches without scanning
       --compliance string           compliance report to generate
       --custom-headers strings      custom headers in client mode
-      --db-repository string        OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
+      --db-repository string        OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --download-db-only            download/update vulnerability database but don't run a scan
       --download-java-db-only       download/update Java index database but don't run a scan
       --exit-code int               specify exit code when any security issues are found
@@ -37,7 +37,7 @@ trivy sbom [flags] SBOM_PATH
       --ignore-status strings       comma-separated list of vulnerability status to ignore (unknown,not_affected,affected,fixed,under_investigation,will_not_fix,fix_deferred,end_of_life)
       --ignore-unfixed              display only fixed vulnerabilities
       --ignorefile string           specify .trivyignore file (default ".trivyignore")
-      --java-db-repository string   OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
+      --java-db-repository string   OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
       --list-all-pkgs               enabling the option will output all packages regardless of vulnerability
       --no-progress                 suppress progress bar
       --offline-scan                do not issue API requests to identify dependencies

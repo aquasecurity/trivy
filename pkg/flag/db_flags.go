@@ -6,8 +6,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-const defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
-const defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
+const defaultDBRepository = "ghcr.io/aquasecurity/trivy-db:2"
+const defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db:1"
 
 var (
 	ResetFlag = Flag[bool]{

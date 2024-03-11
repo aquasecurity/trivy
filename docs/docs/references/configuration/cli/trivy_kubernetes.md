@@ -37,7 +37,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
       --context string                    specify a context to scan
-      --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
+      --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
@@ -57,7 +57,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
-      --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
+      --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
