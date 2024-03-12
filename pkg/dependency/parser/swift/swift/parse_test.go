@@ -1,7 +1,7 @@
 package swift
 
 import (
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"

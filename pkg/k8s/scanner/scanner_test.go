@@ -2,10 +2,13 @@ package scanner
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/uuid"
+	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/maps"
 	"sort"
 	"testing"
 
-	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 
@@ -13,17 +16,15 @@ import (
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	cyc "github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
 )
 
 func TestScanner_Scan(t *testing.T) {
 	flagOpts := flag.Options{ReportOptions: flag.ReportOptions{Format: "cyclonedx"}}
 	tests := []struct {
-		name        string
-		clusterName string
-		artifacts   []*artifacts.Artifact
-		want        *core.Component
+		name           string
+		clusterName    string
+		artifacts      []*artifacts.Artifact
+		wantComponents []*core.Component
 	}{
 		{
 			name:        "test cluster info with resources",
@@ -81,194 +82,190 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			want: &core.Component{
-				Type:    cdx.ComponentTypePlatform,
-				Name:    "k8s.io/kubernetes",
-				Version: "1.21.1",
-				Properties: []core.Property{
-					{
-						Name:      "Name",
-						Value:     "kind-kind",
-						Namespace: k8sCoreComponentNamespace,
+			wantComponents: []*core.Component{
+				{
+					Type:    core.TypeApplication,
+					Name:    "github.com/containerd/containerd",
+					Version: "1.5.2",
+					Properties: []core.Property{
+						{
+							Name:      k8sComponentName,
+							Value:     "github.com/containerd/containerd",
+							Namespace: k8sCoreComponentNamespace,
+						},
+						{
+							Name:      k8sComponentType,
+							Value:     "node",
+							Namespace: k8sCoreComponentNamespace,
+						},
 					},
-					{
-						Name:      "Type",
-						Value:     "cluster",
-						Namespace: k8sCoreComponentNamespace,
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:       "golang",
+							Name:       "github.com/containerd/containerd",
+							Version:    "1.5.2",
+							Qualifiers: packageurl.Qualifiers{},
+						},
+						BOMRef: "pkg:golang/github.com%2Fcontainerd%2Fcontainerd@1.5.2",
 					},
 				},
-				PackageURL: &purl.PackageURL{
-					PackageURL: packageurl.PackageURL{
-						Type:    purl.TypeK8s,
-						Name:    "k8s.io/kubernetes",
-						Version: "1.21.1",
+				{
+					Type:    core.TypeApplication,
+					Name:    "k8s.io/apiserver",
+					Version: "1.21.1",
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:    purl.TypeK8s,
+							Name:    "k8s.io/apiserver",
+							Version: "1.21.1",
+						},
+						BOMRef: "pkg:k8s/k8s.io%2Fapiserver@1.21.1",
 					},
 				},
-				Components: []*core.Component{
-					{
-						Type:    cdx.ComponentTypeApplication,
-						Name:    "k8s.io/apiserver",
-						Version: "1.21.1",
-						PackageURL: &purl.PackageURL{
-							PackageURL: packageurl.PackageURL{
-								Type:    purl.TypeK8s,
-								Name:    "k8s.io/apiserver",
-								Version: "1.21.1",
-							},
+				{
+					Type:    core.TypeApplication,
+					Name:    "k8s.io/kubelet",
+					Version: "1.21.1",
+					Properties: []core.Property{
+						{
+							Name:      k8sComponentName,
+							Value:     "k8s.io/kubelet",
+							Namespace: k8sCoreComponentNamespace,
 						},
-						Properties: []core.Property{},
-						Components: []*core.Component{
-							{
-								Type:    cdx.ComponentTypeContainer,
-								Name:    "k8s.gcr.io/kube-apiserver",
-								Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-								PackageURL: &purl.PackageURL{
-									PackageURL: packageurl.PackageURL{
-										Type:    "oci",
-										Name:    "kube-apiserver",
-										Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
-										Qualifiers: packageurl.Qualifiers{
-											{
-												Key:   "repository_url",
-												Value: "k8s.gcr.io/kube-apiserver",
-											},
-										},
-									},
-								},
-								Properties: []core.Property{
-									{
-										Name:  cyc.PropertyPkgID,
-										Value: "k8s.gcr.io/kube-apiserver:1.21.1",
-									},
-									{
-										Name:  cyc.PropertyPkgType,
-										Value: "oci",
-									},
-								},
-							},
+						{
+							Name:      k8sComponentType,
+							Value:     "node",
+							Namespace: k8sCoreComponentNamespace,
 						},
 					},
-					{
-						Type: cdx.ComponentTypePlatform,
-						Name: "kind-control-plane",
-						Properties: []core.Property{
-							{
-								Name:  "Architecture",
-								Value: "arm64",
-							},
-							{
-								Name:  "HostName",
-								Value: "kind-control-plane",
-							},
-							{
-								Name:  "KernelVersion",
-								Value: "6.2.15-300.fc38.aarch64",
-							},
-							{
-								Name:  "NodeRole",
-								Value: "master",
-							},
-							{
-								Name:  "OperatingSystem",
-								Value: "linux",
-							},
-							{
-								Name:      k8sComponentName,
-								Value:     "kind-control-plane",
-								Namespace: k8sCoreComponentNamespace,
-							},
-							{
-								Name:      k8sComponentType,
-								Value:     "node",
-								Namespace: k8sCoreComponentNamespace,
-							},
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:    "k8s",
+							Name:    "k8s.io/kubelet",
+							Version: "1.21.1",
 						},
-						Components: []*core.Component{
-							{
-								Type:    cdx.ComponentTypeOS,
-								Name:    "ubuntu",
-								Version: "21.04",
-								Properties: []core.Property{
-									{
-										Name:      "Class",
-										Value:     "os-pkgs",
-										Namespace: "",
-									},
-									{
-										Name:      "Type",
-										Value:     "ubuntu",
-										Namespace: "",
-									},
-								},
-							},
-							{
-								Type: cdx.ComponentTypeApplication,
-								Name: "node-core-components",
-								Properties: []core.Property{
-									{
-										Name:      "Class",
-										Value:     "lang-pkgs",
-										Namespace: "",
-									},
-									{
-										Name:      "Type",
-										Value:     "golang",
-										Namespace: "",
-									},
-								},
-								Components: []*core.Component{
-									{
-										Type:    cdx.ComponentTypeApplication,
-										Name:    "k8s.io/kubelet",
-										Version: "1.21.1",
-										Properties: []core.Property{
-											{
-												Name:      k8sComponentType,
-												Value:     "node",
-												Namespace: k8sCoreComponentNamespace,
-											},
-											{
-												Name:      k8sComponentName,
-												Value:     "k8s.io/kubelet",
-												Namespace: k8sCoreComponentNamespace,
-											},
-										},
-										PackageURL: &purl.PackageURL{
-											PackageURL: packageurl.PackageURL{
-												Type:    "k8s",
-												Name:    "k8s.io/kubelet",
-												Version: "1.21.1",
-											},
-										},
-									},
-									{
-										Type:    cdx.ComponentTypeApplication,
-										Name:    "github.com/containerd/containerd",
-										Version: "1.5.2",
-										Properties: []core.Property{
-											{
-												Name:      k8sComponentType,
-												Value:     "node",
-												Namespace: k8sCoreComponentNamespace,
-											},
-											{
-												Name:      k8sComponentName,
-												Value:     "github.com/containerd/containerd",
-												Namespace: k8sCoreComponentNamespace,
-											},
-										},
-										PackageURL: &purl.PackageURL{
-											PackageURL: packageurl.PackageURL{
-												Type:       "golang",
-												Name:       "github.com/containerd/containerd",
-												Version:    "1.5.2",
-												Qualifiers: packageurl.Qualifiers{},
-											},
-										},
-									},
+						BOMRef: "pkg:k8s/k8s.io%2Fkubelet@1.21.1",
+					},
+				},
+				{
+					Type: core.TypeApplication,
+					Name: "node-core-components",
+					PkgID: core.PkgID{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000006",
+					},
+				},
+				{
+					Type:    core.TypeContainer,
+					Name:    "k8s.gcr.io/kube-apiserver",
+					Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:    "oci",
+							Name:    "kube-apiserver",
+							Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
+							Qualifiers: packageurl.Qualifiers{
+								{
+									Key:   "repository_url",
+									Value: "k8s.gcr.io/kube-apiserver",
 								},
 							},
 						},
+						BOMRef: "pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver",
+					},
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "k8s.gcr.io/kube-apiserver:1.21.1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "oci",
+						},
+					},
+				},
+				{
+					Type:    core.TypeOS,
+					Name:    "ubuntu",
+					Version: "21.04",
+					Properties: []core.Property{
+						{
+							Name:      "Class",
+							Value:     "os-pkgs",
+							Namespace: "",
+						},
+						{
+							Name:      "Type",
+							Value:     "ubuntu",
+							Namespace: "",
+						},
+					},
+					PkgID: core.PkgID{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000005",
+					},
+				},
+				{
+					Type:    core.TypePlatform,
+					Root:    true,
+					Name:    "k8s.io/kubernetes",
+					Version: "1.21.1",
+					Properties: []core.Property{
+						{
+							Name:      "Name",
+							Value:     "kind-kind",
+							Namespace: k8sCoreComponentNamespace,
+						},
+						{
+							Name:      "Type",
+							Value:     "cluster",
+							Namespace: k8sCoreComponentNamespace,
+						},
+					},
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:    purl.TypeK8s,
+							Name:    "k8s.io/kubernetes",
+							Version: "1.21.1",
+						},
+						BOMRef: "pkg:k8s/k8s.io%2Fkubernetes@1.21.1",
+					},
+				},
+				{
+					Type: core.TypePlatform,
+					Name: "kind-control-plane",
+					Properties: []core.Property{
+						{
+							Name:  "Architecture",
+							Value: "arm64",
+						},
+						{
+							Name:  "HostName",
+							Value: "kind-control-plane",
+						},
+						{
+							Name:  "KernelVersion",
+							Value: "6.2.15-300.fc38.aarch64",
+						},
+						{
+							Name:      k8sComponentName,
+							Value:     "kind-control-plane",
+							Namespace: k8sCoreComponentNamespace,
+						},
+						{
+							Name:  "NodeRole",
+							Value: "master",
+						},
+						{
+							Name:  "OperatingSystem",
+							Value: "linux",
+						},
+						{
+							Name:      k8sComponentType,
+							Value:     "node",
+							Namespace: k8sCoreComponentNamespace,
+						},
+					},
+					PkgID: core.PkgID{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000004",
 					},
 				},
 			},
@@ -276,34 +273,34 @@ func TestScanner_Scan(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.TODO()
+			ctx := context.Background()
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
 			runner, err := cmd.NewRunner(ctx, flagOpts)
 			assert.NoError(t, err)
+
 			scanner := NewScanner(tt.clusterName, runner, flagOpts)
 			got, err := scanner.Scan(ctx, tt.artifacts)
-			sortNodeComponents(got.RootComponent)
-			sortNodeComponents(tt.want)
-			assert.Equal(t, tt.want, got.RootComponent)
+			require.NoError(t, err)
+
+			gotComponents := maps.Values(got.BOM.Components())
+			require.Equal(t, len(tt.wantComponents), len(gotComponents))
+
+			sort.Slice(gotComponents, func(i, j int) bool {
+				switch {
+				case gotComponents[i].Type != gotComponents[j].Type:
+					return gotComponents[i].Type < gotComponents[j].Type
+				case gotComponents[i].Name != gotComponents[j].Name:
+					return gotComponents[i].Name < gotComponents[j].Name
+				default:
+					return gotComponents[i].Version < gotComponents[j].Version
+				}
+			})
+			for i, want := range tt.wantComponents {
+				assert.EqualExportedValues(t, *want, *gotComponents[i], want.Name)
+			}
 		})
 	}
-}
-
-func sortNodeComponents(component *core.Component) {
-	nodeComp := findComponentByName(component, "node-core-components")
-	sort.Slice(nodeComp.Components, func(i, j int) bool {
-		return nodeComp.Components[i].Name < nodeComp.Components[j].Name
-	})
-}
-
-func findComponentByName(component *core.Component, compName string) *core.Component {
-	if component.Name == compName {
-		return component
-	}
-	var fComp *core.Component
-	for _, comp := range component.Components {
-		fComp = findComponentByName(comp, compName)
-	}
-	return fComp
 }
 
 func TestTestOsNameVersion(t *testing.T) {
@@ -546,7 +543,8 @@ func TestFindNodeName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := findNodeName(tt.artifacts)
+			s := Scanner{}
+			got := s.findNodeName(tt.artifacts)
 			assert.Equal(t, tt.want, got)
 		})
 	}

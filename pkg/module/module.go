@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/mailru/easyjson"
 	"github.com/samber/lo"
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
@@ -235,8 +234,8 @@ func unmarshal(mem api.Memory, ptrSize uint64, v any) error {
 	return nil
 }
 
-func marshal(ctx context.Context, m api.Module, malloc api.Function, v easyjson.Marshaler) (uint64, uint64, error) {
-	b, err := easyjson.Marshal(v)
+func marshal(ctx context.Context, m api.Module, malloc api.Function, v any) (uint64, uint64, error) {
+	b, err := json.Marshal(v)
 	if err != nil {
 		return 0, 0, xerrors.Errorf("marshal error: %w", err)
 	}

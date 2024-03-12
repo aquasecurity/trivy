@@ -2,11 +2,12 @@ package lockfile
 
 import (
 	"bufio"
-	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -36,7 +37,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		name := strings.Join(dep[:2], ":")
 		version := strings.Split(dep[2], "=")[0] // remove classPaths
 		libs = append(libs, types.Library{
-			ID:      fmt.Sprintf("%s:%s", name, version),
+			ID:      dependency.ID(ftypes.Gradle, name, version),
 			Name:    name,
 			Version: version,
 			Locations: []types.Location{

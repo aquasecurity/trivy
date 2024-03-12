@@ -247,7 +247,7 @@ func (m *Marshaler) rootPackage(r types.Report, pkgDownloadLocation string) (*sp
 	if p, err := purl.New(purl.TypeOCI, r.Metadata, ftypes.Package{}); err != nil {
 		return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
 	} else if p != nil {
-		externalReferences = append(externalReferences, purlExternalReference(p.ToString()))
+		externalReferences = append(externalReferences, purlExternalReference(p.String()))
 	}
 
 	if r.Metadata.ImageID != "" {

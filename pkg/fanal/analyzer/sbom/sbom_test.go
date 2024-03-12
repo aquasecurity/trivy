@@ -124,6 +124,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						Libraries: types.Packages{
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
+								ID:       "co.elastic.apm:apm-agent:1.36.0",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
 								Identifier: types.PkgIdentifier{
@@ -138,6 +139,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 							},
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
+								ID:       "co.elastic.apm:apm-agent-cached-lookup-key:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
 								Identifier: types.PkgIdentifier{

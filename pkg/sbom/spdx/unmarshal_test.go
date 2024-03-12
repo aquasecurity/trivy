@@ -26,9 +26,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/happy/bom.json",
 			want: types.SBOM{
-				OS: ftypes.OS{
-					Family: "alpine",
-					Name:   "3.16.0",
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "alpine",
+						Name:   "3.16.0",
+					},
 				},
 				Packages: []ftypes.PackageInfo{
 					{
@@ -298,9 +300,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path only os component",
 			inputFile: "testdata/happy/os-only-bom.json",
 			want: types.SBOM{
-				OS: ftypes.OS{
-					Family: "alpine",
-					Name:   "3.16.0",
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "alpine",
+						Name:   "3.16.0",
+					},
 				},
 			},
 		},
@@ -331,7 +335,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			}
 
 			// Not compare the SPDX field
-			v.SPDX = nil
+			v.BOM = nil
 
 			sort.Slice(v.Applications, func(i, j int) bool {
 				return v.Applications[i].Type < v.Applications[j].Type

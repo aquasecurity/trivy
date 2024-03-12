@@ -54,17 +54,7 @@
     {
       "bom-ref": "a62abb1f-cb38-4fde-90f3-2bda3b87ddb2",
       "type": "application",
-      "name": "node-core-components",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:Class",
-          "value": "lang-pkgs"
-        },
-        {
-          "name": "aquasecurity:trivy:Type",
-          "value": "golang"
-        }
-      ]
+      "name": "node-core-components"
     },
     {
       "bom-ref": "a6350ac3-52f6-4c5f-a3e3-184b9a634bef",

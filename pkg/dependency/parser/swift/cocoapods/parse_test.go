@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/swift/cocoapods"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
