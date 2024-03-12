@@ -107,7 +107,7 @@ package user.foobar.ABC001
 
 deny[cause] {
 	bucket := input.aws.s3.buckets[_]
-	bucket.name.value == "${template-name-is-evil}"
+	bucket.name.value == "${template-name-is-$evil}"
 	cause := bucket.name
 }
 `,

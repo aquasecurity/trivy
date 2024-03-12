@@ -108,8 +108,8 @@ func parseStringPrimitive(input string) string {
 	// ref: https://developer.hashicorp.com/terraform/language/expressions/strings#escape-sequences-1
 	r := regexp.MustCompile(`((\$|\%)\{.+\})`)
 	ff := r.ReplaceAllStringFunc(input, func(s string) string {
-		s = strings.ReplaceAll(s, "$", "$$")
-		s = strings.ReplaceAll(s, "%", "%%")
+		s = strings.Replace(s, "$", "$$", 1)
+		s = strings.Replace(s, "%", "%%", 1)
 		return s
 	})
 	if strings.Contains(ff, "\n") {
