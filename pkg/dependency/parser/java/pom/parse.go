@@ -207,14 +207,14 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 			dependsOn := lo.Map(result.dependencies, func(a artifact, _ int) string {
 				return a.Name()
 			})
-			uniqDeps[dependency.ID(ftypes.Pom, art.Name(), art.Version.String())] = dependsOn
+			uniqDeps[packageID(art.Name(), art.Version.String())] = dependsOn
 		}
 	}
 
 	// Convert to []types.Library and []types.Dependency
 	for name, art := range uniqArtifacts {
 		lib := types.Library{
-			ID:        dependency.ID(ftypes.Pom, name, art.Version.String()),
+			ID:        packageID(name, art.Version.String()),
 			Name:      name,
 			Version:   art.Version.String(),
 			License:   art.JoinLicenses(),
@@ -226,7 +226,7 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		// Convert dependency names into dependency IDs
 		dependsOn := lo.FilterMap(uniqDeps[lib.ID], func(dependOnName string, _ int) (string, bool) {
 			ver := depVersion(dependOnName, uniqArtifacts)
-			return dependency.ID(ftypes.Pom, dependOnName, ver), ver != ""
+			return packageID(dependOnName, ver), ver != ""
 		})
 
 		sort.Strings(dependsOn)
@@ -689,4 +689,8 @@ func parsePom(r io.Reader) (*pomXML, error) {
 		return nil, xerrors.Errorf("xml decode error: %w", err)
 	}
 	return parsed, nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Pom, name, version)
 }
