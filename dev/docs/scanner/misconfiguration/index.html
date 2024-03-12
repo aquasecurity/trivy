@@ -1286,6 +1286,33 @@ You're not viewing the latest version.
     Skipping resources by inline comments
   </a>
   
+    <nav class="md-nav" aria-label="Skipping resources by inline comments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expiration-date" class="md-nav__link">
+    Expiration Date
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignoring-by-attributes" class="md-nav__link">
+    Ignoring by attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignoring-module-issues" class="md-nav__link">
+    Ignoring module issues
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -3689,6 +3716,33 @@ You're not viewing the latest version.
     Skipping resources by inline comments
   </a>
   
+    <nav class="md-nav" aria-label="Skipping resources by inline comments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expiration-date" class="md-nav__link">
+    Expiration Date
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignoring-by-attributes" class="md-nav__link">
+    Ignoring by attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ignoring-module-issues" class="md-nav__link">
+    Ignoring module issues
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -4045,7 +4099,7 @@ This can be repeated for specifying multiple packages.</p>
 <p>Trivy can download terraform code from private registries.
 To pass credentials you must use the <code>TF_TOKEN_</code> environment variables.
 You cannot use a <code>.terraformrc</code> or <code>terraform.rc</code> file, these are not supported by trivy yet.</p>
-<p>From the terraform docs:</p>
+<p>From the terraform <a href="https://developer.hashicorp.com/terraform/cli/config/config-file#environment-variable-credentials">docs</a>:</p>
 <blockquote>
 <p>Environment variable names should have the prefix TF_TOKEN_ added to the domain name, with periods encoded as underscores.
 For example, the value of a variable named <code>TF_TOKEN_app_terraform_io</code> will be used as a bearer authorization token when the CLI makes service requests to the hostname <code>app.terraform.io</code>.</p>
@@ -4056,24 +4110,117 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 </blockquote>
 <p>If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.</p>
 <h3 id="skipping-resources-by-inline-comments">Skipping resources by inline comments</h3>
-<p>Some configuration file formats (e.g. Terraform) support inline comments.</p>
-<p>In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned).</p>
-<p>The format for these comments is <code>trivy:ignore:&lt;Vulnerability ID&gt;</code> immediately following the format-specific line-comment token.
-You can add multiple ignores on the same comment line.</p>
-<p>For example, to filter a misconfiguration ID "AVD-GCP-0051" in a Terraform HCL file:</p>
+<p>Trivy supports ignoring misconfigured resources by inline comments for Terraform configuration files only.</p>
+<p>In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned). The format for these comments is <code>trivy:ignore:&lt;rule&gt;</code> immediately following the format-specific line-comment <a href="https://developer.hashicorp.com/terraform/language/syntax/configuration#comments">token</a>.</p>
+<p>The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The <code>id</code> from the metadata is not case-sensitive, so you can specify, for example, <code>AVD-AWS-0089</code> or <code>avd-aws-0089</code>.</p>
+<p>For example, to ignore a misconfiguration ID <code>AVD-GCP-0051</code> in a Terraform HCL file:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051</span>
-<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;one_off_test&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
 <span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
-<p>For example, to filter misconfigurations "AVD-GCP-0051" and "AVD-GCP-0053" in a Terraform HCL file:</p>
+<p>You can add multiple ignores on the same comment line:
 <div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051 trivy:ignore:AVD-GCP-0053</span>
-<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;one_off_test&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
 <span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<p>You can also specify a long ID, which is formed as follows: <code>&lt;provider&gt;-&lt;service&gt;-&lt;short-code&gt;</code>.</p>
+<p>As an example, consider the following check metadata:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># custom:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># id: AVD-AWS-0089</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># avd_id: AVD-AWS-0089</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># provider: aws</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># service: s3</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># severity: LOW</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># short_code: enable-logging</span><span class="w"></span>
 </code></pre></div>
+<p>Long ID would look like the following: <code>aws-s3-enable-logging</code>.</p>
+<h4 id="expiration-date">Expiration Date</h4>
+<p>You can specify the expiration date of the ignore rule in <code>yyyy-mm-dd</code> format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-s3-enable-logging:exp:2024-03-10</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<p>The <code>aws-s3-enable-logging</code> check will be ignored until <code>2024-03-10</code> until the ignore rule expires.</p>
+<h4 id="ignoring-by-attributes">Ignoring by attributes</h4>
+<p>You can ignore a resource by its attribute value. This is useful when using the <code>for-each</code> meta-argument. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">ports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;3306&quot;, &quot;5432&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="c1"></span>
+
+<span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_security_group_rule&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">for_each</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nv">local.ports</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="na">type</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ingress&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="na">from_port</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="nv">each.key</span><span class="w"></span>
+<span class="w">  </span><span class="na">to_port</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="nv">each.key</span><span class="w"></span>
+<span class="w">  </span><span class="na">protocol</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;TCP&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="na">cidr_blocks</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;0.0.0.0/0&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="w">  </span><span class="na">security_group_id</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span><span class="w"></span>
+<span class="w">  </span><span class="na">source_security_group_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>The <code>aws-ec2-no-public-ingress-sgr</code> check will be ignored only for the <code>aws_security_group_rule</code> resource with port number <code>5432</code>. It is important to note that the ignore rule should not enclose the attribute value in quotes, despite the fact that the port is represented as a string.</p>
+<p>If you want to ignore multiple resources on different attributes, you can specify multiple ignore rules:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=3306]</span>
+<span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=5432]</span>
+</code></pre></div>
+<p>You can also ignore a resource on multiple attributes:
+<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nb">rules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nb">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="w"></span>
+<span class="w">      </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ingress&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nb">second</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="w"></span>
+<span class="w">      </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;egress&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="c1"></span>
+
+<span class="c1">#trivy:ignore:aws-ec2-no-public-ingress-sgr[from_port=1000,type=egress]</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_security_group_rule&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nb">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">for</span><span class="w"> </span><span class="err">k</span><span class="p">,</span><span class="w"> </span><span class="err">v</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">local.rules</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="na">k</span><span class="w"> </span><span class="o">=</span><span class="err">&gt;</span><span class="w"> </span><span class="err">v</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="na">type</span><span class="w">                     </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value.type</span><span class="w"></span>
+<span class="w">  </span><span class="na">from_port</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value.port</span><span class="w"></span>
+<span class="w">  </span><span class="na">to_port</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value.port</span><span class="w"></span>
+<span class="w">  </span><span class="na">protocol</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;TCP&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="na">cidr_blocks</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;0.0.0.0/0&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="w">  </span><span class="na">security_group_id</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span><span class="w"></span>
+<span class="w">  </span><span class="na">source_security_group_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_security_group.example.id</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently nested attributes are not supported. For example you will not be able to reference the <code>each.key</code> attribute.</p>
+</div>
+<h4 id="ignoring-module-issues">Ignoring module issues</h4>
+<p>Issues in third-party modules cannot be ignored using the method described above, because you may not have access to modify the module source code. In such a situation you can add ignore rules above the module block, for example:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-s3-enable-logging</span>
+<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;s3_bucket&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;terraform-aws-modules/s3-bucket/aws&quot;</span><span class="w"></span>
+
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my-s3-bucket&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>An example of ignoring checks for a specific bucket in a module:
+<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;test1&quot;, &quot;test2&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="c1"></span>
+
+<span class="c1">#trivy:ignore:*[bucket=test1]</span>
+<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;s3_bucket&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nv">local.bucket</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="na">source</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;terraform-aws-modules/s3-bucket/aws&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="na">bucket</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div></p>
 
               
             </article>
