@@ -138,11 +138,10 @@ data "aws_iam_policy_document" "this" {
   }
 }
 
-
 resource "aws_iam_policy" "this" {
   for_each = local.sqs
-  name        = "test-${each.key}"
-  policy      = data.aws_iam_policy_document.this[each.key].json
+  name     = "test-${each.key}"
+  policy   = data.aws_iam_policy_document.this[each.key].json
 }`,
 			expected: []iam.Policy{
 				{
@@ -165,6 +164,241 @@ resource "aws_iam_policy" "this" {
 							builder.WithStatement(sb.Build())
 							return builder.Build()
 						}(),
+					},
+				},
+			},
+		},
+		{
+			name: "policy_document with source_policy_documents",
+			terraform: `
+data "aws_iam_policy_document" "source" {
+  statement {
+    actions   = ["ec2:*"]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "source_document_example" {
+  source_policy_documents = [data.aws_iam_policy_document.source.json]
+
+  statement {
+    actions = ["s3:*"]
+
+    resources = [
+      "arn:aws:s3:::somebucket",
+      "arn:aws:s3:::somebucket/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "this" {
+  name   = "test-policy"
+  policy = data.aws_iam_policy_document.source_document_example.json
+}`,
+			expected: []iam.Policy{
+				{
+					Name:    iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Builtin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					Document: func() iam.Document {
+						builder := iamgo.NewPolicyBuilder()
+						firstStatement := iamgo.NewStatementBuilder().
+							WithActions([]string{"ec2:*"}).
+							WithResources([]string{"*"}).
+							WithEffect("Allow").
+							Build()
+
+						builder.WithStatement(firstStatement)
+
+						secondStatement := iamgo.NewStatementBuilder().
+							WithActions([]string{"s3:*"}).
+							WithResources([]string{"arn:aws:s3:::somebucket", "arn:aws:s3:::somebucket/*"}).
+							WithEffect("Allow").
+							Build()
+
+						builder.WithStatement(secondStatement)
+
+						return iam.Document{
+							Parsed:   builder.Build(),
+							Metadata: iacTypes.NewTestMetadata(),
+							IsOffset: true,
+							HasRefs:  false,
+						}
+					}(),
+				},
+			},
+		},
+		{
+			name: "source_policy_documents with for-each",
+			terraform: `
+locals {
+  versions = ["2008-10-17", "2012-10-17"]
+}
+
+resource "aws_iam_policy" "test_policy" {
+  name   = "test-policy"
+  policy = data.aws_iam_policy_document.policy.json
+}
+
+data "aws_iam_policy_document" "policy" {
+  source_policy_documents = [for s in data.aws_iam_policy_document.policy_source : s.json if s.version != "2008-10-17"]
+  statement {
+    actions   = ["s3:*"]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "policy_source" {
+  for_each = toset(local.versions)
+  version  = each.value
+  statement {
+    actions   = ["s3:PutObject"]
+    resources = ["*"]
+  }
+}`,
+			expected: []iam.Policy{
+				{
+					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Document: func() iam.Document {
+						builder := iamgo.NewPolicyBuilder().
+							WithStatement(
+								iamgo.NewStatementBuilder().
+									WithActions([]string{"s3:PutObject"}).
+									WithResources([]string{"*"}).
+									WithEffect("Allow").
+									Build(),
+							).
+							WithStatement(
+								iamgo.NewStatementBuilder().
+									WithActions([]string{"s3:*"}).
+									WithResources([]string{"*"}).
+									WithEffect("Allow").
+									Build(),
+							)
+
+						return iam.Document{
+							Parsed:   builder.Build(),
+							Metadata: iacTypes.NewTestMetadata(),
+							IsOffset: true,
+							HasRefs:  false,
+						}
+					}(),
+				},
+			},
+		},
+		{
+			name: "source_policy_documents with condition",
+			terraform: `
+locals {
+  versions = ["2008-10-17", "2012-10-17"]
+}
+
+resource "aws_iam_policy" "test_policy" {
+  name   = "test-policy"
+  policy = data.aws_iam_policy_document.policy.json
+}
+
+data "aws_iam_policy_document" "policy" {
+  source_policy_documents = true ? [data.aws_iam_policy_document.policy_source.json] : [data.aws_iam_policy_document.policy_source2.json]
+}
+
+data "aws_iam_policy_document" "policy_source" {
+  statement {
+    actions   = ["s3:PutObject"]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "policy_source2" {
+  statement {
+    actions   = ["s3:PutObject2"]
+    resources = ["*"]
+  }
+}
+`,
+			expected: []iam.Policy{
+				{
+					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Document: func() iam.Document {
+						builder := iamgo.NewPolicyBuilder().
+							WithStatement(
+								iamgo.NewStatementBuilder().
+									WithActions([]string{"s3:PutObject"}).
+									WithResources([]string{"*"}).
+									WithEffect("Allow").
+									Build(),
+							)
+
+						return iam.Document{
+							Parsed:   builder.Build(),
+							Metadata: iacTypes.NewTestMetadata(),
+							IsOffset: true,
+							HasRefs:  false,
+						}
+					}(),
+				},
+			},
+		},
+		{
+			name: "raw source policy",
+			terraform: `resource "aws_iam_policy" "test_policy" {
+  name   = "test-policy"
+  policy = data.aws_iam_policy_document.policy.json
+}
+
+data "aws_iam_policy_document" "policy" {
+  source_policy_documents = [
+    jsonencode({
+      Statement = [
+        {
+          Action = [
+            "ec2:Describe*",
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+        },
+      ]
+    }),
+  ]
+}
+`,
+			expected: []iam.Policy{
+				{
+					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Document: func() iam.Document {
+						builder := iamgo.NewPolicyBuilder().
+							WithStatement(
+								iamgo.NewStatementBuilder().
+									WithActions([]string{"ec2:Describe*"}).
+									WithResources([]string{"*"}).
+									WithEffect("Allow").
+									Build(),
+							)
+
+						return iam.Document{
+							Parsed:   builder.Build(),
+							Metadata: iacTypes.NewTestMetadata(),
+							IsOffset: true,
+							HasRefs:  false,
+						}
+					}(),
+				},
+			},
+		},
+		{
+			name: "invalid `override_policy_documents` attribute",
+			terraform: `resource "aws_iam_policy" "test_policy" {
+  name   = "test-policy"
+  policy = data.aws_iam_policy_document.policy.json
+}
+
+data "aws_iam_policy_document" "policy" {
+  source_policy_documents = data.aws_iam_policy_document.policy2.json
+}`,
+			expected: []iam.Policy{
+				{
+					Name: iacTypes.String("test-policy", iacTypes.NewTestMetadata()),
+					Document: iam.Document{
+						IsOffset: true,
 					},
 				},
 			},
