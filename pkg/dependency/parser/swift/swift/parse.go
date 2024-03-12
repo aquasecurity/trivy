@@ -52,7 +52,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		version := lo.Ternary(pin.State.Version != "", pin.State.Version, pin.State.Branch)
 
 		libs = append(libs, types.Library{
-			ID:      packageID(name, version),
+			ID:      dependency.ID(ftypes.Swift, name, version),
 			Name:    name,
 			Version: version,
 			Locations: []types.Location{
@@ -91,8 +91,4 @@ func (p *Pin) UnmarshalJSONWithMetadata(node jfather.Node) error {
 	p.StartLine = node.Range().Start.Line
 	p.EndLine = node.Range().End.Line
 	return nil
-}
-
-func packageID(name, version string) string {
-	return dependency.ID(ftypes.Swift, name, version)
 }
