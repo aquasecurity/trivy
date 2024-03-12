@@ -113,7 +113,7 @@ func TestEncoder_Encode(t *testing.T) {
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
-					Type: core.TypeContainer,
+					Type: core.TypeContainerImage,
 					Name: "debian:12",
 					Root: true,
 					PkgID: core.PkgID{

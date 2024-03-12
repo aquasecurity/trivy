@@ -218,9 +218,9 @@ func (m *Marshaler) marshalVulnerabilities() *[]cdx.Vulnerability {
 // componentType converts the Trivy component type to the CycloneDX component type
 func (*Marshaler) componentType(t core.ComponentType) (cdx.ComponentType, error) {
 	switch t {
-	case core.TypeContainer:
+	case core.TypeContainerImage, core.TypeVM:
 		return cdx.ComponentTypeContainer, nil
-	case core.TypeApplication:
+	case core.TypeApplication, core.TypeFilesystem, core.TypeRepository:
 		return cdx.ComponentTypeApplication, nil
 	case core.TypeLibrary:
 		return cdx.ComponentTypeLibrary, nil
@@ -249,17 +249,17 @@ func (*Marshaler) Supplier(supplier string) *cdx.OrganizationalEntity {
 }
 
 func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
-	hashes := lo.FilterMap(files, func(f core.File, index int) (digest.Digest, bool) {
-		return f.Hash, f.Hash != ""
+	digests := lo.FlatMap(files, func(file core.File, _ int) []digest.Digest {
+		return file.Digests
 	})
-	if len(hashes) == 0 {
+	if len(digests) == 0 {
 		return nil
 	}
 
 	var cdxHashes []cdx.Hash
-	for _, h := range hashes {
+	for _, d := range digests {
 		var alg cdx.HashAlgorithm
-		switch h.Algorithm() {
+		switch d.Algorithm() {
 		case digest.SHA1:
 			alg = cdx.HashAlgoSHA1
 		case digest.SHA256:
@@ -267,13 +267,13 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 		case digest.MD5:
 			alg = cdx.HashAlgoMD5
 		default:
-			log.Logger.Debugf("Unable to convert %q algorithm to CycloneDX format", h.Algorithm())
+			log.Logger.Debugf("Unable to convert %q algorithm to CycloneDX format", d.Algorithm())
 			continue
 		}
 
 		cdxHashes = append(cdxHashes, cdx.Hash{
 			Algorithm: alg,
-			Value:     h.Encoded(),
+			Value:     d.Encoded(),
 		})
 	}
 	return &cdxHashes

@@ -8,9 +8,11 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -58,7 +60,7 @@ func (m *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 
 	switch r.ArtifactType {
 	case ftypes.ArtifactContainerImage:
-		root.Type = core.TypeContainer
+		root.Type = core.TypeContainerImage
 		props = append(props, core.Property{
 			Name:  core.PropertyImageID,
 			Value: r.Metadata.ImageID,
@@ -73,9 +75,11 @@ func (m *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 		}
 
 	case ftypes.ArtifactVM:
-		root.Type = core.TypeContainer
-	case ftypes.ArtifactFilesystem, ftypes.ArtifactRepository:
-		root.Type = core.TypeApplication
+		root.Type = core.TypeVM
+	case ftypes.ArtifactFilesystem:
+		root.Type = core.TypeFilesystem
+	case ftypes.ArtifactRepository:
+		root.Type = core.TypeRepository
 	case ftypes.ArtifactCycloneDX:
 		return r.BOM.Root(), nil
 	}
@@ -171,8 +175,8 @@ func (m *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		result.Packages[i].ID = pkgID
 
 		// Convert packages to components
-		c := m.component(result.Type, pkg)
-		components[pkgID] = c
+		c := m.component(result, pkg)
+		components[pkgID+pkg.FilePath] = c
 
 		// Add a component
 		m.bom.AddComponent(c)
@@ -190,7 +194,7 @@ func (m *Encoder) encodePackages(parent *core.Component, result types.Result) {
 			continue
 		}
 
-		directPkg := components[pkg.ID]
+		directPkg := components[pkg.ID+pkg.FilePath]
 		m.bom.AddRelationship(parent, directPkg, core.RelationshipContains)
 
 		for _, dep := range pkg.DependsOn {
@@ -239,14 +243,20 @@ func (m *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 	return component
 }
 
-func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.Component {
+func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Component {
 	name := pkg.Name
-	version := pkg.Version
+	version := utils.FormatVersion(pkg)
 	var group string
 	// there are cases when we can't build purl
 	// e.g. local Go packages
 	if pu := pkg.Identifier.PURL; pu != nil {
 		version = pu.Version
+		for _, q := range pu.Qualifiers {
+			if q.Key == "epoch" && q.Value != "0" {
+				version = fmt.Sprintf("%s:%s", q.Value, version)
+			}
+		}
+
 		// Use `group` field for GroupID and `name` for ArtifactID for java files
 		// https://github.com/aquasecurity/trivy/issues/4675
 		// Use `group` field for npm scopes
@@ -264,7 +274,7 @@ func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.C
 		},
 		{
 			Name:  core.PropertyPkgType,
-			Value: string(pkgType),
+			Value: string(result.Type),
 		},
 		{
 			Name:  core.PropertyFilePath,
@@ -303,16 +313,26 @@ func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.C
 	var files []core.File
 	if pkg.FilePath != "" || pkg.Digest != "" {
 		files = append(files, core.File{
-			Path: pkg.FilePath,
-			Hash: pkg.Digest,
+			Path:    pkg.FilePath,
+			Digests: []digest.Digest{pkg.Digest},
 		})
 	}
 
+	// TODO(refactor): simplify the list of conditions
+	var srcFile string
+	if result.Class == types.ClassLangPkg && result.Type != ftypes.NodePkg && result.Type != ftypes.PythonPkg &&
+		result.Type != ftypes.GemSpec && result.Type != ftypes.Jar && result.Type != ftypes.CondaPkg {
+		srcFile = result.Target
+	}
+
 	return &core.Component{
-		Type:    core.TypeLibrary,
-		Name:    name,
-		Group:   group,
-		Version: version,
+		Type:       core.TypeLibrary,
+		Name:       name,
+		Group:      group,
+		Version:    version,
+		SrcName:    pkg.SrcName,
+		SrcVersion: utils.FormatSrcVersion(pkg),
+		SrcFile:    srcFile,
 		PkgID: core.PkgID{
 			PURL: pkg.Identifier.PURL,
 		},

@@ -11,11 +11,14 @@ import (
 )
 
 const (
-	TypeApplication ComponentType = "application"
-	TypeContainer   ComponentType = "container"
-	TypeLibrary     ComponentType = "library"
-	TypeOS          ComponentType = "os"
-	TypePlatform    ComponentType = "platform"
+	TypeFilesystem     ComponentType = "filesystem"
+	TypeRepository     ComponentType = "repository"
+	TypeContainerImage ComponentType = "container_image"
+	TypeVM             ComponentType = "vm"
+	TypeApplication    ComponentType = "application"
+	TypeLibrary        ComponentType = "library"
+	TypeOS             ComponentType = "os"
+	TypePlatform       ComponentType = "platform"
 
 	// Metadata properties
 	PropertySchemaVersion = "SchemaVersion"
@@ -98,6 +101,21 @@ type Component struct {
 	// SPDX: package.versionInfo
 	Version string
 
+	// SrcName is the name of the source component
+	// CycloneDX: N/A
+	// SPDX: package.sourceInfo
+	SrcName string
+
+	// SrcVersion is the version of the source component
+	// CycloneDX: N/A
+	// SPDX: package.sourceInfo
+	SrcVersion string
+
+	// SrcFile is the file path where the component is found.
+	// CycloneDX: N/A
+	// SPDX: package.sourceInfo
+	SrcFile string
+
 	// Licenses is a list of licenses that apply to the component
 	// CycloneDX: component.licenses
 	// SPDX: package.licenseConcluded, package.licenseDeclared
@@ -139,9 +157,10 @@ type File struct {
 	Path string
 
 	// Hash is a hash that uniquely identify the component.
+	// A file can have several digests with different algorithms, like SHA1, SHA256, etc.
 	// CycloneDX: component.hashes
-	// SPDX: package.files[].checksum
-	Hash digest.Digest
+	// SPDX: package.files[].checksums
+	Digests []digest.Digest
 }
 
 type Property struct {

@@ -143,9 +143,11 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 		Group:    c.Group,
 		Version:  c.Version,
 		Licenses: b.unmarshalLicenses(c.Licenses),
-		Files: lo.Map(b.unmarshalHashes(c.Hashes), func(d digest.Digest, _ int) core.File {
-			return core.File{Hash: d} // CycloneDX doesn't have a file path for the hash
-		}),
+		Files: []core.File{
+			{
+				Digests: b.unmarshalHashes(c.Hashes),
+			},
+		},
 		PkgID: core.PkgID{
 			PURL:   &purl,
 			BOMRef: c.BOMRef,
@@ -161,7 +163,7 @@ func (b *BOM) unmarshalType(t cdx.ComponentType) (core.ComponentType, error) {
 	var ctype core.ComponentType
 	switch t {
 	case cdx.ComponentTypeContainer:
-		ctype = core.TypeContainer
+		ctype = core.TypeContainerImage
 	case cdx.ComponentTypeApplication:
 		ctype = core.TypeApplication
 	case cdx.ComponentTypeLibrary:

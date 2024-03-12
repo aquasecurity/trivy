@@ -413,7 +413,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 				}
 
 				imageComponent := &core.Component{
-					Type:    core.TypeContainer,
+					Type:    core.TypeContainerImage,
 					Name:    name,
 					Version: cDigest,
 					PkgID: core.PkgID{

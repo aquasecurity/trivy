@@ -211,8 +211,12 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 
 	pkg.Identifier.BOMRef = c.PkgID.BOMRef
 	pkg.Licenses = c.Licenses
-	if len(c.Files) > 0 {
-		pkg.Digest = c.Files[0].Hash
+
+	for _, f := range c.Files {
+		// An empty path represents a package digest
+		if f.Path == "" && len(f.Digests) > 0 {
+			pkg.Digest = f.Digests[0]
+		}
 	}
 
 	if p.Class() == types.ClassOSPkg {
