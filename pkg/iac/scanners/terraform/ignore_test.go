@@ -24,12 +24,18 @@ var exampleRule = scan.Rule{
 		Terraform: &scan.TerraformCustomCheck{
 			RequiredLabels: []string{"bad"},
 			Check: func(resourceBlock *terraform.Block, _ *terraform.Module) (results scan.Results) {
-				attr := resourceBlock.GetAttribute("secure")
-				if attr.IsNil() {
-					results.Add("example problem", resourceBlock)
-				}
-				if attr.IsFalse() {
-					results.Add("example problem", attr)
+				if attr, _ := resourceBlock.GetNestedAttribute("secure_settings.enabled"); attr.IsNotNil() {
+					if attr.IsFalse() {
+						results.Add("example problem", attr)
+					}
+				} else {
+					attr := resourceBlock.GetAttribute("secure")
+					if attr.IsNil() {
+						results.Add("example problem", resourceBlock)
+					}
+					if attr.IsFalse() {
+						results.Add("example problem", attr)
+					}
 				}
 				return
 			},
@@ -264,6 +270,68 @@ resource "bad" "my-rule" {
    port = 123
 }
 `, assertLength: 1},
+		{
+			name: "ignore by nested attribute",
+			inputOptions: `
+// trivy:ignore:*[secure_settings.enabled=false]
+resource "bad" "my-rule" {
+  secure_settings {
+    enabled = false
+  }
+}
+`,
+			assertLength: 0,
+		},
+		{
+			name: "ignore by nested attribute of another type",
+			inputOptions: `
+// trivy:ignore:*[secure_settings.enabled=1]
+resource "bad" "my-rule" {
+  secure_settings {
+    enabled = false
+  }
+}
+`,
+			assertLength: 1,
+		},
+		{
+			name: "ignore by non-existent nested attribute",
+			inputOptions: `
+// trivy:ignore:*[secure_settings.rule=myrule]
+resource "bad" "my-rule" {
+  secure_settings {
+    enabled = false
+  }
+}
+`,
+			assertLength: 1,
+		},
+		{
+			name: "ignore resource with `for_each` meta-argument",
+			inputOptions: `
+// trivy:ignore:*[secure=false]
+resource "bad" "my-rule" {
+  for_each = toset(["false", "true", "false"])
+  secure   = each.key
+}
+`,
+			assertLength: 0,
+		},
+		{
+			name: "ignore by dynamic block value",
+			inputOptions: `
+// trivy:ignore:*[secure_settings.enabled=false]
+resource "bad" "my-rule" {
+  dynamic "secure_settings" {
+    for_each = ["false", "true"]
+    content {
+      enabled = secure_settings.value
+    }
+  }
+}
+`,
+			assertLength: 0,
+		},
 		{name: "TrivyIgnoreLineStackedAboveTheBlock", inputOptions: `
 // trivy:ignore:*
 // trivy:ignore:a
