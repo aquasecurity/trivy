@@ -786,6 +786,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 								},
+								Digest:   "sha256:a5efa82f08774597165e8c1a102d45d0406913b74c184883ac91f409ae26009d",
 								FilePath: "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
 							},
 						},
@@ -852,6 +853,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						FileName:           "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
 						FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
+						Checksums: []common.Checksum{
+							{
+								Algorithm: common.SHA256,
+								Value:     "a5efa82f08774597165e8c1a102d45d0406913b74c184883ac91f409ae26009d",
+							},
+						},
 					},
 				},
 				Relationships: []*spdx.Relationship{

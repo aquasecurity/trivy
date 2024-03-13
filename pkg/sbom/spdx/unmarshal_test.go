@@ -2,6 +2,7 @@ package spdx_test
 
 import (
 	"encoding/json"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/package-url/packageurl-go"
 	"os"
 	"sort"
@@ -27,6 +28,15 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			inputFile: "testdata/happy/bom.json",
 			want: types.SBOM{
 				Metadata: types.Metadata{
+					ImageID: "sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5",
+					DiffIDs: []string{
+						"sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+						"sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
+					},
+					RepoTags: []string{
+						"maven-test-project:latest",
+						"tmp-test:latest",
+					},
 					OS: &ftypes.OS{
 						Family: "alpine",
 						Name:   "3.16.0",
@@ -36,6 +46,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					{
 						Packages: ftypes.Packages{
 							{
+								ID:         "musl@1.2.3-r0",
 								Name:       "musl",
 								Version:    "1.2.3-r0",
 								SrcName:    "musl",
@@ -54,6 +65,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 											},
 										},
 									},
+									BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
@@ -68,6 +80,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "app/composer/composer.lock",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
@@ -77,13 +90,14 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "log",
 										Version:   "1.13.1",
 									},
+									BOMRef: "pkg:composer/pear/log@1.13.1",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 								},
 							},
 							{
-
+								ID:      "pear/pear_exception@v1.0.0",
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -93,6 +107,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "pear_exception",
 										Version:   "v1.0.0",
 									},
+									BOMRef: "pkg:composer/pear/pear_exception@v1.0.0",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -105,6 +120,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "app/gobinary/gobinary",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 								Name:    "github.com/package-url/packageurl-go",
 								Version: "v0.1.1-0.20220203205134-d70459300c8a",
 								Identifier: ftypes.PkgIdentifier{
@@ -114,6 +130,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "packageurl-go",
 										Version:   "v0.1.1-0.20220203205134-d70459300c8a",
 									},
+									BOMRef: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -125,6 +142,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: "jar",
 						Libraries: ftypes.Packages{
 							{
+								ID:   "org.codehaus.mojo:child-project:1.0",
 								Name: "org.codehaus.mojo:child-project",
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
@@ -133,6 +151,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "child-project",
 										Version:   "1.0",
 									},
+									BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0",
 								},
 								Version: "1.0",
 								Layer: ftypes.Layer{
@@ -145,6 +164,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: "node-pkg",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "bootstrap@5.0.2",
 								Name:    "bootstrap",
 								Version: "5.0.2",
 								Identifier: ftypes.PkgIdentifier{
@@ -153,6 +173,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:    "bootstrap",
 										Version: "5.0.2",
 									},
+									BOMRef: "pkg:npm/bootstrap@5.0.2",
 								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
@@ -170,7 +191,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			want: types.SBOM{
 				Applications: []ftypes.Application{
 					{
-						Type: "node-pkg",
+						Type: ftypes.NodePkg,
 						Libraries: ftypes.Packages{
 							{
 								ID:       "yargs-parser@21.1.1",
@@ -183,6 +204,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:    "yargs-parser",
 										Version: "21.1.1",
 									},
+									BOMRef: "pkg:npm/yargs-parser@21.1.1",
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
 							},
@@ -210,6 +232,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:    "yargs-parser",
 										Version: "21.1.1",
 									},
+									BOMRef: "pkg:npm/yargs-parser@21.1.1",
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
 							},
@@ -228,6 +251,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "app/composer/composer.lock",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
@@ -237,10 +261,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "log",
 										Version:   "1.13.1",
 									},
+									BOMRef: "pkg:composer/pear/log@1.13.1",
 								},
 							},
 							{
-
+								ID:      "pear/pear_exception@v1.0.0",
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -250,6 +275,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "pear_exception",
 										Version:   "v1.0.0",
 									},
+									BOMRef: "pkg:composer/pear/pear_exception@v1.0.0",
 								},
 							},
 						},
@@ -266,9 +292,10 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: ftypes.Jar,
 						Libraries: ftypes.Packages{
 							{
-								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
+								ID:       "co.elastic.apm:apm-agent:1.36.0",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
+								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
@@ -276,12 +303,14 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "apm-agent",
 										Version:   "1.36.0",
 									},
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 								},
 							},
 							{
-								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
+								ID:       "co.elastic.apm:apm-agent-cached-lookup-key:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
+								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
@@ -289,6 +318,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "apm-agent-cached-lookup-key",
 										Version:   "1.36.0",
 									},
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 								},
 							},
 						},
@@ -315,8 +345,8 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 		},
 		{
 			name:      "sad path invalid purl",
-			inputFile: "testdata/sad/invalid-source-info.json",
-			wantErr:   "failed to parse source info:",
+			inputFile: "testdata/sad/invalid-purl.json",
+			wantErr:   "purl is missing type or name",
 		},
 	}
 
@@ -326,22 +356,24 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			v := &spdx.SPDX{SBOM: &types.SBOM{}}
-			err = json.NewDecoder(f).Decode(v)
+			var v spdx.SPDX
+			err = json.NewDecoder(f).Decode(&v)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
-			// Not compare the SPDX field
-			v.BOM = nil
-
-			sort.Slice(v.Applications, func(i, j int) bool {
-				return v.Applications[i].Type < v.Applications[j].Type
-			})
+			var got types.SBOM
+			err = sbomio.NewDecoder(v.BOM).Decode(&got)
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, *v.SBOM)
+
+			// Not compare BOM
+			got.BOM = nil
+
+			sort.Slice(got.Applications, func(i, j int) bool {
+				return got.Applications[i].Type < got.Applications[j].Type
+			})
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

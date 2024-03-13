@@ -2,6 +2,7 @@ package io
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 
 	"github.com/package-url/packageurl-go"
@@ -118,8 +119,7 @@ func (m *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 }
 
 func (m *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result) {
-	if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
-		result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
+	if slices.Contains(ftypes.AggregatingTypes, result.Type) {
 		// If a package is language-specific package that isn't associated with a lock file,
 		// it will be a dependency of a component under "metadata".
 		// e.g.
@@ -314,14 +314,13 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 	if pkg.FilePath != "" || pkg.Digest != "" {
 		files = append(files, core.File{
 			Path:    pkg.FilePath,
-			Digests: []digest.Digest{pkg.Digest},
+			Digests: lo.Ternary(pkg.Digest != "", []digest.Digest{pkg.Digest}, nil),
 		})
 	}
 
 	// TODO(refactor): simplify the list of conditions
 	var srcFile string
-	if result.Class == types.ClassLangPkg && result.Type != ftypes.NodePkg && result.Type != ftypes.PythonPkg &&
-		result.Type != ftypes.GemSpec && result.Type != ftypes.Jar && result.Type != ftypes.CondaPkg {
+	if result.Class == types.ClassLangPkg && !slices.Contains(ftypes.AggregatingTypes, result.Type) {
 		srcFile = result.Target
 	}
 

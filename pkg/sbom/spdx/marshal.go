@@ -37,19 +37,6 @@ const (
 	CategoryPackageManager = "PACKAGE-MANAGER"
 	RefTypePurl            = "purl"
 
-	PropertySchemaVersion = "SchemaVersion"
-
-	// Image properties
-	PropertySize       = "Size"
-	PropertyImageID    = "ImageID"
-	PropertyRepoDigest = "RepoDigest"
-	PropertyDiffID     = "DiffID"
-	PropertyRepoTag    = "RepoTag"
-
-	// Package properties
-	PropertyPkgID       = "PkgID"
-	PropertyLayerDiffID = "LayerDiffID"
-	PropertyLayerDigest = "LayerDigest"
 	// Package Purpose fields
 	PackagePurposeOS          = "OPERATING-SYSTEM"
 	PackagePurposeContainer   = "CONTAINER"

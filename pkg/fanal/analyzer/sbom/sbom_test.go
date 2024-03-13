@@ -31,6 +31,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						Type: types.Jar,
 						Libraries: types.Packages{
 							{
+								ID:       "co.elastic.apm:apm-agent:1.36.0",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
@@ -41,9 +42,11 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent",
 										Version:   "1.36.0",
 									},
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 								},
 							},
 							{
+								ID:       "co.elastic.apm:apm-agent-cached-lookup-key:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
@@ -54,9 +57,11 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-cached-lookup-key",
 										Version:   "1.36.0",
 									},
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 								},
 							},
 							{
+								ID:       "co.elastic.apm:apm-agent-common:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-common",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
@@ -67,9 +72,11 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-common",
 										Version:   "1.36.0",
 									},
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-common@1.36.0",
 								},
 							},
 							{
+								ID:       "co.elastic.apm:apm-agent-core:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-core",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
@@ -80,6 +87,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-core",
 										Version:   "1.36.0",
 									},
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0",
 								},
 							},
 						},
@@ -89,7 +97,8 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/elasticsearch",
 						Libraries: types.Packages{
 							{
-								Name:     "elasticsearch",
+								ID:       "elasticsearch@8.9.1",
+								Name:     "Elasticsearch",
 								Version:  "8.9.1",
 								Arch:     "arm64",
 								Licenses: []string{"Elastic-2.0"},
@@ -105,6 +114,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 											},
 										},
 									},
+									BOMRef: "pkg:bitnami/elasticsearch@8.9.1?arch=arm64",
 								},
 							},
 						},
@@ -169,7 +179,8 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/postgresql",
 						Libraries: types.Packages{
 							{
-								Name:     "gdal",
+								ID:       "gdal@3.7.1",
+								Name:     "GDAL",
 								Version:  "3.7.1",
 								Licenses: []string{"MIT"},
 								Identifier: types.PkgIdentifier{
@@ -178,10 +189,12 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "gdal",
 										Version: "3.7.1",
 									},
+									BOMRef: "pkg:bitnami/gdal@3.7.1",
 								},
 							},
 							{
-								Name:     "geos",
+								ID:       "geos@3.8.3",
+								Name:     "GEOS",
 								Version:  "3.8.3",
 								Licenses: []string{"LGPL-2.1-only"},
 								Identifier: types.PkgIdentifier{
@@ -190,10 +203,12 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "geos",
 										Version: "3.8.3",
 									},
+									BOMRef: "pkg:bitnami/geos@3.8.3",
 								},
 							},
 							{
-								Name:     "postgresql",
+								ID:       "postgresql@15.3.0",
+								Name:     "PostgreSQL",
 								Version:  "15.3.0",
 								Licenses: []string{"PostgreSQL"},
 								Identifier: types.PkgIdentifier{
@@ -202,10 +217,17 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "postgresql",
 										Version: "15.3.0",
 									},
+									BOMRef: "pkg:bitnami/postgresql@15.3.0",
+								},
+								DependsOn: []string{
+									"geos@3.8.3",
+									"proj@6.3.2",
+									"gdal@3.7.1",
 								},
 							},
 							{
-								Name:     "proj",
+								ID:       "proj@6.3.2",
+								Name:     "Proj",
 								Version:  "6.3.2",
 								Licenses: []string{"MIT"},
 								Identifier: types.PkgIdentifier{
@@ -214,6 +236,7 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "proj",
 										Version: "6.3.2",
 									},
+									BOMRef: "pkg:bitnami/proj@6.3.2",
 								},
 							},
 						},
