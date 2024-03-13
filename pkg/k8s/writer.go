@@ -23,7 +23,7 @@ func Write(ctx context.Context, k8sreport report.Report, option report.Option) e
 		}
 		return jwriter.Write(k8sreport)
 	case types.FormatTable:
-		separatedReports := report.SeparateMisconfigReports(k8sreport, option.Scanners, option.Components)
+		separatedReports := report.SeparateMisconfigReports(k8sreport, option.Scanners)
 
 		if option.Report == report.SummaryReport {
 			target := fmt.Sprintf("Summary Report for %s", k8sreport.ClusterName)
@@ -35,7 +35,7 @@ func Write(ctx context.Context, k8sreport report.Report, option report.Option) e
 				Output:        option.Output,
 				Report:        option.Report,
 				Severities:    option.Severities,
-				ColumnHeading: report.ColumnHeading(option.Scanners, option.Components, r.Columns),
+				ColumnHeading: report.ColumnHeading(option.Scanners, r.Columns),
 			}
 
 			if err := writer.Write(ctx, r.Report); err != nil {

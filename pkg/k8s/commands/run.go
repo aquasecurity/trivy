@@ -115,7 +115,6 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		Report:     r.flagOpts.ReportFormat,
 		Output:     output,
 		Severities: r.flagOpts.Severities,
-		Components: r.flagOpts.Components,
 		Scanners:   r.flagOpts.ScanOptions.Scanners,
 		APIVersion: r.flagOpts.AppVersion,
 	}); err != nil {

@@ -34,7 +34,6 @@ trivy kubernetes [flags] [CONTEXT]
       --cache-ttl duration                cache TTL when using redis as cache backend
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate (k8s-nsa,k8s-cis,k8s-pss-baseline,k8s-pss-restricted)
-      --components strings                specify which components to scan (workload,infra) (default [workload,infra])
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
@@ -96,6 +95,7 @@ trivy kubernetes [flags] [CONTEXT]
       --skip-db-update                    skip updating vulnerability database
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
+      --skip-intrusive                    When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
       --skip-java-db-update               skip updating Java index database
       --skip-policy-update                skip fetching rego policy updates
   -t, --template string                   output template

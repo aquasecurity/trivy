@@ -34,7 +34,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 			trivyk8s.WithIncludeKinds(opts.IncludeKinds),
 			trivyk8s.WithExcludeOwned(opts.ExcludeOwned),
 		}
-		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && slices.Contains(opts.Components, "infra") {
+		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && !opts.DisableNodeCollector {
 			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifactAndNodeInfo(ctx,
 				trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
 				trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),

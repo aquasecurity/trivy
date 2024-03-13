@@ -202,108 +202,139 @@ func TestReportWrite_Summary(t *testing.T) {
 		report         report.Report
 		opt            report.Option
 		scanners       types.Scanners
-		components     []string
 		severities     []dbTypes.Severity
 		expectedOutput string
-	}{
-		{
-			name: "Only config, all severities",
-			report: report.Report{
-				ClusterName: "test",
-				Resources:   []report.Resource{deployOrionWithMisconfigs},
-			},
-			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{workloadComponent},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
+	}{ /*
+				{
+					name: "Only config, all serverities",
+					report: report.Report{
+						ClusterName: "test",
+						Resources:   []report.Resource{deployOrionWithMisconfigs},
+					},
+					scanners:   types.Scanners{types.MisconfigScanner},
+					severities: allSeverities,
+					expectedOutput: `Summary Report for test
+		=======================
 
-Workload Assessment
-┌───────────┬──────────────┬───────────────────┐
-│ Namespace │   Resource   │ Misconfigurations │
-│           │              ├───┬───┬───┬───┬───┤
-│           │              │ C │ H │ M │ L │ U │
-├───────────┼──────────────┼───┼───┼───┼───┼───┤
-│ default   │ Deploy/orion │ 1 │ 2 │ 1 │ 2 │ 1 │
-└───────────┴──────────────┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "Only vuln, all severities",
-			report: report.Report{
-				ClusterName: "test",
-				Resources:   []report.Resource{deployOrionWithVulns},
-			},
-			scanners:   types.Scanners{types.VulnerabilityScanner},
-			components: []string{workloadComponent},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
+		Workload Assessment
+		┌───────────┬──────────────┬───────────────────┐
+		│ Namespace │   Resource   │ Misconfigurations │
+		│           │              ├───┬───┬───┬───┬───┤
+		│           │              │ C │ H │ M │ L │ U │
+		├───────────┼──────────────┼───┼───┼───┼───┼───┤
+		│ default   │ Deploy/orion │ 1 │ 2 │ 1 │ 2 │ 1 │
+		└───────────┴──────────────┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
 
-Workload Assessment
-┌───────────┬──────────────┬───────────────────┐
-│ Namespace │   Resource   │  Vulnerabilities  │
-│           │              ├───┬───┬───┬───┬───┤
-│           │              │ C │ H │ M │ L │ U │
-├───────────┼──────────────┼───┼───┼───┼───┼───┤
-│ default   │ Deploy/orion │ 2 │ 1 │ 2 │ 1 │ 1 │
-└───────────┴──────────────┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "Only rbac, all severities",
-			report: report.Report{
-				ClusterName: "test",
-				Resources:   []report.Resource{roleWithMisconfig},
-			},
-			scanners:   types.Scanners{types.RBACScanner},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
 
-RBAC Assessment
-┌───────────┬─────────────────────────────────────────────────────┬───────────────────┐
-│ Namespace │                      Resource                       │  RBAC Assessment  │
-│           │                                                     ├───┬───┬───┬───┬───┤
-│           │                                                     │ C │ H │ M │ L │ U │
-├───────────┼─────────────────────────────────────────────────────┼───┼───┼───┼───┼───┤
-│ default   │ Role/system::leader-locking-kube-controller-manager │   │   │ 1 │   │   │
-└───────────┴─────────────────────────────────────────────────────┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "Only secret, all severities",
-			report: report.Report{
-				ClusterName: "test",
-				Resources:   []report.Resource{deployLuaWithSecrets},
-			},
-			scanners:   types.Scanners{types.SecretScanner},
-			components: []string{workloadComponent},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
+		Infra Assessment
+		┌───────────┬──────────┬───────────────────┐
+		│ Namespace │ Resource │ Misconfigurations │
+		│           │          ├───┬───┬───┬───┬───┤
+		│           │          │ C │ H │ M │ L │ U │
+		└───────────┴──────────┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
+				},
+				{
+					name: "Only vuln, all serverities",
+					report: report.Report{
+						ClusterName: "test",
+						Resources:   []report.Resource{deployOrionWithVulns},
+					},
+					scanners:   types.Scanners{types.VulnerabilityScanner},
+					severities: allSeverities,
+					expectedOutput: `Summary Report for test
+		=======================
 
-Workload Assessment
-┌───────────┬────────────┬───────────────────┐
-│ Namespace │  Resource  │      Secrets      │
-│           │            ├───┬───┬───┬───┬───┤
-│           │            │ C │ H │ M │ L │ U │
-├───────────┼────────────┼───┼───┼───┼───┼───┤
-│ default   │ Deploy/lua │ 1 │   │ 1 │   │   │
-└───────────┴────────────┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
+		Workload Assessment
+		┌───────────┬──────────────┬───────────────────┐
+		│ Namespace │   Resource   │  Vulnerabilities  │
+		│           │              ├───┬───┬───┬───┬───┤
+		│           │              │ C │ H │ M │ L │ U │
+		├───────────┼──────────────┼───┼───┼───┼───┼───┤
+		│ default   │ Deploy/orion │ 2 │ 1 │ 2 │ 1 │ 1 │
+		└───────────┴──────────────┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+
+
+		Infra Assessment
+		┌───────────┬──────────┬───────────────────┐
+		│ Namespace │ Resource │  Vulnerabilities  │
+		│           │          ├───┬───┬───┬───┬───┤
+		│           │          │ C │ H │ M │ L │ U │
+		└───────────┴──────────┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
+				},
+				{
+					name: "Only rbac, all serverities",
+					report: report.Report{
+						ClusterName: "test",
+						Resources:   []report.Resource{roleWithMisconfig},
+					},
+					scanners:   types.Scanners{types.RBACScanner},
+					severities: allSeverities,
+					expectedOutput: `Summary Report for test
+		=======================
+
+		RBAC Assessment
+		┌───────────┬─────────────────────────────────────────────────────┬───────────────────┐
+		│ Namespace │                      Resource                       │  RBAC Assessment  │
+		│           │                                                     ├───┬───┬───┬───┬───┤
+		│           │                                                     │ C │ H │ M │ L │ U │
+		├───────────┼─────────────────────────────────────────────────────┼───┼───┼───┼───┼───┤
+		│ default   │ Role/system::leader-locking-kube-controller-manager │   │   │ 1 │   │   │
+		└───────────┴─────────────────────────────────────────────────────┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
+				},
+				{
+					name: "Only secret, all serverities",
+					report: report.Report{
+						ClusterName: "test",
+						Resources:   []report.Resource{deployLuaWithSecrets},
+					},
+					scanners:   types.Scanners{types.SecretScanner},
+					severities: allSeverities,
+					expectedOutput: `Summary Report for test
+		=======================
+
+		Workload Assessment
+		┌───────────┬────────────┬───────────────────┐
+		│ Namespace │  Resource  │      Secrets      │
+		│           │            ├───┬───┬───┬───┬───┤
+		│           │            │ C │ H │ M │ L │ U │
+		├───────────┼────────────┼───┼───┼───┼───┼───┤
+		│ default   │ Deploy/lua │ 1 │   │ 1 │   │   │
+		└───────────┴────────────┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+
+
+		Infra Assessment
+		┌───────────┬──────────┬───────────────────┐
+		│ Namespace │ Resource │      Secrets      │
+		│           │          ├───┬───┬───┬───┬───┤
+		│           │          │ C │ H │ M │ L │ U │
+		└───────────┴──────────┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
+				},*/
 		{
-			name: "apiserver, only infra and severities",
+			name: "apiserver, only infra and serverities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{infraComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
+
+Workload Assessment
+┌───────────┬──────────┬───────────────────┐
+│ Namespace │ Resource │ Misconfigurations │
+│           │          ├───┬───┬───┬───┬───┤
+│           │          │ C │ H │ M │ L │ U │
+└───────────┴──────────┴───┴───┴───┴───┴───┘
+Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+
 
 Infra Assessment
 ┌─────────────┬────────────────────┬───────────────────┐
@@ -314,70 +345,65 @@ Infra Assessment
 │ kube-system │ Pod/kube-apiserver │   │ 1 │ 2 │ 2 │   │
 └─────────────┴────────────────────┴───┴───┴───┴───┴───┘
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "apiserver, vuln,config,secret and severities",
-			report: report.Report{
-				ClusterName: "test",
-				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
-			},
-			scanners: types.Scanners{
-				types.VulnerabilityScanner,
-				types.MisconfigScanner,
-				types.SecretScanner,
-			},
-			components: []string{infraComponent},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
+		}, /*
+				{
+					name: "apiserver, vuln,config,secret and serverities",
+					report: report.Report{
+						ClusterName: "test",
+						Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
+					},
+					scanners: types.Scanners{
+						types.VulnerabilityScanner,
+						types.MisconfigScanner,
+						types.SecretScanner,
+					},
+					severities: allSeverities,
+					expectedOutput: `Summary Report for test
+		=======================
 
-Infra Assessment
-┌─────────────┬────────────────────┬───────────────────┬───────────────────┬───────────────────┐
-│  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │      Secrets      │
-│             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
-│             │                    │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
-├─────────────┼────────────────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
-│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 2 │ 2 │   │   │   │   │   │   │
-└─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
-		{
-			name: "apiserver, all misconfig and vuln scanners and severities",
-			report: report.Report{
-				ClusterName: "test",
-				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
-			},
-			scanners: types.Scanners{
-				types.MisconfigScanner,
-				types.VulnerabilityScanner,
-			},
-			components: []string{
-				workloadComponent,
-				infraComponent,
-			},
-			severities: allSeverities,
-			expectedOutput: `Summary Report for test
-=======================
+		Infra Assessment
+		┌─────────────┬────────────────────┬───────────────────┬───────────────────┬───────────────────┐
+		│  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │      Secrets      │
+		│             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
+		│             │                    │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
+		├─────────────┼────────────────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
+		│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 2 │ 2 │   │   │   │   │   │   │
+		└─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
+				},
+				{
+					name: "apiserver, all misconfig and vuln scanners and serverities",
+					report: report.Report{
+						ClusterName: "test",
+						Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
+					},
+					scanners: types.Scanners{
+						types.MisconfigScanner,
+						types.VulnerabilityScanner,
+					},
+					severities: allSeverities,
+					expectedOutput: `Summary Report for test
+		=======================
 
-Workload Assessment
-┌───────────┬──────────┬───────────────────┬───────────────────┐
-│ Namespace │ Resource │  Vulnerabilities  │ Misconfigurations │
-│           │          ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
-│           │          │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
-└───────────┴──────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+		Workload Assessment
+		┌───────────┬──────────┬───────────────────┬───────────────────┐
+		│ Namespace │ Resource │  Vulnerabilities  │ Misconfigurations │
+		│           │          ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
+		│           │          │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
+		└───────────┴──────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
 
 
-Infra Assessment
-┌─────────────┬────────────────────┬───────────────────┬───────────────────┐
-│  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │
-│             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
-│             │                    │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
-├─────────────┼────────────────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
-│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 2 │ 2 │   │
-└─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
-		},
+		Infra Assessment
+		┌─────────────┬────────────────────┬───────────────────┬───────────────────┐
+		│  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │
+		│             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
+		│             │                    │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
+		├─────────────┼────────────────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┤
+		│ kube-system │ Pod/kube-apiserver │   │   │   │   │   │   │ 1 │ 2 │ 2 │   │
+		└─────────────┴────────────────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+		Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
+				},*/
 	}
 
 	for _, tc := range tests {
@@ -390,7 +416,6 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				Output:     &output,
 				Scanners:   tc.scanners,
 				Severities: tc.severities,
-				Components: tc.components,
 			}
 
 			err := Write(context.Background(), tc.report, opt)

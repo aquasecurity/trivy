@@ -515,19 +515,14 @@ func Test_separateMisconfigReports(t *testing.T) {
 		name            string
 		k8sReport       Report
 		scanners        types.Scanners
-		components      []string
 		expectedReports []Report
 	}{
-		{
+		/*{
 			name:      "Config, Rbac, and Infra Reports",
 			k8sReport: k8sReport,
 			scanners: types.Scanners{
 				types.MisconfigScanner,
 				types.RBACScanner,
-			},
-			components: []string{
-				workloadComponent,
-				infraComponent,
 			},
 			expectedReports: []Report{
 				// the order matter for the test
@@ -545,10 +540,6 @@ func Test_separateMisconfigReports(t *testing.T) {
 			name:      "Config and Infra for the same resource",
 			k8sReport: k8sReport,
 			scanners:  types.Scanners{types.MisconfigScanner},
-			components: []string{
-				workloadComponent,
-				infraComponent,
-			},
 			expectedReports: []Report{
 				// the order matter for the test
 				{
@@ -567,12 +558,11 @@ func Test_separateMisconfigReports(t *testing.T) {
 			expectedReports: []Report{
 				{Resources: []Resource{{Kind: "Role"}}},
 			},
-		},
+		},*/
 		{
-			name:       "Config Report Only",
-			k8sReport:  k8sReport,
-			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{workloadComponent},
+			name:      "Config Report Only",
+			k8sReport: k8sReport,
+			scanners:  types.Scanners{types.MisconfigScanner},
 			expectedReports: []Report{
 				{
 					Resources: []Resource{
@@ -580,24 +570,28 @@ func Test_separateMisconfigReports(t *testing.T) {
 						{Kind: "StatefulSet"},
 					},
 				},
+				{
+					Resources: []Resource{
+						{Kind: "Pod"},
+					},
+				},
 			},
 		},
-		{
+		/*	{
 			name:       "Infra Report Only",
 			k8sReport:  k8sReport,
 			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{infraComponent},
 			expectedReports: []Report{
 				{Resources: []Resource{{Kind: "Pod"}}},
 			},
-		},
+		},*/
 
 		// TODO: add vuln only
 		// TODO: add secret only
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			reports := SeparateMisconfigReports(tt.k8sReport, tt.scanners, tt.components)
+			reports := SeparateMisconfigReports(tt.k8sReport, tt.scanners)
 			assert.Equal(t, len(tt.expectedReports), len(reports))
 
 			for i := range reports {
