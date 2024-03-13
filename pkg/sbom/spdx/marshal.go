@@ -150,7 +150,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 				m.spdxRelationShip(spdxPackage.PackageSPDXIdentifier, file.FileSPDXIdentifier, RelationShipContains),
 			)
 		}
-		verificationCode, err := spdxutils.GetVerificationCode(files, "")
+		verificationCode, err := spdxutils.GetVerificationCode(spdxFiles, "")
 		if err != nil {
 			return nil, xerrors.Errorf("package verification error: %w", err)
 		}

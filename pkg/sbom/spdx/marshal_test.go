@@ -547,7 +547,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 						FilesAnalyzed:         true,
 						PackageVerificationCode: &spdx.PackageVerificationCode{
-							Value: "8912b65a96f9d67c00427e1671ea760ca21d60cc",
+							Value: "688d98e7e5660b879fd1fc548af8c0df3b7d785a",
 						},
 					},
 					{
