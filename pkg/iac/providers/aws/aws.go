@@ -2,6 +2,7 @@ package aws
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/accessanalyzer"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/acm"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/athena"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
@@ -73,6 +74,7 @@ type AWS struct {
 	SQS            sqs.SQS
 	SSM            ssm.SSM
 	WorkSpaces     workspaces.WorkSpaces
+	ACM            acm.ACM
 }
 
 type Meta struct {
