@@ -4,6 +4,7 @@ import (
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -17,13 +18,13 @@ func newOpenVEX(vex openvex.VEX) VEX {
 	}
 }
 
-func (v *OpenVEX) Filter(result *types.Result) {
+func (v *OpenVEX) Filter(result *types.Result, bom *core.BOM) {
 	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
 		if vuln.PkgIdentifier.PURL == nil {
 			return true
 		}
 
-		stmts := v.vex.Matches(vuln.VulnerabilityID, vuln.PkgIdentifier.PURL.String(), nil)
+		stmts := v.Matches(vuln, bom)
 		if len(stmts) == 0 {
 			return true
 		}
@@ -39,6 +40,17 @@ func (v *OpenVEX) Filter(result *types.Result) {
 		}
 		return true
 	})
+}
+
+func (v *OpenVEX) Matches(vuln types.DetectedVulnerability, bom *core.BOM) []openvex.Statement {
+	root := bom.Root()
+	if root != nil && root.PkgID.PURL != nil {
+		stmts := v.vex.Matches(vuln.VulnerabilityID, root.PkgID.PURL.String(), []string{vuln.PkgIdentifier.PURL.String()})
+		if len(stmts) != 0 {
+			return stmts
+		}
+	}
+	return v.vex.Matches(vuln.VulnerabilityID, vuln.PkgIdentifier.PURL.String(), nil)
 }
 
 func findingStatus(status openvex.Status) types.FindingStatus {

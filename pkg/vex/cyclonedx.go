@@ -45,7 +45,7 @@ func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 	}
 }
 
-func (v *CycloneDX) Filter(result *types.Result) {
+func (v *CycloneDX) Filter(result *types.Result, _ *core.BOM) {
 	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
 		stmt, ok := lo.Find(v.statements, func(item Statement) bool {
 			return item.VulnerabilityID == vuln.VulnerabilityID
