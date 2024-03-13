@@ -51,7 +51,7 @@ func (tv *TVDecoder) Decode(v interface{}) error {
 
 func (s *SPDX) UnmarshalJSON(b []byte) error {
 	if s.BOM == nil {
-		s.BOM = core.NewBOM()
+		s.BOM = core.NewBOM(core.Options{})
 	}
 	if s.pkgFilePaths == nil {
 		s.pkgFilePaths = make(map[common.ElementID]string)

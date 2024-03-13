@@ -24,7 +24,7 @@ import (
 )
 
 func TestMarshaler_MarshalReport(t *testing.T) {
-	testSBOM := core.NewBOM()
+	testSBOM := core.NewBOM(core.Options{GenerateBOMRef: true})
 	testSBOM.AddComponent(&core.Component{
 		Root: true,
 		Type: core.TypeApplication,

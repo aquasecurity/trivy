@@ -62,7 +62,7 @@ type BOM struct {
 	components    map[uuid.UUID]*Component
 	relationships map[uuid.UUID][]Relationship
 
-	// Vulnerabilities is a list of vulnerabilities that affect the component
+	// Vulnerabilities is a list of vulnerabilities that affect the component.
 	// CycloneDX: vulnerabilities
 	// SPDX: N/A
 	vulnerabilities map[uuid.UUID][]Vulnerability
@@ -70,6 +70,9 @@ type BOM struct {
 	// purls is a map of package URLs to UUIDs
 	// This is used to ensure that each package URL is only represented once in the BOM.
 	purls map[string][]uuid.UUID
+
+	// opts is a set of options for the BOM.
+	opts Options
 }
 
 type Component struct {
@@ -201,12 +204,17 @@ type Vulnerability struct {
 	DataSource       *dtypes.DataSource
 }
 
-func NewBOM() *BOM {
+type Options struct {
+	GenerateBOMRef bool
+}
+
+func NewBOM(opts Options) *BOM {
 	return &BOM{
 		components:      make(map[uuid.UUID]*Component),
 		relationships:   make(map[uuid.UUID][]Relationship),
 		vulnerabilities: make(map[uuid.UUID][]Vulnerability),
 		purls:           make(map[string][]uuid.UUID),
+		opts:            opts,
 	}
 }
 
@@ -264,14 +272,18 @@ func (b *BOM) Root() *Component {
 	if !ok {
 		return nil
 	}
-	root.PkgID.BOMRef = b.bomRef(root)
+	if b.opts.GenerateBOMRef {
+		root.PkgID.BOMRef = b.bomRef(root)
+	}
 	return root
 }
 
 func (b *BOM) Components() map[uuid.UUID]*Component {
 	// Fill in BOMRefs for components
-	for id, c := range b.components {
-		b.components[id].PkgID.BOMRef = b.bomRef(c)
+	if b.opts.GenerateBOMRef {
+		for id, c := range b.components {
+			b.components[id].PkgID.BOMRef = b.bomRef(c)
+		}
 	}
 	return b.components
 }

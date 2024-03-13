@@ -65,7 +65,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 											},
 										},
 									},
-									BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
@@ -90,7 +89,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "log",
 										Version:   "1.13.1",
 									},
-									BOMRef: "pkg:composer/pear/log@1.13.1",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -107,7 +105,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "pear_exception",
 										Version:   "v1.0.0",
 									},
-									BOMRef: "pkg:composer/pear/pear_exception@v1.0.0",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -130,7 +127,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "packageurl-go",
 										Version:   "v0.1.1-0.20220203205134-d70459300c8a",
 									},
-									BOMRef: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 								},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -151,7 +147,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "child-project",
 										Version:   "1.0",
 									},
-									BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0",
 								},
 								Version: "1.0",
 								Layer: ftypes.Layer{
@@ -173,7 +168,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:    "bootstrap",
 										Version: "5.0.2",
 									},
-									BOMRef: "pkg:npm/bootstrap@5.0.2",
 								},
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
@@ -204,7 +198,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:    "yargs-parser",
 										Version: "21.1.1",
 									},
-									BOMRef: "pkg:npm/yargs-parser@21.1.1",
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
 							},
@@ -232,7 +225,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:    "yargs-parser",
 										Version: "21.1.1",
 									},
-									BOMRef: "pkg:npm/yargs-parser@21.1.1",
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
 							},
@@ -261,7 +253,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "log",
 										Version:   "1.13.1",
 									},
-									BOMRef: "pkg:composer/pear/log@1.13.1",
 								},
 							},
 							{
@@ -275,7 +266,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "pear_exception",
 										Version:   "v1.0.0",
 									},
-									BOMRef: "pkg:composer/pear/pear_exception@v1.0.0",
 								},
 							},
 						},
@@ -303,7 +293,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "apm-agent",
 										Version:   "1.36.0",
 									},
-									BOMRef: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 								},
 							},
 							{
@@ -318,7 +307,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "apm-agent-cached-lookup-key",
 										Version:   "1.36.0",
 									},
-									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 								},
 							},
 						},

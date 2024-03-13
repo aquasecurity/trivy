@@ -42,7 +42,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent",
 										Version:   "1.36.0",
 									},
-									BOMRef: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 								},
 							},
 							{
@@ -57,7 +56,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-cached-lookup-key",
 										Version:   "1.36.0",
 									},
-									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 								},
 							},
 							{
@@ -72,7 +70,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-common",
 										Version:   "1.36.0",
 									},
-									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-common@1.36.0",
 								},
 							},
 							{
@@ -87,7 +84,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:      "apm-agent-core",
 										Version:   "1.36.0",
 									},
-									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-core@1.36.0",
 								},
 							},
 						},
@@ -114,7 +110,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 											},
 										},
 									},
-									BOMRef: "pkg:bitnami/elasticsearch@8.9.1?arch=arm64",
 								},
 							},
 						},
@@ -189,7 +184,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "gdal",
 										Version: "3.7.1",
 									},
-									BOMRef: "pkg:bitnami/gdal@3.7.1",
 								},
 							},
 							{
@@ -203,7 +197,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "geos",
 										Version: "3.8.3",
 									},
-									BOMRef: "pkg:bitnami/geos@3.8.3",
 								},
 							},
 							{
@@ -217,7 +210,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "postgresql",
 										Version: "15.3.0",
 									},
-									BOMRef: "pkg:bitnami/postgresql@15.3.0",
 								},
 								DependsOn: []string{
 									"geos@3.8.3",
@@ -236,7 +228,6 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Name:    "proj",
 										Version: "6.3.2",
 									},
-									BOMRef: "pkg:bitnami/proj@6.3.2",
 								},
 							},
 						},

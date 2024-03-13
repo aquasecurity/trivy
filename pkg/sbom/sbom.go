@@ -183,7 +183,7 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 func Decode(f io.Reader, format Format) (types.SBOM, error) {
 	var (
 		v       interface{}
-		bom     = core.NewBOM()
+		bom     = core.NewBOM(core.Options{})
 		decoder interface{ Decode(any) error }
 	)
 
