@@ -58,6 +58,11 @@ var (
 		Shorthand:  "A",
 		Usage:      "fetch resources from all cluster namespaces",
 	}
+	Intrusive = Flag[bool]{
+		Name:       "intrusive",
+		ConfigName: "kubernetes.intrusive",
+		Usage:      "When the flag is activated, the node-collector job will be executed, revealing misconfiguration findings detected within the Node.",
+	}
 	NodeCollectorNamespace = Flag[string]{
 		Name:       "node-collector-namespace",
 		ConfigName: "node.collector.namespace",
@@ -101,6 +106,7 @@ type K8sFlagGroup struct {
 	Components             *Flag[[]string]
 	K8sVersion             *Flag[string]
 	Tolerations            *Flag[[]string]
+	Intrusive              *Flag[bool]
 	NodeCollectorImageRef  *Flag[string]
 	AllNamespaces          *Flag[bool]
 	NodeCollectorNamespace *Flag[string]
@@ -121,6 +127,7 @@ type K8sOptions struct {
 	AllNamespaces          bool
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
+	Intrusive              bool
 	ExcludeNodes           map[string]string
 	QPS                    float32
 	Burst                  int
@@ -134,6 +141,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		Components:             ComponentsFlag.Clone(),
 		K8sVersion:             K8sVersionFlag.Clone(),
 		Tolerations:            TolerationsFlag.Clone(),
+		Intrusive:              Intrusive.Clone(),
 		AllNamespaces:          AllNamespaces.Clone(),
 		NodeCollectorNamespace: NodeCollectorNamespace.Clone(),
 		ExcludeOwned:           ExcludeOwned.Clone(),
@@ -193,6 +201,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		Components:             f.Components.Value(),
 		K8sVersion:             f.K8sVersion.Value(),
 		Tolerations:            tolerations,
+		Intrusive:              f.Intrusive.Value(),
 		AllNamespaces:          f.AllNamespaces.Value(),
 		NodeCollectorNamespace: f.NodeCollectorNamespace.Value(),
 		ExcludeOwned:           f.ExcludeOwned.Value(),
