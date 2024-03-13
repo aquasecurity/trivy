@@ -13,6 +13,7 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -186,6 +187,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 		return nil, ErrUnsupportedType
 	}
 	pkg.Name = m.pkgName(pkg, c)
+	pkg.ID = dependency.ID(p.LangType(), pkg.Name, p.Version) // Re-generate ID with the updated name
 
 	var err error
 	for _, prop := range c.Properties {
