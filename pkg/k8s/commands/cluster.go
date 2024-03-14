@@ -27,7 +27,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 			return xerrors.Errorf("get k8s artifacts with node info error: %w", err)
 		}
 	case types.FormatJSON, types.FormatTable:
-		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && opts.Intrusive {
+		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && !opts.NonIntrusive {
 			artifacts, err = trivyk8s.New(cluster, log.Logger, trivyk8s.WithExcludeOwned(opts.ExcludeOwned)).ListArtifactAndNodeInfo(ctx,
 				trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
 				trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),

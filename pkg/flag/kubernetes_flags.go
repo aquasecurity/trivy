@@ -58,10 +58,10 @@ var (
 		Shorthand:  "A",
 		Usage:      "fetch resources from all cluster namespaces",
 	}
-	Intrusive = Flag[bool]{
-		Name:       "intrusive",
-		ConfigName: "kubernetes.intrusive",
-		Usage:      "When the flag is activated, the node-collector job will be executed, revealing misconfiguration findings detected within the Node.",
+	NonIntrusive = Flag[bool]{
+		Name:       "non-intrusive",
+		ConfigName: "kubernetes.non.intrusive",
+		Usage:      "When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.",
 	}
 	NodeCollectorNamespace = Flag[string]{
 		Name:       "node-collector-namespace",
@@ -106,7 +106,7 @@ type K8sFlagGroup struct {
 	Components             *Flag[[]string]
 	K8sVersion             *Flag[string]
 	Tolerations            *Flag[[]string]
-	Intrusive              *Flag[bool]
+	NonIntrusive           *Flag[bool]
 	NodeCollectorImageRef  *Flag[string]
 	AllNamespaces          *Flag[bool]
 	NodeCollectorNamespace *Flag[string]
@@ -127,7 +127,7 @@ type K8sOptions struct {
 	AllNamespaces          bool
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
-	Intrusive              bool
+	NonIntrusive           bool
 	ExcludeNodes           map[string]string
 	QPS                    float32
 	Burst                  int
@@ -141,7 +141,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		Components:             ComponentsFlag.Clone(),
 		K8sVersion:             K8sVersionFlag.Clone(),
 		Tolerations:            TolerationsFlag.Clone(),
-		Intrusive:              Intrusive.Clone(),
+		NonIntrusive:           NonIntrusive.Clone(),
 		AllNamespaces:          AllNamespaces.Clone(),
 		NodeCollectorNamespace: NodeCollectorNamespace.Clone(),
 		ExcludeOwned:           ExcludeOwned.Clone(),
@@ -163,6 +163,7 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 		f.KubeConfig,
 		f.Components,
 		f.K8sVersion,
+		f.NonIntrusive,
 		f.Tolerations,
 		f.AllNamespaces,
 		f.NodeCollectorNamespace,
@@ -201,7 +202,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		Components:             f.Components.Value(),
 		K8sVersion:             f.K8sVersion.Value(),
 		Tolerations:            tolerations,
-		Intrusive:              f.Intrusive.Value(),
+		NonIntrusive:           f.NonIntrusive.Value(),
 		AllNamespaces:          f.AllNamespaces.Value(),
 		NodeCollectorNamespace: f.NodeCollectorNamespace.Value(),
 		ExcludeOwned:           f.ExcludeOwned.Value(),
