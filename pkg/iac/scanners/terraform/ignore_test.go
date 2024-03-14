@@ -415,9 +415,9 @@ resource "bad" "my-rule" {
 			assertLength: 1,
 		},
 		{
-			name: "ignore by each.key",
+			name: "ignore resource with `for_each` meta-argument",
 			inputOptions: `
-// trivy:ignore:*[each.key=false]
+// trivy:ignore:*[secure=false]
 resource "bad" "my-rule" {
   for_each = toset(["false", "true", "false"])
   secure   = each.key
@@ -426,164 +426,15 @@ resource "bad" "my-rule" {
 			assertLength: 0,
 		},
 		{
-			name: "ignore by each.value",
-			inputOptions: `
-// trivy:ignore:*[each.value=false]
-resource "bad" "my-rule" {
-  for_each = toset(["false", "true", "false"])
-  secure   = each.value
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "ignore by nested each.value",
-			inputOptions: `
-locals {
-  vms = [
-    {
-      ip_address = "10.0.0.1"
-      name       = "vm-1"
-    },
-    {
-      ip_address = "10.0.0.2"
-      name       = "vm-2"
-    }
-  ]
-}
-// trivy:ignore:*[each.value.name=vm-2]
-resource "bad" "my-rule" {
-  secure = false
-  for_each   = { for vm in local.vms : vm.name => vm }
-  ip_address = each.value.ip_address
-}
-`,
-			assertLength: 1,
-		},
-		{
-			name: "ignore resource with `count` meta-argument",
-			inputOptions: `
-// trivy:ignore:*[count.index=1]
-resource "bad" "my-rule" {
-  count = 2
-  secure = false
-}
-`,
-			assertLength: 1,
-		},
-		{
 			name: "ignore by dynamic block value",
 			inputOptions: `
-// trivy:ignore:*[ingress.1.port=9090]
+// trivy:ignore:*[secure_settings.enabled=false]
 resource "bad" "my-rule" {
-  secure = false
-  dynamic "ingress" {
-    for_each = [8080, 9090]
+  dynamic "secure_settings" {
+    for_each = ["false", "true"]
     content {
-      port = ingress.value
+      enabled = secure_settings.value
     }
-  }
-}
-`,
-			assertLength: 0,
-		},
-		{
-			name: "invalid index when accessing blocks",
-			inputOptions: `
-// trivy:ignore:*[ingress.99.port=9090]
-// trivy:ignore:*[ingress.-10.port=9090]
-resource "bad" "my-rule" {
-  secure = false
-  dynamic "ingress" {
-    for_each = [8080, 9090]
-    content {
-      port = ingress.value
-    }
-  }
-}
-`,
-			assertLength: 1,
-		},
-		{
-			name: "ignore by list value",
-			inputOptions: `
-#trivy:ignore:*[someattr.1.Environment=dev]
-resource "bad" "my-rule" {
-  secure = false
-  someattr = [
-	{
-		Environment = "prod"
-	},
-	{
-		Environment = "dev"
-	}
-  ]
-}	
-`,
-			assertLength: 0,
-		},
-		{
-			name: "ignore by list value with invalid index",
-			inputOptions: `
-#trivy:ignore:*[someattr.-2.Environment=dev]
-resource "bad" "my-rule" {
-  secure = false
-  someattr = [
-	{
-		Environment = "prod"
-	},
-	{
-		Environment = "dev"
-	}
-  ]
-}	
-`,
-			assertLength: 1,
-		},
-		{
-			name: "ignore by object value",
-			inputOptions: `
-#trivy:ignore:*[tags.Environment=dev]
-resource "bad" "my-rule" {
-  secure = false
-  tags = {
-    Environment = "dev"
-  }
-}	
-`,
-			assertLength: 0,
-		},
-		{
-			name: "ignore by object value in block",
-			inputOptions: `
-#trivy:ignore:*[someblock.tags.Environment=dev]
-resource "bad" "my-rule" {
-  secure = false
-  someblock {
-	tags = {
-	  Environment = "dev"
-	}
-  }
-}	
-`,
-			assertLength: 0,
-		},
-		{
-			name: "ignore by list value in map",
-			inputOptions: `
-variable "testvar" {
-  type = map(list(string))
-  default = {
-    server1 = ["web", "dev"]
-    server2 = ["prod"]
-  }
-}
-
-#trivy:ignore:*[someblock.someattr.server1.1=dev]
-resource "bad" "my-rule" {
-  secure = false
-  someblock {
-	someattr = var.testvar
   }
 }
 `,

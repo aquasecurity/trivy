@@ -1,10 +1,8 @@
 package terraform
 
 import (
-	"errors"
 	"fmt"
 	"io/fs"
-	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
@@ -322,125 +320,6 @@ func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
 	}
 
 	return nil, b
-}
-
-// GetValueByPath returns the value of the attribute located at the given path.
-// Supports special paths like "count.index," "each.key," and "each.value."
-//
-// The path may contain indices, keys and dots (used as separators) and
-// it should end with the name of the attribute.
-func (b *Block) GetValueByPath(path string) cty.Value {
-
-	if path == "count.index" || path == "each.key" || path == "each.value" {
-		return b.Context().GetByDot(path)
-	}
-
-	if restPath, ok := strings.CutPrefix(path, "each.value."); ok {
-		if restPath == "" {
-			return cty.NilVal
-		}
-
-		val := b.Context().GetByDot("each.value")
-		res, err := getValueByPath(val, strings.Split(restPath, "."))
-		if err != nil {
-			return cty.NilVal
-		}
-		return res
-	}
-
-	attr, restPath := b.getAttrByPath(path)
-
-	if attr == nil {
-		return cty.NilVal
-	}
-
-	if !attr.IsIterable() || len(restPath) == 0 {
-		return attr.Value()
-	}
-
-	res, err := getValueByPath(attr.Value(), restPath)
-	if err != nil {
-		return cty.NilVal
-	}
-	return res
-}
-
-// getAttrByPath returns the attribute and the remaining path relative to the passed path.
-func (b *Block) getAttrByPath(path string) (*Attribute, []string) {
-	parts := strings.Split(path, ".")
-
-	if len(parts) == 1 {
-		return b.GetAttribute(parts[0]), nil
-	}
-
-	var (
-		attr   *Attribute
-		cursor int
-	)
-
-	currentBlock := b
-	for currentBlock != nil {
-		if cursor > len(parts)-1 {
-			return nil, nil
-		}
-
-		blocks := currentBlock.GetBlocks(parts[cursor])
-
-		// handling the case when there are multiple blocks with the same name,
-		// e.g. when using a `dynamic` block
-		var checkBlock *Block
-		if len(blocks) == 1 {
-			checkBlock = blocks[0]
-		} else if len(blocks) > 1 && cursor <= len(parts)-1 {
-			idx, err := strconv.Atoi(parts[cursor+1])
-			if err != nil {
-				return nil, nil
-			}
-			if idx < 0 || idx > len(blocks)-1 {
-				return nil, nil
-			}
-			checkBlock = blocks[idx]
-			cursor++
-		}
-
-		if checkBlock == nil {
-			attr = currentBlock.GetAttribute(parts[cursor])
-		}
-
-		currentBlock = checkBlock
-		cursor++
-	}
-
-	return attr, parts[cursor:]
-}
-
-// getValueByPath retrieves the nested value from a cty.Value using the provided steps.
-// It supports traversing through maps, objects, lists, and tuples based on the steps provided.
-// Returns the resulting value and any encountered errors during traversal.
-func getValueByPath(val cty.Value, steps []string) (cty.Value, error) {
-	var err error
-	for _, step := range steps {
-		switch valType := val.Type(); {
-		case valType.IsMapType():
-			val, err = cty.IndexStringPath(step).Apply(val)
-		case valType.IsObjectType():
-			val, err = cty.GetAttrPath(step).Apply(val)
-		case valType.IsListType() || valType.IsTupleType():
-			var idx int
-			idx, err = strconv.Atoi(step)
-			if err != nil {
-				return cty.NilVal, errors.New("index not number")
-			}
-			val, err = cty.IndexIntPath(idx).Apply(val)
-		default:
-			return cty.NilVal, fmt.Errorf("unexpected value type: %s", valType.FriendlyName())
-		}
-		if err != nil {
-			return cty.NilVal, err
-		}
-
-	}
-	return val, nil
 }
 
 func MapNestedAttribute[T any](block *Block, path string, f func(attr *Attribute, parent *Block) T) T {

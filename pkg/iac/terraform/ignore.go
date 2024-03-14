@@ -70,23 +70,26 @@ func (ignore Ignore) MatchParams(modules Modules, blockMetadata *iacTypes.Metada
 	if block == nil {
 		return true
 	}
-	for key, param := range ignore.Params {
-		val := block.GetValueByPath(key)
-		switch val.Type() {
+	for key, val := range ignore.Params {
+		attr, _ := block.GetNestedAttribute(key)
+		if attr.IsNil() || !attr.Value().IsKnown() {
+			return false
+		}
+		switch attr.Type() {
 		case cty.String:
-			if val.AsString() != param {
+			if !attr.Equals(val) {
 				return false
 			}
 		case cty.Number:
-			bf := val.AsBigFloat()
+			bf := attr.Value().AsBigFloat()
 			f64, _ := bf.Float64()
 			comparableInt := fmt.Sprintf("%d", int(f64))
 			comparableFloat := fmt.Sprintf("%f", f64)
-			if param != comparableInt && param != comparableFloat {
+			if val != comparableInt && val != comparableFloat {
 				return false
 			}
 		case cty.Bool:
-			if fmt.Sprintf("%t", val.True()) != param {
+			if fmt.Sprintf("%t", attr.IsTrue()) != val {
 				return false
 			}
 		default:
