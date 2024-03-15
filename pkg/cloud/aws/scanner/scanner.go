@@ -31,9 +31,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	awsCache := cache.New(option.CacheDir, option.MaxCacheAge, option.Account, option.Region)
 	included, missing := awsCache.ListServices(option.Services)
 
+	prefixedLogger := &log.PrefixedLogger{Name: "aws"}
+
 	var scannerOpts []options.ScannerOption
 	if !option.NoProgress {
-		tracker := newProgressTracker()
+		tracker := newProgressTracker(prefixedLogger)
 		defer tracker.Finish()
 		scannerOpts = append(scannerOpts, aws.ScannerWithProgressTracker(tracker))
 	}
@@ -43,11 +45,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	if option.Debug {
-		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "aws"}))
+		scannerOpts = append(scannerOpts, options.ScannerWithDebug(prefixedLogger))
 	}
 
 	if option.Trace {
-		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&log.PrefixedLogger{Name: "aws"}))
+		scannerOpts = append(scannerOpts, options.ScannerWithTrace(prefixedLogger))
 	}
 
 	if option.Region != "" {
