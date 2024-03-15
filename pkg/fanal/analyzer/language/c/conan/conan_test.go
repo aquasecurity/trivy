@@ -3,7 +3,6 @@ package conan
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -156,16 +155,8 @@ func Test_conanLockAnalyzer_Required(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir := t.TempDir()
-			f, err := os.Create(filepath.Join(dir, tt.filePath))
-			require.NoError(t, err)
-			defer f.Close()
-
-			fi, err := f.Stat()
-			require.NoError(t, err)
-
 			a := conanLockAnalyzer{}
-			got := a.Required("", fi)
+			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}
