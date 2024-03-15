@@ -57,6 +57,10 @@ func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 			return xerrors.Errorf("%s parse error: %w", filePath, err)
 		}
 
+		if app == nil {
+			return nil
+		}
+
 		// Fill licenses
 		for i, lib := range app.Libraries {
 			if license, ok := licenses[lib.Name]; ok {
