@@ -110,6 +110,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 		{
 			name: "empty file",
 			dir:  "testdata/empty",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 
@@ -125,8 +126,8 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 				FS: os.DirFS(tt.dir),
 			})
 
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			require.NoError(t, err)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }
