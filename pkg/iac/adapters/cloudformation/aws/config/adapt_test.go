@@ -1,14 +1,11 @@
 package config
 
 import (
-	"context"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/config"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAdapt(t *testing.T) {
@@ -29,8 +26,7 @@ Resources:
 `,
 			expected: config.Config{
 				ConfigurationAggregrator: config.ConfigurationAggregrator{
-					Metadata:         types.NewTestMetadata(),
-					SourceAllRegions: types.Bool(true, types.NewTestMetadata()),
+					SourceAllRegions: types.BoolTest(true),
 				},
 			},
 		},
@@ -46,8 +42,7 @@ Resources:
 `,
 			expected: config.Config{
 				ConfigurationAggregrator: config.ConfigurationAggregrator{
-					Metadata:         types.NewTestMetadata(),
-					SourceAllRegions: types.Bool(true, types.NewTestMetadata()),
+					SourceAllRegions: types.BoolTest(true),
 				},
 			},
 		},
@@ -55,15 +50,7 @@ Resources:
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fs := testutil.CreateFS(t, map[string]string{
-				"template.yaml": tt.source,
-			})
-
-			p := parser.New()
-			fctx, err := p.ParseFile(context.TODO(), fs, "template.yaml")
-			require.NoError(t, err)
-
-			testutil.AssertDefsecEqual(t, tt.expected, Adapt(*fctx))
+			testutil.AdaptAndCompare(t, tt.source, tt.expected, Adapt)
 		})
 	}
 
