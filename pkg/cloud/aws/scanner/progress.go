@@ -73,7 +73,7 @@ func (m *progressTracker) StartService(name string) {
 		return
 	}
 
-	m.debugWriter.Write([]byte(fmt.Sprintf("[%d/%d] Scanning %s...\n", m.serviceCurrent+1, m.serviceTotal, name)))
+	fmt.Fprintf(m.debugWriter, "[%d/%d] Scanning %s...\n", m.serviceCurrent+1, m.serviceTotal, name)
 	m.serviceBar = bar.New(
 		bar.OptionHideOnFinish(true),
 		bar.OptionWithAutoComplete(false),
