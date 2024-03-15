@@ -1,9 +1,9 @@
 package conan
 
 import (
+	"context"
 	"os"
 	"path/filepath"
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,18 +15,19 @@ import (
 
 func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
+		name     string
+		dir      string
+		cacheDir string
+		want     *analyzer.AnalysisResult
 	}{
 		{
-			name:      "happy path",
-			inputFile: "testdata/happy.lock",
+			name: "happy path",
+			dir:  "testdata/happy",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Conan,
-						FilePath: "testdata/happy.lock",
+						FilePath: "conan.lock",
 						Libraries: types.Packages{
 							{
 								ID:      "openssl/3.0.5",
@@ -60,28 +61,69 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "empty file",
-			inputFile: "testdata/empty.lock",
+			name:     "happy path with cache dir",
+			dir:      "testdata/happy",
+			cacheDir: "testdata/cacheDir",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Conan,
+						FilePath: "conan.lock",
+						Libraries: types.Packages{
+							{
+								ID:      "openssl/3.0.5",
+								Name:    "openssl",
+								Version: "3.0.5",
+								Licenses: []string{
+									"Apache-2.0",
+								},
+								DependsOn: []string{
+									"zlib/1.2.12",
+								},
+								Locations: []types.Location{
+									{
+										StartLine: 12,
+										EndLine:   21,
+									},
+								},
+							},
+							{
+								ID:      "zlib/1.2.12",
+								Name:    "zlib",
+								Version: "1.2.12",
+								Licenses: []string{
+									"Zlib",
+								},
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 22,
+										EndLine:   28,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "empty file",
+			dir:  "testdata/empty",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
-			require.NoError(t, err)
-			defer f.Close()
-
-			a := conanLockAnalyzer{}
-			got, err := a.Analyze(nil, analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Content:  f,
-			})
-
-			if got != nil {
-				for _, app := range got.Applications {
-					sort.Sort(app.Libraries)
-				}
+			if tt.cacheDir != "" {
+				t.Setenv("CONAN_USER_HOME", tt.cacheDir)
 			}
+			a, err := newConanLockAnalyzer(analyzer.AnalyzerOptions{})
+			require.NoError(t, err)
+
+			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+				FS: os.DirFS(tt.dir),
+			})
 
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
