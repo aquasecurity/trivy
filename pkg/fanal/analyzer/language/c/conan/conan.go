@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -70,6 +71,7 @@ func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 			}
 		}
 
+		sort.Sort(app.Libraries)
 		apps = append(apps, *app)
 		return nil
 	}); err != nil {
