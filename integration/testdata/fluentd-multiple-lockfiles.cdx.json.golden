@@ -2,7 +2,7 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000163",
   "version": 1,
   "metadata": {
     "timestamp": "2021-08-25T12:20:30+00:00",
@@ -17,13 +17,33 @@
       ]
     },
     "component": {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
       "type": "container",
       "name": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
       "properties": [
         {
           "name": "aquasecurity:trivy:DiffID",
-          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f,sha256:02874b2b269dea8dde0f7edb4c9906904dfe38a09de1a214f20c650cfb15c60e,sha256:3752e1f6fd759c795c13aff2c93c081529366e27635ba6621e849b0f9cfc77f0,sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9,sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89,sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
+          "value": "sha256:02874b2b269dea8dde0f7edb4c9906904dfe38a09de1a214f20c650cfb15c60e"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:3752e1f6fd759c795c13aff2c93c081529366e27635ba6621e849b0f9cfc77f0"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
         },
         {
           "name": "aquasecurity:trivy:ImageID",
@@ -38,7 +58,7 @@
   },
   "components": [
     {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000003",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "type": "operating-system",
       "name": "debian",
       "version": "10.2",
@@ -5715,7 +5735,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
+      "bom-ref": "pkg:gem/activesupport@6.0.2.1",
       "type": "library",
       "name": "activesupport",
       "version": "6.0.2.1",
@@ -5747,7 +5767,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/addressable@2.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Faddressable-2.7.0.gemspec",
+      "bom-ref": "pkg:gem/addressable@2.7.0",
       "type": "library",
       "name": "addressable",
       "version": "2.7.0",
@@ -5779,7 +5799,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/concurrent-ruby@1.1.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fconcurrent-ruby-1.1.6.gemspec",
+      "bom-ref": "pkg:gem/concurrent-ruby@1.1.6",
       "type": "library",
       "name": "concurrent-ruby",
       "version": "1.1.6",
@@ -5811,7 +5831,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/cool.io@1.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fcool.io-1.6.0.gemspec",
+      "bom-ref": "pkg:gem/cool.io@1.6.0",
       "type": "library",
       "name": "cool.io",
       "version": "1.6.0",
@@ -5836,7 +5856,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/dig_rb@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fdig_rb-1.0.1.gemspec",
+      "bom-ref": "pkg:gem/dig_rb@1.0.1",
       "type": "library",
       "name": "dig_rb",
       "version": "1.0.1",
@@ -5868,7 +5888,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/domain_name@0.5.20190701?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fdomain_name-0.5.20190701.gemspec",
+      "bom-ref": "pkg:gem/domain_name@0.5.20190701",
       "type": "library",
       "name": "domain_name",
       "version": "0.5.20190701",
@@ -5910,7 +5930,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/elasticsearch-api@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-api-7.5.0.gemspec",
+      "bom-ref": "pkg:gem/elasticsearch-api@7.5.0",
       "type": "library",
       "name": "elasticsearch-api",
       "version": "7.5.0",
@@ -5942,7 +5962,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/elasticsearch-transport@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-transport-7.5.0.gemspec",
+      "bom-ref": "pkg:gem/elasticsearch-transport@7.5.0",
       "type": "library",
       "name": "elasticsearch-transport",
       "version": "7.5.0",
@@ -5974,7 +5994,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/elasticsearch@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-7.5.0.gemspec",
+      "bom-ref": "pkg:gem/elasticsearch@7.5.0",
       "type": "library",
       "name": "elasticsearch",
       "version": "7.5.0",
@@ -6006,7 +6026,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/excon@0.72.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fexcon-0.72.0.gemspec",
+      "bom-ref": "pkg:gem/excon@0.72.0",
       "type": "library",
       "name": "excon",
       "version": "0.72.0",
@@ -6038,7 +6058,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/faraday@0.17.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffaraday-0.17.3.gemspec",
+      "bom-ref": "pkg:gem/faraday@0.17.3",
       "type": "library",
       "name": "faraday",
       "version": "0.17.3",
@@ -6070,7 +6090,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/ffi-compiler@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-compiler-1.0.1.gemspec",
+      "bom-ref": "pkg:gem/ffi-compiler@1.0.1",
       "type": "library",
       "name": "ffi-compiler",
       "version": "1.0.1",
@@ -6102,7 +6122,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/ffi@1.12.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-1.12.2.gemspec",
+      "bom-ref": "pkg:gem/ffi@1.12.2",
       "type": "library",
       "name": "ffi",
       "version": "1.12.2",
@@ -6134,7 +6154,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/fluent-plugin-concat@2.4.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-concat-2.4.0.gemspec",
+      "bom-ref": "pkg:gem/fluent-plugin-concat@2.4.0",
       "type": "library",
       "name": "fluent-plugin-concat",
       "version": "2.4.0",
@@ -6166,7 +6186,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/fluent-plugin-detect-exceptions@0.0.13?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-detect-exceptions-0.0.13.gemspec",
+      "bom-ref": "pkg:gem/fluent-plugin-detect-exceptions@0.0.13",
       "type": "library",
       "name": "fluent-plugin-detect-exceptions",
       "version": "0.0.13",
@@ -6198,7 +6218,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/fluent-plugin-elasticsearch@3.8.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-elasticsearch-3.8.0.gemspec",
+      "bom-ref": "pkg:gem/fluent-plugin-elasticsearch@3.8.0",
       "type": "library",
       "name": "fluent-plugin-elasticsearch",
       "version": "3.8.0",
@@ -6230,7 +6250,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/fluent-plugin-kubernetes_metadata_filter@2.4.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-kubernetes_metadata_filter-2.4.1.gemspec",
+      "bom-ref": "pkg:gem/fluent-plugin-kubernetes_metadata_filter@2.4.1",
       "type": "library",
       "name": "fluent-plugin-kubernetes_metadata_filter",
       "version": "2.4.1",
@@ -6262,7 +6282,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/fluent-plugin-multi-format-parser@1.0.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-multi-format-parser-1.0.0.gemspec",
+      "bom-ref": "pkg:gem/fluent-plugin-multi-format-parser@1.0.0",
       "type": "library",
       "name": "fluent-plugin-multi-format-parser",
       "version": "1.0.0",
@@ -6294,7 +6314,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/fluent-plugin-prometheus@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-prometheus-1.7.0.gemspec",
+      "bom-ref": "pkg:gem/fluent-plugin-prometheus@1.7.0",
       "type": "library",
       "name": "fluent-plugin-prometheus",
       "version": "1.7.0",
@@ -6326,7 +6346,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/fluent-plugin-systemd@1.0.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-systemd-1.0.2.gemspec",
+      "bom-ref": "pkg:gem/fluent-plugin-systemd@1.0.2",
       "type": "library",
       "name": "fluent-plugin-systemd",
       "version": "1.0.2",
@@ -6358,7 +6378,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/fluentd@1.8.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluentd-1.8.0.gemspec",
+      "bom-ref": "pkg:gem/fluentd@1.8.0",
       "type": "library",
       "name": "fluentd",
       "version": "1.8.0",
@@ -6390,7 +6410,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/http-accept@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-accept-1.7.0.gemspec",
+      "bom-ref": "pkg:gem/http-accept@1.7.0",
       "type": "library",
       "name": "http-accept",
       "version": "1.7.0",
@@ -6415,7 +6435,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/http-cookie@1.0.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-cookie-1.0.3.gemspec",
+      "bom-ref": "pkg:gem/http-cookie@1.0.3",
       "type": "library",
       "name": "http-cookie",
       "version": "1.0.3",
@@ -6447,7 +6467,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/http-form_data@2.2.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-form_data-2.2.0.gemspec",
+      "bom-ref": "pkg:gem/http-form_data@2.2.0",
       "type": "library",
       "name": "http-form_data",
       "version": "2.2.0",
@@ -6479,7 +6499,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/http-parser@1.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-parser-1.2.1.gemspec",
+      "bom-ref": "pkg:gem/http-parser@1.2.1",
       "type": "library",
       "name": "http-parser",
       "version": "1.2.1",
@@ -6511,7 +6531,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/http@4.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-4.3.0.gemspec",
+      "bom-ref": "pkg:gem/http@4.3.0",
       "type": "library",
       "name": "http",
       "version": "4.3.0",
@@ -6543,7 +6563,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/http_parser.rb@0.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp_parser.rb-0.6.0.gemspec",
+      "bom-ref": "pkg:gem/http_parser.rb@0.6.0",
       "type": "library",
       "name": "http_parser.rb",
       "version": "0.6.0",
@@ -6575,7 +6595,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/i18n@1.8.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fi18n-1.8.2.gemspec",
+      "bom-ref": "pkg:gem/i18n@1.8.2",
       "type": "library",
       "name": "i18n",
       "version": "1.8.2",
@@ -6607,7 +6627,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/kubeclient@4.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fkubeclient-4.6.0.gemspec",
+      "bom-ref": "pkg:gem/kubeclient@4.6.0",
       "type": "library",
       "name": "kubeclient",
       "version": "4.6.0",
@@ -6639,7 +6659,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/lru_redux@1.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Flru_redux-1.1.0.gemspec",
+      "bom-ref": "pkg:gem/lru_redux@1.1.0",
       "type": "library",
       "name": "lru_redux",
       "version": "1.1.0",
@@ -6671,7 +6691,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/mime-types-data@3.2019.1009?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmime-types-data-3.2019.1009.gemspec",
+      "bom-ref": "pkg:gem/mime-types-data@3.2019.1009",
       "type": "library",
       "name": "mime-types-data",
       "version": "3.2019.1009",
@@ -6703,7 +6723,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/mime-types@3.3.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmime-types-3.3.1.gemspec",
+      "bom-ref": "pkg:gem/mime-types@3.3.1",
       "type": "library",
       "name": "mime-types",
       "version": "3.3.1",
@@ -6735,7 +6755,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/minitest@5.14.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fminitest-5.14.0.gemspec",
+      "bom-ref": "pkg:gem/minitest@5.14.0",
       "type": "library",
       "name": "minitest",
       "version": "5.14.0",
@@ -6767,7 +6787,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/msgpack@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmsgpack-1.3.3.gemspec",
+      "bom-ref": "pkg:gem/msgpack@1.3.3",
       "type": "library",
       "name": "msgpack",
       "version": "1.3.3",
@@ -6799,7 +6819,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/multi_json@1.14.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmulti_json-1.14.1.gemspec",
+      "bom-ref": "pkg:gem/multi_json@1.14.1",
       "type": "library",
       "name": "multi_json",
       "version": "1.14.1",
@@ -6831,7 +6851,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/multipart-post@2.1.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmultipart-post-2.1.1.gemspec",
+      "bom-ref": "pkg:gem/multipart-post@2.1.1",
       "type": "library",
       "name": "multipart-post",
       "version": "2.1.1",
@@ -6863,7 +6883,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/netrc@0.11.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fnetrc-0.11.0.gemspec",
+      "bom-ref": "pkg:gem/netrc@0.11.0",
       "type": "library",
       "name": "netrc",
       "version": "0.11.0",
@@ -6895,7 +6915,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/oj@3.10.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Foj-3.10.0.gemspec",
+      "bom-ref": "pkg:gem/oj@3.10.0",
       "type": "library",
       "name": "oj",
       "version": "3.10.0",
@@ -6927,7 +6947,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/prometheus-client@0.9.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fprometheus-client-0.9.0.gemspec",
+      "bom-ref": "pkg:gem/prometheus-client@0.9.0",
       "type": "library",
       "name": "prometheus-client",
       "version": "0.9.0",
@@ -6959,7 +6979,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/public_suffix@4.0.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fpublic_suffix-4.0.3.gemspec",
+      "bom-ref": "pkg:gem/public_suffix@4.0.3",
       "type": "library",
       "name": "public_suffix",
       "version": "4.0.3",
@@ -6991,7 +7011,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/quantile@0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fquantile-0.2.1.gemspec",
+      "bom-ref": "pkg:gem/quantile@0.2.1",
       "type": "library",
       "name": "quantile",
       "version": "0.2.1",
@@ -7023,7 +7043,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/rake@13.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frake-13.0.1.gemspec",
+      "bom-ref": "pkg:gem/rake@13.0.1",
       "type": "library",
       "name": "rake",
       "version": "13.0.1",
@@ -7055,7 +7075,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/recursive-open-struct@1.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frecursive-open-struct-1.1.0.gemspec",
+      "bom-ref": "pkg:gem/recursive-open-struct@1.1.0",
       "type": "library",
       "name": "recursive-open-struct",
       "version": "1.1.0",
@@ -7087,7 +7107,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/rest-client@2.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frest-client-2.1.0.gemspec",
+      "bom-ref": "pkg:gem/rest-client@2.1.0",
       "type": "library",
       "name": "rest-client",
       "version": "2.1.0",
@@ -7119,7 +7139,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/serverengine@2.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fserverengine-2.2.1.gemspec",
+      "bom-ref": "pkg:gem/serverengine@2.2.1",
       "type": "library",
       "name": "serverengine",
       "version": "2.2.1",
@@ -7151,7 +7171,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/sigdump@0.2.4?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsigdump-0.2.4.gemspec",
+      "bom-ref": "pkg:gem/sigdump@0.2.4",
       "type": "library",
       "name": "sigdump",
       "version": "0.2.4",
@@ -7183,7 +7203,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/strptime@0.2.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fstrptime-0.2.3.gemspec",
+      "bom-ref": "pkg:gem/strptime@0.2.3",
       "type": "library",
       "name": "strptime",
       "version": "0.2.3",
@@ -7215,7 +7235,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/systemd-journal@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsystemd-journal-1.3.3.gemspec",
+      "bom-ref": "pkg:gem/systemd-journal@1.3.3",
       "type": "library",
       "name": "systemd-journal",
       "version": "1.3.3",
@@ -7247,7 +7267,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/thread_safe@0.3.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fthread_safe-0.3.6.gemspec",
+      "bom-ref": "pkg:gem/thread_safe@0.3.6",
       "type": "library",
       "name": "thread_safe",
       "version": "0.3.6",
@@ -7279,7 +7299,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/tzinfo-data@1.2019.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ftzinfo-data-1.2019.3.gemspec",
+      "bom-ref": "pkg:gem/tzinfo-data@1.2019.3",
       "type": "library",
       "name": "tzinfo-data",
       "version": "1.2019.3",
@@ -7311,7 +7331,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/tzinfo@1.2.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ftzinfo-1.2.6.gemspec",
+      "bom-ref": "pkg:gem/tzinfo@1.2.6",
       "type": "library",
       "name": "tzinfo",
       "version": "1.2.6",
@@ -7343,7 +7363,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/unf@0.1.4?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Funf-0.1.4.gemspec",
+      "bom-ref": "pkg:gem/unf@0.1.4",
       "type": "library",
       "name": "unf",
       "version": "0.1.4",
@@ -7375,7 +7395,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/unf_ext@0.0.7.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Funf_ext-0.0.7.6.gemspec",
+      "bom-ref": "pkg:gem/unf_ext@0.0.7.6",
       "type": "library",
       "name": "unf_ext",
       "version": "0.0.7.6",
@@ -7407,7 +7427,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/yajl-ruby@1.4.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fyajl-ruby-1.4.1.gemspec",
+      "bom-ref": "pkg:gem/yajl-ruby@1.4.1",
       "type": "library",
       "name": "yajl-ruby",
       "version": "1.4.1",
@@ -7439,7 +7459,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:gem/zeitwerk@2.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fzeitwerk-2.3.0.gemspec",
+      "bom-ref": "pkg:gem/zeitwerk@2.3.0",
       "type": "library",
       "name": "zeitwerk",
       "version": "2.3.0",
@@ -7473,68 +7493,68 @@
   ],
   "dependencies": [
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000001",
       "dependsOn": [
-        "3ff14136-e09f-4df9-80ea-000000000003",
-        "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
-        "pkg:gem/addressable@2.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Faddressable-2.7.0.gemspec",
-        "pkg:gem/concurrent-ruby@1.1.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fconcurrent-ruby-1.1.6.gemspec",
-        "pkg:gem/cool.io@1.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fcool.io-1.6.0.gemspec",
-        "pkg:gem/dig_rb@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fdig_rb-1.0.1.gemspec",
-        "pkg:gem/domain_name@0.5.20190701?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fdomain_name-0.5.20190701.gemspec",
-        "pkg:gem/elasticsearch-api@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-api-7.5.0.gemspec",
-        "pkg:gem/elasticsearch-transport@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-transport-7.5.0.gemspec",
-        "pkg:gem/elasticsearch@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-7.5.0.gemspec",
-        "pkg:gem/excon@0.72.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fexcon-0.72.0.gemspec",
-        "pkg:gem/faraday@0.17.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffaraday-0.17.3.gemspec",
-        "pkg:gem/ffi-compiler@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-compiler-1.0.1.gemspec",
-        "pkg:gem/ffi@1.12.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-1.12.2.gemspec",
-        "pkg:gem/fluent-plugin-concat@2.4.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-concat-2.4.0.gemspec",
-        "pkg:gem/fluent-plugin-detect-exceptions@0.0.13?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-detect-exceptions-0.0.13.gemspec",
-        "pkg:gem/fluent-plugin-elasticsearch@3.8.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-elasticsearch-3.8.0.gemspec",
-        "pkg:gem/fluent-plugin-kubernetes_metadata_filter@2.4.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-kubernetes_metadata_filter-2.4.1.gemspec",
-        "pkg:gem/fluent-plugin-multi-format-parser@1.0.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-multi-format-parser-1.0.0.gemspec",
-        "pkg:gem/fluent-plugin-prometheus@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-prometheus-1.7.0.gemspec",
-        "pkg:gem/fluent-plugin-systemd@1.0.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-systemd-1.0.2.gemspec",
-        "pkg:gem/fluentd@1.8.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluentd-1.8.0.gemspec",
-        "pkg:gem/http-accept@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-accept-1.7.0.gemspec",
-        "pkg:gem/http-cookie@1.0.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-cookie-1.0.3.gemspec",
-        "pkg:gem/http-form_data@2.2.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-form_data-2.2.0.gemspec",
-        "pkg:gem/http-parser@1.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-parser-1.2.1.gemspec",
-        "pkg:gem/http@4.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-4.3.0.gemspec",
-        "pkg:gem/http_parser.rb@0.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp_parser.rb-0.6.0.gemspec",
-        "pkg:gem/i18n@1.8.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fi18n-1.8.2.gemspec",
-        "pkg:gem/kubeclient@4.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fkubeclient-4.6.0.gemspec",
-        "pkg:gem/lru_redux@1.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Flru_redux-1.1.0.gemspec",
-        "pkg:gem/mime-types-data@3.2019.1009?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmime-types-data-3.2019.1009.gemspec",
-        "pkg:gem/mime-types@3.3.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmime-types-3.3.1.gemspec",
-        "pkg:gem/minitest@5.14.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fminitest-5.14.0.gemspec",
-        "pkg:gem/msgpack@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmsgpack-1.3.3.gemspec",
-        "pkg:gem/multi_json@1.14.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmulti_json-1.14.1.gemspec",
-        "pkg:gem/multipart-post@2.1.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmultipart-post-2.1.1.gemspec",
-        "pkg:gem/netrc@0.11.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fnetrc-0.11.0.gemspec",
-        "pkg:gem/oj@3.10.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Foj-3.10.0.gemspec",
-        "pkg:gem/prometheus-client@0.9.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fprometheus-client-0.9.0.gemspec",
-        "pkg:gem/public_suffix@4.0.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fpublic_suffix-4.0.3.gemspec",
-        "pkg:gem/quantile@0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fquantile-0.2.1.gemspec",
-        "pkg:gem/rake@13.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frake-13.0.1.gemspec",
-        "pkg:gem/recursive-open-struct@1.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frecursive-open-struct-1.1.0.gemspec",
-        "pkg:gem/rest-client@2.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frest-client-2.1.0.gemspec",
-        "pkg:gem/serverengine@2.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fserverengine-2.2.1.gemspec",
-        "pkg:gem/sigdump@0.2.4?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsigdump-0.2.4.gemspec",
-        "pkg:gem/strptime@0.2.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fstrptime-0.2.3.gemspec",
-        "pkg:gem/systemd-journal@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsystemd-journal-1.3.3.gemspec",
-        "pkg:gem/thread_safe@0.3.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fthread_safe-0.3.6.gemspec",
-        "pkg:gem/tzinfo-data@1.2019.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ftzinfo-data-1.2019.3.gemspec",
-        "pkg:gem/tzinfo@1.2.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ftzinfo-1.2.6.gemspec",
-        "pkg:gem/unf@0.1.4?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Funf-0.1.4.gemspec",
-        "pkg:gem/unf_ext@0.0.7.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Funf_ext-0.0.7.6.gemspec",
-        "pkg:gem/yajl-ruby@1.4.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fyajl-ruby-1.4.1.gemspec",
-        "pkg:gem/zeitwerk@2.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fzeitwerk-2.3.0.gemspec"
+        "3ff14136-e09f-4df9-80ea-000000000002",
+        "pkg:gem/activesupport@6.0.2.1",
+        "pkg:gem/addressable@2.7.0",
+        "pkg:gem/concurrent-ruby@1.1.6",
+        "pkg:gem/cool.io@1.6.0",
+        "pkg:gem/dig_rb@1.0.1",
+        "pkg:gem/domain_name@0.5.20190701",
+        "pkg:gem/elasticsearch-api@7.5.0",
+        "pkg:gem/elasticsearch-transport@7.5.0",
+        "pkg:gem/elasticsearch@7.5.0",
+        "pkg:gem/excon@0.72.0",
+        "pkg:gem/faraday@0.17.3",
+        "pkg:gem/ffi-compiler@1.0.1",
+        "pkg:gem/ffi@1.12.2",
+        "pkg:gem/fluent-plugin-concat@2.4.0",
+        "pkg:gem/fluent-plugin-detect-exceptions@0.0.13",
+        "pkg:gem/fluent-plugin-elasticsearch@3.8.0",
+        "pkg:gem/fluent-plugin-kubernetes_metadata_filter@2.4.1",
+        "pkg:gem/fluent-plugin-multi-format-parser@1.0.0",
+        "pkg:gem/fluent-plugin-prometheus@1.7.0",
+        "pkg:gem/fluent-plugin-systemd@1.0.2",
+        "pkg:gem/fluentd@1.8.0",
+        "pkg:gem/http-accept@1.7.0",
+        "pkg:gem/http-cookie@1.0.3",
+        "pkg:gem/http-form_data@2.2.0",
+        "pkg:gem/http-parser@1.2.1",
+        "pkg:gem/http@4.3.0",
+        "pkg:gem/http_parser.rb@0.6.0",
+        "pkg:gem/i18n@1.8.2",
+        "pkg:gem/kubeclient@4.6.0",
+        "pkg:gem/lru_redux@1.1.0",
+        "pkg:gem/mime-types-data@3.2019.1009",
+        "pkg:gem/mime-types@3.3.1",
+        "pkg:gem/minitest@5.14.0",
+        "pkg:gem/msgpack@1.3.3",
+        "pkg:gem/multi_json@1.14.1",
+        "pkg:gem/multipart-post@2.1.1",
+        "pkg:gem/netrc@0.11.0",
+        "pkg:gem/oj@3.10.0",
+        "pkg:gem/prometheus-client@0.9.0",
+        "pkg:gem/public_suffix@4.0.3",
+        "pkg:gem/quantile@0.2.1",
+        "pkg:gem/rake@13.0.1",
+        "pkg:gem/recursive-open-struct@1.1.0",
+        "pkg:gem/rest-client@2.1.0",
+        "pkg:gem/serverengine@2.2.1",
+        "pkg:gem/sigdump@0.2.4",
+        "pkg:gem/strptime@0.2.3",
+        "pkg:gem/systemd-journal@1.3.3",
+        "pkg:gem/thread_safe@0.3.6",
+        "pkg:gem/tzinfo-data@1.2019.3",
+        "pkg:gem/tzinfo@1.2.6",
+        "pkg:gem/unf@0.1.4",
+        "pkg:gem/unf_ext@0.0.7.6",
+        "pkg:gem/yajl-ruby@1.4.1",
+        "pkg:gem/zeitwerk@2.3.0"
       ]
     },
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000003",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
       "dependsOn": [
         "pkg:deb/debian/adduser@3.118?arch=all&distro=debian-10.2",
         "pkg:deb/debian/apt@1.8.2?arch=amd64&distro=debian-10.2",
@@ -8324,223 +8344,223 @@
       ]
     },
     {
-      "ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
+      "ref": "pkg:gem/activesupport@6.0.2.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/addressable@2.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Faddressable-2.7.0.gemspec",
+      "ref": "pkg:gem/addressable@2.7.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/concurrent-ruby@1.1.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fconcurrent-ruby-1.1.6.gemspec",
+      "ref": "pkg:gem/concurrent-ruby@1.1.6",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/cool.io@1.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fcool.io-1.6.0.gemspec",
+      "ref": "pkg:gem/cool.io@1.6.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/dig_rb@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fdig_rb-1.0.1.gemspec",
+      "ref": "pkg:gem/dig_rb@1.0.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/domain_name@0.5.20190701?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fdomain_name-0.5.20190701.gemspec",
+      "ref": "pkg:gem/domain_name@0.5.20190701",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/elasticsearch-api@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-api-7.5.0.gemspec",
+      "ref": "pkg:gem/elasticsearch-api@7.5.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/elasticsearch-transport@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-transport-7.5.0.gemspec",
+      "ref": "pkg:gem/elasticsearch-transport@7.5.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/elasticsearch@7.5.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Felasticsearch-7.5.0.gemspec",
+      "ref": "pkg:gem/elasticsearch@7.5.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/excon@0.72.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fexcon-0.72.0.gemspec",
+      "ref": "pkg:gem/excon@0.72.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/faraday@0.17.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffaraday-0.17.3.gemspec",
+      "ref": "pkg:gem/faraday@0.17.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/ffi-compiler@1.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-compiler-1.0.1.gemspec",
+      "ref": "pkg:gem/ffi-compiler@1.0.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/ffi@1.12.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fffi-1.12.2.gemspec",
+      "ref": "pkg:gem/ffi@1.12.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/fluent-plugin-concat@2.4.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-concat-2.4.0.gemspec",
+      "ref": "pkg:gem/fluent-plugin-concat@2.4.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/fluent-plugin-detect-exceptions@0.0.13?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-detect-exceptions-0.0.13.gemspec",
+      "ref": "pkg:gem/fluent-plugin-detect-exceptions@0.0.13",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/fluent-plugin-elasticsearch@3.8.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-elasticsearch-3.8.0.gemspec",
+      "ref": "pkg:gem/fluent-plugin-elasticsearch@3.8.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/fluent-plugin-kubernetes_metadata_filter@2.4.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-kubernetes_metadata_filter-2.4.1.gemspec",
+      "ref": "pkg:gem/fluent-plugin-kubernetes_metadata_filter@2.4.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/fluent-plugin-multi-format-parser@1.0.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-multi-format-parser-1.0.0.gemspec",
+      "ref": "pkg:gem/fluent-plugin-multi-format-parser@1.0.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/fluent-plugin-prometheus@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-prometheus-1.7.0.gemspec",
+      "ref": "pkg:gem/fluent-plugin-prometheus@1.7.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/fluent-plugin-systemd@1.0.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluent-plugin-systemd-1.0.2.gemspec",
+      "ref": "pkg:gem/fluent-plugin-systemd@1.0.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/fluentd@1.8.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ffluentd-1.8.0.gemspec",
+      "ref": "pkg:gem/fluentd@1.8.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/http-accept@1.7.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-accept-1.7.0.gemspec",
+      "ref": "pkg:gem/http-accept@1.7.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/http-cookie@1.0.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-cookie-1.0.3.gemspec",
+      "ref": "pkg:gem/http-cookie@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/http-form_data@2.2.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-form_data-2.2.0.gemspec",
+      "ref": "pkg:gem/http-form_data@2.2.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/http-parser@1.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-parser-1.2.1.gemspec",
+      "ref": "pkg:gem/http-parser@1.2.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/http@4.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp-4.3.0.gemspec",
+      "ref": "pkg:gem/http@4.3.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/http_parser.rb@0.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fhttp_parser.rb-0.6.0.gemspec",
+      "ref": "pkg:gem/http_parser.rb@0.6.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/i18n@1.8.2?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fi18n-1.8.2.gemspec",
+      "ref": "pkg:gem/i18n@1.8.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/kubeclient@4.6.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fkubeclient-4.6.0.gemspec",
+      "ref": "pkg:gem/kubeclient@4.6.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/lru_redux@1.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Flru_redux-1.1.0.gemspec",
+      "ref": "pkg:gem/lru_redux@1.1.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/mime-types-data@3.2019.1009?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmime-types-data-3.2019.1009.gemspec",
+      "ref": "pkg:gem/mime-types-data@3.2019.1009",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/mime-types@3.3.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmime-types-3.3.1.gemspec",
+      "ref": "pkg:gem/mime-types@3.3.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/minitest@5.14.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fminitest-5.14.0.gemspec",
+      "ref": "pkg:gem/minitest@5.14.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/msgpack@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmsgpack-1.3.3.gemspec",
+      "ref": "pkg:gem/msgpack@1.3.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/multi_json@1.14.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmulti_json-1.14.1.gemspec",
+      "ref": "pkg:gem/multi_json@1.14.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/multipart-post@2.1.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fmultipart-post-2.1.1.gemspec",
+      "ref": "pkg:gem/multipart-post@2.1.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/netrc@0.11.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fnetrc-0.11.0.gemspec",
+      "ref": "pkg:gem/netrc@0.11.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/oj@3.10.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Foj-3.10.0.gemspec",
+      "ref": "pkg:gem/oj@3.10.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/prometheus-client@0.9.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fprometheus-client-0.9.0.gemspec",
+      "ref": "pkg:gem/prometheus-client@0.9.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/public_suffix@4.0.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fpublic_suffix-4.0.3.gemspec",
+      "ref": "pkg:gem/public_suffix@4.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/quantile@0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fquantile-0.2.1.gemspec",
+      "ref": "pkg:gem/quantile@0.2.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/rake@13.0.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frake-13.0.1.gemspec",
+      "ref": "pkg:gem/rake@13.0.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/recursive-open-struct@1.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frecursive-open-struct-1.1.0.gemspec",
+      "ref": "pkg:gem/recursive-open-struct@1.1.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/rest-client@2.1.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Frest-client-2.1.0.gemspec",
+      "ref": "pkg:gem/rest-client@2.1.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/serverengine@2.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fserverengine-2.2.1.gemspec",
+      "ref": "pkg:gem/serverengine@2.2.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/sigdump@0.2.4?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsigdump-0.2.4.gemspec",
+      "ref": "pkg:gem/sigdump@0.2.4",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/strptime@0.2.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fstrptime-0.2.3.gemspec",
+      "ref": "pkg:gem/strptime@0.2.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/systemd-journal@1.3.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fsystemd-journal-1.3.3.gemspec",
+      "ref": "pkg:gem/systemd-journal@1.3.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/thread_safe@0.3.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fthread_safe-0.3.6.gemspec",
+      "ref": "pkg:gem/thread_safe@0.3.6",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/tzinfo-data@1.2019.3?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ftzinfo-data-1.2019.3.gemspec",
+      "ref": "pkg:gem/tzinfo-data@1.2019.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/tzinfo@1.2.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Ftzinfo-1.2.6.gemspec",
+      "ref": "pkg:gem/tzinfo@1.2.6",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/unf@0.1.4?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Funf-0.1.4.gemspec",
+      "ref": "pkg:gem/unf@0.1.4",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/unf_ext@0.0.7.6?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Funf_ext-0.0.7.6.gemspec",
+      "ref": "pkg:gem/unf_ext@0.0.7.6",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/yajl-ruby@1.4.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fyajl-ruby-1.4.1.gemspec",
+      "ref": "pkg:gem/yajl-ruby@1.4.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:gem/zeitwerk@2.3.0?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Fzeitwerk-2.3.0.gemspec",
+      "ref": "pkg:gem/zeitwerk@2.3.0",
       "dependsOn": []
     }
   ],

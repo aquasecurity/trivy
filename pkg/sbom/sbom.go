@@ -11,7 +11,9 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -181,20 +183,21 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 func Decode(f io.Reader, format Format) (types.SBOM, error) {
 	var (
 		v       interface{}
-		bom     types.SBOM
+		bom     = core.NewBOM()
+		sbom    types.SBOM
 		decoder interface{ Decode(any) error }
 	)
 
 	switch format {
 	case FormatCycloneDXJSON:
-		v = &cyclonedx.BOM{SBOM: &bom}
+		v = &cyclonedx.BOM{BOM: bom}
 		decoder = json.NewDecoder(f)
 	case FormatAttestCycloneDXJSON:
 		// dsse envelope
 		//   => in-toto attestation
 		//     => CycloneDX JSON
 		v = &attestation.Statement{
-			Predicate: &cyclonedx.BOM{SBOM: &bom},
+			Predicate: &cyclonedx.BOM{BOM: bom},
 		}
 		decoder = json.NewDecoder(f)
 	case FormatLegacyCosignAttestCycloneDXJSON:
@@ -204,26 +207,34 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 		//       => CycloneDX JSON
 		v = &attestation.Statement{
 			Predicate: &attestation.CosignPredicate{
-				Data: &cyclonedx.BOM{SBOM: &bom},
+				Data: &cyclonedx.BOM{BOM: bom},
 			},
 		}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXJSON:
-		v = &spdx.SPDX{SBOM: &bom}
+		v = &spdx.SPDX{SBOM: &sbom}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXTV:
-		v = &spdx.SPDX{SBOM: &bom}
+		v = &spdx.SPDX{SBOM: &sbom}
 		decoder = spdx.NewTVDecoder(f)
-
 	default:
 		return types.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
 
 	}
 
-	// Decode a file content into sbom.SBOM
+	// Decode a file content into core.BOM
 	if err := decoder.Decode(v); err != nil {
 		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
 	}
 
-	return bom, nil
+	// TODO: use BOM in SPDX
+	if format == FormatSPDXJSON || format == FormatSPDXTV {
+		return sbom, nil
+	}
+
+	if err := sbomio.NewDecoder(bom).Decode(&sbom); err != nil {
+		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
+	}
+
+	return sbom, nil
 }

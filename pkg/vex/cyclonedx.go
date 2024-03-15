@@ -5,13 +5,13 @@ import (
 	"github.com/samber/lo"
 	"go.uber.org/zap"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type CycloneDX struct {
-	sbom       *ftypes.CycloneDX
+	sbom       *core.BOM
 	statements []Statement
 	logger     *zap.SugaredLogger
 }
@@ -23,7 +23,7 @@ type Statement struct {
 	Justification   string
 }
 
-func newCycloneDX(cdxSBOM *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
+func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 	var stmts []Statement
 	for _, vuln := range lo.FromPtr(vex.Vulnerabilities) {
 		affects := lo.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects, index int) string {
@@ -39,7 +39,7 @@ func newCycloneDX(cdxSBOM *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
 		})
 	}
 	return &CycloneDX{
-		sbom:       cdxSBOM,
+		sbom:       sbom,
 		statements: stmts,
 		logger:     log.Logger.With(zap.String("VEX format", "CycloneDX")),
 	}

@@ -6,8 +6,10 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -44,7 +46,7 @@ func (p pkg) library() types.Library {
 	name = strings.TrimSpace(name)
 	version := strings.TrimSpace(p.Version)
 	return types.Library{
-		ID:      utils.PackageID(name, version),
+		ID:      dependency.ID(ftypes.NuGet, name, version),
 		Name:    name,
 		Version: version,
 	}

@@ -141,7 +141,7 @@ var (
 				},
 				Dependencies: &[]cyclonedx.Dependency{
 					{
-						Ref: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine&6arch=amd64",
+						Ref: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine&arch=amd64",
 						Dependencies: &[]string{
 							"fad4eb97-3d2a-4499-ace7-2c94444148a7",
 						},

@@ -66,7 +66,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/liamg/jfather v0.0.7
 	github.com/magefile/mage v1.15.0
-	github.com/mailru/easyjson v0.7.7
+	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
 	github.com/masahiro331/go-ebs-file v0.0.0-20240112135404-d5fbb1d46323
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20231208112839-4339555a0cd4

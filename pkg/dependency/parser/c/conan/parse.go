@@ -1,7 +1,6 @@
 package conan
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -9,7 +8,9 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -109,7 +110,7 @@ func parseRef(node Node) (types.Library, error) {
 		return types.Library{}, xerrors.Errorf("Unable to determine conan dependency: %q", node.Ref)
 	}
 	return types.Library{
-		ID:      fmt.Sprintf("%s/%s", ss[0], ss[1]),
+		ID:      dependency.ID(ftypes.Conan, ss[0], ss[1]),
 		Name:    ss[0],
 		Version: ss[1],
 		Locations: []types.Location{

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/opencontainers/go-digest"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -57,7 +58,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 
 	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
-		OS:            bom.OS,
+		OS:            lo.FromPtr(bom.Metadata.OS),
 		PackageInfos:  bom.Packages,
 		Applications:  bom.Applications,
 	}
@@ -87,7 +88,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		BlobIDs: []string{cacheKey},
 
 		// Keep an original report
-		CycloneDX: bom.CycloneDX,
+		BOM: bom.BOM,
 	}, nil
 }
 

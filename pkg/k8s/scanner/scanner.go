@@ -7,7 +7,6 @@ import (
 	"sort"
 	"strings"
 
-	cdx "github.com/CycloneDX/cyclonedx-go"
 	ms "github.com/mitchellh/mapstructure"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
@@ -25,14 +24,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	cyc "github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx/core"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
-	k8sCoreComponentNamespace = core.Namespace + "resource:"
+	k8sCoreComponentNamespace = cyclonedx.Namespace + "resource:"
 	k8sComponentType          = "Type"
 	k8sComponentName          = "Name"
 	k8sComponentNode          = "node"
@@ -71,13 +70,13 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	}()
 
 	if s.opts.Format == types.FormatCycloneDX {
-		rootComponent, err := clusterInfoToReportResources(artifactsData)
+		kbom, err := s.clusterInfoToReportResources(artifactsData)
 		if err != nil {
 			return report.Report{}, err
 		}
 		return report.Report{
 			SchemaVersion: 0,
-			RootComponent: rootComponent,
+			BOM:           kbom,
 		}, nil
 	}
 	var resourceArtifacts []*artifacts.Artifact
@@ -213,7 +212,6 @@ func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifact
 }
 
 const (
-	golang                 = "golang"
 	oci                    = "oci"
 	kubelet                = "k8s.io/kubelet"
 	controlPlaneComponents = "ControlPlaneComponents"
@@ -225,7 +223,7 @@ const (
 func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.Artifact) ([]report.Resource, error) {
 	var resources []report.Resource
 	var nodeName string
-	if nodeName = findNodeName(artifactsData); nodeName == "" {
+	if nodeName = s.findNodeName(artifactsData); nodeName == "" {
 		return resources, nil
 	}
 
@@ -357,7 +355,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 	return resources, nil
 }
 
-func findNodeName(allArtifact []*artifacts.Artifact) string {
+func (*Scanner) findNodeName(allArtifact []*artifacts.Artifact) string {
 	for _, artifact := range allArtifact {
 		if artifact.Kind != nodeComponents {
 			continue
@@ -367,25 +365,36 @@ func findNodeName(allArtifact []*artifacts.Artifact) string {
 	return ""
 }
 
-func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Component, error) {
+func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.BOM, error) {
+	var rootComponent *core.Component
 	var coreComponents []*core.Component
-	var cInfo *core.Component
 
 	// Find the first node name to identify AKS cluster
 	var nodeName string
-	if nodeName = findNodeName(allArtifact); nodeName == "" {
+	if nodeName = s.findNodeName(allArtifact); nodeName == "" {
 		return nil, fmt.Errorf("failed to find node name")
 	}
 
+	kbom := core.NewBOM()
 	for _, artifact := range allArtifact {
 		switch artifact.Kind {
 		case controlPlaneComponents:
 			var comp bom.Component
-			err := ms.Decode(artifact.RawResource, &comp)
-			if err != nil {
+			if err := ms.Decode(artifact.RawResource, &comp); err != nil {
 				return nil, err
 			}
-			var imageComponents []*core.Component
+
+			controlPlane := &core.Component{
+				Name:       comp.Name,
+				Version:    comp.Version,
+				Type:       core.TypeApplication,
+				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
+				PkgID: core.PkgID{
+					PURL: generatePURL(comp.Name, comp.Version, nodeName),
+				},
+			}
+			coreComponents = append(coreComponents, controlPlane)
+
 			for _, c := range comp.Containers {
 				name := fmt.Sprintf("%s/%s", c.Registry, c.Repository)
 				cDigest := c.Digest
@@ -399,67 +408,149 @@ func clusterInfoToReportResources(allArtifact []*artifacts.Artifact) (*core.Comp
 						fmt.Sprintf("%s@%s", name, cDigest),
 					},
 				}, ftypes.Package{})
-
 				if err != nil {
 					return nil, xerrors.Errorf("failed to create PURL: %w", err)
 				}
-				imageComponents = append(imageComponents, &core.Component{
-					PackageURL: imagePURL,
-					Type:       cdx.ComponentTypeContainer,
-					Name:       name,
-					Version:    cDigest,
+
+				imageComponent := &core.Component{
+					Type:    core.TypeContainer,
+					Name:    name,
+					Version: cDigest,
+					PkgID: core.PkgID{
+						PURL: imagePURL.Unwrap(),
+					},
 					Properties: []core.Property{
 						{
-							Name:  cyc.PropertyPkgID,
+							Name:  core.PropertyPkgID,
 							Value: fmt.Sprintf("%s:%s", name, ver),
 						},
 						{
-							Name:  cyc.PropertyPkgType,
+							Name:  core.PropertyPkgType,
 							Value: oci,
 						},
 					},
-				})
+				}
+				kbom.AddRelationship(controlPlane, imageComponent, core.RelationshipDependsOn)
 			}
-			rootComponent := &core.Component{
-				Name:       comp.Name,
-				Version:    comp.Version,
-				Type:       cdx.ComponentTypeApplication,
-				Properties: toProperties(comp.Properties, k8sCoreComponentNamespace),
-				Components: imageComponents,
-				PackageURL: generatePURL(comp.Name, comp.Version, nodeName),
-			}
-			coreComponents = append(coreComponents, rootComponent)
 		case nodeComponents:
 			var nf bom.NodeInfo
 			err := ms.Decode(artifact.RawResource, &nf)
 			if err != nil {
 				return nil, err
 			}
-			coreComponents = append(coreComponents, nodeComponent(nf))
+			coreComponents = append(coreComponents, s.nodeComponent(kbom, nf))
 		case clusterInfo:
 			var cf bom.ClusterInfo
-			err := ms.Decode(artifact.RawResource, &cf)
-			if err != nil {
+			if err := ms.Decode(artifact.RawResource, &cf); err != nil {
 				return nil, err
 			}
-			cInfo = &core.Component{
+			rootComponent = &core.Component{
+				Type:       core.TypePlatform,
 				Name:       cf.Name,
 				Version:    cf.Version,
 				Properties: toProperties(cf.Properties, k8sCoreComponentNamespace),
+				PkgID: core.PkgID{
+					PURL: generatePURL(cf.Name, cf.Version, nodeName),
+				},
+				Root: true,
 			}
+			kbom.AddComponent(rootComponent)
 		default:
 			return nil, fmt.Errorf("resource kind %s is not supported", artifact.Kind)
 		}
 	}
-	rootComponent := &core.Component{
-		Name:       cInfo.Name,
-		Version:    cInfo.Version,
-		Type:       cdx.ComponentTypePlatform,
-		Properties: cInfo.Properties,
-		Components: coreComponents,
-		PackageURL: generatePURL(cInfo.Name, cInfo.Version, nodeName),
+
+	for _, c := range coreComponents {
+		kbom.AddRelationship(rootComponent, c, core.RelationshipContains)
 	}
-	return rootComponent, nil
+
+	return kbom, nil
+}
+
+func (s *Scanner) nodeComponent(b *core.BOM, nf bom.NodeInfo) *core.Component {
+	osName, osVersion := osNameVersion(nf.OsImage)
+	runtimeName, runtimeVersion := runtimeNameVersion(nf.ContainerRuntimeVersion)
+	kubeletVersion := sanitizedVersion(nf.KubeletVersion)
+	properties := toProperties(nf.Properties, "")
+	properties = append(properties, toProperties(map[string]string{
+		k8sComponentType: k8sComponentNode,
+		k8sComponentName: nf.NodeName,
+	}, k8sCoreComponentNamespace)...)
+
+	nodeComponent := &core.Component{
+		Type:       core.TypePlatform,
+		Name:       nf.NodeName,
+		Properties: properties,
+	}
+
+	osComponent := &core.Component{
+		Type:    core.TypeOS,
+		Name:    osName,
+		Version: osVersion,
+		Properties: []core.Property{
+			{
+				Name:  "Class",
+				Value: string(types.ClassOSPkg),
+			},
+			{
+				Name:  "Type",
+				Value: osName,
+			},
+		},
+	}
+	b.AddRelationship(nodeComponent, osComponent, core.RelationshipContains)
+
+	appComponent := &core.Component{
+		Type: core.TypeApplication,
+		Name: nodeCoreComponents,
+	}
+	b.AddRelationship(nodeComponent, appComponent, core.RelationshipContains)
+
+	kubeletComponent := &core.Component{
+		Type:    core.TypeApplication,
+		Name:    kubelet,
+		Version: kubeletVersion,
+		Properties: []core.Property{
+			{
+				Name:      k8sComponentType,
+				Value:     k8sComponentNode,
+				Namespace: k8sCoreComponentNamespace,
+			},
+			{
+				Name:      k8sComponentName,
+				Value:     kubelet,
+				Namespace: k8sCoreComponentNamespace,
+			},
+		},
+		PkgID: core.PkgID{
+			PURL: generatePURL(kubelet, kubeletVersion, nf.NodeName),
+		},
+	}
+	b.AddRelationship(appComponent, kubeletComponent, core.RelationshipContains)
+
+	runtimeComponent := &core.Component{
+		Type:    core.TypeApplication,
+		Name:    runtimeName,
+		Version: runtimeVersion,
+		Properties: []core.Property{
+			{
+				Name:      k8sComponentType,
+				Value:     k8sComponentNode,
+				Namespace: k8sCoreComponentNamespace,
+			},
+			{
+				Name:      k8sComponentName,
+				Value:     runtimeName,
+				Namespace: k8sCoreComponentNamespace,
+			},
+		},
+		PkgID: core.PkgID{
+			PURL: packageurl.NewPackageURL(packageurl.TypeGolang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
+		},
+	}
+	b.AddRelationship(appComponent, runtimeComponent, core.RelationshipContains)
+
+	return nodeComponent
 }
 
 func sanitizedVersion(ver string) string {
@@ -500,93 +591,6 @@ func runtimeNameVersion(name string) (string, string) {
 	return name, ver
 }
 
-func nodeComponent(nf bom.NodeInfo) *core.Component {
-	osName, osVersion := osNameVersion(nf.OsImage)
-	runtimeName, runtimeVersion := runtimeNameVersion(nf.ContainerRuntimeVersion)
-	kubeletVersion := sanitizedVersion(nf.KubeletVersion)
-	properties := toProperties(nf.Properties, "")
-	properties = append(properties, toProperties(map[string]string{
-		k8sComponentType: k8sComponentNode,
-		k8sComponentName: nf.NodeName,
-	}, k8sCoreComponentNamespace)...)
-	return &core.Component{
-		Type:       cdx.ComponentTypePlatform,
-		Name:       nf.NodeName,
-		Properties: properties,
-		Components: []*core.Component{
-			{
-				Type:    cdx.ComponentTypeOS,
-				Name:    osName,
-				Version: osVersion,
-				Properties: []core.Property{
-					{
-						Name:  "Class",
-						Value: string(types.ClassOSPkg),
-					},
-					{
-						Name:  "Type",
-						Value: osName,
-					},
-				},
-			},
-			{
-				Type: cdx.ComponentTypeApplication,
-				Name: nodeCoreComponents,
-				Properties: []core.Property{
-					{
-						Name:  "Class",
-						Value: string(types.ClassLangPkg),
-					},
-					{
-						Name:  "Type",
-						Value: golang,
-					},
-				},
-				Components: []*core.Component{
-					{
-						Type:    cdx.ComponentTypeApplication,
-						Name:    kubelet,
-						Version: kubeletVersion,
-						Properties: []core.Property{
-							{
-								Name:      k8sComponentType,
-								Value:     k8sComponentNode,
-								Namespace: k8sCoreComponentNamespace,
-							},
-							{
-								Name:      k8sComponentName,
-								Value:     kubelet,
-								Namespace: k8sCoreComponentNamespace,
-							},
-						},
-						PackageURL: generatePURL(kubelet, kubeletVersion, nf.NodeName),
-					},
-					{
-						Type:    cdx.ComponentTypeApplication,
-						Name:    runtimeName,
-						Version: runtimeVersion,
-						Properties: []core.Property{
-							{
-								Name:      k8sComponentType,
-								Value:     k8sComponentNode,
-								Namespace: k8sCoreComponentNamespace,
-							},
-							{
-								Name:      k8sComponentName,
-								Value:     runtimeName,
-								Namespace: k8sCoreComponentNamespace,
-							},
-						},
-						PackageURL: &purl.PackageURL{
-							PackageURL: *packageurl.NewPackageURL(golang, "", runtimeName, runtimeVersion, packageurl.Qualifiers{}, ""),
-						},
-					},
-				},
-			},
-		},
-	}
-}
-
 func toProperties(props map[string]string, namespace string) []core.Property {
 	properties := lo.MapToSlice(props, func(k, v string) core.Property {
 		return core.Property{
@@ -595,14 +599,16 @@ func toProperties(props map[string]string, namespace string) []core.Property {
 			Namespace: namespace,
 		}
 	})
+	if len(properties) == 0 {
+		return nil
+	}
 	sort.Slice(properties, func(i, j int) bool {
 		return properties[i].Name < properties[j].Name
 	})
 	return properties
 }
 
-func generatePURL(name, ver, nodeName string) *purl.PackageURL {
-
+func generatePURL(name, ver, nodeName string) *packageurl.PackageURL {
 	var namespace string
 	// Identify k8s distribution. An empty namespace means upstream.
 	if namespace = k8sNamespace(ver, nodeName); namespace == "" {
@@ -611,9 +617,7 @@ func generatePURL(name, ver, nodeName string) *purl.PackageURL {
 		namespace = ""
 	}
 
-	return &purl.PackageURL{
-		PackageURL: *packageurl.NewPackageURL(purl.TypeK8s, namespace, name, ver, nil, ""),
-	}
+	return packageurl.NewPackageURL(purl.TypeK8s, namespace, name, ver, nil, "")
 }
 
 func k8sNamespace(ver, nodeName string) string {
