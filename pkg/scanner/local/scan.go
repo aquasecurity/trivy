@@ -161,6 +161,9 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 		s.vulnClient.FillInfo(results[i].Vulnerabilities)
 	}
 
+	// Fill package location information
+	fillPackageLocation(results)
+
 	// Post scanning
 	results, err = post.Scan(ctx, results)
 	if err != nil {
@@ -485,4 +488,25 @@ func mergeSecrets(targetName string, detail ftypes.ArtifactDetail) []ftypes.Secr
 	secret := detail.ImageConfig.Secret
 	secret.FilePath = targetName // Set the target name to the file path as container image config is not a real file.
 	return append(detail.Secrets, *secret)
+}
+
+// fillPackageLocation extracts location information from the packages list and populates it into the vulnerability.
+func fillPackageLocation(resultSet []types.Result) {
+	locationMap := make(map[string][]ftypes.Location)
+	for _, res := range resultSet {
+		for i, vuln := range res.Vulnerabilities {
+			id := fmt.Sprintf("%s@%s@%s", vuln.PkgPath, vuln.PkgName, vuln.InstalledVersion)
+			locations, ok := locationMap[id]
+			if !ok {
+				for _, pkg := range res.Packages {
+					if pkg.Name == vuln.PkgName && pkg.Version == vuln.InstalledVersion {
+						locations = pkg.Locations
+						locationMap[id] = locations
+						break
+					}
+				}
+			}
+			res.Vulnerabilities[i].Locations = locations
+		}
+	}
 }

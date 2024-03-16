@@ -1358,6 +1358,189 @@ func TestScanner_Scan(t *testing.T) {
 				Eosl:   false,
 			},
 		},
+		{
+			name: "happy path with list all packages and fill location information",
+			args: args{
+				target:   "alpine:latest",
+				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				options: types.ScanOptions{
+					VulnType: []string{
+						types.VulnTypeOS,
+						types.VulnTypeLibrary,
+					},
+					Scanners:        types.Scanners{types.VulnerabilityScanner},
+					ListAllPackages: true,
+				},
+			},
+			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				},
+				Returns: ApplierApplyLayersReturns{
+					Detail: ftypes.ArtifactDetail{
+						OS: ftypes.OS{
+							Family: "alpine",
+							Name:   "3.11",
+						},
+						Packages: []ftypes.Package{
+							{
+								Name:       "musl",
+								Version:    "1.2.3",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
+								Locations: []ftypes.Location{
+									{
+										StartLine: 23,
+										EndLine:   31,
+									},
+								},
+							},
+							{
+								Name:       "ausl",
+								Version:    "1.2.3",
+								SrcName:    "ausl",
+								SrcVersion: "1.2.3",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:bbf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
+								Locations: []ftypes.Location{
+									{
+										StartLine: 54,
+										EndLine:   60,
+									},
+								},
+							},
+						},
+						Applications: []ftypes.Application{
+							{
+								Type:     "bundler",
+								FilePath: "/app/Gemfile.lock",
+								Libraries: []ftypes.Package{
+									{
+										Name:    "rails",
+										Version: "4.0.2",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantResults: types.Results{
+				{
+					Target: "alpine:latest (alpine 3.11)",
+					Class:  types.ClassOSPkg,
+					Type:   ftypes.Alpine,
+					Packages: []ftypes.Package{
+						{
+							Name:       "ausl",
+							Version:    "1.2.3",
+							SrcName:    "ausl",
+							SrcVersion: "1.2.3",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:bbf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							},
+							Locations: []ftypes.Location{
+								{
+									StartLine: 54,
+									EndLine:   60,
+								},
+							},
+						},
+						{
+							Name:       "musl",
+							Version:    "1.2.3",
+							SrcName:    "musl",
+							SrcVersion: "1.2.3",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							},
+							Locations: []ftypes.Location{
+								{
+									StartLine: 23,
+									EndLine:   31,
+								},
+							},
+						},
+					},
+					// For backward compatibility, will be removed
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2020-9999",
+							PkgName:          "musl",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Status:           dbTypes.StatusFixed,
+							Layer: ftypes.Layer{
+								DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							},
+							PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "dos",
+								Description: "dos vulnerability",
+								Severity:    "HIGH",
+							},
+							Locations: []ftypes.Location{
+								{
+									StartLine: 23,
+									EndLine:   31,
+								},
+							},
+						},
+					},
+				},
+				{
+					Target: "/app/Gemfile.lock",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Bundler,
+					Packages: []ftypes.Package{
+						{
+							Name:    "rails",
+							Version: "4.0.2",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
+						},
+					},
+					// For backward compatibility, will be removed
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2014-0081",
+							PkgName:          "rails",
+							InstalledVersion: "4.0.2",
+							FixedVersion:     "4.0.3, 3.2.17",
+							Status:           dbTypes.StatusFixed,
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
+							PrimaryURL: "https://avd.aquasec.com/nvd/cve-2014-0081",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "xss",
+								Description: "xss vulnerability",
+								Severity:    "MEDIUM",
+								References: []string{
+									"http://example.com",
+								},
+								LastModifiedDate: lo.ToPtr(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
+								PublishedDate:    lo.ToPtr(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
+							},
+						},
+					},
+				},
+			},
+			wantOS: ftypes.OS{
+				Family: "alpine",
+				Name:   "3.11",
+				Eosl:   true,
+			},
+		},
 	}
 
 	for _, tt := range tests {

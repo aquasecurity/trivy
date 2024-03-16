@@ -165,7 +165,7 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				resourceClass:    res.Class,
 				artifactLocation: path,
 				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
-				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
+				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages, vuln.Locations),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				shortDescription: html.EscapeString(vuln.Title),
 				fullDescription:  html.EscapeString(fullDescription),
@@ -346,10 +346,20 @@ func clearURI(s string) string {
 	return strings.ReplaceAll(strings.ReplaceAll(s, "\\", "/"), "git::https:/", "")
 }
 
-func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
+func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package, vulnLocations []ftypes.Location) []location {
 	id := fmt.Sprintf("%s@%s@%s", path, name, version)
-	locs, ok := sw.locationCache[id]
-	if !ok {
+	if locs, ok := sw.locationCache[id]; ok {
+		return locs
+	}
+	var locs []location
+	if len(vulnLocations) != 0 {
+		for _, loc := range vulnLocations {
+			locs = append(locs, location{
+				startLine: loc.StartLine,
+				endLine:   loc.EndLine,
+			})
+		}
+	} else {
 		for _, pkg := range pkgs {
 			if name == pkg.Name && version == pkg.Version {
 				for _, l := range pkg.Locations {
@@ -359,11 +369,11 @@ func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Pa
 					}
 					locs = append(locs, loc)
 				}
-				sw.locationCache[id] = locs
-				return locs
+				break
 			}
 		}
 	}
+	sw.locationCache[id] = locs
 	return locs
 }
 
