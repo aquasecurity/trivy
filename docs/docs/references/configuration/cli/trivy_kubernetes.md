@@ -66,7 +66,6 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --no-progress                       suppress progress bar
       --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.0.9")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
-      --skip-intrusive                     When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
@@ -92,6 +91,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --skip-db-update                    skip updating vulnerability database
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
+      --skip-intrusive                    When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
       --skip-java-db-update               skip updating Java index database
       --skip-policy-update                skip fetching rego policy updates
   -t, --template string                   output template
@@ -118,4 +118,5 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
 
 ### SEE ALSO
 
-* [trivy](trivy.md)  - Unified security scanner
+* [trivy](trivy.md)	 - Unified security scanner
+
