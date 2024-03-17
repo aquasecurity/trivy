@@ -55,6 +55,11 @@ var (
 		ConfigName: "kubernetes.exclude.owned",
 		Usage:      "exclude resources that have an owner reference",
 	}
+	SkipImages = Flag[bool]{
+		Name:       "skip-images",
+		ConfigName: "kubernetes.skipImages",
+		Usage:      "skip the downloading and scanning of images (vulnerabilities and secrets) in the cluster resources",
+	}
 	ExcludeNodes = Flag[[]string]{
 		Name:       "exclude-nodes",
 		ConfigName: "kubernetes.exclude.nodes",
@@ -103,6 +108,7 @@ type K8sFlagGroup struct {
 	NodeCollectorImageRef  *Flag[string]
 	NodeCollectorNamespace *Flag[string]
 	ExcludeOwned           *Flag[bool]
+	SkipImages             *Flag[bool]
 	ExcludeNodes           *Flag[[]string]
 	ExcludeKinds           *Flag[[]string]
 	IncludeKinds           *Flag[[]string]
@@ -126,6 +132,7 @@ type K8sOptions struct {
 	ExcludeNamespaces      []string
 	IncludeNamespaces      []string
 	QPS                    float32
+	SkipImages             bool
 	Burst                  int
 }
 
@@ -144,6 +151,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		IncludeNamespaces:      IncludeNamespaces.Clone(),
 		NodeCollectorImageRef:  NodeCollectorImageRef.Clone(),
 		QPS:                    QPS.Clone(),
+		SkipImages:             SkipImages.Clone(),
 		Burst:                  Burst.Clone(),
 	}
 }
@@ -167,6 +175,7 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 		f.ExcludeNamespaces,
 		f.IncludeNamespaces,
 		f.QPS,
+		f.SkipImages,
 		f.Burst,
 	}
 }
@@ -211,6 +220,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		IncludeKinds:           f.IncludeKinds.Value(),
 		ExcludeNamespaces:      f.ExcludeNamespaces.Value(),
 		IncludeNamespaces:      f.IncludeNamespaces.Value(),
+		SkipDeep:               f.SkipDeep.Value(),
 		Burst:                  f.Burst.Value(),
 	}, nil
 }
