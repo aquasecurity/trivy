@@ -69,6 +69,11 @@ var (
 		ConfigName: "kubernetes.exclude.owned",
 		Usage:      "exclude resources that have an owner reference",
 	}
+	SkipDeep = Flag[bool]{
+		Name:       "skip-deep",
+		ConfigName: "kubernetes.skip.deep",
+		Usage:      "skip the deep scan of the resources",
+	}
 	ExcludeNodes = Flag[[]string]{
 		Name:       "exclude-nodes",
 		ConfigName: "kubernetes.exclude.nodes",
@@ -105,6 +110,7 @@ type K8sFlagGroup struct {
 	AllNamespaces          *Flag[bool]
 	NodeCollectorNamespace *Flag[string]
 	ExcludeOwned           *Flag[bool]
+	SkipDeep               *Flag[bool]
 	ExcludeNodes           *Flag[[]string]
 	QPS                    *Flag[float64]
 	Burst                  *Flag[int]
@@ -123,6 +129,7 @@ type K8sOptions struct {
 	ExcludeOwned           bool
 	ExcludeNodes           map[string]string
 	QPS                    float32
+	SkipDeep               bool
 	Burst                  int
 }
 
@@ -140,6 +147,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		ExcludeNodes:           ExcludeNodes.Clone(),
 		NodeCollectorImageRef:  NodeCollectorImageRef.Clone(),
 		QPS:                    QPS.Clone(),
+		SkipDeep:               SkipDeep.Clone(),
 		Burst:                  Burst.Clone(),
 	}
 }
@@ -162,6 +170,7 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 		f.ExcludeNodes,
 		f.NodeCollectorImageRef,
 		f.QPS,
+		f.SkipDeep,
 		f.Burst,
 	}
 }
@@ -199,6 +208,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		ExcludeNodes:           exludeNodeLabels,
 		NodeCollectorImageRef:  f.NodeCollectorImageRef.Value(),
 		QPS:                    float32(f.QPS.Value()),
+		SkipDeep:               f.SkipDeep.Value(),
 		Burst:                  f.Burst.Value(),
 	}, nil
 }
