@@ -72,6 +72,12 @@
           "PkgIdentifier": {
             "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
           },
+          "Locations": [
+            {
+              "StartLine": 130,
+              "EndLine": 245
+            }
+          ],
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
           "Status": "fixed",

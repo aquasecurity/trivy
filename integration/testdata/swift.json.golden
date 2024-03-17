@@ -60,6 +60,12 @@
           "PkgIdentifier": {
             "PURL": "pkg:swift/github.com/apple/swift-nio@2.41.0"
           },
+          "Locations": [
+            {
+              "StartLine": 13,
+              "EndLine": 21
+            }
+          ],
           "InstalledVersion": "2.41.0",
           "FixedVersion": "2.29.1, 2.39.1, 2.42.0",
           "Status": "fixed",

@@ -269,6 +269,12 @@
           "PkgIdentifier": {
             "PURL": "pkg:npm/jquery@3.3.9"
           },
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 15
+            }
+          ],
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
           "Status": "fixed",

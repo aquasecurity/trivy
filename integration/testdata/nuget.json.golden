@@ -65,6 +65,12 @@
           "PkgIdentifier": {
             "PURL": "pkg:nuget/Newtonsoft.Json@12.0.3"
           },
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 10
+            }
+          ],
           "InstalledVersion": "12.0.3",
           "FixedVersion": "13.0.1",
           "Status": "fixed",
