@@ -41,6 +41,8 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
+      --exclude-kinds strings             indicate the kinds exclude from scanning (example: node)
+      --exclude-namespaces strings        indicate the namespaces excluded from scanning (example: kube-system)
       --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
       --exclude-owned                     exclude resources that have an owner reference
       --exit-code int                     specify exit code when any security issues are found
@@ -56,6 +58,8 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
+      --include-kinds strings             indicate the kinds included in scanning (example: node)
+      --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
