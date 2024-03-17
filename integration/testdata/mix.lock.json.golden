@@ -180,6 +180,12 @@
           "PkgIdentifier": {
             "PURL": "pkg:hex/phoenix@1.6.13"
           },
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
           "InstalledVersion": "1.6.13",
           "FixedVersion": "1.6.14",
           "Status": "fixed",

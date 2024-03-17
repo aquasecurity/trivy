@@ -43,6 +43,12 @@
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1"
           },
+          "Locations": [
+            {
+              "StartLine": 19,
+              "EndLine": 26
+            }
+          ],
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
           "Status": "fixed",
@@ -99,6 +105,12 @@
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1"
           },
+          "Locations": [
+            {
+              "StartLine": 19,
+              "EndLine": 26
+            }
+          ],
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",
           "Status": "fixed",
