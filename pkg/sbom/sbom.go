@@ -183,8 +183,7 @@ func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
 func Decode(f io.Reader, format Format) (types.SBOM, error) {
 	var (
 		v       interface{}
-		bom     = core.NewBOM()
-		sbom    types.SBOM
+		bom     = core.NewBOM(core.Options{})
 		decoder interface{ Decode(any) error }
 	)
 
@@ -212,10 +211,10 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 		}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXJSON:
-		v = &spdx.SPDX{SBOM: &sbom}
+		v = &spdx.SPDX{BOM: bom}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXTV:
-		v = &spdx.SPDX{SBOM: &sbom}
+		v = &spdx.SPDX{BOM: bom}
 		decoder = spdx.NewTVDecoder(f)
 	default:
 		return types.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
@@ -227,11 +226,7 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
 	}
 
-	// TODO: use BOM in SPDX
-	if format == FormatSPDXJSON || format == FormatSPDXTV {
-		return sbom, nil
-	}
-
+	var sbom types.SBOM
 	if err := sbomio.NewDecoder(bom).Decode(&sbom); err != nil {
 		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
 	}

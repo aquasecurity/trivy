@@ -113,7 +113,7 @@ func TestEncoder_Encode(t *testing.T) {
 			},
 			wantComponents: map[uuid.UUID]*core.Component{
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
-					Type: core.TypeContainer,
+					Type: core.TypeContainerImage,
 					Name: "debian:12",
 					Root: true,
 					PkgID: core.PkgID{
@@ -320,7 +320,8 @@ func TestEncoder_Encode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			got, err := sbomio.NewEncoder().Encode(tt.report)
+			opts := core.Options{GenerateBOMRef: true}
+			got, err := sbomio.NewEncoder(opts).Encode(tt.report)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
