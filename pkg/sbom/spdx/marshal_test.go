@@ -669,6 +669,26 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "pom.xml",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.Pom,
+						Packages: []ftypes.Package{
+							{
+								ID:      "com.example:example:1.0.0",
+								Name:    "com.example:example",
+								Version: "1.0.0",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.example",
+										Name:      "example",
+										Version:   "1.0.0",
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 			wantSBOM: &spdx.Document{
@@ -676,7 +696,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				DataLicense:       spdx.DataLicense,
 				SPDXIdentifier:    "DOCUMENT",
 				DocumentName:      "masahiro331/CVE-2021-41098",
-				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/masahiro331/CVE-2021-41098-3ff14136-e09f-4df9-80ea-000000000004",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/masahiro331/CVE-2021-41098-3ff14136-e09f-4df9-80ea-000000000006",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -702,6 +722,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						PackageSPDXIdentifier:   spdx.ElementID("Application-800d9e6e0f88ab3a"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "pom.xml",
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageAttributionTexts: []string{
+							"Class: lang-pkgs",
+							"Type: pom",
+						},
+					},
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-e78eaf94802a53dc"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actioncable",
@@ -723,6 +753,28 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						PackageSPDXIdentifier:   spdx.ElementID("Package-69cd7625c68537c7"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "com.example:example",
+						PackageVersion:          "1.0.0",
+						PackageLicenseConcluded: "NONE",
+						PackageLicenseDeclared:  "NONE",
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:maven/com.example/example@1.0.0",
+							},
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+						PackageSourceInfo:     "package found in: pom.xml",
+						PackageAttributionTexts: []string{
+							"PkgID: com.example:example:1.0.0",
+							"PkgType: pom",
+						},
+					},
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Filesystem-5af0f1f08c20909a"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "masahiro331/CVE-2021-41098",
@@ -734,6 +786,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Relationships: []*spdx.Relationship{
 					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-800d9e6e0f88ab3a"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-69cd7625c68537c7"},
+						Relationship: "CONTAINS",
+					},
+					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-ed046c4a6b4da30f"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-e78eaf94802a53dc"},
 						Relationship: "CONTAINS",
@@ -742,6 +799,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-5af0f1f08c20909a"},
 						Relationship: "DESCRIBES",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Filesystem-5af0f1f08c20909a"},
+						RefB:         spdx.DocElementID{ElementRefID: "Application-800d9e6e0f88ab3a"},
+						Relationship: "CONTAINS",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Filesystem-5af0f1f08c20909a"},

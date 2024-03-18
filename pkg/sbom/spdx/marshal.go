@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
@@ -318,7 +319,7 @@ func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (
 
 	return spdx.Package{
 		PackageSPDXIdentifier:     elementID(elementType, pkgID),
-		PackageName:               c.Name,
+		PackageName:               spdxPkgName(c),
 		PackageVersion:            c.Version,
 		PrimaryPackagePurpose:     purpose,
 		PackageDownloadLocation:   pkgDownloadLocation,
@@ -334,7 +335,16 @@ func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (
 		// The Concluded License field is the license the SPDX file creator believes governs the package
 		PackageLicenseDeclared: license,
 	}, nil
+}
 
+func spdxPkgName(component *core.Component) string {
+	if p := component.PkgID.PURL; p != nil && component.Group != "" {
+		if p.Type == packageurl.TypeMaven || p.Type == packageurl.TypeGradle {
+			return component.Group + ":" + component.Name
+		}
+		return component.Group + "/" + component.Name
+	}
+	return component.Name
 }
 
 func (m *Marshaler) spdxAttributionTexts(c *core.Component) []string {
