@@ -32,7 +32,6 @@
         }
       ],
       "attributionTexts": [
-        "FilePath: miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json",
         "PkgType: conda-pkg"
       ],
       "primaryPackagePurpose": "LIBRARY"
@@ -57,7 +56,6 @@
         }
       ],
       "attributionTexts": [
-        "FilePath: miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json",
         "PkgType: conda-pkg"
       ],
       "primaryPackagePurpose": "LIBRARY"

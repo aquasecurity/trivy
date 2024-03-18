@@ -273,9 +273,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageLicenseDeclared:  "GPL-3.0-or-later",
 						PackageAttributionTexts: []string{
 							"PkgType: centos",
-							"SrcName: binutils",
-							"SrcRelease: 93.el8",
-							"SrcVersion: 2.30",
 						},
 						PackageSupplier: &spdx.Supplier{
 							SupplierType: tspdx.PackageSupplierOrganization,
@@ -502,10 +499,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageLicenseDeclared:  "GPL-2.0-or-later",
 						PackageAttributionTexts: []string{
 							"PkgType: centos",
-							"SrcEpoch: 1",
-							"SrcName: acl",
-							"SrcRelease: 1.el8",
-							"SrcVersion: 2.2.53",
 						},
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
@@ -539,7 +532,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PackageAttributionTexts: []string{
-							"FilePath: tools/project-doe/specifications/actionpack.gemspec",
 							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 							"PkgType: gemspec",
 						},
@@ -565,7 +557,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PackageAttributionTexts: []string{
-							"FilePath: tools/project-john/specifications/actionpack.gemspec",
 							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 							"PkgType: gemspec",
 						},
@@ -828,7 +819,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PackageAttributionTexts: []string{
-							"FilePath: usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
 							"LayerDiffID: sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 							"PkgType: node-pkg",
 						},

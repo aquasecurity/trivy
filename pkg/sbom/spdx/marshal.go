@@ -12,6 +12,7 @@ import (
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	spdxutils "github.com/spdx/tools-golang/utils"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
@@ -61,6 +62,17 @@ var (
 	SourcePackagePrefix = "built package from"
 	SourceFilePrefix    = "package found in"
 )
+
+// duplicateProperties contains a list of properties contained in other fields.
+var duplicateProperties = []string{
+	// `SourceInfo` contains SrcName and SrcVersion (it contains PropertySrcRelease and PropertySrcEpoch)
+	core.PropertySrcName,
+	core.PropertySrcRelease,
+	core.PropertySrcEpoch,
+	core.PropertySrcVersion,
+	// `File` contains filePath.
+	core.PropertyFilePath,
+}
 
 type Marshaler struct {
 	format     spdx.Document
@@ -328,7 +340,10 @@ func (m *Marshaler) spdxPackage(c *core.Component, pkgDownloadLocation string) (
 func (m *Marshaler) spdxAttributionTexts(c *core.Component) []string {
 	var texts []string
 	for _, p := range c.Properties {
-		texts = m.appendAttributionText(texts, p.Name, p.Value)
+		// Add properties that are not in other fields.
+		if !slices.Contains(duplicateProperties, p.Name) {
+			texts = m.appendAttributionText(texts, p.Name, p.Value)
+		}
 	}
 	return texts
 }
