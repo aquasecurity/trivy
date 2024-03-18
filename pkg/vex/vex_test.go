@@ -373,10 +373,10 @@ func TestVEX_Filter(t *testing.T) {
 }
 
 func newTestBOM() *core.BOM {
-	bom := core.NewBOM()
+	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(&core.Component{
 		Root: true,
-		Type: core.TypeContainer,
+		Type: core.TypeContainerImage,
 		Name: "debian:12",
 		PkgID: core.PkgID{
 			PURL: &packageurl.PackageURL{
@@ -400,10 +400,10 @@ func newTestBOM() *core.BOM {
 }
 
 func newTestBOM2() *core.BOM {
-	bom := core.NewBOM()
+	bom := core.NewBOM(core.Options{})
 	bom.AddComponent(&core.Component{
 		Root: true,
-		Type: core.TypeContainer,
+		Type: core.TypeContainerImage,
 		Name: "ubuntu:24.04",
 		PkgID: core.PkgID{
 			PURL: &packageurl.PackageURL{
