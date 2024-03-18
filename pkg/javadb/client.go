@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -82,8 +83,13 @@ func (u *Updater) Update() error {
 }
 
 func Init(cacheDir, javaDBRepository string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
+	// Add the schema version as a tag if the tag doesn't exist.
+	// This is required for backward compatibility.
+	if !strings.Contains(javaDBRepository, ":") {
+		javaDBRepository = fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion)
+	}
 	updater = &Updater{
-		repo:           fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
+		repo:           javaDBRepository,
 		dbDir:          filepath.Join(cacheDir, "java-db"),
 		skip:           skip,
 		quiet:          quiet,

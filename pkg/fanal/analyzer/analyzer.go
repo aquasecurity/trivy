@@ -15,11 +15,11 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -117,7 +117,7 @@ type CustomGroup interface {
 	Group() Group
 }
 
-type Opener func() (dio.ReadSeekCloserAt, error)
+type Opener func() (xio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
 	analyzers     []analyzer
@@ -133,7 +133,7 @@ type AnalysisInput struct {
 	Dir      string
 	FilePath string
 	Info     os.FileInfo
-	Content  dio.ReadSeekerAt
+	Content  xio.ReadSeekerAt
 
 	Options AnalysisOptions
 }
@@ -422,7 +422,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 		}
 		wg.Add(1)
 
-		go func(a analyzer, rc dio.ReadSeekCloserAt) {
+		go func(a analyzer, rc xio.ReadSeekCloserAt) {
 			defer limit.Release(1)
 			defer wg.Done()
 			defer rc.Close()

@@ -11,12 +11,13 @@ import (
 	"time"
 
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/samber/lo"
+	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 // IgnoreFinding represents an item to be ignored.
@@ -26,10 +27,16 @@ type IgnoreFinding struct {
 	// required: true
 	ID string `yaml:"id"`
 
-	// Paths is the list of file paths to be ignored.
+	// Paths is the list of file paths to ignore.
 	// If Paths is not set, the ignore finding is applied to all files.
 	// required: false
 	Paths []string `yaml:"paths"`
+
+	// PURLs is the list of packages to ignore.
+	// If PURLs is not set, the ignore finding is applied to packages.
+	// The field is currently available only for vulnerabilities.
+	// required: false
+	PURLs []*purl.PackageURL `yaml:"-"` // Filled in UnmarshalYAML
 
 	// ExpiredAt is the expiration date of the ignore finding.
 	// If ExpiredAt is not set, the ignore finding is always valid.
@@ -41,17 +48,50 @@ type IgnoreFinding struct {
 	Statement string `yaml:"statement"`
 }
 
+// UnmarshalYAML is a custom unmarshaler for IgnoreFinding that handles
+// the conversion of PURLs from strings to purl.PackageURL objects.
+func (i *IgnoreFinding) UnmarshalYAML(value *yaml.Node) error {
+	// Define a shadow type to prevent infinite recursion
+	type plain IgnoreFinding
+	var tmp struct {
+		plain `yaml:",inline"`
+		PURLs []string `yaml:"purls"`
+	}
+	if err := value.Decode(&tmp); err != nil {
+		return err
+	}
+
+	*i = IgnoreFinding(tmp.plain)
+
+	for _, pattern := range i.Paths {
+		if !doublestar.ValidatePattern(pattern) {
+			return xerrors.Errorf("invalid path pattern in the ignore file, id: %s, path: %s", i.ID, pattern)
+		}
+	}
+
+	// Convert string PURLs to purl.PackageURL objects
+	for _, purlStr := range tmp.PURLs {
+		parsedPURL, err := purl.FromString(purlStr)
+		if err != nil {
+			return xerrors.Errorf("purl error in the ignore file: %w", err)
+		}
+		i.PURLs = append(i.PURLs, parsedPURL)
+	}
+
+	return nil
+}
+
 type IgnoreFindings []IgnoreFinding
 
-func (f *IgnoreFindings) Match(id, path string) *IgnoreFinding {
+func (f *IgnoreFindings) Match(id, path string, pkg *packageurl.PackageURL) *IgnoreFinding {
 	for _, finding := range *f {
 		if id != finding.ID {
 			continue
 		}
-
-		if !pathMatch(path, finding.Paths) {
+		if !matchPath(path, finding.Paths) || !matchPURL(pkg, finding.PURLs) {
 			continue
 		}
+
 		log.Logger.Debugw("Ignored", log.String("id", id), log.String("path", path))
 		return &finding
 
@@ -59,7 +99,7 @@ func (f *IgnoreFindings) Match(id, path string) *IgnoreFinding {
 	return nil
 }
 
-func pathMatch(path string, patterns []string) bool {
+func matchPath(path string, patterns []string) bool {
 	if len(patterns) == 0 {
 		return true
 	}
@@ -73,22 +113,26 @@ func pathMatch(path string, patterns []string) bool {
 	return false
 }
 
-func (f *IgnoreFindings) Filter(ctx context.Context) {
+func matchPURL(target *packageurl.PackageURL, purls []*purl.PackageURL) bool {
+	if target == nil || len(purls) == 0 {
+		return true
+	}
+
+	for _, p := range purls {
+		if p.Match(target) {
+			return true
+		}
+	}
+	return false
+}
+
+func (f *IgnoreFindings) Prune(ctx context.Context) {
 	var findings IgnoreFindings
 	for _, finding := range *f {
 		// Filter out expired ignore findings
 		if !finding.ExpiredAt.IsZero() && finding.ExpiredAt.Before(clock.Now(ctx)) {
 			continue
 		}
-
-		// Filter out invalid path patterns
-		finding.Paths = lo.Filter(finding.Paths, func(pattern string, _ int) bool {
-			if !doublestar.ValidatePattern(pattern) {
-				log.Logger.Errorf("Invalid path pattern in the ignore file: %q", pattern)
-				return false
-			}
-			return true
-		})
 		findings = append(findings, finding)
 	}
 	*f = findings
@@ -103,13 +147,13 @@ type IgnoreConfig struct {
 	Licenses          IgnoreFindings `yaml:"licenses"`
 }
 
-func (c *IgnoreConfig) MatchVulnerability(vulnID, filePath, pkgPath string) *IgnoreFinding {
+func (c *IgnoreConfig) MatchVulnerability(vulnID, filePath, pkgPath string, pkg *packageurl.PackageURL) *IgnoreFinding {
 	paths := []string{
 		filePath,
 		pkgPath,
 	}
 	for _, p := range paths {
-		if f := c.Vulnerabilities.Match(vulnID, p); f != nil {
+		if f := c.Vulnerabilities.Match(vulnID, p, pkg); f != nil {
 			return f
 		}
 	}
@@ -122,7 +166,7 @@ func (c *IgnoreConfig) MatchMisconfiguration(misconfID, avdID, filePath string) 
 		avdID,
 	}
 	for _, id := range ids {
-		if f := c.Misconfigurations.Match(id, filePath); f != nil {
+		if f := c.Misconfigurations.Match(id, filePath, nil); f != nil {
 			return f
 		}
 	}
@@ -130,11 +174,11 @@ func (c *IgnoreConfig) MatchMisconfiguration(misconfID, avdID, filePath string) 
 }
 
 func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {
-	return c.Secrets.Match(secretID, filePath)
+	return c.Secrets.Match(secretID, filePath, nil)
 }
 
 func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
-	return c.Licenses.Match(licenseID, filePath)
+	return c.Licenses.Match(licenseID, filePath, nil)
 }
 
 func parseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
@@ -163,10 +207,10 @@ func parseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, erro
 		}
 	}
 
-	conf.Vulnerabilities.Filter(ctx)
-	conf.Misconfigurations.Filter(ctx)
-	conf.Secrets.Filter(ctx)
-	conf.Licenses.Filter(ctx)
+	conf.Vulnerabilities.Prune(ctx)
+	conf.Misconfigurations.Prune(ctx)
+	conf.Secrets.Prune(ctx)
+	conf.Licenses.Prune(ctx)
 	conf.FilePath = filepath.ToSlash(filepath.Clean(ignoreFile))
 
 	return conf, nil

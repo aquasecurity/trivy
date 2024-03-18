@@ -3,7 +3,6 @@ package parser
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io/fs"
 	"reflect"
 	"time"
@@ -74,18 +73,19 @@ func newEvaluator(
 	}
 
 	return &evaluator{
-		filesystem:      target,
-		parentParser:    parentParser,
-		modulePath:      modulePath,
-		moduleName:      moduleName,
-		projectRootPath: projectRootPath,
-		ctx:             ctx,
-		blocks:          blocks,
-		inputVars:       inputVars,
-		moduleMetadata:  moduleMetadata,
-		ignores:         ignores,
-		debug:           logger,
-		allowDownloads:  allowDownloads,
+		filesystem:        target,
+		parentParser:      parentParser,
+		modulePath:        modulePath,
+		moduleName:        moduleName,
+		projectRootPath:   projectRootPath,
+		ctx:               ctx,
+		blocks:            blocks,
+		inputVars:         inputVars,
+		moduleMetadata:    moduleMetadata,
+		ignores:           ignores,
+		debug:             logger,
+		allowDownloads:    allowDownloads,
+		skipCachedModules: skipCachedModules,
 	}
 }
 
@@ -148,7 +148,8 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 		}
 	}
 
-	// expand out resources and modules via count (not a typo, we do this twice so every order is processed)
+	// expand out resources and modules via count, for-each and dynamic
+	// (not a typo, we do this twice so every order is processed)
 	e.blocks = e.expandBlocks(e.blocks)
 	e.blocks = e.expandBlocks(e.blocks)
 
@@ -191,20 +192,12 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 
 	e.debug.Log("Module evaluation complete.")
 	parseDuration += time.Since(start)
-	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores, e.isModuleLocal())
-	for _, m := range modules {
-		m.SetParent(rootModule)
-	}
+	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
 	return append(terraform.Modules{rootModule}, modules...), fsMap, parseDuration
 }
 
-func (e *evaluator) isModuleLocal() bool {
-	// the module source is empty only for local modules
-	return e.parentParser.moduleSource == ""
-}
-
 func (e *evaluator) expandBlocks(blocks terraform.Blocks) terraform.Blocks {
-	return e.expandDynamicBlocks(e.expandBlockForEaches(e.expandBlockCounts(blocks))...)
+	return e.expandDynamicBlocks(e.expandBlockForEaches(e.expandBlockCounts(blocks), false)...)
 }
 
 func (e *evaluator) expandDynamicBlocks(blocks ...*terraform.Block) terraform.Blocks {
@@ -219,80 +212,49 @@ func (e *evaluator) expandDynamicBlock(b *terraform.Block) {
 		e.expandDynamicBlock(sub)
 	}
 	for _, sub := range b.AllBlocks().OfType("dynamic") {
+		if sub.IsExpanded() {
+			continue
+		}
 		blockName := sub.TypeLabel()
-		expanded := e.expandBlockForEaches(terraform.Blocks{sub})
+		expanded := e.expandBlockForEaches(terraform.Blocks{sub}, true)
 		for _, ex := range expanded {
 			if content := ex.GetBlock("content"); content.IsNotNil() {
 				_ = e.expandDynamicBlocks(content)
 				b.InjectBlock(content, blockName)
 			}
 		}
+		sub.MarkExpanded()
 	}
-}
-
-func validateForEachArg(arg cty.Value) error {
-	if arg.IsNull() {
-		return errors.New("arg is null")
-	}
-
-	ty := arg.Type()
-
-	if !arg.IsKnown() || ty.Equals(cty.DynamicPseudoType) || arg.LengthInt() == 0 {
-		return nil
-	}
-
-	if !(ty.IsSetType() || ty.IsObjectType() || ty.IsMapType()) {
-		return fmt.Errorf("%s type is not supported: arg is not set or map", ty.FriendlyName())
-	}
-
-	if ty.IsSetType() {
-		if !ty.ElementType().Equals(cty.String) {
-			return errors.New("arg is not set of strings")
-		}
-
-		it := arg.ElementIterator()
-		for it.Next() {
-			key, _ := it.Element()
-			if key.IsNull() {
-				return errors.New("arg is set of strings, but contains null")
-			}
-
-			if !key.IsKnown() {
-				return errors.New("arg is set of strings, but contains unknown value")
-			}
-		}
-	}
-
-	return nil
 }
 
 func isBlockSupportsForEachMetaArgument(block *terraform.Block) bool {
 	return slices.Contains([]string{"module", "resource", "data", "dynamic"}, block.Type())
 }
 
-func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Blocks {
+func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool) terraform.Blocks {
 	var forEachFiltered terraform.Blocks
 
 	for _, block := range blocks {
 
 		forEachAttr := block.GetAttribute("for_each")
 
-		if forEachAttr.IsNil() || block.IsCountExpanded() || !isBlockSupportsForEachMetaArgument(block) {
+		if forEachAttr.IsNil() || block.IsExpanded() || !isBlockSupportsForEachMetaArgument(block) {
 			forEachFiltered = append(forEachFiltered, block)
 			continue
 		}
 
 		forEachVal := forEachAttr.Value()
 
-		if err := validateForEachArg(forEachVal); err != nil {
-			e.debug.Log(`"for_each" argument is invalid: %s`, err.Error())
+		if forEachVal.IsNull() || !forEachVal.IsKnown() || !forEachAttr.IsIterable() {
 			continue
 		}
 
 		clones := make(map[string]cty.Value)
 		_ = forEachAttr.Each(func(key cty.Value, val cty.Value) {
 
-			if !key.Type().Equals(cty.String) {
+			// instances are identified by a map key (or set member) from the value provided to for_each
+			idx, err := convert.Convert(key, cty.String)
+			if err != nil {
 				e.debug.Log(
 					`Invalid "for-each" argument: map key (or set value) is not a string, but %s`,
 					key.Type().FriendlyName(),
@@ -300,22 +262,34 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks) terraform.Bloc
 				return
 			}
 
-			clone := block.Clone(key)
+			// if the argument is a collection but not a map, then the resource identifier
+			// is the value of the collection. The exception is the use of for-each inside a dynamic block,
+			// because in this case the collection element may not be a primitive value.
+			if (forEachVal.Type().IsCollectionType() || forEachVal.Type().IsTupleType()) &&
+				!forEachVal.Type().IsMapType() && !isDynamic {
+				stringVal, err := convert.Convert(val, cty.String)
+				if err != nil {
+					e.debug.Log("Failed to convert for-each arg %v to string", val)
+					return
+				}
+				idx = stringVal
+			}
+
+			clone := block.Clone(idx)
 
 			ctx := clone.Context()
 
 			e.copyVariables(block, clone)
 
-			ctx.SetByDot(key, "each.key")
+			ctx.SetByDot(idx, "each.key")
 			ctx.SetByDot(val, "each.value")
-
-			ctx.Set(key, block.TypeLabel(), "key")
+			ctx.Set(idx, block.TypeLabel(), "key")
 			ctx.Set(val, block.TypeLabel(), "value")
 
 			forEachFiltered = append(forEachFiltered, clone)
 
 			values := clone.Values()
-			clones[key.AsString()] = values
+			clones[idx.AsString()] = values
 			e.ctx.SetByDot(values, clone.GetMetadata().Reference())
 		})
 
@@ -341,7 +315,7 @@ func (e *evaluator) expandBlockCounts(blocks terraform.Blocks) terraform.Blocks 
 	var countFiltered terraform.Blocks
 	for _, block := range blocks {
 		countAttr := block.GetAttribute("count")
-		if countAttr.IsNil() || block.IsCountExpanded() || !isBlockSupportsCountMetaArgument(block) {
+		if countAttr.IsNil() || block.IsExpanded() || !isBlockSupportsCountMetaArgument(block) {
 			countFiltered = append(countFiltered, block)
 			continue
 		}

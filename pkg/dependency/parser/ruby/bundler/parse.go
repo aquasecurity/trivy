@@ -8,9 +8,10 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Parser struct{}
@@ -19,7 +20,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	libs := make(map[string]types.Library)
 	var dependsOn, directDeps []string
 	var deps []types.Dependency
@@ -47,13 +48,18 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			version := strings.Trim(s[1], "()")          // drop parentheses
 			version = strings.SplitN(version, "-", 2)[0] // drop platform (e.g. 1.13.6-x86_64-linux => 1.13.6)
 			name := s[0]
-			pkgID = utils.PackageID(name, version)
+			pkgID = packageID(name, version)
 			libs[name] = types.Library{
-				ID:        pkgID,
-				Name:      name,
-				Version:   version,
-				Indirect:  true,
-				Locations: []types.Location{{StartLine: lineNum, EndLine: lineNum}},
+				ID:       pkgID,
+				Name:     name,
+				Version:  version,
+				Indirect: true,
+				Locations: []types.Location{
+					{
+						StartLine: lineNum,
+						EndLine:   lineNum,
+					},
+				},
 			}
 		}
 		// Parse dependency graph
@@ -89,7 +95,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		dependsOn = make([]string, 0)
 		for _, pkgName := range dep.DependsOn {
 			if lib, ok := libs[pkgName]; ok {
-				dependsOn = append(dependsOn, utils.PackageID(pkgName, lib.Version))
+				dependsOn = append(dependsOn, packageID(pkgName, lib.Version))
 			}
 		}
 		deps[i].DependsOn = dependsOn
@@ -133,4 +139,8 @@ func parseDirectDeps(scanner *bufio.Scanner) []string {
 		deps = append(deps, ss[0])
 	}
 	return deps
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Bundler, name, version)
 }

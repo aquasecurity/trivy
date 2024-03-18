@@ -6,9 +6,11 @@ import (
 	"github.com/liamg/jfather"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type LockFile struct {
@@ -32,7 +34,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockFile LockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
@@ -51,7 +53,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				continue
 			}
 
-			depId := utils.PackageID(packageName, packageContent.Resolved)
+			depId := packageID(packageName, packageContent.Resolved)
 
 			lib := types.Library{
 				ID:       depId,
@@ -70,7 +72,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			var dependsOn []string
 
 			for depName := range packageContent.Dependencies {
-				dependsOn = append(dependsOn, utils.PackageID(depName, targetContent[depName].Resolved))
+				dependsOn = append(dependsOn, packageID(depName, targetContent[depName].Resolved))
 			}
 
 			if savedDependsOn, ok := depsMap[depId]; ok {
@@ -104,4 +106,8 @@ func (t *Dependency) UnmarshalJSONWithMetadata(node jfather.Node) error {
 	t.StartLine = node.Range().Start.Line
 	t.EndLine = node.Range().End.Line
 	return nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.NuGet, name, version)
 }

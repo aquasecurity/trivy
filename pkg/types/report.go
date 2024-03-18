@@ -6,6 +6,7 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 // Report represents a scan result
@@ -17,8 +18,8 @@ type Report struct {
 	Metadata      Metadata            `json:",omitempty"`
 	Results       Results             `json:",omitempty"`
 
-	// SBOM
-	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
+	// parsed SBOM
+	BOM *core.BOM `json:"-"` // Just for internal usage, not exported in JSON
 }
 
 // Metadata represents a metadata of artifact

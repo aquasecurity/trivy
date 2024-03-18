@@ -2,10 +2,9 @@ package parser
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/fs"
-	"path/filepath"
+	"path"
 	"strings"
 
 	"github.com/zclconf/go-cty/cty"
@@ -13,15 +12,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
-
-type moduleLoadError struct {
-	source string
-	err    error
-}
-
-func (m *moduleLoadError) Error() string {
-	return fmt.Sprintf("failed to load module '%s': %s", m.source, m.err)
-}
 
 type ModuleDefinition struct {
 	Name       string
@@ -32,16 +22,11 @@ type ModuleDefinition struct {
 	External   bool
 }
 
-// LoadModules reads all module blocks and loads the underlying modules, adding blocks to e.moduleBlocks
+// loadModules reads all module blocks and loads them
 func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
-
-	blocks := e.blocks
-
 	var moduleDefinitions []*ModuleDefinition
 
-	expanded := e.expandBlocks(blocks.OfType("module"))
-
-	var loadErrors []*moduleLoadError
+	expanded := e.expandBlocks(e.blocks.OfType("module"))
 
 	for _, moduleBlock := range expanded {
 		if moduleBlock.Label() == "" {
@@ -49,24 +34,11 @@ func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
 		}
 		moduleDefinition, err := e.loadModule(ctx, moduleBlock)
 		if err != nil {
-			var loadErr *moduleLoadError
-			if errors.As(err, &loadErr) {
-				var found bool
-				for _, fm := range loadErrors {
-					if fm.source == loadErr.source {
-						found = true
-						break
-					}
-				}
-				if !found {
-					loadErrors = append(loadErrors, loadErr)
-				}
-				continue
-			}
-			e.debug.Log("Failed to load module '%s'. Maybe try 'terraform init'?", err)
+			e.debug.Log("Failed to load module %q. Maybe try 'terraform init'?", err)
 			continue
 		}
-		e.debug.Log("Loaded module '%s' from '%s'.", moduleDefinition.Name, moduleDefinition.Path)
+
+		e.debug.Log("Loaded module %q from %q.", moduleDefinition.Name, moduleDefinition.Path)
 		moduleDefinitions = append(moduleDefinitions, moduleDefinition)
 	}
 
@@ -112,7 +84,7 @@ func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terrafo
 		name := b.ModuleName()
 		for _, module := range e.moduleMetadata.Modules {
 			if module.Key == name {
-				modulePath = filepath.Clean(filepath.Join(e.projectRootPath, module.Dir))
+				modulePath = path.Clean(path.Join(e.projectRootPath, module.Dir))
 				break
 			}
 		}
@@ -162,19 +134,19 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		SkipCache:       e.skipCachedModules,
 	}
 
-	filesystem, prefix, path, err := resolveModule(ctx, e.filesystem, opt)
+	filesystem, prefix, downloadPath, err := resolveModule(ctx, e.filesystem, opt)
 	if err != nil {
 		return nil, err
 	}
-	prefix = filepath.Join(e.parentParser.moduleSource, prefix)
-	e.debug.Log("Module '%s' resolved to path '%s' in filesystem '%s' with prefix '%s'", b.FullName(), path, filesystem, prefix)
-	moduleParser := e.parentParser.newModuleParser(filesystem, prefix, path, b.Label(), b)
-	if err := moduleParser.ParseFS(ctx, path); err != nil {
+	prefix = path.Join(e.parentParser.moduleSource, prefix)
+	e.debug.Log("Module '%s' resolved to path '%s' in filesystem '%s' with prefix '%s'", b.FullName(), downloadPath, filesystem, prefix)
+	moduleParser := e.parentParser.newModuleParser(filesystem, prefix, downloadPath, b.Label(), b)
+	if err := moduleParser.ParseFS(ctx, downloadPath); err != nil {
 		return nil, err
 	}
 	return &ModuleDefinition{
 		Name:       b.Label(),
-		Path:       path,
+		Path:       downloadPath,
 		Definition: b,
 		Parser:     moduleParser,
 		FileSystem: filesystem,

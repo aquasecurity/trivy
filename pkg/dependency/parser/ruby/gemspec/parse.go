@@ -8,8 +8,8 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const specNewStr = "Gem::Specification.new"
@@ -47,7 +47,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) (libs []types.Library, deps []types.Dependency, err error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) (libs []types.Library, deps []types.Dependency, err error) {
 	var newVar, name, version, license string
 
 	scanner := bufio.NewScanner(r)
@@ -99,7 +99,8 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) (libs []types.Library, deps []types.D
 			Name:    name,
 			Version: version,
 			License: license,
-		}}, nil, nil
+		},
+	}, nil, nil
 }
 
 func findSubString(re *regexp.Regexp, line, name string) string {

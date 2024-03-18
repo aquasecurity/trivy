@@ -70,7 +70,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:5c9fad635c53ddafd1b5248fcd989b6c0f311c91a2fe2a206c7d67a715335fa1",
+						BlobID: "sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							OS: types.OS{
@@ -81,6 +81,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 								{
 									Packages: types.Packages{
 										{
+											ID:      "musl@1.2.3-r0",
 											Name:    "musl",
 											Version: "1.2.3-r0",
 											Identifier: types.PkgIdentifier{
@@ -119,9 +120,9 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:5c9fad635c53ddafd1b5248fcd989b6c0f311c91a2fe2a206c7d67a715335fa1",
+				ID:   "sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
 				BlobIDs: []string{
-					"sha256:5c9fad635c53ddafd1b5248fcd989b6c0f311c91a2fe2a206c7d67a715335fa1",
+					"sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
 				},
 			},
 		},
@@ -169,7 +170,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 				return
 			}
 			require.NoError(t, err, tt.name)
-			got.CycloneDX = nil
+			got.BOM = nil
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -222,7 +223,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:fb9379cfc2aeff911515f04ca04300a8c0609c8a2a19b4a3b05a984802fa44eb",
+						BlobID: "sha256:7e0b5476a5ff5a10594ad1ed7566220fcc43ecff29b831236cb2e98e574a1d05",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Applications: []types.Application{
@@ -230,6 +231,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 									Type: types.GoBinary,
 									Libraries: types.Packages{
 										{
+											ID:      "github.com/opencontainers/go-digest@v1.0.0",
 											Name:    "github.com/opencontainers/go-digest",
 											Version: "v1.0.0",
 											Identifier: types.PkgIdentifier{
@@ -243,6 +245,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 											},
 										},
 										{
+											ID:      "golang.org/x/sync@v0.1.0",
 											Name:    "golang.org/x/sync",
 											Version: "v0.1.0",
 											Identifier: types.PkgIdentifier{
@@ -265,9 +268,9 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: registry + "/test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:fb9379cfc2aeff911515f04ca04300a8c0609c8a2a19b4a3b05a984802fa44eb",
+				ID:   "sha256:7e0b5476a5ff5a10594ad1ed7566220fcc43ecff29b831236cb2e98e574a1d05",
 				BlobIDs: []string{
-					"sha256:fb9379cfc2aeff911515f04ca04300a8c0609c8a2a19b4a3b05a984802fa44eb",
+					"sha256:7e0b5476a5ff5a10594ad1ed7566220fcc43ecff29b831236cb2e98e574a1d05",
 				},
 			},
 		},
@@ -309,7 +312,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			}
 
 			require.NoError(t, err, tt.name)
-			got.CycloneDX = nil
+			got.BOM = nil
 			assert.Equal(t, tt.want, got)
 		})
 	}

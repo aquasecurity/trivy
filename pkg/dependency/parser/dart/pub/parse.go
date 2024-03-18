@@ -1,13 +1,13 @@
 package pub
 
 import (
-	"fmt"
-
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const (
@@ -31,7 +31,7 @@ type Dep struct {
 	Version    string `yaml:"version"`
 }
 
-func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	l := &lock{}
 	if err := yaml.NewDecoder(r).Decode(&l); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode pubspec.lock: %w", err)
@@ -44,7 +44,7 @@ func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		// It will be confusing if we exclude direct dev dependencies and include transitive dev dependencies.
 		// We decided to keep all dev dependencies until Pub will add support for "transitive main" and "transitive dev".
 		lib := types.Library{
-			ID:       pkgID(name, dep.Version),
+			ID:       dependency.ID(ftypes.Pub, name, dep.Version),
 			Name:     name,
 			Version:  dep.Version,
 			Indirect: dep.Dependency == transitiveDep,
@@ -53,8 +53,4 @@ func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 	}
 
 	return libs, nil, nil
-}
-
-func pkgID(name, version string) string {
-	return fmt.Sprintf(idFormat, name, version)
 }

@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/net/idna"
+
 	"github.com/aquasecurity/go-version/pkg/semver"
 )
 
@@ -55,12 +57,11 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		hostname = parts[0]
 		parts = parts[1:]
 
-		envVar := fmt.Sprintf("TF_TOKEN_%s", strings.ReplaceAll(hostname, ".", "_"))
-		token = os.Getenv(envVar)
-		if token != "" {
+		token, err = getPrivateRegistryTokenFromEnvVars(hostname)
+		if err == nil {
 			opt.Debug("Found a token for the registry at %s", hostname)
 		} else {
-			opt.Debug("No token was found for the registry at %s", hostname)
+			opt.Debug(err.Error())
 		}
 	}
 
@@ -134,6 +135,28 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 	}
 
 	return filesystem, prefix, downloadPath, true, nil
+}
+
+func getPrivateRegistryTokenFromEnvVars(hostname string) (string, error) {
+	token := ""
+	asciiHostname, err := idna.ToASCII(hostname)
+	if err != nil {
+		return "", fmt.Errorf("could not convert hostname %s to a punycode encoded ASCII string so cannot find token for this registry", hostname)
+	}
+
+	envVar := fmt.Sprintf("TF_TOKEN_%s", strings.ReplaceAll(asciiHostname, ".", "_"))
+	token = os.Getenv(envVar)
+
+	// Dashes in the hostname can optionally be converted to double underscores
+	if token == "" {
+		envVar = strings.ReplaceAll(envVar, "-", "__")
+		token = os.Getenv(envVar)
+	}
+
+	if token == "" {
+		return "", fmt.Errorf("no token was found for the registry at %s", hostname)
+	}
+	return token, nil
 }
 
 func resolveVersion(input string, versions moduleVersions) (string, error) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
@@ -76,6 +77,12 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 
 	for _, opt := range opts {
 		opt(o)
+	}
+
+	// Add the schema version as a tag if the tag doesn't exist.
+	// This is required for backward compatibility.
+	if !strings.Contains(o.dbRepository, ":") {
+		o.dbRepository = fmt.Sprintf("%s:%d", o.dbRepository, db.SchemaVersion)
 	}
 
 	return &Client{
@@ -188,8 +195,7 @@ func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, erro
 		return c.artifact, nil
 	}
 
-	repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
-	art, err := oci.NewArtifact(repo, c.quiet, opt)
+	art, err := oci.NewArtifact(c.dbRepository, c.quiet, opt)
 	if err != nil {
 		var terr *transport.Error
 		if errors.As(err, &terr) {

@@ -7,8 +7,8 @@ import (
 	"github.com/liamg/jfather"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type lockFile struct {
@@ -26,7 +26,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockFile lockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
@@ -39,9 +39,14 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	var libs []types.Library
 	for pkgName, dependency := range lockFile.Default {
 		libs = append(libs, types.Library{
-			Name:      pkgName,
-			Version:   strings.TrimLeft(dependency.Version, "="),
-			Locations: []types.Location{{StartLine: dependency.StartLine, EndLine: dependency.EndLine}},
+			Name:    pkgName,
+			Version: strings.TrimLeft(dependency.Version, "="),
+			Locations: []types.Location{
+				{
+					StartLine: dependency.StartLine,
+					EndLine:   dependency.EndLine,
+				},
+			},
 		})
 	}
 	return libs, nil, nil

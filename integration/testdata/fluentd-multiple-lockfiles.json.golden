@@ -27,6 +27,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-18276",
+          "PkgID": "bash@5.0-4",
           "PkgName": "bash",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
@@ -90,6 +91,7 @@
           "VendorIDs": [
             "DSA-4613-1"
           ],
+          "PkgID": "libidn2-0@2.0.5-1",
           "PkgName": "libidn2-0",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
@@ -158,6 +160,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2020-8165",
+          "PkgID": "activesupport@6.0.2.1",
           "PkgName": "activesupport",
           "PkgPath": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
           "PkgIdentifier": {

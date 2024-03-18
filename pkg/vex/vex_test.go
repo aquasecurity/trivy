@@ -1,6 +1,7 @@
 package vex_test
 
 import (
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"os"
 	"testing"
 
@@ -115,7 +116,8 @@ func TestVEX_Filter(t *testing.T) {
 			fields: fields{
 				filePath: "testdata/cyclonedx.json",
 				report: types.Report{
-					CycloneDX: &ftypes.CycloneDX{
+					ArtifactType: ftypes.ArtifactCycloneDX,
+					BOM: &core.BOM{
 						SerialNumber: "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
 						Version:      1,
 					},
@@ -197,7 +199,8 @@ func TestVEX_Filter(t *testing.T) {
 			fields: fields{
 				filePath: "testdata/cyclonedx.json",
 				report: types.Report{
-					CycloneDX: &ftypes.CycloneDX{
+					ArtifactType: ftypes.ArtifactCycloneDX,
+					BOM: &core.BOM{
 						SerialNumber: "urn:uuid:wrong",
 						Version:      1,
 					},
@@ -297,6 +300,30 @@ func TestVEX_Filter(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name: "CSAF (not affected vuln) with sub components",
+			fields: fields{
+				filePath: "testdata/csaf-not-affected-sub-components.json",
+			},
+			args: args{
+				vulns: []types.DetectedVulnerability{
+					{
+						VulnerabilityID:  "CVE-2023-2727",
+						PkgName:          "kubernetes",
+						InstalledVersion: "v1.24.2",
+						PkgIdentifier: ftypes.PkgIdentifier{
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeGolang,
+								Namespace: "k8s.io",
+								Name:      "kubernetes",
+								Version:   "v1.24.2",
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{},
 		},
 		{
 			name: "unknown format",

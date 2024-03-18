@@ -14,9 +14,9 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/dart/pub"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -166,7 +166,7 @@ func parsePubSpecYaml(r io.Reader) (string, []string, error) {
 	// save only dependencies names
 	dependsOn := maps.Keys(spec.Dependencies)
 
-	return utils.PackageID(spec.Name, spec.Version), dependsOn, nil
+	return dependency.ID(types.Pub, spec.Name, spec.Version), dependsOn, nil
 }
 
 func (a pubSpecLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {

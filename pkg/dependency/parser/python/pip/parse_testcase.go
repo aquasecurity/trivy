@@ -1,6 +1,6 @@
 package pip
 
-import "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+import "github.com/aquasecurity/trivy/pkg/dependency/types"
 
 var (
 	requirementsFlask = []types.Library{

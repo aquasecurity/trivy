@@ -21,11 +21,15 @@ import (
 // "mage test:k8s" will run this test.
 
 func TestK8s(t *testing.T) {
+	// Set up testing DB
+	cacheDir := initDB(t)
 	t.Run("misconfig and vulnerability scan", func(t *testing.T) {
 		// Set up the output file
 		outputFile := filepath.Join(t.TempDir(), "output.json")
 
 		osArgs := []string{
+			"--cache-dir",
+			cacheDir,
 			"k8s",
 			"cluster",
 			"--report",

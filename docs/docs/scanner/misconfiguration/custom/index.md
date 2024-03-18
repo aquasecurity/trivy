@@ -27,7 +27,7 @@ In the above general file formats, Trivy automatically identifies the following 
 - CloudFormation (JSON/YAML)
 - Kubernetes (JSON/YAML)
 - Helm (YAML)
-- Terraform Plan (JSON)
+- Terraform Plan (JSON/Snapshot)
 
 This is useful for filtering inputs, as described below.
 

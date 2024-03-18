@@ -8,10 +8,11 @@ import (
 	"golang.org/x/xerrors"
 
 	version "github.com/aquasecurity/go-pep440-version"
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Lockfile struct {
@@ -34,7 +35,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockfile Lockfile
 	if _, err := toml.NewDecoder(r).Decode(&lockfile); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode poetry.lock: %w", err)
@@ -50,7 +51,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 
-		pkgID := utils.PackageID(pkg.Name, pkg.Version)
+		pkgID := packageID(pkg.Name, pkg.Version)
 		libs = append(libs, types.Library{
 			ID:      pkgID,
 			Name:    pkg.Name,
@@ -124,7 +125,7 @@ func parseDependency(name string, versRange any, libVersions map[string][]string
 		if matched, err := matchVersion(ver, vRange); err != nil {
 			return "", xerrors.Errorf("failed to match version for %s: %w", name, err)
 		} else if matched {
-			return utils.PackageID(name, ver), nil
+			return packageID(name, ver), nil
 		}
 	}
 	return "", xerrors.Errorf("no matched version found for %q", name)
@@ -152,4 +153,8 @@ func normalizePkgName(name string) string {
 	name = strings.ReplaceAll(name, "_", "-") // e.g. https://github.com/python-poetry/poetry/blob/c8945eb110aeda611cc6721565d7ad0c657d453a/poetry.lock#L50
 	name = strings.ReplaceAll(name, ".", "-") // e.g. https://github.com/python-poetry/poetry/blob/c8945eb110aeda611cc6721565d7ad0c657d453a/poetry.lock#L816
 	return name
+}
+
+func packageID(name, ver string) string {
+	return dependency.ID(ftypes.Poetry, name, ver)
 }

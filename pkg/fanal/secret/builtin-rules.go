@@ -69,6 +69,7 @@ var (
 	CategoryTwitch               = types.SecretRuleCategory("Twitch")
 	CategoryTypeform             = types.SecretRuleCategory("Typeform")
 	CategoryDocker               = types.SecretRuleCategory("Docker")
+	CategoryHuggingFace          = types.SecretRuleCategory("HuggingFace")
 )
 
 // Reusable regex patterns
@@ -157,6 +158,15 @@ var builtinRules = []Rule{
 		Severity: "CRITICAL",
 		Regex:    MustCompile(`glpat-[0-9a-zA-Z\-\_]{20}`),
 		Keywords: []string{"glpat-"},
+	},
+	{
+		// cf. https://huggingface.co/docs/hub/en/security-tokens
+		ID:       "hugging-face-access-token",
+		Category: CategoryHuggingFace,
+		Severity: "CRITICAL",
+		Title:    "Hugging Face Access Token",
+		Regex:    MustCompile(`hf_[A-Za-z0-9]{39}`),
+		Keywords: []string{"hf_"},
 	},
 	{
 		ID:              "private-key",

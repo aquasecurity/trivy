@@ -2,14 +2,13 @@ package packagejson_test
 
 import (
 	"os"
-	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func TestParse(t *testing.T) {
@@ -78,6 +77,11 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "invalid package name",
+			inputFile: "testdata/invalid_name.json",
+			wantErr:   "Name can only contain URL-friendly characters",
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/invalid_package.json",
 
@@ -99,7 +103,7 @@ func TestParse(t *testing.T) {
 	}
 
 	for _, v := range vectors {
-		t.Run(path.Base(v.name), func(t *testing.T) {
+		t.Run(v.name, func(t *testing.T) {
 			f, err := os.Open(v.inputFile)
 			require.NoError(t, err)
 			defer f.Close()
@@ -112,6 +116,56 @@ func TestParse(t *testing.T) {
 
 			require.NoError(t, err)
 			assert.Equal(t, v.want, got)
+		})
+	}
+}
+
+func TestIsValidName(t *testing.T) {
+	tests := []struct {
+		name string
+		want bool
+	}{
+		{
+			name: "",
+			want: true,
+		},
+		{
+			name: "test_package",
+			want: true,
+		},
+		{
+			name: "test.package",
+			want: true,
+		},
+		{
+			name: "test-package",
+			want: true,
+		},
+		{
+			name: "@test/package",
+			want: true,
+		},
+		{
+			name: "test@package",
+			want: false,
+		}, {
+			name: "test?package",
+			want: false,
+		},
+		{
+			name: "test/package",
+			want: false,
+		},
+		{
+			name: "package/",
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid := packagejson.IsValidName(tt.name)
+			require.Equal(t, tt.want, valid)
 		})
 	}
 }

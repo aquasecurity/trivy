@@ -11,15 +11,15 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/npm"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xpath "github.com/aquasecurity/trivy/pkg/x/path"
 )
 
@@ -114,7 +114,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types
 	}
 	defer func() { _ = f.Close() }()
 
-	file, ok := f.(dio.ReadSeekCloserAt)
+	file, ok := f.(xio.ReadSeekCloserAt)
 	if !ok {
 		return nil, xerrors.Errorf("type assertion error: %w", err)
 	}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zclconf/go-cty/cty"
@@ -904,6 +905,91 @@ data "http" "example" {
 }
 
 func TestForEach(t *testing.T) {
+	tests := []struct {
+		name               string
+		src                string
+		expectedBucketName string
+		expectedNameLabel  string
+	}{
+		{
+			name: "arg is set and ref to each.key",
+			src: `locals {
+	buckets = ["bucket1"]
+}
+
+resource "aws_s3_bucket" "this" {
+	for_each = toset(local.buckets)
+	bucket = each.key
+}`,
+			expectedBucketName: "bucket1",
+			expectedNameLabel:  `this["bucket1"]`,
+		},
+		{
+			name: "arg is set and ref to each.value",
+			src: `locals {
+	buckets = ["bucket1"]
+}
+
+resource "aws_s3_bucket" "this" {
+	for_each = toset(local.buckets)
+	bucket = each.value
+}`,
+			expectedBucketName: "bucket1",
+			expectedNameLabel:  `this["bucket1"]`,
+		},
+		{
+			name: "arg is map and ref to each.key",
+			src: `locals {
+	buckets = {
+		bucket1key = "bucket1value"
+	}
+}
+
+resource "aws_s3_bucket" "this" {
+	for_each = local.buckets
+	bucket = each.key
+}`,
+			expectedBucketName: "bucket1key",
+			expectedNameLabel:  `this["bucket1key"]`,
+		},
+		{
+			name: "arg is map and ref to each.value",
+			src: `locals {
+	buckets = {
+		bucket1key = "bucket1value"
+	}
+}
+
+resource "aws_s3_bucket" "this" {
+	for_each = local.buckets
+	bucket = each.value
+}`,
+			expectedBucketName: "bucket1value",
+			expectedNameLabel:  `this["bucket1key"]`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modules := parse(t, map[string]string{
+				"main.tf": tt.src,
+			})
+			require.Len(t, modules, 1)
+
+			buckets := modules.GetResourcesByType("aws_s3_bucket")
+			assert.Len(t, buckets, 1)
+
+			bucket := buckets[0]
+			bucketName := bucket.GetAttribute("bucket").Value().AsString()
+			assert.Equal(t, tt.expectedBucketName, bucketName)
+
+			assert.Equal(t, tt.expectedNameLabel, bucket.NameLabel())
+		})
+	}
+
+}
+
+func TestForEachCountExpanded(t *testing.T) {
 
 	tests := []struct {
 		name          string
@@ -920,6 +1006,18 @@ resource "aws_s3_bucket" "this" {
   for_each = local.buckets
   bucket = each.key
 }`,
+			expectedCount: 2,
+		},
+		{
+			name: "arg is empty list",
+			source: `locals {
+  buckets = []
+}
+
+resource "aws_s3_bucket" "this" {
+  for_each = local.buckets
+  bucket   = each.value
+}`,
 			expectedCount: 0,
 		},
 		{
@@ -929,8 +1027,34 @@ resource "aws_s3_bucket" "this" {
 }
 
 resource "aws_s3_bucket" "this" {
-  for_each = loca.buckets
+  for_each = local.buckets
   bucket = each.key
+}`,
+			expectedCount: 0,
+		},
+		{
+			name: "argument set with the same values",
+			source: `locals {
+  buckets = ["true", "true"]
+}
+
+resource "aws_s3_bucket" "this" {
+  for_each = toset(local.buckets)
+  bucket = each.key
+}`,
+			expectedCount: 1,
+		},
+		{
+			name: "arg is non-valid set",
+			source: `locals {
+  buckets = [{
+    bucket1key = "bucket1value"
+  }]
+}
+
+resource "aws_s3_bucket" "this" {
+	for_each = toset(local.buckets)
+	bucket = each.value
 }`,
 			expectedCount: 0,
 		},
@@ -961,18 +1085,25 @@ resource "aws_s3_bucket" "this" {
 }`,
 			expectedCount: 2,
 		},
+		{
+			name: "arg is empty map",
+			source: `locals {
+	buckets = {}
+}
+resource "aws_s3_bucket" "this" {
+	for_each = local.buckets
+	bucket   = each.value
+}
+		`,
+			expectedCount: 0,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fs := testutil.CreateFS(t, map[string]string{
+			modules := parse(t, map[string]string{
 				"main.tf": tt.source,
 			})
-			parser := New(fs, "", OptionStopOnHCLError(true))
-			require.NoError(t, parser.ParseFS(context.TODO(), "."))
-
-			modules, _, err := parser.EvaluateAll(context.TODO())
-			assert.NoError(t, err)
 			assert.Len(t, modules, 1)
 
 			bucketBlocks := modules.GetResourcesByType("aws_s3_bucket")
@@ -1138,4 +1269,256 @@ func TestForEachWithObjectsOfDifferentTypes(t *testing.T) {
 	modules, _, err := parser.EvaluateAll(context.TODO())
 	assert.NoError(t, err)
 	assert.Len(t, modules, 1)
+}
+
+func TestCountMetaArgument(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected int
+	}{
+		{
+			name: "zero resources",
+			src: `resource "test" "this" {
+  count = 0
+}`,
+			expected: 0,
+		},
+		{
+			name: "several resources",
+			src: `resource "test" "this" {
+  count = 2
+}`,
+			expected: 2,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(t, map[string]string{
+				"main.tf": tt.src,
+			})
+			parser := New(fsys, "", OptionStopOnHCLError(true))
+			require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+			modules, _, err := parser.EvaluateAll(context.TODO())
+			require.NoError(t, err)
+			assert.Len(t, modules, 1)
+
+			resources := modules.GetResourcesByType("test")
+			assert.Len(t, resources, tt.expected)
+		})
+	}
+}
+
+func TestCountMetaArgumentInModule(t *testing.T) {
+	tests := []struct {
+		name                   string
+		files                  map[string]string
+		expectedCountModules   int
+		expectedCountResources int
+	}{
+		{
+			name: "zero modules",
+			files: map[string]string{
+				"main.tf": `module "this" {
+  count = 0
+  source = "./modules/test"
+}`,
+				"modules/test/main.tf": `resource "test" "this" {}`,
+			},
+			expectedCountModules:   1,
+			expectedCountResources: 0,
+		},
+		{
+			name: "several modules",
+			files: map[string]string{
+				"main.tf": `module "this" {
+  count = 2
+  source = "./modules/test"
+}`,
+				"modules/test/main.tf": `resource "test" "this" {}`,
+			},
+			expectedCountModules:   3,
+			expectedCountResources: 2,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(t, tt.files)
+			parser := New(fsys, "", OptionStopOnHCLError(true))
+			require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+			modules, _, err := parser.EvaluateAll(context.TODO())
+			require.NoError(t, err)
+
+			assert.Len(t, modules, tt.expectedCountModules)
+
+			resources := modules.GetResourcesByType("test")
+			assert.Len(t, resources, tt.expectedCountResources)
+		})
+	}
+}
+
+func TestDynamicBlocks(t *testing.T) {
+	t.Run("arg is list of int", func(t *testing.T) {
+		modules := parse(t, map[string]string{
+			"main.tf": `
+resource "aws_security_group" "sg-webserver" {
+  vpc_id = "1111"
+  dynamic "ingress" {
+    for_each = [80, 443]
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+}
+`,
+		})
+		require.Len(t, modules, 1)
+
+		secGroups := modules.GetResourcesByType("aws_security_group")
+		assert.Len(t, secGroups, 1)
+		ingressBlocks := secGroups[0].GetBlocks("ingress")
+		assert.Len(t, ingressBlocks, 2)
+
+		var inboundPorts []int
+		for _, ingress := range ingressBlocks {
+			fromPort := ingress.GetAttribute("from_port").AsIntValueOrDefault(-1, ingress).Value()
+			inboundPorts = append(inboundPorts, fromPort)
+		}
+
+		assert.True(t, compareSets([]int{80, 443}, inboundPorts))
+	})
+
+	t.Run("empty for-each", func(t *testing.T) {
+		modules := parse(t, map[string]string{
+			"main.tf": `
+resource "aws_lambda_function" "analyzer" {
+  dynamic "vpc_config" {
+    for_each = []
+    content {}
+  }
+}
+`,
+		})
+		require.Len(t, modules, 1)
+
+		functions := modules.GetResourcesByType("aws_lambda_function")
+		assert.Len(t, functions, 1)
+		vpcConfigs := functions[0].GetBlocks("vpc_config")
+		assert.Empty(t, vpcConfigs)
+	})
+
+	t.Run("arg is list of bool", func(t *testing.T) {
+		modules := parse(t, map[string]string{
+			"main.tf": `
+resource "aws_lambda_function" "analyzer" {
+  dynamic "vpc_config" {
+    for_each = [true]
+    content {}
+  }
+}
+`,
+		})
+		require.Len(t, modules, 1)
+
+		functions := modules.GetResourcesByType("aws_lambda_function")
+		assert.Len(t, functions, 1)
+		vpcConfigs := functions[0].GetBlocks("vpc_config")
+		assert.Len(t, vpcConfigs, 1)
+	})
+
+	t.Run("arg is list of objects", func(t *testing.T) {
+		modules := parse(t, map[string]string{
+			"main.tf": `locals {
+  cluster_network_policy = [{
+    enabled = true
+  }]
+}
+
+resource "google_container_cluster" "primary" {
+  name = "test"
+
+  dynamic "network_policy" {
+    for_each = local.cluster_network_policy
+
+    content {
+      enabled = network_policy.value.enabled
+    }
+  }
+}`,
+		})
+		require.Len(t, modules, 1)
+
+		clusters := modules.GetResourcesByType("google_container_cluster")
+		assert.Len(t, clusters, 1)
+
+		networkPolicies := clusters[0].GetBlocks("network_policy")
+		assert.Len(t, networkPolicies, 1)
+
+		enabled := networkPolicies[0].GetAttribute("enabled")
+		assert.True(t, enabled.Value().True())
+	})
+
+	t.Run("nested dynamic", func(t *testing.T) {
+		modules := parse(t, map[string]string{
+			"main.tf": `
+resource "test_block" "this" {
+  name     = "name"
+  location = "loc"
+  dynamic "env" {
+	for_each = ["1", "2"]
+	content {
+	  dynamic "value_source" {
+		for_each = [true, true]
+		content {}
+	  }
+	}
+  }
+}`,
+		})
+		require.Len(t, modules, 1)
+
+		testResources := modules.GetResourcesByType("test_block")
+		assert.Len(t, testResources, 1)
+		envs := testResources[0].GetBlocks("env")
+		assert.Len(t, envs, 2)
+
+		var sources []*terraform.Block
+		for _, env := range envs {
+			sources = append(sources, env.GetBlocks("value_source")...)
+		}
+		assert.Len(t, sources, 4)
+	})
+}
+
+func parse(t *testing.T, files map[string]string) terraform.Modules {
+	fs := testutil.CreateFS(t, files)
+	parser := New(fs, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+
+	return modules
+}
+
+func compareSets(a []int, b []int) bool {
+	m := make(map[int]bool)
+	for _, el := range a {
+		m[el] = true
+	}
+
+	for _, el := range b {
+		if !m[el] {
+			return false
+		}
+	}
+
+	return true
 }

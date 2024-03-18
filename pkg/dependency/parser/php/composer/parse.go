@@ -9,10 +9,11 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type lockFile struct {
@@ -33,7 +34,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockFile lockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
@@ -47,7 +48,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	foundDeps := make(map[string][]string)
 	for _, pkg := range lockFile.Packages {
 		lib := types.Library{
-			ID:       utils.PackageID(pkg.Name, pkg.Version),
+			ID:       dependency.ID(ftypes.Composer, pkg.Name, pkg.Version),
 			Name:     pkg.Name,
 			Version:  pkg.Version,
 			Indirect: false, // composer.lock file doesn't have info about Direct/Indirect deps. Will think that all dependencies are Direct

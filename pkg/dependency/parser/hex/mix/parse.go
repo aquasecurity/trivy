@@ -2,14 +2,15 @@ package mix
 
 import (
 	"bufio"
-	"fmt"
 	"strings"
 	"unicode"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 // Parser is a parser for mix.lock
@@ -19,7 +20,7 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var libs []types.Library
 	scanner := bufio.NewScanner(r)
 	var lineNumber int // It is used to save dependency location
@@ -50,10 +51,15 @@ func (Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		}
 		version := strings.Trim(ss[2], `"`)
 		libs = append(libs, types.Library{
-			ID:        fmt.Sprintf("%s@%s", name, version),
-			Name:      name,
-			Version:   version,
-			Locations: []types.Location{{StartLine: lineNumber, EndLine: lineNumber}},
+			ID:      dependency.ID(ftypes.Hex, name, version),
+			Name:    name,
+			Version: version,
+			Locations: []types.Location{
+				{
+					StartLine: lineNumber,
+					EndLine:   lineNumber,
+				},
+			},
 		})
 
 	}

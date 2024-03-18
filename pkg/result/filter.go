@@ -113,7 +113,7 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 		}
 
 		// Filter by ignore file
-		if f := ignoreConfig.MatchVulnerability(vuln.VulnerabilityID, result.Target, vuln.PkgPath); f != nil {
+		if f := ignoreConfig.MatchVulnerability(vuln.VulnerabilityID, result.Target, vuln.PkgPath, vuln.PkgIdentifier.PURL); f != nil {
 			result.ModifiedFindings = append(result.ModifiedFindings,
 				types.NewModifiedFinding(vuln, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
 			continue
@@ -188,9 +188,9 @@ func filterSecrets(result *types.Result, severities []string, ignoreConfig Ignor
 
 func filterLicenses(result *types.Result, severities, ignoreLicenseNames []string, ignoreConfig IgnoreConfig) {
 	// Merge ignore license names into ignored findings
-	var ignoreLicenses IgnoreFindings
+	var ignoreLicenses IgnoreConfig
 	for _, licenseName := range ignoreLicenseNames {
-		ignoreLicenses = append(ignoreLicenses, IgnoreFinding{
+		ignoreLicenses.Licenses = append(ignoreLicenses.Licenses, IgnoreFinding{
 			ID: licenseName,
 		})
 	}
@@ -203,7 +203,7 @@ func filterLicenses(result *types.Result, severities, ignoreLicenseNames []strin
 		}
 
 		// Filter by `--ignored-licenses`
-		if f := ignoreLicenses.Match(l.Name, l.FilePath); f != nil {
+		if f := ignoreLicenses.MatchLicense(l.Name, l.FilePath); f != nil {
 			result.ModifiedFindings = append(result.ModifiedFindings,
 				types.NewModifiedFinding(l, types.FindingStatusIgnored, "", "--ignored-licenses"))
 			continue

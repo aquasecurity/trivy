@@ -535,11 +535,10 @@ func Test_separateMisconfigReports(t *testing.T) {
 					Resources: []Resource{
 						{Kind: "Deployment"},
 						{Kind: "StatefulSet"},
-						{Kind: "Pod"},
 					},
 				},
-				{Resources: []Resource{{Kind: "Role"}}},
 				{Resources: []Resource{{Kind: "Pod"}}},
+				{Resources: []Resource{{Kind: "Role"}}},
 			},
 		},
 		{
@@ -556,7 +555,6 @@ func Test_separateMisconfigReports(t *testing.T) {
 					Resources: []Resource{
 						{Kind: "Deployment"},
 						{Kind: "StatefulSet"},
-						{Kind: "Pod"},
 					},
 				},
 				{Resources: []Resource{{Kind: "Pod"}}},
@@ -580,7 +578,6 @@ func Test_separateMisconfigReports(t *testing.T) {
 					Resources: []Resource{
 						{Kind: "Deployment"},
 						{Kind: "StatefulSet"},
-						{Kind: "Pod"},
 					},
 				},
 			},

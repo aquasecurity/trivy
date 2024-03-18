@@ -10,10 +10,11 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/trivy/pkg/dependency/parser/io"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/log"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -86,7 +87,7 @@ func parsePackagePatterns(target string) (packagename, protocol string, patterns
 	}
 	patterns = lo.Map(patternsSplit, func(pattern string, _ int) string {
 		_, _, version, _ := parsePattern(pattern)
-		return utils.PackageID(packagename, version)
+		return packageID(packagename, version)
 	})
 	return
 }
@@ -261,11 +262,11 @@ func parseDependency(line string) (string, error) {
 	if name, version, err := getDependency(line); err != nil {
 		return "", err
 	} else {
-		return utils.PackageID(name, version), nil
+		return packageID(name, version), nil
 	}
 }
 
-func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	lineNumber := 1
 	var libs []types.Library
 
@@ -286,7 +287,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 
-		libID := utils.PackageID(lib.Name, lib.Version)
+		libID := packageID(lib.Name, lib.Version)
 		libs = append(libs, types.Library{
 			ID:        libID,
 			Name:      lib.Name,
@@ -313,4 +314,8 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
 	deps := parseResults(patternIDs, dependsOn)
 	return libs, deps, nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Yarn, name, version)
 }

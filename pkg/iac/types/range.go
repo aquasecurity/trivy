@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
-	"path/filepath"
+	"path"
 )
 
 func NewRange(filename string, startLine, endLine int, sourcePrefix string, srcFS fs.FS) Range {
@@ -110,7 +110,7 @@ func (r Range) GetFilename() string {
 	if r.isLogicalSource {
 		return fmt.Sprintf("%s:%s", r.sourcePrefix, r.filename)
 	}
-	return filepath.Join(r.sourcePrefix, r.filename)
+	return path.Join(r.sourcePrefix, r.filename)
 }
 
 func (r Range) GetLocalFilename() string {
