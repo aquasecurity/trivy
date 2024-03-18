@@ -166,6 +166,9 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 			app.Type = ftypes.LangType(prop.Value)
 		}
 	}
+
+	// Aggregation Types use the name of the language (e.g. `Java`, `Python`, etc.) as the component name.
+	// Other language files use the file path as their name.
 	if !slices.Contains(ftypes.AggregatingTypes, app.Type) {
 		app.FilePath = c.Name
 	}
