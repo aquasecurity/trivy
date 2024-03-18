@@ -3,11 +3,10 @@
 package integration
 
 import (
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"path/filepath"
-	"strings"
 	"testing"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -243,9 +242,9 @@ func compareSBOMReports(t *testing.T, wantFile, gotFile string, overrideWant typ
 
 	got := readReport(t, gotFile)
 	// when running on Windows FS
-	got.ArtifactName = strings.ReplaceAll(got.ArtifactName, "\\", "/")
+	got.ArtifactName = filepath.ToSlash(filepath.Clean(got.ArtifactName))
 	for i, result := range got.Results {
-		got.Results[i].Target = strings.ReplaceAll(result.Target, "\\", "/")
+		got.Results[i].Target = filepath.ToSlash(filepath.Clean(result.Target))
 	}
 	assert.Equal(t, want, got)
 }
