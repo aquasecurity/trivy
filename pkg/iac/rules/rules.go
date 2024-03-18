@@ -4,6 +4,7 @@ import (
 	trules "github.com/aquasecurity/trivy-policies/pkg/rules"
 
 	_ "github.com/aquasecurity/trivy-policies/checks/cloud/aws/accessanalyzer"
+	_ "github.com/aquasecurity/trivy-policies/checks/cloud/aws/acm"
 	_ "github.com/aquasecurity/trivy-policies/checks/cloud/aws/apigateway"
 	_ "github.com/aquasecurity/trivy-policies/checks/cloud/aws/athena"
 	_ "github.com/aquasecurity/trivy-policies/checks/cloud/aws/cloudfront"
