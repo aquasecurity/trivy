@@ -24,7 +24,7 @@ import (
 )
 
 func TestMarshaler_MarshalReport(t *testing.T) {
-	testSBOM := core.NewBOM()
+	testSBOM := core.NewBOM(core.Options{GenerateBOMRef: true})
 	testSBOM.AddComponent(&core.Component{
 		Root: true,
 		Type: core.TypeApplication,
@@ -1022,7 +1022,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "acl",
-						Version: "2.2.53-1.el8",
+						Version: "1:2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{
 								License: &cdx.License{
