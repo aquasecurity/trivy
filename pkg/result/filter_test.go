@@ -744,7 +744,7 @@ func TestFilter(t *testing.T) {
 							vuln1,
 						},
 						MisconfSummary: &types.MisconfSummary{
-							Successes:  1,
+							Successes:  0,
 							Failures:   1,
 							Exceptions: 1,
 						},
@@ -765,6 +765,13 @@ func TestFilter(t *testing.T) {
 								Statement: "Filtered by Rego",
 								Source:    "testdata/ignore-dir/ignore-vuln.rego",
 								Finding:   vuln3,
+							},
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Filtered by Rego",
+								Source:    "testdata/ignore-dir/ignore-vuln.rego",
+								Finding:   vuln4,
 							},
 						},
 					},
