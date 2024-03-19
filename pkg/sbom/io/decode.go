@@ -2,14 +2,18 @@ package io
 
 import (
 	"errors"
+	"slices"
 	"sort"
 	"strconv"
 
+	debver "github.com/knqyf263/go-deb-version"
+	rpmver "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
 	"go.uber.org/zap"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -125,7 +129,7 @@ func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
 		// Third-party SBOMs may contain packages in types other than "Library"
 		if c.Type == core.TypeLibrary || c.PkgID.PURL != nil {
 			pkg, err := m.decodeLibrary(c)
-			if errors.Is(err, ErrUnsupportedType) {
+			if errors.Is(err, ErrUnsupportedType) || errors.Is(err, ErrPURLEmpty) {
 				continue
 			} else if err != nil {
 				return xerrors.Errorf("failed to decode library: %w", err)
@@ -156,15 +160,19 @@ func (m *Decoder) buildDependencyGraph() {
 }
 
 func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
-	app := &ftypes.Application{
-		FilePath: c.Name,
-	}
+	var app ftypes.Application
 	for _, prop := range c.Properties {
 		if prop.Name == core.PropertyType {
 			app.Type = ftypes.LangType(prop.Value)
 		}
 	}
-	return app
+
+	// Aggregation Types use the name of the language (e.g. `Java`, `Python`, etc.) as the component name.
+	// Other language files use the file path as their name.
+	if !slices.Contains(ftypes.AggregatingTypes, app.Type) {
+		app.FilePath = c.Name
+	}
+	return &app
 }
 
 func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
@@ -182,6 +190,7 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 		return nil, ErrUnsupportedType
 	}
 	pkg.Name = m.pkgName(pkg, c)
+	pkg.ID = dependency.ID(p.LangType(), pkg.Name, p.Version) // Re-generate ID with the updated name
 
 	var err error
 	for _, prop := range c.Properties {
@@ -211,12 +220,19 @@ func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 
 	pkg.Identifier.BOMRef = c.PkgID.BOMRef
 	pkg.Licenses = c.Licenses
-	if len(c.Files) > 0 {
-		pkg.Digest = c.Files[0].Hash
+
+	for _, f := range c.Files {
+		if f.Path != "" && pkg.FilePath == "" {
+			pkg.FilePath = f.Path
+		}
+		// An empty path represents a package digest
+		if f.Path == "" && len(f.Digests) > 0 {
+			pkg.Digest = f.Digests[0]
+		}
 	}
 
 	if p.Class() == types.ClassOSPkg {
-		m.fillSrcPkg(pkg)
+		m.fillSrcPkg(c, pkg)
 	}
 
 	return pkg, nil
@@ -241,7 +257,12 @@ func (m *Decoder) pkgName(pkg *ftypes.Package, c *core.Component) string {
 	return c.Name
 }
 
-func (m *Decoder) fillSrcPkg(pkg *ftypes.Package) {
+func (m *Decoder) fillSrcPkg(c *core.Component, pkg *ftypes.Package) {
+	if c.SrcName != "" && pkg.SrcName == "" {
+		pkg.SrcName = c.SrcName
+	}
+	m.parseSrcVersion(pkg, c.SrcVersion)
+
 	// Fill source package information for components in third-party SBOMs .
 	if pkg.SrcName == "" {
 		pkg.SrcName = pkg.Name
@@ -254,6 +275,29 @@ func (m *Decoder) fillSrcPkg(pkg *ftypes.Package) {
 	}
 	if pkg.SrcEpoch == 0 {
 		pkg.SrcEpoch = pkg.Epoch
+	}
+}
+
+// parseSrcVersion parses the version of the source package.
+func (m *Decoder) parseSrcVersion(pkg *ftypes.Package, ver string) {
+	if ver == "" {
+		return
+	}
+	switch pkg.Identifier.PURL.Type {
+	case packageurl.TypeRPM:
+		v := rpmver.NewVersion(ver)
+		pkg.SrcEpoch = v.Epoch()
+		pkg.SrcVersion = v.Version()
+		pkg.SrcRelease = v.Release()
+	case packageurl.TypeDebian:
+		v, err := debver.NewVersion(ver)
+		if err != nil {
+			log.Logger.Debugw("Failed to parse Debian version", zap.Error(err))
+			return
+		}
+		pkg.SrcEpoch = v.Epoch()
+		pkg.SrcVersion = v.Version()
+		pkg.SrcRelease = v.Revision()
 	}
 }
 

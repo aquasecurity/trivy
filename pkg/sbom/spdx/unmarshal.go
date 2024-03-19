@@ -2,13 +2,10 @@ package spdx
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
-	"sort"
 	"strings"
 
-	version "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/json"
@@ -17,17 +14,14 @@ import (
 	"github.com/spdx/tools-golang/tagvalue"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/aquasecurity/trivy/pkg/types"
-)
-
-var (
-	errUnknownPackageFormat = xerrors.New("unknown package format")
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 type SPDX struct {
-	*types.SBOM
+	*core.BOM
+
+	trivySBOM    bool
+	pkgFilePaths map[common.ElementID]string
 }
 
 func NewTVDecoder(r io.Reader) *TVDecoder {
@@ -48,8 +42,7 @@ func (tv *TVDecoder) Decode(v interface{}) error {
 	if !ok {
 		return xerrors.Errorf("invalid struct type tag-value decoder needed SPDX struct")
 	}
-	err = a.unmarshal(spdxDocument)
-	if err != nil {
+	if err = a.unmarshal(spdxDocument); err != nil {
 		return xerrors.Errorf("failed to unmarshal spdx: %w", err)
 	}
 
@@ -57,273 +50,57 @@ func (tv *TVDecoder) Decode(v interface{}) error {
 }
 
 func (s *SPDX) UnmarshalJSON(b []byte) error {
+	if s.BOM == nil {
+		s.BOM = core.NewBOM(core.Options{})
+	}
+	if s.pkgFilePaths == nil {
+		s.pkgFilePaths = make(map[common.ElementID]string)
+	}
+
 	spdxDocument, err := json.Read(bytes.NewReader(b))
 	if err != nil {
 		return xerrors.Errorf("failed to load spdx json: %w", err)
 	}
-	err = s.unmarshal(spdxDocument)
-	if err != nil {
+
+	if err = s.unmarshal(spdxDocument); err != nil {
 		return xerrors.Errorf("failed to unmarshal spdx: %w", err)
 	}
 	return nil
 }
 
 func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
-	var osPkgs []ftypes.Package
-	apps := make(map[common.ElementID]*ftypes.Application)
-	packageSPDXIdentifierMap := createPackageSPDXIdentifierMap(spdxDocument.Packages)
-	packageFilePaths := getPackageFilePaths(spdxDocument)
+	s.trivySBOM = s.isTrivySBOM(spdxDocument)
 
-	// Hold packages that are not processed by relationships
-	orphanPkgs := createPackageSPDXIdentifierMap(spdxDocument.Packages)
+	// Parse files and find file paths for packages
+	s.parseFiles(spdxDocument)
 
-	relationships := lo.Filter(spdxDocument.Relationships, func(rel *spdx.Relationship, _ int) bool {
-		// Skip the DESCRIBES relationship.
-		return rel.Relationship != common.TypeRelationshipDescribe && rel.Relationship != "DESCRIBE"
-	})
-
-	// Package relationships would be as belows:
-	// - Root (container image, filesystem, etc.)
-	//   - Operating System (debian 10)
-	//     - OS package A
-	//     - OS package B
-	//   - Application 1 (package-lock.json)
-	//     - Node.js package A
-	//     - Node.js package B
-	//   - Application 2 (Pipfile.lock)
-	//     - Python package A
-	//     - Python package B
-	for _, rel := range relationships {
-		pkgA := packageSPDXIdentifierMap[rel.RefA.ElementRefID]
-		pkgB := packageSPDXIdentifierMap[rel.RefB.ElementRefID]
-
-		if pkgA == nil || pkgB == nil {
-			// Skip the missing pkg relationship.
-			continue
-		}
-
-		switch {
-		// Relationship: root package => OS
-		case isOperatingSystem(pkgB.PackageSPDXIdentifier):
-			s.SBOM.Metadata.OS = parseOS(*pkgB)
-			delete(orphanPkgs, pkgB.PackageSPDXIdentifier)
-		// Relationship: OS => OS package
-		case isOperatingSystem(pkgA.PackageSPDXIdentifier):
-			pkg, _, err := parsePkg(*pkgB, packageFilePaths)
-			if errors.Is(err, errUnknownPackageFormat) {
-				continue
-			} else if err != nil {
-				return xerrors.Errorf("failed to parse os package: %w", err)
-			}
-			osPkgs = append(osPkgs, *pkg)
-			delete(orphanPkgs, pkgB.PackageSPDXIdentifier)
-		// Relationship: root package => application
-		case isApplication(pkgB.PackageSPDXIdentifier):
-			// pass
-		// Relationship: application => language-specific package
-		case isApplication(pkgA.PackageSPDXIdentifier):
-			app, ok := apps[pkgA.PackageSPDXIdentifier]
-			if !ok {
-				app = initApplication(*pkgA)
-				apps[pkgA.PackageSPDXIdentifier] = app
-			}
-
-			lib, _, err := parsePkg(*pkgB, packageFilePaths)
-			if errors.Is(err, errUnknownPackageFormat) {
-				continue
-			} else if err != nil {
-				return xerrors.Errorf("failed to parse language-specific package: %w", err)
-			}
-			app.Libraries = append(app.Libraries, *lib)
-
-			// They are no longer orphan packages
-			delete(orphanPkgs, pkgA.PackageSPDXIdentifier)
-			delete(orphanPkgs, pkgB.PackageSPDXIdentifier)
-		}
-	}
-
-	// Fill OS packages
-	if len(osPkgs) > 0 {
-		s.Packages = []ftypes.PackageInfo{{Packages: osPkgs}}
-	}
-
-	// Fill applications
-	for _, app := range apps {
-		s.SBOM.Applications = append(s.SBOM.Applications, *app)
-	}
-
-	// Fallback for when there are no effective relationships.
-	if err := s.parsePackages(orphanPkgs); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// parsePackages processes the packages and categorizes them into OS packages and application packages.
-// Note that all language-specific packages are treated as a single application.
-func (s *SPDX) parsePackages(pkgs map[common.ElementID]*spdx.Package) error {
-	var (
-		osPkgs []ftypes.Package
-		apps   = make(map[ftypes.LangType]ftypes.Application)
-	)
-
-	for _, p := range pkgs {
-		pkg, pkgURL, err := parsePkg(*p, nil)
-		if errors.Is(err, errUnknownPackageFormat) {
-			continue
-		} else if err != nil {
-			return xerrors.Errorf("failed to parse package: %w", err)
-		}
-		switch pkgURL.Class() {
-		case types.ClassOSPkg:
-			osPkgs = append(osPkgs, *pkg)
-		case types.ClassLangPkg:
-			// Language-specific packages
-			pkgType := pkgURL.LangType()
-			app, ok := apps[pkgType]
-			if !ok {
-				app.Type = pkgType
-			}
-			app.Libraries = append(app.Libraries, *pkg)
-			apps[pkgType] = app
-		}
-	}
-	if len(osPkgs) > 0 {
-		s.Packages = []ftypes.PackageInfo{{Packages: osPkgs}}
-	}
-	for _, app := range apps {
-		sort.Sort(app.Libraries)
-		s.SBOM.Applications = append(s.SBOM.Applications, app)
-	}
-	return nil
-}
-
-func createPackageSPDXIdentifierMap(packages []*spdx.Package) map[common.ElementID]*spdx.Package {
-	return lo.SliceToMap(packages, func(pkg *spdx.Package) (common.ElementID, *spdx.Package) {
-		return pkg.PackageSPDXIdentifier, pkg
-	})
-}
-
-func createFileSPDXIdentifierMap(files []*spdx.File) map[string]*spdx.File {
-	ret := make(map[string]*spdx.File)
-	for _, file := range files {
-		ret[string(file.FileSPDXIdentifier)] = file
-	}
-	return ret
-}
-
-func isOperatingSystem(elementID spdx.ElementID) bool {
-	return strings.HasPrefix(string(elementID), ElementOperatingSystem)
-}
-
-func isApplication(elementID spdx.ElementID) bool {
-	return strings.HasPrefix(string(elementID), ElementApplication)
-}
-
-func isFile(elementID spdx.ElementID) bool {
-	return strings.HasPrefix(string(elementID), ElementFile)
-}
-
-func initApplication(pkg spdx.Package) *ftypes.Application {
-	app := &ftypes.Application{Type: ftypes.LangType(pkg.PackageName)}
-	switch app.Type {
-	case ftypes.NodePkg, ftypes.PythonPkg, ftypes.GemSpec, ftypes.Jar, ftypes.CondaPkg:
-		app.FilePath = ""
-	default:
-		app.FilePath = pkg.PackageSourceInfo
-	}
-
-	return app
-}
-
-func parseOS(pkg spdx.Package) *ftypes.OS {
-	return &ftypes.OS{
-		Family: ftypes.OSType(pkg.PackageName),
-		Name:   pkg.PackageVersion,
-	}
-}
-
-func parsePkg(spdxPkg spdx.Package, packageFilePaths map[string]string) (*ftypes.Package, *purl.PackageURL, error) {
-	pkgURL, err := parseExternalReferences(spdxPkg.PackageExternalReferences)
+	// Convert all SPDX packages into Trivy components
+	components, err := s.parsePackages(spdxDocument)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("external references error: %w", err)
+		return xerrors.Errorf("package parse error: %w", err)
 	}
 
-	pkg := pkgURL.Package()
-	if spdxPkg.PackageLicenseDeclared != "NONE" {
-		pkg.Licenses = strings.Split(spdxPkg.PackageLicenseDeclared, ",")
-	}
-
-	if strings.HasPrefix(spdxPkg.PackageSourceInfo, SourcePackagePrefix) {
-		srcPkgName := strings.TrimPrefix(spdxPkg.PackageSourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
-		pkg.SrcEpoch, pkg.SrcName, pkg.SrcVersion, pkg.SrcRelease, err = parseSourceInfo(pkgURL.Type, srcPkgName)
-		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to parse source info: %w", err)
-		}
-	}
-
-	if path, ok := packageFilePaths[string(spdxPkg.PackageSPDXIdentifier)]; ok {
-		pkg.FilePath = path
-	} else if len(spdxPkg.Files) > 0 {
-		// Take the first file name
-		pkg.FilePath = spdxPkg.Files[0].FileName
-	}
-
-	pkg.ID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyPkgID)
-	pkg.Layer.Digest = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDigest)
-	pkg.Layer.DiffID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDiffID)
-
-	return pkg, pkgURL, nil
-}
-
-func parseExternalReferences(refs []*spdx.PackageExternalReference) (*purl.PackageURL, error) {
-	for _, ref := range refs {
-		// Extract the package information from PURL
-		if ref.RefType != RefTypePurl || ref.Category != CategoryPackageManager {
+	// Parse relationships and build the dependency graph
+	for _, rel := range spdxDocument.Relationships {
+		// Skip the DESCRIBES relationship.
+		if rel.Relationship == common.TypeRelationshipDescribe || rel.Relationship == "DESCRIBE" {
 			continue
 		}
 
-		packageURL, err := purl.FromString(ref.Locator)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
-		}
-		return packageURL, nil
+		compA := components[rel.RefA.ElementRefID]
+		compB := components[rel.RefB.ElementRefID]
+		s.BOM.AddRelationship(compA, compB, s.parseRelationshipType(rel.Relationship))
 	}
-	return nil, errUnknownPackageFormat
+
+	return nil
 }
 
-func lookupAttributionTexts(attributionTexts []string, key string) string {
-	for _, text := range attributionTexts {
-		if strings.HasPrefix(text, key) {
-			return strings.TrimPrefix(text, fmt.Sprintf("%s: ", key))
-		}
-	}
-	return ""
-}
+// parseFiles parses Relationships and finds filepaths for packages
+func (s *SPDX) parseFiles(spdxDocument *spdx.Document) {
+	fileSPDXIdentifierMap := lo.SliceToMap(spdxDocument.Files, func(file *spdx.File) (common.ElementID, *spdx.File) {
+		return file.FileSPDXIdentifier, file
+	})
 
-func parseSourceInfo(pkgType, sourceInfo string) (epoch int, name, ver, rel string, err error) {
-	srcNameVersion := strings.TrimPrefix(sourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
-	ss := strings.Split(srcNameVersion, " ")
-	if len(ss) != 2 {
-		return 0, "", "", "", xerrors.Errorf("invalid source info (%s)", sourceInfo)
-	}
-	name = ss[0]
-	if pkgType == packageurl.TypeRPM {
-		v := version.NewVersion(ss[1])
-		epoch = v.Epoch()
-		ver = v.Version()
-		rel = v.Release()
-	} else {
-		ver = ss[1]
-	}
-	return epoch, name, ver, rel, nil
-}
-
-// getPackageFilePaths parses Relationships and finds filepaths for packages
-func getPackageFilePaths(spdxDocument *spdx.Document) map[string]string {
-	packageFilePaths := make(map[string]string)
-	fileSPDXIdentifierMap := createFileSPDXIdentifierMap(spdxDocument.Files)
 	for _, rel := range spdxDocument.Relationships {
 		if rel.Relationship != common.TypeRelationshipContains && rel.Relationship != "CONTAIN" {
 			// Skip the DESCRIBES relationship.
@@ -335,14 +112,157 @@ func getPackageFilePaths(spdxDocument *spdx.Document) map[string]string {
 		// hasFiles values converted in Relationships
 		// https://github.com/spdx/tools-golang/pull/201
 		if isFile(rel.RefB.ElementRefID) {
-			file, ok := fileSPDXIdentifierMap[string(rel.RefB.ElementRefID)]
+			file, ok := fileSPDXIdentifierMap[rel.RefB.ElementRefID]
 			if ok {
 				// Save filePaths for packages
 				// Insert filepath will be later
-				packageFilePaths[string(rel.RefA.ElementRefID)] = file.FileName
+				s.pkgFilePaths[rel.RefA.ElementRefID] = file.FileName
 			}
 			continue
 		}
 	}
-	return packageFilePaths
+}
+
+func (s *SPDX) parsePackages(spdxDocument *spdx.Document) (map[common.ElementID]*core.Component, error) {
+	// Find a root package
+	var rootID common.ElementID
+	for _, rel := range spdxDocument.Relationships {
+		if rel.RefA.ElementRefID == DocumentSPDXIdentifier && rel.Relationship == RelationShipDescribe {
+			rootID = rel.RefB.ElementRefID
+			break
+		}
+	}
+
+	// Convert packages into components
+	components := make(map[common.ElementID]*core.Component)
+	for _, pkg := range spdxDocument.Packages {
+		component, err := s.parsePackage(*pkg)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse package: %w", err)
+		}
+		components[pkg.PackageSPDXIdentifier] = component
+
+		if pkg.PackageSPDXIdentifier == rootID {
+			component.Root = true
+		}
+		s.BOM.AddComponent(component)
+	}
+	return components, nil
+}
+
+func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
+	var err error
+	component := &core.Component{
+		Type:    s.parseType(spdxPkg),
+		Name:    spdxPkg.PackageName,
+		Version: spdxPkg.PackageVersion,
+	}
+
+	// PURL
+	if component.PkgID.PURL, err = s.parseExternalReferences(spdxPkg.PackageExternalReferences); err != nil {
+		return nil, xerrors.Errorf("external references error: %w", err)
+	}
+
+	// License
+	if spdxPkg.PackageLicenseDeclared != "NONE" {
+		component.Licenses = strings.Split(spdxPkg.PackageLicenseDeclared, ",")
+	}
+
+	// Source package
+	if strings.HasPrefix(spdxPkg.PackageSourceInfo, SourcePackagePrefix) {
+		srcPkgName := strings.TrimPrefix(spdxPkg.PackageSourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
+		component.SrcName, component.SrcVersion, _ = strings.Cut(srcPkgName, " ")
+	}
+
+	// Files
+	// TODO: handle checksums as well
+	if path, ok := s.pkgFilePaths[spdxPkg.PackageSPDXIdentifier]; ok {
+		component.Files = []core.File{
+			{Path: path},
+		}
+	} else if len(spdxPkg.Files) > 0 {
+		component.Files = []core.File{
+			{Path: spdxPkg.Files[0].FileName}, // Take the first file name
+		}
+	}
+
+	// Attributions
+	for _, attr := range spdxPkg.PackageAttributionTexts {
+		k, v, ok := strings.Cut(attr, ": ")
+		if !ok {
+			continue
+		}
+		component.Properties = append(component.Properties, core.Property{
+			Name:  k,
+			Value: v,
+		})
+	}
+
+	// For backward-compatibility
+	// Older Trivy versions put the file path in "sourceInfo" and the package type in "name".
+	if s.trivySBOM && component.Type == core.TypeApplication && spdxPkg.PackageSourceInfo != "" {
+		component.Name = spdxPkg.PackageSourceInfo
+		component.Properties = append(component.Properties, core.Property{
+			Name:  core.PropertyType,
+			Value: spdxPkg.PackageName,
+		})
+	}
+
+	return component, nil
+}
+
+func (s *SPDX) parseType(pkg spdx.Package) core.ComponentType {
+	id := string(pkg.PackageSPDXIdentifier)
+	switch {
+	case strings.HasPrefix(id, ElementOperatingSystem):
+		return core.TypeOS
+	case strings.HasPrefix(id, ElementApplication):
+		return core.TypeApplication
+	case strings.HasPrefix(id, ElementPackage):
+		return core.TypeLibrary
+	default:
+		return core.TypeLibrary // unknown is handled as a library
+	}
+}
+
+func (s *SPDX) parseRelationshipType(rel string) core.RelationshipType {
+	switch rel {
+	case common.TypeRelationshipDescribe:
+		return core.RelationshipDescribes
+	case common.TypeRelationshipContains, "CONTAIN":
+		return core.RelationshipContains
+	case common.TypeRelationshipDependsOn:
+		return core.RelationshipDependsOn
+	default:
+		return core.RelationshipContains
+	}
+}
+
+func (s *SPDX) parseExternalReferences(refs []*spdx.PackageExternalReference) (*packageurl.PackageURL, error) {
+	for _, ref := range refs {
+		// Extract the package information from PURL
+		if ref.RefType != RefTypePurl || ref.Category != CategoryPackageManager {
+			continue
+		}
+
+		packageURL, err := packageurl.FromString(ref.Locator)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
+		}
+		return &packageURL, nil
+	}
+	return nil, nil
+}
+
+func (s *SPDX) isTrivySBOM(spdxDocument *spdx.Document) bool {
+	for _, c := range spdxDocument.CreationInfo.Creators {
+		if c.CreatorType == "Tool" && strings.HasPrefix(c.Creator, "trivy") {
+			return true
+		}
+	}
+	return false
+}
+
+func isFile(elementID spdx.ElementID) bool {
+	return strings.HasPrefix(string(elementID), ElementFile)
 }

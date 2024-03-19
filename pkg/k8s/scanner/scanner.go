@@ -375,7 +375,9 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 		return nil, fmt.Errorf("failed to find node name")
 	}
 
-	kbom := core.NewBOM()
+	kbom := core.NewBOM(core.Options{
+		GenerateBOMRef: true,
+	})
 	for _, artifact := range allArtifact {
 		switch artifact.Kind {
 		case controlPlaneComponents:
@@ -413,7 +415,7 @@ func (s *Scanner) clusterInfoToReportResources(allArtifact []*artifacts.Artifact
 				}
 
 				imageComponent := &core.Component{
-					Type:    core.TypeContainer,
+					Type:    core.TypeContainerImage,
 					Name:    name,
 					Version: cDigest,
 					PkgID: core.PkgID{

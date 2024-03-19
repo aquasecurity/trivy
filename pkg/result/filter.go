@@ -17,6 +17,8 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
@@ -98,11 +100,16 @@ func filterByVEX(report types.Report, opt FilterOption) error {
 		return nil
 	}
 
+	bom, err := sbomio.NewEncoder(core.Options{}).Encode(report)
+	if err != nil {
+		return xerrors.Errorf("unable to encode the SBOM: %w", err)
+	}
+
 	for i, result := range report.Results {
 		if len(result.Vulnerabilities) == 0 {
 			continue
 		}
-		vexDoc.Filter(&report.Results[i])
+		vexDoc.Filter(&report.Results[i], bom)
 	}
 	return nil
 }

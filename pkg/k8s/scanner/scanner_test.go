@@ -155,7 +155,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 				{
-					Type:    core.TypeContainer,
+					Type:    core.TypeContainerImage,
 					Name:    "k8s.gcr.io/kube-apiserver",
 					Version: "sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f",
 					PkgID: core.PkgID{

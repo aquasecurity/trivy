@@ -16,6 +16,48 @@ import (
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
+var (
+	vuln1 = types.DetectedVulnerability{
+		VulnerabilityID:  "CVE-2021-44228",
+		PkgName:          "spring-boot",
+		InstalledVersion: "2.6.0",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework.boot",
+				Name:      "spring-boot",
+				Version:   "2.6.0",
+			},
+		},
+	}
+	vuln2 = types.DetectedVulnerability{
+		VulnerabilityID:  "CVE-2021-0001",
+		PkgName:          "spring-boot",
+		InstalledVersion: "2.6.0",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework.boot",
+				Name:      "spring-boot",
+				Version:   "2.6.0",
+			},
+		},
+	}
+	vuln3 = types.DetectedVulnerability{
+		VulnerabilityID:  "CVE-2022-3715",
+		PkgName:          "bash",
+		InstalledVersion: "5.2.15",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeDebian,
+				Namespace: "debian",
+				Name:      "bash",
+				Version:   "5.2.15",
+			},
+		},
+	}
+)
+
 func TestMain(m *testing.M) {
 	log.InitLogger(false, true)
 	os.Exit(m.Run())
@@ -28,6 +70,7 @@ func TestVEX_Filter(t *testing.T) {
 	}
 	type args struct {
 		vulns []types.DetectedVulnerability
+		bom   *core.BOM
 	}
 	tests := []struct {
 		name    string
@@ -42,21 +85,8 @@ func TestVEX_Filter(t *testing.T) {
 				filePath: "testdata/openvex.json",
 			},
 			args: args{
-				vulns: []types.DetectedVulnerability{
-					{
-						VulnerabilityID:  "CVE-2021-44228",
-						PkgName:          "spring-boot",
-						InstalledVersion: "2.6.0",
-						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: &packageurl.PackageURL{
-								Type:      packageurl.TypeMaven,
-								Namespace: "org.springframework.boot",
-								Name:      "spring-boot",
-								Version:   "2.6.0",
-							},
-						},
-					},
-				},
+				vulns: []types.DetectedVulnerability{vuln1},
+				bom:   newTestBOM(),
 			},
 			want: []types.DetectedVulnerability{},
 		},
@@ -67,49 +97,38 @@ func TestVEX_Filter(t *testing.T) {
 			},
 			args: args{
 				vulns: []types.DetectedVulnerability{
-					{
-						VulnerabilityID:  "CVE-2021-44228",
-						PkgName:          "spring-boot",
-						InstalledVersion: "2.6.0",
-						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: &packageurl.PackageURL{
-								Type:      packageurl.TypeMaven,
-								Namespace: "org.springframework.boot",
-								Name:      "spring-boot",
-								Version:   "2.6.0",
-							},
-						},
-					},
-					{
-						VulnerabilityID:  "CVE-2021-0001",
-						PkgName:          "spring-boot",
-						InstalledVersion: "2.6.0",
-						PkgIdentifier: ftypes.PkgIdentifier{
-							PURL: &packageurl.PackageURL{
-								Type:      packageurl.TypeMaven,
-								Namespace: "org.springframework.boot",
-								Name:      "spring-boot",
-								Version:   "2.6.0",
-							},
-						},
-					},
+					vuln1, // filtered by VEX
+					vuln2,
 				},
+				bom: newTestBOM(),
 			},
 			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2021-0001",
-					PkgName:          "spring-boot",
-					InstalledVersion: "2.6.0",
-					PkgIdentifier: ftypes.PkgIdentifier{
-						PURL: &packageurl.PackageURL{
-							Type:      packageurl.TypeMaven,
-							Namespace: "org.springframework.boot",
-							Name:      "spring-boot",
-							Version:   "2.6.0",
-						},
-					},
-				},
+				vuln2,
 			},
+		},
+		{
+			name: "OpenVEX, subcomponents, oci image",
+			fields: fields{
+				filePath: "testdata/openvex-oci.json",
+			},
+			args: args{
+				vulns: []types.DetectedVulnerability{
+					vuln3,
+				},
+				bom: newTestBOM(),
+			},
+			want: []types.DetectedVulnerability{},
+		},
+		{
+			name: "OpenVEX, subcomponents, wrong oci image",
+			fields: fields{
+				filePath: "testdata/openvex-oci.json",
+			},
+			args: args{
+				vulns: []types.DetectedVulnerability{vuln3},
+				bom:   newTestBOM2(),
+			},
+			want: []types.DetectedVulnerability{vuln3},
 		},
 		{
 			name: "CycloneDX SBOM with CycloneDX VEX",
@@ -347,8 +366,62 @@ func TestVEX_Filter(t *testing.T) {
 			got := &types.Result{
 				Vulnerabilities: tt.args.vulns,
 			}
-			v.Filter(got)
+			v.Filter(got, tt.args.bom)
 			assert.Equal(t, tt.want, got.Vulnerabilities)
 		})
 	}
+}
+
+func newTestBOM() *core.BOM {
+	bom := core.NewBOM(core.Options{})
+	bom.AddComponent(&core.Component{
+		Root: true,
+		Type: core.TypeContainerImage,
+		Name: "debian:12",
+		PkgID: core.PkgID{
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeOCI,
+				Name:    "debian",
+				Version: "sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "tag",
+						Value: "12",
+					},
+					{
+						Key:   "repository_url",
+						Value: "docker.io/library/debian",
+					},
+				},
+			},
+		},
+	})
+	return bom
+}
+
+func newTestBOM2() *core.BOM {
+	bom := core.NewBOM(core.Options{})
+	bom.AddComponent(&core.Component{
+		Root: true,
+		Type: core.TypeContainerImage,
+		Name: "ubuntu:24.04",
+		PkgID: core.PkgID{
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeOCI,
+				Name:    "ubuntu",
+				Version: "sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "tag",
+						Value: "24.04",
+					},
+					{
+						Key:   "repository_url",
+						Value: "docker.io/library/ubuntu",
+					},
+				},
+			},
+		},
+	})
+	return bom
 }

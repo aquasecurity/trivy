@@ -11,11 +11,14 @@ import (
 )
 
 const (
-	TypeApplication ComponentType = "application"
-	TypeContainer   ComponentType = "container"
-	TypeLibrary     ComponentType = "library"
-	TypeOS          ComponentType = "os"
-	TypePlatform    ComponentType = "platform"
+	TypeFilesystem     ComponentType = "filesystem"
+	TypeRepository     ComponentType = "repository"
+	TypeContainerImage ComponentType = "container_image"
+	TypeVM             ComponentType = "vm"
+	TypeApplication    ComponentType = "application"
+	TypeLibrary        ComponentType = "library"
+	TypeOS             ComponentType = "os"
+	TypePlatform       ComponentType = "platform"
 
 	// Metadata properties
 	PropertySchemaVersion = "SchemaVersion"
@@ -59,7 +62,7 @@ type BOM struct {
 	components    map[uuid.UUID]*Component
 	relationships map[uuid.UUID][]Relationship
 
-	// Vulnerabilities is a list of vulnerabilities that affect the component
+	// Vulnerabilities is a list of vulnerabilities that affect the component.
 	// CycloneDX: vulnerabilities
 	// SPDX: N/A
 	vulnerabilities map[uuid.UUID][]Vulnerability
@@ -67,6 +70,9 @@ type BOM struct {
 	// purls is a map of package URLs to UUIDs
 	// This is used to ensure that each package URL is only represented once in the BOM.
 	purls map[string][]uuid.UUID
+
+	// opts is a set of options for the BOM.
+	opts Options
 }
 
 type Component struct {
@@ -97,6 +103,21 @@ type Component struct {
 	// CycloneDX: component.version
 	// SPDX: package.versionInfo
 	Version string
+
+	// SrcName is the name of the source component
+	// CycloneDX: N/A
+	// SPDX: package.sourceInfo
+	SrcName string
+
+	// SrcVersion is the version of the source component
+	// CycloneDX: N/A
+	// SPDX: package.sourceInfo
+	SrcVersion string
+
+	// SrcFile is the file path where the component is found.
+	// CycloneDX: N/A
+	// SPDX: package.sourceInfo
+	SrcFile string
 
 	// Licenses is a list of licenses that apply to the component
 	// CycloneDX: component.licenses
@@ -139,9 +160,10 @@ type File struct {
 	Path string
 
 	// Hash is a hash that uniquely identify the component.
+	// A file can have several digests with different algorithms, like SHA1, SHA256, etc.
 	// CycloneDX: component.hashes
-	// SPDX: package.files[].checksum
-	Hash digest.Digest
+	// SPDX: package.files[].checksums
+	Digests []digest.Digest
 }
 
 type Property struct {
@@ -182,12 +204,17 @@ type Vulnerability struct {
 	DataSource       *dtypes.DataSource
 }
 
-func NewBOM() *BOM {
+type Options struct {
+	GenerateBOMRef bool
+}
+
+func NewBOM(opts Options) *BOM {
 	return &BOM{
 		components:      make(map[uuid.UUID]*Component),
 		relationships:   make(map[uuid.UUID][]Relationship),
 		vulnerabilities: make(map[uuid.UUID][]Vulnerability),
 		purls:           make(map[string][]uuid.UUID),
+		opts:            opts,
 	}
 }
 
@@ -245,14 +272,18 @@ func (b *BOM) Root() *Component {
 	if !ok {
 		return nil
 	}
-	root.PkgID.BOMRef = b.bomRef(root)
+	if b.opts.GenerateBOMRef {
+		root.PkgID.BOMRef = b.bomRef(root)
+	}
 	return root
 }
 
 func (b *BOM) Components() map[uuid.UUID]*Component {
 	// Fill in BOMRefs for components
-	for id, c := range b.components {
-		b.components[id].PkgID.BOMRef = b.bomRef(c)
+	if b.opts.GenerateBOMRef {
+		for id, c := range b.components {
+			b.components[id].PkgID.BOMRef = b.bomRef(c)
+		}
 	}
 	return b.components
 }

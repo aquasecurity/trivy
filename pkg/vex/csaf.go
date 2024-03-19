@@ -8,6 +8,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -23,7 +24,7 @@ func newCSAF(advisory csaf.Advisory) VEX {
 	}
 }
 
-func (v *CSAF) Filter(result *types.Result) {
+func (v *CSAF) Filter(result *types.Result, _ *core.BOM) {
 	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
 		found, ok := lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
 			return string(*item.CVE) == vuln.VulnerabilityID
