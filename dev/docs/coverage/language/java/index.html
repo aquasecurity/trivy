@@ -1927,6 +1927,26 @@ You're not viewing the latest version.
     Gradle.lock
   </a>
   
+    <nav class="md-nav" aria-label="Gradle.lock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-tree" class="md-nav__link">
+    Dependency-tree
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    Licenses
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3624,6 +3644,26 @@ You're not viewing the latest version.
     Gradle.lock
   </a>
   
+    <nav class="md-nav" aria-label="Gradle.lock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-tree" class="md-nav__link">
+    Dependency-tree
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    Licenses
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3673,7 +3713,7 @@ You're not viewing the latest version.
 <td>*gradle.lockfile</td>
 <td align="center">✓</td>
 <td align="center">✓</td>
-<td align="center">-</td>
+<td align="center">✓</td>
 </tr>
 </tbody>
 </table>
@@ -3707,7 +3747,7 @@ You're not viewing the latest version.
 <td>*gradle.lockfile</td>
 <td align="center">-</td>
 <td align="center">Exclude</td>
-<td align="center">-</td>
+<td align="center">✓</td>
 <td align="center">✓</td>
 </tr>
 </tbody>
@@ -3751,9 +3791,22 @@ The vulnerability database will be downloaded anyway.</p>
 <p>Trivy marks dependencies from these files as the development dependencies and skip them by default.
 If you need to show them, use the <code>--include-dev-deps</code> flag.</p>
 <h2 id="gradlelock">Gradle.lock</h2>
-<p><code>gradle.lock</code> files contain all necessary information about used dependencies.
-Trivy simply parses the file, extract dependencies, and finds vulnerabilities for them.
-It doesn't require the internet access.</p>
+<p><code>gradle.lock</code> files only contain information about used dependencies.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All necessary files are checked locally. Gradle file scanning doesn't require internet access.</p>
+</div>
+<h3 id="dependency-tree">Dependency-tree</h3>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+<p>This feature might change without preserving backwards compatibility.</p>
+</div>
+<p>Trivy finds child dependencies from <code>*.pom</code> files in the cache<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup> directory.</p>
+<p>But there is no reliable way to determine direct dependencies (even using other files).
+Therefore, we mark all dependencies as indirect to use logic to guess direct dependencies and build a dependency tree.</p>
+<h3 id="licenses">Licenses</h3>
+<p>Trity also can detect licenses for dependencies.</p>
+<p>Make sure that you have cache<sup id="fnref2:8"><a class="footnote-ref" href="#fn:8">8</a></sup> directory to find licenses from <code>*.pom</code> dependency files.</p>
 <div class="footnote">
 <hr />
 <ol>
@@ -3777,6 +3830,9 @@ It doesn't require the internet access.</p>
 </li>
 <li id="fn:7">
 <p>To avoid confusion, Trivy only finds locations for direct dependencies from the base pom.xml file.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn:8">
+<p>The supported directories are <code>$GRADLE_USER_HOME/caches</code> and <code>$HOME/.gradle/caches</code> (<code>%HOMEPATH%\.gradle\caches</code> for Windows).&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
