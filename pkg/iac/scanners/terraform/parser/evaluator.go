@@ -159,8 +159,14 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	parseDuration += time.Since(start)
 
 	e.debug.Log("Starting submodule evaluation...")
+
+	moduleDefinitions, err := sortModuleDefinitions(e.loadModules(ctx))
+	if err != nil {
+		e.debug.Log("Modules have a cyclic dependency, so some `count`, `for_each` and `dynamic` expressions may not be evaluated.")
+	}
+
 	var modules terraform.Modules
-	for _, definition := range e.loadModules(ctx) {
+	for _, definition := range moduleDefinitions {
 		definition.Parser.moduleVariables = e.ctx.Get("module")
 		submodules, outputs, err := definition.Parser.EvaluateAll(ctx)
 		if err != nil {

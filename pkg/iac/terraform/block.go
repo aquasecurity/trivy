@@ -31,6 +31,15 @@ type Block struct {
 	reference    Reference
 }
 
+func (b Block) AllReferences() []*Reference {
+	var references []*Reference
+	for _, attr := range b.attributes {
+		references = append(references, attr.AllReferences()...)
+	}
+
+	return references
+}
+
 func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, parentBlock *Block, moduleSource string,
 	moduleFS fs.FS, index ...cty.Value) *Block {
 	if ctx == nil {

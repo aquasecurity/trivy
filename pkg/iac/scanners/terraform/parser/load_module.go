@@ -2,11 +2,13 @@ package parser
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/fs"
 	"path"
 	"strings"
 
+	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
@@ -152,4 +154,105 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		FileSystem: filesystem,
 		External:   true,
 	}, nil
+}
+
+func sortModuleDefinitions(modules []*ModuleDefinition) ([]*ModuleDefinition, error) {
+	graph := buildModuleDefinitionsGraph(modules)
+
+	if graph.hasCycle() {
+		return modules, errors.New("graph is cyclical")
+	}
+
+	sortedDefNames := graph.sort()
+
+	defsMap := lo.SliceToMap(modules, func(definition *ModuleDefinition) (string, *ModuleDefinition) {
+		return definition.Name, definition
+	})
+
+	return lo.FilterMap(sortedDefNames, func(defName string, _ int) (*ModuleDefinition, bool) {
+		val, exists := defsMap[defName]
+		return val, exists
+	}), nil
+}
+
+type moduleDefinitionsGraph map[string][]string
+
+func buildModuleDefinitionsGraph(modules []*ModuleDefinition) moduleDefinitionsGraph {
+	graph := lo.SliceToMap(modules, func(definition *ModuleDefinition) (string, []string) {
+		return definition.Name, nil
+	})
+
+	for _, def := range modules {
+		for _, ref := range def.Definition.AllReferences() {
+			if ref.BlockType() != terraform.TypeModule {
+				continue
+			}
+
+			referencedModule := ref.TypeLabel()
+			if referencedModule != "" {
+				graph[def.Name] = append(graph[def.Name], referencedModule)
+			}
+		}
+	}
+
+	return graph
+}
+
+func (g moduleDefinitionsGraph) hasCycle() bool {
+	visited := make(map[string]bool)
+	recStack := make(map[string]bool)
+
+	var dfs func(string) bool
+	dfs = func(node string) bool {
+		visited[node] = true
+		recStack[node] = true
+
+		for _, neighbor := range g[node] {
+			if visited[neighbor] && recStack[neighbor] {
+				return true
+			}
+			if !visited[neighbor] && dfs(neighbor) {
+				return true
+			}
+		}
+
+		recStack[node] = false
+		return false
+	}
+
+	for node := range g {
+		if dfs(node) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (g moduleDefinitionsGraph) sort() []string {
+	var (
+		visited = make(map[string]bool)
+		stack   = make([]string, 0, len(g))
+		dfs     func(n string)
+	)
+
+	dfs = func(n string) {
+		if visited[n] {
+			return
+		}
+
+		visited[n] = true
+
+		for _, neighbor := range g[n] {
+			dfs(neighbor)
+		}
+
+		stack = append(stack, n)
+	}
+
+	for node := range g {
+		dfs(node)
+	}
+
+	return stack
 }

@@ -1497,24 +1497,24 @@ resource "test_block" "this" {
 	})
 }
 
-func TestXxx(t *testing.T) {
+func TestModuleRefersToOutputOfAnotherModule(t *testing.T) {
 	files := map[string]string{
 		"main.tf": `
-module "module1" {
-	source = "./modules/module1"
+module "module2" {
+	source = "./modules/foo"
 }
 
-module "module2" {
-	source = "./modules/module2"
-	test_var = module.module1.test_out
+module "module1" {
+	source = "./modules/bar"
+	test_var = module.module2.test_out
 }
 `,
-		"modules/module1/main.tf": `
+		"modules/foo/main.tf": `
 output "test_out" {
 	value = "test_value"
 }
 `,
-		"modules/module2/main.tf": `
+		"modules/bar/main.tf": `
 variable "test_var" {}
 
 resource "test_resource" "this" {
@@ -1538,6 +1538,33 @@ resource "test_resource" "this" {
 	require.NotNil(t, attr)
 
 	assert.Equal(t, "test_value", attr.GetRawValue())
+}
+
+func TestModuleRefersToModuleThatDoesNotExist(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+module "module2" {
+	source = "./modules/foo"
+}
+
+module "module1" {
+	source = "./modules/bar"
+	test_var = module.module22.test_out
+}
+`,
+		"modules/foo/main.tf": `
+output "test_out" {
+	value = "test_value"
+}
+`,
+		"modules/bar/main.tf": `
+variable "test_var" {}
+
+resource "test_resource" "this" {}
+`,
+	}
+
+	parse(t, files)
 }
 
 func parse(t *testing.T, files map[string]string) terraform.Modules {
