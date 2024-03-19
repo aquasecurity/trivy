@@ -721,12 +721,11 @@ func TestFilter(t *testing.T) {
 						{
 							Vulnerabilities: []types.DetectedVulnerability{
 								vuln1,
-								vuln2, // filtered by severity
 								vuln3, // ignored by policy
+								vuln4, // ignored by policy
 							},
 							Misconfigurations: []types.DetectedMisconfiguration{
 								misconf1,
-								misconf2, // filtered by status
 								misconf3, // ignored by policy
 							},
 						},

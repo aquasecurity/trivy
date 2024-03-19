@@ -70,8 +70,6 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
 
 	if opt.PolicyFile != "" {
-		log.Logger.Debugf("Filtering result with ignore policies, type: %s, path: %s", result.Type, result.Target)
-
 		// Get ignore policy files from the input path (either file or files in dir)
 		policyFiles, err := findPolicyFiles(opt.PolicyFile)
 		if err != nil {
@@ -79,7 +77,6 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 		}
 
 		for _, policyFile := range policyFiles {
-			log.Logger.Debugf("Applying ignore policy: %s", policyFile)
 			if err := applyPolicy(ctx, result, policyFile); err != nil {
 				return xerrors.Errorf("failed to apply ignore policy %s: %w", policyFile, err)
 			}
