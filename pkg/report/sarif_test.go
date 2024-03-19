@@ -685,12 +685,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 								Version: "1.2.3",
 								Locations: []ftypes.Location{
 									{
-										StartLine: 5,
-										EndLine:   10,
-									},
-									{
 										StartLine: 15,
 										EndLine:   20,
+									},
+									{
+										StartLine: 30,
+										EndLine:   35,
 									},
 								},
 							},
