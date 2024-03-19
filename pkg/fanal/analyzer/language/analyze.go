@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

@@ -66,7 +66,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/liamg/jfather v0.0.7
 	github.com/magefile/mage v1.15.0
-	github.com/mailru/easyjson v0.7.7
+	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
 	github.com/masahiro331/go-ebs-file v0.0.0-20240112135404-d5fbb1d46323
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20231208112839-4339555a0cd4
@@ -99,7 +99,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/testcontainers/testcontainers-go v0.28.0
 	github.com/testcontainers/testcontainers-go/modules/localstack v0.26.0
-	github.com/tetratelabs/wazero v1.6.0
+	github.com/tetratelabs/wazero v1.7.0
 	github.com/twitchtv/twirp v8.1.2+incompatible
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xlab/treeprint v1.2.0
@@ -112,7 +112,7 @@ require (
 	golang.org/x/term v0.17.0
 	golang.org/x/text v0.14.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.29.1
 	k8s.io/utils v0.0.0-20231127182322-b307cd553661

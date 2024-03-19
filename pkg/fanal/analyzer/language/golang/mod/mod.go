@@ -19,7 +19,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/sum"
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

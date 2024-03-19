@@ -2,7 +2,7 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000004",
   "version": 1,
   "metadata": {
     "timestamp": "2021-08-25T12:20:30+00:00",
@@ -17,7 +17,7 @@
       ]
     },
     "component": {
-      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
       "type": "application",
       "name": "testdata/fixtures/repo/conda",
       "properties": [
@@ -30,7 +30,7 @@
   },
   "components": [
     {
-      "bom-ref": "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json",
+      "bom-ref": "pkg:conda/openssl@1.1.1q",
       "type": "library",
       "name": "openssl",
       "version": "1.1.1q",
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json",
+      "bom-ref": "pkg:conda/pip@22.2.2",
       "type": "library",
       "name": "pip",
       "version": "22.2.2",
@@ -80,18 +80,18 @@
   ],
   "dependencies": [
     {
-      "ref": "3ff14136-e09f-4df9-80ea-000000000002",
+      "ref": "3ff14136-e09f-4df9-80ea-000000000001",
       "dependsOn": [
-        "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json",
-        "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json"
+        "pkg:conda/openssl@1.1.1q",
+        "pkg:conda/pip@22.2.2"
       ]
     },
     {
-      "ref": "pkg:conda/openssl@1.1.1q?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fopenssl-1.1.1q-h7f8727e_0.json",
+      "ref": "pkg:conda/openssl@1.1.1q",
       "dependsOn": []
     },
     {
-      "ref": "pkg:conda/pip@22.2.2?file_path=miniconda3%2Fenvs%2Ftestenv%2Fconda-meta%2Fpip-22.2.2-py38h06a4308_0.json",
+      "ref": "pkg:conda/pip@22.2.2",
       "dependsOn": []
     }
   ],

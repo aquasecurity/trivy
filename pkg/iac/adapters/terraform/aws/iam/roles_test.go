@@ -8,6 +8,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/liamg/iamgo"
 )
 
 func Test_adaptRoles(t *testing.T) {
@@ -170,7 +171,7 @@ resource "aws_iam_policy" "this" {
   for_each    = local.roles
   name        = format("%s-policy", each.key)
   description = "A test policy"
-  policy      = data.aws_iam_policy_document.this.json
+  policy      = data.aws_iam_policy_document.this[each.key].json
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
@@ -199,6 +200,61 @@ resource "aws_iam_role_policy_attachment" "this" {
 							Metadata: iacTypes.NewTestMetadata(),
 							Name:     iacTypes.String("test-role2-policy", iacTypes.NewTestMetadata()),
 							Document: defaultPolicyDocuemnt(true),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "policy with condition",
+			terraform: `
+resource "aws_iam_role_policy" "test_policy" {
+  name = "test_policy"
+  role = aws_iam_role.test_role.id
+  policy = false ? data.aws_iam_policy_document.s3_policy.json : data.aws_iam_policy_document.s3_policy_one.json
+}
+
+resource "aws_iam_role" "test_role" {
+  name = "test_role"
+  assume_role_policy = ""
+}
+
+data "aws_iam_policy_document" "s3_policy_one" {
+  statement {
+    actions   = ["s3:PutObject"]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "s3_policy" {
+  statement {
+    actions   = ["s3:CreateBucket"]
+    resources = ["*"]
+  }
+}`,
+			expected: []iam.Role{
+				{
+					Name: iacTypes.String("test_role", iacTypes.NewTestMetadata()),
+					Policies: []iam.Policy{
+						{
+							Name:    iacTypes.String("test_policy", iacTypes.NewTestMetadata()),
+							Builtin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+							Document: func() iam.Document {
+								builder := iamgo.NewPolicyBuilder()
+								sb := iamgo.NewStatementBuilder()
+								sb.WithEffect(iamgo.EffectAllow)
+								sb.WithActions([]string{"s3:PutObject"})
+								sb.WithResources([]string{"*"})
+
+								builder.WithStatement(sb.Build())
+
+								return iam.Document{
+									Parsed:   builder.Build(),
+									Metadata: iacTypes.NewTestMetadata(),
+									IsOffset: true,
+									HasRefs:  false,
+								}
+							}(),
 						},
 					},
 				},

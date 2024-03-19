@@ -43,6 +43,7 @@ func Test_unpackagedHook_Handle(t *testing.T) {
 						FilePath: "go.mod",
 						Libraries: types.Packages{
 							{
+								ID:      "github.com/spf13/cobra@v1.5.0",
 								Name:    "github.com/spf13/cobra",
 								Version: "1.5.0",
 								Identifier: types.PkgIdentifier{

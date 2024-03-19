@@ -186,8 +186,8 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
 		},
-		CycloneDX: artifactInfo.CycloneDX,
-		Results:   results,
+		Results: results,
+		BOM:     artifactInfo.BOM,
 	}, nil
 }
 
