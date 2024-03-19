@@ -72,9 +72,12 @@
         {
 	  {{- /* TODO: Type not extractable - https://github.com/aquasecurity/trivy-db/pull/24 */}}
           "type": "cve",
+          {{- /* cf. https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/blob/e3d280d7f0862ca66a1555ea8b24016a004bb914/dist/container-scanning-report-format.json#L157-179 */}}
+          {{- if .PrimaryURL }}
+          "url": "{{ .PrimaryURL }}",
+          {{- end }}
           "name": "{{ .VulnerabilityID }}",
-          "value": "{{ .VulnerabilityID }}",
-          "url": "{{ .PrimaryURL }}"
+          "value": "{{ .VulnerabilityID }}"
         }
       ],
       "links": [
