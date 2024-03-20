@@ -42,6 +42,12 @@ func TestParse(t *testing.T) {
 			wantDeps: npmV3WithWorkspaceDeps,
 		},
 		{
+			name:     "lock file v3 contains same dev and non-dev dependencies",
+			file:     "testdata/package-lock_v3_with-same-dev-and-non-dev.json",
+			want:     npmV3WithSameDevAndNonDevLibs,
+			wantDeps: npmV3WithSameDevAndNonDevDeps,
+		},
+		{
 			name:     "lock version v3 with workspace and without direct deps field",
 			file:     "testdata/package-lock_v3_without_root_deps_field.json",
 			want:     npmV3WithoutRootDepsField,
