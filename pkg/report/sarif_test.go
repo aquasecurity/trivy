@@ -64,6 +64,16 @@ func TestReportWriter_Sarif(t *testing.T) {
 								FixedVersion:     "3.4.5",
 								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
 								SeveritySource:   "redhat",
+								Locations: []ftypes.Location{
+									{
+										StartLine: 5,
+										EndLine:   10,
+									},
+									{
+										StartLine: 15,
+										EndLine:   20,
+									},
+								},
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "foobar",
 									Description: "baz",
