@@ -56,7 +56,7 @@ resource "bad" "my-rule" {
 }
 `, assertLength: 0},
 		{name: "IgnoreLineAboveTheBlockMatchingParamBool", inputOptions: `
-// tfsec:ignore:*[secure=false]
+// trivy:ignore:*[secure=false]
 resource "bad" "my-rule" {
    secure = false
 }
