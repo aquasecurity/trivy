@@ -10,6 +10,7 @@ import (
 	"github.com/liamg/jfather"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -115,28 +116,49 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 			EndLine:   pkg.EndLine,
 		}
 
+		var ref types.ExternalRef
+		if pkg.Resolved != "" {
+			ref = types.ExternalRef{
+				Type: types.RefOther,
+				URL:  pkg.Resolved,
+			}
+		}
+
+		pkgIndirect := isIndirectLib(pkgPath, directDeps)
+
 		// There are cases when similar libraries use same dependencies
 		// we need to add location for each these dependencies
 		if savedLib, ok := libs[pkgID]; ok {
+			savedLib.Dev = savedLib.Dev && pkg.Dev
+			savedLib.Indirect = savedLib.Indirect && pkgIndirect
+
+			if ref.URL != "" && !slices.Contains(savedLib.ExternalReferences, ref) {
+				savedLib.ExternalReferences = append(savedLib.ExternalReferences, ref)
+			}
+			sort.Slice(savedLib.ExternalReferences, func(i, j int) bool {
+				if savedLib.ExternalReferences[i].Type != savedLib.ExternalReferences[j].Type {
+					return savedLib.ExternalReferences[i].Type < savedLib.ExternalReferences[j].Type
+				}
+				return savedLib.ExternalReferences[i].URL < savedLib.ExternalReferences[j].URL
+			})
+
 			savedLib.Locations = append(savedLib.Locations, location)
 			sort.Sort(savedLib.Locations)
+
 			libs[pkgID] = savedLib
 			continue
 		}
 
 		lib := types.Library{
-			ID:       pkgID,
-			Name:     pkgName,
-			Version:  pkg.Version,
-			Indirect: isIndirectLib(pkgPath, directDeps),
-			Dev:      pkg.Dev,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  pkg.Resolved,
-				},
-			},
+			ID:        pkgID,
+			Name:      pkgName,
+			Version:   pkg.Version,
+			Indirect:  pkgIndirect,
+			Dev:       pkg.Dev,
 			Locations: []types.Location{location},
+		}
+		if ref.URL != "" {
+			lib.ExternalReferences = []types.ExternalRef{ref}
 		}
 		libs[pkgID] = lib
 
