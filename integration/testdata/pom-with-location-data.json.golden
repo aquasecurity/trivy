@@ -28,6 +28,12 @@
           "PkgIdentifier": {
             "PURL": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1"
           },
+          "Locations": [
+            {
+              "StartLine": 41,
+              "EndLine": 45
+            }
+          ],
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.4",
           "Status": "fixed",
@@ -93,6 +99,12 @@
           "PkgIdentifier": {
             "PURL": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.1"
           },
+          "Locations": [
+            {
+              "StartLine": 41,
+              "EndLine": 45
+            }
+          ],
           "InstalledVersion": "2.9.1",
           "FixedVersion": "2.9.10.7",
           "Status": "fixed",
