@@ -665,71 +665,63 @@ func TestReportWriter_Sarif(t *testing.T) {
 		{
 			name: "report with vulnerabilities and package locations",
 			input: types.Report{
-				ArtifactName: "debian:9",
-				ArtifactType: ftypes.ArtifactContainerImage,
-				Metadata: types.Metadata{
-					RepoTags: []string{
-						"debian:9",
-					},
-					RepoDigests: []string{
-						"debian@sha256:a8cc1744bbdd5266678e3e8b3e6387e45c053218438897e86876f2eb104e5534",
-					},
-				},
+				ArtifactName: "testdata/fixtures/repo/yarn",
+				ArtifactType: ftypes.ArtifactRepository,
 				Results: types.Results{
 					{
-						Target: "library/test",
-						Class:  types.ClassOSPkg,
+						Target: "yarn.lock",
+						Class:  types.ClassLangPkg,
 						Packages: []ftypes.Package{
 							{
-								Name:    "foo",
-								Version: "1.2.3",
+								ID:      "jquery@3.2.1",
+								Name:    "jquery",
+								Version: "3.2.1",
 								Locations: []ftypes.Location{
 									{
-										StartLine: 15,
-										EndLine:   20,
-									},
-									{
-										StartLine: 30,
-										EndLine:   35,
+										StartLine: 10,
+										EndLine:   13,
 									},
 								},
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
-								VulnerabilityID:  "CVE-2020-0001",
-								PkgName:          "foo",
-								InstalledVersion: "1.2.3",
-								FixedVersion:     "3.4.5",
-								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-								SeveritySource:   "redhat",
+								VulnerabilityID:  "CVE-2019-11358",
+								PkgID:            "jquery@3.2.1",
+								PkgName:          "jquery",
+								InstalledVersion: "3.2.1",
+								FixedVersion:     "3.4.0",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2019-11358",
+								SeveritySource:   "ghsa",
 								Vulnerability: dbTypes.Vulnerability{
-									Title:       "foobar",
-									Description: "baz",
-									Severity:    "HIGH",
+									Title:       "jquery: Prototype pollution in object's prototype leading to denial of service, remote code execution, or property injection",
+									Description: "jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution. If an unsanitized source object contained an enumerable __proto__ property, it could extend the native Object.prototype.",
+									Severity:    "MEDIUM",
 									VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
-										vulnerability.NVD:    dbTypes.SeverityCritical,
-										vulnerability.RedHat: dbTypes.SeverityHigh,
+										vulnerability.NVD:              dbTypes.SeverityMedium,
+										vulnerability.RedHat:           dbTypes.SeverityMedium,
+										vulnerability.GHSA:             dbTypes.SeverityMedium,
+										vulnerability.Alma:             dbTypes.SeverityMedium,
+										vulnerability.NodejsSecurityWg: dbTypes.SeverityMedium,
+										vulnerability.RubySec:          dbTypes.SeverityMedium,
 									},
 									CVSS: map[dbTypes.SourceID]dbTypes.CVSS{
 										vulnerability.NVD: {
-											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-											V3Score:  9.8,
+											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+											V3Score:  6.1,
+											V2Vector: "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+											V2Score:  4.3,
 										},
 										vulnerability.RedHat: {
-											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-											V3Score:  7.5,
+											V3Vector: "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+											V3Score:  5.6,
 										},
 									},
 								},
 								Locations: []ftypes.Location{
 									{
-										StartLine: 15,
-										EndLine:   20,
-									},
-									{
-										StartLine: 30,
-										EndLine:   35,
+										StartLine: 10,
+										EndLine:   13,
 									},
 								},
 							},
@@ -750,26 +742,26 @@ func TestReportWriter_Sarif(t *testing.T) {
 								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
 								Rules: []*sarif.ReportingDescriptor{
 									{
-										ID:               "CVE-2020-0001",
-										Name:             lo.ToPtr("OsPackageVulnerability"),
-										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("foobar")},
-										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("baz")},
+										ID:               "CVE-2019-11358",
+										Name:             lo.ToPtr("LanguageSpecificPackageVulnerability"),
+										ShortDescription: &sarif.MultiformatMessageString{Text: lo.ToPtr("jquery: Prototype pollution in object&#39;s prototype leading to denial of service, remote code execution, or property injection")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: lo.ToPtr("jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution. If an unsanitized source object contained an enumerable __proto__ property, it could extend the native Object.prototype.")},
 										DefaultConfiguration: &sarif.ReportingConfiguration{
-											Level: "error",
+											Level: "warning",
 										},
-										HelpURI: lo.ToPtr("https://avd.aquasec.com/nvd/cve-2020-0001"),
+										HelpURI: lo.ToPtr("https://avd.aquasec.com/nvd/cve-2019-11358"),
 										Properties: map[string]interface{}{
 											"tags": []interface{}{
 												"vulnerability",
 												"security",
-												"HIGH",
+												"MEDIUM",
 											},
 											"precision":         "very-high",
-											"security-severity": "7.5",
+											"security-severity": "5.5",
 										},
 										Help: &sarif.MultiformatMessageString{
-											Text:     lo.ToPtr("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
-											Markdown: lo.ToPtr("**Vulnerability CVE-2020-0001**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|foo|3.4.5|[CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)|\n\nbaz"),
+											Text:     lo.ToPtr("Vulnerability CVE-2019-11358\nSeverity: MEDIUM\nPackage: jquery\nFixed Version: 3.4.0\nLink: [CVE-2019-11358](https://avd.aquasec.com/nvd/cve-2019-11358)\njQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution. If an unsanitized source object contained an enumerable __proto__ property, it could extend the native Object.prototype."),
+											Markdown: lo.ToPtr("**Vulnerability CVE-2019-11358**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|jquery|3.4.0|[CVE-2019-11358](https://avd.aquasec.com/nvd/cve-2019-11358)|\n\njQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution. If an unsanitized source object contained an enumerable __proto__ property, it could extend the native Object.prototype."),
 										},
 									},
 								},
@@ -777,36 +769,21 @@ func TestReportWriter_Sarif(t *testing.T) {
 						},
 						Results: []*sarif.Result{
 							{
-								RuleID:    lo.ToPtr("CVE-2020-0001"),
+								RuleID:    lo.ToPtr("CVE-2019-11358"),
 								RuleIndex: lo.ToPtr[uint](0),
-								Level:     lo.ToPtr("error"),
-								Message:   sarif.Message{Text: lo.ToPtr("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
+								Level:     lo.ToPtr("warning"),
+								Message:   sarif.Message{Text: lo.ToPtr("Package: jquery\nInstalled Version: 3.2.1\nVulnerability CVE-2019-11358\nSeverity: MEDIUM\nFixed Version: 3.4.0\nLink: [CVE-2019-11358](https://avd.aquasec.com/nvd/cve-2019-11358)")},
 								Locations: []*sarif.Location{
 									{
-										Message: &sarif.Message{Text: lo.ToPtr("library/test: foo@1.2.3")},
+										Message: &sarif.Message{Text: lo.ToPtr("yarn.lock: jquery@3.2.1")},
 										PhysicalLocation: &sarif.PhysicalLocation{
 											ArtifactLocation: &sarif.ArtifactLocation{
-												URI:       lo.ToPtr("library/test"),
+												URI:       lo.ToPtr("yarn.lock"),
 												URIBaseId: lo.ToPtr("ROOTPATH"),
 											},
 											Region: &sarif.Region{
-												StartLine:   lo.ToPtr(15),
-												EndLine:     lo.ToPtr(20),
-												StartColumn: lo.ToPtr(1),
-												EndColumn:   lo.ToPtr(1),
-											},
-										},
-									},
-									{
-										Message: &sarif.Message{Text: lo.ToPtr("library/test: foo@1.2.3")},
-										PhysicalLocation: &sarif.PhysicalLocation{
-											ArtifactLocation: &sarif.ArtifactLocation{
-												URI:       lo.ToPtr("library/test"),
-												URIBaseId: lo.ToPtr("ROOTPATH"),
-											},
-											Region: &sarif.Region{
-												StartLine:   lo.ToPtr(30),
-												EndLine:     lo.ToPtr(35),
+												StartLine:   lo.ToPtr(10),
+												EndLine:     lo.ToPtr(13),
 												StartColumn: lo.ToPtr(1),
 												EndColumn:   lo.ToPtr(1),
 											},
@@ -822,11 +799,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						PropertyBag: sarif.PropertyBag{
-							Properties: map[string]interface{}{
-								"imageName":   "debian:9",
-								"repoDigests": []interface{}{"debian@sha256:a8cc1744bbdd5266678e3e8b3e6387e45c053218438897e86876f2eb104e5534"},
-								"repoTags":    []interface{}{"debian:9"},
-							},
+							Properties: nil,
 						},
 					},
 				},

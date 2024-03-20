@@ -4,10 +4,11 @@ package integration
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -143,7 +144,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.VulnerabilityScanner,
 				input:   "testdata/fixtures/repo/pom",
 			},
-			golden: "testdata/pom.json.golden",
+			golden: "testdata/pom-with-location-data.json.golden",
 		},
 		{
 			name: "gradle",
