@@ -251,31 +251,36 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 }
 
 func findPolicyFiles(policiesPath string) ([]string, error) {
-	var files []string
 	fi, err := os.Stat(policiesPath)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to analyze ignore policy path %q: %w", policiesPath, err)
 	}
-	// If the ignore policy option is a dir find and apply rego files in it
-	if fi.IsDir() {
-		err := filepath.WalkDir(policiesPath, func(path string, d fs.DirEntry, err error) error {
-			if err != nil {
-				return err
-			}
-			if !d.IsDir() && filepath.Ext(path) == bundle.RegoExt {
-				files = append(files, path)
-			}
-			return nil
-		})
+
+	// The ignore policy option is a file
+	if !fi.IsDir() {
+		return []string{
+			policiesPath,
+		}, nil
+	}
+
+	// If the ignore policy option is a dir find rego files in it
+	var files []string
+	if err = filepath.WalkDir(policiesPath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return nil, xerrors.Errorf("failed to find policy files in %q: %w", policiesPath, err)
+			return err
+		}
+		if !d.Type().IsRegular() || filepath.Ext(path) != bundle.RegoExt {
+			return nil
 		}
 
-		if len(files) == 0 {
-			log.Logger.Warnf("No ignore policies found in %q", policiesPath)
-		}
-	} else {
-		files = append(files, policiesPath)
+		files = append(files, path)
+		return nil
+	}); err != nil {
+		return nil, xerrors.Errorf("failed to find policy files in %q: %w", policiesPath, err)
+	}
+
+	if len(files) == 0 {
+		log.Logger.Warnf("No ignore policies found in %q", policiesPath)
 	}
 
 	return files, nil
