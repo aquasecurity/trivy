@@ -5,11 +5,12 @@ package integration
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"io"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	api "github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -208,7 +209,7 @@ func TestDockerEngine(t *testing.T) {
 			name:     "busybox with Cargo.lock",
 			imageTag: "ghcr.io/aquasecurity/trivy-test-images:busybox-with-lockfile",
 			input:    "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
-			golden:   "testdata/busybox-with-lockfile.json.golden",
+			golden:   "testdata/busybox-with-lockfile-and-location-data.json.golden",
 		},
 		{
 			name:         "sad path, invalid image",
