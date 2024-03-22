@@ -418,7 +418,8 @@ func TestRepository(t *testing.T) {
 				string(format),
 				"--parallel",
 				fmt.Sprint(tt.args.parallel),
-				"--offline-scan",
+				"--java-remote-options",
+				"offline",
 				tt.args.input,
 			}
 

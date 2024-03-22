@@ -144,8 +144,8 @@ type PostAnalysisInput struct {
 }
 
 type AnalysisOptions struct {
-	Offline      bool
-	FileChecksum bool
+	JavaRemoteOptions []string
+	FileChecksum      bool
 }
 
 type AnalysisResult struct {

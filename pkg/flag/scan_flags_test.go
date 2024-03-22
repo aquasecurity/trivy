@@ -13,10 +13,11 @@ import (
 
 func TestScanFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		skipDirs    []string
-		skipFiles   []string
-		offlineScan bool
-		scanners    string
+		skipDirs          []string
+		skipFiles         []string
+		offlineScan       bool
+		scanners          string
+		javaRemoteOptions []string
 	}
 	tests := []struct {
 		name      string
@@ -100,9 +101,33 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			fields: fields{
 				offlineScan: true,
 			},
-			want: flag.ScanOptions{
-				OfflineScan: true,
+			want:      flag.ScanOptions{},
+			assertion: require.NoError,
+		},
+		{
+			name: "happy path with java remote options",
+			fields: fields{
+				javaRemoteOptions: []string{
+					"releases",
+					"snapshots",
+				},
 			},
+			want: flag.ScanOptions{
+				JavaRemoteOptions: []string{
+					"releases",
+					"snapshots",
+				},
+			},
+			assertion: require.NoError,
+		},
+		{
+			name: "happy path with java remote options offline",
+			fields: fields{
+				javaRemoteOptions: []string{
+					"offline",
+				},
+			},
+			want:      flag.ScanOptions{},
 			assertion: require.NoError,
 		},
 	}
@@ -114,13 +139,15 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			setSliceValue(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
 			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
 			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
+			setSliceValue(flag.JavaRemoteOptions.ConfigName, tt.fields.javaRemoteOptions)
 
 			// Assert options
 			f := &flag.ScanFlagGroup{
-				SkipDirs:    flag.SkipDirsFlag.Clone(),
-				SkipFiles:   flag.SkipFilesFlag.Clone(),
-				OfflineScan: flag.OfflineScanFlag.Clone(),
-				Scanners:    flag.ScannersFlag.Clone(),
+				SkipDirs:          flag.SkipDirsFlag.Clone(),
+				SkipFiles:         flag.SkipFilesFlag.Clone(),
+				OfflineScan:       flag.OfflineScanFlag.Clone(),
+				Scanners:          flag.ScannersFlag.Clone(),
+				JavaRemoteOptions: flag.JavaRemoteOptions.Clone(),
 			}
 
 			got, err := f.ToOptions(tt.args)
