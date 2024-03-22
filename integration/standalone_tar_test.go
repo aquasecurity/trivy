@@ -345,7 +345,7 @@ func TestTar(t *testing.T) {
 				Format: types.FormatJSON,
 				Input:  "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
 			},
-			golden: "testdata/busybox-with-lockfile-and-location-data.json.golden",
+			golden: "testdata/busybox-with-lockfile.json.golden",
 		},
 		{
 			name: "fluentd with RubyGems",
