@@ -25,6 +25,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 		name            string
 		inputFile       string
 		includeChecksum bool
+		javaRemoteOpts  []string
 		want            *analyzer.AnalysisResult
 	}{
 		{
@@ -105,6 +106,9 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "happy path (package found in trivy-java-db by sha1)",
 			inputFile: "testdata/test.jar",
+			javaRemoteOpts: []string{
+				"trivy-java-db",
+			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -112,9 +116,31 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/test.jar",
 						Libraries: types.Packages{
 							{
+								// MANIFEST.MF contains incorrect artifact. Detect Package by sha1 from trivy-java-db
 								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
 								FilePath: "testdata/test.jar",
 								Version:  "9.0.65",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:           "happy path offline scan",
+			inputFile:      "testdata/test.jar",
+			javaRemoteOpts: nil,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Jar,
+						FilePath: "testdata/test.jar",
+						Libraries: types.Packages{
+							{
+								// Package from MANIFEST.MF without check in trivy-java-db
+								Name:     "org.apache:javax.websocket",
+								FilePath: "testdata/test.jar",
+								Version:  "1.1.FR",
 							},
 						},
 					},
@@ -142,8 +168,11 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			assert.NoError(t, err)
 
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
-				FS:      mfs,
-				Options: analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
+				FS: mfs,
+				Options: analyzer.AnalysisOptions{
+					FileChecksum:      tt.includeChecksum,
+					JavaRemoteOptions: tt.javaRemoteOpts,
+				},
 			})
 
 			assert.NoError(t, err)

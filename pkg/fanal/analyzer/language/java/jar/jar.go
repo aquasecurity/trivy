@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
@@ -43,21 +44,26 @@ func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) (analyzer.PostAnal
 }
 
 func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	// TODO: think about the sonatype API and "--offline"
-	client, err := javadb.NewClient()
-	if err != nil {
-		return nil, xerrors.Errorf("Unable to initialize the Java DB: %s", err)
-	}
-	defer func() { _ = client.Close() }()
+	enableJavaDB := slices.Contains(input.Options.JavaRemoteOptions, "trivy-java-db")
+	var client *javadb.DB
+	if enableJavaDB {
+		// TODO: think about the sonatype API
+		var err error
+		client, err = javadb.NewClient()
+		if err != nil {
+			return nil, xerrors.Errorf("Unable to initialize the Java DB: %s", err)
+		}
+		defer func() { _ = client.Close() }()
 
-	// Skip analyzing JAR files as the nil client means the Java DB was not downloaded successfully.
-	if client == nil {
-		return nil, nil
+		// Skip analyzing JAR files as the nil client means the Java DB was not downloaded successfully.
+		if client == nil {
+			return nil, nil
+		}
 	}
 
 	// It will be called on each JAR file
 	onFile := func(path string, info fs.FileInfo, r xio.ReadSeekerAt) (*types.Application, error) {
-		p := jar.NewParser(client, jar.WithSize(info.Size()), jar.WithFilePath(path))
+		p := jar.NewParser(client, jar.WithSize(info.Size()), jar.WithFilePath(path), jar.WithOffline(!enableJavaDB))
 		return language.ParsePackage(types.Jar, path, r, p, input.Options.FileChecksum)
 	}
 
@@ -70,7 +76,7 @@ func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Po
 		return nil
 	}
 
-	if err = parallel.WalkDir(ctx, input.FS, ".", a.parallel, onFile, onResult); err != nil {
+	if err := parallel.WalkDir(ctx, input.FS, ".", a.parallel, onFile, onResult); err != nil {
 		return nil, xerrors.Errorf("walk dir error: %w", err)
 	}
 
