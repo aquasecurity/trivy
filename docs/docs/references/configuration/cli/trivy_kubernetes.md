@@ -58,6 +58,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
+      --java-remote-options strings       list of java remote options like trivy-java-db, maven central, pom repository types (supported: jar, pom) (trivy-java-db,maven-central,releases,snapshots,offline) (default [trivy-java-db,maven-central])
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
@@ -66,7 +67,6 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --no-progress                       suppress progress bar
       --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.0.9")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
-      --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)

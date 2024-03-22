@@ -41,7 +41,6 @@ trivy sbom [flags] SBOM_PATH
       --java-db-repository string   OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
       --list-all-pkgs               enabling the option will output all packages regardless of vulnerability
       --no-progress                 suppress progress bar
-      --offline-scan                do not issue API requests to identify dependencies
   -o, --output string               output file name
       --output-plugin-arg string    [EXPERIMENTAL] output plugin arguments
       --redis-ca string             redis ca file location, if using redis as cache backend
