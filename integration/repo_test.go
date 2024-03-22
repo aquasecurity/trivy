@@ -144,7 +144,7 @@ func TestRepository(t *testing.T) {
 				scanner: types.VulnerabilityScanner,
 				input:   "testdata/fixtures/repo/pom",
 			},
-			golden: "testdata/pom-with-location-data.json.golden",
+			golden: "testdata/pom.json.golden",
 		},
 		{
 			name: "gradle",

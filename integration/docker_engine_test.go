@@ -209,7 +209,7 @@ func TestDockerEngine(t *testing.T) {
 			name:     "busybox with Cargo.lock",
 			imageTag: "ghcr.io/aquasecurity/trivy-test-images:busybox-with-lockfile",
 			input:    "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
-			golden:   "testdata/busybox-with-lockfile-and-location-data.json.golden",
+			golden:   "testdata/busybox-with-lockfile.json.golden",
 		},
 		{
 			name:         "sad path, invalid image",
