@@ -169,7 +169,9 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 				FilePath: tt.inputFile,
 				Content:  f,
 				Options: analyzer.AnalysisOptions{
-					Offline: true,
+					JavaRemoteOptions: []string{
+						"offline",
+					},
 				},
 			})
 			if tt.wantErr != "" {

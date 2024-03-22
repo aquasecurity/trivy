@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -31,17 +32,11 @@ const (
 )
 
 type options struct {
-	offline     bool
 	remoteRepos []string
+	remoteOpts  []string
 }
 
 type option func(*options)
-
-func WithOffline(offline bool) option {
-	return func(opts *options) {
-		opts.offline = offline
-	}
-}
 
 func WithRemoteRepos(repos []string) option {
 	return func(opts *options) {
@@ -49,19 +44,31 @@ func WithRemoteRepos(repos []string) option {
 	}
 }
 
+func WithRemoteOpts(remoteOpts []string) option {
+	return func(opts *options) {
+		opts.remoteOpts = remoteOpts
+	}
+}
+
 type parser struct {
-	rootPath           string
-	cache              pomCache
-	localRepository    string
-	remoteRepositories []string
-	offline            bool
-	servers            []Server
+	rootPath string
+	cache    pomCache
+	repoOpts repoOptions
+}
+
+type repoOptions struct {
+	localRepository     string
+	remoteRepositories  []string
+	servers             []Server
+	releaseReposEnable  bool
+	snapshotReposEnable bool
 }
 
 func NewParser(filePath string, opts ...option) types.Parser {
-	o := &options{
-		offline:     false,
-		remoteRepos: []string{centralURL},
+	o := &options{}
+
+	if slices.Contains(o.remoteOpts, "maven-central") {
+		o.remoteRepos = []string{centralURL}
 	}
 
 	for _, opt := range opts {
@@ -75,13 +82,18 @@ func NewParser(filePath string, opts ...option) types.Parser {
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
 
+	repoOpts := repoOptions{
+		localRepository:     localRepository,
+		remoteRepositories:  o.remoteRepos,
+		servers:             s.Servers,
+		releaseReposEnable:  slices.Contains(o.remoteOpts, "releases"),
+		snapshotReposEnable: slices.Contains(o.remoteOpts, "snapshots"),
+	}
+
 	return &parser{
-		rootPath:           filepath.Clean(filePath),
-		cache:              newPOMCache(),
-		localRepository:    localRepository,
-		remoteRepositories: o.remoteRepos,
-		offline:            o.offline,
-		servers:            s.Servers,
+		rootPath: filepath.Clean(filePath),
+		cache:    newPOMCache(),
+		repoOpts: repoOpts,
 	}
 }
 
@@ -316,7 +328,7 @@ func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	}
 
 	// Update remoteRepositories
-	p.remoteRepositories = utils.UniqueStrings(append(pom.repositories(p.servers), p.remoteRepositories...))
+	p.repoOpts.remoteRepositories = utils.UniqueStrings(append(pom.repositories(p.repoOpts), p.repoOpts.remoteRepositories...))
 
 	// Parent
 	parent, err := p.parseParent(pom.filePath, pom.content.Parent)
@@ -616,7 +628,7 @@ func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error
 }
 
 func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
-	paths = append([]string{p.localRepository}, paths...)
+	paths = append([]string{p.repoOpts.localRepository}, paths...)
 	localPath := filepath.Join(paths...)
 
 	return p.openPom(localPath)
@@ -624,13 +636,13 @@ func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 
 func (p *parser) fetchPOMFromRemoteRepositories(paths []string) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
-	if p.offline {
+	if len(p.repoOpts.remoteRepositories) == 0 {
 		log.Logger.Debug("Fetching the remote pom.xml is skipped")
-		return nil, xerrors.New("offline mode")
+		return nil, xerrors.New("there are no remote repositories")
 	}
 
 	// try all remoteRepositories
-	for _, repo := range p.remoteRepositories {
+	for _, repo := range p.repoOpts.remoteRepositories {
 		fetched, err := fetchPOMFromRemoteRepository(repo, paths)
 		if err != nil {
 			return nil, xerrors.Errorf("fetch repository error: %w", err)

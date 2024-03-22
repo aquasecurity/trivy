@@ -1,10 +1,10 @@
 package flag
 
 import (
-	"golang.org/x/exp/slices"
 	"runtime"
 
 	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"

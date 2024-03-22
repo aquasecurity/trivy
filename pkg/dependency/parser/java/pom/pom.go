@@ -115,31 +115,30 @@ func (p pom) licenses() []string {
 	})
 }
 
-func (p pom) repositories(servers []Server) []string {
+func (p pom) repositories(repoOpts repoOptions) []string {
 	var urls []string
 	for _, rep := range p.content.Repositories.Repository {
-		// Add only enabled repositories
-		if rep.Releases.Enabled == "false" && rep.Snapshots.Enabled == "false" {
-			continue
-		}
-
-		repoURL, err := url.Parse(rep.URL)
-		if err != nil {
-			log.Logger.Debugf("Unable to parse remote repository url: %s", err)
-			continue
-		}
-
-		// Get the credentials from settings.xml based on matching server id
-		// with the repository id from pom.xml and use it for accessing the repository url
-		for _, server := range servers {
-			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
-				repoURL.User = url.UserPassword(server.Username, server.Password)
-				break
+		// Add only if pom and options enable releases/snapshots repositories
+		if rep.Releases.Enabled == "true" && repoOpts.releaseReposEnable || rep.Snapshots.Enabled == "true" && repoOpts.snapshotReposEnable { // nolint: gocritic
+			repoURL, err := url.Parse(rep.URL)
+			if err != nil {
+				log.Logger.Debugf("Unable to parse remote repository url: %s", err)
+				continue
 			}
+
+			// Get the credentials from settings.xml based on matching server id
+			// with the repository id from pom.xml and use it for accessing the repository url
+			for _, server := range repoOpts.servers {
+				if rep.ID == server.ID && server.Username != "" && server.Password != "" {
+					repoURL.User = url.UserPassword(server.Username, server.Password)
+					break
+				}
+			}
+
+			log.Logger.Debugf("Adding repository %s: %s", rep.ID, rep.URL)
+			urls = append(urls, repoURL.String())
 		}
 
-		log.Logger.Debugf("Adding repository %s: %s", rep.ID, rep.URL)
-		urls = append(urls, repoURL.String())
 	}
 	return urls
 }
@@ -362,16 +361,15 @@ type pomRepositories struct {
 }
 
 type pomRepository struct {
-	Text     string `xml:",chardata"`
-	ID       string `xml:"id"`
-	Name     string `xml:"name"`
-	URL      string `xml:"url"`
-	Releases struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"releases"`
-	Snapshots struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"snapshots"`
+	Text      string         `xml:",chardata"`
+	ID        string         `xml:"id"`
+	Name      string         `xml:"name"`
+	URL       string         `xml:"url"`
+	Releases  pomRepoEnabled `xml:"releases"`
+	Snapshots pomRepoEnabled `xml:"snapshots"`
+}
+
+type pomRepoEnabled struct {
+	Text    string `xml:",chardata"`
+	Enabled string `xml:"enabled"`
 }
