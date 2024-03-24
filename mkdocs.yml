@@ -184,6 +184,7 @@ nav:
           - Issues: community/contribute/issue.md
           - Discussions: community/contribute/discussion.md
           - Pull Requests: community/contribute/pr.md
+          - Compliance Checks: community/contribute/compliance.md
       - Maintainer:
           - Help Wanted: community/maintainer/help-wanted.md
           - Triage: community/maintainer/triage.md
