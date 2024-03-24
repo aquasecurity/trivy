@@ -26,6 +26,7 @@ const (
 	Amazon             OSType = "amazon"
 	CBLMariner         OSType = "cbl-mariner"
 	CentOS             OSType = "centos"
+	CentOSStream       OSType = "centos-stream"
 	Chainguard         OSType = "chainguard"
 	Debian             OSType = "debian"
 	Fedora             OSType = "fedora"

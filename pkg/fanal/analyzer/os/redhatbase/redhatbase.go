@@ -52,6 +52,11 @@ func (a redhatOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 				Family: types.CentOS,
 				Name:   result[2],
 			}, nil
+		case "centos stream":
+			return types.OS{
+				Family: types.CentOSStream,
+				Name:   result[2],
+			}, nil
 		case "rocky", "rocky linux":
 			return types.OS{
 				Family: types.Rocky,

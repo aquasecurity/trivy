@@ -27,6 +27,13 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path (CentOS Stream)",
+			inputFile: "testdata/centos/centos-stream-release",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{Family: "centos-stream", Name: "9"},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/not_redhatbase/empty",
 			wantErr:   "centos: unable to analyze OS information",

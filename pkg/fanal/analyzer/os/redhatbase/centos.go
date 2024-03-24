@@ -39,6 +39,13 @@ func (a centOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 					Name:   result[2],
 				},
 			}, nil
+		case "centos stream":
+			return &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CentOSStream,
+					Name:   result[2],
+				},
+			}, nil
 		}
 	}
 
