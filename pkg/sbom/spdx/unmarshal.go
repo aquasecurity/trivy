@@ -255,6 +255,10 @@ func (s *SPDX) parseExternalReferences(refs []*spdx.PackageExternalReference) (*
 }
 
 func (s *SPDX) isTrivySBOM(spdxDocument *spdx.Document) bool {
+	if spdxDocument == nil || spdxDocument.CreationInfo == nil || spdxDocument.CreationInfo.Creators == nil {
+		return false
+	}
+
 	for _, c := range spdxDocument.CreationInfo.Creators {
 		if c.CreatorType == "Tool" && strings.HasPrefix(c.Creator, "trivy") {
 			return true
