@@ -128,6 +128,9 @@ trivy:
   existingSecret: ""
   # extraEnvVars to be set on the container
   extraEnvVars: {}
+  # args trivy container args
+  args:
+    - server
 
 service:
   # If specified, the name used for the Trivy service.
@@ -161,3 +164,5 @@ httpProxy:
 httpsProxy:
 # noProxy the URLs that the proxy settings do not apply to
 noProxy:
+# automountServiceAccountToken the Kubelet to automatically mount a ServiceAccount's API credentials
+automountServiceAccountToken:

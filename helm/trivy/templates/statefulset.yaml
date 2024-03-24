@@ -42,7 +42,7 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ include "trivy.fullname" . }}
-      automountServiceAccountToken: false
+      automountServiceAccountToken: {{ default false .Values.automountServiceAccountToken }}
       {{- if .Values.podSecurityContext }}
       securityContext:
 {{ toYaml .Values.podSecurityContext | indent 8 }}
@@ -71,8 +71,10 @@ spec:
           securityContext:
 {{ toYaml .Values.securityContext | indent 12 }}
           {{- end }}
-          args:
-            - server
+          {{- if .Values.trivy.command }}
+          command: {{ .Values.trivy.command | toJson }}
+          {{- end }}
+          args: {{ .Values.trivy.args | toJson }}
           {{- if .Values.trivy.registryCredentialsExistingSecret }}
           env:
             - name: TRIVY_USERNAME
