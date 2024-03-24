@@ -40,8 +40,9 @@ func Test_helm_parser_with_options_with_values_file(t *testing.T) {
 				opts = append(opts, parser2.OptionWithValuesFile(test.valuesFile))
 			}
 
-			helmParser := parser2.New(chartName, opts...)
-			err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
+			helmParser, err := parser2.New(chartName, opts...)
+			require.NoError(t, err)
+			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
@@ -94,8 +95,9 @@ func Test_helm_parser_with_options_with_set_value(t *testing.T) {
 				opts = append(opts, parser2.OptionWithValues(test.values))
 			}
 
-			helmParser := parser2.New(chartName, opts...)
-			err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
+			helmParser, err := parser2.New(chartName, opts...)
+			require.NoError(t, err)
+			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
@@ -143,8 +145,68 @@ func Test_helm_parser_with_options_with_api_versions(t *testing.T) {
 				opts = append(opts, parser2.OptionWithAPIVersions(test.apiVersions...))
 			}
 
-			helmParser := parser2.New(chartName, opts...)
-			err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
+			helmParser, err := parser2.New(chartName, opts...)
+			require.NoError(t, err)
+			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
+			require.NoError(t, err)
+			manifests, err := helmParser.RenderedChartFiles()
+			require.NoError(t, err)
+
+			assert.Len(t, manifests, 1)
+
+			for _, manifest := range manifests {
+				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.TemplateFilePath)
+
+				expectedContent, err := os.ReadFile(expectedPath)
+				require.NoError(t, err)
+
+				cleanExpected := strings.TrimSpace(strings.ReplaceAll(string(expectedContent), "\r\n", "\n"))
+				cleanActual := strings.TrimSpace(strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n"))
+
+				assert.Equal(t, cleanExpected, cleanActual)
+			}
+		})
+	}
+}
+
+func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
+
+	tests := []struct {
+		testName    string
+		chartName   string
+		kubeVersion string
+		error       string
+	}{
+		{
+			testName:    "Parsing directory 'with-kube-version'",
+			chartName:   "with-kube-version",
+			kubeVersion: "1.60",
+		},
+		{
+			testName:    "Parsing directory 'with-kube-version' with invalid kube version",
+			chartName:   "with-kube-version",
+			kubeVersion: "a.b.c",
+			error:       "Invalid Semantic Version",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.testName, func(t *testing.T) {
+			chartName := test.chartName
+
+			t.Logf("Running test: %s", test.testName)
+
+			var opts []options.ParserOption
+
+			opts = append(opts, parser2.OptionWithKubeVersion(test.kubeVersion))
+
+			helmParser, err := parser2.New(chartName, opts...)
+			if test.error != "" {
+				require.EqualError(t, err, test.error)
+				return
+			}
+			require.NoError(t, err)
+			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)

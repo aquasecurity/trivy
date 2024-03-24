@@ -35,8 +35,9 @@ func Test_helm_parser(t *testing.T) {
 
 			t.Logf("Running test: %s", test.testName)
 
-			helmParser := parser.New(chartName)
-			err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
+			helmParser, err := parser.New(chartName)
+			require.NoError(t, err)
+			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
@@ -73,8 +74,9 @@ func Test_helm_parser_where_name_non_string(t *testing.T) {
 
 		t.Logf("Running test: %s", test.testName)
 
-		helmParser := parser.New(chartName)
-		err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
+		helmParser, err := parser.New(chartName)
+		require.NoError(t, err)
+		err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 		require.NoError(t, err)
 	}
 }
@@ -163,8 +165,9 @@ func Test_helm_tarball_parser(t *testing.T) {
 
 		testFs := os.DirFS(testTemp)
 
-		helmParser := parser.New(test.archiveFile)
-		err := helmParser.ParseFS(context.TODO(), testFs, ".")
+		helmParser, err := parser.New(test.archiveFile)
+		require.NoError(t, err)
+		err = helmParser.ParseFS(context.TODO(), testFs, ".")
 		require.NoError(t, err)
 
 		manifests, err := helmParser.RenderedChartFiles()
