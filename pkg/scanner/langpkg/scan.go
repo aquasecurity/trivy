@@ -74,8 +74,6 @@ func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Resu
 		vulns, err := library.Detect(app.Type, app.Libraries)
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
-		} else if len(vulns) == 0 {
-			continue
 		}
 
 		results = append(results, types.Result{
