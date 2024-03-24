@@ -42,7 +42,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, convertError(err)
 	}
 
-	libs := make([]types.Library, 0, len(info.Deps))
+	libs := make([]types.Library, 0, len(info.Deps)+1)
+	libs = append(libs, types.Library{
+		Name:    "stdlib",
+		Version: strings.TrimPrefix(info.GoVersion, "go"),
+	})
 
 	for _, dep := range info.Deps {
 		// binaries with old go version may incorrectly add module in Deps
