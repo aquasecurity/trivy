@@ -960,6 +960,43 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "Infinity loop for modules",
+			inputFile: filepath.Join("testdata", "modules-infinity-loop", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				// as module
+				{
+					ID:      "org.example:module-1:2.0.0",
+					Name:    "org.example:module-1",
+					Version: "2.0.0",
+				},
+				// as dependency
+				{
+					ID:      "org.example:module-1:2.0.0",
+					Name:    "org.example:module-1",
+					Version: "2.0.0",
+				},
+				{
+					ID:      "org.example:module-2:3.0.0",
+					Name:    "org.example:module-2",
+					Version: "3.0.0",
+				},
+				{
+					ID:      "org.example:root:1.0.0",
+					Name:    "org.example:root",
+					Version: "1.0.0",
+				},
+			},
+			wantDeps: []types.Dependency{
+				{
+					ID: "org.example:module-2:3.0.0",
+					DependsOn: []string{
+						"org.example:module-1:2.0.0",
+					},
+				},
+			},
+		},
+		{
 			name:      "multi module soft requirement",
 			inputFile: filepath.Join("testdata", "multi-module-soft-requirement", "pom.xml"),
 			local:     true,
