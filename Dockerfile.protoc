@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 golang:1.21
+FROM --platform=linux/amd64 golang:1.22
 
 # Set environment variable for protoc
 ENV PROTOC_ZIP=protoc-3.19.4-linux-x86_64.zip
