@@ -30,7 +30,7 @@ To configure the confidence level, you can use `--license-confidence-level`. Thi
 
 |   License scanning    | Image | Rootfs | Filesystem | Repository | SBOM |
 |:---------------------:|:-----:|:------:|:----------:|:----------:|:----:|
-|       Standard        |   ✅   |   ✅    |   ✅[^1]    |   ✅[^1]    |  ✅   |
+|       Standard        |   ✅   |   ✅    | ✅[^1][^2]  | ✅[^1][^2]  |  ✅   |
 | Full (--license-full) |   ✅   |   ✅    |     ✅      |     ✅      |  -   |
 
 License checking classifies the identified licenses and map the classification to severity.
@@ -342,7 +342,8 @@ license:
   permissive: []
 ```
 
-[^1]: Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check [coverage][coverage] for more information.
+[^1]: Trivy doesn't support license detection for all language files. See the list of supported files [here](../coverage/language/index.md).
+[^2]: Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check [coverage][coverage] for more information.
 
 [coverage]: ../coverage/index.md
 [google-license-classification]: https://opensource.google/documentation/reference/thirdparty/licenses
