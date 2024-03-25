@@ -119,10 +119,10 @@ In an air-gapped environment it is your responsibility to update the Trivy datab
 
 ### Run Trivy with the specific flags.
 In an air-gapped environment, you have to specify `--skip-db-update` and `--skip-java-db-update`[^1] so that Trivy doesn't attempt to download the latest database files.
-In addition, if you want to scan `pom.xml` dependencies, you need to specify `--offline-scan` since Trivy tries to issue API requests for scanning Java applications by default.
+In addition, if you want to scan `pom.xml` dependencies, you need to specify `--java-scan-options offline` since Trivy tries to issue API requests for scanning Java applications by default.
 
 ```
-$ trivy image --skip-db-update --skip-java-db-update --offline-scan alpine:3.12
+$ trivy image --skip-db-update --skip-java-db-update --java-scan-options offline alpine:3.12
 ```
 
 ## Air-Gapped Environment for misconfigurations

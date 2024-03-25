@@ -23,12 +23,15 @@ See [here](./index.md) for the detail.
 ## JAR/WAR/PAR/EAR
 To find information about your JAR[^2] file, Trivy parses `pom.properties` and `MANIFEST.MF` files in your JAR[^2] file and takes required properties[^3].
 
+!!! warning "EXPERIMENTAL"
+    Finding JARs in `trivy-java-db` is an experimental function.
+
 If those files don't exist or don't contain enough information - Trivy will try to find this JAR[^2] file in [trivy-java-db](https://github.com/aquasecurity/trivy-java-db).
 The Java DB will be automatically downloaded/updated when any JAR[^2] file is found.
 It is stored in [the cache directory](../../configuration/cache.md#cache-directory).
 
-!!! warning "EXPERIMENTAL"
-    Finding JARs in `trivy-java-db` is an experimental function.
+!!! note
+    `trivy-java-db` is enable by default. To disable it - use the `--java-scan-options offline` flag.
 
 Base JAR[^2] may contain inner JARs[^2] within itself.
 To find information about these JARs[^2], the same logic is used as for the base JAR[^2].
@@ -48,12 +51,21 @@ If your machine doesn't have the necessary files - Trivy tries to find the infor
     Trivy only takes information about packages. We don't take a list of vulnerabilities for packages from the `maven repository`.
     Information about data sources for Java you can see [here](../../scanner/vulnerability.md#data-sources-1).
 
-You can disable connecting to the maven repository with the `--offline-scan` flag.
-The `--offline-scan` flag does not affect the Trivy database.
+Trivy supports dependency discovery from [pom repositories][pom-repositories].
+
+Pom repositories are disabled by default.
+To enable dependency searching from the `releases` and `snapshots` repositories use the `--java-scan-options releases,snapshots` flag.
+!!! note
+    Don't forget add `maven-central` option if you need to use pom repositories along with maven central repository (`--java-scan-options releases,snapshots,maven-central`).
+    
+    Pom repositories have higher priority than maven repository!
+
+You can disable connecting to the maven repository with the `--java-scan-options offline` flag.
+The `--java-scan-options offline` flag does not affect the Trivy database.
 The vulnerability database will be downloaded anyway.
 
 !!! Warning
-    Trivy may skip some dependencies (that were not found on your local machine) when the `--offline-scan` flag is passed.
+    Trivy may skip some dependencies (that were not found on your local machine) when the `--java-scan-options offline` flag is passed.
 
 
 ### maven-invoker-plugin
@@ -93,3 +105,4 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [maven-invoker-plugin]: https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
+[pom-repositories]: https://maven.apache.org/settings.html#repositories

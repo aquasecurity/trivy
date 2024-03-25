@@ -104,9 +104,14 @@ scan:
   skip-files:
     - package-dev.json
 
-  # Same as '--offline-scan'
-  # Default is false
-  offline-scan: false
+  # Same as '--java-scan-options'
+  # Default is trivy-java-db,maven-central
+  java-scan-options: 
+    - trivy-java-db
+    - maven-central
+    - releases
+    - snapshot
+    - offline
 
   # Same as '--scanners'
   # Default depends on subcommand
