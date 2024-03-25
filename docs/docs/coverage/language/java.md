@@ -56,7 +56,7 @@ Trivy supports dependency discovery from [pom repositories][pom-repositories].
 Pom repositories are disabled by default.
 To enable dependency searching from the `releases` and `snapshots` repositories use the `--java-scan-options releases,snapshots` flag.
 !!! note
-    Don't forget add `maven-central` option if you need to use pom repositories along with maven central repository (`--java-scan-options releases,snapshots,maven-central`).
+    Don't forget to add `maven-central` option if you need to use pom repositories along with maven central repository (`--java-scan-options releases,snapshots,maven-central`).
     
     Pom repositories have higher priority than maven repository!
 
