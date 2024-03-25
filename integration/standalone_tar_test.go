@@ -3,12 +3,11 @@
 package integration
 
 import (
+	"github.com/aquasecurity/trivy/pkg/types"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
