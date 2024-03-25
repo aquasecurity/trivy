@@ -4,7 +4,6 @@ import (
 	"runtime"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -203,11 +202,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	javaScanOptions := f.JavaScanOptions.Value()
 	if f.OfflineScan.Value() {
 		log.Logger.Warn("'--offline' option is deprecated and will be removed. Use '--java-scan-options offline'.")
-		javaScanOptions = nil
-	}
-
-	if slices.Contains(javaScanOptions, "offline") {
-		javaScanOptions = nil
+		javaScanOptions = []string{"offline"}
 	}
 
 	return ScanOptions{
