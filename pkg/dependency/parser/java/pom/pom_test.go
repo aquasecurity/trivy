@@ -9,7 +9,7 @@ func Test_Repositories(t *testing.T) {
 	tests := []struct {
 		name     string
 		pomRepos pomRepositories
-		repoOpts repoOptions
+		repoOpts reposOptions
 		want     []string
 	}{
 		{
@@ -30,7 +30,7 @@ func Test_Repositories(t *testing.T) {
 					},
 				},
 			},
-			repoOpts: repoOptions{
+			repoOpts: reposOptions{
 				releaseReposEnable:  true,
 				snapshotReposEnable: false,
 			},
@@ -56,7 +56,7 @@ func Test_Repositories(t *testing.T) {
 					},
 				},
 			},
-			repoOpts: repoOptions{
+			repoOpts: reposOptions{
 				releaseReposEnable:  false,
 				snapshotReposEnable: true,
 			},
@@ -82,7 +82,7 @@ func Test_Repositories(t *testing.T) {
 					},
 				},
 			},
-			repoOpts: repoOptions{
+			repoOpts: reposOptions{
 				releaseReposEnable:  false,
 				snapshotReposEnable: false,
 			},
@@ -91,7 +91,7 @@ func Test_Repositories(t *testing.T) {
 		{
 			name:     "pom doesn't contain repositories",
 			pomRepos: pomRepositories{},
-			repoOpts: repoOptions{
+			repoOpts: reposOptions{
 				releaseReposEnable:  true,
 				snapshotReposEnable: true,
 			},
@@ -110,7 +110,7 @@ func Test_Repositories(t *testing.T) {
 					},
 				},
 			},
-			repoOpts: repoOptions{
+			repoOpts: reposOptions{
 				releaseReposEnable: true,
 				servers: []Server{
 					{

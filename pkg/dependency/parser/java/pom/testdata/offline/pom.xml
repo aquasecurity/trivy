@@ -16,8 +16,8 @@
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
-            <artifactId>example-offline</artifactId>
-            <version>2.3.4</version>
+            <artifactId>example-dependency</artifactId>
+            <version>1.2.3</version>
         </dependency>
     </dependencies>
 

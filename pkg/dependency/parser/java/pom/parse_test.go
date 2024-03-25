@@ -1,6 +1,7 @@
 package pom_test
 
 import (
+	"github.com/samber/lo"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -121,9 +122,9 @@ func TestPom_Parse(t *testing.T) {
 			offline:   true,
 			want: []types.Library{
 				{
-					ID:      "org.example:example-offline:2.3.4",
-					Name:    "org.example:example-offline",
-					Version: "2.3.4",
+					ID:      "org.example:example-dependency:1.2.3",
+					Name:    "org.example:example-dependency",
+					Version: "1.2.3",
 					Locations: types.Locations{
 						{
 							StartLine: 17,
@@ -1258,7 +1259,7 @@ func TestPom_Parse(t *testing.T) {
 				remoteRepos = []string{ts.URL}
 			}
 
-			p := pom.NewParser(tt.inputFile, pom.WithRemoteRepos(remoteRepos))
+			p := pom.NewParser(tt.inputFile, pom.WithRemoteRepos(remoteRepos), pom.WithScanOpts(lo.Ternary(tt.offline, []string{"offline"}, nil)))
 
 			gotLibs, gotDeps, err := p.Parse(f)
 			if tt.wantErr != "" {
