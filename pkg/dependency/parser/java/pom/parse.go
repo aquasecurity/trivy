@@ -33,7 +33,7 @@ const (
 
 type options struct {
 	remoteRepos []string
-	remoteOpts  []string
+	scanOpts    []string
 }
 
 type option func(*options)
@@ -44,9 +44,9 @@ func WithRemoteRepos(repos []string) option {
 	}
 }
 
-func WithRemoteOpts(remoteOpts []string) option {
+func WithScanOpts(scanOpts []string) option {
 	return func(opts *options) {
-		opts.remoteOpts = remoteOpts
+		opts.scanOpts = scanOpts
 	}
 }
 
@@ -67,7 +67,7 @@ type repoOptions struct {
 func NewParser(filePath string, opts ...option) types.Parser {
 	o := &options{}
 
-	if slices.Contains(o.remoteOpts, "maven-central") {
+	if slices.Contains(o.scanOpts, "maven-central") {
 		o.remoteRepos = []string{centralURL}
 	}
 
@@ -86,8 +86,8 @@ func NewParser(filePath string, opts ...option) types.Parser {
 		localRepository:     localRepository,
 		remoteRepositories:  o.remoteRepos,
 		servers:             s.Servers,
-		releaseReposEnable:  slices.Contains(o.remoteOpts, "releases"),
-		snapshotReposEnable: slices.Contains(o.remoteOpts, "snapshots"),
+		releaseReposEnable:  slices.Contains(o.scanOpts, "releases"),
+		snapshotReposEnable: slices.Contains(o.scanOpts, "snapshots"),
 	}
 
 	return &parser{

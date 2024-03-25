@@ -1137,7 +1137,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlagGroup.Scanners = scanners   // allow only 'vuln' and 'license' options for '--scanners'
 	scanFlagGroup.IncludeDevDeps = nil  // disable '--include-dev-deps'
 	scanFlagGroup.Parallel = nil        // disable '--parallel'
-	scanFlagGroup.JavaScanOptions = nil // disable '--java-scan-options` (we don't parse java files).
+	scanFlagGroup.JavaScanOptions = nil // disable '--java-scan-options` (цe take packages from sbom file without parsing java files).
 
 	licenseFlagGroup := flag.NewLicenseFlagGroup()
 	// License full-scan and confidence-level are for file content only
