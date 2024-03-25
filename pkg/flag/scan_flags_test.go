@@ -101,7 +101,11 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			fields: fields{
 				offlineScan: true,
 			},
-			want:      flag.ScanOptions{},
+			want: flag.ScanOptions{
+				JavaScanOptions: []string{
+					"offline",
+				},
+			},
 			assertion: require.NoError,
 		},
 		{
@@ -118,16 +122,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 					"snapshots",
 				},
 			},
-			assertion: require.NoError,
-		},
-		{
-			name: "happy path with java remote options offline",
-			fields: fields{
-				javaScanOptions: []string{
-					"offline",
-				},
-			},
-			want:      flag.ScanOptions{},
 			assertion: require.NoError,
 		},
 	}
