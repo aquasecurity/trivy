@@ -51,12 +51,12 @@ func WithScanOpts(scanOpts []string) option {
 }
 
 type parser struct {
-	rootPath string
-	cache    pomCache
-	repoOpts repoOptions
+	rootPath  string
+	cache     pomCache
+	reposOpts reposOptions
 }
 
-type repoOptions struct {
+type reposOptions struct {
 	localRepository     string
 	remoteRepositories  []string
 	servers             []Server
@@ -82,18 +82,18 @@ func NewParser(filePath string, opts ...option) types.Parser {
 		localRepository = filepath.Join(homeDir, ".m2", "repository")
 	}
 
-	repoOpts := repoOptions{
+	reposOpts := reposOptions{
 		localRepository:     localRepository,
-		remoteRepositories:  o.remoteRepos,
+		remoteRepositories:  lo.Ternary(slices.Contains(o.scanOpts, "offline"), nil, o.remoteRepos),
 		servers:             s.Servers,
 		releaseReposEnable:  slices.Contains(o.scanOpts, "releases"),
 		snapshotReposEnable: slices.Contains(o.scanOpts, "snapshots"),
 	}
 
 	return &parser{
-		rootPath: filepath.Clean(filePath),
-		cache:    newPOMCache(),
-		repoOpts: repoOpts,
+		rootPath:  filepath.Clean(filePath),
+		cache:     newPOMCache(),
+		reposOpts: reposOpts,
 	}
 }
 
@@ -328,7 +328,7 @@ func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	}
 
 	// Update remoteRepositories
-	p.repoOpts.remoteRepositories = utils.UniqueStrings(append(pom.repositories(p.repoOpts), p.repoOpts.remoteRepositories...))
+	p.reposOpts.remoteRepositories = utils.UniqueStrings(append(pom.repositories(p.reposOpts), p.reposOpts.remoteRepositories...))
 
 	// Parent
 	parent, err := p.parseParent(pom.filePath, pom.content.Parent)
@@ -628,7 +628,7 @@ func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error
 }
 
 func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
-	paths = append([]string{p.repoOpts.localRepository}, paths...)
+	paths = append([]string{p.reposOpts.localRepository}, paths...)
 	localPath := filepath.Join(paths...)
 
 	return p.openPom(localPath)
@@ -636,13 +636,13 @@ func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 
 func (p *parser) fetchPOMFromRemoteRepositories(paths []string) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
-	if len(p.repoOpts.remoteRepositories) == 0 {
+	if len(p.reposOpts.remoteRepositories) == 0 {
 		log.Logger.Debug("Fetching the remote pom.xml is skipped")
 		return nil, xerrors.New("there are no remote repositories")
 	}
 
 	// try all remoteRepositories
-	for _, repo := range p.repoOpts.remoteRepositories {
+	for _, repo := range p.reposOpts.remoteRepositories {
 		fetched, err := fetchPOMFromRemoteRepository(repo, paths)
 		if err != nil {
 			return nil, xerrors.Errorf("fetch repository error: %w", err)

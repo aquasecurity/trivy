@@ -115,7 +115,7 @@ func (p pom) licenses() []string {
 	})
 }
 
-func (p pom) repositories(repoOpts repoOptions) []string {
+func (p pom) repositories(repoOpts reposOptions) []string {
 	var urls []string
 	for _, rep := range p.content.Repositories.Repository {
 		// Add only if pom and options enable releases/snapshots repositories
