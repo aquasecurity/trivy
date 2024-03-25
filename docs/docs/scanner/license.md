@@ -342,7 +342,7 @@ license:
   permissive: []
 ```
 
-[^1]: Trivy doesn't support license detection for all language files. See the list of supported files [here](../coverage/language/index.md).
+[^1]: See the list of supported language files [here](../coverage/language/index.md).
 [^2]: Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check [coverage][coverage] for more information.
 
 [coverage]: ../coverage/index.md
