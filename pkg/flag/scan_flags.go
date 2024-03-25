@@ -2,6 +2,7 @@ package flag
 
 import (
 	"runtime"
+	"slices"
 
 	"github.com/samber/lo"
 
@@ -202,6 +203,9 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	javaScanOptions := f.JavaScanOptions.Value()
 	if f.OfflineScan.Value() {
 		log.Logger.Warn("'--offline' option is deprecated and will be removed. Use '--java-scan-options offline'.")
+		javaScanOptions = []string{"offline"}
+	} else if slices.Contains(javaScanOptions, "offline") && len(javaScanOptions) > 1 {
+		log.Logger.Warn("Unable to use the 'offline' java scan option with other options. '--java-scan-options offline' is used.")
 		javaScanOptions = []string{"offline"}
 	}
 

@@ -124,6 +124,21 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			assertion: require.NoError,
 		},
+		{
+			name: "happy path with java scan options offline with another option",
+			fields: fields{
+				javaScanOptions: []string{
+					"trivy-java-db",
+					"offline",
+				},
+			},
+			want: flag.ScanOptions{
+				JavaScanOptions: []string{
+					"offline",
+				},
+			},
+			assertion: require.NoError,
+		},
 	}
 
 	for _, tt := range tests {
