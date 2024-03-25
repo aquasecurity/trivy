@@ -219,7 +219,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int(pkg.SrcEpoch),
 			Licenses:   pkg.Licenses,
-			Locations:  ConvertFromRPCLocation(pkg.Locations),
+			Locations:  ConvertFromRPCLocations(pkg.Locations),
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
@@ -250,7 +250,7 @@ func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier
 	return pkgID
 }
 
-func ConvertFromRPCLocation(locs []*common.Location) []ftypes.Location {
+func ConvertFromRPCLocations(locs []*common.Location) []ftypes.Location {
 	var pkgLocs []ftypes.Location
 	for _, loc := range locs {
 		pkgLocs = append(pkgLocs, ftypes.Location{
@@ -1008,15 +1008,4 @@ func ConvertFromDeleteBlobsRequest(deleteBlobsRequest *cache.DeleteBlobsRequest)
 		return []string{}
 	}
 	return deleteBlobsRequest.GetBlobIds()
-}
-
-func ConvertFromRPCLocations(rpcPkgLocations []*common.Location) []ftypes.Location {
-	var parsedLocations []ftypes.Location
-	for _, loc := range rpcPkgLocations {
-		parsedLocations = append(parsedLocations, ftypes.Location{
-			StartLine: int(loc.GetStartLine()),
-			EndLine:   int(loc.GetEndLine()),
-		})
-	}
-	return parsedLocations
 }

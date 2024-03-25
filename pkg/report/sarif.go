@@ -165,7 +165,7 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 				resourceClass:    res.Class,
 				artifactLocation: path,
 				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
-				locations:        sw.getLocations(vuln.Locations),
+				locations:        toSarifDataLocations(vuln.Locations),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				shortDescription: html.EscapeString(vuln.Title),
 				fullDescription:  html.EscapeString(fullDescription),
@@ -341,7 +341,7 @@ func ToPathUri(input string, resultClass types.ResultClass) string {
 	return strings.ReplaceAll(strings.ReplaceAll(input, "\\", "/"), "git::https:/", "")
 }
 
-func (sw *SarifWriter) getLocations(vulnLocations []ftypes.Location) []location {
+func toSarifDataLocations(vulnLocations []ftypes.Location) []location {
 	var locs []location
 	for _, loc := range vulnLocations {
 		locs = append(locs, location{

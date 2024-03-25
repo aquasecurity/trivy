@@ -43,16 +43,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 							{
 								Name:    "foo",
 								Version: "1.2.3",
-								Locations: []ftypes.Location{
-									{
-										StartLine: 5,
-										EndLine:   10,
-									},
-									{
-										StartLine: 15,
-										EndLine:   20,
-									},
-								},
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -63,16 +53,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 								FixedVersion:     "3.4.5",
 								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
 								SeveritySource:   "redhat",
-								Locations: []ftypes.Location{
-									{
-										StartLine: 5,
-										EndLine:   10,
-									},
-									{
-										StartLine: 15,
-										EndLine:   20,
-									},
-								},
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "foobar",
 									Description: "baz",
@@ -150,23 +130,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 												URIBaseId: lo.ToPtr("ROOTPATH"),
 											},
 											Region: &sarif.Region{
-												StartLine:   lo.ToPtr(5),
-												EndLine:     lo.ToPtr(10),
-												StartColumn: lo.ToPtr(1),
-												EndColumn:   lo.ToPtr(1),
-											},
-										},
-									},
-									{
-										Message: &sarif.Message{Text: lo.ToPtr("library/test: foo@1.2.3")},
-										PhysicalLocation: &sarif.PhysicalLocation{
-											ArtifactLocation: &sarif.ArtifactLocation{
-												URI:       lo.ToPtr("library/test"),
-												URIBaseId: lo.ToPtr("ROOTPATH"),
-											},
-											Region: &sarif.Region{
-												StartLine:   lo.ToPtr(15),
-												EndLine:     lo.ToPtr(20),
+												StartLine:   lo.ToPtr(1),
+												EndLine:     lo.ToPtr(1),
 												StartColumn: lo.ToPtr(1),
 												EndColumn:   lo.ToPtr(1),
 											},
@@ -570,6 +535,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 										StartLine: 10,
 										EndLine:   13,
 									},
+									{
+										StartLine: 20,
+										EndLine:   23,
+									},
 								},
 							},
 						},
@@ -611,6 +580,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 									{
 										StartLine: 10,
 										EndLine:   13,
+									},
+									{
+										StartLine: 20,
+										EndLine:   23,
 									},
 								},
 							},
@@ -673,6 +646,21 @@ func TestReportWriter_Sarif(t *testing.T) {
 											Region: &sarif.Region{
 												StartLine:   lo.ToPtr(10),
 												EndLine:     lo.ToPtr(13),
+												StartColumn: lo.ToPtr(1),
+												EndColumn:   lo.ToPtr(1),
+											},
+										},
+									},
+									{
+										Message: &sarif.Message{Text: lo.ToPtr("yarn.lock: jquery@3.2.1")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       lo.ToPtr("yarn.lock"),
+												URIBaseId: lo.ToPtr("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   lo.ToPtr(20),
+												EndLine:     lo.ToPtr(23),
 												StartColumn: lo.ToPtr(1),
 												EndColumn:   lo.ToPtr(1),
 											},
