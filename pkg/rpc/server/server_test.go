@@ -133,12 +133,10 @@ func TestScanServer_Scan(t *testing.T) {
 								LastModifiedDate: &timestamp.Timestamp{
 									Seconds: 1577840460,
 								},
-								Locations: &common.Locations{
-									Location: []*common.Location{
-										{
-											StartLine: 33,
-											EndLine:   38,
-										},
+								Locations: []*common.Location{
+									{
+										StartLine: 33,
+										EndLine:   38,
 									},
 								},
 								PublishedDate: &timestamp.Timestamp{
