@@ -71,7 +71,6 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			DependsOn:  pkg.DependsOn,
 			Digest:     pkg.Digest.String(),
 			Indirect:   pkg.Indirect,
-			Locations:  ConvertToRPCLocations(pkg.Locations),
 		})
 	}
 	return rpcPkgs
@@ -226,7 +225,6 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			DependsOn:  pkg.DependsOn,
 			Digest:     digest.Digest(pkg.Digest),
 			Indirect:   pkg.Indirect,
-			Locations:  ConvertFromRPCLocations(pkg.Locations),
 		})
 	}
 	return pkgs
@@ -1012,24 +1010,13 @@ func ConvertFromDeleteBlobsRequest(deleteBlobsRequest *cache.DeleteBlobsRequest)
 	return deleteBlobsRequest.GetBlobIds()
 }
 
-func ConvertFromRPCLocations(rpcPkgLocations *common.Locations) []ftypes.Location {
+func ConvertFromRPCLocations(rpcPkgLocations []*common.Location) []ftypes.Location {
 	var parsedLocations []ftypes.Location
-	for _, loc := range rpcPkgLocations.GetLocation() {
+	for _, loc := range rpcPkgLocations {
 		parsedLocations = append(parsedLocations, ftypes.Location{
 			StartLine: int(loc.GetStartLine()),
 			EndLine:   int(loc.GetEndLine()),
 		})
 	}
 	return parsedLocations
-}
-
-func ConvertToRPCLocations(pkgLocations []ftypes.Location) *common.Locations {
-	var rpcLocations []*common.Location
-	for _, loc := range pkgLocations {
-		rpcLocations = append(rpcLocations, &common.Location{
-			StartLine: int32(loc.StartLine),
-			EndLine:   int32(loc.EndLine),
-		})
-	}
-	return &common.Locations{Location: rpcLocations}
 }
