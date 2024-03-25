@@ -66,7 +66,7 @@ trivy image [flags] IMAGE_NAME
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --input string                      input file path instead of image name
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
-      --java-remote-options strings       list of java remote options like trivy-java-db, maven central, pom repository types (supported: jar, pom) (trivy-java-db,maven-central,releases,snapshots,offline) (default [trivy-java-db,maven-central])
+      --java-scan-options strings         list of java scan options like trivy-java-db, maven central, pom repository types (supported: jar, pom) (trivy-java-db,maven-central,releases,snapshots,offline) (default [trivy-java-db,maven-central])
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability

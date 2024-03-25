@@ -1134,10 +1134,10 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		types.VulnerabilityScanner,
 	})
 	scanFlagGroup := flag.NewScanFlagGroup()
-	scanFlagGroup.Scanners = scanners     // allow only 'vuln' and 'license' options for '--scanners'
-	scanFlagGroup.IncludeDevDeps = nil    // disable '--include-dev-deps'
-	scanFlagGroup.Parallel = nil          // disable '--parallel'
-	scanFlagGroup.JavaRemoteOptions = nil // disable '--java-remote-options` (we don't parse java files).
+	scanFlagGroup.Scanners = scanners   // allow only 'vuln' and 'license' options for '--scanners'
+	scanFlagGroup.IncludeDevDeps = nil  // disable '--include-dev-deps'
+	scanFlagGroup.Parallel = nil        // disable '--parallel'
+	scanFlagGroup.JavaScanOptions = nil // disable '--java-scan-options` (we don't parse java files).
 
 	licenseFlagGroup := flag.NewLicenseFlagGroup()
 	// License full-scan and confidence-level are for file content only

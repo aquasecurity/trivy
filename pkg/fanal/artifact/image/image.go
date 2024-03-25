@@ -250,8 +250,8 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	// Prepare variables
 	var wg sync.WaitGroup
 	opts := analyzer.AnalysisOptions{
-		JavaRemoteOptions: a.artifactOption.JavaRemoteOptions,
-		FileChecksum:      a.artifactOption.FileChecksum,
+		JavaScanOptions: a.artifactOption.JavaScanOptions,
+		FileChecksum:    a.artifactOption.FileChecksum,
 	}
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Parallel)

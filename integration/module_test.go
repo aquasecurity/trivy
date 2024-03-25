@@ -42,7 +42,7 @@ func TestModule(t *testing.T) {
 				"--format",
 				"json",
 				"--skip-db-update",
-				"--java-remote-options",
+				"--java-scan-options",
 				"offline",
 				"--quiet",
 				"--module-dir",

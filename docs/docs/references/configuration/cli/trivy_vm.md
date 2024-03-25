@@ -46,7 +46,7 @@ trivy vm [flags] VM_IMAGE
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
-      --java-remote-options strings       list of java remote options like trivy-java-db, maven central, pom repository types (supported: jar, pom) (trivy-java-db,maven-central,releases,snapshots,offline) (default [trivy-java-db,maven-central])
+      --java-scan-options strings         list of java scan options like trivy-java-db, maven central, pom repository types (supported: jar, pom) (trivy-java-db,maven-central,releases,snapshots,offline) (default [trivy-java-db,maven-central])
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")

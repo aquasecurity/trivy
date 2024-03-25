@@ -13,11 +13,11 @@ import (
 
 func TestScanFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		skipDirs          []string
-		skipFiles         []string
-		offlineScan       bool
-		scanners          string
-		javaRemoteOptions []string
+		skipDirs        []string
+		skipFiles       []string
+		offlineScan     bool
+		scanners        string
+		javaScanOptions []string
 	}
 	tests := []struct {
 		name      string
@@ -107,13 +107,13 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "happy path with java remote options",
 			fields: fields{
-				javaRemoteOptions: []string{
+				javaScanOptions: []string{
 					"releases",
 					"snapshots",
 				},
 			},
 			want: flag.ScanOptions{
-				JavaRemoteOptions: []string{
+				JavaScanOptions: []string{
 					"releases",
 					"snapshots",
 				},
@@ -123,7 +123,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "happy path with java remote options offline",
 			fields: fields{
-				javaRemoteOptions: []string{
+				javaScanOptions: []string{
 					"offline",
 				},
 			},
@@ -139,15 +139,15 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			setSliceValue(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
 			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
 			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
-			setSliceValue(flag.JavaRemoteOptions.ConfigName, tt.fields.javaRemoteOptions)
+			setSliceValue(flag.JavaScanOptions.ConfigName, tt.fields.javaScanOptions)
 
 			// Assert options
 			f := &flag.ScanFlagGroup{
-				SkipDirs:          flag.SkipDirsFlag.Clone(),
-				SkipFiles:         flag.SkipFilesFlag.Clone(),
-				OfflineScan:       flag.OfflineScanFlag.Clone(),
-				Scanners:          flag.ScannersFlag.Clone(),
-				JavaRemoteOptions: flag.JavaRemoteOptions.Clone(),
+				SkipDirs:        flag.SkipDirsFlag.Clone(),
+				SkipFiles:       flag.SkipFilesFlag.Clone(),
+				OfflineScan:     flag.OfflineScanFlag.Clone(),
+				Scanners:        flag.ScannersFlag.Clone(),
+				JavaScanOptions: flag.JavaScanOptions.Clone(),
 			}
 
 			got, err := f.ToOptions(tt.args)

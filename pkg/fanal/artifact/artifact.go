@@ -19,7 +19,7 @@ type Option struct {
 	FilePatterns      []string
 	NoProgress        bool
 	Insecure          bool
-	JavaRemoteOptions []string
+	JavaScanOptions   []string
 	AppDirs           []string
 	SBOMSources       []string
 	RekorURL          string

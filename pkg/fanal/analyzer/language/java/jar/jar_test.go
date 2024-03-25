@@ -25,7 +25,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 		name            string
 		inputFile       string
 		includeChecksum bool
-		javaRemoteOpts  []string
+		javaScanOpts    []string
 		want            *analyzer.AnalysisResult
 	}{
 		{
@@ -106,7 +106,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "happy path (package found in trivy-java-db by sha1)",
 			inputFile: "testdata/test.jar",
-			javaRemoteOpts: []string{
+			javaScanOpts: []string{
 				"trivy-java-db",
 			},
 			want: &analyzer.AnalysisResult{
@@ -127,9 +127,9 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:           "happy path offline scan",
-			inputFile:      "testdata/test.jar",
-			javaRemoteOpts: nil,
+			name:         "happy path offline scan",
+			inputFile:    "testdata/test.jar",
+			javaScanOpts: nil,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -170,8 +170,8 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS: mfs,
 				Options: analyzer.AnalysisOptions{
-					FileChecksum:      tt.includeChecksum,
-					JavaRemoteOptions: tt.javaRemoteOpts,
+					FileChecksum:    tt.includeChecksum,
+					JavaScanOptions: tt.javaScanOpts,
 				},
 			})
 

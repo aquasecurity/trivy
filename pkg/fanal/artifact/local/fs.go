@@ -116,8 +116,8 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Parallel)
 	opts := analyzer.AnalysisOptions{
-		JavaRemoteOptions: a.artifactOption.JavaRemoteOptions,
-		FileChecksum:      a.artifactOption.FileChecksum,
+		JavaScanOptions: a.artifactOption.JavaScanOptions,
+		FileChecksum:    a.artifactOption.FileChecksum,
 	}
 
 	// Prepare filesystem for post analysis

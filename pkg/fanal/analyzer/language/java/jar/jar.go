@@ -44,7 +44,7 @@ func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) (analyzer.PostAnal
 }
 
 func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	enableJavaDB := slices.Contains(input.Options.JavaRemoteOptions, "trivy-java-db")
+	enableJavaDB := slices.Contains(input.Options.JavaScanOptions, "trivy-java-db")
 	var client *javadb.DB
 	if enableJavaDB {
 		// TODO: think about the sonatype API

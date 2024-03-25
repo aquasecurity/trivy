@@ -650,7 +650,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SkipFiles:         opts.SkipFiles,
 			SkipDirs:          opts.SkipDirs,
 			FilePatterns:      opts.FilePatterns,
-			JavaRemoteOptions: opts.JavaRemoteOptions,
+			JavaScanOptions:   opts.JavaScanOptions,
 			NoProgress:        opts.NoProgress || opts.Quiet,
 			Insecure:          opts.Insecure,
 			RepoBranch:        opts.RepoBranch,

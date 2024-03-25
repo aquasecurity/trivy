@@ -103,10 +103,10 @@ var (
 		ConfigName: "include-dev-deps",
 		Usage:      "include development dependencies in the report (supported: npm, yarn)",
 	}
-	JavaRemoteOptions = Flag[[]string]{
-		Name:       "java-remote-options",
-		ConfigName: "java-remote-options",
-		Usage:      "list of java remote options like trivy-java-db, maven central, pom repository types (supported: jar, pom)",
+	JavaScanOptions = Flag[[]string]{
+		Name:       "java-scan-options",
+		ConfigName: "java-scan-options",
+		Usage:      "list of java scan options like trivy-java-db, maven central, pom repository types (supported: jar, pom)",
 		Default: []string{
 			"trivy-java-db",
 			"maven-central",
@@ -122,45 +122,45 @@ var (
 )
 
 type ScanFlagGroup struct {
-	SkipDirs          *Flag[[]string]
-	SkipFiles         *Flag[[]string]
-	OfflineScan       *Flag[bool] // deprecated
-	Scanners          *Flag[[]string]
-	FilePatterns      *Flag[[]string]
-	Slow              *Flag[bool] // deprecated
-	Parallel          *Flag[int]
-	SBOMSources       *Flag[[]string]
-	RekorURL          *Flag[string]
-	IncludeDevDeps    *Flag[bool]
-	JavaRemoteOptions *Flag[[]string]
+	SkipDirs        *Flag[[]string]
+	SkipFiles       *Flag[[]string]
+	OfflineScan     *Flag[bool] // deprecated
+	Scanners        *Flag[[]string]
+	FilePatterns    *Flag[[]string]
+	Slow            *Flag[bool] // deprecated
+	Parallel        *Flag[int]
+	SBOMSources     *Flag[[]string]
+	RekorURL        *Flag[string]
+	IncludeDevDeps  *Flag[bool]
+	JavaScanOptions *Flag[[]string]
 }
 
 type ScanOptions struct {
-	Target            string
-	SkipDirs          []string
-	SkipFiles         []string
-	Scanners          types.Scanners
-	FilePatterns      []string
-	Parallel          int
-	SBOMSources       []string
-	RekorURL          string
-	IncludeDevDeps    bool
-	JavaRemoteOptions []string
+	Target          string
+	SkipDirs        []string
+	SkipFiles       []string
+	Scanners        types.Scanners
+	FilePatterns    []string
+	Parallel        int
+	SBOMSources     []string
+	RekorURL        string
+	IncludeDevDeps  bool
+	JavaScanOptions []string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:          SkipDirsFlag.Clone(),
-		SkipFiles:         SkipFilesFlag.Clone(),
-		OfflineScan:       OfflineScanFlag.Clone(),
-		Scanners:          ScannersFlag.Clone(),
-		FilePatterns:      FilePatternsFlag.Clone(),
-		Parallel:          ParallelFlag.Clone(),
-		SBOMSources:       SBOMSourcesFlag.Clone(),
-		RekorURL:          RekorURLFlag.Clone(),
-		IncludeDevDeps:    IncludeDevDepsFlag.Clone(),
-		JavaRemoteOptions: JavaRemoteOptions.Clone(),
-		Slow:              SlowFlag.Clone(),
+		SkipDirs:        SkipDirsFlag.Clone(),
+		SkipFiles:       SkipFilesFlag.Clone(),
+		OfflineScan:     OfflineScanFlag.Clone(),
+		Scanners:        ScannersFlag.Clone(),
+		FilePatterns:    FilePatternsFlag.Clone(),
+		Parallel:        ParallelFlag.Clone(),
+		SBOMSources:     SBOMSourcesFlag.Clone(),
+		RekorURL:        RekorURLFlag.Clone(),
+		IncludeDevDeps:  IncludeDevDepsFlag.Clone(),
+		JavaScanOptions: JavaScanOptions.Clone(),
+		Slow:            SlowFlag.Clone(),
 	}
 }
 
@@ -180,7 +180,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.SBOMSources,
 		f.RekorURL,
 		f.IncludeDevDeps,
-		f.JavaRemoteOptions,
+		f.JavaScanOptions,
 	}
 }
 
@@ -200,26 +200,26 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		parallel = runtime.NumCPU()
 	}
 
-	javaRemoteOpts := f.JavaRemoteOptions.Value()
+	javaScanOptions := f.JavaScanOptions.Value()
 	if f.OfflineScan.Value() {
-		log.Logger.Warn("'--offline' option is deprecated and will be removed. Use '--java-remote-options offline'.")
-		javaRemoteOpts = nil
+		log.Logger.Warn("'--offline' option is deprecated and will be removed. Use '--java-scan-options offline'.")
+		javaScanOptions = nil
 	}
 
-	if slices.Contains(javaRemoteOpts, "offline") {
-		javaRemoteOpts = nil
+	if slices.Contains(javaScanOptions, "offline") {
+		javaScanOptions = nil
 	}
 
 	return ScanOptions{
-		Target:            target,
-		SkipDirs:          f.SkipDirs.Value(),
-		SkipFiles:         f.SkipFiles.Value(),
-		Scanners:          xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
-		FilePatterns:      f.FilePatterns.Value(),
-		Parallel:          parallel,
-		SBOMSources:       f.SBOMSources.Value(),
-		RekorURL:          f.RekorURL.Value(),
-		IncludeDevDeps:    f.IncludeDevDeps.Value(),
-		JavaRemoteOptions: javaRemoteOpts,
+		Target:          target,
+		SkipDirs:        f.SkipDirs.Value(),
+		SkipFiles:       f.SkipFiles.Value(),
+		Scanners:        xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
+		FilePatterns:    f.FilePatterns.Value(),
+		Parallel:        parallel,
+		SBOMSources:     f.SBOMSources.Value(),
+		RekorURL:        f.RekorURL.Value(),
+		IncludeDevDeps:  f.IncludeDevDeps.Value(),
+		JavaScanOptions: javaScanOptions,
 	}, nil
 }
