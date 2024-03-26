@@ -28,7 +28,7 @@ func NewScanner() *Scanner {
 
 // Detect vulnerabilities in package using Wolfi scanner
 func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Wolfi vulnerabilities...")
+	log.Logger.Debug("Detecting Wolfi vulnerabilities...")
 
 	log.Logger.Debugf("wolfi: the number of packages: %d", len(pkgs))
 

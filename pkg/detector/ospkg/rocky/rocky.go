@@ -38,7 +38,7 @@ func NewScanner() *Scanner {
 
 // Detect vulnerabilities in package using Rocky Linux scanner
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Rocky Linux vulnerabilities...")
+	log.Logger.Debug("Detecting Rocky Linux vulnerabilities...")
 
 	osVer = osver.Major(osVer)
 	log.Logger.Debugf("Rocky Linux: os version: %s", osVer)

@@ -40,7 +40,7 @@ func NewScanner() *Scanner {
 
 // Detect scans and returns vulnerabilities using photon scanner
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Photon Linux vulnerabilities...")
+	log.Logger.Debug("Detecting Photon Linux vulnerabilities...")
 	log.Logger.Debugf("Photon Linux: os version: %s", osVer)
 	log.Logger.Debugf("Photon Linux: the number of packages: %d", len(pkgs))
 

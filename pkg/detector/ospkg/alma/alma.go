@@ -39,7 +39,7 @@ func NewScanner() *Scanner {
 
 // Detect vulnerabilities in package using AlmaLinux scanner
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting AlmaLinux vulnerabilities...")
+	log.Logger.Debug("Detecting AlmaLinux vulnerabilities...")
 
 	osVer = osver.Major(osVer)
 	log.Logger.Debugf("AlmaLinux: os version: %s", osVer)

@@ -55,7 +55,7 @@ func NewScanner() *Scanner {
 
 // Detect scans and return vulnerabilities using Debian scanner
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Debian vulnerabilities...")
+	log.Logger.Debug("Detecting Debian vulnerabilities...")
 
 	osVer = osver.Major(osVer)
 	log.Logger.Debugf("debian: os version: %s", osVer)
