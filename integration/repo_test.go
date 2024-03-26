@@ -235,6 +235,16 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/composer.lock.json.golden",
 		},
 		{
+			name: "installed.json",
+			args: args{
+				command:     "rootfs",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/composer-installed",
+			},
+			golden: "testdata/composer.installed.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				scanner:    types.MisconfigScanner,
