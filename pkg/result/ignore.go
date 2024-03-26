@@ -181,7 +181,7 @@ func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 	return c.Licenses.Match(licenseID, filePath, nil)
 }
 
-func parseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
+func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
 	var conf IgnoreConfig
 	if _, err := os.Stat(ignoreFile); errors.Is(err, fs.ErrNotExist) {
 		// .trivyignore doesn't necessarily exist

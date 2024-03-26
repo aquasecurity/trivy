@@ -37,7 +37,7 @@ type FilterOption struct {
 
 // Filter filters out the report
 func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
-	ignoreConf, err := parseIgnoreFile(ctx, opt.IgnoreFile)
+	ignoreConf, err := ParseIgnoreFile(ctx, opt.IgnoreFile)
 	if err != nil {
 		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
 	}
