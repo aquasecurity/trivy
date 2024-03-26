@@ -263,12 +263,9 @@ func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Pack
 func aggregate(detail *ftypes.ArtifactDetail) {
 	var apps []ftypes.Application
 
-	aggregatedApps := map[ftypes.LangType]*ftypes.Application{
-		ftypes.PythonPkg: {Type: ftypes.PythonPkg},
-		ftypes.CondaPkg:  {Type: ftypes.CondaPkg},
-		ftypes.GemSpec:   {Type: ftypes.GemSpec},
-		ftypes.NodePkg:   {Type: ftypes.NodePkg},
-		ftypes.Jar:       {Type: ftypes.Jar},
+	aggregatedApps := make(map[ftypes.LangType]*ftypes.Application)
+	for _, t := range ftypes.AggregatingTypes {
+		aggregatedApps[t] = &ftypes.Application{Type: t}
 	}
 
 	for _, app := range detail.Applications {

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	"strings"
-
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 )
 
 type pkgPosition struct {
@@ -40,7 +38,7 @@ func (parser *naivePkgParser) parse() map[string]pkgPosition {
 		switch {
 		case strings.HasPrefix(strings.TrimSpace(line), "["):
 			if currentPkg.name != "" {
-				pkgId := utils.PackageID(currentPkg.name, currentPkg.version)
+				pkgId := packageID(currentPkg.name, currentPkg.version)
 				currentPkg.setEndPositionIfEmpty(lineNum - 1)
 				idx[pkgId] = currentPkg.position
 			}

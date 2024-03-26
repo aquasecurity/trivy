@@ -8,8 +8,9 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var nameRegexp = regexp.MustCompile(`^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
@@ -52,7 +53,7 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	// Name and version fields are optional
 	// https://docs.npmjs.com/cli/v9/configuring-npm/package-json#name
 	if pkgJSON.Name != "" && pkgJSON.Version != "" {
-		id = utils.PackageID(pkgJSON.Name, pkgJSON.Version)
+		id = dependency.ID(ftypes.NodePkg, pkgJSON.Name, pkgJSON.Version)
 	}
 
 	return Package{

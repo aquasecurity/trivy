@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	config "github.com/aquasecurity/trivy/pkg/dependency/parser/nuget/packagesprops"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func TestParse(t *testing.T) {
