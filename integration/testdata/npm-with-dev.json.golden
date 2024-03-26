@@ -282,18 +282,18 @@
           "PkgIdentifier": {
             "PURL": "pkg:npm/jquery@3.3.9"
           },
-          "Locations": [
-            {
-              "StartLine": 11,
-              "EndLine": 15
-            }
-          ],
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
           "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 15
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Npm",

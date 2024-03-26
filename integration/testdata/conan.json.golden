@@ -152,16 +152,16 @@
           "PkgIdentifier": {
             "PURL": "pkg:conan/pcre@8.43"
           },
+          "InstalledVersion": "8.43",
+          "FixedVersion": "8.45",
+          "Status": "fixed",
+          "Layer": {},
           "Locations": [
             {
               "StartLine": 26,
               "EndLine": 36
             }
           ],
-          "InstalledVersion": "8.43",
-          "FixedVersion": "8.45",
-          "Status": "fixed",
-          "Layer": {},
           "Severity": "UNKNOWN"
         }
       ]

@@ -60,17 +60,17 @@
           "PkgIdentifier": {
             "PURL": "pkg:swift/github.com/apple/swift-nio@2.41.0"
           },
+          "InstalledVersion": "2.41.0",
+          "FixedVersion": "2.29.1, 2.39.1, 2.42.0",
+          "Status": "fixed",
+          "Layer": {},
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-3215",
           "Locations": [
             {
               "StartLine": 13,
               "EndLine": 21
             }
           ],
-          "InstalledVersion": "2.41.0",
-          "FixedVersion": "2.29.1, 2.39.1, 2.42.0",
-          "Status": "fixed",
-          "Layer": {},
-          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-3215",
           "Title": "SwiftNIO vulnerable to Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Response Splitting')",
           "Description": "`NIOHTTP1` and projects using it for generating HTTP responses, including SwiftNIO, can be subject to a HTTP Response Injection attack...",
           "Severity": "MEDIUM",

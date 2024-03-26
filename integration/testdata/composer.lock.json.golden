@@ -70,18 +70,18 @@
           "PkgIdentifier": {
             "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3"
           },
-          "Locations": [
-            {
-              "StartLine": 130,
-              "EndLine": 245
-            }
-          ],
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",
           "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
+          "Locations": [
+            {
+              "StartLine": 130,
+              "EndLine": 245
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Composer",

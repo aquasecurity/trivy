@@ -43,18 +43,18 @@
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1"
           },
-          "Locations": [
-            {
-              "StartLine": 19,
-              "EndLine": 26
-            }
-          ],
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
           "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
+          "Locations": [
+            {
+              "StartLine": 19,
+              "EndLine": 26
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Pip",
@@ -105,18 +105,18 @@
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1"
           },
-          "Locations": [
-            {
-              "StartLine": 19,
-              "EndLine": 26
-            }
-          ],
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",
           "Status": "fixed",
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
+          "Locations": [
+            {
+              "StartLine": 19,
+              "EndLine": 26
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Pip",
