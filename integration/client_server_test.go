@@ -243,6 +243,16 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/pom.json.golden",
 		},
 		{
+			name: "scan package-lock.json with repo command in client/server mode",
+			args: csArgs{
+				Command:          "repo",
+				RemoteAddrOption: "--server",
+				Target:           "testdata/fixtures/repo/npm/",
+				ListAllPackages:  true,
+			},
+			golden: "testdata/npm.json.golden",
+		},
+		{
 			name: "scan sample.pem with repo command in client/server mode",
 			args: csArgs{
 				Command:          "repo",
@@ -586,6 +596,10 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 		}
 	} else {
 		osArgs = append(osArgs, "--format", "json")
+	}
+
+	if c.ListAllPackages {
+		osArgs = append(osArgs, "--list-all-pkgs")
 	}
 
 	if c.IgnoreUnfixed {

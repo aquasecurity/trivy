@@ -2,12 +2,13 @@ package mix
 
 import (
 	"bufio"
-	"fmt"
 	"strings"
 	"unicode"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -50,10 +51,15 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		}
 		version := strings.Trim(ss[2], `"`)
 		libs = append(libs, types.Library{
-			ID:        fmt.Sprintf("%s@%s", name, version),
-			Name:      name,
-			Version:   version,
-			Locations: []types.Location{{StartLine: lineNumber, EndLine: lineNumber}},
+			ID:      dependency.ID(ftypes.Hex, name, version),
+			Name:    name,
+			Version: version,
+			Locations: []types.Location{
+				{
+					StartLine: lineNumber,
+					EndLine:   lineNumber,
+				},
+			},
 		})
 
 	}

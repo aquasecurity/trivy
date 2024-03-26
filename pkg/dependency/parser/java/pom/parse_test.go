@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func TestPom_Parse(t *testing.T) {
@@ -955,6 +955,43 @@ func TestPom_Parse(t *testing.T) {
 					ID: "org.example:example-dependency:1.2.3",
 					DependsOn: []string{
 						"org.example:example-api:2.0.0",
+					},
+				},
+			},
+		},
+		{
+			name:      "Infinity loop for modules",
+			inputFile: filepath.Join("testdata", "modules-infinity-loop", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				// as module
+				{
+					ID:      "org.example:module-1:2.0.0",
+					Name:    "org.example:module-1",
+					Version: "2.0.0",
+				},
+				// as dependency
+				{
+					ID:      "org.example:module-1:2.0.0",
+					Name:    "org.example:module-1",
+					Version: "2.0.0",
+				},
+				{
+					ID:      "org.example:module-2:3.0.0",
+					Name:    "org.example:module-2",
+					Version: "3.0.0",
+				},
+				{
+					ID:      "org.example:root:1.0.0",
+					Name:    "org.example:root",
+					Version: "1.0.0",
+				},
+			},
+			wantDeps: []types.Dependency{
+				{
+					ID: "org.example:module-2:3.0.0",
+					DependsOn: []string{
+						"org.example:module-1:2.0.0",
 					},
 				},
 			},

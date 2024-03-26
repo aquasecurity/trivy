@@ -1125,10 +1125,23 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
 
+	scanners := flag.ScannersFlag.Clone()
+	scanners.Values = xstrings.ToStringSlice(types.Scanners{
+		types.VulnerabilityScanner,
+		types.LicenseScanner,
+	})
+	scanners.Default = xstrings.ToStringSlice(types.Scanners{
+		types.VulnerabilityScanner,
+	})
 	scanFlagGroup := flag.NewScanFlagGroup()
-	scanFlagGroup.Scanners = nil       // disable '--scanners' as it always scans for vulnerabilities
+	scanFlagGroup.Scanners = scanners  // allow only 'vuln' and 'license' options for '--scanners'
 	scanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 	scanFlagGroup.Parallel = nil       // disable '--parallel'
+
+	licenseFlagGroup := flag.NewLicenseFlagGroup()
+	// License full-scan and confidence-level are for file content only
+	licenseFlagGroup.LicenseFull = nil
+	licenseFlagGroup.LicenseConfidenceLevel = nil
 
 	sbomFlags := &flag.Flags{
 		GlobalFlagGroup:        globalFlags,
@@ -1139,11 +1152,12 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ScanFlagGroup:          scanFlagGroup,
 		SBOMFlagGroup:          flag.NewSBOMFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+		LicenseFlagGroup:       licenseFlagGroup,
 	}
 
 	cmd := &cobra.Command{
 		Use:     "sbom [flags] SBOM_PATH",
-		Short:   "Scan SBOM for vulnerabilities",
+		Short:   "Scan SBOM for vulnerabilities and licenses",
 		GroupID: groupScanning,
 		Example: `  # Scan CycloneDX and show the result in tables
   $ trivy sbom /path/to/report.cdx
@@ -1165,9 +1179,6 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
-
-			// Scan vulnerabilities
-			options.Scanners = types.Scanners{types.VulnerabilityScanner}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},

@@ -108,7 +108,7 @@ func TestScanner_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
-				osVer: "2023",
+				osVer: "2023.3.20240304",
 				pkgs: []ftypes.Package{
 					{
 						Name:    "protobuf",

@@ -18,8 +18,10 @@ import (
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -103,10 +105,10 @@ func (p *parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	// Cache root POM
 	p.cache.put(result.artifact, result)
 
-	return p.parseRoot(root.artifact())
+	return p.parseRoot(root.artifact(), make(map[string]struct{}))
 }
 
-func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, error) {
+func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]types.Library, []types.Dependency, error) {
 	// Prepare a queue for dependencies
 	queue := newArtifactQueue()
 
@@ -130,7 +132,12 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, 
 		// Modules should be handled separately so that they can have independent dependencies.
 		// It means multi-module allows for duplicate dependencies.
 		if art.Module {
-			moduleLibs, moduleDeps, err := p.parseRoot(art)
+			if _, ok := uniqModules[art.String()]; ok {
+				continue
+			}
+			uniqModules[art.String()] = struct{}{}
+
+			moduleLibs, moduleDeps, err := p.parseRoot(art, uniqModules)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -687,4 +694,8 @@ func parsePom(r io.Reader) (*pomXML, error) {
 		return nil, xerrors.Errorf("xml decode error: %w", err)
 	}
 	return parsed, nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Pom, name, version)
 }

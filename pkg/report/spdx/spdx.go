@@ -30,7 +30,7 @@ func NewWriter(output io.Writer, version string, spdxFormat types.Format) Writer
 }
 
 func (w Writer) Write(ctx context.Context, report types.Report) error {
-	spdxDoc, err := w.marshaler.Marshal(ctx, report)
+	spdxDoc, err := w.marshaler.MarshalReport(ctx, report)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal spdx: %w", err)
 	}

@@ -27,13 +27,13 @@
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
-          "referenceLocator": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+          "referenceLocator": "pkg:invalid",
           "referenceType": "purl"
         }
       ],
       "filesAnalyzed": false,
       "name": "musl",
-      "sourceInfo": "built package from: invalid",
+      "sourceInfo": "built package from: musl",
       "versionInfo": "1.2.3-r0"
     }
   ],
