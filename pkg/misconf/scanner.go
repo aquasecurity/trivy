@@ -59,6 +59,8 @@ type ScannerOption struct {
 	HelmValueFiles          []string
 	HelmFileValues          []string
 	HelmStringValues        []string
+	HelmAPIVersions         []string
+	HelmKubeVersion         string
 	TerraformTFVars         []string
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
@@ -330,6 +332,14 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []op
 
 	if len(scannerOption.HelmStringValues) > 0 {
 		opts = append(opts, helm2.ScannerWithStringValues(scannerOption.HelmStringValues...))
+	}
+
+	if len(scannerOption.HelmAPIVersions) > 0 {
+		opts = append(opts, helm2.ScannerWithAPIVersions(scannerOption.HelmAPIVersions...))
+	}
+
+	if scannerOption.HelmKubeVersion != "" {
+		opts = append(opts, helm2.ScannerWithKubeVersion(scannerOption.HelmKubeVersion))
 	}
 
 	return opts

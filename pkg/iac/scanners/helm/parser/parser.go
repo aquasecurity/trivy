@@ -18,6 +18,7 @@ import (
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/chart/loader"
+	"helm.sh/helm/v3/pkg/chartutil"
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/releaseutil"
 
@@ -41,6 +42,7 @@ type Parser struct {
 	fileValues   []string
 	stringValues []string
 	apiVersions  []string
+	kubeVersion  string
 }
 
 type ChartFile struct {
@@ -76,7 +78,11 @@ func (p *Parser) SetAPIVersions(values ...string) {
 	p.apiVersions = values
 }
 
-func New(path string, opts ...options.ParserOption) *Parser {
+func (p *Parser) SetKubeVersion(value string) {
+	p.kubeVersion = value
+}
+
+func New(path string, opts ...options.ParserOption) (*Parser, error) {
 
 	client := action.NewInstall(&action.Configuration{})
 	client.DryRun = true     // don't do anything
@@ -96,7 +102,16 @@ func New(path string, opts ...options.ParserOption) *Parser {
 		p.helmClient.APIVersions = p.apiVersions
 	}
 
-	return p
+	if p.kubeVersion != "" {
+		kubeVersion, err := chartutil.ParseKubeVersion(p.kubeVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		p.helmClient.KubeVersion = kubeVersion
+	}
+
+	return p, nil
 }
 
 func (p *Parser) ParseFS(ctx context.Context, target fs.FS, path string) error {

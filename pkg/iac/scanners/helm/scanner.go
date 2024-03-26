@@ -170,7 +170,10 @@ func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, path string) (scan.R
 }
 
 func (s *Scanner) getScanResults(path string, ctx context.Context, target fs.FS) (results []scan.Result, err error) {
-	helmParser := parser.New(path, s.parserOptions...)
+	helmParser, err := parser.New(path, s.parserOptions...)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := helmParser.ParseFS(ctx, target, path); err != nil {
 		return nil, err
