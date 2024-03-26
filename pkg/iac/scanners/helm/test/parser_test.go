@@ -75,8 +75,7 @@ func Test_helm_parser_where_name_non_string(t *testing.T) {
 
 		helmParser, err := parser.New(chartName)
 		require.NoError(t, err)
-		err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
-		require.NoError(t, err)
+		require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
 	}
 }
 
@@ -166,8 +165,7 @@ func Test_helm_tarball_parser(t *testing.T) {
 
 		helmParser, err := parser.New(test.archiveFile)
 		require.NoError(t, err)
-		err = helmParser.ParseFS(context.TODO(), testFs, ".")
-		require.NoError(t, err)
+		require.NoError(t, helmParser.ParseFS(context.TODO(), testFs, "."))
 
 		manifests, err := helmParser.RenderedChartFiles()
 		require.NoError(t, err)
