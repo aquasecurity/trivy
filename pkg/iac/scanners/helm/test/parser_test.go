@@ -37,8 +37,7 @@ func Test_helm_parser(t *testing.T) {
 
 			helmParser, err := parser.New(chartName)
 			require.NoError(t, err)
-			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
-			require.NoError(t, err)
+			require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
 

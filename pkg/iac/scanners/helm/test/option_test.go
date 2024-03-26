@@ -42,8 +42,7 @@ func Test_helm_parser_with_options_with_values_file(t *testing.T) {
 
 			helmParser, err := parser2.New(chartName, opts...)
 			require.NoError(t, err)
-			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
-			require.NoError(t, err)
+			require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
 
@@ -172,10 +171,10 @@ func Test_helm_parser_with_options_with_api_versions(t *testing.T) {
 func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
 
 	tests := []struct {
-		testName    string
-		chartName   string
-		kubeVersion string
-		error       string
+		testName      string
+		chartName     string
+		kubeVersion   string
+		expectedError string
 	}{
 		{
 			testName:    "Parsing directory 'with-kube-version'",
@@ -183,10 +182,10 @@ func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
 			kubeVersion: "1.60",
 		},
 		{
-			testName:    "Parsing directory 'with-kube-version' with invalid kube version",
-			chartName:   "with-kube-version",
-			kubeVersion: "a.b.c",
-			error:       "Invalid Semantic Version",
+			testName:      "Parsing directory 'with-kube-version' with invalid kube version",
+			chartName:     "with-kube-version",
+			kubeVersion:   "a.b.c",
+			expectedError: "Invalid Semantic Version",
 		},
 	}
 
@@ -201,13 +200,12 @@ func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
 			opts = append(opts, parser2.OptionWithKubeVersion(test.kubeVersion))
 
 			helmParser, err := parser2.New(chartName, opts...)
-			if test.error != "" {
-				require.EqualError(t, err, test.error)
+			if test.expectedError != "" {
+				require.EqualError(t, err, test.expectedError)
 				return
 			}
 			require.NoError(t, err)
-			err = helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
-			require.NoError(t, err)
+			require.NoError(t, helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), "."))
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
 
