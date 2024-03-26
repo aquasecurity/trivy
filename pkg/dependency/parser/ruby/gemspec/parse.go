@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -99,7 +99,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) (libs []types.Library, deps []types.D
 			Name:    name,
 			Version: version,
 			License: license,
-		}}, nil, nil
+		},
+	}, nil, nil
 }
 
 func findSubString(re *regexp.Regexp, line, name string) string {

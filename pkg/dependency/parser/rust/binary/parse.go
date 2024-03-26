@@ -5,8 +5,9 @@ import (
 	rustaudit "github.com/microsoft/go-rustaudit"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -48,7 +49,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		if pkg.Kind != rustaudit.Runtime {
 			continue
 		}
-		pkgID := utils.PackageID(pkg.Name, pkg.Version)
+		pkgID := packageID(pkg.Name, pkg.Version)
 		libs = append(libs, types.Library{
 			ID:       pkgID,
 			Name:     pkg.Name,
@@ -60,7 +61,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		for _, dep_idx := range pkg.Dependencies {
 			dep := info.Packages[dep_idx]
 			if dep.Kind == rustaudit.Runtime {
-				childDeps = append(childDeps, utils.PackageID(dep.Name, dep.Version))
+				childDeps = append(childDeps, packageID(dep.Name, dep.Version))
 			}
 		}
 		if len(childDeps) > 0 {
@@ -72,4 +73,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	return libs, deps, nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.RustBinary, name, version)
 }

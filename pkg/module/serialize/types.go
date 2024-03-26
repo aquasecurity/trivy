@@ -4,15 +4,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// TinyGo doesn't support encoding/json, but github.com/mailru/easyjson for now.
-// We need to generate JSON-related methods like MarshalEasyJSON implementing easyjson.Marshaler.
-//
-// $ make easyjson
-
-//easyjson:json
 type StringSlice []string
 
-//easyjson:json
 type AnalysisResult struct {
 	// TODO: support other fields as well
 	// OS                   *types.OS
@@ -34,7 +27,6 @@ type CustomResource struct {
 
 type PostScanAction string
 
-//easyjson:json
 type PostScanSpec struct {
 	// What action the module will do in post scanning.
 	// value: INSERT, UPDATE and DELETE
@@ -45,8 +37,6 @@ type PostScanSpec struct {
 	IDs []string
 }
 
-//easyjson:json
 type Results []Result
 
-//easyjson:json
 type Result types.Result

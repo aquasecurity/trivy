@@ -2,7 +2,6 @@ package parser
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/fs"
 	"path"
@@ -14,15 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
-type moduleLoadError struct {
-	source string
-	err    error
-}
-
-func (m *moduleLoadError) Error() string {
-	return fmt.Sprintf("failed to load module '%s': %s", m.source, m.err)
-}
-
 type ModuleDefinition struct {
 	Name       string
 	Path       string
@@ -32,16 +22,11 @@ type ModuleDefinition struct {
 	External   bool
 }
 
-// LoadModules reads all module blocks and loads the underlying modules, adding blocks to e.moduleBlocks
+// loadModules reads all module blocks and loads them
 func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
-
-	blocks := e.blocks
-
 	var moduleDefinitions []*ModuleDefinition
 
-	expanded := e.expandBlocks(blocks.OfType("module"))
-
-	var loadErrors []*moduleLoadError
+	expanded := e.expandBlocks(e.blocks.OfType("module"))
 
 	for _, moduleBlock := range expanded {
 		if moduleBlock.Label() == "" {
@@ -49,24 +34,11 @@ func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
 		}
 		moduleDefinition, err := e.loadModule(ctx, moduleBlock)
 		if err != nil {
-			var loadErr *moduleLoadError
-			if errors.As(err, &loadErr) {
-				var found bool
-				for _, fm := range loadErrors {
-					if fm.source == loadErr.source {
-						found = true
-						break
-					}
-				}
-				if !found {
-					loadErrors = append(loadErrors, loadErr)
-				}
-				continue
-			}
-			e.debug.Log("Failed to load module '%s'. Maybe try 'terraform init'?", err)
+			e.debug.Log("Failed to load module %q. Maybe try 'terraform init'?", err)
 			continue
 		}
-		e.debug.Log("Loaded module '%s' from '%s'.", moduleDefinition.Name, moduleDefinition.Path)
+
+		e.debug.Log("Loaded module %q from %q.", moduleDefinition.Name, moduleDefinition.Path)
 		moduleDefinitions = append(moduleDefinitions, moduleDefinition)
 	}
 

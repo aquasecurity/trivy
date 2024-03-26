@@ -494,4 +494,4 @@ Please refer to the [VEX documentation](../supply-chain/vex.md) for the details.
 
 
 [^1]: license name is used as id for `.trivyignore.yaml` files.
-[^2]: This doesn't work for package licenses. The `path` field can only be used for license files (licenses obtained using the [--license-full flag](../scanner/license.md#full-scanning)).
+[^2]: This doesn't work for os package licenses (e.g. apk, dpkg, rpm). For projects which manage dependencies through a dependency file (e.g. go.mod, yarn.lock) `path` should point to that particular file.

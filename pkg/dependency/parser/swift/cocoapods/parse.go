@@ -8,8 +8,10 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -72,7 +74,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		var dependsOn []string
 		// find versions for child dependencies
 		for _, childDep := range childDeps {
-			dependsOn = append(dependsOn, utils.PackageID(childDep, parsedDeps[childDep].Version))
+			dependsOn = append(dependsOn, packageID(childDep, parsedDeps[childDep].Version))
 		}
 		deps = append(deps, types.Dependency{
 			ID:        parsedDeps[dep].ID,
@@ -99,10 +101,14 @@ func parseDep(dep string) (types.Library, error) {
 	name := ss[0]
 	version := strings.Trim(strings.TrimSpace(ss[1]), "()")
 	lib := types.Library{
-		ID:      utils.PackageID(name, version),
+		ID:      packageID(name, version),
 		Name:    name,
 		Version: version,
 	}
 
 	return lib, nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Cocoapods, name, version)
 }

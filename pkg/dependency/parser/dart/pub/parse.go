@@ -6,8 +6,9 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -65,7 +66,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		// It will be confusing if we exclude direct dev dependencies and include transitive dev dependencies.
 		// We decided to keep all dev dependencies until Pub will add support for "transitive main" and "transitive dev".
 		lib := types.Library{
-			ID:       utils.PackageID(name, version),
+			ID:       dependency.ID(ftypes.Pub, name, version),
 			Name:     name,
 			Version:  version,
 			Indirect: dep.Dependency == transitiveDep,

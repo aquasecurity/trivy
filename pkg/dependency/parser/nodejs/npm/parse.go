@@ -12,8 +12,10 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -107,7 +109,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 			pkgName = pkgNameFromPath(pkgPath)
 		}
 
-		pkgID := utils.PackageID(pkgName, pkg.Version)
+		pkgID := packageID(pkgName, pkg.Version)
 		location := types.Location{
 			StartLine: pkg.StartLine,
 			EndLine:   pkg.EndLine,
@@ -237,7 +239,7 @@ func findDependsOn(pkgPath, depName string, packages map[string]Package) (string
 		modulePath = joinPaths(modulePath, depName)
 
 		if dep, ok := packages[modulePath]; ok {
-			return utils.PackageID(depName, dep.Version), nil
+			return packageID(depName, dep.Version), nil
 		}
 	}
 
@@ -254,40 +256,40 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 
 	var libs []types.Library
 	var deps []types.Dependency
-	for pkgName, dependency := range dependencies {
+	for pkgName, dep := range dependencies {
 		lib := types.Library{
-			ID:       utils.PackageID(pkgName, dependency.Version),
+			ID:       packageID(pkgName, dep.Version),
 			Name:     pkgName,
-			Version:  dependency.Version,
-			Dev:      dependency.Dev,
+			Version:  dep.Version,
+			Dev:      dep.Dev,
 			Indirect: true, // lockfile v1 schema doesn't have information about Direct dependencies
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
-					URL:  dependency.Resolved,
+					URL:  dep.Resolved,
 				},
 			},
 			Locations: []types.Location{
 				{
-					StartLine: dependency.StartLine,
-					EndLine:   dependency.EndLine,
+					StartLine: dep.StartLine,
+					EndLine:   dep.EndLine,
 				},
 			},
 		}
 		libs = append(libs, lib)
 
-		dependsOn := make([]string, 0, len(dependency.Requires))
-		for libName, requiredVer := range dependency.Requires {
+		dependsOn := make([]string, 0, len(dep.Requires))
+		for libName, requiredVer := range dep.Requires {
 			// Try to resolve the version with nested dependencies first
-			if resolvedDep, ok := dependency.Dependencies[libName]; ok {
-				libID := utils.PackageID(libName, resolvedDep.Version)
+			if resolvedDep, ok := dep.Dependencies[libName]; ok {
+				libID := packageID(libName, resolvedDep.Version)
 				dependsOn = append(dependsOn, libID)
 				continue
 			}
 
 			// Try to resolve the version with the higher level dependencies
 			if ver, ok := versions[libName]; ok {
-				dependsOn = append(dependsOn, utils.PackageID(libName, ver))
+				dependsOn = append(dependsOn, packageID(libName, ver))
 				continue
 			}
 
@@ -297,14 +299,14 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 
 		if len(dependsOn) > 0 {
 			deps = append(deps, types.Dependency{
-				ID:        utils.PackageID(lib.Name, lib.Version),
+				ID:        packageID(lib.Name, lib.Version),
 				DependsOn: dependsOn,
 			})
 		}
 
-		if dependency.Dependencies != nil {
+		if dep.Dependencies != nil {
 			// Recursion
-			childLibs, childDeps := p.parseV1(dependency.Dependencies, maps.Clone(versions))
+			childLibs, childDeps := p.parseV1(dep.Dependencies, maps.Clone(versions))
 			libs = append(libs, childLibs...)
 			deps = append(deps, childDeps...)
 		}
@@ -378,4 +380,8 @@ func (t *Package) UnmarshalJSONWithMetadata(node jfather.Node) error {
 	t.StartLine = node.Range().Start.Line
 	t.EndLine = node.Range().End.Line
 	return nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Npm, name, version)
 }

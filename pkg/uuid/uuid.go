@@ -1,3 +1,5 @@
+//go:build !tinygo.wasm
+
 package uuid
 
 import (
@@ -7,7 +9,13 @@ import (
 	"github.com/google/uuid"
 )
 
-var newUUID func() uuid.UUID = uuid.New
+type UUID = uuid.UUID
+
+var (
+	newUUID   func() uuid.UUID = uuid.New
+	Nil                        = uuid.Nil
+	MustParse                  = uuid.MustParse
+)
 
 // SetFakeUUID sets a fake UUID for testing.
 // The 'format' is used to generate a fake UUID and
@@ -23,6 +31,6 @@ func SetFakeUUID(t *testing.T, format string) {
 	})
 }
 
-func New() uuid.UUID {
+func New() UUID {
 	return newUUID()
 }

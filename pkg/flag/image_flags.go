@@ -45,6 +45,12 @@ var (
 		Default:    "",
 		Usage:      "unix domain socket path to use for docker scanning",
 	}
+	PodmanHostFlag = Flag[string]{
+		Name:       "podman-host",
+		ConfigName: "image.podman.host",
+		Default:    "",
+		Usage:      "unix podman socket path to use for podman scanning",
+	}
 	SourceFlag = Flag[[]string]{
 		Name:       "image-src",
 		ConfigName: "image.source",
@@ -60,6 +66,7 @@ type ImageFlagGroup struct {
 	ScanRemovedPkgs     *Flag[bool]
 	Platform            *Flag[string]
 	DockerHost          *Flag[string]
+	PodmanHost          *Flag[string]
 	ImageSources        *Flag[[]string]
 }
 
@@ -69,6 +76,7 @@ type ImageOptions struct {
 	ScanRemovedPkgs     bool
 	Platform            ftypes.Platform
 	DockerHost          string
+	PodmanHost          string
 	ImageSources        ftypes.ImageSources
 }
 
@@ -79,6 +87,7 @@ func NewImageFlagGroup() *ImageFlagGroup {
 		ScanRemovedPkgs:     ScanRemovedPkgsFlag.Clone(),
 		Platform:            PlatformFlag.Clone(),
 		DockerHost:          DockerHostFlag.Clone(),
+		PodmanHost:          PodmanHostFlag.Clone(),
 		ImageSources:        SourceFlag.Clone(),
 	}
 }
@@ -94,6 +103,7 @@ func (f *ImageFlagGroup) Flags() []Flagger {
 		f.ScanRemovedPkgs,
 		f.Platform,
 		f.DockerHost,
+		f.PodmanHost,
 		f.ImageSources,
 	}
 }
@@ -121,6 +131,7 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		ScanRemovedPkgs:     f.ScanRemovedPkgs.Value(),
 		Platform:            platform,
 		DockerHost:          f.DockerHost.Value(),
+		PodmanHost:          f.PodmanHost.Value(),
 		ImageSources:        xstrings.ToTSlice[ftypes.ImageSource](f.ImageSources.Value()),
 	}, nil
 }

@@ -29,7 +29,7 @@ trivy config [flags] DIR
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
-      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan])
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments

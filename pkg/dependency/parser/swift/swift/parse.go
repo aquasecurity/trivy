@@ -9,8 +9,9 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -51,7 +52,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		version := lo.Ternary(pin.State.Version != "", pin.State.Version, pin.State.Branch)
 
 		libs = append(libs, types.Library{
-			ID:      utils.PackageID(name, version),
+			ID:      dependency.ID(ftypes.Swift, name, version),
 			Name:    name,
 			Version: version,
 			Locations: []types.Location{
