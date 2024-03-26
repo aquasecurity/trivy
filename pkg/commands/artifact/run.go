@@ -166,7 +166,7 @@ func (r *runner) Close(ctx context.Context) error {
 
 func (r *runner) ScanImage(ctx context.Context, opts flag.Options) (types.Report, error) {
 	// Disable the lock file scanning
-	opts.DisabledAnalyzers = analyzer.TypeLockfiles
+	opts.DisabledAnalyzers = append(analyzer.TypeLockfiles, analyzer.TypeSBOM)
 
 	var s InitializeScanner
 	switch {
