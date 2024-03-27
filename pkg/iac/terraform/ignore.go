@@ -71,7 +71,7 @@ func (ignore Ignore) MatchParams(modules Modules, blockMetadata *iacTypes.Metada
 		return true
 	}
 	for key, val := range ignore.Params {
-		attr := block.GetAttribute(key)
+		attr, _ := block.GetNestedAttribute(key)
 		if attr.IsNil() || !attr.Value().IsKnown() {
 			return false
 		}
