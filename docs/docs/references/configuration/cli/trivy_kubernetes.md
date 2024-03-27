@@ -91,6 +91,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --skip-db-update                    skip updating vulnerability database
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
+      --skip-intrusive                    When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.
       --skip-java-db-update               skip updating Java index database
       --skip-policy-update                skip fetching rego policy updates
   -t, --template string                   output template

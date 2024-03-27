@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -28,7 +27,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 			return xerrors.Errorf("get k8s artifacts with node info error: %w", err)
 		}
 	case types.FormatJSON, types.FormatTable:
-		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && slices.Contains(opts.Components, "infra") {
+		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && !opts.SkipIntrusive {
 			artifacts, err = trivyk8s.New(cluster, log.Logger, trivyk8s.WithExcludeOwned(opts.ExcludeOwned)).ListArtifactAndNodeInfo(ctx,
 				trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
 				trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),

@@ -58,6 +58,11 @@ var (
 		Shorthand:  "A",
 		Usage:      "fetch resources from all cluster namespaces",
 	}
+	SkipIntrusive = Flag[bool]{
+		Name:       "skip-intrusive",
+		ConfigName: "kubernetes.non.intrusive",
+		Usage:      "When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.",
+	}
 	NodeCollectorNamespace = Flag[string]{
 		Name:       "node-collector-namespace",
 		ConfigName: "node.collector.namespace",
@@ -101,6 +106,7 @@ type K8sFlagGroup struct {
 	Components             *Flag[[]string]
 	K8sVersion             *Flag[string]
 	Tolerations            *Flag[[]string]
+	SkipIntrusive          *Flag[bool]
 	NodeCollectorImageRef  *Flag[string]
 	AllNamespaces          *Flag[bool]
 	NodeCollectorNamespace *Flag[string]
@@ -121,6 +127,7 @@ type K8sOptions struct {
 	AllNamespaces          bool
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
+	SkipIntrusive          bool
 	ExcludeNodes           map[string]string
 	QPS                    float32
 	Burst                  int
@@ -134,6 +141,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		Components:             ComponentsFlag.Clone(),
 		K8sVersion:             K8sVersionFlag.Clone(),
 		Tolerations:            TolerationsFlag.Clone(),
+		SkipIntrusive:          SkipIntrusive.Clone(),
 		AllNamespaces:          AllNamespaces.Clone(),
 		NodeCollectorNamespace: NodeCollectorNamespace.Clone(),
 		ExcludeOwned:           ExcludeOwned.Clone(),
@@ -155,6 +163,7 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 		f.KubeConfig,
 		f.Components,
 		f.K8sVersion,
+		f.SkipIntrusive,
 		f.Tolerations,
 		f.AllNamespaces,
 		f.NodeCollectorNamespace,
@@ -193,6 +202,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		Components:             f.Components.Value(),
 		K8sVersion:             f.K8sVersion.Value(),
 		Tolerations:            tolerations,
+		SkipIntrusive:          f.SkipIntrusive.Value(),
 		AllNamespaces:          f.AllNamespaces.Value(),
 		NodeCollectorNamespace: f.NodeCollectorNamespace.Value(),
 		ExcludeOwned:           f.ExcludeOwned.Value(),
