@@ -87,8 +87,16 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 			continue
 		}
 
-		compA := components[rel.RefA.ElementRefID]
-		compB := components[rel.RefB.ElementRefID]
+		compA, ok := components[rel.RefA.ElementRefID]
+		if !ok { // Skip if parent is not Package
+			continue
+		}
+
+		compB, ok := components[rel.RefB.ElementRefID]
+		if !ok { // Skip if child is not Package
+			continue
+		}
+
 		s.BOM.AddRelationship(compA, compB, s.parseRelationshipType(rel.Relationship))
 	}
 
