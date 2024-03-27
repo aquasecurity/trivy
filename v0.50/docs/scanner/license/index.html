@@ -3717,13 +3717,12 @@ As those licenses may be in violation, it is recommended to check those unknown 
 Check out <a href="../../coverage/">the coverage document</a> for details.</p>
 <p>To enable extended license scanning, you can use <code>--license-full</code>.
 In addition to package licenses, Trivy scans source code files, Markdown documents, text files and <code>LICENSE</code> documents to identify license usage within the image or filesystem.</p>
-<p>By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 or more by the classifer.
+<p>By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 or more by the classifier.
 To configure the confidence level, you can use <code>--license-confidence-level</code>. This enables us to classify licenses that might be matched with a lower confidence level by the classifer. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The full license scanning is expensive. It takes a while.</p>
 </div>
-<p>Currently, the standard license scanning doesn't support filesystem and repository scanning.</p>
 <table>
 <thead>
 <tr>
@@ -3740,8 +3739,8 @@ To configure the confidence level, you can use <code>--license-confidence-level<
 <td align="center">Standard</td>
 <td align="center">✅</td>
 <td align="center">✅</td>
-<td align="center">-</td>
-<td align="center">-</td>
+<td align="center">✅<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+<td align="center">✅<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
 <td align="center">✅</td>
 </tr>
 <tr>
@@ -4067,6 +4066,17 @@ license:
 
   permissive: <span class="o">[]</span>
 </code></pre></div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>See the list of supported language files <a href="../../coverage/language/">here</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check <a href="../../coverage/">coverage</a> for more information.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
               
             </article>
