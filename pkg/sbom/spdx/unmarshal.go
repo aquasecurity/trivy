@@ -89,6 +89,11 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 
 		compA := components[rel.RefA.ElementRefID]
 		compB := components[rel.RefB.ElementRefID]
+
+		// We only need relationships between packages
+		if compA == nil || compB == nil {
+			continue
+		}
 		s.BOM.AddRelationship(compA, compB, s.parseRelationshipType(rel.Relationship))
 	}
 
