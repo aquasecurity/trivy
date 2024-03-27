@@ -238,6 +238,10 @@ func (b *BOM) AddComponent(c *Component) {
 }
 
 func (b *BOM) AddRelationship(parent, child *Component, relationshipType RelationshipType) {
+	// Check the wrong parent to avoid `panic`
+	if parent == nil {
+		return
+	}
 	if parent.id == uuid.Nil {
 		b.AddComponent(parent)
 	}
