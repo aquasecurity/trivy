@@ -81,7 +81,7 @@ trivy aws [flags]
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-values strings               specify paths to override the Helm values.yaml files
   -h, --help                              help for aws
-      --ignore-policy string              specify the Rego file path to evaluate each vulnerability
+      --ignore-policy string              specify the Rego file path (or dir path with Rego files) to evaluate each vulnerability
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability

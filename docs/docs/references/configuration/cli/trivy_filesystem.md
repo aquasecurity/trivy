@@ -40,7 +40,7 @@ trivy filesystem [flags] PATH
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-values strings               specify paths to override the Helm values.yaml files
   -h, --help                              help for filesystem
-      --ignore-policy string              specify the Rego file path to evaluate each vulnerability
+      --ignore-policy string              specify the Rego file path (or dir path with Rego files) to evaluate each vulnerability
       --ignore-status strings             comma-separated list of vulnerability status to ignore (unknown,not_affected,affected,fixed,under_investigation,will_not_fix,fix_deferred,end_of_life)
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignored-licenses strings          specify a list of license to ignore

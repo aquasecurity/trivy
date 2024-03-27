@@ -24,7 +24,7 @@ trivy convert [flags] RESULT_JSON
       --exit-on-eol int            exit with the specified code when the OS reaches end of service/life
   -f, --format string              format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
   -h, --help                       help for convert
-      --ignore-policy string       specify the Rego file path to evaluate each vulnerability
+      --ignore-policy string       specify the Rego file path (or dir path with Rego files) to evaluate each vulnerability
       --ignorefile string          specify .trivyignore file (default ".trivyignore")
       --list-all-pkgs              enabling the option will output all packages regardless of vulnerability
   -o, --output string              output file name

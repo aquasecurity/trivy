@@ -714,6 +714,71 @@ func TestFilter(t *testing.T) {
 			},
 		},
 		{
+			name: "ignore policy directory",
+			args: args{
+				report: types.Report{
+					Results: types.Results{
+						{
+							Vulnerabilities: []types.DetectedVulnerability{
+								vuln1,
+								vuln3, // ignored by policy
+								vuln4, // ignored by policy
+							},
+							Misconfigurations: []types.DetectedMisconfiguration{
+								misconf1,
+								misconf3, // ignored by policy
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityLow,
+					dbTypes.SeverityHigh,
+				},
+				policyFile: "./testdata/ignore-dir",
+			},
+			want: types.Report{
+				Results: types.Results{
+					{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln1,
+						},
+						MisconfSummary: &types.MisconfSummary{
+							Successes:  0,
+							Failures:   1,
+							Exceptions: 1,
+						},
+						Misconfigurations: []types.DetectedMisconfiguration{
+							misconf1,
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeMisconfiguration,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Filtered by Rego",
+								Source:    "testdata/ignore-dir/ignore-misconf.rego",
+								Finding:   misconf3,
+							},
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Filtered by Rego",
+								Source:    "testdata/ignore-dir/ignore-vuln.rego",
+								Finding:   vuln3,
+							},
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Filtered by Rego",
+								Source:    "testdata/ignore-dir/ignore-vuln.rego",
+								Finding:   vuln4,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with duplicates, one with empty fixed version",
 			args: args{
 				report: types.Report{
