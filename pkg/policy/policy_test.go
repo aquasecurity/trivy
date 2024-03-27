@@ -264,7 +264,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			require.NoError(t, err)
 
 			// Assert results
-			got, err := c.NeedsUpdate(context.Background())
+			got, err := c.NeedsUpdate(context.Background(), ftypes.RegistryOptions{})
 			assert.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, got)
 		})
@@ -367,7 +367,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			c, err := policy.NewClient(tempDir, true, "", policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
 			require.NoError(t, err)
 
-			err = c.DownloadBuiltinPolicies(context.Background())
+			err = c.DownloadBuiltinPolicies(context.Background(), ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
