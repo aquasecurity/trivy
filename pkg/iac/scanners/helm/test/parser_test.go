@@ -32,11 +32,8 @@ func Test_helm_parser(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.testName, func(t *testing.T) {
 			chartName := test.chartName
-
-			t.Logf("Running test: %s", test.testName)
-
 			helmParser := parser.New(chartName)
-			err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
+			err := helmParser.ParseFS(context.TODO(), os.DirFS("testdata"), chartName)
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
 			require.NoError(t, err)
