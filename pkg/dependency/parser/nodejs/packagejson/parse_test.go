@@ -77,6 +77,20 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path - workspace as struct",
+			inputFile: "testdata/workspace_as_map_package.json",
+			want: packagejson.Package{
+				Library: types.Library{
+					ID:      "example@1.0.0",
+					Name:    "example",
+					Version: "1.0.0",
+				},
+				Workspaces: []string{
+					"packages/*",
+				},
+			},
+		},
+		{
 			name:      "invalid package name",
 			inputFile: "testdata/invalid_name.json",
 			wantErr:   "Name can only contain URL-friendly characters",
