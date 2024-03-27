@@ -34,6 +34,12 @@
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-9548",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Maven",
@@ -99,6 +105,12 @@
           "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-20190",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
           "DataSource": {
             "ID": "glad",
             "Name": "GitLab Advisory Database Community",

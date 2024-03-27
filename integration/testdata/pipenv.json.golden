@@ -49,6 +49,12 @@
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
+          "Locations": [
+            {
+              "StartLine": 19,
+              "EndLine": 26
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Pip",
@@ -105,6 +111,12 @@
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
+          "Locations": [
+            {
+              "StartLine": 19,
+              "EndLine": 26
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Pip",

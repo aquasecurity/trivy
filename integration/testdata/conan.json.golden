@@ -156,6 +156,12 @@
           "FixedVersion": "8.45",
           "Status": "fixed",
           "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 26,
+              "EndLine": 36
+            }
+          ],
           "Severity": "UNKNOWN"
         }
       ]

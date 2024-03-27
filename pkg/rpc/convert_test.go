@@ -220,6 +220,12 @@ func TestConvertToRpcVulns(t *testing.T) {
 							PublishedDate:    &fixedPublishedDate,
 							LastModifiedDate: &fixedLastModifiedDate,
 						},
+						Locations: []ftypes.Location{
+							{
+								StartLine: 15,
+								EndLine:   20,
+							},
+						},
 						Layer: ftypes.Layer{
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 							DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
@@ -257,6 +263,12 @@ func TestConvertToRpcVulns(t *testing.T) {
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					},
+					Locations: []*common.Location{
+						{
+							StartLine: 15,
+							EndLine:   20,
+						},
+					},
 					PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
 					PublishedDate:    timestamppb.New(fixedPublishedDate),
 					LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
@@ -286,6 +298,12 @@ func TestConvertToRpcVulns(t *testing.T) {
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 							DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						},
+						Locations: []ftypes.Location{
+							{
+								StartLine: 15,
+								EndLine:   20,
+							},
+						},
 						DataSource: &dbTypes.DataSource{
 							Name: "GitHub Security Advisory Maven",
 							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
@@ -308,6 +326,12 @@ func TestConvertToRpcVulns(t *testing.T) {
 					Layer: &common.Layer{
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+					Locations: []*common.Location{
+						{
+							StartLine: 15,
+							EndLine:   20,
+						},
 					},
 					DataSource: &common.DataSource{
 						Name: "GitHub Security Advisory Maven",

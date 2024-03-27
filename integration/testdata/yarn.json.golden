@@ -54,6 +54,12 @@
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 13
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Npm",

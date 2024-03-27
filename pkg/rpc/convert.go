@@ -219,7 +219,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int(pkg.SrcEpoch),
 			Licenses:   pkg.Licenses,
-			Locations:  ConvertFromRPCLocation(pkg.Locations),
+			Locations:  ConvertFromRPCLocations(pkg.Locations),
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
@@ -250,7 +250,7 @@ func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier
 	return pkgID
 }
 
-func ConvertFromRPCLocation(locs []*common.Location) []ftypes.Location {
+func ConvertFromRPCLocations(locs []*common.Location) []ftypes.Location {
 	var pkgLocs []ftypes.Location
 	for _, loc := range locs {
 		pkgLocs = append(pkgLocs, ftypes.Location{
@@ -325,6 +325,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			CustomAdvisoryData: customAdvisoryData,
 			CustomVulnData:     customVulnData,
 			DataSource:         ConvertToRPCDataSource(vuln.DataSource),
+			Locations:          ConvertToRPCLocations(vuln.Locations),
 		})
 	}
 	return rpcVulns
@@ -612,6 +613,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			PrimaryURL:     vuln.PrimaryUrl,
 			Custom:         vuln.CustomAdvisoryData.AsInterface(),
 			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
+			Locations:      ConvertFromRPCLocations(vuln.Locations),
 		})
 	}
 	return vulns

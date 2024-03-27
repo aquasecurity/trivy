@@ -76,6 +76,12 @@
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
+          "Locations": [
+            {
+              "StartLine": 130,
+              "EndLine": 245
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Composer",

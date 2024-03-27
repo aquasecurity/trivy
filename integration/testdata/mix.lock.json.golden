@@ -186,6 +186,12 @@
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-42975",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Erlang",

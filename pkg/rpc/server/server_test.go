@@ -81,6 +81,12 @@ func TestScanServer_Scan(t *testing.T) {
 										LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
 										PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
 									},
+									Locations: []ftypes.Location{
+										{
+											StartLine: 33,
+											EndLine:   38,
+										},
+									},
 									PrimaryURL: "https://avd.aquasec.com/nvd/cve-2019-0001",
 									DataSource: &dbTypes.DataSource{
 										Name: "DOS vulnerabilities",
@@ -126,6 +132,12 @@ func TestScanServer_Scan(t *testing.T) {
 								References:  []string{"http://example.com"},
 								LastModifiedDate: &timestamp.Timestamp{
 									Seconds: 1577840460,
+								},
+								Locations: []*common.Location{
+									{
+										StartLine: 33,
+										EndLine:   38,
+									},
 								},
 								PublishedDate: &timestamp.Timestamp{
 									Seconds: 978310860,

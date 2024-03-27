@@ -138,6 +138,7 @@ message Vulnerability {
   string                    pkg_path             = 22;
   string                    pkg_id               = 23;
   int32                     status               = 24;
+  repeated Location         locations            = 26;
 }
 
 message DataSource {

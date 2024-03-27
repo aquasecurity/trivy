@@ -69,6 +69,12 @@
           "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 10
+            }
+          ],
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Nuget",

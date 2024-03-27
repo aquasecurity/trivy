@@ -69,6 +69,12 @@
           },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15542",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 13
+            }
+          ],
           "DataSource": {
             "Name": "RustSec Advisory Database",
             "URL": "https://github.com/RustSec/advisory-db"
@@ -114,6 +120,12 @@
           },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-38193",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 13
+            }
+          ],
           "DataSource": {
             "Name": "RustSec Advisory Database",
             "URL": "https://github.com/RustSec/advisory-db"
