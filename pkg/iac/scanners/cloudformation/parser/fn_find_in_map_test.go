@@ -98,3 +98,26 @@ Resources:
 	nodeTypeProp := testRes.GetStringProperty("CacheNodeType", "")
 	assert.Equal(t, "cache.t2.micro", nodeTypeProp.Value())
 }
+
+func Test_InferType(t *testing.T) {
+	source := `---
+Mappings:
+  ApiDB:
+     MultiAZ:
+        development: False
+Resources:
+  ApiDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      MultiAZ: !FindInMap [ApiDB, MultiAZ, development]
+`
+
+	ctx := createTestFileContext(t, source)
+	require.NotNil(t, ctx)
+
+	testRes := ctx.GetResourceByLogicalID("ApiDB")
+	require.NotNil(t, testRes)
+
+	nodeTypeProp := testRes.GetBoolProperty("MultiAZ")
+	assert.False(t, nodeTypeProp.Value())
+}

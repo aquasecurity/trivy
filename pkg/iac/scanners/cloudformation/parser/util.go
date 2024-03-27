@@ -66,13 +66,15 @@ func setPropertyValueFromYaml(node *yaml.Node, propertyData *PropertyInner) erro
 	if node.Content == nil {
 
 		switch node.Tag {
-
 		case "!!int":
 			propertyData.Type = cftypes.Int
 			propertyData.Value, _ = strconv.Atoi(node.Value)
 		case "!!bool":
 			propertyData.Type = cftypes.Bool
 			propertyData.Value, _ = strconv.ParseBool(node.Value)
+		case "!!float":
+			propertyData.Type = cftypes.Float64
+			propertyData.Value, _ = strconv.ParseFloat(node.Value, 64)
 		case "!!str", "!!string":
 			propertyData.Type = cftypes.String
 			propertyData.Value = node.Value
