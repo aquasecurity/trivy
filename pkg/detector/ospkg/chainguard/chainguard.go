@@ -28,7 +28,7 @@ func NewScanner() *Scanner {
 
 // Detect vulnerabilities in package using Chainguard scanner
 func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Chainguard vulnerabilities...")
+	log.Logger.Debug("Detecting Chainguard vulnerabilities...")
 
 	log.Logger.Debugf("chainguard: the number of packages: %d", len(pkgs))
 

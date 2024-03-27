@@ -90,7 +90,7 @@ func NewScanner(t Type) *Scanner {
 
 // Detect scans and returns the vulnerabilities
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting SUSE vulnerabilities...")
+	log.Logger.Debug("Detecting SUSE vulnerabilities...")
 	log.Logger.Debugf("SUSE: os version: %s", osVer)
 	log.Logger.Debugf("SUSE: the number of packages: %d", len(pkgs))
 

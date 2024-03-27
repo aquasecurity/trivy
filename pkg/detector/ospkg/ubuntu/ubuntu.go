@@ -77,7 +77,7 @@ func NewScanner() *Scanner {
 
 // Detect scans and returns the vulnerabilities
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Ubuntu vulnerabilities...")
+	log.Logger.Debug("Detecting Ubuntu vulnerabilities...")
 	log.Logger.Debugf("ubuntu: os version: %s", osVer)
 	log.Logger.Debugf("ubuntu: the number of packages: %d", len(pkgs))
 

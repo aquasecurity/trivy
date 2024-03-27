@@ -41,7 +41,7 @@ func NewScanner() *Scanner {
 
 // Detect scans the packages using amazon scanner
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
+	log.Logger.Debug("Detecting Amazon Linux vulnerabilities...")
 
 	osVer = strings.Fields(osVer)[0]
 	// The format `2023.xxx.xxxx` can be used.

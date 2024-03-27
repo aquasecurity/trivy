@@ -78,7 +78,7 @@ func NewScanner() *Scanner {
 
 // Detect scans and returns redhat vulnerabilities
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting RHEL/CentOS vulnerabilities...")
+	log.Logger.Debug("Detecting RHEL/CentOS vulnerabilities...")
 
 	osVer = osver.Major(osVer)
 	log.Logger.Debugf("Red Hat: os version: %s", osVer)
