@@ -45,6 +45,10 @@ func Int(value int, m Metadata) IntValue {
 	}
 }
 
+func IntTest(value int) IntValue {
+	return Int(value, NewTestMetadata())
+}
+
 func IntFromInt32(value int32, m Metadata) IntValue {
 	return Int(int(value), m)
 }

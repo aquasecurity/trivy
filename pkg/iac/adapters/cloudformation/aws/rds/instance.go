@@ -2,11 +2,11 @@ package rds
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getClustersAndInstances(ctx parser2.FileContext) ([]rds.Cluster, []rds.Instance) {
+func getClustersAndInstances(ctx parser.FileContext) ([]rds.Cluster, []rds.Instance) {
 
 	clusterMap := getClusters(ctx)
 
@@ -68,12 +68,15 @@ func getClustersAndInstances(ctx parser2.FileContext) ([]rds.Cluster, []rds.Inst
 	return clusters, orphans
 }
 
-func getDBParameterGroups(ctx parser2.FileContext, r *parser2.Resource) (dbParameterGroup []rds.DBParameterGroupsList) {
+func getDBParameterGroups(ctx parser.FileContext, r *parser.Resource) (dbParameterGroup []rds.DBParameterGroupsList) {
+
+	var parameterGroupList []rds.DBParameterGroupsList
 
 	dbParameterGroupName := r.GetStringProperty("DBParameterGroupName")
 
 	for _, r := range ctx.GetResourcesByType("AWS::RDS::DBParameterGroup") {
 		name := r.GetStringProperty("DBParameterGroupName")
+		// TODO: find by resource logical id
 		if !dbParameterGroupName.EqualTo(name.Value()) {
 			continue
 		}
@@ -82,13 +85,13 @@ func getDBParameterGroups(ctx parser2.FileContext, r *parser2.Resource) (dbParam
 			DBParameterGroupName: name,
 			KMSKeyID:             types.StringUnresolvable(r.Metadata()),
 		}
-		dbParameterGroup = append(dbParameterGroup, dbpmgl)
+		parameterGroupList = append(dbParameterGroup, dbpmgl)
 	}
 
-	return dbParameterGroup
+	return parameterGroupList
 }
 
-func getEnabledCloudwatchLogsExports(r *parser2.Resource) (enabledcloudwatchlogexportslist []types.StringValue) {
+func getEnabledCloudwatchLogsExports(r *parser.Resource) (enabledcloudwatchlogexportslist []types.StringValue) {
 	enabledCloudwatchLogExportList := r.GetProperty("EnableCloudwatchLogsExports")
 
 	if enabledCloudwatchLogExportList.IsNil() || enabledCloudwatchLogExportList.IsNotList() {
@@ -101,7 +104,7 @@ func getEnabledCloudwatchLogsExports(r *parser2.Resource) (enabledcloudwatchloge
 	return enabledcloudwatchlogexportslist
 }
 
-func getTagList(r *parser2.Resource) (taglist []rds.TagList) {
+func getTagList(r *parser.Resource) (taglist []rds.TagList) {
 	tagLists := r.GetProperty("Tags")
 
 	if tagLists.IsNil() || tagLists.IsNotList() {
@@ -116,7 +119,7 @@ func getTagList(r *parser2.Resource) (taglist []rds.TagList) {
 	return taglist
 }
 
-func getReadReplicaDBInstanceIdentifiers(r *parser2.Resource) (readreplicadbidentifier []types.StringValue) {
+func getReadReplicaDBInstanceIdentifiers(r *parser.Resource) (readreplicadbidentifier []types.StringValue) {
 	readReplicaDBIdentifier := r.GetProperty("SourceDBInstanceIdentifier")
 
 	if readReplicaDBIdentifier.IsNil() || readReplicaDBIdentifier.IsNotList() {

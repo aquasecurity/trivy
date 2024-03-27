@@ -5,18 +5,18 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getFunctions(cfFile parser2.FileContext) (functions []sam.Function) {
+func getFunctions(cfFile parser.FileContext) (functions []sam.Function) {
 
 	functionResources := cfFile.GetResourcesByType("AWS::Serverless::Function")
 	for _, r := range functionResources {
 		function := sam.Function{
 			Metadata:        r.Metadata(),
 			FunctionName:    r.GetStringProperty("FunctionName"),
-			Tracing:         r.GetStringProperty("Tracing", sam.TracingModePassThrough),
+			Tracing:         r.GetStringProperty("Tracing"),
 			ManagedPolicies: nil,
 			Policies:        nil,
 		}
@@ -28,7 +28,7 @@ func getFunctions(cfFile parser2.FileContext) (functions []sam.Function) {
 	return functions
 }
 
-func setFunctionPolicies(r *parser2.Resource, function *sam.Function) {
+func setFunctionPolicies(r *parser.Resource, function *sam.Function) {
 	policies := r.GetProperty("Policies")
 	if policies.IsNotNil() {
 		if policies.IsString() {

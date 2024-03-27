@@ -7,11 +7,11 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecr"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getRepositories(ctx parser2.FileContext) (repositories []ecr.Repository) {
+func getRepositories(ctx parser.FileContext) (repositories []ecr.Repository) {
 
 	repositoryResources := ctx.GetResourcesByType("AWS::ECR::Repository")
 
@@ -57,7 +57,7 @@ func getRepositories(ctx parser2.FileContext) (repositories []ecr.Repository) {
 	return repositories
 }
 
-func getPolicy(r *parser2.Resource) (*iam.Policy, error) {
+func getPolicy(r *parser.Resource) (*iam.Policy, error) {
 	policyProp := r.GetProperty("RepositoryPolicyText")
 	if policyProp.IsNil() {
 		return nil, fmt.Errorf("missing policy")
@@ -79,13 +79,10 @@ func getPolicy(r *parser2.Resource) (*iam.Policy, error) {
 	}, nil
 }
 
-func hasImmutableImageTags(r *parser2.Resource) iacTypes.BoolValue {
+func hasImmutableImageTags(r *parser.Resource) iacTypes.BoolValue {
 	mutabilityProp := r.GetProperty("ImageTagMutability")
 	if mutabilityProp.IsNil() {
 		return iacTypes.BoolDefault(false, r.Metadata())
 	}
-	if !mutabilityProp.EqualTo("IMMUTABLE") {
-		return iacTypes.Bool(false, mutabilityProp.Metadata())
-	}
-	return iacTypes.Bool(true, mutabilityProp.Metadata())
+	return iacTypes.Bool(mutabilityProp.EqualTo("IMMUTABLE"), mutabilityProp.Metadata())
 }

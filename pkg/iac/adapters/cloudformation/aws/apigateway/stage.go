@@ -2,18 +2,18 @@ package apigateway
 
 import (
 	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getApis(cfFile parser2.FileContext) (apis []v2.API) {
+func getApis(cfFile parser.FileContext) (apis []v2.API) {
 
 	apiResources := cfFile.GetResourcesByType("AWS::ApiGatewayV2::Api")
 	for _, apiRes := range apiResources {
 		api := v2.API{
 			Metadata:     apiRes.Metadata(),
-			Name:         types.StringDefault("", apiRes.Metadata()),
-			ProtocolType: types.StringDefault("", apiRes.Metadata()),
+			Name:         apiRes.GetStringProperty("Name"),
+			ProtocolType: apiRes.GetStringProperty("ProtocolType"),
 			Stages:       getStages(apiRes.ID(), cfFile),
 		}
 		apis = append(apis, api)
@@ -22,7 +22,7 @@ func getApis(cfFile parser2.FileContext) (apis []v2.API) {
 	return apis
 }
 
-func getStages(apiId string, cfFile parser2.FileContext) []v2.Stage {
+func getStages(apiId string, cfFile parser.FileContext) []v2.Stage {
 	var apiStages []v2.Stage
 
 	stageResources := cfFile.GetResourcesByType("AWS::ApiGatewayV2::Stage")
@@ -43,7 +43,7 @@ func getStages(apiId string, cfFile parser2.FileContext) []v2.Stage {
 	return apiStages
 }
 
-func getAccessLogging(r *parser2.Resource) v2.AccessLogging {
+func getAccessLogging(r *parser.Resource) v2.AccessLogging {
 
 	loggingProp := r.GetProperty("AccessLogSettings")
 	if loggingProp.IsNil() {

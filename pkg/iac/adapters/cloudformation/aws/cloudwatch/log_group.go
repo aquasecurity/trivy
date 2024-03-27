@@ -3,7 +3,6 @@ package cloudwatch
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudwatch"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getLogGroups(ctx parser.FileContext) (logGroups []cloudwatch.LogGroup) {
@@ -13,11 +12,9 @@ func getLogGroups(ctx parser.FileContext) (logGroups []cloudwatch.LogGroup) {
 	for _, r := range logGroupResources {
 		group := cloudwatch.LogGroup{
 			Metadata:        r.Metadata(),
-			Arn:             types.StringDefault("", r.Metadata()),
 			Name:            r.GetStringProperty("LogGroupName"),
 			KMSKeyID:        r.GetStringProperty("KmsKeyId"),
-			RetentionInDays: r.GetIntProperty("RetentionInDays", 0),
-			MetricFilters:   nil,
+			RetentionInDays: r.GetIntProperty("RetentionInDays"),
 		}
 		logGroups = append(logGroups, group)
 	}

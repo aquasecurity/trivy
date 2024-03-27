@@ -45,6 +45,10 @@ func Bool(value bool, metadata Metadata) BoolValue {
 	}
 }
 
+func BoolTest(value bool) BoolValue {
+	return Bool(value, NewTestMetadata())
+}
+
 func BoolDefault(value bool, metadata Metadata) BoolValue {
 	b := Bool(value, metadata)
 	b.BaseAttribute.metadata.isDefault = true

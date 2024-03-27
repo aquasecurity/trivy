@@ -2,11 +2,11 @@ package rds
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/rds"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getParameterGroups(ctx parser2.FileContext) (parametergroups []rds.ParameterGroups) {
+func getParameterGroups(ctx parser.FileContext) (parametergroups []rds.ParameterGroups) {
 
 	for _, r := range ctx.GetResourcesByType("AWS::RDS::DBParameterGroup") {
 
@@ -23,10 +23,12 @@ func getParameterGroups(ctx parser2.FileContext) (parametergroups []rds.Paramete
 	return parametergroups
 }
 
-func getParameters(r *parser2.Resource) (parameters []rds.Parameters) {
+func getParameters(r *parser.Resource) (parameters []rds.Parameters) {
 
 	dBParam := r.GetProperty("Parameters")
 
+	// TODO: parameters is JSON
+	// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html#cfn-rds-dbparametergroup-parameters
 	if dBParam.IsNil() || dBParam.IsNotList() {
 		return parameters
 	}

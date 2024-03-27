@@ -2,11 +2,11 @@ package documentdb
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/documentdb"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getClusters(ctx parser2.FileContext) (clusters []documentdb.Cluster) {
+func getClusters(ctx parser.FileContext) (clusters []documentdb.Cluster) {
 
 	clusterResources := ctx.GetResourcesByType("AWS::DocDB::DBCluster")
 
@@ -28,13 +28,13 @@ func getClusters(ctx parser2.FileContext) (clusters []documentdb.Cluster) {
 	return clusters
 }
 
-func updateInstancesOnCluster(cluster *documentdb.Cluster, ctx parser2.FileContext) {
+func updateInstancesOnCluster(cluster *documentdb.Cluster, ctx parser.FileContext) {
 
 	instanceResources := ctx.GetResourcesByType("AWS::DocDB::DBInstance")
 
 	for _, r := range instanceResources {
 		clusterIdentifier := r.GetStringProperty("DBClusterIdentifier")
-		if clusterIdentifier == cluster.Identifier {
+		if cluster.Identifier.EqualTo(clusterIdentifier.Value()) {
 			cluster.Instances = append(cluster.Instances, documentdb.Instance{
 				Metadata: r.Metadata(),
 				KMSKeyID: cluster.KMSKeyID,
@@ -43,7 +43,7 @@ func updateInstancesOnCluster(cluster *documentdb.Cluster, ctx parser2.FileConte
 	}
 }
 
-func getLogExports(r *parser2.Resource) (logExports []types.StringValue) {
+func getLogExports(r *parser.Resource) (logExports []types.StringValue) {
 
 	exportsList := r.GetProperty("EnableCloudwatchLogsExports")
 

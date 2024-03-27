@@ -2,11 +2,10 @@ package cloudfront
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/cloudfront"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-func getDistributions(ctx parser2.FileContext) (distributions []cloudfront.Distribution) {
+func getDistributions(ctx parser.FileContext) (distributions []cloudfront.Distribution) {
 
 	distributionResources := ctx.GetResourcesByType("AWS::CloudFront::Distribution")
 
@@ -32,24 +31,15 @@ func getDistributions(ctx parser2.FileContext) (distributions []cloudfront.Distr
 	return distributions
 }
 
-func getDefaultCacheBehaviour(r *parser2.Resource) cloudfront.CacheBehaviour {
+func getDefaultCacheBehaviour(r *parser.Resource) cloudfront.CacheBehaviour {
 	defaultCache := r.GetProperty("DistributionConfig.DefaultCacheBehavior")
 	if defaultCache.IsNil() {
 		return cloudfront.CacheBehaviour{
-			Metadata:             r.Metadata(),
-			ViewerProtocolPolicy: types.StringDefault("allow-all", r.Metadata()),
+			Metadata: r.Metadata(),
 		}
 	}
-	protoProp := r.GetProperty("DistributionConfig.DefaultCacheBehavior.ViewerProtocolPolicy")
-	if protoProp.IsNotString() {
-		return cloudfront.CacheBehaviour{
-			Metadata:             r.Metadata(),
-			ViewerProtocolPolicy: types.StringDefault("allow-all", r.Metadata()),
-		}
-	}
-
 	return cloudfront.CacheBehaviour{
-		Metadata:             r.Metadata(),
-		ViewerProtocolPolicy: protoProp.AsStringValue(),
+		Metadata:             defaultCache.Metadata(),
+		ViewerProtocolPolicy: defaultCache.GetStringProperty("ViewerProtocolPolicy"),
 	}
 }

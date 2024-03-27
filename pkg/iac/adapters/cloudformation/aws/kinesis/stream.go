@@ -3,7 +3,6 @@ package kinesis
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/kinesis"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func getStreams(ctx parser.FileContext) (streams []kinesis.Stream) {
@@ -14,11 +13,6 @@ func getStreams(ctx parser.FileContext) (streams []kinesis.Stream) {
 
 		stream := kinesis.Stream{
 			Metadata: r.Metadata(),
-			Encryption: kinesis.Encryption{
-				Metadata: r.Metadata(),
-				Type:     types.StringDefault("KMS", r.Metadata()),
-				KMSKeyID: types.StringDefault("", r.Metadata()),
-			},
 		}
 
 		if prop := r.GetProperty("StreamEncryption"); prop.IsNotNil() {
