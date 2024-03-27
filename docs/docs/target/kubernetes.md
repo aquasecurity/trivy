@@ -106,7 +106,7 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 2, CRITICAL: 0)
 
 You can control what kinds of components are discovered using the `--components` flag:
 - `--components infra` will discover only cluster infrastructure components.
-- `--components workloads` will discover only application workloads.
+- `--components workload` will discover only application workloads.
 - If the flag is omitted: infra, workloads, and RBAC are discovered.
 
 ## Reporting and filtering

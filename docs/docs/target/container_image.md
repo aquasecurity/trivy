@@ -110,7 +110,7 @@ It is disabled by default.
 You can enable it with `--image-config-scanners config`.
 
 ```
-$ trivy image --image-config-scanners config [YOUR_IMAGE_NAME]
+$ trivy image --image-config-scanners misconfig [YOUR_IMAGE_NAME]
 ```
 
 <details>
