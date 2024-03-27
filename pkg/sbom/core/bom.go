@@ -247,7 +247,11 @@ func (b *BOM) AddRelationship(parent, child *Component, relationshipType Relatio
 	}
 
 	if child == nil {
-		b.relationships[parent.id] = nil // Meaning no dependencies
+		// It is possible that `relationships` already contains this parent.
+		// Check this to avoid overwriting.
+		if _, ok := b.relationships[parent.id]; !ok {
+			b.relationships[parent.id] = nil // Meaning no dependencies
+		}
 		return
 	}
 
