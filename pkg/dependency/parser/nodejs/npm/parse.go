@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 
 	"github.com/liamg/jfather"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -134,13 +134,8 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 
 			if ref.URL != "" && !slices.Contains(savedLib.ExternalReferences, ref) {
 				savedLib.ExternalReferences = append(savedLib.ExternalReferences, ref)
+				sortExternalReferences(savedLib.ExternalReferences)
 			}
-			sort.Slice(savedLib.ExternalReferences, func(i, j int) bool {
-				if savedLib.ExternalReferences[i].Type != savedLib.ExternalReferences[j].Type {
-					return savedLib.ExternalReferences[i].Type < savedLib.ExternalReferences[j].Type
-				}
-				return savedLib.ExternalReferences[i].URL < savedLib.ExternalReferences[j].URL
-			})
 
 			savedLib.Locations = append(savedLib.Locations, location)
 			sort.Sort(savedLib.Locations)
@@ -150,15 +145,13 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 		}
 
 		lib := types.Library{
-			ID:        pkgID,
-			Name:      pkgName,
-			Version:   pkg.Version,
-			Indirect:  pkgIndirect,
-			Dev:       pkg.Dev,
-			Locations: []types.Location{location},
-		}
-		if ref.URL != "" {
-			lib.ExternalReferences = []types.ExternalRef{ref}
+			ID:                 pkgID,
+			Name:               pkgName,
+			Version:            pkg.Version,
+			Indirect:           pkgIndirect,
+			Dev:                pkg.Dev,
+			ExternalReferences: lo.Ternary(ref.URL != "", []types.ExternalRef{ref}, nil),
+			Locations:          []types.Location{location},
 		}
 		libs[pkgID] = lib
 
@@ -406,4 +399,13 @@ func (t *Package) UnmarshalJSONWithMetadata(node jfather.Node) error {
 
 func packageID(name, version string) string {
 	return dependency.ID(ftypes.Npm, name, version)
+}
+
+func sortExternalReferences(refs []types.ExternalRef) {
+	sort.Slice(refs, func(i, j int) bool {
+		if refs[i].Type != refs[j].Type {
+			return refs[i].Type < refs[j].Type
+		}
+		return refs[i].URL < refs[j].URL
+	})
 }
