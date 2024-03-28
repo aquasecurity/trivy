@@ -118,7 +118,7 @@ func (p pom) licenses() []string {
 func (p pom) repositories(servers []Server) ([]string, []string) {
 	var releaseRepos, snapshotRepos []string
 	for _, rep := range p.content.Repositories.Repository {
-		snapshot := rep.Releases.Enabled == "true"
+		snapshot := rep.Snapshots.Enabled == "true"
 		release := rep.Releases.Enabled == "true"
 		// Add only enabled repositories
 		if !release && !snapshot {
@@ -140,7 +140,7 @@ func (p pom) repositories(servers []Server) ([]string, []string) {
 			}
 		}
 
-		log.Logger.Debugf("Adding %s repository %s: %s", lo.Ternary(snapshot, "snapshot", "release"), rep.ID, rep.URL)
+		log.Logger.Debugf("Adding repository %s: %s", rep.ID, rep.URL)
 		if snapshot {
 			snapshotRepos = append(snapshotRepos, repoURL.String())
 		}
