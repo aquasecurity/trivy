@@ -27,14 +27,6 @@ func ScannerWithTFVarsPaths(paths ...string) options.ScannerOption {
 	}
 }
 
-func ScannerWithAlternativeIDProvider(f func(string) []string) options.ScannerOption {
-	return func(s options.ConfigurableScanner) {
-		if tf, ok := s.(ConfigurableTerraformScanner); ok {
-			tf.AddExecutorOptions(executor.OptionWithAlternativeIDProvider(f))
-		}
-	}
-}
-
 func ScannerWithSeverityOverrides(overrides map[string]string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if tf, ok := s.(ConfigurableTerraformScanner); ok {
@@ -55,14 +47,6 @@ func ScannerWithExcludedRules(ruleIDs []string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if tf, ok := s.(ConfigurableTerraformScanner); ok {
 			tf.AddExecutorOptions(executor.OptionExcludeRules(ruleIDs))
-		}
-	}
-}
-
-func ScannerWithExcludeIgnores(ruleIDs []string) options.ScannerOption {
-	return func(s options.ConfigurableScanner) {
-		if tf, ok := s.(ConfigurableTerraformScanner); ok {
-			tf.AddExecutorOptions(executor.OptionExcludeIgnores(ruleIDs))
 		}
 	}
 }

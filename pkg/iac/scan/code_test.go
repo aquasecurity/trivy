@@ -5,13 +5,11 @@ import (
 	"strings"
 	"testing"
 
-	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-
+	"github.com/liamg/memoryfs"
 	"github.com/stretchr/testify/assert"
-
 	"github.com/stretchr/testify/require"
 
-	"github.com/liamg/memoryfs"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func TestResult_GetCode(t *testing.T) {

@@ -17,6 +17,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/extrafs"
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
@@ -326,12 +327,12 @@ func (p *Parser) GetFilesystemMap() map[string]fs.FS {
 	return p.fsMap
 }
 
-func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, terraform.Ignores, error) {
+func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules, error) {
 	var blocks terraform.Blocks
-	var ignores terraform.Ignores
+	var ignores ignore.Rules
 	moduleCtx := tfcontext.NewContext(&hcl.EvalContext{}, nil)
 	for _, file := range files {
-		fileBlocks, fileIgnores, err := loadBlocksFromFile(file, p.moduleSource)
+		fileBlocks, err := loadBlocksFromFile(file)
 		if err != nil {
 			if p.stopOnHCLError {
 				return nil, nil, err
@@ -342,9 +343,61 @@ func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, terraform.Ign
 		for _, fileBlock := range fileBlocks {
 			blocks = append(blocks, terraform.NewBlock(fileBlock, moduleCtx, p.moduleBlock, nil, p.moduleSource, p.moduleFS))
 		}
+		fileIgnores := ignore.Parse(
+			string(file.file.Bytes),
+			file.path,
+			&ignore.StringMatchParser{
+				SectionKey: "ws",
+			},
+			&paramParser{},
+		)
 		ignores = append(ignores, fileIgnores...)
 	}
 
 	sortBlocksByHierarchy(blocks)
 	return blocks, ignores, nil
+}
+
+func loadBlocksFromFile(file sourceFile) (hcl.Blocks, error) {
+	contents, diagnostics := file.file.Body.Content(terraform.Schema)
+	if diagnostics != nil && diagnostics.HasErrors() {
+		return nil, diagnostics
+	}
+	if contents == nil {
+		return nil, nil
+	}
+	return contents.Blocks, nil
+}
+
+type paramParser struct {
+	params map[string]string
+}
+
+func (s *paramParser) Key() string {
+	return "ignore"
+}
+
+func (s *paramParser) Parse(str string) bool {
+	s.params = make(map[string]string)
+
+	idx := strings.Index(str, "[")
+	if idx == -1 {
+		return false
+	}
+
+	str = str[idx+1:]
+
+	paramStr := strings.TrimSuffix(str, "]")
+	for _, pair := range strings.Split(paramStr, ",") {
+		parts := strings.Split(pair, "=")
+		if len(parts) != 2 {
+			continue
+		}
+		s.params[parts[0]] = parts[1]
+	}
+	return true
+}
+
+func (s *paramParser) Param() any {
+	return s.params
 }

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -17,6 +18,7 @@ type FileContext struct {
 	filepath     string
 	lines        []string
 	SourceFormat SourceFormat
+	Ignores      ignore.Rules
 	Parameters   map[string]*Parameter  `json:"Parameters" yaml:"Parameters"`
 	Resources    map[string]*Resource   `json:"Resources" yaml:"Resources"`
 	Globals      map[string]*Resource   `json:"Globals" yaml:"Globals"`

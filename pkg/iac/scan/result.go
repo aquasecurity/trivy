@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -259,6 +260,22 @@ func (r *Results) AddIgnored(source interface{}, descriptions ...string) {
 	rnge := res.metadata.Range()
 	res.fsPath = rnge.GetLocalFilename()
 	*r = append(*r, res)
+}
+
+func (r *Results) Ignore(ignoreRules ignore.Rules, ignores map[string]ignore.Ignorer) {
+	for i, result := range *r {
+		allIDs := []string{
+			result.Rule().LongID(),
+			result.Rule().AVDID,
+			strings.ToLower(result.Rule().AVDID),
+			result.Rule().ShortCode,
+		}
+		allIDs = append(allIDs, result.Rule().Aliases...)
+
+		if ignoreRules.Ignore(result.Metadata(), allIDs, ignores) {
+			(*r)[i].OverrideStatus(StatusIgnored)
+		}
+	}
 }
 
 func (r *Results) SetRule(rule Rule) {

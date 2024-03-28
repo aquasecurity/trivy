@@ -18,12 +18,6 @@ func OptionWithFrameworks(frameworks ...framework.Framework) Option {
 	}
 }
 
-func OptionWithAlternativeIDProvider(f func(string) []string) Option {
-	return func(s *Executor) {
-		s.alternativeIDProviderFunc = f
-	}
-}
-
 func OptionWithResultsFilter(f func(scan.Results) scan.Results) Option {
 	return func(s *Executor) {
 		s.resultsFilters = append(s.resultsFilters, f)
@@ -51,12 +45,6 @@ func OptionNoIgnores() Option {
 func OptionExcludeRules(ruleIDs []string) Option {
 	return func(s *Executor) {
 		s.excludedRuleIDs = ruleIDs
-	}
-}
-
-func OptionExcludeIgnores(ruleIDs []string) Option {
-	return func(s *Executor) {
-		s.excludeIgnoresIDs = ruleIDs
 	}
 }
 

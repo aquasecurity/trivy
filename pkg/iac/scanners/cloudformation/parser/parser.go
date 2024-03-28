@@ -16,6 +16,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
@@ -165,12 +166,14 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, path string) (fctx *
 		SourceFormat: sourceFmt,
 	}
 
-	if strings.HasSuffix(strings.ToLower(path), ".json") {
-		if err := jfather.Unmarshal(content, fctx); err != nil {
+	switch sourceFmt {
+	case YamlSourceFormat:
+		if err := yaml.Unmarshal(content, fctx); err != nil {
 			return nil, NewErrInvalidContent(path, err)
 		}
-	} else {
-		if err := yaml.Unmarshal(content, fctx); err != nil {
+		fctx.Ignores = ignore.Parse(string(content), path)
+	case JsonSourceFormat:
+		if err := jfather.Unmarshal(content, fctx); err != nil {
 			return nil, NewErrInvalidContent(path, err)
 		}
 	}

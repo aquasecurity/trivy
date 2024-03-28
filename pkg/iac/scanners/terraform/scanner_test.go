@@ -68,42 +68,6 @@ func scanWithOptions(t *testing.T, code string, opt ...options.ScannerOption) sc
 	return results
 }
 
-func Test_OptionWithAlternativeIDProvider(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	options := []options.ScannerOption{
-		ScannerWithAlternativeIDProvider(func(s string) []string {
-			return []string{"something", "altid", "blah"}
-		}),
-	}
-	results := scanWithOptions(t, `
-//tfsec:ignore:altid
-resource "something" "else" {}
-`, options...)
-	require.Len(t, results.GetFailed(), 0)
-	require.Len(t, results.GetIgnored(), 1)
-
-}
-
-func Test_TrivyOptionWithAlternativeIDProvider(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	options := []options.ScannerOption{
-		ScannerWithAlternativeIDProvider(func(s string) []string {
-			return []string{"something", "altid", "blah"}
-		}),
-	}
-	results := scanWithOptions(t, `
-//trivy:ignore:altid
-resource "something" "else" {}
-`, options...)
-	require.Len(t, results.GetFailed(), 0)
-	require.Len(t, results.GetIgnored(), 1)
-
-}
-
 func Test_OptionWithSeverityOverrides(t *testing.T) {
 	reg := rules.Register(alwaysFailRule)
 	defer rules.Deregister(reg)
