@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/aquasecurity/loading/pkg/bar"
@@ -12,15 +13,17 @@ type progressTracker struct {
 	serviceTotal   int
 	serviceCurrent int
 	isTTY          bool
+	debugWriter    io.Writer
 }
 
-func newProgressTracker() *progressTracker {
+func newProgressTracker(w io.Writer) *progressTracker {
 	var isTTY bool
 	if stat, err := os.Stdout.Stat(); err == nil {
 		isTTY = stat.Mode()&os.ModeCharDevice == os.ModeCharDevice
 	}
 	return &progressTracker{
-		isTTY: isTTY,
+		isTTY:       isTTY,
+		debugWriter: w,
 	}
 }
 
@@ -69,7 +72,8 @@ func (m *progressTracker) StartService(name string) {
 	if !m.isTTY {
 		return
 	}
-	fmt.Printf("[%d/%d] Scanning %s...\n", m.serviceCurrent+1, m.serviceTotal, name)
+
+	fmt.Fprintf(m.debugWriter, "[%d/%d] Scanning %s...\n", m.serviceCurrent+1, m.serviceTotal, name)
 	m.serviceBar = bar.New(
 		bar.OptionHideOnFinish(true),
 		bar.OptionWithAutoComplete(false),
