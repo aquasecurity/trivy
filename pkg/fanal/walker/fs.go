@@ -97,7 +97,13 @@ func (w FS) walkFast(root string, walkFn fastWalkFunc) error {
 
 func (w FS) walkSlow(root string, walkFn fastWalkFunc) error {
 	log.Logger.Debugf("Walk the file tree rooted at '%s' in series", root)
-	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+
+	relPath, err := filepath.Rel("/", root)
+	if err != nil {
+		return err
+	}
+
+	err = fs.WalkDir(os.DirFS("/"), relPath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return w.errCallback(path, err)
 		}
@@ -105,7 +111,7 @@ func (w FS) walkSlow(root string, walkFn fastWalkFunc) error {
 		if err != nil {
 			return xerrors.Errorf("file info error: %w", err)
 		}
-		return walkFn(path, info)
+		return walkFn(string(filepath.Separator)+path, info)
 	})
 	if err != nil {
 		return xerrors.Errorf("walk dir error: %w", err)
