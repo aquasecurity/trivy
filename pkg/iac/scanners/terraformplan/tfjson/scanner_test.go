@@ -13,11 +13,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_OptionWithPolicyDirs_OldRegoMetadata(t *testing.T) {
-	b, _ := os.ReadFile("test/testdata/plan.json")
-	fs := testutil.CreateFS(t, map[string]string{
-		"/code/main.tfplan.json": string(b),
-		"/rules/test.rego": `
+func Test_TerraformScanner(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name      string
+		inputFile string
+		inputRego string
+		options   []options.ScannerOption
+	}{
+		{
+			name:      "old rego metadata",
+			inputFile: "test/testdata/plan.json",
+			inputRego: `
 package defsec.abcdefg
 
 __rego_metadata__ := {
@@ -43,36 +51,15 @@ deny[cause] {
 	cause := bucket.name
 }
 `,
-	})
-
-	debugLog := bytes.NewBuffer([]byte{})
-	scanner := New(
-		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
-		options.ScannerWithEmbeddedPolicies(false),
-	)
-
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
-	require.NoError(t, err)
-
-	require.Len(t, results.GetFailed(), 1)
-
-	failure := results.GetFailed()[0]
-
-	assert.Equal(t, "AVD-TEST-0123", failure.Rule().AVDID)
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
-	}
-
-}
-
-func Test_OptionWithPolicyDirs_WithUserNamespace(t *testing.T) {
-	b, _ := os.ReadFile("test/testdata/plan.json")
-	fs := testutil.CreateFS(t, map[string]string{
-		"/code/main.tfplan.json": string(b),
-		"/rules/test.rego": `
+			options: []options.ScannerOption{
+				options.ScannerWithPolicyDirs("rules"),
+				options.ScannerWithRegoOnly(true),
+				options.ScannerWithEmbeddedPolicies(false)},
+		},
+		{
+			name:      "with user namespace",
+			inputFile: "test/testdata/plan.json",
+			inputRego: ` 
 # METADATA
 # title: Bad buckets are bad
 # description: Bad buckets are bad because they are not good.
@@ -93,28 +80,70 @@ deny[cause] {
 	cause := bucket.name
 }
 `,
-	})
+			options: []options.ScannerOption{
+				options.ScannerWithPolicyDirs("rules"),
+				options.ScannerWithRegoOnly(true),
+				options.ScannerWithEmbeddedPolicies(false),
+				options.ScannerWithPolicyNamespaces("user"),
+			},
+		},
+		{
+			name:      "with templated plan json",
+			inputFile: "test/testdata/plan_with_template.json",
+			inputRego: `
+# METADATA
+# title: Bad buckets are bad
+# description: Bad buckets are bad because they are not good.
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   avd_id: AVD-TEST-0123
+#   severity: CRITICAL
+#   short_code: very-bad-misconfig
+#   recommended_action: "Fix the s3 bucket"
 
-	debugLog := bytes.NewBuffer([]byte{})
-	scanner := New(
-		options.ScannerWithDebug(debugLog),
-		options.ScannerWithPolicyFilesystem(fs),
-		options.ScannerWithPolicyDirs("rules"),
-		options.ScannerWithRegoOnly(true),
-		options.ScannerWithPolicyNamespaces("user"),
-		options.ScannerWithEmbeddedPolicies(false),
-	)
+package user.foobar.ABC001
 
-	results, err := scanner.ScanFS(context.TODO(), fs, "code")
-	require.NoError(t, err)
-
-	require.Len(t, results.GetFailed(), 1)
-
-	failure := results.GetFailed()[0]
-
-	assert.Equal(t, "AVD-TEST-0123", failure.Rule().AVDID)
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
+deny[cause] {
+	bucket := input.aws.s3.buckets[_]
+	bucket.name.value == "${template-name-is-$evil}"
+	cause := bucket.name
+}
+`,
+			options: []options.ScannerOption{
+				options.ScannerWithPolicyDirs("rules"),
+				options.ScannerWithRegoOnly(true),
+				options.ScannerWithEmbeddedPolicies(false),
+				options.ScannerWithPolicyNamespaces("user"),
+			},
+		},
 	}
 
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			b, _ := os.ReadFile(tc.inputFile)
+			fs := testutil.CreateFS(t, map[string]string{
+				"/code/main.tfplan.json": string(b),
+				"/rules/test.rego":       tc.inputRego,
+			})
+
+			debugLog := bytes.NewBuffer([]byte{})
+			so := append(tc.options, options.ScannerWithDebug(debugLog), options.ScannerWithPolicyFilesystem(fs))
+			scanner := New(so...)
+
+			results, err := scanner.ScanFS(context.TODO(), fs, "code")
+			require.NoError(t, err)
+
+			require.Len(t, results.GetFailed(), 1)
+
+			failure := results.GetFailed()[0]
+
+			assert.Equal(t, "AVD-TEST-0123", failure.Rule().AVDID)
+			if t.Failed() {
+				fmt.Printf("Debug logs:\n%s\n", debugLog.String())
+			}
+		})
+	}
 }
