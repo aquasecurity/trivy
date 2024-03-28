@@ -2,6 +2,7 @@ package parser
 
 import (
 	"context"
+	"errors"
 	"io"
 	"io/fs"
 	"os"
@@ -254,18 +255,19 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	return nil
 }
 
-func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {
+var ErrNoFiles = errors.New("no files found")
 
+func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 	p.debug.Log("Evaluating module...")
 
 	if len(p.files) == 0 {
 		p.debug.Log("No files found, nothing to do.")
-		return nil, cty.NilVal, nil
+		return nil, ErrNoFiles
 	}
 
 	blocks, ignores, err := p.readBlocks(p.files)
 	if err != nil {
-		return nil, cty.NilVal, err
+		return nil, err
 	}
 	p.debug.Log("Read %d block(s) and %d ignore(s) for module '%s' (%d file[s])...", len(blocks), len(ignores), p.moduleName, len(p.files))
 
@@ -278,7 +280,7 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 	} else {
 		inputVars, err = loadTFVars(p.configsFS, p.tfvarsPaths)
 		if err != nil {
-			return nil, cty.NilVal, err
+			return nil, err
 		}
 		p.debug.Log("Added %d variables from tfvars.", len(inputVars))
 	}
@@ -292,10 +294,10 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 
 	workingDir, err := os.Getwd()
 	if err != nil {
-		return nil, cty.NilVal, err
+		return nil, err
 	}
 	p.debug.Log("Working directory for module evaluation is '%s'", workingDir)
-	evaluator := newEvaluator(
+	return newEvaluator(
 		p.moduleFS,
 		p,
 		p.projectRoot,
@@ -310,13 +312,21 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 		p.debug.Extend("evaluator"),
 		p.allowDownloads,
 		p.skipCachedModules,
-	)
-	modules, fsMap, parseDuration := evaluator.EvaluateAll(ctx)
+	), nil
+}
+
+func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value, error) {
+
+	e, err := p.Load(ctx)
+	if errors.Is(err, ErrNoFiles) {
+		return nil, cty.NilVal, nil
+	}
+	modules, fsMap, parseDuration := e.EvaluateAll(ctx)
 	p.metrics.Counts.Modules = len(modules)
 	p.metrics.Timings.ParseDuration = parseDuration
 	p.debug.Log("Finished parsing module '%s'.", p.moduleName)
 	p.fsMap = fsMap
-	return modules, evaluator.exportOutputs(), nil
+	return modules, e.exportOutputs(), nil
 }
 
 func (p *Parser) GetFilesystemMap() map[string]fs.FS {
