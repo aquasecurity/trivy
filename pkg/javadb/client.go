@@ -83,9 +83,11 @@ func (u *Updater) Update() error {
 }
 
 func Init(cacheDir, javaDBRepository string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
+	// Split repository url to check only image name
+	s := strings.Split(javaDBRepository, "/")
 	// Add the schema version as a tag if the tag doesn't exist.
 	// This is required for backward compatibility.
-	if !strings.Contains(javaDBRepository, ":") {
+	if !strings.Contains(s[len(s)-1], ":") {
 		javaDBRepository = fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion)
 	}
 	updater = &Updater{
