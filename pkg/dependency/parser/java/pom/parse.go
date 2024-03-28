@@ -50,12 +50,6 @@ func WithReleaseRemoteRepos(repos []string) option {
 	}
 }
 
-func WithSnapshotRemoteRepos(repos []string) option {
-	return func(opts *options) {
-		opts.snapshotRemoteRepos = repos
-	}
-}
-
 type parser struct {
 	rootPath            string
 	cache               pomCache
@@ -66,15 +60,10 @@ type parser struct {
 	servers             []Server
 }
 
-type RemoteRepo struct {
-	url      string
-	snapshot bool
-}
-
 func NewParser(filePath string, opts ...option) types.Parser {
 	o := &options{
 		offline:            false,
-		releaseRemoteRepos: []string{centralURL},
+		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
 	}
 
 	for _, opt := range opts {
@@ -652,8 +641,8 @@ func (p *parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 	}
 
 	remoteRepos := p.releaseRemoteRepos
-	// TODO do we need to check releases repos for snapshots if snapshot repos don't exist?
-	if snapshot && p.snapshotRemoteRepos != nil {
+	// Maven uses only snapshot repos for snapshot artifacts
+	if snapshot {
 		remoteRepos = p.snapshotRemoteRepos
 	}
 
