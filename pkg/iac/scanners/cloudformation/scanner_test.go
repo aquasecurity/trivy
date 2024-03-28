@@ -143,7 +143,7 @@ func TestIgnore(t *testing.T) {
 		ignored int
 	}{
 		{
-			name: "without ignored",
+			name: "without ignore",
 			src: `---
 Resources:
   S3Bucket:
