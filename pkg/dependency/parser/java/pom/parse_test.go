@@ -70,7 +70,7 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
-			name:      "remote repository",
+			name:      "remote release repository",
 			inputFile: filepath.Join("testdata", "happy", "pom.xml"),
 			local:     false,
 			want: []types.Library{
@@ -110,6 +110,37 @@ func TestPom_Parse(t *testing.T) {
 					DependsOn: []string{
 						"org.example:example-api:1.7.30",
 						"org.example:example-runtime:1.0.0",
+					},
+				},
+			},
+		},
+		{
+			name:      "snapshot dependency",
+			inputFile: filepath.Join("testdata", "snapshot", "pom.xml"),
+			local:     false,
+			want: []types.Library{
+				{
+					ID:      "com.example:happy:1.0.0",
+					Name:    "com.example:happy",
+					Version: "1.0.0",
+				},
+				{
+					ID:      "org.example:example-dependency:1.2.3-SNAPSHOT",
+					Name:    "org.example:example-dependency",
+					Version: "1.2.3-SNAPSHOT",
+					Locations: types.Locations{
+						{
+							StartLine: 14,
+							EndLine:   18,
+						},
+					},
+				},
+			},
+			wantDeps: []types.Dependency{
+				{
+					ID: "com.example:happy:1.0.0",
+					DependsOn: []string{
+						"org.example:example-dependency:1.2.3-SNAPSHOT",
 					},
 				},
 			},
@@ -1295,7 +1326,7 @@ func TestPom_Parse(t *testing.T) {
 				remoteRepos = []string{ts.URL}
 			}
 
-			p := pom.NewParser(tt.inputFile, pom.WithRemoteRepos(remoteRepos), pom.WithOffline(tt.offline))
+			p := pom.NewParser(tt.inputFile, pom.WithReleaseRemoteRepos(remoteRepos), pom.WithOffline(tt.offline))
 
 			gotLibs, gotDeps, err := p.Parse(f)
 			if tt.wantErr != "" {
