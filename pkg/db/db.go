@@ -79,9 +79,11 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 		opt(o)
 	}
 
+	// Split repository url to check only image name
+	s := strings.Split(o.dbRepository, "/")
 	// Add the schema version as a tag if the tag doesn't exist.
 	// This is required for backward compatibility.
-	if !strings.Contains(o.dbRepository, ":") {
+	if !strings.Contains(s[len(s)-1], ":") {
 		o.dbRepository = fmt.Sprintf("%s:%d", o.dbRepository, db.SchemaVersion)
 	}
 
