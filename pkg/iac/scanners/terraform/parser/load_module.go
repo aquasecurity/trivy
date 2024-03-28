@@ -22,6 +22,14 @@ type ModuleDefinition struct {
 	External   bool
 }
 
+func (d *ModuleDefinition) inputVars() map[string]cty.Value {
+	inputs := d.Definition.Values().AsValueMap()
+	if inputs == nil {
+		return make(map[string]cty.Value)
+	}
+	return inputs
+}
+
 // loadModules reads all module blocks and loads them
 func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
 	var moduleDefinitions []*ModuleDefinition
