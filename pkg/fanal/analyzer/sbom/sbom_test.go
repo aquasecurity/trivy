@@ -31,62 +31,58 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						Type: types.Jar,
 						Libraries: types.Packages{
 							{
+								ID:       "co.elastic.apm:apm-agent:1.36.0",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "co.elastic.apm",
-											Name:      "apm-agent",
-											Version:   "1.36.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent",
+										Version:   "1.36.0",
 									},
 								},
 							},
 							{
+								ID:       "co.elastic.apm:apm-agent-cached-lookup-key:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "co.elastic.apm",
-											Name:      "apm-agent-cached-lookup-key",
-											Version:   "1.36.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent-cached-lookup-key",
+										Version:   "1.36.0",
 									},
 								},
 							},
 							{
+								ID:       "co.elastic.apm:apm-agent-common:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-common",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "co.elastic.apm",
-											Name:      "apm-agent-common",
-											Version:   "1.36.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent-common",
+										Version:   "1.36.0",
 									},
 								},
 							},
 							{
+								ID:       "co.elastic.apm:apm-agent-core:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-core",
 								Version:  "1.36.0",
 								FilePath: "opt/bitnami/elasticsearch",
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "co.elastic.apm",
-											Name:      "apm-agent-core",
-											Version:   "1.36.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent-core",
+										Version:   "1.36.0",
 									},
 								},
 							},
@@ -97,21 +93,20 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/elasticsearch",
 						Libraries: types.Packages{
 							{
-								Name:     "elasticsearch",
+								ID:       "Elasticsearch@8.9.1",
+								Name:     "Elasticsearch",
 								Version:  "8.9.1",
 								Arch:     "arm64",
 								Licenses: []string{"Elastic-2.0"},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeBitnami,
-											Name:    "elasticsearch",
-											Version: "8.9.1",
-											Qualifiers: packageurl.Qualifiers{
-												{
-													Key:   "arch",
-													Value: "arm64",
-												},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "elasticsearch",
+										Version: "8.9.1",
+										Qualifiers: packageurl.Qualifiers{
+											{
+												Key:   "arch",
+												Value: "arm64",
 											},
 										},
 									},
@@ -134,34 +129,30 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						Libraries: types.Packages{
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
+								ID:       "co.elastic.apm:apm-agent:1.36.0",
 								Name:     "co.elastic.apm:apm-agent",
 								Version:  "1.36.0",
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "co.elastic.apm",
-											Name:      "apm-agent",
-											Version:   "1.36.0",
-										},
-										FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent",
+										Version:   "1.36.0",
 									},
 									BOMRef: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 								},
 							},
 							{
 								FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
+								ID:       "co.elastic.apm:apm-agent-cached-lookup-key:1.36.0",
 								Name:     "co.elastic.apm:apm-agent-cached-lookup-key",
 								Version:  "1.36.0",
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:      packageurl.TypeMaven,
-											Namespace: "co.elastic.apm",
-											Name:      "apm-agent-cached-lookup-key",
-											Version:   "1.36.0",
-										},
-										FilePath: "opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "co.elastic.apm",
+										Name:      "apm-agent-cached-lookup-key",
+										Version:   "1.36.0",
 									},
 									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 								},
@@ -183,58 +174,59 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "opt/bitnami/postgresql",
 						Libraries: types.Packages{
 							{
-								Name:     "gdal",
+								ID:       "GDAL@3.7.1",
+								Name:     "GDAL",
 								Version:  "3.7.1",
 								Licenses: []string{"MIT"},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeBitnami,
-											Name:    "gdal",
-											Version: "3.7.1",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "gdal",
+										Version: "3.7.1",
 									},
 								},
 							},
 							{
-								Name:     "geos",
+								ID:       "GEOS@3.8.3",
+								Name:     "GEOS",
 								Version:  "3.8.3",
 								Licenses: []string{"LGPL-2.1-only"},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeBitnami,
-											Name:    "geos",
-											Version: "3.8.3",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "geos",
+										Version: "3.8.3",
 									},
 								},
 							},
 							{
-								Name:     "postgresql",
+								ID:       "PostgreSQL@15.3.0",
+								Name:     "PostgreSQL",
 								Version:  "15.3.0",
 								Licenses: []string{"PostgreSQL"},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeBitnami,
-											Name:    "postgresql",
-											Version: "15.3.0",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "postgresql",
+										Version: "15.3.0",
 									},
+								},
+								DependsOn: []string{
+									"GEOS@3.8.3",
+									"Proj@6.3.2",
+									"GDAL@3.7.1",
 								},
 							},
 							{
-								Name:     "proj",
+								ID:       "Proj@6.3.2",
+								Name:     "Proj",
 								Version:  "6.3.2",
 								Licenses: []string{"MIT"},
 								Identifier: types.PkgIdentifier{
-									PURL: &types.PackageURL{
-										PackageURL: packageurl.PackageURL{
-											Type:    packageurl.TypeBitnami,
-											Name:    "proj",
-											Version: "6.3.2",
-										},
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "proj",
+										Version: "6.3.2",
 									},
 								},
 							},

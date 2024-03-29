@@ -8,19 +8,18 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/npm"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/npm"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xpath "github.com/aquasecurity/trivy/pkg/x/path"
 )
 
@@ -87,13 +86,14 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 
 func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
+	// Don't save package-lock.json from the `node_modules` directory to avoid duplication and mistakes.
 	if fileName == types.NpmPkgLock && !xpath.Contains(filePath, "node_modules") {
 		return true
 	}
-	// The file path to package.json - */node_modules/<package_name>/package.json
-	// The path is slashed in analyzers.
-	dirs := strings.Split(path.Dir(filePath), "/")
-	if len(dirs) > 1 && dirs[len(dirs)-2] == "node_modules" && fileName == types.NpmPkg {
+
+	// Save package.json files only from the `node_modules` directory.
+	// Required to search for licenses.
+	if fileName == types.NpmPkg && xpath.Contains(filePath, "node_modules") {
 		return true
 	}
 	return false
@@ -114,7 +114,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types
 	}
 	defer func() { _ = f.Close() }()
 
-	file, ok := f.(dio.ReadSeekCloserAt)
+	file, ok := f.(xio.ReadSeekCloserAt)
 	if !ok {
 		return nil, xerrors.Errorf("type assertion error: %w", err)
 	}

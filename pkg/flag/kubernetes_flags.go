@@ -10,29 +10,26 @@ import (
 )
 
 var (
-	ClusterContextFlag = Flag{
+	ClusterContextFlag = Flag[string]{
 		Name:       "context",
 		ConfigName: "kubernetes.context",
-		Default:    "",
 		Usage:      "specify a context to scan",
 		Aliases: []Alias{
 			{Name: "ctx"},
 		},
 	}
-	K8sNamespaceFlag = Flag{
+	K8sNamespaceFlag = Flag[string]{
 		Name:       "namespace",
 		ConfigName: "kubernetes.namespace",
 		Shorthand:  "n",
-		Default:    "",
 		Usage:      "specify a namespace to scan",
 	}
-	KubeConfigFlag = Flag{
+	KubeConfigFlag = Flag[string]{
 		Name:       "kubeconfig",
 		ConfigName: "kubernetes.kubeconfig",
-		Default:    "",
 		Usage:      "specify the kubeconfig file path to use",
 	}
-	ComponentsFlag = Flag{
+	ComponentsFlag = Flag[[]string]{
 		Name:       "components",
 		ConfigName: "kubernetes.components",
 		Default: []string{
@@ -45,63 +42,72 @@ var (
 		},
 		Usage: "specify which components to scan",
 	}
-	K8sVersionFlag = Flag{
+	K8sVersionFlag = Flag[string]{
 		Name:       "k8s-version",
 		ConfigName: "kubernetes.k8s.version",
-		Default:    "",
 		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
 	}
-	TolerationsFlag = Flag{
+	TolerationsFlag = Flag[[]string]{
 		Name:       "tolerations",
 		ConfigName: "kubernetes.tolerations",
-		Default:    []string{},
 		Usage:      "specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)",
 	}
-	AllNamespaces = Flag{
+	AllNamespaces = Flag[bool]{
 		Name:       "all-namespaces",
 		ConfigName: "kubernetes.all.namespaces",
 		Shorthand:  "A",
-		Default:    false,
 		Usage:      "fetch resources from all cluster namespaces",
 	}
-	NodeCollectorNamespace = Flag{
+	NodeCollectorNamespace = Flag[string]{
 		Name:       "node-collector-namespace",
 		ConfigName: "node.collector.namespace",
 		Default:    "trivy-temp",
 		Usage:      "specify the namespace in which the node-collector job should be deployed",
 	}
-	ExcludeOwned = Flag{
+	ExcludeOwned = Flag[bool]{
 		Name:       "exclude-owned",
 		ConfigName: "kubernetes.exclude.owned",
-		Default:    false,
 		Usage:      "exclude resources that have an owner reference",
 	}
-	ExcludeNodes = Flag{
+	ExcludeNodes = Flag[[]string]{
 		Name:       "exclude-nodes",
-		ConfigName: "exclude.nodes",
-		Default:    []string{},
+		ConfigName: "kubernetes.exclude.nodes",
 		Usage:      "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)",
 	}
-	NodeCollectorImageRef = Flag{
+	NodeCollectorImageRef = Flag[string]{
 		Name:       "node-collector-imageref",
-		ConfigName: "node.collector.imageref",
+		ConfigName: "kubernetes.node.collector.imageref",
 		Default:    "ghcr.io/aquasecurity/node-collector:0.0.9",
 		Usage:      "indicate the image reference for the node-collector scan job",
+	}
+	QPS = Flag[float64]{
+		Name:       "qps",
+		ConfigName: "kubernetes.qps",
+		Default:    5.0,
+		Usage:      "specify the maximum QPS to the master from this client",
+	}
+	Burst = Flag[int]{
+		Name:       "burst",
+		ConfigName: "kubernetes.burst",
+		Default:    10,
+		Usage:      "specify the maximum burst for throttle",
 	}
 )
 
 type K8sFlagGroup struct {
-	ClusterContext         *Flag
-	Namespace              *Flag
-	KubeConfig             *Flag
-	Components             *Flag
-	K8sVersion             *Flag
-	Tolerations            *Flag
-	NodeCollectorImageRef  *Flag
-	AllNamespaces          *Flag
-	NodeCollectorNamespace *Flag
-	ExcludeOwned           *Flag
-	ExcludeNodes           *Flag
+	ClusterContext         *Flag[string]
+	Namespace              *Flag[string]
+	KubeConfig             *Flag[string]
+	Components             *Flag[[]string]
+	K8sVersion             *Flag[string]
+	Tolerations            *Flag[[]string]
+	NodeCollectorImageRef  *Flag[string]
+	AllNamespaces          *Flag[bool]
+	NodeCollectorNamespace *Flag[string]
+	ExcludeOwned           *Flag[bool]
+	ExcludeNodes           *Flag[[]string]
+	QPS                    *Flag[float64]
+	Burst                  *Flag[int]
 }
 
 type K8sOptions struct {
@@ -116,21 +122,25 @@ type K8sOptions struct {
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
 	ExcludeNodes           map[string]string
+	QPS                    float32
+	Burst                  int
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
 	return &K8sFlagGroup{
-		ClusterContext:         &ClusterContextFlag,
-		Namespace:              &K8sNamespaceFlag,
-		KubeConfig:             &KubeConfigFlag,
-		Components:             &ComponentsFlag,
-		K8sVersion:             &K8sVersionFlag,
-		Tolerations:            &TolerationsFlag,
-		AllNamespaces:          &AllNamespaces,
-		NodeCollectorNamespace: &NodeCollectorNamespace,
-		ExcludeOwned:           &ExcludeOwned,
-		ExcludeNodes:           &ExcludeNodes,
-		NodeCollectorImageRef:  &NodeCollectorImageRef,
+		ClusterContext:         ClusterContextFlag.Clone(),
+		Namespace:              K8sNamespaceFlag.Clone(),
+		KubeConfig:             KubeConfigFlag.Clone(),
+		Components:             ComponentsFlag.Clone(),
+		K8sVersion:             K8sVersionFlag.Clone(),
+		Tolerations:            TolerationsFlag.Clone(),
+		AllNamespaces:          AllNamespaces.Clone(),
+		NodeCollectorNamespace: NodeCollectorNamespace.Clone(),
+		ExcludeOwned:           ExcludeOwned.Clone(),
+		ExcludeNodes:           ExcludeNodes.Clone(),
+		NodeCollectorImageRef:  NodeCollectorImageRef.Clone(),
+		QPS:                    QPS.Clone(),
+		Burst:                  Burst.Clone(),
 	}
 }
 
@@ -138,8 +148,8 @@ func (f *K8sFlagGroup) Name() string {
 	return "Kubernetes"
 }
 
-func (f *K8sFlagGroup) Flags() []*Flag {
-	return []*Flag{
+func (f *K8sFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.ClusterContext,
 		f.Namespace,
 		f.KubeConfig,
@@ -151,17 +161,23 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.ExcludeOwned,
 		f.ExcludeNodes,
 		f.NodeCollectorImageRef,
+		f.QPS,
+		f.Burst,
 	}
 }
 
 func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
-	tolerations, err := optionToTolerations(getStringSlice(f.Tolerations))
+	if err := parseFlags(f); err != nil {
+		return K8sOptions{}, err
+	}
+
+	tolerations, err := optionToTolerations(f.Tolerations.Value())
 	if err != nil {
 		return K8sOptions{}, err
 	}
 
 	exludeNodeLabels := make(map[string]string)
-	exludeNodes := getStringSlice(f.ExcludeNodes)
+	exludeNodes := f.ExcludeNodes.Value()
 	for _, exludeNodeValue := range exludeNodes {
 		excludeNodeParts := strings.Split(exludeNodeValue, ":")
 		if len(excludeNodeParts) != 2 {
@@ -171,17 +187,19 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 	}
 
 	return K8sOptions{
-		ClusterContext:         getString(f.ClusterContext),
-		Namespace:              getString(f.Namespace),
-		KubeConfig:             getString(f.KubeConfig),
-		Components:             getStringSlice(f.Components),
-		K8sVersion:             getString(f.K8sVersion),
+		ClusterContext:         f.ClusterContext.Value(),
+		Namespace:              f.Namespace.Value(),
+		KubeConfig:             f.KubeConfig.Value(),
+		Components:             f.Components.Value(),
+		K8sVersion:             f.K8sVersion.Value(),
 		Tolerations:            tolerations,
-		AllNamespaces:          getBool(f.AllNamespaces),
-		NodeCollectorNamespace: getString(f.NodeCollectorNamespace),
-		ExcludeOwned:           getBool(f.ExcludeOwned),
+		AllNamespaces:          f.AllNamespaces.Value(),
+		NodeCollectorNamespace: f.NodeCollectorNamespace.Value(),
+		ExcludeOwned:           f.ExcludeOwned.Value(),
 		ExcludeNodes:           exludeNodeLabels,
-		NodeCollectorImageRef:  getString(f.NodeCollectorImageRef),
+		NodeCollectorImageRef:  f.NodeCollectorImageRef.Value(),
+		QPS:                    float32(f.QPS.Value()),
+		Burst:                  f.Burst.Value(),
 	}, nil
 }
 

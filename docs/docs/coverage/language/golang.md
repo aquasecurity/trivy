@@ -68,7 +68,7 @@ If there is a Go binary in your container image, Trivy automatically finds and s
 Also, you can scan your local binaries.
 
 ```
-$ trivy fs ./your_binary
+$ trivy rootfs ./your_binary
 ```
 
 !!! note

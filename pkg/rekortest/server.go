@@ -54,11 +54,14 @@ var (
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-09-15T13:53:49+00:00",
-					Tools: &[]cyclonedx.Tool{
-						{
-							Vendor:  "aquasecurity",
-							Name:    "trivy",
-							Version: "dev",
+					Tools: &cyclonedx.ToolsChoice{
+						Components: &[]cyclonedx.Component{
+							{
+								Type:    cyclonedx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cyclonedx.Component{
@@ -138,7 +141,7 @@ var (
 				},
 				Dependencies: &[]cyclonedx.Dependency{
 					{
-						Ref: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine&6arch=amd64",
+						Ref: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine&arch=amd64",
 						Dependencies: &[]string{
 							"fad4eb97-3d2a-4499-ace7-2c94444148a7",
 						},
@@ -175,11 +178,14 @@ var (
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-10-21T09:50:08+00:00",
-					Tools: &[]cyclonedx.Tool{
-						{
-							Vendor:  "aquasecurity",
-							Name:    "trivy",
-							Version: "dev",
+					Tools: &cyclonedx.ToolsChoice{
+						Components: &[]cyclonedx.Component{
+							{
+								Type:    cyclonedx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
 						},
 					},
 					Component: &cyclonedx.Component{

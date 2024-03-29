@@ -3,18 +3,19 @@ package report
 import (
 	"bytes"
 	"context"
-	"github.com/aquasecurity/trivy/pkg/clock"
 	"testing"
 	"time"
+
+	"github.com/aquasecurity/trivy/pkg/clock"
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Test_ServiceReport(t *testing.T) {
@@ -88,7 +89,10 @@ This scan report was loaded from cached results. If you'd like to run a fresh sc
 					},
 				},
 				AWSOptions: flag.AWSOptions{
-					Services: []string{"s3", "ec2"},
+					Services: []string{
+						"s3",
+						"ec2",
+					},
 				},
 			},
 			fromCache: false,
@@ -117,7 +121,11 @@ Scan Overview for AWS Account
 					},
 				},
 				AWSOptions: flag.AWSOptions{
-					Services: []string{"ec2", "s3", "iam"},
+					Services: []string{
+						"ec2",
+						"s3",
+						"iam",
+					},
 				},
 			},
 			fromCache: false,
@@ -310,7 +318,7 @@ Scan Overview for AWS Account
 }`,
 		},
 	}
-	clock.SetFakeTime(t, time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			report := New(
@@ -323,7 +331,7 @@ Scan Overview for AWS Account
 
 			output := bytes.NewBuffer(nil)
 			tt.options.SetOutputWriter(output)
-			require.NoError(t, Write(context.Background(), report, tt.options, tt.fromCache))
+			require.NoError(t, Write(ctx, report, tt.options, tt.fromCache))
 
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)
@@ -357,7 +365,7 @@ func createTestResults() scan.Results {
 	var s3Results scan.Results
 	s3Results.Add(
 		"something failed",
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "s3",
 			Region:    "us-east-1",
@@ -367,7 +375,7 @@ func createTestResults() scan.Results {
 	)
 	s3Results.Add(
 		"something else failed",
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "s3",
 			Region:    "us-east-1",
@@ -377,7 +385,7 @@ func createTestResults() scan.Results {
 	)
 	s3Results.Add(
 		"something else failed again",
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "s3",
 			Region:    "us-east-1",
@@ -386,7 +394,7 @@ func createTestResults() scan.Results {
 		}).String()),
 	)
 	s3Results.AddPassed(
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "s3",
 			Region:    "us-east-1",
@@ -399,7 +407,7 @@ func createTestResults() scan.Results {
 	var ec2Results scan.Results
 	ec2Results.Add(
 		"instance is bad",
-		defsecTypes.NewRemoteMetadata((arn.ARN{
+		iacTypes.NewRemoteMetadata((arn.ARN{
 			Partition: "aws",
 			Service:   "ec2",
 			Region:    "us-east-1",

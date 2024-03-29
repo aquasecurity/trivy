@@ -1,0 +1,2 @@
+oauth2-client==4.0.0
+python-gitlab==2.0.0

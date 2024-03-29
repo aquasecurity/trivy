@@ -12,7 +12,7 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
@@ -525,7 +525,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 
 			ctx := context.Background()
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
-				func() (dio.ReadSeekCloserAt, error) {
+				func() (xio.ReadSeekCloserAt, error) {
 					if tt.args.testFilePath == "testdata/error" {
 						return nil, xerrors.New("error")
 					} else if tt.args.testFilePath == "testdata/no-permission" {

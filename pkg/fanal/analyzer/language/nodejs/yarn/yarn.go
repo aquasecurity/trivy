@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -17,9 +18,9 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/yarn"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/yarn"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -35,6 +36,10 @@ func init() {
 }
 
 const version = 2
+
+// Taken from Yarn
+// cf. https://github.com/yarnpkg/yarn/blob/328fd596de935acc6c3e134741748fcc62ec3739/src/resolvers/exotics/registry-resolver.js#L12
+var fragmentRegexp = regexp.MustCompile(`(\S+):(@?.*?)(@(.*?)|)$`)
 
 type yarnAnalyzer struct {
 	packageJsonParser *packagejson.Parser
@@ -193,17 +198,30 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 	// Identify direct dependencies
 	pkgs := make(map[string]types.Package)
 	for _, pkg := range libs {
-		if constraint, ok := directDeps[pkg.Name]; ok {
-			// npm has own comparer to compare versions
-			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-				return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
-			} else if match {
-				// Mark as a direct dependency
-				pkg.Indirect = false
-				pkg.Dev = dev
-				pkgs[pkg.ID] = pkg
-			}
+		constraint, ok := directDeps[pkg.Name]
+		if !ok {
+			continue
 		}
+
+		// Handle aliases
+		// cf. https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias
+		if m := fragmentRegexp.FindStringSubmatch(constraint); len(m) == 5 {
+			pkg.Name = m[2] // original name
+			constraint = m[4]
+		}
+
+		// npm has own comparer to compare versions
+		if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
+			return nil, xerrors.Errorf("unable to match version for %s", pkg.Name)
+		} else if !match {
+			continue
+		}
+
+		// Mark as a direct dependency
+		pkg.Indirect = false
+		pkg.Dev = dev
+		pkgs[pkg.ID] = pkg
+
 	}
 
 	// Walk indirect dependencies
@@ -250,7 +268,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) 
 	devDependencies := rootPkg.DevDependencies
 
 	if len(rootPkg.Workspaces) > 0 {
-		pkgs, err := a.traverseWorkspaces(fsys, rootPkg.Workspaces)
+		pkgs, err := a.traverseWorkspaces(fsys, path.Dir(filePath), rootPkg.Workspaces)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("traverse workspaces error: %w", err)
 		}
@@ -263,7 +281,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) 
 	return dependencies, devDependencies, nil
 }
 
-func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]packagejson.Package, error) {
+func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []string) ([]packagejson.Package, error) {
 	var pkgs []packagejson.Package
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -280,6 +298,9 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 	}
 
 	for _, workspace := range workspaces {
+		// We need to add the path to the `package.json` file
+		// to properly get the pattern to search in `fs`
+		workspace = path.Join(dir, workspace)
 		matches, err := fs.Glob(fsys, workspace)
 		if err != nil {
 			return nil, err

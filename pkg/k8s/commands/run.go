@@ -30,6 +30,8 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	cluster, err := k8s.GetCluster(
 		k8s.WithContext(opts.K8sOptions.ClusterContext),
 		k8s.WithKubeConfig(opts.K8sOptions.KubeConfig),
+		k8s.WithBurst(opts.K8sOptions.Burst),
+		k8s.WithQPS(opts.K8sOptions.QPS),
 	)
 	if err != nil {
 		return xerrors.Errorf("failed getting k8s cluster: %w", err)
@@ -116,14 +118,14 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		if err != nil {
 			return xerrors.Errorf("compliance report build error: %w", err)
 		}
-		return cr.Write(complianceReport, cr.Option{
+		return cr.Write(ctx, complianceReport, cr.Option{
 			Format: r.flagOpts.Format,
 			Report: r.flagOpts.ReportFormat,
 			Output: output,
 		})
 	}
 
-	if err := k8sRep.Write(rpt, report.Option{
+	if err := k8sRep.Write(ctx, rpt, report.Option{
 		Format:     r.flagOpts.Format,
 		Report:     r.flagOpts.ReportFormat,
 		Output:     output,

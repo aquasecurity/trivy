@@ -217,13 +217,16 @@ $ cat result.json | jq .
   "version": 1,
   "metadata": {
     "timestamp": "2022-02-22T15:11:40.270597Z",
-    "tools": [
-      {
-        "vendor": "aquasecurity",
-        "name": "trivy",
-        "version": "dev"
-      }
-    ],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
     "component": {
       "bom-ref": "pkg:oci/alpine@sha256:21a3deaa0d32a8057914f36584b5288d2e5ecc984380bc0118285c70fa8c9300?repository_url=index.docker.io%2Flibrary%2Falpine&arch=amd64",
       "type": "container",

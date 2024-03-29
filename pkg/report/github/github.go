@@ -1,6 +1,7 @@
 package github
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -71,11 +72,11 @@ type Writer struct {
 	Version string
 }
 
-func (w Writer) Write(report types.Report) error {
+func (w Writer) Write(ctx context.Context, report types.Report) error {
 	snapshot := &DependencySnapshot{}
 
 	// use now() method that can be overwritten while integration tests run
-	snapshot.Scanned = clock.Now().Format(time.RFC3339)
+	snapshot.Scanned = clock.Now(ctx).Format(time.RFC3339)
 	snapshot.Detector = Detector{
 		Name:    "trivy",
 		Version: w.Version,
@@ -104,8 +105,25 @@ func (w Writer) Write(report types.Report) error {
 		manifest.Name = string(result.Type)
 		// show path for language-specific packages only
 		if result.Class == types.ClassLangPkg {
-			manifest.File = &File{
-				SrcLocation: result.Target,
+			if report.ArtifactType == ftypes.ArtifactContainerImage {
+				// `RepoDigests` ~= <registry>/<image_name>@sha256:<image_hash>
+				// `RepoTag` ~= <registry>/<image_name>:<image_tag>
+				// By concatenating the hash from `RepoDigests` at the end of `RepoTag` we get all the information
+				imageReference := strings.Join(report.Metadata.RepoTags, ", ")
+				imageWithHash := strings.Join(report.Metadata.RepoDigests, ", ")
+				_, imageHash, found := strings.Cut(imageWithHash, "@")
+				if found {
+					imageReference += "@" + imageHash
+				}
+				// Replacing `source_location` in manifest by the image name, tag and hash
+				manifest.File = &File{
+					SrcLocation: imageReference,
+				}
+
+			} else {
+				manifest.File = &File{
+					SrcLocation: result.Target,
+				}
 			}
 		}
 
@@ -120,6 +138,10 @@ func (w Writer) Write(report types.Report) error {
 			githubPkg.PackageUrl, err = buildPurl(result.Type, report.Metadata, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl for %s: %w", pkg.Name, err)
+			}
+
+			if pkg.FilePath != "" {
+				githubPkg.Metadata = Metadata{"source_location": pkg.FilePath}
 			}
 
 			resolved[pkg.Name] = githubPkg
@@ -168,5 +190,5 @@ func buildPurl(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package)
 	if packageUrl == nil {
 		return "", nil
 	}
-	return packageUrl.ToString(), nil
+	return packageUrl.String(), nil
 }

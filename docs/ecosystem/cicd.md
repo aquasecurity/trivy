@@ -79,3 +79,11 @@ You can use Trivy Resource in Concourse for scanning containers and introducing 
 It has capabilities to fail the pipeline, create issues, alert communication channels (using respective resources) based on Trivy scan output.
 
 👉 Get it at: <https://github.com/Comcast/trivy-resource/>
+
+
+## SecObserve GitHub actions and GitLab templates (Community)
+[SecObserve GitHub actions and GitLab templates](https://github.com/MaibornWolff/secobserve_actions_templates) run various vulnerability scanners, providing uniform methods and parameters for launching the tools.
+
+The Trivy integration supports scanning Docker images and local filesystems for vulnerabilities as well as scanning IaC files for misconfigurations.
+
+👉 Get it at: <https://github.com/MaibornWolff/secobserve_actions_templates>

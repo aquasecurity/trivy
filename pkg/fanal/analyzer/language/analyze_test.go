@@ -9,18 +9,18 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type mockParser struct {
 	t *testing.T
 }
 
-func (p *mockParser) Parse(r dio.ReadSeekerAt) ([]godeptypes.Library, []godeptypes.Dependency, error) {
+func (p *mockParser) Parse(r xio.ReadSeekerAt) ([]godeptypes.Library, []godeptypes.Dependency, error) {
 	b, err := io.ReadAll(r)
 	require.NoError(p.t, err)
 
@@ -43,7 +43,7 @@ func TestAnalyze(t *testing.T) {
 	type args struct {
 		fileType types.LangType
 		filePath string
-		content  dio.ReadSeekerAt
+		content  xio.ReadSeekerAt
 	}
 	tests := []struct {
 		name    string

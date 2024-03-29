@@ -14,9 +14,9 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var requiredDiskName = []string{
@@ -167,7 +167,7 @@ func newCachedVMFile(fsys fs.FS, filePath string, threshold int64) *cachedVMFile
 	}
 }
 
-func (cvf *cachedVMFile) Open() (dio.ReadSeekCloserAt, error) {
+func (cvf *cachedVMFile) Open() (xio.ReadSeekCloserAt, error) {
 	if cvf.cf != nil {
 		return cvf.cf.Open()
 	}

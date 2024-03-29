@@ -59,5 +59,5 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 
 	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader,
 		opts.DBRepository, opts.RegistryOpts())
-	return server.ListenAndServe(cache, opts.SkipDBUpdate)
+	return server.ListenAndServe(ctx, cache, opts.SkipDBUpdate)
 }

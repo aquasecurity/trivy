@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/google/wire"
 	"github.com/samber/lo"
@@ -120,7 +121,7 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	// Scan packages for vulnerabilities
 	if options.Scanners.Enabled(types.VulnerabilityScanner) {
 		var vulnResults types.Results
-		vulnResults, eosl, err = s.scanVulnerabilities(target, options)
+		vulnResults, eosl, err = s.scanVulnerabilities(ctx, target, options)
 		if err != nil {
 			return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
@@ -166,13 +167,13 @@ func (s Scanner) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	return results, target.OS, nil
 }
 
-func (s Scanner) scanVulnerabilities(target types.ScanTarget, options types.ScanOptions) (
+func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (
 	types.Results, bool, error) {
 	var eosl bool
 	var results types.Results
 
 	if slices.Contains(options.VulnType, types.VulnTypeOS) {
-		vuln, detectedEOSL, err := s.osPkgScanner.Scan(target, options)
+		vuln, detectedEOSL, err := s.osPkgScanner.Scan(ctx, target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
 		} else if vuln.Target != "" {
@@ -229,16 +230,16 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 		var detected []types.DetectedMisconfiguration
 
 		for _, f := range misconf.Failures {
-			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.StatusFailure, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.MisconfStatusFailure, misconf.Layer))
 		}
 		for _, w := range misconf.Warnings {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.StatusFailure, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.MisconfStatusFailure, misconf.Layer))
 		}
 		for _, w := range misconf.Successes {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusPassed, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusPassed, misconf.Layer))
 		}
 		for _, w := range misconf.Exceptions {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusException, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.MisconfStatusException, misconf.Layer))
 		}
 
 		results = append(results, types.Result{
@@ -266,9 +267,11 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 		log.Logger.Debugf("Secret file: %s", secret.FilePath)
 
 		results = append(results, types.Result{
-			Target:  secret.FilePath,
-			Class:   types.ClassSecret,
-			Secrets: secret.Findings,
+			Target: secret.FilePath,
+			Class:  types.ClassSecret,
+			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, index int) types.DetectedSecret {
+				return types.DetectedSecret(secret)
+			}),
 		})
 	}
 	return results
@@ -295,7 +298,6 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 				Confidence: 1.0,
 			})
 		}
-
 	}
 	results = append(results, types.Result{
 		Target:   "OS Packages",
@@ -310,10 +312,13 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 			for _, license := range lib.Licenses {
 				category, severity := scanner.Scan(license)
 				langLicenses = append(langLicenses, types.DetectedLicense{
-					Severity:   severity,
-					Category:   category,
-					PkgName:    lib.Name,
-					Name:       license,
+					Severity: severity,
+					Category: category,
+					PkgName:  lib.Name,
+					Name:     license,
+					// Lock files use app.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
+					// Applications use lib.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
+					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
 					Confidence: 1.0,
 				})
 			}
@@ -422,8 +427,15 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 	if include {
 		return
 	}
+
+	onceInfo := sync.OnceFunc(func() {
+		log.Logger.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
+	})
 	for i := range apps {
 		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
+			if lib.Dev {
+				onceInfo()
+			}
 			return !lib.Dev
 		})
 	}

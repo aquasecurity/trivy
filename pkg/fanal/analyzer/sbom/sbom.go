@@ -88,9 +88,6 @@ func handleBitnamiImages(componentPath string, bom types.SBOM) {
 			// If the file path is empty, the file path will be set to the component dir path.
 			filePath := path.Join(componentPath, pkg.FilePath)
 			bom.Applications[i].Libraries[j].FilePath = filePath
-			if pkg.Identifier.PURL != nil && pkg.Identifier.PURL.FilePath != "" {
-				bom.Applications[i].Libraries[j].Identifier.PURL.FilePath = filePath
-			}
 		}
 	}
 }

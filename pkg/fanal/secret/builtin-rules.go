@@ -5,8 +5,8 @@ import (
 
 	"github.com/samber/lo"
 
-	defsecRules "github.com/aquasecurity/trivy-iac/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	iacRules "github.com/aquasecurity/trivy/pkg/iac/rules"
 )
 
 var (
@@ -69,6 +69,7 @@ var (
 	CategoryTwitch               = types.SecretRuleCategory("Twitch")
 	CategoryTypeform             = types.SecretRuleCategory("Typeform")
 	CategoryDocker               = types.SecretRuleCategory("Docker")
+	CategoryHuggingFace          = types.SecretRuleCategory("HuggingFace")
 )
 
 // Reusable regex patterns
@@ -76,15 +77,15 @@ const (
 	quote       = `["']?`
 	connect     = `\s*(:|=>|=)?\s*`
 	startSecret = `(^|\s+)`
-	endSecret   = `(\s+|$)`
+	endSecret   = `[.,]?(\s+|$)`
 
-	aws = `(aws)?_?`
+	aws = `aws_?`
 )
 
 // This function is exported for trivy-plugin-aqua purposes only
-func GetSecretRulesMetadata() []defsecRules.Check {
-	return lo.Map(builtinRules, func(rule Rule, i int) defsecRules.Check {
-		return defsecRules.Check{
+func GetSecretRulesMetadata() []iacRules.Check {
+	return lo.Map(builtinRules, func(rule Rule, i int) iacRules.Check {
+		return iacRules.Check{
 			Name:        rule.ID,
 			Description: rule.Title,
 		}
@@ -157,6 +158,15 @@ var builtinRules = []Rule{
 		Severity: "CRITICAL",
 		Regex:    MustCompile(`glpat-[0-9a-zA-Z\-\_]{20}`),
 		Keywords: []string{"glpat-"},
+	},
+	{
+		// cf. https://huggingface.co/docs/hub/en/security-tokens
+		ID:       "hugging-face-access-token",
+		Category: CategoryHuggingFace,
+		Severity: "CRITICAL",
+		Title:    "Hugging Face Access Token",
+		Regex:    MustCompile(`hf_[A-Za-z0-9]{39}`),
+		Keywords: []string{"hf_"},
 	},
 	{
 		ID:              "private-key",

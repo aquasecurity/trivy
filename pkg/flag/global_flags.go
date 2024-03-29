@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ConfigFileFlag = Flag{
+	ConfigFileFlag = Flag[string]{
 		Name:       "config",
 		ConfigName: "config",
 		Shorthand:  "c",
@@ -18,55 +18,50 @@ var (
 		Usage:      "config path",
 		Persistent: true,
 	}
-	ShowVersionFlag = Flag{
+	ShowVersionFlag = Flag[bool]{
 		Name:       "version",
 		ConfigName: "version",
 		Shorthand:  "v",
-		Default:    false,
 		Usage:      "show version",
 		Persistent: true,
 	}
-	QuietFlag = Flag{
+	QuietFlag = Flag[bool]{
 		Name:       "quiet",
 		ConfigName: "quiet",
 		Shorthand:  "q",
-		Default:    false,
 		Usage:      "suppress progress bar and log output",
 		Persistent: true,
 	}
-	DebugFlag = Flag{
+	DebugFlag = Flag[bool]{
 		Name:       "debug",
 		ConfigName: "debug",
 		Shorthand:  "d",
-		Default:    false,
 		Usage:      "debug mode",
 		Persistent: true,
 	}
-	InsecureFlag = Flag{
+	InsecureFlag = Flag[bool]{
 		Name:       "insecure",
 		ConfigName: "insecure",
-		Default:    false,
 		Usage:      "allow insecure server connections",
 		Persistent: true,
 	}
-	TimeoutFlag = Flag{
+	TimeoutFlag = Flag[time.Duration]{
 		Name:       "timeout",
 		ConfigName: "timeout",
 		Default:    time.Second * 300, // 5 mins
 		Usage:      "timeout",
 		Persistent: true,
 	}
-	CacheDirFlag = Flag{
+	CacheDirFlag = Flag[string]{
 		Name:       "cache-dir",
 		ConfigName: "cache.dir",
 		Default:    fsutils.CacheDir(),
 		Usage:      "cache directory",
 		Persistent: true,
 	}
-	GenerateDefaultConfigFlag = Flag{
+	GenerateDefaultConfigFlag = Flag[bool]{
 		Name:       "generate-default-config",
 		ConfigName: "generate-default-config",
-		Default:    false,
 		Usage:      "write the default config to trivy-default.yaml",
 		Persistent: true,
 	}
@@ -74,14 +69,14 @@ var (
 
 // GlobalFlagGroup composes global flags
 type GlobalFlagGroup struct {
-	ConfigFile            *Flag
-	ShowVersion           *Flag // spf13/cobra can't override the logic of version printing like VersionPrinter in urfave/cli. -v needs to be defined ourselves.
-	Quiet                 *Flag
-	Debug                 *Flag
-	Insecure              *Flag
-	Timeout               *Flag
-	CacheDir              *Flag
-	GenerateDefaultConfig *Flag
+	ConfigFile            *Flag[string]
+	ShowVersion           *Flag[bool] // spf13/cobra can't override the logic of version printing like VersionPrinter in urfave/cli. -v needs to be defined ourselves.
+	Quiet                 *Flag[bool]
+	Debug                 *Flag[bool]
+	Insecure              *Flag[bool]
+	Timeout               *Flag[time.Duration]
+	CacheDir              *Flag[string]
+	GenerateDefaultConfig *Flag[bool]
 }
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
@@ -98,19 +93,23 @@ type GlobalOptions struct {
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
 	return &GlobalFlagGroup{
-		ConfigFile:            &ConfigFileFlag,
-		ShowVersion:           &ShowVersionFlag,
-		Quiet:                 &QuietFlag,
-		Debug:                 &DebugFlag,
-		Insecure:              &InsecureFlag,
-		Timeout:               &TimeoutFlag,
-		CacheDir:              &CacheDirFlag,
-		GenerateDefaultConfig: &GenerateDefaultConfigFlag,
+		ConfigFile:            ConfigFileFlag.Clone(),
+		ShowVersion:           ShowVersionFlag.Clone(),
+		Quiet:                 QuietFlag.Clone(),
+		Debug:                 DebugFlag.Clone(),
+		Insecure:              InsecureFlag.Clone(),
+		Timeout:               TimeoutFlag.Clone(),
+		CacheDir:              CacheDirFlag.Clone(),
+		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
 	}
 }
 
-func (f *GlobalFlagGroup) flags() []*Flag {
-	return []*Flag{
+func (f *GlobalFlagGroup) Name() string {
+	return "global"
+}
+
+func (f *GlobalFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.ConfigFile,
 		f.ShowVersion,
 		f.Quiet,
@@ -123,32 +122,36 @@ func (f *GlobalFlagGroup) flags() []*Flag {
 }
 
 func (f *GlobalFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
+	for _, flag := range f.Flags() {
+		flag.Add(cmd)
 	}
 }
 
 func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
+	for _, flag := range f.Flags() {
+		if err := flag.Bind(cmd); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
+func (f *GlobalFlagGroup) ToOptions() (GlobalOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return GlobalOptions{}, err
+	}
+
 	// Keep TRIVY_NON_SSL for backward compatibility
-	insecure := getBool(f.Insecure) || os.Getenv("TRIVY_NON_SSL") != ""
+	insecure := f.Insecure.Value() || os.Getenv("TRIVY_NON_SSL") != ""
 
 	return GlobalOptions{
-		ConfigFile:            getString(f.ConfigFile),
-		ShowVersion:           getBool(f.ShowVersion),
-		Quiet:                 getBool(f.Quiet),
-		Debug:                 getBool(f.Debug),
+		ConfigFile:            f.ConfigFile.Value(),
+		ShowVersion:           f.ShowVersion.Value(),
+		Quiet:                 f.Quiet.Value(),
+		Debug:                 f.Debug.Value(),
 		Insecure:              insecure,
-		Timeout:               getDuration(f.Timeout),
-		CacheDir:              getString(f.CacheDir),
-		GenerateDefaultConfig: getBool(f.GenerateDefaultConfig),
-	}
+		Timeout:               f.Timeout.Value(),
+		CacheDir:              f.CacheDir.Value(),
+		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
+	}, nil
 }

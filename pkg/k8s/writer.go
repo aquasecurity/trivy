@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"context"
 	"fmt"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -10,12 +11,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-type Writer interface {
-	Write(report.Report) error
-}
-
 // Write writes the results in the give format
-func Write(k8sreport report.Report, option report.Option) error {
+func Write(ctx context.Context, k8sreport report.Report, option report.Option) error {
 	k8sreport.PrintErrors()
 
 	switch option.Format {
@@ -41,7 +38,7 @@ func Write(k8sreport report.Report, option report.Option) error {
 				ColumnHeading: report.ColumnHeading(option.Scanners, option.Components, r.Columns),
 			}
 
-			if err := writer.Write(r.Report); err != nil {
+			if err := writer.Write(ctx, r.Report); err != nil {
 				return err
 			}
 		}
@@ -49,7 +46,7 @@ func Write(k8sreport report.Report, option report.Option) error {
 		return nil
 	case types.FormatCycloneDX:
 		w := report.NewCycloneDXWriter(option.Output, cdx.BOMFileFormatJSON, option.APIVersion)
-		return w.Write(k8sreport.RootComponent)
+		return w.Write(ctx, k8sreport.BOM)
 	}
 	return nil
 }

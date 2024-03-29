@@ -1,6 +1,8 @@
 package ospkg
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"sort"
 	"time"
@@ -14,7 +16,7 @@ import (
 
 type Scanner interface {
 	Packages(target types.ScanTarget, options types.ScanOptions) types.Result
-	Scan(target types.ScanTarget, options types.ScanOptions) (types.Result, bool, error)
+	Scan(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Result, bool, error)
 }
 
 type scanner struct{}
@@ -37,7 +39,7 @@ func (s *scanner) Packages(target types.ScanTarget, _ types.ScanOptions) types.R
 	}
 }
 
-func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Result, bool, error) {
+func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, _ types.ScanOptions) (types.Result, bool, error) {
 	if !target.OS.Detected() {
 		log.Logger.Debug("Detected OS: unknown")
 		return types.Result{}, false, nil
@@ -49,9 +51,9 @@ func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Resu
 		target.OS.Name += "-ESM"
 	}
 
-	vulns, eosl, err := ospkgDetector.Detect("", target.OS.Family, target.OS.Name, target.Repository, time.Time{},
+	vulns, eosl, err := ospkgDetector.Detect(ctx, "", target.OS.Family, target.OS.Name, target.Repository, time.Time{},
 		target.Packages)
-	if err == ospkgDetector.ErrUnsupportedOS {
+	if errors.Is(err, ospkgDetector.ErrUnsupportedOS) {
 		return types.Result{}, false, nil
 	} else if err != nil {
 		return types.Result{}, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)

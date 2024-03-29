@@ -1,12 +1,12 @@
 package oracle
 
 import (
+	"context"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -33,15 +33,13 @@ var (
 
 // Scanner implements oracle vulnerability scanner
 type Scanner struct {
-	vs    *oracleoval.VulnSrc
-	clock clock.Clock
+	vs *oracleoval.VulnSrc
 }
 
 // NewScanner is the factory method to return oracle vulnerabilities
 func NewScanner() *Scanner {
 	return &Scanner{
-		vs:    oracleoval.NewVulnSrc(),
-		clock: clock.RealClock{},
+		vs: oracleoval.NewVulnSrc(),
 	}
 }
 
@@ -101,6 +99,6 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 }
 
 // IsSupportedVersion checks if the version is supported.
-func (s *Scanner) IsSupportedVersion(osFamily ftypes.OSType, osVer string) bool {
-	return osver.Supported(s.clock, eolDates, osFamily, osver.Major(osVer))
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	return osver.Supported(ctx, eolDates, osFamily, osver.Major(osVer))
 }

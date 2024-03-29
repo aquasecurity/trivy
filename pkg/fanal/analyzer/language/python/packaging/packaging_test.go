@@ -15,25 +15,27 @@ import (
 func Test_packagingAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name            string
-		inputFile       string
+		dir             string
 		includeChecksum bool
 		want            *analyzer.AnalysisResult
 		wantErr         string
 	}{
 		{
-			name:      "egg zip",
-			inputFile: "testdata/kitchen-1.2.6-py2.7.egg",
+			name: "egg zip",
+			dir:  "testdata/egg-zip",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
+						FilePath: "kitchen-1.2.6-py2.7.egg",
 						Libraries: types.Packages{
 							{
-								Name:     "kitchen",
-								Version:  "1.2.6",
-								Licenses: []string{"LGPLv2+"},
-								FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
+								Name:    "kitchen",
+								Version: "1.2.6",
+								Licenses: []string{
+									"GNU Library or Lesser General Public License (LGPL)",
+								},
+								FilePath: "kitchen-1.2.6-py2.7.egg",
 							},
 						},
 					},
@@ -42,19 +44,19 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:            "egg-info",
-			inputFile:       "testdata/happy.egg-info/PKG-INFO",
+			dir:             "testdata/happy-egg",
 			includeChecksum: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "testdata/happy.egg-info/PKG-INFO",
+						FilePath: "distlib-0.3.1.egg-info/PKG-INFO",
 						Libraries: types.Packages{
 							{
 								Name:     "distlib",
 								Version:  "0.3.1",
 								Licenses: []string{"Python license"},
-								FilePath: "testdata/happy.egg-info/PKG-INFO",
+								FilePath: "distlib-0.3.1.egg-info/PKG-INFO",
 								Digest:   "sha1:d9d89d8ed3b2b683767c96814c9c5d3e57ef2e1b",
 							},
 						},
@@ -63,19 +65,19 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "egg-info license classifiers",
-			inputFile: "testdata/classifier-license.egg-info/PKG-INFO",
+			name: "egg-info license classifiers",
+			dir:  "testdata/classifier-license-egg",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "testdata/classifier-license.egg-info/PKG-INFO",
+						FilePath: "setuptools-51.3.3.egg-info/PKG-INFO",
 						Libraries: types.Packages{
 							{
 								Name:     "setuptools",
 								Version:  "51.3.3",
 								Licenses: []string{"MIT License"},
-								FilePath: "testdata/classifier-license.egg-info/PKG-INFO",
+								FilePath: "setuptools-51.3.3.egg-info/PKG-INFO",
 							},
 						},
 					},
@@ -83,19 +85,19 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "dist-info license classifiers",
-			inputFile: "testdata/classifier-license.dist-info/METADATA",
+			name: "dist-info license classifiers",
+			dir:  "testdata/classifier-license-dist",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "testdata/classifier-license.dist-info/METADATA",
+						FilePath: "setuptools-51.3.3.dist-info/METADATA",
 						Libraries: types.Packages{
 							{
 								Name:     "setuptools",
 								Version:  "51.3.3",
 								Licenses: []string{"MIT License"},
-								FilePath: "testdata/classifier-license.dist-info/METADATA",
+								FilePath: "setuptools-51.3.3.dist-info/METADATA",
 							},
 						},
 					},
@@ -103,19 +105,19 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "wheel",
-			inputFile: "testdata/happy.dist-info/METADATA",
+			name: "wheel",
+			dir:  "testdata/happy-dist",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "testdata/happy.dist-info/METADATA",
+						FilePath: "distlib-0.3.1.dist-info/METADATA",
 						Libraries: types.Packages{
 							{
 								Name:     "distlib",
 								Version:  "0.3.1",
 								Licenses: []string{"Python license"},
-								FilePath: "testdata/happy.dist-info/METADATA",
+								FilePath: "distlib-0.3.1.dist-info/METADATA",
 							},
 						},
 					},
@@ -123,27 +125,41 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "egg zip doesn't contain required files",
-			inputFile: "testdata/no-required-files.egg",
-			want:      nil,
+			name: "egg zip doesn't contain required files",
+			dir:  "testdata/no-req-files",
+			want: &analyzer.AnalysisResult{},
+		},
+		{
+			name: "license file in dist.info",
+			dir:  "testdata/license-file-dist",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.PythonPkg,
+						FilePath: "typing_extensions-4.4.0.dist-info/METADATA",
+						Libraries: []types.Package{
+							{
+								Name:     "typing_extensions",
+								Version:  "4.4.0",
+								Licenses: []string{"BeOpen", "CNRI-Python-GPL-Compatible", "LicenseRef-MIT-Lucent", "Python-2.0"},
+								FilePath: "typing_extensions-4.4.0.dist-info/METADATA",
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
-			require.NoError(t, err)
-			defer f.Close()
 
-			stat, err := f.Stat()
+			a, err := newPackagingAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
-
-			a := packagingAnalyzer{}
-			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Info:     stat,
-				Content:  f,
-				Options:  analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
+			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+				FS: os.DirFS(tt.dir),
+				Options: analyzer.AnalysisOptions{
+					FileChecksum: tt.includeChecksum,
+				},
 			})
 
 			if tt.wantErr != "" {
@@ -182,6 +198,11 @@ func Test_packagingAnalyzer_Required(t *testing.T) {
 		{
 			name:     "wheel",
 			filePath: "python3.8/site-packages/wrapt-1.12.1.dist-info/METADATA",
+			want:     true,
+		},
+		{
+			name:     "wheel license",
+			filePath: "python3.8/site-packages/wrapt-1.12.1.dist-info/LICENSE",
 			want:     true,
 		},
 		{
