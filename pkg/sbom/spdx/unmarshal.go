@@ -87,8 +87,16 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 			continue
 		}
 
-		compA := components[rel.RefA.ElementRefID]
-		compB := components[rel.RefB.ElementRefID]
+		compA, ok := components[rel.RefA.ElementRefID]
+		if !ok { // Skip if parent is not Package
+			continue
+		}
+
+		compB, ok := components[rel.RefB.ElementRefID]
+		if !ok { // Skip if child is not Package
+			continue
+		}
+
 		s.BOM.AddRelationship(compA, compB, s.parseRelationshipType(rel.Relationship))
 	}
 
@@ -255,6 +263,10 @@ func (s *SPDX) parseExternalReferences(refs []*spdx.PackageExternalReference) (*
 }
 
 func (s *SPDX) isTrivySBOM(spdxDocument *spdx.Document) bool {
+	if spdxDocument == nil || spdxDocument.CreationInfo == nil || spdxDocument.CreationInfo.Creators == nil {
+		return false
+	}
+
 	for _, c := range spdxDocument.CreationInfo.Creators {
 		if c.CreatorType == "Tool" && strings.HasPrefix(c.Creator, "trivy") {
 			return true

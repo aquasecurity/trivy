@@ -1516,4 +1516,89 @@ var (
 			DependsOn: []string{"debug@2.6.9"},
 		},
 	}
+
+	npmV3WithSameDevAndNonDevLibs = []types.Library{
+		{
+			ID:      "fsevents@1.2.9",
+			Name:    "fsevents",
+			Version: "1.2.9",
+			Dev:     true,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/fsevents/-/fsevents-1.2.9.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 18,
+					EndLine:   37,
+				},
+			},
+		},
+		{
+			ID:       "minimist@0.0.8",
+			Name:     "minimist",
+			Version:  "0.0.8",
+			Indirect: false,
+			Dev:      false,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 38,
+					EndLine:   43,
+				},
+				{
+					StartLine: 68,
+					EndLine:   72,
+				},
+			},
+		},
+		{
+			ID:       "mkdirp@0.5.1",
+			Name:     "mkdirp",
+			Version:  "0.5.1",
+			Indirect: true,
+			Dev:      true,
+			Locations: []types.Location{
+				{
+					StartLine: 44,
+					EndLine:   55,
+				},
+			},
+		},
+		{
+			ID:       "node-pre-gyp@0.12.0",
+			Name:     "node-pre-gyp",
+			Version:  "0.12.0",
+			Indirect: true,
+			Dev:      true,
+			Locations: []types.Location{
+				{
+					StartLine: 56,
+					EndLine:   67,
+				},
+			},
+		},
+	}
+
+	npmV3WithSameDevAndNonDevDeps = []types.Dependency{
+		{
+			ID:        "fsevents@1.2.9",
+			DependsOn: []string{"node-pre-gyp@0.12.0"},
+		},
+		{
+			ID:        "mkdirp@0.5.1",
+			DependsOn: []string{"minimist@0.0.8"},
+		},
+		{
+			ID:        "node-pre-gyp@0.12.0",
+			DependsOn: []string{"mkdirp@0.5.1"},
+		},
+	}
 )

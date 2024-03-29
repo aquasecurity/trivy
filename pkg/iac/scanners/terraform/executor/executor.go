@@ -241,7 +241,7 @@ func ignoreByParams(params map[string]string, modules terraform.Modules, m *type
 		return true
 	}
 	for key, val := range params {
-		attr := block.GetAttribute(key)
+		attr, _ := block.GetNestedAttribute(key)
 		if attr.IsNil() || !attr.Value().IsKnown() {
 			return false
 		}

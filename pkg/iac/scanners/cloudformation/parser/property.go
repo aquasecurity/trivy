@@ -414,3 +414,11 @@ func convert(input interface{}) interface{} {
 	}
 	return input
 }
+
+func (p *Property) inferType() {
+	typ := cftypes.TypeFromGoValue(p.Inner.Value)
+	if typ == cftypes.Unknown {
+		return
+	}
+	p.Inner.Type = typ
+}

@@ -315,6 +315,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path with file as parent of relationship",
+			inputFile: "testdata/happy/with-file-as-relationship-parent.json",
+			want:      types.SBOM{},
+		},
+		{
 			name:      "happy path only os component",
 			inputFile: "testdata/happy/os-only-bom.json",
 			want: types.SBOM{
