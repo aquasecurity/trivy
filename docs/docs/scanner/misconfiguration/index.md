@@ -494,8 +494,21 @@ resource "aws_security_group_rule" "example" {
 }
 ```
 
-!!! note
-    Currently nested attributes are not supported. For example you will not be able to reference the `each.key` attribute.
+Checks can also be ignored by nested attributes, but certain restrictions apply:
+
+- You cannot access an individual block using indexes, for example when working with dynamic blocks.
+- Special variables like [each](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each#the-each-object) and [count](https://developer.hashicorp.com/terraform/language/meta-arguments/count#the-count-object) cannot be accessed.
+
+```tf
+#trivy:ignore:*[logging_config.prefix=myprefix]
+resource "aws_cloudfront_distribution" "example" {
+  logging_config {
+    include_cookies = false
+    bucket          = "mylogs.s3.amazonaws.com"
+    prefix          = "myprefix"
+  }
+}
+```
 
 #### Ignoring module issues
 
