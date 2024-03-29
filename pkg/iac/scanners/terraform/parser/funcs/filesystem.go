@@ -205,7 +205,7 @@ func MakeFileExistsFunc(target fs.FS, baseDir string) function.Function {
 				path = filepath.Join(baseDir, path)
 			}
 
-			// Trivy uses a vitrual file system
+			// Trivy uses a virtual file system
 			path = filepath.ToSlash(path)
 
 			fi, err := fs.Stat(target, path)
@@ -253,7 +253,7 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 			// pattern is canonical for the host OS. The joined path is
 			// automatically cleaned during this operation.
 			pattern = filepath.Join(path, pattern)
-			// Trivy uses a vitrual file system
+			// Trivy uses a virtual file system
 			path = filepath.ToSlash(path)
 
 			matches, err := doublestar.Glob(target, pattern)
@@ -367,7 +367,7 @@ func openFile(target fs.FS, baseDir, path string) (fs.File, error) {
 		path = filepath.Join(baseDir, path)
 	}
 
-	// Trivy uses a vitrual file system
+	// Trivy uses a virtual file system
 	path = filepath.ToSlash(path)
 
 	if target != nil {
