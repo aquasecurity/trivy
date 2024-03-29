@@ -4110,7 +4110,7 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 </blockquote>
 <p>If multiple variables evaluate to the same hostname, Trivy will choose the environment variable name where the dashes have not been encoded as double underscores.</p>
 <h3 id="skipping-resources-by-inline-comments">Skipping resources by inline comments</h3>
-<p>Trivy supports ignoring misconfigured resources by inline comments for Terraform configuration files only.</p>
+<p>Trivy supports ignoring misconfigured resources by inline comments for Terraform and CloudFormation configuration files only.</p>
 <p>In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned). The format for these comments is <code>trivy:ignore:&lt;rule&gt;</code> immediately following the format-specific line-comment <a href="https://developer.hashicorp.com/terraform/language/syntax/configuration#comments">token</a>.</p>
 <p>The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The <code>id</code> from the metadata is not case-sensitive, so you can specify, for example, <code>AVD-AWS-0089</code> or <code>avd-aws-0089</code>.</p>
 <p>For example, to ignore a misconfiguration ID <code>AVD-GCP-0051</code> in a Terraform HCL file:</p>
@@ -4138,6 +4138,15 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 <span class="w">  </span><span class="c1"># short_code: enable-logging</span><span class="w"></span>
 </code></pre></div>
 <p>Long ID would look like the following: <code>aws-s3-enable-logging</code>.</p>
+<p>Example for CloudFromation:
+<div class="highlight"><pre><span></span><code><span class="nt">AWSTemplateFormatVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2010-09-09&quot;</span><span class="w"></span>
+<span class="nt">Resources</span><span class="p">:</span><span class="w"></span>
+<span class="c1">#trivy:ignore:*</span><span class="w"></span>
+<span class="w">  </span><span class="nt">S3Bucket</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;AWS::S3::Bucket&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">Properties</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">BucketName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-bucket</span><span class="w"></span>
+</code></pre></div></p>
 <h4 id="expiration-date">Expiration Date</h4>
 <p>You can specify the expiration date of the ignore rule in <code>yyyy-mm-dd</code> format. This is a useful feature when you want to make sure that an ignored issue is not forgotten and worth revisiting in the future. For example:
 <div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:aws-s3-enable-logging:exp:2024-03-10</span>
