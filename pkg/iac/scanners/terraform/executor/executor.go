@@ -128,7 +128,7 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 					return false
 				}
 
-				return ws == e.workspaceName
+				return ignore.MatchPattern(e.workspaceName, ws)
 			},
 			"ignore": func(resultMeta types.Metadata, param any) bool {
 				params, ok := param.(map[string]string)
