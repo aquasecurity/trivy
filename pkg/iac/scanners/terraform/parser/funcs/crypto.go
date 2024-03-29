@@ -26,8 +26,9 @@ import (
 )
 
 var UUIDFunc = function.New(&function.Spec{
-	Params: []function.Parameter{},
-	Type:   function.StaticReturnType(cty.String),
+	Params:       []function.Parameter{},
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 		result, err := uuid.GenerateUUID()
 		if err != nil {
@@ -48,7 +49,8 @@ var UUIDV5Func = function.New(&function.Spec{
 			Type: cty.String,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 		var namespace uuidv5.UUID
 		switch {
@@ -102,7 +104,8 @@ var BcryptFunc = function.New(&function.Spec{
 		Name: "cost",
 		Type: cty.Number,
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 		defaultCost := 10
 
@@ -121,7 +124,7 @@ var BcryptFunc = function.New(&function.Spec{
 		input := args[0].AsString()
 		out, err := bcrypt.GenerateFromPassword([]byte(input), defaultCost)
 		if err != nil {
-			return cty.UnknownVal(cty.String), fmt.Errorf("error occurred generating password %s", err.Error())
+			return cty.UnknownVal(cty.String), fmt.Errorf("error occured generating password %s", err.Error())
 		}
 
 		return cty.StringVal(string(out)), nil
@@ -149,7 +152,8 @@ var RsaDecryptFunc = function.New(&function.Spec{
 			Type: cty.String,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 		s := args[0].AsString()
 		key := args[1].AsString()
@@ -166,7 +170,7 @@ var RsaDecryptFunc = function.New(&function.Spec{
 			case asn1.SyntaxError:
 				errStr = strings.ReplaceAll(e.Error(), "asn1: syntax error", "invalid ASN1 data in the given private key")
 			case asn1.StructuralError:
-				errStr = strings.ReplaceAll(e.Error(), "asn1: structure error", "invalid ASN1 data in the given private key")
+				errStr = strings.ReplaceAll(e.Error(), "asn1: struture error", "invalid ASN1 data in the given private key")
 			default:
 				errStr = fmt.Sprintf("invalid private key: %s", e)
 			}
@@ -186,7 +190,7 @@ var RsaDecryptFunc = function.New(&function.Spec{
 	},
 })
 
-// Sha1Func constructs a function that computes the SHA1 hash of a given string
+// Sha1Func contructs a function that computes the SHA1 hash of a given string
 // and encodes it with hexadecimal digits.
 var Sha1Func = makeStringHashFunction(sha1.New, hex.EncodeToString)
 
@@ -196,7 +200,7 @@ func MakeFileSha1Func(target fs.FS, baseDir string) function.Function {
 	return makeFileHashFunction(target, baseDir, sha1.New, hex.EncodeToString)
 }
 
-// Sha256Func constructs a function that computes the SHA256 hash of a given string
+// Sha256Func contructs a function that computes the SHA256 hash of a given string
 // and encodes it with hexadecimal digits.
 var Sha256Func = makeStringHashFunction(sha256.New, hex.EncodeToString)
 
@@ -206,7 +210,7 @@ func MakeFileSha256Func(target fs.FS, baseDir string) function.Function {
 	return makeFileHashFunction(target, baseDir, sha256.New, hex.EncodeToString)
 }
 
-// Sha512Func constructs a function that computes the SHA512 hash of a given string
+// Sha512Func contructs a function that computes the SHA512 hash of a given string
 // and encodes it with hexadecimal digits.
 var Sha512Func = makeStringHashFunction(sha512.New, hex.EncodeToString)
 
@@ -224,7 +228,8 @@ func makeStringHashFunction(hf func() hash.Hash, enc func([]byte) string) functi
 				Type: cty.String,
 			},
 		},
-		Type: function.StaticReturnType(cty.String),
+		Type:         function.StaticReturnType(cty.String),
+		RefineResult: refineNotNull,
 		Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 			s := args[0].AsString()
 			h := hf()
@@ -243,13 +248,15 @@ func makeFileHashFunction(target fs.FS, baseDir string, hf func() hash.Hash, enc
 				Type: cty.String,
 			},
 		},
-		Type: function.StaticReturnType(cty.String),
+		Type:         function.StaticReturnType(cty.String),
+		RefineResult: refineNotNull,
 		Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 			path := args[0].AsString()
 			f, err := openFile(target, baseDir, path)
 			if err != nil {
 				return cty.UnknownVal(cty.String), err
 			}
+			defer f.Close()
 
 			h := hf()
 			_, err = io.Copy(h, f)
@@ -260,76 +267,4 @@ func makeFileHashFunction(target fs.FS, baseDir string, hf func() hash.Hash, enc
 			return cty.StringVal(rv), nil
 		},
 	})
-}
-
-// UUID generates and returns a Type-4 UUID in the standard hexadecimal string
-// format.
-//
-// This is not a pure function: it will generate a different result for each
-// call. It must therefore be registered as an impure function in the function
-// table in the "lang" package.
-func UUID() (cty.Value, error) {
-	return UUIDFunc.Call(nil)
-}
-
-// UUIDV5 generates and returns a Type-5 UUID in the standard hexadecimal string
-// format.
-func UUIDV5(namespace, name cty.Value) (cty.Value, error) {
-	return UUIDV5Func.Call([]cty.Value{namespace, name})
-}
-
-// Base64Sha256 computes the SHA256 hash of a given string and encodes it with
-// Base64.
-//
-// The given string is first encoded as UTF-8 and then the SHA256 algorithm is applied
-// as defined in RFC 4634. The raw hash is then encoded with Base64 before returning.
-// Terraform uses the "standard" Base64 alphabet as defined in RFC 4648 section 4.
-func Base64Sha256(str cty.Value) (cty.Value, error) {
-	return Base64Sha256Func.Call([]cty.Value{str})
-}
-
-// Base64Sha512 computes the SHA512 hash of a given string and encodes it with
-// Base64.
-//
-// The given string is first encoded as UTF-8 and then the SHA256 algorithm is applied
-// as defined in RFC 4634. The raw hash is then encoded with Base64 before returning.
-// Terraform uses the "standard" Base64  alphabet as defined in RFC 4648 section 4
-func Base64Sha512(str cty.Value) (cty.Value, error) {
-	return Base64Sha512Func.Call([]cty.Value{str})
-}
-
-// Bcrypt computes a hash of the given string using the Blowfish cipher,
-// returning a string in the Modular Crypt Format
-// usually expected in the shadow password file on many Unix systems.
-func Bcrypt(str cty.Value, cost ...cty.Value) (cty.Value, error) {
-	args := make([]cty.Value, len(cost)+1)
-	args[0] = str
-	copy(args[1:], cost)
-	return BcryptFunc.Call(args)
-}
-
-// Md5 computes the MD5 hash of a given string and encodes it with hexadecimal digits.
-func Md5(str cty.Value) (cty.Value, error) {
-	return Md5Func.Call([]cty.Value{str})
-}
-
-// RsaDecrypt decrypts an RSA-encrypted ciphertext, returning the corresponding
-// cleartext.
-func RsaDecrypt(ciphertext, privatekey cty.Value) (cty.Value, error) {
-	return RsaDecryptFunc.Call([]cty.Value{ciphertext, privatekey})
-}
-
-// Sha1 computes the SHA1 hash of a given string and encodes it with hexadecimal digits.
-func Sha1(str cty.Value) (cty.Value, error) {
-	return Sha1Func.Call([]cty.Value{str})
-}
-
-// Sha256 computes the SHA256 hash of a given string and encodes it with hexadecimal digits.
-func Sha256(str cty.Value) (cty.Value, error) {
-	return Sha256Func.Call([]cty.Value{str})
-}
-
-// Sha512 computes the SHA512 hash of a given string and encodes it with hexadecimal digits.
-func Sha512(str cty.Value) (cty.Value, error) {
-	return Sha512Func.Call([]cty.Value{str})
 }
