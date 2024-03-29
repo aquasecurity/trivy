@@ -14,6 +14,7 @@ import (
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -32,7 +33,7 @@ type evaluator struct {
 	projectRootPath   string // root of the current scan
 	modulePath        string
 	moduleName        string
-	ignores           terraform.Ignores
+	ignores           ignore.Rules
 	parentParser      *Parser
 	debug             debug.Logger
 	allowDownloads    bool
@@ -50,7 +51,7 @@ func newEvaluator(
 	inputVars map[string]cty.Value,
 	moduleMetadata *modulesMetadata,
 	workspace string,
-	ignores []terraform.Ignore,
+	ignores ignore.Rules,
 	logger debug.Logger,
 	allowDownloads bool,
 	skipCachedModules bool,

@@ -113,19 +113,8 @@ func (p *Property) Range() iacTypes.Range {
 }
 
 func (p *Property) Metadata() iacTypes.Metadata {
-	base := p
-	if p.isFunction() {
-		if resolved, ok := p.resolveValue(); ok {
-			base = resolved
-		}
-	}
-	ref := NewCFReferenceWithValue(p.parentRange, *base, p.logicalId)
-	return iacTypes.NewMetadata(p.Range(), ref.String())
-}
-
-func (p *Property) MetadataWithValue(resolvedValue *Property) iacTypes.Metadata {
-	ref := NewCFReferenceWithValue(p.parentRange, *resolvedValue, p.logicalId)
-	return iacTypes.NewMetadata(p.Range(), ref.String())
+	return iacTypes.NewMetadata(p.Range(), p.name).
+		WithParent(iacTypes.NewMetadata(p.parentRange, p.logicalId))
 }
 
 func (p *Property) isFunction() bool {
