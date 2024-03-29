@@ -547,4 +547,15 @@ module "s3_bucket" {
   bucket   = each.value
 }
 ```
+
+#### Support for Wildcards
+
+You can use wildcards in the `ws` (workspace) and `ignore` sections of the ignore rules.
+
+```tf
+# trivy:ignore:aws-s3-*:ws:dev-*
+```
+
+This example ignores all checks starting with `aws-s3-` for workspaces matching the pattern `dev-*`.
+
 [custom]: custom/index.md
