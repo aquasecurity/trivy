@@ -2,29 +2,24 @@ package lambda
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/lambda"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
 
-func getFunctions(ctx parser2.FileContext) (functions []lambda.Function) {
+func getFunctions(ctx parser.FileContext) (functions []lambda.Function) {
 
 	functionResources := ctx.GetResourcesByType("AWS::Lambda::Function")
 
 	for _, r := range functionResources {
 
 		function := lambda.Function{
-			Metadata: r.Metadata(),
-			Tracing: lambda.Tracing{
-				Metadata: r.Metadata(),
-				Mode:     types.StringDefault("PassThrough", r.Metadata()),
-			},
+			Metadata:    r.Metadata(),
 			Permissions: getPermissions(r, ctx),
 		}
 
 		if prop := r.GetProperty("TracingConfig"); prop.IsNotNil() {
 			function.Tracing = lambda.Tracing{
 				Metadata: prop.Metadata(),
-				Mode:     prop.GetStringProperty("Mode", "PassThrough"),
+				Mode:     prop.GetStringProperty("Mode"),
 			}
 		}
 
@@ -34,7 +29,7 @@ func getFunctions(ctx parser2.FileContext) (functions []lambda.Function) {
 	return functions
 }
 
-func getPermissions(funcR *parser2.Resource, ctx parser2.FileContext) (perms []lambda.Permission) {
+func getPermissions(funcR *parser.Resource, ctx parser.FileContext) (perms []lambda.Permission) {
 
 	permissionResources := ctx.GetResourcesByType("AWS::Lambda::Permission")
 

@@ -2,11 +2,11 @@ package eks
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/eks"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getClusters(ctx parser2.FileContext) (clusters []eks.Cluster) {
+func getClusters(ctx parser.FileContext) (clusters []eks.Cluster) {
 
 	clusterResources := ctx.GetResourcesByType("AWS::EKS::Cluster")
 
@@ -14,6 +14,7 @@ func getClusters(ctx parser2.FileContext) (clusters []eks.Cluster) {
 		cluster := eks.Cluster{
 			Metadata: r.Metadata(),
 			// Logging not supported for cloudformation https://github.com/aws/containers-roadmap/issues/242
+			// TODO: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-cluster.html#cfn-eks-cluster-logging
 			Logging: eks.Logging{
 				Metadata:          r.Metadata(),
 				API:               iacTypes.BoolUnresolvable(r.Metadata()),
@@ -24,6 +25,7 @@ func getClusters(ctx parser2.FileContext) (clusters []eks.Cluster) {
 			},
 			Encryption: getEncryptionConfig(r),
 			// endpoint protection not supported - https://github.com/aws/containers-roadmap/issues/242
+			// TODO: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-cluster.html#cfn-eks-cluster-resourcesvpcconfig
 			PublicAccessEnabled: iacTypes.BoolUnresolvable(r.Metadata()),
 			PublicAccessCIDRs:   nil,
 		}
@@ -33,7 +35,7 @@ func getClusters(ctx parser2.FileContext) (clusters []eks.Cluster) {
 	return clusters
 }
 
-func getEncryptionConfig(r *parser2.Resource) eks.Encryption {
+func getEncryptionConfig(r *parser.Resource) eks.Encryption {
 
 	encryption := eks.Encryption{
 		Metadata: r.Metadata(),
@@ -41,6 +43,8 @@ func getEncryptionConfig(r *parser2.Resource) eks.Encryption {
 		KMSKeyID: iacTypes.StringDefault("", r.Metadata()),
 	}
 
+	// TODO: EncryptionConfig is a list
+	// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-cluster.html#cfn-eks-cluster-encryptionconfig
 	if encProp := r.GetProperty("EncryptionConfig"); encProp.IsNotNil() {
 		encryption.Metadata = encProp.Metadata()
 		encryption.KMSKeyID = encProp.GetStringProperty("Provider.KeyArn")

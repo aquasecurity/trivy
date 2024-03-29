@@ -13,14 +13,14 @@ func getLaunchConfigurations(file parser.FileContext) (launchConfigurations []ec
 
 		launchConfig := ec2.LaunchConfiguration{
 			Metadata:          r.Metadata(),
-			Name:              r.GetStringProperty("Name"),
+			Name:              r.GetStringProperty("LaunchConfigurationName"),
 			AssociatePublicIP: r.GetBoolProperty("AssociatePublicIpAddress"),
 			MetadataOptions: ec2.MetadataOptions{
 				Metadata:     r.Metadata(),
 				HttpTokens:   types.StringDefault("optional", r.Metadata()),
 				HttpEndpoint: types.StringDefault("enabled", r.Metadata()),
 			},
-			UserData: r.GetStringProperty("UserData", ""),
+			UserData: r.GetStringProperty("UserData"),
 		}
 
 		if opts := r.GetProperty("MetadataOptions"); opts.IsNotNil() {
