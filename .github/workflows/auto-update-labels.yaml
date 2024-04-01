@@ -20,7 +20,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install aqua tools
-        uses: aquaproj/aqua-installer@v2.2.0
+        uses: aquaproj/aqua-installer@v3.0.0
         with:
           aqua_version: v1.25.0
 
