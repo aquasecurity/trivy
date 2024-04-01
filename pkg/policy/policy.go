@@ -89,10 +89,10 @@ func NewClient(cacheDir string, quiet bool, policyBundleRepo string, opts ...Opt
 	}, nil
 }
 
-func (c *Client) populateOCIArtifact() error {
+func (c *Client) populateOCIArtifact(registryOpts types.RegistryOptions) error {
 	if c.artifact == nil {
 		log.Logger.Debugf("Using URL: %s to load policy bundle", c.policyBundleRepo)
-		art, err := oci.NewArtifact(c.policyBundleRepo, c.quiet, types.RegistryOptions{})
+		art, err := oci.NewArtifact(c.policyBundleRepo, c.quiet, registryOpts)
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
@@ -102,8 +102,8 @@ func (c *Client) populateOCIArtifact() error {
 }
 
 // DownloadBuiltinPolicies download default policies from GitHub Pages
-func (c *Client) DownloadBuiltinPolicies(ctx context.Context) error {
-	if err := c.populateOCIArtifact(); err != nil {
+func (c *Client) DownloadBuiltinPolicies(ctx context.Context, registryOpts types.RegistryOptions) error {
+	if err := c.populateOCIArtifact(registryOpts); err != nil {
 		return xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
@@ -154,7 +154,7 @@ func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 }
 
 // NeedsUpdate returns if the default policy should be updated
-func (c *Client) NeedsUpdate(ctx context.Context) (bool, error) {
+func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOptions) (bool, error) {
 	meta, err := c.GetMetadata()
 	if err != nil {
 		return true, nil
@@ -165,7 +165,7 @@ func (c *Client) NeedsUpdate(ctx context.Context) (bool, error) {
 		return false, nil
 	}
 
-	if err = c.populateOCIArtifact(); err != nil {
+	if err = c.populateOCIArtifact(registryOpts); err != nil {
 		return false, xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
