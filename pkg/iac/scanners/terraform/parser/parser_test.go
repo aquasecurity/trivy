@@ -1571,12 +1571,18 @@ func TestCyclicModules(t *testing.T) {
 		"main.tf": `
 module "module2" {
 	source = "./modules/foo"
-	test_var = module.module1.test_out
+	test_var = passthru.handover.from_1
+}
+
+// Demonstrates need for evaluateSteps between submodule evaluations.
+resource "passthru" "handover" {
+	from_1 = module.module1.test_out
+	from_2 = module.module2.test_out
 }
 
 module "module1" {
 	source = "./modules/bar"
-	test_var = module.module2.test_out
+	test_var = passthru.handover.from_2
 }
 `,
 		"modules/foo/main.tf": `
