@@ -16,9 +16,7 @@ func getDomains(ctx parser.FileContext) (domains []elasticsearch.Domain) {
 			Metadata:       r.Metadata(),
 			DomainName:     r.GetStringProperty("DomainName"),
 			AccessPolicies: r.GetStringProperty("AccessPolicies"),
-			// TODO: ElasticsearchClusterConfig changed to ClusterConfig
-			DedicatedMasterEnabled: r.GetBoolProperty("ElasticsearchClusterConfig.DedicatedMasterEnabled"),
-			VpcId:                  iacTypes.String("", r.Metadata()),
+			VpcId:          iacTypes.String("", r.Metadata()),
 			LogPublishing: elasticsearch.LogPublishing{
 				Metadata:              r.Metadata(),
 				AuditEnabled:          iacTypes.BoolDefault(false, r.Metadata()),
@@ -44,6 +42,12 @@ func getDomains(ctx parser.FileContext) (domains []elasticsearch.Domain) {
 				UpdateStatus:    iacTypes.String("", r.Metadata()),
 				UpdateAvailable: iacTypes.Bool(false, r.Metadata()),
 			},
+		}
+
+		if r.Type() == "AWS::OpenSearchService::Domain" {
+			domain.DedicatedMasterEnabled = r.GetBoolProperty("ClusterConfig.DedicatedMasterEnabled")
+		} else {
+			domain.DedicatedMasterEnabled = r.GetBoolProperty("ElasticsearchClusterConfig.DedicatedMasterEnabled")
 		}
 
 		if prop := r.GetProperty("LogPublishingOptions"); prop.IsNotNil() {
