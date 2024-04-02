@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 )
 
@@ -37,10 +37,10 @@ func Test_helm_parser_with_options_with_values_file(t *testing.T) {
 			var opts []options.ParserOption
 
 			if test.valuesFile != "" {
-				opts = append(opts, parser2.OptionWithValuesFile(test.valuesFile))
+				opts = append(opts, parser.OptionWithValuesFile(test.valuesFile))
 			}
 
-			helmParser := parser2.New(chartName, opts...)
+			helmParser := parser.New(chartName, opts...)
 			err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
@@ -87,14 +87,14 @@ func Test_helm_parser_with_options_with_set_value(t *testing.T) {
 			var opts []options.ParserOption
 
 			if test.valuesFile != "" {
-				opts = append(opts, parser2.OptionWithValuesFile(test.valuesFile))
+				opts = append(opts, parser.OptionWithValuesFile(test.valuesFile))
 			}
 
 			if test.values != "" {
-				opts = append(opts, parser2.OptionWithValues(test.values))
+				opts = append(opts, parser.OptionWithValues(test.values))
 			}
 
-			helmParser := parser2.New(chartName, opts...)
+			helmParser := parser.New(chartName, opts...)
 			err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
@@ -140,10 +140,10 @@ func Test_helm_parser_with_options_with_api_versions(t *testing.T) {
 			var opts []options.ParserOption
 
 			if len(test.apiVersions) > 0 {
-				opts = append(opts, parser2.OptionWithAPIVersions(test.apiVersions...))
+				opts = append(opts, parser.OptionWithAPIVersions(test.apiVersions...))
 			}
 
-			helmParser := parser2.New(chartName, opts...)
+			helmParser := parser.New(chartName, opts...)
 			err := helmParser.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", chartName)), ".")
 			require.NoError(t, err)
 			manifests, err := helmParser.RenderedChartFiles()
