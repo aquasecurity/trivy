@@ -10,7 +10,7 @@ type API struct {
 	TracingEnabled      iacTypes.BoolValue
 	DomainConfiguration DomainConfiguration
 	AccessLogging       AccessLogging
-	RESTMethodSettings  RESTMethodSettings
+	RESTMethodSettings  []RESTMethodSettings
 }
 
 type ApiAuth struct {

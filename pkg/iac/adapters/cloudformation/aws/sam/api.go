@@ -25,36 +25,29 @@ func getApis(cfFile parser.FileContext) (apis []sam.API) {
 	return apis
 }
 
-func getRestMethodSettings(r *parser.Resource) sam.RESTMethodSettings {
+func getRestMethodSettings(r *parser.Resource) []sam.RESTMethodSettings {
 
-	settings := sam.RESTMethodSettings{
-		Metadata:           r.Metadata(),
-		CacheDataEncrypted: iacTypes.BoolDefault(false, r.Metadata()),
-		LoggingEnabled:     iacTypes.BoolDefault(false, r.Metadata()),
-		DataTraceEnabled:   iacTypes.BoolDefault(false, r.Metadata()),
-		MetricsEnabled:     iacTypes.BoolDefault(false, r.Metadata()),
+	var settings []sam.RESTMethodSettings
+
+	methodSettings := r.GetProperty("MethodSettings")
+	if methodSettings.IsNotList() {
+		return nil
 	}
 
-	// TODO: MethodSettings is list
-	// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-stage.html#cfn-apigateway-stage-methodsettings
-	settingsProp := r.GetProperty("MethodSettings")
-	if settingsProp.IsNotNil() {
+	for _, el := range methodSettings.AsList() {
 
-		settings = sam.RESTMethodSettings{
-			Metadata:           settingsProp.Metadata(),
-			CacheDataEncrypted: settingsProp.GetBoolProperty("CacheDataEncrypted"),
-			LoggingEnabled:     iacTypes.BoolDefault(false, settingsProp.Metadata()),
-			DataTraceEnabled:   settingsProp.GetBoolProperty("DataTraceEnabled"),
-			MetricsEnabled:     settingsProp.GetBoolProperty("MetricsEnabled"),
+		methodSetting := sam.RESTMethodSettings{
+			Metadata:           el.Metadata(),
+			CacheDataEncrypted: el.GetBoolProperty("CacheDataEncrypted"),
+			DataTraceEnabled:   el.GetBoolProperty("DataTraceEnabled"),
+			MetricsEnabled:     el.GetBoolProperty("MetricsEnabled"),
 		}
 
-		if loggingLevel := settingsProp.GetProperty("LoggingLevel"); loggingLevel.IsNotNil() {
-			if loggingLevel.EqualTo("OFF", parser.IgnoreCase) {
-				settings.LoggingEnabled = iacTypes.Bool(false, loggingLevel.Metadata())
-			} else {
-				settings.LoggingEnabled = iacTypes.Bool(true, loggingLevel.Metadata())
-			}
+		if loggingLevel := methodSettings.GetProperty("LoggingLevel"); loggingLevel.IsNotNil() {
+			methodSetting.LoggingEnabled = iacTypes.Bool(!loggingLevel.EqualTo("OFF"), loggingLevel.Metadata())
 		}
+
+		settings = append(settings, methodSetting)
 	}
 
 	return settings

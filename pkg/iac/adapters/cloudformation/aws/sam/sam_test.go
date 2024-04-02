@@ -96,6 +96,14 @@ Resources:
 						AccessLogging: sam.AccessLogging{
 							CloudwatchLogGroupARN: types.StringTest("arn:aws:logs:us-east-1:123456789:log-group:my-log-group"),
 						},
+						RESTMethodSettings: []sam.RESTMethodSettings{
+							{
+								LoggingEnabled:     types.BoolTest(true),
+								CacheDataEncrypted: types.BoolTest(true),
+								DataTraceEnabled:   types.BoolTest(true),
+								MetricsEnabled:     types.BoolTest(true),
+							},
+						},
 					},
 				},
 				HttpAPIs: []sam.HttpAPI{
