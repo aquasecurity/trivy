@@ -153,6 +153,9 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 		}
 	}
 
+	e.debug.Log("Starting post-submodule evaluation...")
+	e.evaluateSteps()
+
 	var modules terraform.Modules
 	for _, sm := range submodules {
 		modules = append(modules, sm.modules...)
