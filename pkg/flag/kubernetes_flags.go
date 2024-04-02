@@ -91,7 +91,7 @@ type K8sFlagGroup struct {
 	KubeConfig             *Flag[string]
 	K8sVersion             *Flag[string]
 	Tolerations            *Flag[[]string]
-	SkipIntrusive          *Flag[bool]
+	NonIntrusive           *Flag[bool]
 	NodeCollectorImageRef  *Flag[string]
 	NodeCollectorNamespace *Flag[string]
 	ExcludeOwned           *Flag[bool]
@@ -111,7 +111,7 @@ type K8sOptions struct {
 	NodeCollectorImageRef  string
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
-	SkipIntrusive          bool
+	NonIntrusive           bool
 	ExcludeNodes           map[string]string
 	ExcludeKinds           []string
 	IncludeKinds           []string
@@ -148,7 +148,7 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.KubeConfig,
 		f.K8sVersion,
-		f.SkipIntrusive,
+		f.NonIntrusive,
 		f.Tolerations,
 		f.NodeCollectorNamespace,
 		f.ExcludeOwned,
