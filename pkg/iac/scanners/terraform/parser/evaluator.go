@@ -139,8 +139,6 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.blocks = e.expandBlocks(e.blocks)
 	e.blocks = e.expandBlocks(e.blocks)
 
-	parseDuration += time.Since(start)
-
 	e.debug.Log("Starting submodule evaluation...")
 	submodules := e.loadSubmodules(ctx)
 
@@ -155,6 +153,9 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 		}
 	}
 
+	e.debug.Log("Starting post-submodule evaluation...")
+	e.evaluateSteps()
+
 	var modules terraform.Modules
 	for _, sm := range submodules {
 		modules = append(modules, sm.modules...)
@@ -162,9 +163,6 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	}
 
 	e.debug.Log("Finished processing %d submodule(s).", len(modules))
-
-	e.debug.Log("Starting post-submodule evaluation...")
-	e.evaluateSteps()
 
 	e.debug.Log("Module evaluation complete.")
 	parseDuration += time.Since(start)
@@ -176,7 +174,7 @@ type submodule struct {
 	definition *ModuleDefinition
 	eval       *evaluator
 	modules    terraform.Modules
-	lastState  cty.Value
+	lastState  map[string]cty.Value
 	fsMap      map[string]fs.FS
 }
 
@@ -203,19 +201,26 @@ func (e *evaluator) loadSubmodules(ctx context.Context) []*submodule {
 }
 
 func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
-	sm.eval.inputVars = sm.definition.inputVars()
+	inputVars := sm.definition.inputVars()
+	if len(sm.modules) > 0 {
+		if reflect.DeepEqual(inputVars, sm.lastState) {
+			e.debug.Log("Submodule %s inputs unchanged", sm.definition.Name)
+			return false
+		}
+	}
+
+	e.debug.Log("Evaluating submodule %s", sm.definition.Name)
+	sm.eval.inputVars = inputVars
 	sm.modules, sm.fsMap, _ = sm.eval.EvaluateAll(ctx)
 	outputs := sm.eval.exportOutputs()
 
-	if reflect.DeepEqual(outputs, sm.lastState) {
-		e.debug.Log("Submodule %s outputs unchanged", sm.definition.Name)
-		return false
-	}
-	e.debug.Log("Submodule %s outputs changed", sm.definition.Name)
-
+	// lastState needs to be captured after applying outputs – so that they
+	// don't get treated as changes – but before running post-submodule
+	// evaluation, so that changes from that can trigger re-evaluations of
+	// the submodule if/when they feed back into inputs.
 	e.ctx.Set(outputs, "module", sm.definition.Name)
-	sm.lastState = outputs
-
+	sm.lastState = sm.definition.inputVars()
+	e.evaluateSteps()
 	return true
 }
 
