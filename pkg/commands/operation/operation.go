@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -110,7 +111,8 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(ctx context.Context, appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool, opt ftypes.RegistryOptions) error {
+func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository name.Reference, quiet, skipUpdate bool,
+	opt ftypes.RegistryOptions) error {
 	mu.Lock()
 	defer mu.Unlock()
 
