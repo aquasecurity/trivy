@@ -148,26 +148,30 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		log.Logger.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
 	}
 
-	dbRepository, err := name.ParseReference(f.DBRepository.Value(), name.WithDefaultTag(""))
-	if err != nil {
-		return DBOptions{}, xerrors.Errorf("invalid db repository: %w", err)
-	}
-	// Add the schema version if the tag is not specified for backward compatibility.
-	if t, ok := dbRepository.(name.Tag); ok && t.TagStr() == "" {
-		dbRepository = t.Tag(fmt.Sprint(db.SchemaVersion))
-		log.Logger.Infow("Adding schema version to the DB repository for backward compatibility",
-			zap.String("repository", dbRepository.String()))
+	var dbRepository, javaDBRepository name.Reference
+	var err error
+	if f.DBRepository != nil {
+		if dbRepository, err = name.ParseReference(f.DBRepository.Value(), name.WithDefaultTag("")); err != nil {
+			return DBOptions{}, xerrors.Errorf("invalid db repository: %w", err)
+		}
+		// Add the schema version if the tag is not specified for backward compatibility.
+		if t, ok := dbRepository.(name.Tag); ok && t.TagStr() == "" {
+			dbRepository = t.Tag(fmt.Sprint(db.SchemaVersion))
+			log.Logger.Infow("Adding schema version to the DB repository for backward compatibility",
+				zap.String("repository", dbRepository.String()))
+		}
 	}
 
-	javaDBRepository, err := name.ParseReference(f.JavaDBRepository.Value(), name.WithDefaultTag(""))
-	if err != nil {
-		return DBOptions{}, xerrors.Errorf("invalid javadb repository: %w", err)
-	}
-	// Add the schema version if the tag is not specified for backward compatibility.
-	if t, ok := javaDBRepository.(name.Tag); ok && t.TagStr() == "" {
-		javaDBRepository = t.Tag(fmt.Sprint(javadb.SchemaVersion))
-		log.Logger.Infow("Adding schema version to the Java DB repository for backward compatibility",
-			zap.String("repository", javaDBRepository.String()))
+	if f.JavaDBRepository != nil {
+		if javaDBRepository, err = name.ParseReference(f.JavaDBRepository.Value(), name.WithDefaultTag("")); err != nil {
+			return DBOptions{}, xerrors.Errorf("invalid javadb repository: %w", err)
+		}
+		// Add the schema version if the tag is not specified for backward compatibility.
+		if t, ok := javaDBRepository.(name.Tag); ok && t.TagStr() == "" {
+			javaDBRepository = t.Tag(fmt.Sprint(javadb.SchemaVersion))
+			log.Logger.Infow("Adding schema version to the Java DB repository for backward compatibility",
+				zap.String("repository", javaDBRepository.String()))
+		}
 	}
 
 	return DBOptions{
