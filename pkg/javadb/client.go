@@ -97,6 +97,22 @@ func Init(cacheDir, javaDBRepository string, skip, quiet bool, registryOption ft
 	}
 }
 
+func NewUpdater(
+	cacheDir, javaDBRepository string,
+	skip, quiet bool,
+	registryOption ftypes.RegistryOptions,
+) *Updater {
+	updater = &Updater{
+		repo:           fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
+		dbDir:          filepath.Join(cacheDir, "java-db"),
+		skip:           skip,
+		quiet:          quiet,
+		registryOption: registryOption,
+	}
+
+	return updater
+}
+
 func Update() error {
 	if updater == nil {
 		return xerrors.New("Java DB client not initialized")
