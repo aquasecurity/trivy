@@ -122,22 +122,8 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 		}
 
 		ignorers := map[string]ignore.Ignorer{
-			"ws": func(_ types.Metadata, param any) bool {
-				ws, ok := param.(string)
-				if !ok {
-					return false
-				}
-
-				return ignore.MatchPattern(e.workspaceName, ws)
-			},
-			"ignore": func(resultMeta types.Metadata, param any) bool {
-				params, ok := param.(map[string]string)
-				if !ok {
-					return false
-				}
-
-				return ignoreByParams(params, modules, &resultMeta)
-			},
+			"ws":     workspaceIgnorer(e.workspaceName),
+			"ignore": attributeIgnorer(modules),
 		}
 
 		results.Ignore(ignores, ignorers)
@@ -267,4 +253,24 @@ func ignoreByParams(params map[string]string, modules terraform.Modules, m *type
 		}
 	}
 	return true
+}
+
+func workspaceIgnorer(ws string) ignore.Ignorer {
+	return func(_ types.Metadata, param any) bool {
+		ignoredWorkspace, ok := param.(string)
+		if !ok {
+			return false
+		}
+		return ignore.MatchPattern(ws, ignoredWorkspace)
+	}
+}
+
+func attributeIgnorer(modules terraform.Modules) ignore.Ignorer {
+	return func(resultMeta types.Metadata, param any) bool {
+		params, ok := param.(map[string]string)
+		if !ok {
+			return false
+		}
+		return ignoreByParams(params, modules, &resultMeta)
+	}
 }

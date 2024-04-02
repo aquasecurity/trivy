@@ -12,7 +12,7 @@ import (
 )
 
 // Ignorer represents a function that checks if the rule should be ignored.
-type Ignorer func(resultMeta types.Metadata, param any) bool
+type Ignorer func(resultMeta types.Metadata, ignoredParam any) bool
 
 type Rules []Rule
 
