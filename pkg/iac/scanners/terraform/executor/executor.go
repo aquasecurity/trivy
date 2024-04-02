@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"runtime"
 	"sort"
-	"time"
 
 	"github.com/zclconf/go-cty/cty"
 
@@ -38,22 +37,6 @@ type Executor struct {
 	frameworks        []framework.Framework
 }
 
-type Metrics struct {
-	Timings struct {
-		Adaptation    time.Duration
-		RunningChecks time.Duration
-	}
-	Counts struct {
-		Ignored  int
-		Failed   int
-		Passed   int
-		Critical int
-		High     int
-		Medium   int
-		Low      int
-	}
-}
-
 // New creates a new Executor
 func New(options ...Option) *Executor {
 	s := &Executor{
@@ -77,14 +60,10 @@ func checkInList(id string, list []string) bool {
 	return false
 }
 
-func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, error) {
-
-	var metrics Metrics
+func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 
 	e.debug.Log("Adapting modules...")
-	adaptationTime := time.Now()
 	infra := adapter.Adapt(modules)
-	metrics.Timings.Adaptation = time.Since(adaptationTime)
 	e.debug.Log("Adapted %d module(s) into defsec state data.", len(modules))
 
 	threads := runtime.NumCPU()
@@ -101,7 +80,6 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 		f(infra)
 	}
 
-	checksTime := time.Now()
 	registeredRules := rules.GetRegistered(e.frameworks...)
 	e.debug.Log("Initialized %d rule(s).", len(registeredRules))
 
@@ -109,9 +87,8 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 	e.debug.Log("Created pool with %d worker(s) to apply rules.", threads)
 	results, err := pool.Run()
 	if err != nil {
-		return nil, metrics, err
+		return nil, err
 	}
-	metrics.Timings.RunningChecks = time.Since(checksTime)
 	e.debug.Log("Finished applying rules.")
 
 	if e.enableIgnores {
@@ -152,25 +129,9 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 
 	results = e.updateSeverity(results)
 	results = e.filterResults(results)
-	metrics.Counts.Ignored = len(results.GetIgnored())
-	metrics.Counts.Passed = len(results.GetPassed())
-	metrics.Counts.Failed = len(results.GetFailed())
-
-	for _, res := range results.GetFailed() {
-		switch res.Severity() {
-		case severity.Critical:
-			metrics.Counts.Critical++
-		case severity.High:
-			metrics.Counts.High++
-		case severity.Medium:
-			metrics.Counts.Medium++
-		case severity.Low:
-			metrics.Counts.Low++
-		}
-	}
 
 	e.sortResults(results)
-	return results, metrics, nil
+	return results, nil
 }
 
 func (e *Executor) updateSeverity(results []scan.Result) scan.Results {

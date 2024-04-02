@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclparse"
@@ -28,19 +27,6 @@ type sourceFile struct {
 	path string
 }
 
-type Metrics struct {
-	Timings struct {
-		DiskIODuration time.Duration
-		ParseDuration  time.Duration
-	}
-	Counts struct {
-		Blocks          int
-		Modules         int
-		ModuleDownloads int
-		Files           int
-	}
-}
-
 var _ ConfigurableTerraformParser = (*Parser)(nil)
 
 // Parser is a tool for parsing terraform templates at a given file system location
@@ -57,7 +43,6 @@ type Parser struct {
 	workspaceName     string
 	underlying        *hclparse.Parser
 	children          []*Parser
-	metrics           Metrics
 	options           []options.ParserOption
 	debug             debug.Logger
 	allowDownloads    bool
@@ -132,21 +117,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	return mp
 }
 
-func (p *Parser) Metrics() Metrics {
-	total := p.metrics
-	for _, child := range p.children {
-		metrics := child.Metrics()
-		total.Counts.Files += metrics.Counts.Files
-		total.Counts.Blocks += metrics.Counts.Blocks
-		total.Timings.ParseDuration += metrics.Timings.ParseDuration
-		total.Timings.DiskIODuration += metrics.Timings.DiskIODuration
-		// NOTE: we don't add module count - this has already propagated to the top level
-	}
-	return total
-}
-
 func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
-	diskStart := time.Now()
 
 	isJSON := strings.HasSuffix(fullPath, ".tf.json")
 	isHCL := strings.HasSuffix(fullPath, ".tf")
@@ -165,14 +136,13 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 	if err != nil {
 		return err
 	}
-	p.metrics.Timings.DiskIODuration += time.Since(diskStart)
+
 	if dir := path.Dir(fullPath); p.projectRoot == "" {
 		p.debug.Log("Setting project/module root to '%s'", dir)
 		p.projectRoot = dir
 		p.modulePath = dir
 	}
 
-	start := time.Now()
 	var file *hcl.File
 	var diag hcl.Diagnostics
 
@@ -188,8 +158,7 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 		file: file,
 		path: fullPath,
 	})
-	p.metrics.Counts.Files++
-	p.metrics.Timings.ParseDuration += time.Since(start)
+
 	p.debug.Log("Added file %s.", fullPath)
 	return nil
 }
@@ -270,8 +239,6 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 	}
 	p.debug.Log("Read %d block(s) and %d ignore(s) for module '%s' (%d file[s])...", len(blocks), len(ignores), p.moduleName, len(p.files))
 
-	p.metrics.Counts.Blocks = len(blocks)
-
 	var inputVars map[string]cty.Value
 	if p.moduleBlock != nil {
 		inputVars = p.moduleBlock.Values().AsValueMap()
@@ -312,9 +279,7 @@ func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, cty.Value,
 		p.allowDownloads,
 		p.skipCachedModules,
 	)
-	modules, fsMap, parseDuration := evaluator.EvaluateAll(ctx)
-	p.metrics.Counts.Modules = len(modules)
-	p.metrics.Timings.ParseDuration = parseDuration
+	modules, fsMap := evaluator.EvaluateAll(ctx)
 	p.debug.Log("Finished parsing module '%s'.", p.moduleName)
 	p.fsMap = fsMap
 	return modules, evaluator.exportOutputs(), nil
