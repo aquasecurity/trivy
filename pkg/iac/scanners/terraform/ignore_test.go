@@ -599,7 +599,10 @@ data "aws_iam_policy_document" "test_policy" {
     resources = ["*"] # trivy:ignore:aws-iam-enforce-mfa
   }
 }
-`, assertLength: 0}}
+`,
+			assertLength: 0,
+		},
+	}
 
 	reg := rules.Register(exampleRule)
 	defer rules.Deregister(reg)
@@ -612,16 +615,53 @@ data "aws_iam_policy_document" "test_policy" {
 	}
 }
 
-func Test_IgnoreIgnoreWithExpiryAndWorkspaceAndWorkspaceSupplied(t *testing.T) {
+func Test_IgnoreByWorkspace(t *testing.T) {
 	reg := rules.Register(exampleRule)
 	defer rules.Deregister(reg)
 
-	results := scanHCLWithWorkspace(t, `
-# tfsec:ignore:aws-service-abc123:exp:2221-01-02:ws:testworkspace
-resource "bad" "my-rule" {
-}
-`, "testworkspace")
-	assert.Len(t, results.GetFailed(), 0)
+	tests := []struct {
+		name           string
+		src            string
+		expectedFailed int
+	}{
+		{
+			name: "with expiry and workspace",
+			src: `# tfsec:ignore:aws-service-abc123:exp:2221-01-02:ws:testworkspace
+resource "bad" "my-rule" {}`,
+			expectedFailed: 0,
+		},
+		{
+			name: "bad workspace",
+			src: `# tfsec:ignore:aws-service-abc123:exp:2221-01-02:ws:otherworkspace
+resource "bad" "my-rule" {}`,
+			expectedFailed: 1,
+		},
+		{
+			name: "with expiry and workspace, trivy prefix",
+			src: `# trivy:ignore:aws-service-abc123:exp:2221-01-02:ws:testworkspace
+resource "bad" "my-rule" {}`,
+			expectedFailed: 0,
+		},
+		{
+			name: "bad workspace, trivy prefix",
+			src: `# trivy:ignore:aws-service-abc123:exp:2221-01-02:ws:otherworkspace
+resource "bad" "my-rule" {}`,
+			expectedFailed: 1,
+		},
+		{
+			name: "workspace with wildcard",
+			src: `# tfsec:ignore:*:ws:test* 
+resource "bad" "my-rule" {}`,
+			expectedFailed: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			results := scanHCLWithWorkspace(t, tt.src, "testworkspace")
+			assert.Len(t, results.GetFailed(), tt.expectedFailed)
+		})
+	}
 }
 
 func Test_IgnoreInline(t *testing.T) {
@@ -636,19 +676,6 @@ func Test_IgnoreInline(t *testing.T) {
 	assert.Len(t, results.GetFailed(), 0)
 }
 
-func Test_IgnoreIgnoreWithExpiryAndWorkspaceButWrongWorkspaceSupplied(t *testing.T) {
-	reg := rules.Register(exampleRule)
-	defer rules.Deregister(reg)
-
-	results := scanHCLWithWorkspace(t, `
-# tfsec:ignore:aws-service-abc123:exp:2221-01-02:ws:otherworkspace
-resource "bad" "my-rule" {
-	
-}
-`, "testworkspace")
-	assert.Len(t, results.GetFailed(), 1)
-}
-
 func Test_IgnoreWithAliasCodeStillIgnored(t *testing.T) {
 	reg := rules.Register(exampleRule)
 	defer rules.Deregister(reg)
@@ -660,31 +687,6 @@ resource "bad" "my-rule" {
 }
 `, "testworkspace")
 	assert.Len(t, results.GetFailed(), 0)
-}
-
-func Test_TrivyIgnoreIgnoreWithExpiryAndWorkspaceAndWorkspaceSupplied(t *testing.T) {
-	reg := rules.Register(exampleRule)
-	defer rules.Deregister(reg)
-
-	results := scanHCLWithWorkspace(t, `
-# trivy:ignore:aws-service-abc123:exp:2221-01-02:ws:testworkspace
-resource "bad" "my-rule" {
-}
-`, "testworkspace")
-	assert.Len(t, results.GetFailed(), 0)
-}
-
-func Test_TrivyIgnoreIgnoreWithExpiryAndWorkspaceButWrongWorkspaceSupplied(t *testing.T) {
-	reg := rules.Register(exampleRule)
-	defer rules.Deregister(reg)
-
-	results := scanHCLWithWorkspace(t, `
-# trivy:ignore:aws-service-abc123:exp:2221-01-02:ws:otherworkspace
-resource "bad" "my-rule" {
-	
-}
-`, "testworkspace")
-	assert.Len(t, results.GetFailed(), 1)
 }
 
 func Test_TrivyIgnoreWithAliasCodeStillIgnored(t *testing.T) {
