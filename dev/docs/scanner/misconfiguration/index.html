@@ -1310,6 +1310,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#support-for-wildcards" class="md-nav__link">
+    Support for Wildcards
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3740,6 +3747,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#support-for-wildcards" class="md-nav__link">
+    Support for Wildcards
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4240,6 +4254,11 @@ For example, you can set a token for the domain name café.fr as TF_TOKEN_xn--ca
 <span class="w">  </span><span class="na">bucket</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div></p>
+<h4 id="support-for-wildcards">Support for Wildcards</h4>
+<p>You can use wildcards in the <code>ws</code> (workspace) and <code>ignore</code> sections of the ignore rules.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># trivy:ignore:aws-s3-*:ws:dev-*</span>
+</code></pre></div>
+<p>This example ignores all checks starting with <code>aws-s3-</code> for workspaces matching the pattern <code>dev-*</code>.</p>
 
               
             </article>
