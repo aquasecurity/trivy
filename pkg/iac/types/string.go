@@ -19,6 +19,7 @@ func String(str string, m Metadata) StringValue {
 		BaseAttribute: BaseAttribute{metadata: m},
 	}
 }
+
 func StringDefault(value string, m Metadata) StringValue {
 	b := String(value, m)
 	b.BaseAttribute.metadata.isDefault = true
@@ -35,6 +36,10 @@ func StringExplicit(value string, m Metadata) StringValue {
 	b := String(value, m)
 	b.BaseAttribute.metadata.isExplicit = true
 	return b
+}
+
+func StringTest(value string) StringValue {
+	return String(value, NewTestMetadata())
 }
 
 type StringValueList []StringValue

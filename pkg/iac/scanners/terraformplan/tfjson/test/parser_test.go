@@ -9,7 +9,6 @@ import (
 )
 
 func Test_Parse_Plan_File(t *testing.T) {
-
 	planFile, err := parser.New().ParseFile("testdata/plan.json")
 	require.NoError(t, err)
 

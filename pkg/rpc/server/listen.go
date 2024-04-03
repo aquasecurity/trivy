@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/NYTimes/gziphandler"
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
@@ -33,14 +34,14 @@ type Server struct {
 	cacheDir     string
 	token        string
 	tokenHeader  string
-	dbRepository string
+	dbRepository name.Reference
 
 	// For OCI registries
 	types.RegistryOptions
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository string, opt types.RegistryOptions) Server {
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader string, dbRepository name.Reference, opt types.RegistryOptions) Server {
 	return Server{
 		appVersion:      appVersion,
 		addr:            addr,

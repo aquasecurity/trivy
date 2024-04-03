@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io/fs"
 	"reflect"
-	"time"
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
@@ -15,6 +14,7 @@ import (
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -33,7 +33,7 @@ type evaluator struct {
 	projectRootPath   string // root of the current scan
 	modulePath        string
 	moduleName        string
-	ignores           terraform.Ignores
+	ignores           ignore.Rules
 	parentParser      *Parser
 	debug             debug.Logger
 	allowDownloads    bool
@@ -51,7 +51,7 @@ func newEvaluator(
 	inputVars map[string]cty.Value,
 	moduleMetadata *modulesMetadata,
 	workspace string,
-	ignores []terraform.Ignore,
+	ignores ignore.Rules,
 	logger debug.Logger,
 	allowDownloads bool,
 	skipCachedModules bool,
@@ -120,7 +120,7 @@ func (e *evaluator) exportOutputs() cty.Value {
 	return cty.ObjectVal(data)
 }
 
-func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS, time.Duration) {
+func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS) {
 
 	fsKey := types.CreateFSKey(e.filesystem)
 	e.debug.Log("Filesystem key is '%s'", fsKey)
@@ -128,9 +128,6 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	fsMap := make(map[string]fs.FS)
 	fsMap[fsKey] = e.filesystem
 
-	var parseDuration time.Duration
-
-	start := time.Now()
 	e.debug.Log("Starting module evaluation...")
 	e.evaluateSteps()
 
@@ -165,9 +162,8 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.debug.Log("Finished processing %d submodule(s).", len(modules))
 
 	e.debug.Log("Module evaluation complete.")
-	parseDuration += time.Since(start)
 	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
-	return append(terraform.Modules{rootModule}, modules...), fsMap, parseDuration
+	return append(terraform.Modules{rootModule}, modules...), fsMap
 }
 
 type submodule struct {
@@ -211,7 +207,7 @@ func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 
 	e.debug.Log("Evaluating submodule %s", sm.definition.Name)
 	sm.eval.inputVars = inputVars
-	sm.modules, sm.fsMap, _ = sm.eval.EvaluateAll(ctx)
+	sm.modules, sm.fsMap = sm.eval.EvaluateAll(ctx)
 	outputs := sm.eval.exportOutputs()
 
 	// lastState needs to be captured after applying outputs – so that they

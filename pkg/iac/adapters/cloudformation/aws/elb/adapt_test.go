@@ -1,14 +1,11 @@
 package elb
 
 import (
-	"context"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/cloudformation/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elb"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAdapt(t *testing.T) {
@@ -18,7 +15,7 @@ func TestAdapt(t *testing.T) {
 		expected elb.ELB
 	}{
 		{
-			name: "LoadBalancer",
+			name: "complete",
 			source: `AWSTemplateFormatVersion: "2010-09-09"
 Resources:
   LoadBalancer:
@@ -27,6 +24,7 @@ Resources:
       - ALBLogsBucketPermission
     Properties:
       Name: "k8s-dev"
+      Scheme: internal
       IpAddressType: ipv4
       LoadBalancerAttributes:
         - Key: routing.http2.enabled
@@ -43,13 +41,36 @@ Resources:
         - Key: elbv2.k8s.aws/cluster
           Value: "biomage-dev"
       Type: application
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: 'redirect'
+          RedirectConfig:
+            Port: 443
+            Protocol: HTTPS
+            StatusCode: HTTP_302
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: HTTPS
+      SslPolicy: "ELBSecurityPolicy-TLS-1-2-2017-01"
 `,
 			expected: elb.ELB{
 				LoadBalancers: []elb.LoadBalancer{
 					{
-						Metadata:                types.NewTestMetadata(),
-						Type:                    types.String("application", types.NewTestMetadata()),
-						DropInvalidHeaderFields: types.Bool(true, types.NewTestMetadata()),
+						Type:                    types.StringTest("application"),
+						DropInvalidHeaderFields: types.BoolTest(true),
+						Internal:                types.Bool(true, types.NewTestMetadata()),
+						Listeners: []elb.Listener{
+							{
+								Protocol:  types.StringTest("HTTPS"),
+								TLSPolicy: types.StringTest("ELBSecurityPolicy-TLS-1-2-2017-01"),
+								DefaultActions: []elb.Action{
+									{
+										Type: types.StringTest("redirect"),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -58,15 +79,7 @@ Resources:
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fs := testutil.CreateFS(t, map[string]string{
-				"template.yaml": tt.source,
-			})
-
-			p := parser.New()
-			fctx, err := p.ParseFile(context.TODO(), fs, "template.yaml")
-			require.NoError(t, err)
-
-			testutil.AssertDefsecEqual(t, tt.expected, Adapt(*fctx))
+			testutil.AdaptAndCompare(t, tt.source, tt.expected, Adapt)
 		})
 	}
 }
