@@ -216,6 +216,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		ExcludeNodes:           exludeNodeLabels,
 		NodeCollectorImageRef:  f.NodeCollectorImageRef.Value(),
 		QPS:                    float32(f.QPS.Value()),
+		SkipImages:             f.SkipImages.Value(),
 		ExcludeKinds:           f.ExcludeKinds.Value(),
 		IncludeKinds:           f.IncludeKinds.Value(),
 		ExcludeNamespaces:      f.ExcludeNamespaces.Value(),
