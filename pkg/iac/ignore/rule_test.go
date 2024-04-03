@@ -172,6 +172,24 @@ func TestRules_Ignore(t *testing.T) {
 			},
 			shouldIgnore: false,
 		},
+		{
+			name: "with valid wildcard",
+			src:  `#trivy:ignore:rule-*`,
+			args: args{
+				metadata: metadataWithLine(filename, 2),
+				ids:      []string{"rule-1"},
+			},
+			shouldIgnore: true,
+		},
+		{
+			name: "with non-valid wildcard",
+			src:  `#trivy:ignore:rule-1-*d`,
+			args: args{
+				metadata: metadataWithLine(filename, 2),
+				ids:      []string{"rule-1-abc"},
+			},
+			shouldIgnore: false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -221,6 +239,27 @@ func TestRules_IgnoreWithCustomIgnorer(t *testing.T) {
 			shouldIgnore: true,
 		},
 		{
+			name: "with wildcard",
+			src:  `#trivy:ignore:rule-1:ws:dev-*`,
+			parser: &ignore.StringMatchParser{
+				SectionKey: "ws",
+			},
+			args: args{
+				metadata: metadataWithLine(filename, 2),
+				ids:      []string{"rule-1"},
+				ignorers: map[string]ignore.Ignorer{
+					"ws": func(_ types.Metadata, param any) bool {
+						ws, ok := param.(string)
+						if !ok {
+							return false
+						}
+						return ignore.MatchPattern("dev-stage1", ws)
+					},
+				},
+			},
+			shouldIgnore: true,
+		},
+		{
 			name: "bad",
 			src:  `#trivy:ignore:rule-1:ws:prod`,
 			parser: &ignore.StringMatchParser{
@@ -248,6 +287,28 @@ func TestRules_IgnoreWithCustomIgnorer(t *testing.T) {
 			rules := ignore.Parse(tt.src, filename, tt.parser)
 			got := rules.Ignore(tt.args.metadata, tt.args.ids, tt.args.ignorers)
 			assert.Equal(t, tt.shouldIgnore, got)
+		})
+	}
+}
+
+func TestMatchPattern(t *testing.T) {
+	tests := []struct {
+		input    string
+		pattern  string
+		expected bool
+	}{
+		{"foo-test-bar", "*-test-*", true},
+		{"foo-test-bar", "*-example-*", false},
+		{"test", "*test", true},
+		{"example", "test", false},
+		{"example-test", "*-test*", true},
+		{"example-test", "*example-*", true},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.input+":"+tc.pattern, func(t *testing.T) {
+			got := ignore.MatchPattern(tc.input, tc.pattern)
+			assert.Equal(t, tc.expected, got)
 		})
 	}
 }

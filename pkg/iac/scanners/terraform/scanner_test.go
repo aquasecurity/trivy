@@ -62,7 +62,7 @@ func scanWithOptions(t *testing.T, code string, opt ...options.ScannerOption) sc
 	})
 
 	scanner := New(opt...)
-	results, _, err := scanner.ScanFSWithMetrics(context.TODO(), fs, "project")
+	results, err := scanner.ScanFS(context.TODO(), fs, "project")
 	require.NoError(t, err)
 	return results
 }
@@ -262,7 +262,7 @@ cause := bucket.name
 				options.ScannerWithPolicyNamespaces(test.includedNamespaces...),
 			)
 
-			results, _, err := scanner.ScanFSWithMetrics(context.TODO(), fs, "code")
+			results, err := scanner.ScanFS(context.TODO(), fs, "code")
 			require.NoError(t, err)
 
 			var found bool

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"runtime"
 	"sort"
-	"time"
 
 	"github.com/zclconf/go-cty/cty"
 
@@ -15,7 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -30,22 +28,6 @@ type Executor struct {
 	frameworks     []framework.Framework
 }
 
-type Metrics struct {
-	Timings struct {
-		Adaptation    time.Duration
-		RunningChecks time.Duration
-	}
-	Counts struct {
-		Ignored  int
-		Failed   int
-		Passed   int
-		Critical int
-		High     int
-		Medium   int
-		Low      int
-	}
-}
-
 // New creates a new Executor
 func New(options ...Option) *Executor {
 	s := &Executor{
@@ -57,14 +39,10 @@ func New(options ...Option) *Executor {
 	return s
 }
 
-func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, error) {
-
-	var metrics Metrics
+func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 
 	e.debug.Log("Adapting modules...")
-	adaptationTime := time.Now()
 	infra := adapter.Adapt(modules)
-	metrics.Timings.Adaptation = time.Since(adaptationTime)
 	e.debug.Log("Adapted %d module(s) into defsec state data.", len(modules))
 
 	threads := runtime.NumCPU()
@@ -74,17 +52,17 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 
 	e.debug.Log("Using max routines of %d", threads)
 
-	checksTime := time.Now()
 	registeredRules := rules.GetRegistered(e.frameworks...)
 	e.debug.Log("Initialized %d rule(s).", len(registeredRules))
 
 	pool := NewPool(threads, registeredRules, modules, infra, e.regoScanner, e.regoOnly)
 	e.debug.Log("Created pool with %d worker(s) to apply rules.", threads)
+
 	results, err := pool.Run()
 	if err != nil {
-		return nil, metrics, err
+		return nil, err
 	}
-	metrics.Timings.RunningChecks = time.Since(checksTime)
+
 	e.debug.Log("Finished applying rules.")
 
 	e.debug.Log("Applying ignores...")
@@ -94,22 +72,8 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 	}
 
 	ignorers := map[string]ignore.Ignorer{
-		"ws": func(_ types.Metadata, param any) bool {
-			ws, ok := param.(string)
-			if !ok {
-				return false
-			}
-
-			return ws == e.workspaceName
-		},
-		"ignore": func(resultMeta types.Metadata, param any) bool {
-			params, ok := param.(map[string]string)
-			if !ok {
-				return false
-			}
-
-			return ignoreByParams(params, modules, &resultMeta)
-		},
+		"ws":     workspaceIgnorer(e.workspaceName),
+		"ignore": attributeIgnorer(modules),
 	}
 
 	results.Ignore(ignores, ignorers)
@@ -119,25 +83,9 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, Metrics, er
 	}
 
 	results = e.filterResults(results)
-	metrics.Counts.Ignored = len(results.GetIgnored())
-	metrics.Counts.Passed = len(results.GetPassed())
-	metrics.Counts.Failed = len(results.GetFailed())
-
-	for _, res := range results.GetFailed() {
-		switch res.Severity() {
-		case severity.Critical:
-			metrics.Counts.Critical++
-		case severity.High:
-			metrics.Counts.High++
-		case severity.Medium:
-			metrics.Counts.Medium++
-		case severity.Low:
-			metrics.Counts.Low++
-		}
-	}
 
 	e.sortResults(results)
-	return results, metrics, nil
+	return results, nil
 }
 
 func (e *Executor) filterResults(results scan.Results) scan.Results {
@@ -201,4 +149,24 @@ func ignoreByParams(params map[string]string, modules terraform.Modules, m *type
 		}
 	}
 	return true
+}
+
+func workspaceIgnorer(ws string) ignore.Ignorer {
+	return func(_ types.Metadata, param any) bool {
+		ignoredWorkspace, ok := param.(string)
+		if !ok {
+			return false
+		}
+		return ignore.MatchPattern(ws, ignoredWorkspace)
+	}
+}
+
+func attributeIgnorer(modules terraform.Modules) ignore.Ignorer {
+	return func(resultMeta types.Metadata, param any) bool {
+		params, ok := param.(map[string]string)
+		if !ok {
+			return false
+		}
+		return ignoreByParams(params, modules, &resultMeta)
+	}
 }

@@ -22,6 +22,8 @@ Resources:
     Type: AWS::OpenSearchService::Domain
     Properties:
       DomainName: 'test'
+      ClusterConfig:
+        DedicatedMasterEnabled: true
       NodeToNodeEncryptionOptions:
         Enabled: true
       EncryptionAtRestOptions:
@@ -47,7 +49,8 @@ Resources:
 			expected: elasticsearch.Elasticsearch{
 				Domains: []elasticsearch.Domain{
 					{
-						DomainName: types.StringTest("test"),
+						DomainName:             types.StringTest("test"),
+						DedicatedMasterEnabled: types.BoolTest(true),
 						LogPublishing: elasticsearch.LogPublishing{
 							AuditEnabled:          types.BoolTest(true),
 							CloudWatchLogGroupArn: types.StringTest("arn:aws:logs:us-east-1:123456789012:log-group:/aws/opensearch/domains/opensearch-application-logs"),
@@ -76,6 +79,24 @@ Resources:
   `,
 			expected: elasticsearch.Elasticsearch{
 				Domains: []elasticsearch.Domain{{}},
+			},
+		},
+		{
+			name: "Elasticsearch",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  ElasticsearchDomain:
+    Type: AWS::Elasticsearch::Domain
+    Properties:
+      ElasticsearchClusterConfig:
+        DedicatedMasterEnabled: true
+  `,
+			expected: elasticsearch.Elasticsearch{
+				Domains: []elasticsearch.Domain{
+					{
+						DedicatedMasterEnabled: types.BoolTest(true),
+					},
+				},
 			},
 		},
 	}

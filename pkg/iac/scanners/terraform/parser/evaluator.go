@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io/fs"
 	"reflect"
-	"time"
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
@@ -119,7 +118,7 @@ func (e *evaluator) exportOutputs() cty.Value {
 	return cty.ObjectVal(data)
 }
 
-func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS, time.Duration) {
+func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS) {
 
 	fsKey := types.CreateFSKey(e.filesystem)
 	e.debug.Log("Filesystem key is '%s'", fsKey)
@@ -127,10 +126,7 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	fsMap := make(map[string]fs.FS)
 	fsMap[fsKey] = e.filesystem
 
-	var parseDuration time.Duration
-
 	var lastContext hcl.EvalContext
-	start := time.Now()
 	e.debug.Log("Starting module evaluation...")
 	for i := 0; i < maxContextIterations; i++ {
 
@@ -153,8 +149,6 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	// (not a typo, we do this twice so every order is processed)
 	e.blocks = e.expandBlocks(e.blocks)
 	e.blocks = e.expandBlocks(e.blocks)
-
-	parseDuration += time.Since(start)
 
 	e.debug.Log("Starting submodule evaluation...")
 	var modules terraform.Modules
@@ -192,9 +186,8 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	}
 
 	e.debug.Log("Module evaluation complete.")
-	parseDuration += time.Since(start)
 	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
-	return append(terraform.Modules{rootModule}, modules...), fsMap, parseDuration
+	return append(terraform.Modules{rootModule}, modules...), fsMap
 }
 
 func (e *evaluator) expandBlocks(blocks terraform.Blocks) terraform.Blocks {

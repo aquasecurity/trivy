@@ -1,7 +1,9 @@
 package ignore
 
 import (
+	"regexp"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/samber/lo"
@@ -10,7 +12,7 @@ import (
 )
 
 // Ignorer represents a function that checks if the rule should be ignored.
-type Ignorer func(resultMeta types.Metadata, param any) bool
+type Ignorer func(resultMeta types.Metadata, ignoredParam any) bool
 
 type Rules []Rule
 
@@ -88,11 +90,42 @@ func defaultIgnorers(ids []string) map[string]Ignorer {
 	return map[string]Ignorer{
 		"id": func(_ types.Metadata, param any) bool {
 			id, ok := param.(string)
-			return ok && (id == "*" || len(ids) == 0 || slices.Contains(ids, id))
+			if !ok {
+				return false
+			}
+			if id == "*" || len(ids) == 0 {
+				return true
+			}
+
+			return slices.ContainsFunc(ids, func(s string) bool {
+				return MatchPattern(s, id)
+			})
 		},
 		"exp": func(_ types.Metadata, param any) bool {
 			expiry, ok := param.(time.Time)
 			return ok && time.Now().Before(expiry)
 		},
 	}
+}
+
+// MatchPattern checks if the pattern string matches the input pattern.
+// The wildcard '*' in the pattern matches any sequence of characters.
+func MatchPattern(input, pattern string) bool {
+	matched, err := regexp.MatchString(regexpFromPattern(pattern), input)
+	return err == nil && matched
+}
+
+func regexpFromPattern(pattern string) string {
+	parts := strings.Split(pattern, "*")
+	if len(parts) == 1 {
+		return "^" + pattern + "$"
+	}
+	var sb strings.Builder
+	for i, literal := range parts {
+		if i > 0 {
+			sb.WriteString(".*")
+		}
+		sb.WriteString(regexp.QuoteMeta(literal))
+	}
+	return "^" + sb.String() + "$"
 }
