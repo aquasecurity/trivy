@@ -113,11 +113,23 @@ func TestParse(t *testing.T) {
 					ID:      "matrix/1.3",
 					Name:    "matrix",
 					Version: "1.3",
+					Locations: []types.Location{
+						{
+							StartLine: 5,
+							EndLine:   5,
+						},
+					},
 				},
 				{
 					ID:      "sound32/1.0",
 					Name:    "sound32",
 					Version: "1.0",
+					Locations: []types.Location{
+						{
+							StartLine: 4,
+							EndLine:   4,
+						},
+					},
 				},
 			},
 			wantDeps: []types.Dependency{},
