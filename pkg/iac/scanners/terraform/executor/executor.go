@@ -14,50 +14,29 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	"github.com/aquasecurity/trivy/pkg/iac/state"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 // Executor scans HCL blocks by running all registered rules against them
 type Executor struct {
-	enableIgnores     bool
-	excludedRuleIDs   []string
-	includedRuleIDs   []string
-	ignoreCheckErrors bool
-	workspaceName     string
-	useSingleThread   bool
-	debug             debug.Logger
-	resultsFilters    []func(scan.Results) scan.Results
-	severityOverrides map[string]string
-	regoScanner       *rego.Scanner
-	regoOnly          bool
-	stateFuncs        []func(*state.State)
-	frameworks        []framework.Framework
+	workspaceName  string
+	debug          debug.Logger
+	resultsFilters []func(scan.Results) scan.Results
+	regoScanner    *rego.Scanner
+	regoOnly       bool
+	frameworks     []framework.Framework
 }
 
 // New creates a new Executor
 func New(options ...Option) *Executor {
 	s := &Executor{
-		ignoreCheckErrors: true,
-		enableIgnores:     true,
-		regoOnly:          false,
+		regoOnly: false,
 	}
 	for _, option := range options {
 		option(s)
 	}
 	return s
-}
-
-// Find element in list
-func checkInList(id string, list []string) bool {
-	for _, codeIgnored := range list {
-		if codeIgnored == id {
-			return true
-		}
-	}
-	return false
 }
 
 func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
@@ -70,90 +49,46 @@ func (e *Executor) Execute(modules terraform.Modules) (scan.Results, error) {
 	if threads > 1 {
 		threads--
 	}
-	if e.useSingleThread {
-		threads = 1
-	}
-	e.debug.Log("Using max routines of %d", threads)
 
-	e.debug.Log("Applying state modifier functions...")
-	for _, f := range e.stateFuncs {
-		f(infra)
-	}
+	e.debug.Log("Using max routines of %d", threads)
 
 	registeredRules := rules.GetRegistered(e.frameworks...)
 	e.debug.Log("Initialized %d rule(s).", len(registeredRules))
 
-	pool := NewPool(threads, registeredRules, modules, infra, e.ignoreCheckErrors, e.regoScanner, e.regoOnly)
+	pool := NewPool(threads, registeredRules, modules, infra, e.regoScanner, e.regoOnly)
 	e.debug.Log("Created pool with %d worker(s) to apply rules.", threads)
+
 	results, err := pool.Run()
 	if err != nil {
 		return nil, err
 	}
+
 	e.debug.Log("Finished applying rules.")
 
-	if e.enableIgnores {
-		e.debug.Log("Applying ignores...")
-		var ignores ignore.Rules
-		for _, module := range modules {
-			ignores = append(ignores, module.Ignores()...)
-		}
-
-		ignorers := map[string]ignore.Ignorer{
-			"ws":     workspaceIgnorer(e.workspaceName),
-			"ignore": attributeIgnorer(modules),
-		}
-
-		results.Ignore(ignores, ignorers)
-
-		for _, ignored := range results.GetIgnored() {
-			e.debug.Log("Ignored '%s' at '%s'.", ignored.Rule().LongID(), ignored.Range())
-		}
-
-	} else {
-		e.debug.Log("Ignores are disabled.")
+	e.debug.Log("Applying ignores...")
+	var ignores ignore.Rules
+	for _, module := range modules {
+		ignores = append(ignores, module.Ignores()...)
 	}
 
-	results = e.updateSeverity(results)
+	ignorers := map[string]ignore.Ignorer{
+		"ws":     workspaceIgnorer(e.workspaceName),
+		"ignore": attributeIgnorer(modules),
+	}
+
+	results.Ignore(ignores, ignorers)
+
+	for _, ignored := range results.GetIgnored() {
+		e.debug.Log("Ignored '%s' at '%s'.", ignored.Rule().LongID(), ignored.Range())
+	}
+
 	results = e.filterResults(results)
 
 	e.sortResults(results)
 	return results, nil
 }
 
-func (e *Executor) updateSeverity(results []scan.Result) scan.Results {
-	if len(e.severityOverrides) == 0 {
-		return results
-	}
-
-	var overriddenResults scan.Results
-	for _, res := range results {
-		for code, sev := range e.severityOverrides {
-			if res.Rule().LongID() != code {
-				continue
-			}
-
-			overrides := scan.Results([]scan.Result{res})
-			override := res.Rule()
-			override.Severity = severity.Severity(sev)
-			overrides.SetRule(override)
-			res = overrides[0]
-		}
-		overriddenResults = append(overriddenResults, res)
-	}
-
-	return overriddenResults
-}
-
 func (e *Executor) filterResults(results scan.Results) scan.Results {
-	includedOnly := len(e.includedRuleIDs) > 0
-	for i, result := range results {
-		id := result.Rule().LongID()
-		if (includedOnly && !checkInList(id, e.includedRuleIDs)) || checkInList(id, e.excludedRuleIDs) {
-			e.debug.Log("Excluding '%s' at '%s'.", result.Rule().LongID(), result.Range())
-			results[i].OverrideStatus(scan.StatusIgnored)
-		}
-	}
-
 	if len(e.resultsFilters) > 0 && len(results) > 0 {
 		before := len(results.GetIgnored())
 		e.debug.Log("Applying %d results filters to %d results...", len(results), before)
