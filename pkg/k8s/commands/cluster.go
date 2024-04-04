@@ -53,6 +53,10 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 		return xerrors.Errorf(`unknown format %q. Use "json" or "table" or "cyclonedx"`, opts.Format)
 	}
 
+	if !opts.NonIntrusive && !opts.Quiet {
+		log.Logger.Info("Node scanning is enabled")
+		log.Logger.Info("If you want to disable Node scanning via an in-cluster Job, please try '--non-intrusive' to disable the Node-Collector job.")
+	}
 	runner := newRunner(opts, cluster.GetCurrentContext())
 	return runner.run(ctx, artifacts)
 }
