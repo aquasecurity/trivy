@@ -13,6 +13,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -21,7 +22,7 @@ import (
 // Note: This is in the experimental stage and does not yet support many specifications.
 // The implementation may change significantly.
 type VEX interface {
-	Filter(*types.Result)
+	Filter(*types.Result, *core.BOM)
 }
 
 func New(filePath string, report types.Report) (VEX, error) {

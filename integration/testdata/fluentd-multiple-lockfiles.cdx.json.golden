@@ -286,7 +286,7 @@
       "bom-ref": "pkg:deb/debian/bsdutils@2.33.1-0.1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "bsdutils",
-      "version": "2.33.1-0.1",
+      "version": "1:2.33.1-0.1",
       "licenses": [
         {
           "license": {
@@ -628,7 +628,7 @@
       "bom-ref": "pkg:deb/debian/diffutils@3.7-3?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "diffutils",
-      "version": "3.7-3",
+      "version": "1:3.7-3",
       "licenses": [
         {
           "license": {
@@ -1338,7 +1338,7 @@
       "bom-ref": "pkg:deb/debian/libattr1@2.4.48-4?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "libattr1",
-      "version": "2.4.48-4",
+      "version": "1:2.4.48-4",
       "licenses": [
         {
           "license": {
@@ -1396,7 +1396,7 @@
       "bom-ref": "pkg:deb/debian/libaudit-common@2.8.4-3?arch=all&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "libaudit-common",
-      "version": "2.8.4-3",
+      "version": "1:2.8.4-3",
       "licenses": [
         {
           "license": {
@@ -1454,7 +1454,7 @@
       "bom-ref": "pkg:deb/debian/libaudit1@2.8.4-3?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "libaudit1",
-      "version": "2.8.4-3",
+      "version": "1:2.8.4-3",
       "licenses": [
         {
           "license": {
@@ -2091,7 +2091,7 @@
       "bom-ref": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "libgcc1",
-      "version": "8.3.0-6",
+      "version": "1:8.3.0-6",
       "purl": "pkg:deb/debian/libgcc1@8.3.0-6?arch=amd64&distro=debian-10.2&epoch=1",
       "properties": [
         {
@@ -2285,7 +2285,7 @@
       "bom-ref": "pkg:deb/debian/libgmp10@6.1.2%2Bdfsg-4?arch=amd64&distro=debian-10.2&epoch=2",
       "type": "library",
       "name": "libgmp10",
-      "version": "6.1.2+dfsg-4",
+      "version": "2:6.1.2+dfsg-4",
       "licenses": [
         {
           "license": {
@@ -3286,7 +3286,7 @@
       "bom-ref": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64&distro=debian-10.2&epoch=2",
       "type": "library",
       "name": "libpcre3",
-      "version": "8.39-12",
+      "version": "2:8.39-12",
       "purl": "pkg:deb/debian/libpcre3@8.39-12?arch=amd64&distro=debian-10.2&epoch=2",
       "properties": [
         {
@@ -4450,7 +4450,7 @@
       "bom-ref": "pkg:deb/debian/login@4.5-1.1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "login",
-      "version": "4.5-1.1",
+      "version": "1:4.5-1.1",
       "licenses": [
         {
           "license": {
@@ -4742,7 +4742,7 @@
       "bom-ref": "pkg:deb/debian/passwd@4.5-1.1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "passwd",
-      "version": "4.5-1.1",
+      "version": "1:4.5-1.1",
       "licenses": [
         {
           "license": {
@@ -5338,7 +5338,7 @@
       "bom-ref": "pkg:deb/debian/ruby@2.5.1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "ruby",
-      "version": "2.5.1",
+      "version": "1:2.5.1",
       "licenses": [
         {
           "license": {
@@ -5690,7 +5690,7 @@
       "bom-ref": "pkg:deb/debian/zlib1g@1.2.11.dfsg-1?arch=amd64&distro=debian-10.2&epoch=1",
       "type": "library",
       "name": "zlib1g",
-      "version": "1.2.11.dfsg-1",
+      "version": "1:1.2.11.dfsg-1",
       "licenses": [
         {
           "license": {

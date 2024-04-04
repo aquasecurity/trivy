@@ -65,6 +65,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int32(pkg.SrcEpoch),
 			Licenses:   pkg.Licenses,
+			Locations:  ConvertToRPCLocations(pkg.Locations),
 			Layer:      ConvertToRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
@@ -88,6 +89,17 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 		Purl:   p,
 		BomRef: pkg.BOMRef,
 	}
+}
+
+func ConvertToRPCLocations(pkgLocs []ftypes.Location) []*common.Location {
+	var locations []*common.Location
+	for _, pkgLoc := range pkgLocs {
+		locations = append(locations, &common.Location{
+			StartLine: int32(pkgLoc.StartLine),
+			EndLine:   int32(pkgLoc.EndLine),
+		})
+	}
+	return locations
 }
 
 func ConvertToRPCCustomResources(resources []ftypes.CustomResource) []*common.CustomResource {
@@ -207,6 +219,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int(pkg.SrcEpoch),
 			Licenses:   pkg.Licenses,
+			Locations:  ConvertFromRPCLocation(pkg.Locations),
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
@@ -235,6 +248,17 @@ func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier
 	}
 
 	return pkgID
+}
+
+func ConvertFromRPCLocation(locs []*common.Location) []ftypes.Location {
+	var pkgLocs []ftypes.Location
+	for _, loc := range locs {
+		pkgLocs = append(pkgLocs, ftypes.Location{
+			StartLine: int(loc.StartLine),
+			EndLine:   int(loc.EndLine),
+		})
+	}
+	return pkgLocs
 }
 
 // ConvertToRPCVulns returns common.Vulnerability

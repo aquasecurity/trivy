@@ -2,11 +2,11 @@ package sam
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getHttpApis(cfFile parser2.FileContext) (apis []sam.HttpAPI) {
+func getHttpApis(cfFile parser.FileContext) (apis []sam.HttpAPI) {
 
 	apiResources := cfFile.GetResourcesByType("AWS::Serverless::HttpApi")
 	for _, r := range apiResources {
@@ -24,7 +24,7 @@ func getHttpApis(cfFile parser2.FileContext) (apis []sam.HttpAPI) {
 	return apis
 }
 
-func getAccessLoggingV2(r *parser2.Resource) sam.AccessLogging {
+func getAccessLoggingV2(r *parser.Resource) sam.AccessLogging {
 
 	logging := sam.AccessLogging{
 		Metadata:              r.Metadata(),
@@ -41,7 +41,7 @@ func getAccessLoggingV2(r *parser2.Resource) sam.AccessLogging {
 	return logging
 }
 
-func getRouteSettings(r *parser2.Resource) sam.RouteSettings {
+func getRouteSettings(r *parser.Resource) sam.RouteSettings {
 
 	routeSettings := sam.RouteSettings{
 		Metadata:               r.Metadata(),
@@ -52,7 +52,8 @@ func getRouteSettings(r *parser2.Resource) sam.RouteSettings {
 
 	if route := r.GetProperty("DefaultRouteSettings"); route.IsNotNil() {
 		routeSettings = sam.RouteSettings{
-			Metadata:               route.Metadata(),
+			Metadata: route.Metadata(),
+			// TODO: LoggingLevel is string
 			LoggingEnabled:         route.GetBoolProperty("LoggingLevel"),
 			DataTraceEnabled:       route.GetBoolProperty("DataTraceEnabled"),
 			DetailedMetricsEnabled: route.GetBoolProperty("DetailedMetricsEnabled"),

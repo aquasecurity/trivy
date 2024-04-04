@@ -57,7 +57,7 @@ jobs:
         if: ${{ failure() && steps.lint.conclusion == 'failure' }}
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.2.0
+        uses: aquaproj/aqua-installer@v3.0.0
         with:
           aqua_version: v1.25.0
           aqua_opts: ""
@@ -87,7 +87,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.2.0
+        uses: aquaproj/aqua-installer@v3.0.0
         with:
           aqua_version: v1.25.0
 
@@ -116,7 +116,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.2.0
+        uses: aquaproj/aqua-installer@v3.0.0
         with:
           aqua_version: v1.25.0
 
@@ -136,7 +136,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.2.0
+        uses: aquaproj/aqua-installer@v3.0.0
         with:
           aqua_version: v1.25.0
 
@@ -166,7 +166,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Install tools
-        uses: aquaproj/aqua-installer@v2.2.0
+        uses: aquaproj/aqua-installer@v3.0.0
         with:
           aqua_version: v1.25.0
       - name: Run vm integration tests

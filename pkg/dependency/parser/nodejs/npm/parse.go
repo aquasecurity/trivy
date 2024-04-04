@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 
@@ -115,28 +116,42 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 			EndLine:   pkg.EndLine,
 		}
 
+		var ref types.ExternalRef
+		if pkg.Resolved != "" {
+			ref = types.ExternalRef{
+				Type: types.RefOther,
+				URL:  pkg.Resolved,
+			}
+		}
+
+		pkgIndirect := isIndirectLib(pkgPath, directDeps)
+
 		// There are cases when similar libraries use same dependencies
 		// we need to add location for each these dependencies
 		if savedLib, ok := libs[pkgID]; ok {
+			savedLib.Dev = savedLib.Dev && pkg.Dev
+			savedLib.Indirect = savedLib.Indirect && pkgIndirect
+
+			if ref.URL != "" && !slices.Contains(savedLib.ExternalReferences, ref) {
+				savedLib.ExternalReferences = append(savedLib.ExternalReferences, ref)
+				sortExternalReferences(savedLib.ExternalReferences)
+			}
+
 			savedLib.Locations = append(savedLib.Locations, location)
 			sort.Sort(savedLib.Locations)
+
 			libs[pkgID] = savedLib
 			continue
 		}
 
 		lib := types.Library{
-			ID:       pkgID,
-			Name:     pkgName,
-			Version:  pkg.Version,
-			Indirect: isIndirectLib(pkgPath, directDeps),
-			Dev:      pkg.Dev,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  pkg.Resolved,
-				},
-			},
-			Locations: []types.Location{location},
+			ID:                 pkgID,
+			Name:               pkgName,
+			Version:            pkg.Version,
+			Indirect:           pkgIndirect,
+			Dev:                pkg.Dev,
+			ExternalReferences: lo.Ternary(ref.URL != "", []types.ExternalRef{ref}, nil),
+			Locations:          []types.Location{location},
 		}
 		libs[pkgID] = lib
 
@@ -384,4 +399,13 @@ func (t *Package) UnmarshalJSONWithMetadata(node jfather.Node) error {
 
 func packageID(name, version string) string {
 	return dependency.ID(ftypes.Npm, name, version)
+}
+
+func sortExternalReferences(refs []types.ExternalRef) {
+	sort.Slice(refs, func(i, j int) bool {
+		if refs[i].Type != refs[j].Type {
+			return refs[i].Type < refs[j].Type
+		}
+		return refs[i].URL < refs[j].URL
+	})
 }

@@ -132,10 +132,6 @@ func Run(ctx context.Context, opt flag.Options) error {
 	ctx, cancel := context.WithTimeout(ctx, opt.GlobalOptions.Timeout)
 	defer cancel()
 
-	if err := log.InitLogger(opt.Debug, false); err != nil {
-		return xerrors.Errorf("logger error: %w", err)
-	}
-
 	var err error
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {

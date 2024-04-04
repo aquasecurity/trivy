@@ -2,11 +2,11 @@ package ecs
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ecs"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getClusters(ctx parser2.FileContext) (clusters []ecs.Cluster) {
+func getClusters(ctx parser.FileContext) (clusters []ecs.Cluster) {
 
 	clusterResources := ctx.GetResourcesByType("AWS::ECS::Cluster")
 
@@ -24,7 +24,7 @@ func getClusters(ctx parser2.FileContext) (clusters []ecs.Cluster) {
 	return clusters
 }
 
-func getClusterSettings(r *parser2.Resource) ecs.ClusterSettings {
+func getClusterSettings(r *parser.Resource) ecs.ClusterSettings {
 
 	clusterSettings := ecs.ClusterSettings{
 		Metadata:                 r.Metadata(),
@@ -45,7 +45,7 @@ func getClusterSettings(r *parser2.Resource) ecs.ClusterSettings {
 	return clusterSettings
 }
 
-func checkProperty(setting *parser2.Property, clusterSettings *ecs.ClusterSettings) {
+func checkProperty(setting *parser.Property, clusterSettings *ecs.ClusterSettings) {
 	settingMap := setting.AsMap()
 	name := settingMap["Name"]
 	if name.IsNotNil() && name.EqualTo("containerInsights") {

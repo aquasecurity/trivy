@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -110,7 +111,8 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(ctx context.Context, appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool, opt ftypes.RegistryOptions) error {
+func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository name.Reference, quiet, skipUpdate bool,
+	opt ftypes.RegistryOptions) error {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -148,7 +150,7 @@ func showDBInfo(cacheDir string) error {
 }
 
 // InitBuiltinPolicies downloads the built-in policies and loads them
-func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool, policyBundleRepository string) ([]string, error) {
+func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool, policyBundleRepository string, registryOpts ftypes.RegistryOptions) ([]string, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -159,7 +161,7 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 
 	needsUpdate := false
 	if !skipUpdate {
-		needsUpdate, err = client.NeedsUpdate(ctx)
+		needsUpdate, err = client.NeedsUpdate(ctx, registryOpts)
 		if err != nil {
 			return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
 		}
@@ -168,7 +170,7 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 	if needsUpdate {
 		log.Logger.Info("Need to update the built-in policies")
 		log.Logger.Info("Downloading the built-in policies...")
-		if err = client.DownloadBuiltinPolicies(ctx); err != nil {
+		if err = client.DownloadBuiltinPolicies(ctx, registryOpts); err != nil {
 			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
 		}
 	}

@@ -70,16 +70,18 @@ func Write(ctx context.Context, rep *Report, opt flag.Options, fromCache bool) e
 		return writeCompliance(ctx, rep, opt, output)
 	}
 
+	ignoreConf, err := result.ParseIgnoreFile(ctx, opt.IgnoreFile)
+	if err != nil {
+		return xerrors.Errorf("%s error: %w", opt.IgnoreFile, err)
+	}
+
 	var filtered []types.Result
 
 	// filter results
 	for _, resultsAtTime := range rep.Results {
 		for _, res := range resultsAtTime.Results {
 			resCopy := res
-			if err := result.FilterResult(ctx, &resCopy, result.IgnoreConfig{}, result.FilterOption{
-				Severities:         opt.Severities,
-				IncludeNonFailures: opt.IncludeNonFailures,
-			}); err != nil {
+			if err := result.FilterResult(ctx, &resCopy, ignoreConf, opt.FilterOpts()); err != nil {
 				return err
 			}
 			sort.Slice(resCopy.Misconfigurations, func(i, j int) bool {
