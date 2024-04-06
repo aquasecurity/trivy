@@ -4032,25 +4032,30 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">terraform</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># helm value override configurations</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># set individual values</span><span class="w"></span>
 <span class="w">  </span><span class="nt">helm</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># set individual values</span><span class="w"></span>
 <span class="w">    </span><span class="nt">set</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">securityContext.runAsUser=10001</span><span class="w"></span>
 
-<span class="w">  </span><span class="c1"># set values with file</span><span class="w"></span>
-<span class="w">  </span><span class="nt">helm</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># set values with file</span><span class="w"></span>
 <span class="w">    </span><span class="nt">values</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">overrides.yaml</span><span class="w"></span>
 
-<span class="w">  </span><span class="c1"># set specific values from specific files</span><span class="w"></span>
-<span class="w">  </span><span class="nt">helm</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># set specific values from specific files</span><span class="w"></span>
 <span class="w">    </span><span class="nt">set-file</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image=dev-overrides.yaml</span><span class="w"></span>
 
-<span class="w">  </span><span class="c1"># set as string and preserve type</span><span class="w"></span>
-<span class="w">  </span><span class="nt">helm</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># set as string and preserve type</span><span class="w"></span>
 <span class="w">    </span><span class="nt">set-string</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name=true</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1"># Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command.</span><span class="w"></span>
+<span class="w">    </span><span class="nt">api-versions</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/v1/PodDisruptionBudget</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1/Deployment</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1"># Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.</span><span class="w"></span>
+<span class="w">    </span><span class="nt">kube-version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;v1.21.0&quot;</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># terraform tfvars overrrides</span><span class="w"></span>
 <span class="w">  </span><span class="nt">terraform</span><span class="p">:</span><span class="w"></span>
@@ -4058,9 +4063,8 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-terraform.tfvars</span><span class="w"></span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">common-terraform.tfvars</span><span class="w"></span>
 
-<span class="w">  </span><span class="c1"># Same as &#39;--tf-exclude-downloaded-modules&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
-<span class="w">  </span><span class="nt">terraform</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Same as &#39;--tf-exclude-downloaded-modules&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Default is false</span><span class="w"></span>
 <span class="w">    </span><span class="nt">exclude-downloaded-modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 </code></pre></div>
 <h2 id="kubernetes-options">Kubernetes Options</h2>
