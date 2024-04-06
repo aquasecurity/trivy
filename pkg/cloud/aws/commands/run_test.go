@@ -660,7 +660,7 @@ const expectedS3AndCloudTrailResult = `{
           "ID": "AVD-AWS-0015",
           "AVDID": "AVD-AWS-0015",
           "Title": "Cloudtrail should be encrypted at rest to secure access to sensitive trail data",
-          "Description": "Cloudtrail logs should be encrypted at rest to secure the sensitive data. Cloudtrail logs record all activity that occurs in the the account through API calls and would be one of the first places to look when reacting to a breach.",
+          "Description": "Cloudtrail logs should be encrypted at rest to secure the sensitive data. Cloudtrail logs record all activity that occurs in the account through API calls and would be one of the first places to look when reacting to a breach.",
           "Message": "Trail is not encrypted.",
           "Resolution": "Enable encryption at rest",
           "Severity": "HIGH",

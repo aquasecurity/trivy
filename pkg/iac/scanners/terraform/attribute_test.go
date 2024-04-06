@@ -322,7 +322,7 @@ resource "aws_s3_bucket" "my-bucket" {
 			expectedResult: true,
 		},
 		{
-			name: "is is one of the provided valued",
+			name: "is one of the provided values",
 			source: `
 resource "aws_security_group" "my-security_group" {
 	count = 1
