@@ -197,9 +197,9 @@ func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
 
 			var opts []options.ParserOption
 
-			opts = append(opts, parser2.OptionWithKubeVersion(test.kubeVersion))
+			opts = append(opts, parser.OptionWithKubeVersion(test.kubeVersion))
 
-			helmParser, err := parser2.New(chartName, opts...)
+			helmParser, err := parser.New(chartName, opts...)
 			if test.expectedError != "" {
 				require.EqualError(t, err, test.expectedError)
 				return
