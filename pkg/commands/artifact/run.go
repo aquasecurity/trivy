@@ -603,6 +603,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			HelmValueFiles:           opts.HelmValueFiles,
 			HelmFileValues:           opts.HelmFileValues,
 			HelmStringValues:         opts.HelmStringValues,
+			HelmAPIVersions:          opts.HelmAPIVersions,
+			HelmKubeVersion:          opts.HelmKubeVersion,
 			TerraformTFVars:          opts.TerraformTFVars,
 			CloudFormationParamVars:  opts.CloudFormationParamVars,
 			K8sVersion:               opts.K8sVersion,
