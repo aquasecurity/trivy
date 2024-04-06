@@ -94,6 +94,8 @@ run:
     - ".*_test.go$"
     - "integration/*"
     - "examples/*"
+  skip-dirs:
+    - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
 
 issues:
   exclude-rules:
