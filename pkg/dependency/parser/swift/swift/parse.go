@@ -17,13 +17,17 @@ import (
 )
 
 // Parser is a parser for Package.resolved files
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func NewParser() types.Parser {
+	return &Parser{
+		logger: log.WithPrefix("swift"),
+	}
+}
+
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockFile LockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
@@ -43,7 +47,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 
 		// Skip packages for which we cannot resolve the version
 		if pin.State.Version == "" && pin.State.Branch == "" {
-			log.Logger.Warnf("Unable to resolve %q. Both the version and branch fields are empty.", name)
+			p.logger.Warn("Unable to resolve. Both the version and branch fields are empty.", log.String("name", name))
 			continue
 		}
 

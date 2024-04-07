@@ -63,7 +63,7 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
-		log.Logger.Debug("OS is not detected.")
+		log.Debug("OS is not detected.")
 
 		// Packages may contain OS-independent binary information even though OS is not detected.
 		if len(detail.Packages) != 0 {
@@ -72,16 +72,18 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 
 		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
 		if detail.Repository != nil {
-			log.Logger.Debugf("Package repository: %s %s", detail.Repository.Family, detail.Repository.Release)
-			log.Logger.Debugf("Assuming OS is %s %s.", detail.Repository.Family, detail.Repository.Release)
+			log.Debug("Package repository", log.String("family", string(detail.Repository.Family)),
+				log.String("version", detail.Repository.Release))
+			log.Debug("Assuming OS", log.String("family", string(detail.Repository.Family)),
+				log.String("version", detail.Repository.Release))
 			detail.OS = ftypes.OS{
 				Family: detail.Repository.Family,
 				Name:   detail.Repository.Release,
 			}
 		}
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
-		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
-		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
+		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
+		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
 		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
@@ -222,10 +224,10 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 
 // MisconfsToResults is exported for trivy-plugin-aqua purposes only
 func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
-	log.Logger.Infof("Detected config files: %d", len(misconfs))
+	log.Info("Detected config files", log.Int("num", len(misconfs)))
 	var results types.Results
 	for _, misconf := range misconfs {
-		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
+		log.Debug("Scanned config file", log.String("path", misconf.FilePath))
 
 		var detected []types.DetectedMisconfiguration
 
@@ -264,7 +266,7 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 
 	var results types.Results
 	for _, secret := range secrets {
-		log.Logger.Debugf("Secret file: %s", secret.FilePath)
+		log.Debug("Secret file", log.String("path", secret.FilePath))
 
 		results = append(results, types.Result{
 			Target: secret.FilePath,
@@ -367,7 +369,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	severity := defaultSeverity
 	sev, err := dbTypes.NewSeverity(res.Severity)
 	if err != nil {
-		log.Logger.Warnf("severity must be %s, but %s", dbTypes.SeverityNames, res.Severity)
+		log.Warn("Unsupported severity", log.String("severity", res.Severity))
 	} else {
 		severity = sev
 	}
@@ -429,7 +431,7 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 	}
 
 	onceInfo := sync.OnceFunc(func() {
-		log.Logger.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
+		log.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
 	})
 	for i := range apps {
 		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {

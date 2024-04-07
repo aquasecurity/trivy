@@ -16,9 +16,7 @@ import (
 
 // Run runs the scan
 func Run(ctx context.Context, opts flag.Options) (err error) {
-	if err = log.InitLogger(opts.Debug, opts.Quiet); err != nil {
-		return xerrors.Errorf("failed to initialize a logger: %w", err)
-	}
+	log.InitLogger(opts.Debug, opts.Quiet)
 
 	// configure cache dir
 	fsutils.SetCacheDir(opts.CacheDir)
@@ -27,7 +25,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
 	defer cache.Close()
-	log.Logger.Debugf("cache dir:  %s", fsutils.CacheDir())
+	log.Debug("Cache", log.String("dir", fsutils.CacheDir()))
 
 	if opts.Reset {
 		return cache.ClearDB()

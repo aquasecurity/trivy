@@ -29,10 +29,14 @@ type Lockfile struct {
 	} `toml:"package"`
 }
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
-func NewParser() types.Parser {
-	return &Parser{}
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("poetry"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -42,7 +46,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	// Keep all installed versions
-	libVersions := parseVersions(lockfile)
+	libVersions := p.parseVersions(lockfile)
 
 	var libs []types.Library
 	var deps []types.Dependency
@@ -58,7 +62,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			Version: pkg.Version,
 		})
 
-		dependsOn := parseDependencies(pkg.Dependencies, libVersions)
+		dependsOn := p.parseDependencies(pkg.Dependencies, libVersions)
 		if len(dependsOn) != 0 {
 			deps = append(deps, types.Dependency{
 				ID:        pkgID,
@@ -71,7 +75,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 // parseVersions stores all installed versions of libraries for use in dependsOn
 // as the dependencies of libraries use version range.
-func parseVersions(lockfile Lockfile) map[string][]string {
+func (p *Parser) parseVersions(lockfile Lockfile) map[string][]string {
 	libVersions := make(map[string][]string)
 	for _, pkg := range lockfile.Packages {
 		if pkg.Category == "dev" {
@@ -86,11 +90,11 @@ func parseVersions(lockfile Lockfile) map[string][]string {
 	return libVersions
 }
 
-func parseDependencies(deps map[string]any, libVersions map[string][]string) []string {
+func (p *Parser) parseDependencies(deps map[string]any, libVersions map[string][]string) []string {
 	var dependsOn []string
 	for name, versRange := range deps {
-		if dep, err := parseDependency(name, versRange, libVersions); err != nil {
-			log.Logger.Debugf("failed to parse poetry dependency: %s", err)
+		if dep, err := p.parseDependency(name, versRange, libVersions); err != nil {
+			p.logger.Debug("Failed to parse poetry dependency", log.Err(err))
 		} else if dep != "" {
 			dependsOn = append(dependsOn, dep)
 		}
@@ -101,7 +105,7 @@ func parseDependencies(deps map[string]any, libVersions map[string][]string) []s
 	return dependsOn
 }
 
-func parseDependency(name string, versRange any, libVersions map[string][]string) (string, error) {
+func (p *Parser) parseDependency(name string, versRange any, libVersions map[string][]string) (string, error) {
 	name = normalizePkgName(name)
 	vers, ok := libVersions[name]
 	if !ok {

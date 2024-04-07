@@ -50,7 +50,7 @@ func parseLine(line string, rng types.Range, parsers []RuleSectionParser) []Rule
 
 		rule, err := parseComment(section, rng, parsers)
 		if err != nil {
-			log.Logger.Debugf("Failed to parse rule at %s: %s", rng.String(), err.Error())
+			log.Debug("Failed to parse rule", log.String("range", rng.String()), log.Err(err))
 			continue
 		}
 		rules = append(rules, rule)
@@ -60,7 +60,10 @@ func parseLine(line string, rng types.Range, parsers []RuleSectionParser) []Rule
 }
 
 func hasIgnoreRulePrefix(s string) (string, bool) {
-	for _, prefix := range []string{"tfsec:", "trivy:"} {
+	for _, prefix := range []string{
+		"tfsec:",
+		"trivy:",
+	} {
 		if after, found := strings.CutPrefix(s, prefix); found {
 			return after, true
 		}
@@ -153,10 +156,10 @@ func (s *expiryDateParser) Key() string {
 func (s *expiryDateParser) Parse(str string) bool {
 	parsed, err := time.Parse("2006-01-02", str)
 	if err != nil {
-		log.Logger.Debugf("Incorrect time to ignore is specified: %s", str)
+		log.Debug("Incorrect time to ignore is specified", log.String("time", str))
 		parsed = time.Time{}
 	} else if time.Now().After(parsed) {
-		log.Logger.Debug("Ignore rule time has expired for location: %s", s.rng.String())
+		log.Debug("Ignore rule time has expired for location", log.String("range", s.rng.String()))
 	}
 
 	s.expiry = parsed

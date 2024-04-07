@@ -52,7 +52,7 @@ func (s *scanner) Packages(target types.ScanTarget, _ types.ScanOptions) types.R
 
 func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Results, error) {
 	apps := target.Applications
-	log.Logger.Infof("Number of language-specific files: %d", len(apps))
+	log.Info("Number of language-specific files", log.Int("num", len(apps)))
 	if len(apps) == 0 {
 		return nil, nil
 	}
@@ -64,13 +64,15 @@ func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Resu
 			continue
 		}
 
+		logger := log.WithPrefix(string(app.Type))
+
 		// Prevent the same log messages from being displayed many times for the same type.
 		if _, ok := printedTypes[app.Type]; !ok {
-			log.Logger.Infof("Detecting %s vulnerabilities...", app.Type)
+			logger.Info("Detecting vulnerabilities...")
 			printedTypes[app.Type] = struct{}{}
 		}
 
-		log.Logger.Debugf("Detecting library vulnerabilities, type: %s, path: %s", app.Type, app.FilePath)
+		logger.Debug("Scanning packages from the file", log.String("file_path", app.FilePath))
 		vulns, err := library.Detect(app.Type, app.Libraries)
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)

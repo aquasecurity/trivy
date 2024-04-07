@@ -158,5 +158,5 @@ func printLoopedPropertiesStack(env string, usedProps []string) {
 	for _, prop := range usedProps {
 		s += fmt.Sprintf("%s -> ", prop)
 	}
-	log.Logger.Warnf("Lopped properties were detected: %s%s", s, env)
+	log.Warn("Lopped properties were detected", log.String("prop", s+env))
 }

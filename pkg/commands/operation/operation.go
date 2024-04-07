@@ -42,7 +42,7 @@ type Cache struct {
 // NewCache is the factory method for Cache
 func NewCache(c flag.CacheOptions) (Cache, error) {
 	if strings.HasPrefix(c.CacheBackend, "redis://") {
-		log.Logger.Infof("Redis cache: %s", c.CacheBackendMasked())
+		log.Info("Redis cache", log.String("url", c.CacheBackendMasked()))
 		options, err := redis.ParseURL(c.CacheBackend)
 		if err != nil {
 			return Cache{}, err
@@ -70,7 +70,7 @@ func NewCache(c flag.CacheOptions) (Cache, error) {
 	}
 
 	if c.CacheTTL != 0 {
-		log.Logger.Warn("'--cache-ttl' is only available with Redis cache backend")
+		log.Warn("'--cache-ttl' is only available with Redis cache backend")
 	}
 
 	// standalone mode
@@ -94,7 +94,7 @@ func (c Cache) Reset() (err error) {
 
 // ClearDB clears the DB cache
 func (c Cache) ClearDB() (err error) {
-	log.Logger.Info("Removing DB file...")
+	log.Info("Removing DB file...")
 	if err = os.RemoveAll(fsutils.CacheDir()); err != nil {
 		return xerrors.Errorf("failed to remove the directory (%s) : %w", fsutils.CacheDir(), err)
 	}
@@ -103,7 +103,7 @@ func (c Cache) ClearDB() (err error) {
 
 // ClearArtifacts clears the artifact cache
 func (c Cache) ClearArtifacts() error {
-	log.Logger.Info("Removing artifact caches...")
+	log.Info("Removing artifact caches...")
 	if err := c.Clear(); err != nil {
 		return xerrors.Errorf("failed to remove the cache: %w", err)
 	}
@@ -123,9 +123,8 @@ func DownloadDB(ctx context.Context, appVersion, cacheDir string, dbRepository n
 	}
 
 	if needsUpdate {
-		log.Logger.Info("Need to update DB")
-		log.Logger.Infof("DB Repository: %s", dbRepository)
-		log.Logger.Info("Downloading DB...")
+		log.Info("Need to update DB")
+		log.Info("Downloading DB...", log.String("repository", dbRepository.String()))
 		if err = client.Download(ctx, cacheDir, opt); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
@@ -144,8 +143,8 @@ func showDBInfo(cacheDir string) error {
 	if err != nil {
 		return xerrors.Errorf("something wrong with DB: %w", err)
 	}
-	log.Logger.Debugf("DB Schema: %d, UpdatedAt: %s, NextUpdate: %s, DownloadedAt: %s",
-		meta.Version, meta.UpdatedAt, meta.NextUpdate, meta.DownloadedAt)
+	log.Debug("DB info", log.Int("schema", meta.Version), log.Time("updated_at", meta.UpdatedAt),
+		log.Time("next_update", meta.NextUpdate), log.Time("downloaded_at", meta.DownloadedAt))
 	return nil
 }
 
@@ -168,8 +167,8 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 	}
 
 	if needsUpdate {
-		log.Logger.Info("Need to update the built-in policies")
-		log.Logger.Info("Downloading the built-in policies...")
+		log.Info("Need to update the built-in policies")
+		log.Info("Downloading the built-in policies...")
 		if err = client.DownloadBuiltinPolicies(ctx, registryOpts); err != nil {
 			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
 		}
@@ -179,7 +178,7 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 	if err != nil {
 		if skipUpdate {
 			msg := "No downloadable policies were loaded as --skip-policy-update is enabled"
-			log.Logger.Info(msg)
+			log.Info(msg)
 			return nil, xerrors.Errorf(msg)
 		}
 		return nil, xerrors.Errorf("policy load error: %w", err)
@@ -213,7 +212,8 @@ func Exit(opts flag.Options, failedResults bool) {
 
 func ExitOnEOL(opts flag.Options, m types.Metadata) {
 	if opts.ExitOnEOL != 0 && m.OS != nil && m.OS.Eosl {
-		log.Logger.Errorf("Detected EOL OS: %s %s", m.OS.Family, m.OS.Name)
+		log.Error("Detected EOL OS", log.String("family", string(m.OS.Family)),
+			log.String("version", m.OS.Name))
 		os.Exit(opts.ExitOnEOL)
 	}
 }

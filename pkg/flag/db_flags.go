@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/google/go-containerregistry/pkg/name"
-	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/db"
@@ -145,7 +144,7 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		return DBOptions{}, xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
 	}
 	if light {
-		log.Logger.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
+		log.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
 	}
 
 	var dbRepository, javaDBRepository name.Reference
@@ -157,8 +156,8 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		// Add the schema version if the tag is not specified for backward compatibility.
 		if t, ok := dbRepository.(name.Tag); ok && t.TagStr() == "" {
 			dbRepository = t.Tag(fmt.Sprint(db.SchemaVersion))
-			log.Logger.Infow("Adding schema version to the DB repository for backward compatibility",
-				zap.String("repository", dbRepository.String()))
+			log.Info("Adding schema version to the DB repository for backward compatibility",
+				log.String("repository", dbRepository.String()))
 		}
 	}
 
@@ -169,8 +168,8 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		// Add the schema version if the tag is not specified for backward compatibility.
 		if t, ok := javaDBRepository.(name.Tag); ok && t.TagStr() == "" {
 			javaDBRepository = t.Tag(fmt.Sprint(javadb.SchemaVersion))
-			log.Logger.Infow("Adding schema version to the Java DB repository for backward compatibility",
-				zap.String("repository", javaDBRepository.String()))
+			log.Info("Adding schema version to the Java DB repository for backward compatibility",
+				log.String("repository", javaDBRepository.String()))
 		}
 	}
 

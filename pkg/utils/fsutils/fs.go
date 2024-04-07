@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -104,7 +103,7 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		defer f.Close()
 
 		if err = fn(path, d, f); err != nil {
-			log.Logger.Debugw("Walk error", zap.String("file_path", path), zap.Error(err))
+			log.Debug("Walk error", log.String("file_path", path), log.Err(err))
 		}
 		return nil
 	})

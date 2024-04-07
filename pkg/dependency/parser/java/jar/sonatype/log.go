@@ -9,14 +9,14 @@ type logger struct{}
 func (logger) Error(msg string, keysAndValues ...interface{}) {
 	// Use Debugw to suppress errors on failure
 	if msg == "request failed" {
-		log.Logger.Debugw(msg, keysAndValues...)
+		log.Debug(msg, keysAndValues...)
 		return
 	}
-	log.Logger.Errorw(msg, keysAndValues)
+	log.Error(msg, keysAndValues)
 }
 
 func (logger) Info(msg string, keysAndValues ...interface{}) {
-	log.Logger.Infow(msg, keysAndValues...)
+	log.Info(msg, keysAndValues...)
 }
 
 func (logger) Debug(msg string, keysAndValues ...interface{}) {
@@ -24,9 +24,9 @@ func (logger) Debug(msg string, keysAndValues ...interface{}) {
 	if msg == "performing request" {
 		return
 	}
-	log.Logger.Debugw(msg, keysAndValues...)
+	log.Debug(msg, keysAndValues...)
 }
 
 func (logger) Warn(msg string, keysAndValues ...interface{}) {
-	log.Logger.Warnw(msg, keysAndValues...)
+	log.Warn(msg, keysAndValues...)
 }
