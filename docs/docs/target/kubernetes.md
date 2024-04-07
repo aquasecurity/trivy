@@ -9,7 +9,7 @@ Trivy can also be installed *inside* your cluster as a Kubernetes Operator, and 
 When scanning a Kubernetes cluster, Trivy differentiates between the following:
 
 1. Cluster infrastructure (e.g api-server, kubelet, addons)
-1. Cluster configuration (e.g Roles, ClusterRoles). 
+1. Cluster configuration (e.g Roles, ClusterRoles).
 1. Application workloads (e.g nginx, postgresql).
 
 When scanning any of the above, the container image is scanned separately to the Kubernetes resource definition (the YAML manifest) that defines the resource.
@@ -33,30 +33,23 @@ Trivy follows the behavior of the `kubectl` tool as much as possible.
 ### Scope
 
 The command expects an argument that selects the scope of the scan (similarly to how `kubectl` expects an argument after `kubectl get`). This argument can be:
-1. A Kubernetes Kind. e.g `pod`, `deployment`, etc. 
+
+1. A Kubernetes Kind. e.g `pod`, `deployment`, etc.
 2. A Kubernetes Resource. e.g `pods/mypod`, etc.
-3. `all`. Scan common workload kinds, as listed [here](https://github.com/aquasecurity/trivy-kubernetes/blob/bf8cc2a00d9772e0aa271f06d375b936152b54b1/pkg/k8s/k8s.go#L296:L314)
-4. `cluster` scan the entire cluster including all namespaced resources and cluster level resources.
 
 Examples:
 
-```
-trivy k8s all
+```sh
 trivy k8s pods
 trivy k8s deploy myapp
 trivy k8s pod/mypod
 trivy k8s pods,deploy
-trivy k8s cluster
 ```
-
-Note that the scope argument must appear last in the command line, after any other flag.
-
-### Cluster
 
 By default Trivy will look for a [`kubeconfig` configuration file in the default location](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), and use the default cluster that is specified.  
 You can also specify a `kubeconfig` using the `--kubeconfig` flag:
 
-```
+```sh
 trivy k8s --kubeconfig ~/.kube/config2
 ```
 
@@ -64,24 +57,24 @@ trivy k8s --kubeconfig ~/.kube/config2
 
 By default Trivy will scan all namespaces (following `kubectl` behavior). To specify a namespace use the `--namespace` flag:
 
-```
+```sh
 trivy k8s --kubeconfig ~/.kube/config2 --namespace default
 ```
+
 ### Node
 
 You can exclude specific nodes from the scan using the `--exclude-nodes` flag, which takes a label in the format `label-name:label-value` and excludes all matching nodes:
 
-```
-trivy k8s cluster --report summary --exclude-nodes kubernetes.io/arch:arm6
+```sh
+trivy k8s --report summary --exclude-nodes kubernetes.io/arch:arm6
 ```
 
 ## Control Plane and Node Components Vulnerability Scanning
 
 Trivy is capable of discovering Kubernetes control plane (apiserver, controller-manager and etc) and node components(kubelet, kube-proxy and etc), matching them against the [official Kubernetes vulnerability database feed](https://github.com/aquasecurity/vuln-list-k8s), and reporting any vulnerabilities it finds
 
-
-```
-trivy k8s cluster --scanners vuln  --report all
+```sh
+trivy k8s --scanners vuln  --report all
 
 NodeComponents/kind-control-plane (kubernetes)
 
@@ -101,13 +94,67 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 2, CRITICAL: 0)
 └────────────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┘
 ```
 
+### Non-intrusive
 
-### Components types
+You can control whether the node scan-job (`node-collector`) will run in the cluster. To disable it, add the `--non-intrusive` flag  
 
-You can control what kinds of components are discovered using the `--components` flag:
-- `--components infra` will discover only cluster infrastructure components.
-- `--components workload` will discover only application workloads.
-- If the flag is omitted: infra, workloads, and RBAC are discovered.
+- `--non-intrusive` This flag will exclude findings related to Node (infra assessment) misconfigurations
+
+By default, the node scan-job (`node-collector`) will run in the cluster.
+
+Example:
+
+```sh
+trivy k8s --report summary --non-intrusive
+```
+
+### Skip-images
+
+You can control whether Trivy will scan and download the cluster resource images. To disable this feature, add the --skip-images flag.
+
+- `--skip-images` flag will prevent the downloading and scanning of images (including vulnerabilities and secrets) in the cluster resources.
+
+By default, all cluster resource images will be downloaded and scanned.
+
+Example:
+
+```sh
+trivy k8s --report summary --skip-images
+```
+
+### Include/Exclude Kinds
+
+You can control which kinds of resources will be discovered using the `--include-kinds` or `--exclude-kinds` comma-separated flags:
+
+***Note:*** Both flags (`--include-kinds` or `--exclude-kinds`) cannot be set in conjunction.
+
+- `--include-kinds` will include the listed kinds in cluster scanning.
+- `--exclude-kinds` will exclude the listed kinds from cluster scanning.
+
+By default, all kinds will be included in cluster scanning.
+
+Example:
+
+```sh
+trivy k8s --report summary --exclude-kinds node,pod
+```
+
+### Include/Exclude Namespaces
+
+You can control which namespaces will be discovered using the `--include-namespaces` or `--exclude-namespaces` comma-separated flags:
+
+***Note:*** Both flags (`--include-namespaces` or `--exclude-namespaces`) cannot be set in conjunction.
+
+- `--include-namespaces` will include the listed namespaces in cluster scanning.
+- `--exclude-namespaces` will exclude the listed namespaces from cluster scanning.
+
+By default, all namespaces will be included in cluster scanning.
+
+Example:
+
+```sh
+trivy k8s --report summary --exclude-namespace dev-system,staging-system
+```
 
 ## Reporting and filtering
 
@@ -117,8 +164,8 @@ You can always choose the report granularity using the `--report summary`/`--rep
 
 Scan a full cluster and generate a simple summary report:
 
-```
-$ trivy k8s --report=summary cluster
+```sh
+trivy k8s --report=summary
 ```
 
 ![k8s Summary Report](../../imgs/trivy-k8s.png)
@@ -126,15 +173,15 @@ $ trivy k8s --report=summary cluster
 Filter by severity:
 
 ```
-trivy k8s --severity=CRITICAL --report=all cluster
+trivy k8s --severity=CRITICAL --report=all
 ```
 
 Filter by scanners (Vulnerabilities, Secrets or Misconfigurations):
 
 ```
-trivy k8s --scanners=secret --report=summary cluster
+trivy k8s --scanners=secret --report=summary
 # or
-trivy k8s --scanners=misconfig --report=summary cluster
+trivy k8s --scanners=misconfig --report=summary
 ```
 
 The supported output formats are `table`, which is the default, and `json`.
@@ -300,6 +347,7 @@ trivy k8s --format json -o results.json cluster
 </details>
 
 ## Compliance
+
 This section describes Kubernetes specific compliance reports.
 For an overview of Trivy's Compliance feature, including working with custom compliance, check out the [Compliance documentation](../compliance/compliance.md).
 
@@ -318,7 +366,7 @@ Scan the cluster for Kubernetes Pod Security Standards Baseline compliance:
 
 ```
 
-$ trivy k8s cluster --compliance=k8s-pss-baseline --report summary
+trivy k8s --compliance=k8s-pss-baseline --report summary
 
 ```
 
@@ -326,7 +374,7 @@ Get the detailed report for checks:
 
 ```
 
-$ trivy k8s cluster --compliance=k8s-cis --report all
+trivy k8s --compliance=k8s-cis --report all
 
 ```
 
@@ -334,7 +382,7 @@ Get summary report in JSON format:
 
 ```
 
-$ trivy k8s cluster --compliance=k8s-cis --report summary --format json
+trivy k8s --compliance=k8s-cis --report summary --format json
 
 ```
 
@@ -342,7 +390,7 @@ Get detailed report in JSON format:
 
 ```
 
-$ trivy k8s cluster --compliance=k8s-cis --report all --format json
+trivy k8s --compliance=k8s-cis --report all --format json
 
 ```
 
@@ -355,7 +403,7 @@ Trivy can generate KBOM in CycloneDX format:
 
 ```sh
 
-$ trivy k8s cluster --format cyclonedx --output mykbom.cdx.json
+trivy k8s --format cyclonedx --output mykbom.cdx.json
 
 ```
 
@@ -363,7 +411,7 @@ Trivy can also scan that generated KBOM (or any SBOM) for vulnerabilities:
 
 ```sh
 
-$ trivy sbom mykbom.cdx.json
+trivy sbom mykbom.cdx.json
 
 ```
 

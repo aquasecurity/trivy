@@ -15,13 +15,13 @@ The `trivy k8s` command is part of the Trivy CLI.
 With the following command, we can scan our entire Kubernetes cluster for vulnerabilities and get a summary of the scan: 
 
 ```
-trivy k8s --report=summary cluster
+trivy k8s --report=summary
 ```
 
 To get detailed information for all your resources, just replace ‘summary’ with ‘all’: 
 
 ```
-trivy k8s --report=all cluster
+trivy k8s --report=all
 ```
 
 However, we recommend displaying all information only in case you scan a specific namespace or resource since you can get overwhelmed with additional details. 
@@ -29,19 +29,19 @@ However, we recommend displaying all information only in case you scan a specifi
 Furthermore, we can specify the namespace that Trivy is supposed to scan to focus on specific resources in the scan result: 
 
 ```
-trivy k8s -n kube-system --report=summary cluster
+trivy k8s -n kube-system --report=summary
 ```
 
 Again, if you’d like to receive additional details, use the ‘--report=all’ flag: 
 
 ```
-trivy k8s -n kube-system --report=all cluster
+trivy k8s -n kube-system --report=all
 ```
 
 Like with scanning for vulnerabilities, we can also filter in-cluster security issues by severity of the vulnerabilities: 
 
 ```
-trivy k8s --severity=CRITICAL --report=summary cluster
+trivy k8s --severity=CRITICAL --report=summary
 ```
 
 Note that you can use any of the Trivy flags on the Trivy K8s command. 
