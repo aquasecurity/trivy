@@ -25,7 +25,7 @@ jobs:
           remove-haskell: "true"
         if: matrix.operating-system == 'ubuntu-latest'
 
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.2
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.2
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -108,7 +108,7 @@ jobs:
           remove-haskell: "true"
 
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.2
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.2
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -159,7 +159,7 @@ jobs:
           remove-haskell: 'true'
 
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.2
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -193,7 +193,7 @@ jobs:
       if: matrix.operating-system == 'ubuntu-latest'
 
     - name: Checkout
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4.1.2
 
     - name: Set up Go
       uses: actions/setup-go@v5
