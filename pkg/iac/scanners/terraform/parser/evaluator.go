@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
+	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
 	"golang.org/x/exp/slices"
@@ -102,6 +103,7 @@ func (e *evaluator) evaluateStep() {
 
 	e.ctx.Set(e.getValuesByBlockType("data"), "data")
 	e.ctx.Set(e.getValuesByBlockType("output"), "output")
+	e.ctx.Set(e.getValuesByBlockType("module"), "module")
 }
 
 // exportOutputs is used to export module outputs to the parent module
@@ -126,24 +128,8 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	fsMap := make(map[string]fs.FS)
 	fsMap[fsKey] = e.filesystem
 
-	var lastContext hcl.EvalContext
 	e.debug.Log("Starting module evaluation...")
-	for i := 0; i < maxContextIterations; i++ {
-
-		e.evaluateStep()
-
-		// if ctx matches the last evaluation, we can bail, nothing left to resolve
-		if i > 0 && reflect.DeepEqual(lastContext.Variables, e.ctx.Inner().Variables) {
-			break
-		}
-
-		if len(e.ctx.Inner().Variables) != len(lastContext.Variables) {
-			lastContext.Variables = make(map[string]cty.Value, len(e.ctx.Inner().Variables))
-		}
-		for k, v := range e.ctx.Inner().Variables {
-			lastContext.Variables[k] = v
-		}
-	}
+	e.evaluateSteps()
 
 	// expand out resources and modules via count, for-each and dynamic
 	// (not a typo, we do this twice so every order is processed)
@@ -151,23 +137,91 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 	e.blocks = e.expandBlocks(e.blocks)
 
 	e.debug.Log("Starting submodule evaluation...")
-	var modules terraform.Modules
-	for _, definition := range e.loadModules(ctx) {
-		submodules, outputs, err := definition.Parser.EvaluateAll(ctx)
-		if err != nil {
-			e.debug.Log("Failed to evaluate submodule '%s': %s.", definition.Name, err)
-			continue
+	submodules := e.loadSubmodules(ctx)
+
+	for i := 0; i < maxContextIterations; i++ {
+		changed := false
+		for _, sm := range submodules {
+			changed = changed || e.evaluateSubmodule(ctx, sm)
 		}
-		// export module outputs
-		e.ctx.Set(outputs, "module", definition.Name)
-		modules = append(modules, submodules...)
-		for key, val := range definition.Parser.GetFilesystemMap() {
-			fsMap[key] = val
+		if !changed {
+			e.debug.Log("All submodules are evaluated at i=%d", i)
+			break
 		}
 	}
-	e.debug.Log("Finished processing %d submodule(s).", len(modules))
 
 	e.debug.Log("Starting post-submodule evaluation...")
+	e.evaluateSteps()
+
+	var modules terraform.Modules
+	for _, sm := range submodules {
+		modules = append(modules, sm.modules...)
+		fsMap = lo.Assign(fsMap, sm.fsMap)
+	}
+
+	e.debug.Log("Finished processing %d submodule(s).", len(modules))
+
+	e.debug.Log("Module evaluation complete.")
+	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
+	return append(terraform.Modules{rootModule}, modules...), fsMap
+}
+
+type submodule struct {
+	definition *ModuleDefinition
+	eval       *evaluator
+	modules    terraform.Modules
+	lastState  map[string]cty.Value
+	fsMap      map[string]fs.FS
+}
+
+func (e *evaluator) loadSubmodules(ctx context.Context) []*submodule {
+	var submodules []*submodule
+
+	for _, definition := range e.loadModules(ctx) {
+		eval, err := definition.Parser.Load(ctx)
+		if errors.Is(err, ErrNoFiles) {
+			continue
+		} else if err != nil {
+			e.debug.Log("Failed to load submodule '%s': %s.", definition.Name, err)
+			continue
+		}
+
+		submodules = append(submodules, &submodule{
+			definition: definition,
+			eval:       eval,
+			fsMap:      make(map[string]fs.FS),
+		})
+	}
+
+	return submodules
+}
+
+func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
+	inputVars := sm.definition.inputVars()
+	if len(sm.modules) > 0 {
+		if reflect.DeepEqual(inputVars, sm.lastState) {
+			e.debug.Log("Submodule %s inputs unchanged", sm.definition.Name)
+			return false
+		}
+	}
+
+	e.debug.Log("Evaluating submodule %s", sm.definition.Name)
+	sm.eval.inputVars = inputVars
+	sm.modules, sm.fsMap = sm.eval.EvaluateAll(ctx)
+	outputs := sm.eval.exportOutputs()
+
+	// lastState needs to be captured after applying outputs – so that they
+	// don't get treated as changes – but before running post-submodule
+	// evaluation, so that changes from that can trigger re-evaluations of
+	// the submodule if/when they feed back into inputs.
+	e.ctx.Set(outputs, "module", sm.definition.Name)
+	sm.lastState = sm.definition.inputVars()
+	e.evaluateSteps()
+	return true
+}
+
+func (e *evaluator) evaluateSteps() {
+	var lastContext hcl.EvalContext
 	for i := 0; i < maxContextIterations; i++ {
 
 		e.evaluateStep()
@@ -176,7 +230,6 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 		if i > 0 && reflect.DeepEqual(lastContext.Variables, e.ctx.Inner().Variables) {
 			break
 		}
-
 		if len(e.ctx.Inner().Variables) != len(lastContext.Variables) {
 			lastContext.Variables = make(map[string]cty.Value, len(e.ctx.Inner().Variables))
 		}
@@ -184,10 +237,6 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 			lastContext.Variables[k] = v
 		}
 	}
-
-	e.debug.Log("Module evaluation complete.")
-	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
-	return append(terraform.Modules{rootModule}, modules...), fsMap
 }
 
 func (e *evaluator) expandBlocks(blocks terraform.Blocks) terraform.Blocks {
@@ -217,7 +266,9 @@ func (e *evaluator) expandDynamicBlock(b *terraform.Block) {
 				b.InjectBlock(content, blockName)
 			}
 		}
-		sub.MarkExpanded()
+		if len(expanded) > 0 {
+			sub.MarkExpanded()
+		}
 	}
 }
 
@@ -245,6 +296,10 @@ func (e *evaluator) expandBlockForEaches(blocks terraform.Blocks, isDynamic bool
 
 		clones := make(map[string]cty.Value)
 		_ = forEachAttr.Each(func(key cty.Value, val cty.Value) {
+
+			if val.IsNull() {
+				return
+			}
 
 			// instances are identified by a map key (or set member) from the value provided to for_each
 			idx, err := convert.Convert(key, cty.String)

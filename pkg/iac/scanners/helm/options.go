@@ -49,3 +49,11 @@ func ScannerWithAPIVersions(values ...string) options.ScannerOption {
 		}
 	}
 }
+
+func ScannerWithKubeVersion(values string) options.ScannerOption {
+	return func(s options.ConfigurableScanner) {
+		if helmScanner, ok := s.(ConfigurableHelmScanner); ok {
+			helmScanner.AddParserOptions(parser.OptionWithKubeVersion(values))
+		}
+	}
+}

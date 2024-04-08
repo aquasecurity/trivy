@@ -279,25 +279,30 @@ misconfiguration:
     - terraform
 
   # helm value override configurations
-  # set individual values
   helm:
+    # set individual values
     set:
       - securityContext.runAsUser=10001
 
-  # set values with file
-  helm:
+    # set values with file
     values:
       - overrides.yaml
 
-  # set specific values from specific files
-  helm:
+    # set specific values from specific files
     set-file:
       - image=dev-overrides.yaml
 
-  # set as string and preserve type
-  helm:
+    # set as string and preserve type
     set-string:
       - name=true
+
+    # Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command.
+    api-versions:
+      - policy/v1/PodDisruptionBudget
+      - apps/v1/Deployment
+
+    # Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
+    kube-version: "v1.21.0"
 
   # terraform tfvars overrrides
   terraform:
@@ -305,9 +310,8 @@ misconfiguration:
       - dev-terraform.tfvars
       - common-terraform.tfvars
   
-  # Same as '--tf-exclude-downloaded-modules'
-  # Default is false
-  terraform:
+    # Same as '--tf-exclude-downloaded-modules'
+    # Default is false
     exclude-downloaded-modules: false
 ```
 

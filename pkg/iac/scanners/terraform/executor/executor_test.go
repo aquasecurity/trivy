@@ -78,8 +78,7 @@ resource "problem" "this" {
 
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-
-	_, err = New(OptionStopOnErrors(false)).Execute(modules)
+	_, err = New().Execute(modules)
 	assert.Error(t, err)
 }
 
@@ -127,6 +126,6 @@ resource "problem" "this" {
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
 
-	_, err = New(OptionStopOnErrors(false)).Execute(modules)
+	_, err = New().Execute(modules)
 	assert.Error(t, err)
 }
