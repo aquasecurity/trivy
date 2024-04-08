@@ -40,10 +40,7 @@ The command expects an argument that selects the scope of the scan (similarly to
 Examples:
 
 ```sh
-trivy k8s pods
-trivy k8s deploy myapp
-trivy k8s pod/mypod
-trivy k8s pods,deploy
+trivy k8s --report summary
 ```
 
 By default Trivy will look for a [`kubeconfig` configuration file in the default location](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), and use the default cluster that is specified.  

@@ -29,13 +29,13 @@ However, we recommend displaying all information only in case you scan a specifi
 Furthermore, we can specify the namespace that Trivy is supposed to scan to focus on specific resources in the scan result: 
 
 ```
-trivy k8s -n kube-system --report=summary
+trivy k8s --include-namespaces kube-system --report summary
 ```
 
 Again, if you’d like to receive additional details, use the ‘--report=all’ flag: 
 
 ```
-trivy k8s -n kube-system --report=all
+trivy k8s --include-namespaces kube-system --report all
 ```
 
 Like with scanning for vulnerabilities, we can also filter in-cluster security issues by severity of the vulnerabilities: 
@@ -45,12 +45,6 @@ trivy k8s --severity=CRITICAL --report=summary
 ```
 
 Note that you can use any of the Trivy flags on the Trivy K8s command. 
-
-With the Trivy K8s command, you can also scan specific workloads that are running within your cluster, such as our deployment: 
-
-```
-trivy k8s --namespace  app --report=summary deployments/react-application
-```
 
 ## Trivy Operator 
 
