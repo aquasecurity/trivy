@@ -44,6 +44,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
 
 	osVer = strings.Fields(osVer)[0]
+	// The format `2023.xxx.xxxx` can be used.
+	osVer = osver.Major(osVer)
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
 	}
@@ -97,6 +99,8 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 // IsSupportedVersion checks if the version is supported.
 func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
 	osVer = strings.Fields(osVer)[0]
+	// The format `2023.xxx.xxxx` can be used.
+	osVer = osver.Major(osVer)
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
 	}

@@ -81,17 +81,26 @@ const (
 	OCP         LangType = "ocp" // Red Hat OpenShift Container Platform
 )
 
+var AggregatingTypes = []LangType{
+	PythonPkg,
+	CondaPkg,
+	GemSpec,
+	NodePkg,
+	Jar,
+}
+
 // Config files
 const (
-	JSON           ConfigType = "json"
-	Dockerfile     ConfigType = "dockerfile"
-	Terraform      ConfigType = "terraform"
-	TerraformPlan  ConfigType = "terraformplan"
-	CloudFormation ConfigType = "cloudformation"
-	Kubernetes     ConfigType = "kubernetes"
-	Helm           ConfigType = "helm"
-	Cloud          ConfigType = "cloud"
-	AzureARM       ConfigType = "azure-arm"
+	JSON                  ConfigType = "json"
+	Dockerfile            ConfigType = "dockerfile"
+	Terraform             ConfigType = "terraform"
+	TerraformPlanJSON     ConfigType = "terraformplan"
+	TerraformPlanSnapshot ConfigType = "terraformplan-snapshot"
+	CloudFormation        ConfigType = "cloudformation"
+	Kubernetes            ConfigType = "kubernetes"
+	Helm                  ConfigType = "helm"
+	Cloud                 ConfigType = "cloud"
+	AzureARM              ConfigType = "azure-arm"
 )
 
 // Language-specific file names

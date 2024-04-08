@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
@@ -18,8 +19,13 @@ import (
 )
 
 const (
-	dbMediaType         = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
-	defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
+	SchemaVersion = db.SchemaVersion
+	dbMediaType   = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
+)
+
+var (
+	DefaultRepository    = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-db", db.SchemaVersion)
+	defaultRepository, _ = name.NewTag(DefaultRepository)
 )
 
 // Operation defines the DB operations
@@ -31,7 +37,7 @@ type Operation interface {
 type options struct {
 	artifact     *oci.Artifact
 	clock        clock.Clock
-	dbRepository string
+	dbRepository name.Reference
 }
 
 // Option is a functional option
@@ -45,7 +51,7 @@ func WithOCIArtifact(art *oci.Artifact) Option {
 }
 
 // WithDBRepository takes a dbRepository
-func WithDBRepository(dbRepository string) Option {
+func WithDBRepository(dbRepository name.Reference) Option {
 	return func(opts *options) {
 		opts.dbRepository = dbRepository
 	}
@@ -71,7 +77,7 @@ type Client struct {
 func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
 		clock:        clock.RealClock{},
-		dbRepository: defaultDBRepository,
+		dbRepository: defaultRepository,
 	}
 
 	for _, opt := range opts {
@@ -188,8 +194,7 @@ func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, erro
 		return c.artifact, nil
 	}
 
-	repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
-	art, err := oci.NewArtifact(repo, c.quiet, opt)
+	art, err := oci.NewArtifact(c.dbRepository.String(), c.quiet, opt)
 	if err != nil {
 		var terr *transport.Error
 		if errors.As(err, &terr) {

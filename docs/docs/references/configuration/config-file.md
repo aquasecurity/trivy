@@ -203,6 +203,11 @@ image:
     # Same as '--docker-host'
     # Default is empty
     host: 
+  
+  podman:
+    # Same as '--podman-host'
+    # Default is empty
+    host: 
 ```
 
 ## Vulnerability Options

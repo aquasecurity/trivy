@@ -5,12 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -24,7 +24,7 @@ const (
 
 type parser struct{}
 
-func (*parser) Parse(r dio.ReadSeekerAt) ([]godeptypes.Library, []godeptypes.Dependency, error) {
+func (*parser) Parse(r xio.ReadSeekerAt) ([]godeptypes.Library, []godeptypes.Dependency, error) {
 	p := packagejson.NewParser()
 	pkg, err := p.Parse(r)
 	if err != nil {

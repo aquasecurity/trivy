@@ -281,6 +281,24 @@ var pkgs = []types.Package{
 			"usr/include/sqlite3.h",
 		},
 	},
+
+	{
+		ID:         "ada-libs@2.7.4-r0",
+		Name:       "ada-libs",
+		Version:    "2.7.4-r0",
+		SrcName:    "ada",
+		SrcVersion: "2.7.4-r0",
+		Licenses:   []string{"Apache-2.0", "MIT", "MPL-2.0"},
+		Digest:     "sha1:593154f80c440685448e0f52479725d7bc9b678d",
+		DependsOn: []string{
+			"musl@1.1.14-r10",
+		},
+		Arch: "x86_64",
+		InstalledFiles: []string{
+			"usr/lib/libada.so.2",
+			"usr/lib/libada.so.2.7.4",
+		},
+	},
 }
 
 var files = []string{
@@ -385,27 +403,29 @@ var files = []string{
 	"usr/lib/pkgconfig/sqlite3.pc",
 	"usr/include/sqlite3ext.h",
 	"usr/include/sqlite3.h",
+
+	// ada-libs@2.5.1-r0
+	"usr/lib/libada.so.2",
+	"usr/lib/libada.so.2.7.4",
 }
 
 func TestParseApkInfo(t *testing.T) {
-	var tests = map[string]struct {
+	var tests = []struct {
+		name      string
 		path      string
 		wantPkgs  []types.Package
 		wantFiles []string
 	}{
-		"Valid": {
-			path:      "./testdata/apk",
-			wantPkgs:  pkgs,
-			wantFiles: files,
-		},
-		"do not retain pkg installed files": {
+		{
+			name:      "happy path",
 			path:      "./testdata/apk",
 			wantPkgs:  pkgs,
 			wantFiles: files,
 		},
 	}
-	for testname, tt := range tests {
-		t.Run(testname, func(t *testing.T) {
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			a := alpinePkgAnalyzer{}
 			f, err := os.Open(tt.path)
 			require.NoError(t, err)

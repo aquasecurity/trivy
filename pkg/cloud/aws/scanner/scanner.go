@@ -7,14 +7,14 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/defsec/pkg/framework"
-	"github.com/aquasecurity/defsec/pkg/scan"
-	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/defsec/pkg/state"
 	aws "github.com/aquasecurity/trivy-aws/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/iac/framework"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	"github.com/aquasecurity/trivy/pkg/iac/state"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
 )
@@ -31,9 +31,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	awsCache := cache.New(option.CacheDir, option.MaxCacheAge, option.Account, option.Region)
 	included, missing := awsCache.ListServices(option.Services)
 
+	prefixedLogger := &log.PrefixedLogger{Name: "aws"}
+
 	var scannerOpts []options.ScannerOption
 	if !option.NoProgress {
-		tracker := newProgressTracker()
+		tracker := newProgressTracker(prefixedLogger)
 		defer tracker.Finish()
 		scannerOpts = append(scannerOpts, aws.ScannerWithProgressTracker(tracker))
 	}
@@ -43,11 +45,11 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	if option.Debug {
-		scannerOpts = append(scannerOpts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "aws"}))
+		scannerOpts = append(scannerOpts, options.ScannerWithDebug(prefixedLogger))
 	}
 
 	if option.Trace {
-		scannerOpts = append(scannerOpts, options.ScannerWithTrace(&log.PrefixedLogger{Name: "aws"}))
+		scannerOpts = append(scannerOpts, options.ScannerWithTrace(prefixedLogger))
 	}
 
 	if option.Region != "" {
@@ -67,7 +69,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	var policyPaths []string
 	var downloadedPolicyPaths []string
 	var err error
-	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate, option.MisconfOptions.PolicyBundleRepository)
+	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate, option.MisconfOptions.PolicyBundleRepository, option.RegistryOpts())
 	if err != nil {
 		if !option.SkipPolicyUpdate {
 			log.Logger.Errorf("Falling back to embedded policies: %s", err)

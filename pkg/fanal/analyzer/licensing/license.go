@@ -11,11 +11,11 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const version = 1
@@ -96,7 +96,7 @@ func (a licenseFileAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return slices.Contains(acceptedFileNames, baseName)
 }
 
-func isHumanReadable(content dio.ReadSeekerAt, fileSize int64) (bool, error) {
+func isHumanReadable(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 	headSize := int(math.Min(float64(fileSize), 300))
 	head := make([]byte, headSize)
 	if _, err := content.Read(head); err != nil {

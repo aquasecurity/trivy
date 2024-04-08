@@ -30,9 +30,11 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "kitchen-1.2.6-py2.7.egg",
 						Libraries: types.Packages{
 							{
-								Name:     "kitchen",
-								Version:  "1.2.6",
-								Licenses: []string{"LGPLv2+"},
+								Name:    "kitchen",
+								Version: "1.2.6",
+								Licenses: []string{
+									"GNU Library or Lesser General Public License (LGPL)",
+								},
 								FilePath: "kitchen-1.2.6-py2.7.egg",
 							},
 						},

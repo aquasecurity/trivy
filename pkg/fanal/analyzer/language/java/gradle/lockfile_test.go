@@ -1,6 +1,7 @@
 package gradle
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -13,22 +14,50 @@ import (
 
 func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
+		name     string
+		dir      string
+		cacheDir string
+		want     *analyzer.AnalysisResult
 	}{
 		{
-			name:      "happy path",
-			inputFile: "testdata/happy.lockfile",
+			name:     "happy path",
+			dir:      "testdata/lockfiles/happy",
+			cacheDir: "testdata/cache",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Gradle,
-						FilePath: "testdata/happy.lockfile",
+						FilePath: "gradle.lockfile",
 						Libraries: types.Packages{
 							{
-								Name:    "com.example:example",
-								Version: "0.0.1",
+								ID:       "junit:junit:4.13",
+								Name:     "junit:junit",
+								Version:  "4.13",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   4,
+									},
+								},
+								Licenses: []string{
+									"Eclipse Public License 1.0",
+								},
+								DependsOn: []string{
+									"org.hamcrest:hamcrest-core:1.3",
+								},
+							},
+							{
+								ID:       "org.hamcrest:hamcrest-core:1.3",
+								Name:     "org.hamcrest:hamcrest-core",
+								Version:  "1.3",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   5,
+									},
+								},
 							},
 						},
 					},
@@ -36,24 +65,61 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "empty file",
-			inputFile: "testdata/empty.lockfile",
+			name: "happy path without cache",
+			dir:  "testdata/lockfiles/happy",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Gradle,
+						FilePath: "gradle.lockfile",
+						Libraries: types.Packages{
+							{
+								ID:       "junit:junit:4.13",
+								Name:     "junit:junit",
+								Version:  "4.13",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 4,
+										EndLine:   4,
+									},
+								},
+							},
+							{
+								ID:       "org.hamcrest:hamcrest-core:1.3",
+								Name:     "org.hamcrest:hamcrest-core",
+								Version:  "1.3",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   5,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "empty file",
+			dir:  "testdata/lockfiles/empty",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
-			require.NoError(t, err)
-			defer func() {
-				err = f.Close()
-				assert.NoError(t, err)
-			}()
+			if tt.cacheDir != "" {
+				t.Setenv("GRADLE_USER_HOME", tt.cacheDir)
+			}
 
-			a := gradleLockAnalyzer{}
-			got, err := a.Analyze(nil, analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Content:  f,
+			a, err := newGradleLockAnalyzer(analyzer.AnalyzerOptions{})
+			require.NoError(t, err)
+
+			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+				FS: os.DirFS(tt.dir),
 			})
 
 			assert.NoError(t, err)

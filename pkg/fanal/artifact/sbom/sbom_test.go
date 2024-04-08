@@ -30,7 +30,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+					BlobID: "sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -41,6 +41,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Packages: types.Packages{
 									{
+										ID:         "musl@1.2.3-r0",
 										Name:       "musl",
 										Version:    "1.2.3-r0",
 										SrcName:    "musl",
@@ -74,6 +75,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "app/composer/composer.lock",
 								Libraries: types.Packages{
 									{
+										ID:      "pear/log@1.13.1",
 										Name:    "pear/log",
 										Version: "1.13.1",
 										Layer: types.Layer{
@@ -90,7 +92,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										},
 									},
 									{
-
+										ID:      "pear/pear_exception@v1.0.0",
 										Name:    "pear/pear_exception",
 										Version: "v1.0.0",
 										Layer: types.Layer{
@@ -113,6 +115,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "app/gobinary/gobinary",
 								Libraries: types.Packages{
 									{
+										ID:      "github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
 										Layer: types.Layer{
@@ -135,6 +138,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "",
 								Libraries: types.Packages{
 									{
+										ID:      "org.codehaus.mojo:child-project:1.0",
 										Name:    "org.codehaus.mojo:child-project",
 										Version: "1.0",
 										Layer: types.Layer{
@@ -148,6 +152,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												Name:      "child-project",
 												Version:   "1.0",
 											},
+											// Keep the original value
 											BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										},
 									},
@@ -158,6 +163,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "",
 								Libraries: types.Packages{
 									{
+										ID:       "bootstrap@5.0.2",
 										Name:     "bootstrap",
 										Version:  "5.0.2",
 										Licenses: []string{"MIT"},
@@ -171,6 +177,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												Name:    "bootstrap",
 												Version: "5.0.2",
 											},
+											// Keep the original value
 											BOMRef: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 										},
 									},
@@ -184,9 +191,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+				ID:   "sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 				BlobIDs: []string{
-					"sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+					"sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 				},
 			},
 		},
@@ -195,7 +202,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+					BlobID: "sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -206,6 +213,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Packages: types.Packages{
 									{
+										ID:         "musl@1.2.3-r0",
 										Name:       "musl",
 										Version:    "1.2.3-r0",
 										SrcName:    "musl",
@@ -239,6 +247,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "app/composer/composer.lock",
 								Libraries: types.Packages{
 									{
+										ID:      "pear/log@1.13.1",
 										Name:    "pear/log",
 										Version: "1.13.1",
 										Identifier: types.PkgIdentifier{
@@ -255,7 +264,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										},
 									},
 									{
-
+										ID:      "pear/pear_exception@v1.0.0",
 										Name:    "pear/pear_exception",
 										Version: "v1.0.0",
 										Identifier: types.PkgIdentifier{
@@ -278,6 +287,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "app/gobinary/gobinary",
 								Libraries: types.Packages{
 									{
+										ID:      "github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
 										Identifier: types.PkgIdentifier{
@@ -300,6 +310,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "",
 								Libraries: types.Packages{
 									{
+										ID:      "org.codehaus.mojo:child-project:1.0",
 										Name:    "org.codehaus.mojo:child-project",
 										Version: "1.0",
 										Identifier: types.PkgIdentifier{
@@ -309,6 +320,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												Name:      "child-project",
 												Version:   "1.0",
 											},
+											// Keep the original value
 											BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										},
 										Layer: types.Layer{
@@ -323,6 +335,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "",
 								Libraries: types.Packages{
 									{
+										ID:      "bootstrap@5.0.2",
 										Name:    "bootstrap",
 										Version: "5.0.2",
 										Identifier: types.PkgIdentifier{
@@ -331,6 +344,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												Name:    "bootstrap",
 												Version: "5.0.2",
 											},
+											// Keep the original value
 											BOMRef: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 										},
 										Licenses: []string{"MIT"},
@@ -349,9 +363,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+				ID:   "sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 				BlobIDs: []string{
-					"sha256:5d7b14f463a56006dd4060d04295afbda468350f2e5a786ae48d18fd02fb9a89",
+					"sha256:f6d4bf4edf2818010ef009b6cd0f837c94dac3464d99e665470c8d05648478e3",
 				},
 			},
 		},
@@ -368,15 +382,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "os-only-bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:033dc76e6daf7d8ba439d678dc7e33400687098f3e9f563f6975adf4eb440eee",
+					BlobID: "sha256:911a6c875617315c51971dddf19fa2d47d6132cd14e9c6a87deb074afaf07818",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
 							Family: "alpine",
 							Name:   "3.16.0",
-						},
-						PackageInfos: []types.PackageInfo{
-							{},
 						},
 					},
 				},
@@ -410,7 +421,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			}
 
 			// Not compare the original CycloneDX report
-			got.CycloneDX = nil
+			got.BOM = nil
 
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)

@@ -15,6 +15,16 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest, windows-latest, macos-latest]
     steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@v10
+        with:
+          root-reserve-mb: 32768 # The golangci-lint uses a lot of space.
+          remove-android: "true"
+          remove-docker-images: "true"
+          remove-dotnet: "true"
+          remove-haskell: "true"
+        if: matrix.operating-system == 'ubuntu-latest'
+
       - uses: actions/checkout@v4.1.1
 
       - name: Set up Go
@@ -33,7 +43,7 @@ jobs:
 
       - name: Lint
         id: lint
-        uses: golangci/golangci-lint-action@v3.7.0
+        uses: golangci/golangci-lint-action@v4.0.0
         with:
           version: v1.54
           args: --deadline=30m --out-format=line-number
@@ -89,9 +99,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Maximize build space
-        uses: easimon/maximize-build-space@v9
+        uses: easimon/maximize-build-space@v10
         with:
-          root-reserve-mb: 35840 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
+          root-reserve-mb: 32768 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
           remove-android: "true"
           remove-docker-images: "true"
           remove-dotnet: "true"
@@ -140,9 +150,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Maximize build space
-        uses: easimon/maximize-build-space@v9
+        uses: easimon/maximize-build-space@v10
         with:
-          root-reserve-mb: 35840 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
+          root-reserve-mb: 32768 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
           remove-android: 'true'
           remove-docker-images: 'true'
           remove-dotnet: 'true'
@@ -173,9 +183,9 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
     - name: Maximize build space
-      uses: easimon/maximize-build-space@v9
+      uses: easimon/maximize-build-space@v10
       with:
-        root-reserve-mb: 35840 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
+        root-reserve-mb: 32768 # The Go cache (`~/.cache/go-build` and `~/go/pkg`) requires a lot of storage space.
         remove-android: 'true'
         remove-docker-images: 'true'
         remove-dotnet: 'true'

@@ -1,15 +1,22 @@
 # Global
 *   @knqyf263
 
+# SBOM/Vulnerability scanning
+pkg/dependency/  @knqyf263 @DmitriyLewen
+pkg/fanal/       @knqyf263 @DmitriyLewen
+pkg/sbom/        @knqyf263 @DmitriyLewen
+pkg/scanner/     @knqyf263 @DmitriyLewen
+
 # Misconfiguration scanning
-docs/docs/scanner/misconfiguration  @knqyf263 @simar7
-docs/docs/target/aws.md             @knqyf263 @simar7
-pkg/fanal/analyzer/config           @knqyf263 @simar7
-pkg/cloud                           @knqyf263 @simar7
+docs/docs/scanner/misconfiguration/  @simar7 @nikpivkin
+docs/docs/target/aws.md              @simar7 @nikpivkin
+pkg/fanal/analyzer/config/           @simar7 @nikpivkin
+pkg/cloud/                           @simar7 @nikpivkin
+pkg/iac/                             @simar7 @nikpivkin
 
 # Helm chart
 helm/trivy/ @chen-keinan
 
 # Kubernetes scanning
-pkg/k8s/                @josedonizetti @chen-keinan @knqyf263
-docs/docs/kubernetes/   @josedonizetti @chen-keinan @knqyf263
+pkg/k8s/                         @chen-keinan
+docs/docs/target/kubernetes.md   @chen-keinan

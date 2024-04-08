@@ -15,7 +15,7 @@ import (
 type Writer struct {
 	output    io.Writer
 	format    cdx.BOMFileFormat
-	marshaler *cyclonedx.Marshaler
+	marshaler cyclonedx.Marshaler
 }
 
 func NewWriter(output io.Writer, appVersion string) Writer {
@@ -28,7 +28,7 @@ func NewWriter(output io.Writer, appVersion string) Writer {
 
 // Write writes the results in CycloneDX format
 func (w Writer) Write(ctx context.Context, report types.Report) error {
-	bom, err := w.marshaler.Marshal(ctx, report)
+	bom, err := w.marshaler.MarshalReport(ctx, report)
 	if err != nil {
 		return xerrors.Errorf("CycloneDX marshal error: %w", err)
 	}

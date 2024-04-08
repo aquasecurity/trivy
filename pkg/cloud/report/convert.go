@@ -7,8 +7,8 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -61,12 +61,12 @@ func ConvertResults(results scan.Results, provider string, scoped []string) map[
 					primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(result.Rule().AVDID))
 				}
 
-				status := types.StatusFailure
+				status := types.MisconfStatusFailure
 				switch result.Status() {
 				case scan.StatusPassed:
-					status = types.StatusPassed
+					status = types.MisconfStatusPassed
 				case scan.StatusIgnored:
-					status = types.StatusException
+					status = types.MisconfStatusException
 				}
 
 				flat := result.Flatten()

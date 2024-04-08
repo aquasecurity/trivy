@@ -10,24 +10,28 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
 	"github.com/aquasecurity/trivy-java-db/pkg/db"
 	"github.com/aquasecurity/trivy-java-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (
-	mediaType = "application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip"
+	SchemaVersion = db.SchemaVersion
+	mediaType     = "application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip"
 )
+
+var DefaultRepository = fmt.Sprintf("%s:%d", "ghcr.io/aquasecurity/trivy-java-db", SchemaVersion)
 
 var updater *Updater
 
 type Updater struct {
-	repo           string
+	repo           name.Reference
 	dbDir          string
 	skip           bool
 	quiet          bool
@@ -49,14 +53,14 @@ func (u *Updater) Update() error {
 		}
 	}
 
-	if (meta.Version != db.SchemaVersion || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
+	if (meta.Version != SchemaVersion || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
 		// Download DB
 		log.Logger.Infof("Java DB Repository: %s", u.repo)
 		log.Logger.Info("Downloading the Java DB...")
 
 		// TODO: support remote options
 		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo, u.quiet, u.registryOption); err != nil {
+		if a, err = oci.NewArtifact(u.repo.String(), u.quiet, u.registryOption); err != nil {
 			return xerrors.Errorf("oci error: %w", err)
 		}
 		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
@@ -81,9 +85,9 @@ func (u *Updater) Update() error {
 	return nil
 }
 
-func Init(cacheDir, javaDBRepository string, skip, quiet bool, registryOption ftypes.RegistryOptions) {
+func Init(cacheDir string, javaDBRepository name.Reference, skip, quiet bool, registryOption ftypes.RegistryOptions) {
 	updater = &Updater{
-		repo:           fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
+		repo:           javaDBRepository,
 		dbDir:          filepath.Join(cacheDir, "java-db"),
 		skip:           skip,
 		quiet:          quiet,

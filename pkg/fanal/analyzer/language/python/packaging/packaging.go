@@ -15,15 +15,15 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/go-dep-parser/pkg/python/packaging"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -68,7 +68,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
-		rsa, ok := r.(dio.ReadSeekerAt)
+		rsa, ok := r.(xio.ReadSeekerAt)
 		if !ok {
 			return xerrors.New("invalid reader")
 		}
@@ -167,11 +167,11 @@ func classifyLicense(dir, licPath string, classifierConfidenceLevel float64, fsy
 	return l.Findings, nil
 }
 
-func (a packagingAnalyzer) parse(filePath string, r dio.ReadSeekerAt, checksum bool) (*types.Application, error) {
+func (a packagingAnalyzer) parse(filePath string, r xio.ReadSeekerAt, checksum bool) (*types.Application, error) {
 	return language.ParsePackage(types.PythonPkg, filePath, r, a.pkgParser, checksum)
 }
 
-func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSeekerAt, error) {
+func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (xio.ReadSeekerAt, error) {
 	zr, err := zip.NewReader(r, size)
 	if err != nil {
 		return nil, xerrors.Errorf("zip reader error: %w", err)
@@ -187,7 +187,7 @@ func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSee
 }
 
 // open reads the file content in the zip archive to make it seekable.
-func (a packagingAnalyzer) open(file *zip.File) (dio.ReadSeekerAt, error) {
+func (a packagingAnalyzer) open(file *zip.File) (xio.ReadSeekerAt, error) {
 	f, err := file.Open()
 	if err != nil {
 		return nil, err

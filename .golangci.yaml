@@ -19,6 +19,7 @@ linters-settings:
     locale: US
     ignore-words:
       - licence
+      - optimise
   gosec:
     excludes:
       - G101

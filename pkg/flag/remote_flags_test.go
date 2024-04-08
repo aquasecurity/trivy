@@ -1,6 +1,7 @@
 package flag_test
 
 import (
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
 
@@ -108,12 +109,13 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 
 			// Assert options
 			f := &flag.RemoteFlagGroup{
-				ServerAddr:    &flag.ServerAddrFlag,
-				CustomHeaders: &flag.ServerCustomHeadersFlag,
-				Token:         &flag.ServerTokenFlag,
-				TokenHeader:   &flag.ServerTokenHeaderFlag,
+				ServerAddr:    flag.ServerAddrFlag.Clone(),
+				CustomHeaders: flag.ServerCustomHeadersFlag.Clone(),
+				Token:         flag.ServerTokenFlag.Clone(),
+				TokenHeader:   flag.ServerTokenHeaderFlag.Clone(),
 			}
-			got := f.ToOptions()
+			got, err := f.ToOptions()
+			require.NoError(t, err)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
