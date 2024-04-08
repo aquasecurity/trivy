@@ -27,7 +27,7 @@ require (
 	github.com/aquasecurity/trivy-kubernetes v0.6.3
 	github.com/aquasecurity/trivy-policies v0.10.0
 	github.com/aws/aws-sdk-go-v2 v1.26.1
-	github.com/aws/aws-sdk-go-v2/config v1.27.10
+	github.com/aws/aws-sdk-go-v2/config v1.27.11
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.11
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.15.15
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.155.1
