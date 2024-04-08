@@ -27,9 +27,9 @@ require (
 	github.com/aquasecurity/trivy-kubernetes v0.6.3
 	github.com/aquasecurity/trivy-policies v0.10.0
 	github.com/aws/aws-sdk-go-v2 v1.26.1
-	github.com/aws/aws-sdk-go-v2/config v1.27.10
-	github.com/aws/aws-sdk-go-v2/credentials v1.17.10
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.15.15
+	github.com/aws/aws-sdk-go-v2/config v1.27.11
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.11
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.16.15
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.155.1
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.24.6
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.53.1
@@ -49,7 +49,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.3
-	github.com/google/go-containerregistry v0.19.0
+	github.com/google/go-containerregistry v0.19.1
 	github.com/google/licenseclassifier/v2 v2.0.0
 	github.com/google/uuid v1.6.0
 	github.com/google/wire v0.6.0
@@ -218,7 +218,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.26.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sns v1.26.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.29.6 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.20.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.20.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.23.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/workspaces v1.38.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
