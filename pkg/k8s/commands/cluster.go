@@ -10,7 +10,6 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
 	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -23,7 +22,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 	var err error
 	switch opts.Format {
 	case types.FormatCycloneDX:
-		artifacts, err = trivyk8s.New(cluster, log.Logger).ListClusterBomInfo(ctx)
+		artifacts, err = trivyk8s.New(cluster).ListClusterBomInfo(ctx)
 		if err != nil {
 			return xerrors.Errorf("get k8s artifacts with node info error: %w", err)
 		}
@@ -36,7 +35,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 			trivyk8s.WithExcludeOwned(opts.ExcludeOwned),
 		}
 		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && slices.Contains(opts.Components, "infra") {
-			artifacts, err = trivyk8s.New(cluster, log.Logger, k8sOpts...).ListArtifactAndNodeInfo(ctx,
+			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifactAndNodeInfo(ctx,
 				trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
 				trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),
 				trivyk8s.WithScanJobImageRef(opts.NodeCollectorImageRef),
@@ -45,7 +44,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 				return xerrors.Errorf("get k8s artifacts with node info error: %w", err)
 			}
 		} else {
-			artifacts, err = trivyk8s.New(cluster, log.Logger, k8sOpts...).ListArtifacts(ctx)
+			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifacts(ctx)
 			if err != nil {
 				return xerrors.Errorf("get k8s artifacts error: %w", err)
 			}
