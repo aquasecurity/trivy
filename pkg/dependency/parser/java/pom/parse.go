@@ -633,7 +633,7 @@ func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 func (p *parser) fetchPOMFromRemoteRepositories(paths []string) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
 	if p.offline {
-		log.Debug("Fetching the remote pom.xml is skipped")
+		p.logger.Debug("Fetching the remote pom.xml is skipped")
 		return nil, xerrors.New("offline mode")
 	}
 
