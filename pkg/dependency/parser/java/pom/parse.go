@@ -478,7 +478,7 @@ func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResu
 
 	logger := p.logger.With("artifact", target.String())
 	logger.Debug("Start parent")
-	defer log.Debug("Exit parent")
+	defer logger.Debug("Exit parent")
 
 	// If the artifact is found in cache, it is returned.
 	if result := p.cache.get(target); result != nil {
