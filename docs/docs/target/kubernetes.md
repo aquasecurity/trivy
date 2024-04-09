@@ -91,6 +91,18 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 2, CRITICAL: 0)
 └────────────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┘
 ```
 
+### Taints and Tolerations
+
+The node-collector scan-job will run on every node. In case the node has been tainted, it is possible to add toleration to the scan job for it to be scheduled on the tainted node
+
+- `--tolerations  key1=value1:NoExecute,key2=value2:NoSchedule` this flag wil enable node-collector to be schedule on tainted Node
+
+Example:
+
+```sh
+trivy k8s --report summary --tolerations  key1=value1:NoExecute,key2=value2:NoSchedule
+```
+
 ### Non-intrusive
 
 You can control whether the node scan-job (`node-collector`) will run in the cluster. To disable it, add the `--non-intrusive` flag  
