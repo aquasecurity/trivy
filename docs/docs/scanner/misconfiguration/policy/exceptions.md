@@ -94,5 +94,5 @@ For more details, see [an example][rule-example].
 
 [ns-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/namespace-exception
 [rule-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/rule-exception
-[ksv012]: https://github.com/aquasecurity/trivy-policies/blob/main/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego 
-[trivy-policies]: https://github.com/aquasecurity/trivy-policies/
+[ksv012]: https://github.com/aquasecurity/trivy-checks/blob/main/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego 
+[trivy-policies]: https://github.com/aquasecurity/trivy-checks/

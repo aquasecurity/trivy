@@ -8,7 +8,7 @@ import (
 
 	"github.com/open-policy-agent/opa/ast"
 
-	rules2 "github.com/aquasecurity/trivy-policies"
+	rules2 "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 )
 

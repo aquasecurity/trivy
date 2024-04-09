@@ -3,7 +3,7 @@ package rego
 import (
 	"testing"
 
-	rules2 "github.com/aquasecurity/trivy-policies"
+	rules2 "github.com/aquasecurity/trivy-checks"
 	"github.com/aquasecurity/trivy/pkg/iac/rules"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/stretchr/testify/assert"

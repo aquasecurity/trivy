@@ -18,7 +18,7 @@ Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if th
 
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 
-[kubernetes-policies]: https://github.com/aquasecurity/trivy-policies/tree/main/rules/kubernetes/policies
-[docker-policies]: https://github.com/aquasecurity/trivy-policies/tree/main/rules/docker/policies
-[trivy-policies]: https://github.com/aquasecurity/trivy-policies
-[ghcr]: https://github.com/aquasecurity/trivy-policies/pkgs/container/trivy-policies
+[kubernetes-policies]: https://github.com/aquasecurity/trivy-checks/tree/main/rules/kubernetes/policies
+[docker-policies]: https://github.com/aquasecurity/trivy-checks/tree/main/rules/docker/policies
+[trivy-policies]: https://github.com/aquasecurity/trivy-checks
+[ghcr]: https://github.com/aquasecurity/trivy-checks/pkgs/container/trivy-policies

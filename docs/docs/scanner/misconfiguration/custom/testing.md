@@ -85,6 +85,6 @@ The following example stores allowed and denied configuration files in a directo
 `Dockerfile.allowed` has one successful result in `Successes`, while `Dockerfile.denied` has one failure result in `Failures`.
 
 [opa-testing]: https://www.openpolicyagent.org/docs/latest/policy-testing/
-[defsec]: https://github.com/aquasecurity/trivy-policies/tree/main
+[defsec]: https://github.com/aquasecurity/trivy-checks/tree/main
 [table]: https://github.com/golang/go/wiki/TableDrivenTests
 [fanal]: https://github.com/aquasecurity/fanal
