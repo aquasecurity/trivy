@@ -19,7 +19,7 @@ const (
 	LevelFatal = slog.Level(12)
 )
 
-// Logger is a thin wrapper of slog.Logger
+// Logger is an alias of slog.Logger
 type Logger = slog.Logger
 
 // New creates a new Logger with the given non-nil Handler.
