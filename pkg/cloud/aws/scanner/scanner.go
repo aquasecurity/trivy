@@ -98,7 +98,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 
 	dataFS, dataPaths, err := misconf.CreateDataFS(option.RegoOptions.DataPaths)
 	if err != nil {
-		log.Error("Could not load config data", err)
+		s.logger.Error("Could not load config data", err)
 	}
 	scannerOpts = append(scannerOpts,
 		options.ScannerWithDataDirs(dataPaths...),
