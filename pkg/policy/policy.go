@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	BundleVersion    = 0 // Latest released MAJOR version for trivy-policies
-	BundleRepository = "ghcr.io/aquasecurity/trivy-policies"
+	BundleVersion    = 0 // Latest released MAJOR version for trivy-checks
+	BundleRepository = "ghcr.io/aquasecurity/trivy-checks"
 	policyMediaType  = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
 	updateInterval   = 24 * time.Hour
 )

@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
+	"golang.org/x/xerrors"
 )
 
 // e.g. config yaml:
@@ -18,7 +20,13 @@ var (
 	ResetPolicyBundleFlag = Flag[bool]{
 		Name:       "reset-policy-bundle",
 		ConfigName: "misconfiguration.reset-policy-bundle",
-		Usage:      "remove policy bundle",
+		Usage:      "remove policy bundle, please use --reset-checks-bundle instead",
+		Deprecated: true,
+	}
+	ResetChecksBundleFlag = Flag[bool]{
+		Name:       "reset-checks-bundle",
+		ConfigName: "misconfiguration.reset-checks-bundle",
+		Usage:      "remove checks bundle",
 	}
 	IncludeNonFailuresFlag = Flag[bool]{
 		Name:       "include-non-failures",
@@ -75,7 +83,14 @@ var (
 		Name:       "policy-bundle-repository",
 		ConfigName: "misconfiguration.policy-bundle-repository",
 		Default:    fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
-		Usage:      "OCI registry URL to retrieve policy bundle from",
+		Usage:      "OCI registry URL to retrieve policy bundle from, please use --checks-bundle-repository instead",
+		Deprecated: true,
+	}
+	ChecksBundleRepositoryFlag = Flag[string]{
+		Name:       "checks-bundle-repository",
+		ConfigName: "misconfiguration.checks-bundle-repository",
+		Default:    fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
+		Usage:      "OCI registry URL to retrieve checks bundle from",
 	}
 	MisconfigScannersFlag = Flag[[]string]{
 		Name:       "misconfig-scanners",
@@ -88,8 +103,10 @@ var (
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfiguration scanning.
 type MisconfFlagGroup struct {
 	IncludeNonFailures     *Flag[bool]
-	ResetPolicyBundle      *Flag[bool]
-	PolicyBundleRepository *Flag[string]
+	ResetPolicyBundle      *Flag[bool] // deprecated
+	ResetChecksBundle      *Flag[bool]
+	PolicyBundleRepository *Flag[string] // deprecated
+	ChecksBundleRepository *Flag[string]
 
 	// Values Files
 	HelmValues                 *Flag[[]string]
@@ -107,7 +124,9 @@ type MisconfFlagGroup struct {
 type MisconfOptions struct {
 	IncludeNonFailures     bool
 	ResetPolicyBundle      bool
+	ResetChecksBundle      bool
 	PolicyBundleRepository string
+	ChecksBundleRepository string
 
 	// Values Files
 	HelmValues              []string
@@ -125,8 +144,10 @@ type MisconfOptions struct {
 func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
 		IncludeNonFailures:     IncludeNonFailuresFlag.Clone(),
-		ResetPolicyBundle:      ResetPolicyBundleFlag.Clone(),
-		PolicyBundleRepository: PolicyBundleRepositoryFlag.Clone(),
+		ResetPolicyBundle:      ResetPolicyBundleFlag.Clone(), // deprecated
+		ResetChecksBundle:      ResetChecksBundleFlag.Clone(),
+		PolicyBundleRepository: PolicyBundleRepositoryFlag.Clone(), // deprecated
+		ChecksBundleRepository: ChecksBundleRepositoryFlag.Clone(),
 
 		HelmValues:                 HelmSetFlag.Clone(),
 		HelmFileValues:             HelmSetFileFlag.Clone(),
@@ -149,7 +170,9 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.IncludeNonFailures,
 		f.ResetPolicyBundle,
+		f.ResetChecksBundle,
 		f.PolicyBundleRepository,
+		f.ChecksBundleRepository,
 		f.HelmValues,
 		f.HelmValueFiles,
 		f.HelmFileValues,
@@ -168,10 +191,24 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		return MisconfOptions{}, err
 	}
 
+	if f.PolicyBundleRepository.isSet() {
+		log.Logger.Warn("'--policy-bundle-repository' option is deprecated now. Please use --checks-bundle-repository instead. See <insert link to discussion here>")
+	}
+
+	if f.ResetPolicyBundle.isSet() {
+		log.Logger.Warn("'--reset-policy-bundle' option is deprecated now. Please use --reset-checks-bundle instead. See <insert link to discussion here>")
+	}
+
+	if f.PolicyBundleRepository.Value() != f.PolicyBundleRepository.Default && f.ChecksBundleRepository.Value() != f.ChecksBundleRepository.Default {
+		return MisconfOptions{}, xerrors.Errorf("please specify either --policy-bundle-repository (deprecated) or --checks-bundle-repository but not both")
+	}
+
 	return MisconfOptions{
 		IncludeNonFailures:      f.IncludeNonFailures.Value(),
 		ResetPolicyBundle:       f.ResetPolicyBundle.Value(),
+		ResetChecksBundle:       f.ResetChecksBundle.Value(),
 		PolicyBundleRepository:  f.PolicyBundleRepository.Value(),
+		ChecksBundleRepository:  f.ChecksBundleRepository.Value(),
 		HelmValues:              f.HelmValues.Value(),
 		HelmValueFiles:          f.HelmValueFiles.Value(),
 		HelmFileValues:          f.HelmFileValues.Value(),

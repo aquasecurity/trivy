@@ -231,6 +231,7 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 
 	if f.Deprecated {
 		flags.MarkHidden(f.Name) // nolint: gosec
+		flags.FlagUsages()
 	}
 }
 

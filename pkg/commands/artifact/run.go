@@ -370,8 +370,16 @@ func (r *runner) initCache(opts flag.Options) error {
 		return SkipScan
 	}
 
-	if opts.ResetPolicyBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.PolicyBundleRepository)
+	var bundleRepo string
+	switch {
+	case len(opts.MisconfOptions.PolicyBundleRepository) > 0:
+		bundleRepo = opts.MisconfOptions.PolicyBundleRepository
+	case len(opts.MisconfOptions.ChecksBundleRepository) > 0:
+		bundleRepo = opts.MisconfOptions.ChecksBundleRepository
+	}
+
+	if opts.ResetPolicyBundle || opts.ResetChecksBundle {
+		c, err := policy.NewClient(fsutils.CacheDir(), true, bundleRepo)
 		if err != nil {
 			return xerrors.Errorf("failed to instantiate policy client: %w", err)
 		}
@@ -584,7 +592,16 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 		var downloadedPolicyPaths []string
 		var disableEmbedded bool
-		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate, opts.MisconfOptions.PolicyBundleRepository, opts.RegistryOpts())
+
+		var bundleRepo string
+		switch {
+		case len(opts.MisconfOptions.PolicyBundleRepository) > 0:
+			bundleRepo = opts.MisconfOptions.PolicyBundleRepository
+		case len(opts.MisconfOptions.ChecksBundleRepository) > 0:
+			bundleRepo = opts.MisconfOptions.ChecksBundleRepository
+		}
+
+		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate, bundleRepo, opts.RegistryOpts())
 		if err != nil {
 			if !opts.SkipPolicyUpdate {
 				log.Logger.Errorf("Falling back to embedded policies: %s", err)
