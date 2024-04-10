@@ -12,6 +12,7 @@ trivy config [flags] DIR
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
       --cf-params strings                 specify paths to override the CloudFormation parameters files
+      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
@@ -36,7 +37,6 @@ trivy config [flags] DIR
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
@@ -44,7 +44,7 @@ trivy config [flags] DIR
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --report string                     specify a compliance report format for the output (all,summary) (default "all")
-      --reset-policy-bundle               remove policy bundle
+      --reset-checks-bundle               remove checks bundle
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip

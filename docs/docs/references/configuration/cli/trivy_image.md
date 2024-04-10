@@ -36,6 +36,7 @@ trivy image [flags] IMAGE_NAME
 ```
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
+      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate (docker-cis)
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
@@ -81,7 +82,6 @@ trivy image [flags] IMAGE_NAME
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --platform string                   set platform in the form os/arch if image is multi-platform capable
       --podman-host string                unix podman socket path to use for podman scanning
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
@@ -92,7 +92,7 @@ trivy image [flags] IMAGE_NAME
       --removed-pkgs                      detect vulnerabilities of removed packages (only for Alpine)
       --report string                     specify a format for the compliance report. (all,summary) (default "summary")
       --reset                             remove all caches and database
-      --reset-policy-bundle               remove policy bundle
+      --reset-checks-bundle               remove checks bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,license) (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
