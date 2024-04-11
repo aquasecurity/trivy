@@ -70,15 +70,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	var downloadedPolicyPaths []string
 	var err error
 
-	var bundleRepo string
-	switch {
-	case len(option.MisconfOptions.PolicyBundleRepository) > 0:
-		bundleRepo = option.MisconfOptions.PolicyBundleRepository
-	case len(option.MisconfOptions.ChecksBundleRepository) > 0:
-		bundleRepo = option.MisconfOptions.ChecksBundleRepository
-	}
-
-	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate, bundleRepo, option.RegistryOpts())
+	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate, option.MisconfOptions.ChecksBundleRepository, option.RegistryOpts())
 	if err != nil {
 		if !option.SkipPolicyUpdate {
 			log.Logger.Errorf("Falling back to embedded policies: %s", err)
