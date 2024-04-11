@@ -101,7 +101,7 @@ type postAnalyzerInitialize func(options AnalyzerOptions) (PostAnalyzer, error)
 
 func RegisterPostAnalyzer(t Type, initializer postAnalyzerInitialize) {
 	if _, ok := postAnalyzers[t]; ok {
-		log.Fatal("The analyzer is registered twice", log.String("type", string(t)))
+		log.Fatal("Analyzer is registered twice", log.String("type", string(t)))
 	}
 	postAnalyzers[t] = initializer
 }
