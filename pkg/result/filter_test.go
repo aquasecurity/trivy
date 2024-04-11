@@ -671,7 +671,7 @@ func TestFilter(t *testing.T) {
 							secret1,
 						},
 						ModifiedFindings: []types.ModifiedFinding{
-						     {
+							 {
 								Type:      types.FindingTypeSecret,
 								Status:    types.FindingStatusIgnored,
 								Statement: "Filtered by Rego",
