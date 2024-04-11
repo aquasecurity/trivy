@@ -92,7 +92,7 @@ const GroupBuiltin Group = "builtin"
 
 func RegisterAnalyzer(analyzer analyzer) {
 	if _, ok := analyzers[analyzer.Type()]; ok {
-		log.Fatal("The analyzer is registered twice", log.String("type", string(analyzer.Type())))
+		log.Fatal("Analyzer is registered twice", log.String("type", string(analyzer.Type())))
 	}
 	analyzers[analyzer.Type()] = analyzer
 }
