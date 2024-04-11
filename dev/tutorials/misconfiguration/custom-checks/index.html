@@ -3663,8 +3663,8 @@ You're not viewing the latest version.
 <p>This tutorial will walk you through writing a custom check in Rego that checks for an issue in a Dockerfile.</p>
 <p>When you are writing a check, it's important to understand the input to the check. This will be the IaC file that you are scanning; for example, a Kubernetes YAML resource definition, or an AWS JSON CloudFormation, or in our case a Dockerfile.</p>
 <p>Since Rego is primarily tailored to query JSON objects, all incoming configuration files needs to be first converted to structured objects, which is available to the Rego code as the input variable. This is nothing that users have to do manually in Trivy. Instead, Rego makes it possible to pass in custom Schemas that detail how files are converted. Once Rego has access to a custom Schema, it will know in which format to access configuration files such as a Dockerfile. </p>
-<p><a href="https://github.com/aquasecurity/defsec/tree/master/pkg/rego/schemas">Here you can find the schemas</a> that define how different configuration files are converted to JSON by Trivy.
-This tutorial will make use of the <a href="https://github.com/aquasecurity/defsec/tree/master/pkg/rego/schemas">dockerfile.json schema</a>. The schema will need to be parsed into your custom check. </p>
+<p><a href="https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas">Here you can find the schemas</a> that define how different configuration files are converted to JSON by Trivy.
+This tutorial will make use of the <a href="https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/dockerfile.json">dockerfile.json schema</a>. The schema will need to be parsed into your custom check. </p>
 <p>Users can also use the <a href="https://aquasecurity.github.io/trivy-schemas/">Schema Explorer</a> to view the structure of the data provided to Rego.</p>
 <h2 id="create-a-rego-file-and-specify-trivy-metadata">Create a Rego file and Specify Trivy metadata</h2>
 <p>First, create a new <code>.rego</code> file e.g. a <code>docker-check.rego</code> file:
