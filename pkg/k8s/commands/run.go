@@ -27,6 +27,11 @@ const (
 
 // Run runs a k8s scan
 func Run(ctx context.Context, args []string, opts flag.Options) error {
+	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
+	defer cancel()
+
+	ctx = log.WithContextPrefix(ctx, "k8s")
+
 	cluster, err := k8s.GetCluster(
 		k8s.WithContext(opts.K8sOptions.ClusterContext),
 		k8s.WithKubeConfig(opts.K8sOptions.KubeConfig),
@@ -36,12 +41,10 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	if err != nil {
 		return xerrors.Errorf("failed getting k8s cluster: %w", err)
 	}
-	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
-	defer cancel()
 
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Logger.Warn("Increase --timeout value")
+			log.Warn("Increase --timeout value")
 		}
 	}()
 	opts.K8sVersion = cluster.GetClusterVersion()
@@ -68,8 +71,8 @@ type runner struct {
 
 func newRunner(flagOpts flag.Options, cluster string) *runner {
 	return &runner{
-		flagOpts,
-		cluster,
+		flagOpts: flagOpts,
+		cluster:  cluster,
 	}
 }
 
@@ -83,7 +86,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 	}
 	defer func() {
 		if err := runner.Close(ctx); err != nil {
-			log.Logger.Errorf("failed to close runner: %s", err)
+			log.ErrorContext(ctx, "Failed to close runner", log.Err(err))
 		}
 	}()
 

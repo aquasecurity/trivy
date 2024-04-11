@@ -39,7 +39,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.Errorf("unable to filter results: %w", err)
 	}
 
-	log.Logger.Debug("Writing report to output...")
+	log.Debug("Writing report to output...")
 	if err = report.Write(ctx, r, opts); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}

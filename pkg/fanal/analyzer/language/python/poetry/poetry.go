@@ -27,12 +27,14 @@ func init() {
 const version = 1
 
 type poetryAnalyzer struct {
+	logger          *log.Logger
 	pyprojectParser *pyproject.Parser
 	lockParser      godeptypes.Parser
 }
 
 func newPoetryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &poetryAnalyzer{
+		logger:          log.WithPrefix("poetry"),
 		pyprojectParser: pyproject.NewParser(),
 		lockParser:      poetry.NewParser(),
 	}, nil
@@ -56,7 +58,8 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 
 		// Parse pyproject.toml alongside poetry.lock to identify the direct dependencies
 		if err = a.mergePyProject(input.FS, filepath.Dir(path), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.PyProject), err)
+			a.logger.Warn("Unable to parse pyproject.toml to identify direct dependencies",
+				log.String("path", filepath.Join(filepath.Dir(path), types.PyProject)), log.Err(err))
 		}
 		apps = append(apps, *app)
 
@@ -94,7 +97,7 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 	p, err := a.parsePyProject(fsys, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Assume all the packages are direct dependencies as it cannot identify them from poetry.lock
-		log.Logger.Debugf("Poetry: %s not found", path)
+		a.logger.Debug("pyproject.toml not found", log.String("path", path))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", path, err)

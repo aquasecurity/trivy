@@ -60,7 +60,7 @@ func (w *walker) shouldSkipFile(filePath string) bool {
 		if err != nil {
 			return false // return early if bad pattern
 		} else if match {
-			log.Logger.Debugf("Skipping file: %s", filePath)
+			log.Debug("Skipping file", log.String("file_path", filePath))
 			return true
 		}
 	}
@@ -81,7 +81,7 @@ func (w *walker) shouldSkipDir(dir string) bool {
 		if match, err := doublestar.Match(pattern, dir); err != nil {
 			return false // return early if bad pattern
 		} else if match {
-			log.Logger.Debugf("Skipping directory: %s", dir)
+			log.Debug("Skipping directory", log.String("dir", dir))
 			return true
 		}
 	}

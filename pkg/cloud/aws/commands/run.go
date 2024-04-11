@@ -23,7 +23,7 @@ import (
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
 
 func getAccountIDAndRegion(ctx context.Context, region, endpoint string) (string, string, error) {
-	log.Logger.Debug("Looking for AWS credentials provider...")
+	log.DebugContext(ctx, "Looking for AWS credentials provider...")
 
 	cfg, err := config.LoadDefaultAWSConfig(ctx, region, endpoint)
 	if err != nil {
@@ -32,7 +32,7 @@ func getAccountIDAndRegion(ctx context.Context, region, endpoint string) (string
 
 	svc := sts.NewFromConfig(cfg)
 
-	log.Logger.Debug("Looking up AWS caller identity...")
+	log.DebugContext(ctx, "Looking up AWS caller identity...")
 	result, err := svc.GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
 	if err != nil {
 		return "", "", xerrors.Errorf("failed to discover AWS caller identity: %w", err)
@@ -40,7 +40,7 @@ func getAccountIDAndRegion(ctx context.Context, region, endpoint string) (string
 	if result.Account == nil {
 		return "", "", xerrors.Errorf("missing account id for aws account")
 	}
-	log.Logger.Debugf("Verified AWS credentials for account %s!", *result.Account)
+	log.DebugContext(ctx, "Verified AWS credentials for account!", log.String("account", *result.Account))
 	return *result.Account, cfg.Region, nil
 }
 
@@ -85,22 +85,22 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 		}
 	}
 
-	err := filterServices(opt)
+	err := filterServices(ctx, opt)
 	if err != nil {
 		return err
 	}
 
-	log.Logger.Debug("scanning services: ", opt.Services)
+	log.DebugContext(ctx, "Scanning services", log.Any("services", opt.Services))
 	return nil
 }
 
-func filterServices(opt *flag.Options) error {
+func filterServices(ctx context.Context, opt *flag.Options) error {
 	switch {
 	case len(opt.Services) == 0 && len(opt.SkipServices) == 0:
-		log.Logger.Debug("No service(s) specified, scanning all services...")
+		log.DebugContext(ctx, "No service(s) specified, scanning all services...")
 		opt.Services = allSupportedServicesFunc()
 	case len(opt.SkipServices) > 0:
-		log.Logger.Debug("excluding services: ", opt.SkipServices)
+		log.DebugContext(ctx, "Excluding services", log.Any("services", opt.SkipServices))
 		for _, s := range allSupportedServicesFunc() {
 			if slices.Contains(opt.SkipServices, s) {
 				continue
@@ -110,7 +110,8 @@ func filterServices(opt *flag.Options) error {
 			}
 		}
 	case len(opt.Services) > 0:
-		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(opt.Services, ", "))
+		log.DebugContext(ctx, "Specific services were requested...",
+			log.String("services", strings.Join(opt.Services, ", ")))
 		for _, service := range opt.Services {
 			var found bool
 			supported := allSupportedServicesFunc()
@@ -132,10 +133,12 @@ func Run(ctx context.Context, opt flag.Options) error {
 	ctx, cancel := context.WithTimeout(ctx, opt.GlobalOptions.Timeout)
 	defer cancel()
 
+	ctx = log.WithContextPrefix(ctx, "aws")
+
 	var err error
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Logger.Warn("Increase --timeout value")
+			log.Warn("Increase --timeout value")
 		}
 	}()
 
@@ -148,14 +151,14 @@ func Run(ctx context.Context, opt flag.Options) error {
 		var aerr errs.AdapterError
 		if errors.As(err, &aerr) {
 			for _, e := range aerr.Errors() {
-				log.Logger.Warnf("Adapter error: %s", e)
+				log.WarnContext(ctx, "Adapter error", log.Err(e))
 			}
 		} else {
 			return xerrors.Errorf("aws scan error: %w", err)
 		}
 	}
 
-	log.Logger.Debug("Writing report to output...")
+	log.DebugContext(ctx, "Writing report to output...")
 
 	res := results.GetFailed()
 	if opt.MisconfOptions.IncludeNonFailures {

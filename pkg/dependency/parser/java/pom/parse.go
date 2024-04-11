@@ -14,7 +14,6 @@ import (
 
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
-	"go.uber.org/zap"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
@@ -50,6 +49,7 @@ func WithRemoteRepos(repos []string) option {
 }
 
 type parser struct {
+	logger             *log.Logger
 	rootPath           string
 	cache              pomCache
 	localRepository    string
@@ -76,6 +76,7 @@ func NewParser(filePath string, opts ...option) types.Parser {
 	}
 
 	return &parser{
+		logger:             log.WithPrefix("pom"),
 		rootPath:           filepath.Clean(filePath),
 		cache:              newPOMCache(),
 		localRepository:    localRepository,
@@ -186,7 +187,8 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 		for _, relativePath := range result.modules {
 			moduleArtifact, err := p.parseModule(result.filePath, relativePath)
 			if err != nil {
-				log.Logger.Debugf("Unable to parse %q module: %s", result.filePath, err)
+				p.logger.Debug("Unable to parse the module",
+					log.String("file_path", result.filePath), log.Err(err))
 				continue
 			}
 
@@ -283,10 +285,11 @@ func (p *parser) resolve(art artifact, rootDepManagement []pomDependency) (analy
 		return *result, nil
 	}
 
-	log.Logger.Debugf("Resolving %s:%s:%s...", art.GroupID, art.ArtifactID, art.Version)
+	p.logger.Debug("Resolving...", log.String("group_id", art.GroupID),
+		log.String("artifact_id", art.ArtifactID), log.String("version", art.Version.String()))
 	pomContent, err := p.tryRepository(art.GroupID, art.ArtifactID, art.Version.String())
 	if err != nil {
-		log.Logger.Debug(err)
+		p.logger.Debug("Repository error", log.Err(err))
 	}
 	result, err := p.analyze(pomContent, analysisOptions{
 		exclusions:    art.Exclusions,
@@ -472,10 +475,10 @@ func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResu
 	if target.IsEmpty() && !isProperty(parent.Version) {
 		return analysisResult{}, nil
 	}
-	log.Logger.Debugf("Start parent: %s", target.String())
-	defer func() {
-		log.Logger.Debugf("Exit parent: %s", target.String())
-	}()
+
+	logger := p.logger.With("artifact", target.String())
+	logger.Debug("Start parent")
+	defer logger.Debug("Exit parent")
 
 	// If the artifact is found in cache, it is returned.
 	if result := p.cache.get(target); result != nil {
@@ -484,7 +487,7 @@ func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResu
 
 	parentPOM, err := p.retrieveParent(currentPath, parent.RelativePath, target)
 	if err != nil {
-		log.Logger.Debugf("parent POM not found: %s", err)
+		logger.Debug("Parent POM not found", log.Err(err))
 	}
 
 	result, err := p.analyze(parentPOM, analysisOptions{})
@@ -630,13 +633,13 @@ func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 func (p *parser) fetchPOMFromRemoteRepositories(paths []string) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
 	if p.offline {
-		log.Logger.Debug("Fetching the remote pom.xml is skipped")
+		p.logger.Debug("Fetching the remote pom.xml is skipped")
 		return nil, xerrors.New("offline mode")
 	}
 
 	// try all remoteRepositories
 	for _, repo := range p.remoteRepositories {
-		fetched, err := fetchPOMFromRemoteRepository(repo, paths)
+		fetched, err := p.fetchPOMFromRemoteRepository(repo, paths)
 		if err != nil {
 			return nil, xerrors.Errorf("fetch repository error: %w", err)
 		} else if fetched == nil {
@@ -647,20 +650,21 @@ func (p *parser) fetchPOMFromRemoteRepositories(paths []string) (*pom, error) {
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
 }
 
-func fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
+func (p *parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
 	repoURL, err := url.Parse(repo)
 	if err != nil {
-		log.Logger.Errorw("URL parse error", zap.String("repo", repo))
+		p.logger.Error("URL parse error", log.String("repo", repo))
 		return nil, nil
 	}
 
 	paths = append([]string{repoURL.Path}, paths...)
 	repoURL.Path = path.Join(paths...)
 
+	logger := p.logger.With(log.String("host", repoURL.Host), log.String("path", repoURL.Path))
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", repoURL.String(), http.NoBody)
 	if err != nil {
-		log.Logger.Debugf("Request failed for %s%s", repoURL.Host, repoURL.Path)
+		logger.Debug("HTTP request failed")
 		return nil, nil
 	}
 	if repoURL.User != nil {
@@ -670,7 +674,7 @@ func fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
 
 	resp, err := client.Do(req)
 	if err != nil || resp.StatusCode != http.StatusOK {
-		log.Logger.Debugf("Failed to fetch from %s%s", repoURL.Host, repoURL.Path)
+		logger.Debug("Failed to fetch")
 		return nil, nil
 	}
 	defer resp.Body.Close()

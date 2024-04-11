@@ -17,12 +17,14 @@ import (
 )
 
 type License struct {
+	logger                    *log.Logger
 	parser                    *packagejson.Parser
 	classifierConfidenceLevel float64
 }
 
 func NewLicense(classifierConfidenceLevel float64) *License {
 	return &License{
+		logger:                    log.WithPrefix("npm"),
 		parser:                    packagejson.NewParser(),
 		classifierConfidenceLevel: classifierConfidenceLevel,
 	}
@@ -42,7 +44,8 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 			return nil
 		}
 
-		log.Logger.Debugf("License names are missing in %q, an attempt to find them in the %q file", pkgJSONPath, licenseFileName)
+		l.logger.Debug("License names are missing, an attempt to find them in the license file",
+			log.String("file", pkgJSONPath), log.String("license_file", licenseFileName))
 		licenseFilePath := path.Join(path.Dir(pkgJSONPath), licenseFileName)
 
 		if findings, err := classifyLicense(licenseFilePath, l.classifierConfidenceLevel, fsys); err != nil {
@@ -51,7 +54,8 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 			// License found
 			licenses[pkg.ID] = findings.Names()
 		} else {
-			log.Logger.Debugf("The license file %q was not found or the license could not be classified", licenseFilePath)
+			l.logger.Debug("The license file was not found or the license could not be classified",
+				log.String("license_file", licenseFilePath))
 		}
 		return nil
 	}

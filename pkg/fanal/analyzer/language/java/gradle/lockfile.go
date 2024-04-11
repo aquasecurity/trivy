@@ -32,19 +32,21 @@ const (
 
 // gradleLockAnalyzer analyzes '*gradle.lockfile'
 type gradleLockAnalyzer struct {
+	logger *log.Logger
 	parser godeptypes.Parser
 }
 
 func newGradleLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &gradleLockAnalyzer{
+		logger: log.WithPrefix("gradle"),
 		parser: lockfile.NewParser(),
 	}, nil
 }
 
 func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	poms, err := parsePoms()
+	poms, err := a.parsePoms()
 	if err != nil {
-		log.Logger.Warnf("Unable to get licenses and dependsOn: %s", err)
+		a.logger.Warn("Unable to get licenses and dependencies", log.Err(err))
 	}
 
 	required := func(path string, d fs.DirEntry) bool {

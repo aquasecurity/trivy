@@ -206,10 +206,10 @@ func main() {
 
 // GenAllowedActions generates the list of valid actions for wildcard support
 func GenAllowedActions() error {
-	log.Logger.Info("Start parsing actions")
+	log.Info("Start parsing actions")
 	startTime := time.Now()
 	defer func() {
-		log.Logger.Infof("Parsing is completed. Duration %fs\n", time.Since(startTime).Seconds())
+		log.Info("Parsing is completed", log.Duration(time.Since(startTime).Seconds()))
 	}()
 
 	doc, err := htmlquery.LoadURL(serviceActionReferencesURL)

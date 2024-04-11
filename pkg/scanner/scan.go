@@ -149,7 +149,8 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 	}
 	defer func() {
 		if err := s.artifact.Clean(artifactInfo); err != nil {
-			log.Logger.Warnf("Failed to clean the artifact %q: %v", artifactInfo.Name, err)
+			log.Warn("Failed to clean the artifact",
+				log.String("artifact", artifactInfo.Name), log.Err(err))
 		}
 	}()
 
@@ -160,8 +161,9 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	ptros := &osFound
 	if osFound.Detected() && osFound.Eosl {
-		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
-		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+		log.Warn("This OS version is no longer supported by the distribution",
+			log.String("family", string(osFound.Family)), log.String("version", osFound.Name))
+		log.Warn("The vulnerability detection may be insufficient because security updates are not provided")
 	} else if !osFound.Detected() {
 		ptros = nil
 	}

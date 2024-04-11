@@ -55,12 +55,14 @@ func RegisterDriver(name ftypes.OSType, driver Driver) {
 
 // Driver defines operations for OS package scan
 type Driver interface {
-	Detect(string, *ftypes.Repository, []ftypes.Package) ([]types.DetectedVulnerability, error)
+	Detect(context.Context, string, *ftypes.Repository, []ftypes.Package) ([]types.DetectedVulnerability, error)
 	IsSupportedVersion(context.Context, ftypes.OSType, string) bool
 }
 
 // Detect detects the vulnerabilities
 func Detect(ctx context.Context, _, osFamily ftypes.OSType, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
+	ctx = log.WithContextPrefix(ctx, string(osFamily))
+
 	driver, err := newDriver(osFamily)
 	if err != nil {
 		return nil, false, ErrUnsupportedOS
@@ -73,7 +75,7 @@ func Detect(ctx context.Context, _, osFamily ftypes.OSType, osName string, repo 
 	filteredPkgs := lo.Filter(pkgs, func(pkg ftypes.Package, index int) bool {
 		return pkg.Name != "gpg-pubkey"
 	})
-	vulns, err := driver.Detect(osName, repo, filteredPkgs)
+	vulns, err := driver.Detect(ctx, osName, repo, filteredPkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}
@@ -86,6 +88,6 @@ func newDriver(osFamily ftypes.OSType) (Driver, error) {
 		return driver, nil
 	}
 
-	log.Logger.Warnf("unsupported os : %s", osFamily)
+	log.Warn("Unsupported os", log.String("family", string(osFamily)))
 	return nil, ErrUnsupportedOS
 }

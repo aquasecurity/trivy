@@ -52,10 +52,14 @@ type Package struct {
 	EndLine              int
 }
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() types.Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("npm"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -85,13 +89,14 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 
 	// Resolve links first
 	// https://docs.npmjs.com/cli/v9/configuring-npm/package-lock-json#packages
-	resolveLinks(packages)
+	p.resolveLinks(packages)
 
 	directDeps := make(map[string]struct{})
 	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies, packages[""].DevDependencies) {
 		pkgPath := joinPaths(nodeModulesDir, name)
 		if _, ok := packages[pkgPath]; !ok {
-			log.Logger.Debugf("Unable to find the direct dependency: '%s@%s'", name, version)
+			p.logger.Debug("Unable to find the direct dependency",
+				log.String("name", name), log.String("version", version))
 			continue
 		}
 		// Store the package paths of direct dependencies
@@ -107,7 +112,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 		// pkg.Name exists when package name != folder name
 		pkgName := pkg.Name
 		if pkgName == "" {
-			pkgName = pkgNameFromPath(pkgPath)
+			pkgName = p.pkgNameFromPath(pkgPath)
 		}
 
 		pkgID := packageID(pkgName, pkg.Version)
@@ -164,7 +169,8 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 		for depName, depVersion := range dependencies {
 			depID, err := findDependsOn(pkgPath, depName, packages)
 			if err != nil {
-				log.Logger.Warnf("Cannot resolve the version: '%s@%s'", depName, depVersion)
+				p.logger.Debug("Unable to resolve the version",
+					log.String("name", depName), log.String("version", depVersion))
 				continue
 			}
 			dependsOn = append(dependsOn, depID)
@@ -186,7 +192,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 // function/func1 -> target of package
 // node_modules/func1 -> link to target
 // see `package-lock_v3_with_workspace.json` to better understanding
-func resolveLinks(packages map[string]Package) {
+func (p *Parser) resolveLinks(packages map[string]Package) {
 	links := lo.PickBy(packages, func(_ string, pkg Package) bool {
 		return pkg.Link
 	})
@@ -218,8 +224,8 @@ func resolveLinks(packages map[string]Package) {
 			// Delete the target package
 			delete(packages, pkgPath)
 
-			if isWorkspace(pkgPath, workspaces) {
-				rootPkg.Dependencies[pkgNameFromPath(linkPath)] = pkg.Version
+			if p.isWorkspace(pkgPath, workspaces) {
+				rootPkg.Dependencies[p.pkgNameFromPath(linkPath)] = pkg.Version
 			}
 			break
 		}
@@ -227,10 +233,11 @@ func resolveLinks(packages map[string]Package) {
 	packages[""] = rootPkg
 }
 
-func isWorkspace(pkgPath string, workspaces []string) bool {
+func (p *Parser) isWorkspace(pkgPath string, workspaces []string) bool {
 	for _, workspace := range workspaces {
 		if match, err := path.Match(workspace, pkgPath); err != nil {
-			log.Logger.Debugf("unable to parse workspace %q for %s", workspace, pkgPath)
+			p.logger.Debug("Unable to parse workspace",
+				log.String("workspace", workspace), log.String("pkg_path", pkgPath))
 		} else if match {
 			return true
 		}
@@ -309,7 +316,8 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 			}
 
 			// It should not reach here.
-			log.Logger.Warnf("Cannot resolve the version: %s@%s", libName, requiredVer)
+			p.logger.Warn("Unable to resolve the version",
+				log.String("name", libName), log.String("version", requiredVer))
 		}
 
 		if len(dependsOn) > 0 {
@@ -328,6 +336,20 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 	}
 
 	return libs, deps
+}
+
+func (p *Parser) pkgNameFromPath(pkgPath string) string {
+	// lock file contains path to dependency in `node_modules`. e.g.:
+	// node_modules/string-width
+	// node_modules/string-width/node_modules/strip-ansi
+	// we renamed to `node_modules` directory prefixes `workspace` when resolving Links
+	// node_modules/function1
+	// node_modules/nested_func/node_modules/debug
+	if index := strings.LastIndex(pkgPath, nodeModulesDir); index != -1 {
+		return pkgPath[index+len(nodeModulesDir)+1:]
+	}
+	p.logger.Warn("Package path doesn't have `node_modules` prefix", log.String("pkg_path", pkgPath))
+	return pkgPath
 }
 
 func uniqueDeps(deps []types.Dependency) []types.Dependency {
@@ -355,20 +377,6 @@ func isIndirectLib(pkgPath string, directDeps map[string]struct{}) bool {
 		return false
 	}
 	return true
-}
-
-func pkgNameFromPath(pkgPath string) string {
-	// lock file contains path to dependency in `node_modules`. e.g.:
-	// node_modules/string-width
-	// node_modules/string-width/node_modules/strip-ansi
-	// we renamed to `node_modules` directory prefixes `workspace` when resolving Links
-	// node_modules/function1
-	// node_modules/nested_func/node_modules/debug
-	if index := strings.LastIndex(pkgPath, nodeModulesDir); index != -1 {
-		return pkgPath[index+len(nodeModulesDir)+1:]
-	}
-	log.Logger.Warnf("npm %q package path doesn't have `node_modules` prefix", pkgPath)
-	return pkgPath
 }
 
 func joinPaths(paths ...string) string {

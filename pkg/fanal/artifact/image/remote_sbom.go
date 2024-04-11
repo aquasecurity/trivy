@@ -15,8 +15,8 @@ import (
 
 	sbomatt "github.com/aquasecurity/trivy/pkg/attestation/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -42,7 +42,7 @@ func (a Artifact) retrieveRemoteSBOM(ctx context.Context) (ftypes.ArtifactRefere
 		ref, err := inspect(ctx)
 		if errors.Is(err, errNoSBOMFound) {
 			// Try the next SBOM source
-			log.Logger.Debugf("No SBOM found in the source: %s", sbomSource)
+			a.logger.Debug("No SBOM found in the source", log.String("source", sbomSource))
 			continue
 		} else if err != nil {
 			return ftypes.ArtifactReference{}, xerrors.Errorf("SBOM searching error: %w", err)
@@ -74,7 +74,8 @@ func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context) (ftypes.ArtifactRe
 		}
 		res, err := a.parseReferrer(ctx, digest.Context().String(), m)
 		if err != nil {
-			log.Logger.Warnf("Error with SBOM via OCI referrers (%s): %s", m.Digest.String(), err)
+			a.logger.Warn("Error with SBOM via OCI referrers",
+				log.String("digest", m.Digest.String()), log.Err(err))
 			continue
 		}
 		return res, nil
@@ -110,7 +111,7 @@ func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descri
 	}
 
 	// Found SBOM
-	log.Logger.Infof("Found SBOM (%s) in the OCI referrers", res.Type)
+	a.logger.Info("Found SBOM in the OCI referrers", log.String("type", string(res.Type)))
 
 	return res, nil
 }
@@ -151,7 +152,8 @@ func (a Artifact) inspectRekorSBOMAttestation(ctx context.Context) (ftypes.Artif
 	}
 
 	// Found SBOM
-	log.Logger.Infof("Found SBOM (%s) in Rekor (%s)", res.Type, a.artifactOption.RekorURL)
+	a.logger.Info("Found SBOM in Rekor", log.String("type", string(res.Type)),
+		log.String("url", a.artifactOption.RekorURL))
 
 	return res, nil
 }

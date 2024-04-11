@@ -28,10 +28,14 @@ type packageInfo struct {
 	EndLine   int
 }
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() types.Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("composer"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -85,7 +89,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				dependsOn = append(dependsOn, lib.ID)
 				continue
 			}
-			log.Logger.Debugf("unable to find version of %s", depName)
+			p.logger.Debug("Unable to find version", log.String("name", depName))
 		}
 		sort.Strings(dependsOn)
 		deps = append(deps, types.Dependency{

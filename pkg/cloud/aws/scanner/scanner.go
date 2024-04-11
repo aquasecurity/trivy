@@ -20,10 +20,13 @@ import (
 )
 
 type AWSScanner struct {
+	logger *log.Logger
 }
 
 func NewScanner() *AWSScanner {
-	return &AWSScanner{}
+	return &AWSScanner{
+		logger: log.WithPrefix("aws"),
+	}
 }
 
 func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Results, bool, error) {
@@ -31,7 +34,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	awsCache := cache.New(option.CacheDir, option.MaxCacheAge, option.Account, option.Region)
 	included, missing := awsCache.ListServices(option.Services)
 
-	prefixedLogger := &log.PrefixedLogger{Name: "aws"}
+	prefixedLogger := log.NewWriteLogger(log.WithPrefix("aws"))
 
 	var scannerOpts []options.ScannerOption
 	if !option.NoProgress {
@@ -72,10 +75,10 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate, option.MisconfOptions.PolicyBundleRepository, option.RegistryOpts())
 	if err != nil {
 		if !option.SkipPolicyUpdate {
-			log.Logger.Errorf("Falling back to embedded policies: %s", err)
+			s.logger.Error("Falling back to embedded policies", log.Err(err))
 		}
 	} else {
-		log.Logger.Debug("Policies successfully loaded from disk")
+		s.logger.Debug("Policies successfully loaded from disk")
 		policyPaths = append(policyPaths, downloadedPolicyPaths...)
 		scannerOpts = append(scannerOpts,
 			options.ScannerWithEmbeddedPolicies(false),
@@ -95,7 +98,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 
 	dataFS, dataPaths, err := misconf.CreateDataFS(option.RegoOptions.DataPaths)
 	if err != nil {
-		log.Logger.Errorf("Could not load config data: %s", err)
+		s.logger.Error("Could not load config data", err)
 	}
 	scannerOpts = append(scannerOpts,
 		options.ScannerWithDataDirs(dataPaths...),

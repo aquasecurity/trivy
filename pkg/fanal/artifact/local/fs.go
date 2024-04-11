@@ -61,7 +61,7 @@ func buildPathsToSkip(base string, paths []string) []string {
 	var relativePaths []string
 	absBase, err := filepath.Abs(base)
 	if err != nil {
-		log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
+		log.Warn("Failed to get an absolute path", log.String("base", base), log.Err(err))
 		return nil
 	}
 	for _, path := range paths {
@@ -84,12 +84,12 @@ func buildPathsToSkip(base string, paths []string) []string {
 
 		absSkipPath, err := filepath.Abs(path)
 		if err != nil {
-			log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
+			log.Warn("Failed to get an absolute path", log.String("base", base), log.Err(err))
 			continue
 		}
 		rel, err := filepath.Rel(absBase, absSkipPath)
 		if err != nil {
-			log.Logger.Warnf("Failed to get a relative path from %s to %s: %s", base, path, err)
+			log.Warn("Failed to get an relative path", log.String("base", base), log.Err(err))
 			continue
 		}
 
