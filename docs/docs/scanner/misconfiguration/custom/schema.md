@@ -88,4 +88,4 @@ To use such a policy with Trivy, use the `--config-policy` flag that points to t
 $ trivy --config-policy=/Users/user/my-custom-policies <path/to/iac>
 ```
 
-For more details on how to define schemas within Rego policies, please see the [OPA guide](https://www.openpolicyagent.org/docs/latest/schemas/#schema-annotations) that describes it in more detail.
+For more details on how to define schemas within Rego policies, please see the [OPA guide](https://www.openpolicyagent.org/docs/latest/policy-language/#schema-annotations) that describes it in more detail.
