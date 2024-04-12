@@ -3856,8 +3856,7 @@ If you define custom packages, you have to specify the package prefix via <code>
 <p>In this case, <code>user.*</code> will be evaluated.
 Any package prefixes such as <code>main</code> and <code>user</code> are allowed.</p>
 <h3 id="metadata">Metadata</h3>
-<p>Metadata helps enrich Trivy's scan results with useful information.</p>
-<p>The annotation format is described in the <a href="https://www.openpolicyagent.org/docs/latest/annotations/">OPA documentation</a>.</p>
+<p>The check must contain a <a href="https://www.openpolicyagent.org/docs/latest/policy-language/#metadata">Rego Metadata</a> section. Trivy uses standard rego metadata to define the new policy and general information about it.</p>
 <p>Trivy supports extra fields in the <code>custom</code> section as described below.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
