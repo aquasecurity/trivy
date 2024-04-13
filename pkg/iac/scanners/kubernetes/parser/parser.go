@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
+	kyaml "sigs.k8s.io/yaml"
 
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
@@ -113,7 +114,11 @@ func (p *Parser) Parse(r io.Reader, path string) ([]interface{}, error) {
 		if err := json.Unmarshal(contents, &target); err != nil {
 			return nil, err
 		}
-		return []interface{}{target}, nil
+
+		contents, err = kyaml.JSONToYAML(contents) // convert into yaml to reuse file parsing logic
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var results []interface{}
