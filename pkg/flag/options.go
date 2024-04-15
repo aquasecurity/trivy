@@ -361,7 +361,7 @@ func (o *Options) Align() {
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
 	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
-		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+		log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
 		o.Scanners = nil
 	}
 }

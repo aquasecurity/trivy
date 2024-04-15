@@ -25,9 +25,21 @@ var (
 		ConfigName: "kubernetes.tolerations",
 		Usage:      "specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)",
 	}
+<<<<<<< HEAD
 	DisableNodeCollector = Flag[bool]{
 		Name:       "disable-node-collector",
 		ConfigName: "kubernetes.disableNodeCollector",
+=======
+	AllNamespaces = Flag[bool]{
+		Name:       "all-namespaces",
+		ConfigName: "kubernetes.all.namespaces",
+		Shorthand:  "A",
+		Usage:      "fetch resources from all cluster namespaces",
+	}
+	DisableNodeCollector = Flag[bool]{
+		Name:       "disable-node-collector",
+		ConfigName: "kubernetes.disable.node.collector",
+>>>>>>> 660c113f6 (feat: change flag name to disable-node-collector)
 		Usage:      "When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.",
 	}
 	NodeCollectorNamespace = Flag[string]{
@@ -91,7 +103,7 @@ type K8sFlagGroup struct {
 	KubeConfig             *Flag[string]
 	K8sVersion             *Flag[string]
 	Tolerations            *Flag[[]string]
-	NonIntrusive           *Flag[bool]
+	DisableNodeCollector   *Flag[bool]
 	NodeCollectorImageRef  *Flag[string]
 	NodeCollectorNamespace *Flag[string]
 	ExcludeOwned           *Flag[bool]
@@ -111,7 +123,7 @@ type K8sOptions struct {
 	NodeCollectorImageRef  string
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
-	NonIntrusive           bool
+	DisableNodeCollector   bool
 	ExcludeNodes           map[string]string
 	ExcludeKinds           []string
 	IncludeKinds           []string
@@ -127,6 +139,10 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		K8sVersion:             K8sVersionFlag.Clone(),
 		Tolerations:            TolerationsFlag.Clone(),
 		DisableNodeCollector:   DisableNodeCollector.Clone(),
+<<<<<<< HEAD
+=======
+		AllNamespaces:          AllNamespaces.Clone(),
+>>>>>>> 660c113f6 (feat: change flag name to disable-node-collector)
 		NodeCollectorNamespace: NodeCollectorNamespace.Clone(),
 		ExcludeOwned:           ExcludeOwned.Clone(),
 		ExcludeNodes:           ExcludeNodes.Clone(),
@@ -148,7 +164,7 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.KubeConfig,
 		f.K8sVersion,
-		f.NonIntrusive,
+		f.DisableNodeCollector,
 		f.Tolerations,
 		f.NodeCollectorNamespace,
 		f.ExcludeOwned,
@@ -194,6 +210,10 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		K8sVersion:             f.K8sVersion.Value(),
 		Tolerations:            tolerations,
 		DisableNodeCollector:   f.DisableNodeCollector.Value(),
+<<<<<<< HEAD
+=======
+		AllNamespaces:          f.AllNamespaces.Value(),
+>>>>>>> 660c113f6 (feat: change flag name to disable-node-collector)
 		NodeCollectorNamespace: f.NodeCollectorNamespace.Value(),
 		ExcludeOwned:           f.ExcludeOwned.Value(),
 		ExcludeNodes:           exludeNodeLabels,
