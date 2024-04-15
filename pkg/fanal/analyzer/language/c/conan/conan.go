@@ -17,8 +17,8 @@ import (
 	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -32,11 +32,13 @@ const (
 
 // conanLockAnalyzer analyzes conan.lock
 type conanLockAnalyzer struct {
+	logger *log.Logger
 	parser godeptypes.Parser
 }
 
 func newConanLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return conanLockAnalyzer{
+		logger: log.WithPrefix("conan"),
 		parser: conan.NewParser(),
 	}, nil
 }
@@ -48,7 +50,7 @@ func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 
 	licenses, err := licensesFromCache()
 	if err != nil {
-		log.Logger.Debugf("Unable to parse cache directory to obtain licenses: %s", err)
+		a.logger.Debug("Unable to parse cache directory to obtain licenses", log.Err(err))
 	}
 
 	var apps []types.Application
@@ -96,8 +98,7 @@ func licensesFromCache() (map[string]string, error) {
 	cacheDir = path.Join(cacheDir, ".conan", "data")
 
 	if !fsutils.DirExists(cacheDir) {
-		log.Logger.Debugf("The Conan cache directory (%s) was not found. Package licenses will be skipped", cacheDir)
-		return nil, nil
+		return nil, xerrors.Errorf("the Conan cache directory (%s) was not found.", cacheDir)
 	}
 
 	licenses := make(map[string]string)
@@ -132,7 +133,7 @@ func licensesFromCache() (map[string]string, error) {
 		licenses[name] = license
 		return nil
 	}); err != nil {
-		return nil, xerrors.Errorf("conan cache dir (%s) walk error: %w", cacheDir, err)
+		return nil, xerrors.Errorf("the Conan cache dir (%s) walk error: %w", cacheDir, err)
 	}
 	return licenses, nil
 }
