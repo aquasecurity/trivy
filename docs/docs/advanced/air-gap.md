@@ -137,6 +137,6 @@ $ trivy conf --skip-policy-update /path/to/conf
 ```
 
 [allowlist]: ../references/troubleshooting.md
-[oras]: https://oras.land/cli/
+[oras]: https://oras.land/docs/installation
 
 [^1]: This is only required to scan `jar` files. More information about `Java index db` [here](../coverage/language/java.md)

@@ -36,7 +36,7 @@ resource "aws_s3_bucket_public_access_block" "example_access_block"{
 			hasPublicAccess: true,
 		},
 		{
-			desc: "public access block is found when using the bucket name as the lookup",
+			desc: "public access block is found when using the bucket id as the lookup",
 			source: `
 resource "aws_s3_bucket" "example" {
 	bucket = "bucketname"
@@ -248,6 +248,33 @@ func Test_Adapt(t *testing.T) {
 							Metadata:     iacTypes.NewTestMetadata(),
 							Enabled:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
 							TargetBucket: iacTypes.String("aws_s3_bucket.example", iacTypes.NewTestMetadata()),
+						},
+						ACL: iacTypes.String("private", iacTypes.NewTestMetadata()),
+					},
+				},
+			},
+		},
+		{
+			name: "non-valid SSE algorithm",
+			terraform: `
+resource "aws_s3_bucket" "this" {
+  bucket = "test"
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = ""
+    }
+  }
+}`,
+			expected: s3.S3{
+				Buckets: []s3.Bucket{
+					{
+						Name: iacTypes.String("test", iacTypes.NewTestMetadata()),
+						Encryption: s3.Encryption{
+							Enabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						},
 						ACL: iacTypes.String("private", iacTypes.NewTestMetadata()),
 					},

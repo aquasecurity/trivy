@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func TestParse(t *testing.T) {
@@ -40,6 +40,12 @@ func TestParse(t *testing.T) {
 			file:     "testdata/package-lock_v3_with_workspace.json",
 			want:     npmV3WithWorkspaceLibs,
 			wantDeps: npmV3WithWorkspaceDeps,
+		},
+		{
+			name:     "lock file v3 contains same dev and non-dev dependencies",
+			file:     "testdata/package-lock_v3_with-same-dev-and-non-dev.json",
+			want:     npmV3WithSameDevAndNonDevLibs,
+			wantDeps: npmV3WithSameDevAndNonDevDeps,
 		},
 		{
 			name:     "lock version v3 with workspace and without direct deps field",

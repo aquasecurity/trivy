@@ -190,5 +190,5 @@ func buildPurl(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package)
 	if packageUrl == nil {
 		return "", nil
 	}
-	return packageUrl.ToString(), nil
+	return packageUrl.String(), nil
 }

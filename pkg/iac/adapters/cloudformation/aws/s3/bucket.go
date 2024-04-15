@@ -1,17 +1,21 @@
 package s3
 
 import (
+	"cmp"
 	"regexp"
+	"slices"
 	"strings"
 
+	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
+
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/s3"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 var aclConvertRegex = regexp.MustCompile(`[A-Z][^A-Z]*`)
 
-func getBuckets(cfFile parser2.FileContext) []s3.Bucket {
+func getBuckets(cfFile parser.FileContext) []s3.Bucket {
 	var buckets []s3.Bucket
 	bucketResources := cfFile.GetResourcesByType("AWS::S3::Bucket")
 
@@ -37,20 +41,26 @@ func getBuckets(cfFile parser2.FileContext) []s3.Bucket {
 
 		buckets = append(buckets, s3b)
 	}
+
+	slices.SortFunc(buckets, func(a, b s3.Bucket) int {
+		return cmp.Compare(a.Name.Value(), b.Name.Value())
+	})
+
 	return buckets
 }
 
-func getPublicAccessBlock(r *parser2.Resource) *s3.PublicAccessBlock {
-	if block := r.GetProperty("PublicAccessBlockConfiguration"); block.IsNil() {
+func getPublicAccessBlock(r *parser.Resource) *s3.PublicAccessBlock {
+	block := r.GetProperty("PublicAccessBlockConfiguration")
+	if block.IsNil() {
 		return nil
 	}
 
 	return &s3.PublicAccessBlock{
-		Metadata:              r.Metadata(),
-		BlockPublicACLs:       r.GetBoolProperty("PublicAccessBlockConfiguration.BlockPublicAcls"),
-		BlockPublicPolicy:     r.GetBoolProperty("PublicAccessBlockConfiguration.BlockPublicPolicy"),
-		IgnorePublicACLs:      r.GetBoolProperty("PublicAccessBlockConfiguration.IgnorePublicAcls"),
-		RestrictPublicBuckets: r.GetBoolProperty("PublicAccessBlockConfiguration.RestrictPublicBuckets"),
+		Metadata:              block.Metadata(),
+		BlockPublicACLs:       block.GetBoolProperty("BlockPublicAcls"),
+		BlockPublicPolicy:     block.GetBoolProperty("BlockPublicPolicy"),
+		IgnorePublicACLs:      block.GetBoolProperty("IgnorePublicAcls"),
+		RestrictPublicBuckets: block.GetBoolProperty("RestrictPublicBuckets"),
 	}
 }
 
@@ -60,8 +70,7 @@ func convertAclValue(aclValue iacTypes.StringValue) iacTypes.StringValue {
 	return iacTypes.String(strings.ToLower(strings.Join(matches, "-")), aclValue.GetMetadata())
 }
 
-func getLogging(r *parser2.Resource) s3.Logging {
-
+func getLogging(r *parser.Resource) s3.Logging {
 	logging := s3.Logging{
 		Metadata:     r.Metadata(),
 		Enabled:      iacTypes.BoolDefault(false, r.Metadata()),
@@ -77,7 +86,7 @@ func getLogging(r *parser2.Resource) s3.Logging {
 	return logging
 }
 
-func hasVersioning(r *parser2.Resource) iacTypes.BoolValue {
+func hasVersioning(r *parser.Resource) iacTypes.BoolValue {
 	versioningProp := r.GetProperty("VersioningConfiguration.Status")
 
 	if versioningProp.IsNil() {
@@ -92,8 +101,7 @@ func hasVersioning(r *parser2.Resource) iacTypes.BoolValue {
 	return iacTypes.Bool(versioningEnabled, versioningProp.Metadata())
 }
 
-func getEncryption(r *parser2.Resource, _ parser2.FileContext) s3.Encryption {
-
+func getEncryption(r *parser.Resource, _ parser.FileContext) s3.Encryption {
 	encryption := s3.Encryption{
 		Metadata:  r.Metadata(),
 		Enabled:   iacTypes.BoolDefault(false, r.Metadata()),
@@ -103,13 +111,17 @@ func getEncryption(r *parser2.Resource, _ parser2.FileContext) s3.Encryption {
 
 	if encryptProps := r.GetProperty("BucketEncryption.ServerSideEncryptionConfiguration"); encryptProps.IsNotNil() {
 		for _, rule := range encryptProps.AsList() {
-			if algo := rule.GetProperty("ServerSideEncryptionByDefault.SSEAlgorithm"); algo.EqualTo("AES256") {
-				encryption.Enabled = iacTypes.Bool(true, algo.Metadata())
-			} else if kmsKeyProp := rule.GetProperty("ServerSideEncryptionByDefault.KMSMasterKeyID"); !kmsKeyProp.IsEmpty() && kmsKeyProp.IsString() {
-				encryption.KMSKeyId = kmsKeyProp.AsStringValue()
+			algo := rule.GetProperty("ServerSideEncryptionByDefault.SSEAlgorithm")
+			if algo.IsString() {
+				algoVal := algo.AsString()
+				isValidAlgo := slices.Contains(s3types.ServerSideEncryption("").Values(), s3types.ServerSideEncryption(algoVal))
+				encryption.Enabled = iacTypes.Bool(isValidAlgo, algo.Metadata())
+				encryption.Algorithm = algo.AsStringValue()
 			}
-			if encryption.Enabled.IsFalse() {
-				encryption.Enabled = rule.GetBoolProperty("BucketKeyEnabled", false)
+
+			kmsKeyProp := rule.GetProperty("ServerSideEncryptionByDefault.KMSMasterKeyID")
+			if !kmsKeyProp.IsEmpty() && kmsKeyProp.IsString() {
+				encryption.KMSKeyId = kmsKeyProp.AsStringValue()
 			}
 		}
 	}
@@ -117,9 +129,8 @@ func getEncryption(r *parser2.Resource, _ parser2.FileContext) s3.Encryption {
 	return encryption
 }
 
-func getLifecycle(resource *parser2.Resource) []s3.Rules {
-	LifecycleProp := resource.GetProperty("LifecycleConfiguration")
-	RuleProp := LifecycleProp.GetProperty("Rules")
+func getLifecycle(resource *parser.Resource) []s3.Rules {
+	RuleProp := resource.GetProperty("LifecycleConfiguration.Rules")
 
 	var rule []s3.Rules
 
@@ -136,7 +147,7 @@ func getLifecycle(resource *parser2.Resource) []s3.Rules {
 	return rule
 }
 
-func getWebsite(r *parser2.Resource) *s3.Website {
+func getWebsite(r *parser.Resource) *s3.Website {
 	if block := r.GetProperty("WebsiteConfiguration"); block.IsNil() {
 		return nil
 	} else {

@@ -1,6 +1,6 @@
 package pipenv
 
-import "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+import "github.com/aquasecurity/trivy/pkg/dependency/types"
 
 var (
 	// docker run --name pipenv --rm -it python:3.9-alpine sh

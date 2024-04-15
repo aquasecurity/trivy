@@ -1,13 +1,15 @@
 package flag
 
 import (
+	"fmt"
+
+	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
-
-const defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
-const defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
 
 var (
 	ResetFlag = Flag[bool]{
@@ -49,13 +51,13 @@ var (
 	DBRepositoryFlag = Flag[string]{
 		Name:       "db-repository",
 		ConfigName: "db.repository",
-		Default:    defaultDBRepository,
+		Default:    db.DefaultRepository,
 		Usage:      "OCI repository to retrieve trivy-db from",
 	}
 	JavaDBRepositoryFlag = Flag[string]{
 		Name:       "java-db-repository",
 		ConfigName: "db.java-repository",
-		Default:    defaultJavaDBRepository,
+		Default:    javadb.DefaultRepository,
 		Usage:      "OCI repository to retrieve trivy-java-db from",
 	}
 	LightFlag = Flag[bool]{
@@ -86,8 +88,8 @@ type DBOptions struct {
 	DownloadJavaDBOnly bool
 	SkipJavaDBUpdate   bool
 	NoProgress         bool
-	DBRepository       string
-	JavaDBRepository   string
+	DBRepository       name.Reference
+	JavaDBRepository   name.Reference
 	Light              bool // deprecated
 }
 
@@ -142,7 +144,33 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		return DBOptions{}, xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
 	}
 	if light {
-		log.Logger.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
+		log.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
+	}
+
+	var dbRepository, javaDBRepository name.Reference
+	var err error
+	if f.DBRepository != nil {
+		if dbRepository, err = name.ParseReference(f.DBRepository.Value(), name.WithDefaultTag("")); err != nil {
+			return DBOptions{}, xerrors.Errorf("invalid db repository: %w", err)
+		}
+		// Add the schema version if the tag is not specified for backward compatibility.
+		if t, ok := dbRepository.(name.Tag); ok && t.TagStr() == "" {
+			dbRepository = t.Tag(fmt.Sprint(db.SchemaVersion))
+			log.Info("Adding schema version to the DB repository for backward compatibility",
+				log.String("repository", dbRepository.String()))
+		}
+	}
+
+	if f.JavaDBRepository != nil {
+		if javaDBRepository, err = name.ParseReference(f.JavaDBRepository.Value(), name.WithDefaultTag("")); err != nil {
+			return DBOptions{}, xerrors.Errorf("invalid javadb repository: %w", err)
+		}
+		// Add the schema version if the tag is not specified for backward compatibility.
+		if t, ok := javaDBRepository.(name.Tag); ok && t.TagStr() == "" {
+			javaDBRepository = t.Tag(fmt.Sprint(javadb.SchemaVersion))
+			log.Info("Adding schema version to the Java DB repository for backward compatibility",
+				log.String("repository", javaDBRepository.String()))
+		}
 	}
 
 	return DBOptions{
@@ -153,7 +181,7 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 		SkipJavaDBUpdate:   skipJavaDBUpdate,
 		Light:              light,
 		NoProgress:         f.NoProgress.Value(),
-		DBRepository:       f.DBRepository.Value(),
-		JavaDBRepository:   f.JavaDBRepository.Value(),
+		DBRepository:       dbRepository,
+		JavaDBRepository:   javaDBRepository,
 	}, nil
 }

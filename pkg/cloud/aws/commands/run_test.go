@@ -267,6 +267,63 @@ const expectedS3ScanResult = `{
 }
 `
 
+const expectedS3ScanResultWithExceptions = `{
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "12345678",
+  "ArtifactType": "aws_account",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "arn:aws:s3:::examplebucket",
+      "Class": "config",
+      "Type": "cloud",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 1,
+        "Exceptions": 8
+      },
+      "Misconfigurations": [
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-0094",
+          "AVDID": "AVD-AWS-0094",
+          "Title": "S3 buckets should each define an aws_s3_bucket_public_access_block",
+          "Description": "The \"block public access\" settings in S3 override individual policies that apply to a given bucket, meaning that all public access can be controlled in one central types for that bucket. It is therefore good practice to define these settings for each bucket in order to clearly define the public access that can be allowed for it.",
+          "Message": "Bucket does not have a corresponding public access block.",
+          "Resolution": "Define a aws_s3_bucket_public_access_block for the given bucket to control public access policies",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0094",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0094"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+`
+
 const expectedCustomScanResult = `{
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "12345678",
@@ -915,6 +972,7 @@ func Test_Run(t *testing.T) {
 		regoPolicy   string
 		allServices  []string
 		inputData    string
+		ignoreFile   string
 	}{
 		{
 			name: "succeed with cached infra",
@@ -1140,6 +1198,25 @@ Summary Report for compliance: my-custom-spec
 			cacheContent: "testdata/s3andcloudtrailcache.json",
 			expectErr:    true,
 		},
+		{
+			name: "ignore findings with .trivyignore",
+			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				AWSOptions: flag.AWSOptions{
+					Region:   "us-east-1",
+					Services: []string{"s3"},
+					Account:  "12345678",
+				},
+				CloudOptions: flag.CloudOptions{
+					MaxCacheAge: time.Hour * 24 * 365 * 100,
+				},
+				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
+			},
+			cacheContent: "testdata/s3onlycache.json",
+			allServices:  []string{"s3"},
+			ignoreFile:   "testdata/.trivyignore",
+			want:         expectedS3ScanResultWithExceptions,
+		},
 	}
 
 	ctx := clock.With(context.Background(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
@@ -1190,6 +1267,10 @@ Summary Report for compliance: my-custom-spec
 				require.NoError(t, err, test.name)
 
 				require.NoError(t, os.WriteFile(cacheFile, cacheData, 0600))
+			}
+
+			if test.ignoreFile != "" {
+				test.options.ReportOptions.IgnoreFile = test.ignoreFile
 			}
 
 			err := Run(ctx, test.options)

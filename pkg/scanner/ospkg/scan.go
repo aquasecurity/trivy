@@ -41,10 +41,11 @@ func (s *scanner) Packages(target types.ScanTarget, _ types.ScanOptions) types.R
 
 func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, _ types.ScanOptions) (types.Result, bool, error) {
 	if !target.OS.Detected() {
-		log.Logger.Debug("Detected OS: unknown")
+		log.Debug("Detected OS: unknown")
 		return types.Result{}, false, nil
 	}
-	log.Logger.Infof("Detected OS: %s", target.OS.Family)
+	log.Info("Detected OS", log.String("family",
+		string(target.OS.Family)), log.String("version", target.OS.Name))
 
 	if target.OS.Extended {
 		// TODO: move the logic to each detector

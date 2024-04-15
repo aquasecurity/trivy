@@ -3,6 +3,8 @@ package cyclonedx_test
 import (
 	"encoding/json"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/package-url/packageurl-go"
 	"os"
 	"testing"
@@ -12,7 +14,6 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestUnmarshaler_Unmarshal(t *testing.T) {
@@ -26,14 +27,25 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/happy/bom.json",
 			want: types.SBOM{
-				OS: ftypes.OS{
-					Family: "alpine",
-					Name:   "3.16.0",
+				Metadata: types.Metadata{
+					ImageID: "sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5",
+					DiffIDs: []string{
+						"sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+						"sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
+					},
+					RepoTags: []string{
+						"maven-test-project:latest",
+					},
+					OS: &ftypes.OS{
+						Family: "alpine",
+						Name:   "3.16.0",
+					},
 				},
 				Packages: []ftypes.PackageInfo{
 					{
 						Packages: ftypes.Packages{
 							{
+								ID:         "musl@1.2.3-r0",
 								Name:       "musl",
 								Version:    "1.2.3-r0",
 								SrcName:    "musl",
@@ -67,6 +79,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "app/composer/composer.lock",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
@@ -83,7 +96,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 							},
 							{
-
+								ID:      "pear/pear_exception@v1.0.0",
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -106,6 +119,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "app/gobinary/gobinary",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 								Name:    "github.com/package-url/packageurl-go",
 								Version: "v0.1.1-0.20220203205134-d70459300c8a",
 								Identifier: ftypes.PkgIdentifier{
@@ -128,6 +142,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "app/gradle/target/gradle.lockfile",
 						Libraries: ftypes.Packages{
 							{
+								ID:   "com.example:example:0.0.1",
 								Name: "com.example:example",
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
@@ -149,6 +164,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: ftypes.Jar,
 						Libraries: ftypes.Packages{
 							{
+								ID:   "org.codehaus.mojo:child-project:1.0",
 								Name: "org.codehaus.mojo:child-project",
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
@@ -172,6 +188,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "@example/bootstrap@5.0.2",
 								Name:    "@example/bootstrap",
 								Version: "5.0.2",
 								Identifier: ftypes.PkgIdentifier{
@@ -198,13 +215,10 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path KBOM",
 			inputFile: "testdata/happy/kbom.json",
 			want: types.SBOM{
-				OS: ftypes.OS{
-					Family: "ubuntu",
-					Name:   "22.04.2",
-				},
-				Packages: []ftypes.PackageInfo{
-					{
-						FilePath: "",
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "ubuntu",
+						Name:   "22.04.2",
 					},
 				},
 				Applications: []ftypes.Application{
@@ -212,6 +226,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: ftypes.GoBinary,
 						Libraries: ftypes.Packages{
 							{
+								ID:      "docker@v24.0.4",
 								Name:    "docker",
 								Version: "24.0.4",
 								Identifier: ftypes.PkgIdentifier{
@@ -226,13 +241,10 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type:     "golang",
-						FilePath: "node-core-components",
-					},
-					{
 						Type: ftypes.K8sUpstream,
 						Libraries: ftypes.Packages{
 							{
+								ID:      "k8s.io/apiserver@1.27.4",
 								Name:    "k8s.io/apiserver",
 								Version: "1.27.4",
 								Identifier: ftypes.PkgIdentifier{
@@ -245,6 +257,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 							},
 							{
+								ID:      "k8s.io/controller-manager@1.27.4",
 								Name:    "k8s.io/controller-manager",
 								Version: "1.27.4",
 								Identifier: ftypes.PkgIdentifier{
@@ -257,6 +270,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 							},
 							{
+								ID:      "k8s.io/kube-proxy@1.27.4",
 								Name:    "k8s.io/kube-proxy",
 								Version: "1.27.4",
 								Identifier: ftypes.PkgIdentifier{
@@ -269,6 +283,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 							},
 							{
+								ID:      "k8s.io/kube-scheduler@1.27.4",
 								Name:    "k8s.io/kube-scheduler",
 								Version: "1.27.4",
 								Identifier: ftypes.PkgIdentifier{
@@ -281,6 +296,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 							},
 							{
+								ID:      "k8s.io/kubelet@1.27.4",
 								Name:    "k8s.io/kubelet",
 								Version: "1.27.4",
 								Identifier: ftypes.PkgIdentifier{
@@ -293,6 +309,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 							},
 							{
+								ID:      "k8s.io/kubernetes@1.27.4",
 								Name:    "k8s.io/kubernetes",
 								Version: "1.27.4",
 								Identifier: ftypes.PkgIdentifier{
@@ -302,6 +319,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Version: "1.27.4",
 									},
 									BOMRef: "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
+								},
+								DependsOn: []string{
+									"k8s.io/apiserver@1.27.4",
+									"k8s.io/controller-manager@1.27.4",
+									"k8s.io/kube-proxy@1.27.4",
+									"k8s.io/kube-scheduler@1.27.4",
 								},
 							},
 						},
@@ -313,9 +336,21 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path with infinity loop",
 			inputFile: "testdata/happy/infinite-loop-bom.json",
 			want: types.SBOM{
-				OS: ftypes.OS{
-					Family: "ubuntu",
-					Name:   "22.04",
+				Metadata: types.Metadata{
+					ImageID: "sha256:08d22c0ceb150ddeb2237c5fa3129c0183f3cc6f5eeb2e7aa4016da3ad02140a",
+					DiffIDs: []string{
+						"sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466",
+					},
+					RepoTags: []string{
+						"ubuntu:latest",
+					},
+					RepoDigests: []string{
+						"ubuntu@sha256:67211c14fa74f070d27cc59d69a7fa9aeff8e28ea118ef3babc295a0428a6d21",
+					},
+					OS: &ftypes.OS{
+						Family: "ubuntu",
+						Name:   "22.04",
+					},
 				},
 				Packages: []ftypes.PackageInfo{
 					{
@@ -346,6 +381,9 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										},
 									},
 									BOMRef: "pkg:deb/ubuntu/libc6@2.35-0ubuntu3.1?distro=ubuntu-22.04",
+								},
+								DependsOn: []string{
+									"libcrypt1@1:4.4.27-1",
 								},
 								Layer: ftypes.Layer{
 									Digest: "sha256:74ac377868f863e123f24c409f79709f7563fa464557c36a09cf6f85c8b92b7f",
@@ -380,6 +418,9 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 									BOMRef: "pkg:deb/ubuntu/libcrypt1@4.4.27-1?epoch=1&distro=ubuntu-22.04",
 								},
+								DependsOn: []string{
+									"libc6@2.35-0ubuntu3.1",
+								},
 								Layer: ftypes.Layer{
 									Digest: "sha256:74ac377868f863e123f24c409f79709f7563fa464557c36a09cf6f85c8b92b7f",
 									DiffID: "sha256:b93c1bd012ab8fda60f5b4f5906bf244586e0e3292d84571d3abb56472248466",
@@ -394,14 +435,17 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path for third party sbom",
 			inputFile: "testdata/happy/third-party-bom.json",
 			want: types.SBOM{
-				OS: ftypes.OS{
-					Family: "alpine",
-					Name:   "3.16.0",
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: "alpine",
+						Name:   "3.16.0",
+					},
 				},
 				Packages: []ftypes.PackageInfo{
 					{
 						Packages: ftypes.Packages{
 							{
+								ID:         "musl@1.2.3-r0",
 								Name:       "musl",
 								Version:    "1.2.3-r0",
 								SrcName:    "musl",
@@ -432,6 +476,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
@@ -446,7 +491,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Licenses: []string{"MIT"},
 							},
 							{
-
+								ID:      "pear/pear_exception@v1.0.0",
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -474,6 +519,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
@@ -501,6 +547,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
@@ -514,7 +561,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 							},
 							{
-
+								ID:      "pear/pear_exception@v1.0.0",
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -542,6 +589,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "pear/core@1.13.1",
 								Name:    "pear/core",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
@@ -553,8 +601,13 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 									BOMRef: "pkg:composer/pear/core@1.13.1",
 								},
+								DependsOn: []string{
+									"pear/log@1.13.1",
+									"pear/pear_exception@v1.0.0",
+								},
 							},
 							{
+								ID:      "pear/log@1.13.1",
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
@@ -568,7 +621,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 							},
 							{
-
+								ID:      "pear/pear_exception@v1.0.0",
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -595,6 +648,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: "jar",
 						Libraries: ftypes.Packages{
 							{
+								ID:      "org.springframework:spring-web:5.3.22",
 								Name:    "org.springframework:spring-web",
 								Version: "5.3.22",
 								Identifier: ftypes.PkgIdentifier{
@@ -617,19 +671,37 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path only os component",
 			inputFile: "testdata/happy/os-only-bom.json",
 			want: types.SBOM{
-				OS: ftypes.OS{
-					Family: "alpine",
-					Name:   "3.16.0",
-				},
-				Packages: []ftypes.PackageInfo{
-					{},
+				Metadata: types.Metadata{
+					ImageID: "sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5",
+					DiffIDs: []string{
+						"sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+						"sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
+					},
+					RepoTags: []string{
+						"maven-test-project:latest",
+					},
+					OS: &ftypes.OS{
+						Family: "alpine",
+						Name:   "3.16.0",
+					},
 				},
 			},
 		},
 		{
 			name:      "happy path empty component",
 			inputFile: "testdata/happy/empty-bom.json",
-			want:      types.SBOM{},
+			want: types.SBOM{
+				Metadata: types.Metadata{
+					ImageID: "sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5",
+					DiffIDs: []string{
+						"sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+						"sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
+					},
+					RepoTags: []string{
+						"maven-test-project:latest",
+					},
+				},
+			},
 		},
 		{
 			name:      "happy path empty metadata component",
@@ -637,9 +709,36 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			want:      types.SBOM{},
 		},
 		{
-			name:      "sad path invalid purl",
-			inputFile: "testdata/sad/invalid-purl.json",
-			wantErr:   "failed to parse purl",
+			name:      "invalid purl",
+			inputFile: "testdata/happy/invalid-purl.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.Composer,
+						Libraries: ftypes.Packages{
+							{
+								ID:      "pear/core@1.13.1",
+								Name:    "pear/core",
+								Version: "1.13.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "pear",
+										Name:      "core",
+										Version:   "1.13.1",
+									},
+									BOMRef: "pkg:composer/pear/core@1.13.1",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "invalid serial",
+			inputFile: "testdata/sad/invalid-serial.json",
+			wantErr:   "CycloneDX decode error",
 		},
 	}
 
@@ -652,16 +751,16 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			var cdx cyclonedx.BOM
 			err = json.NewDecoder(f).Decode(&cdx)
 			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
 
-			// Not compare the CycloneDX field
-			got := *cdx.SBOM
-			got.CycloneDX = nil
+			var got types.SBOM
+			err = sbomio.NewDecoder(cdx.BOM).Decode(&got)
+			require.NoError(t, err)
 
+			got.BOM = nil
 			assert.Equal(t, tt.want, got)
 		})
 	}

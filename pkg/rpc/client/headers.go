@@ -14,7 +14,7 @@ func WithCustomHeaders(ctx context.Context, customHeaders http.Header) context.C
 	// Attach the headers to a context
 	ctxWithToken, err := twirp.WithHTTPRequestHeaders(ctx, customHeaders)
 	if err != nil {
-		log.Logger.Warnf("twirp error setting headers: %s", err)
+		log.Warn("twirp error setting headers", log.Err(err))
 		return ctx
 	}
 	return ctxWithToken

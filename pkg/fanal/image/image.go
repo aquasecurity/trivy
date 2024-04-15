@@ -42,7 +42,7 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 	for _, src := range opt.ImageSources {
 		trySrc, ok := imageSourceFuncs[src]
 		if !ok {
-			log.Logger.Warnf("Unknown image source: '%s'", src)
+			log.Warn("Unknown image source", log.String("source", string(src)))
 			continue
 		}
 

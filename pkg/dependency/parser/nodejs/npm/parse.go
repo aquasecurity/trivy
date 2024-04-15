@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 
@@ -12,8 +13,10 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -49,10 +52,14 @@ type Package struct {
 	EndLine              int
 }
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() types.Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("npm"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -82,13 +89,14 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 
 	// Resolve links first
 	// https://docs.npmjs.com/cli/v9/configuring-npm/package-lock-json#packages
-	resolveLinks(packages)
+	p.resolveLinks(packages)
 
 	directDeps := make(map[string]struct{})
 	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies, packages[""].DevDependencies) {
 		pkgPath := joinPaths(nodeModulesDir, name)
 		if _, ok := packages[pkgPath]; !ok {
-			log.Logger.Debugf("Unable to find the direct dependency: '%s@%s'", name, version)
+			p.logger.Debug("Unable to find the direct dependency",
+				log.String("name", name), log.String("version", version))
 			continue
 		}
 		// Store the package paths of direct dependencies
@@ -104,37 +112,51 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 		// pkg.Name exists when package name != folder name
 		pkgName := pkg.Name
 		if pkgName == "" {
-			pkgName = pkgNameFromPath(pkgPath)
+			pkgName = p.pkgNameFromPath(pkgPath)
 		}
 
-		pkgID := utils.PackageID(pkgName, pkg.Version)
+		pkgID := packageID(pkgName, pkg.Version)
 		location := types.Location{
 			StartLine: pkg.StartLine,
 			EndLine:   pkg.EndLine,
 		}
 
+		var ref types.ExternalRef
+		if pkg.Resolved != "" {
+			ref = types.ExternalRef{
+				Type: types.RefOther,
+				URL:  pkg.Resolved,
+			}
+		}
+
+		pkgIndirect := isIndirectLib(pkgPath, directDeps)
+
 		// There are cases when similar libraries use same dependencies
 		// we need to add location for each these dependencies
 		if savedLib, ok := libs[pkgID]; ok {
+			savedLib.Dev = savedLib.Dev && pkg.Dev
+			savedLib.Indirect = savedLib.Indirect && pkgIndirect
+
+			if ref.URL != "" && !slices.Contains(savedLib.ExternalReferences, ref) {
+				savedLib.ExternalReferences = append(savedLib.ExternalReferences, ref)
+				sortExternalReferences(savedLib.ExternalReferences)
+			}
+
 			savedLib.Locations = append(savedLib.Locations, location)
 			sort.Sort(savedLib.Locations)
+
 			libs[pkgID] = savedLib
 			continue
 		}
 
 		lib := types.Library{
-			ID:       pkgID,
-			Name:     pkgName,
-			Version:  pkg.Version,
-			Indirect: isIndirectLib(pkgPath, directDeps),
-			Dev:      pkg.Dev,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  pkg.Resolved,
-				},
-			},
-			Locations: []types.Location{location},
+			ID:                 pkgID,
+			Name:               pkgName,
+			Version:            pkg.Version,
+			Indirect:           pkgIndirect,
+			Dev:                pkg.Dev,
+			ExternalReferences: lo.Ternary(ref.URL != "", []types.ExternalRef{ref}, nil),
+			Locations:          []types.Location{location},
 		}
 		libs[pkgID] = lib
 
@@ -147,7 +169,8 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 		for depName, depVersion := range dependencies {
 			depID, err := findDependsOn(pkgPath, depName, packages)
 			if err != nil {
-				log.Logger.Warnf("Cannot resolve the version: '%s@%s'", depName, depVersion)
+				p.logger.Debug("Unable to resolve the version",
+					log.String("name", depName), log.String("version", depVersion))
 				continue
 			}
 			dependsOn = append(dependsOn, depID)
@@ -169,7 +192,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 // function/func1 -> target of package
 // node_modules/func1 -> link to target
 // see `package-lock_v3_with_workspace.json` to better understanding
-func resolveLinks(packages map[string]Package) {
+func (p *Parser) resolveLinks(packages map[string]Package) {
 	links := lo.PickBy(packages, func(_ string, pkg Package) bool {
 		return pkg.Link
 	})
@@ -201,8 +224,8 @@ func resolveLinks(packages map[string]Package) {
 			// Delete the target package
 			delete(packages, pkgPath)
 
-			if isWorkspace(pkgPath, workspaces) {
-				rootPkg.Dependencies[pkgNameFromPath(linkPath)] = pkg.Version
+			if p.isWorkspace(pkgPath, workspaces) {
+				rootPkg.Dependencies[p.pkgNameFromPath(linkPath)] = pkg.Version
 			}
 			break
 		}
@@ -210,10 +233,11 @@ func resolveLinks(packages map[string]Package) {
 	packages[""] = rootPkg
 }
 
-func isWorkspace(pkgPath string, workspaces []string) bool {
+func (p *Parser) isWorkspace(pkgPath string, workspaces []string) bool {
 	for _, workspace := range workspaces {
 		if match, err := path.Match(workspace, pkgPath); err != nil {
-			log.Logger.Debugf("unable to parse workspace %q for %s", workspace, pkgPath)
+			p.logger.Debug("Unable to parse workspace",
+				log.String("workspace", workspace), log.String("pkg_path", pkgPath))
 		} else if match {
 			return true
 		}
@@ -237,7 +261,7 @@ func findDependsOn(pkgPath, depName string, packages map[string]Package) (string
 		modulePath = joinPaths(modulePath, depName)
 
 		if dep, ok := packages[modulePath]; ok {
-			return utils.PackageID(depName, dep.Version), nil
+			return packageID(depName, dep.Version), nil
 		}
 	}
 
@@ -254,63 +278,78 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 
 	var libs []types.Library
 	var deps []types.Dependency
-	for pkgName, dependency := range dependencies {
+	for pkgName, dep := range dependencies {
 		lib := types.Library{
-			ID:       utils.PackageID(pkgName, dependency.Version),
+			ID:       packageID(pkgName, dep.Version),
 			Name:     pkgName,
-			Version:  dependency.Version,
-			Dev:      dependency.Dev,
+			Version:  dep.Version,
+			Dev:      dep.Dev,
 			Indirect: true, // lockfile v1 schema doesn't have information about Direct dependencies
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
-					URL:  dependency.Resolved,
+					URL:  dep.Resolved,
 				},
 			},
 			Locations: []types.Location{
 				{
-					StartLine: dependency.StartLine,
-					EndLine:   dependency.EndLine,
+					StartLine: dep.StartLine,
+					EndLine:   dep.EndLine,
 				},
 			},
 		}
 		libs = append(libs, lib)
 
-		dependsOn := make([]string, 0, len(dependency.Requires))
-		for libName, requiredVer := range dependency.Requires {
+		dependsOn := make([]string, 0, len(dep.Requires))
+		for libName, requiredVer := range dep.Requires {
 			// Try to resolve the version with nested dependencies first
-			if resolvedDep, ok := dependency.Dependencies[libName]; ok {
-				libID := utils.PackageID(libName, resolvedDep.Version)
+			if resolvedDep, ok := dep.Dependencies[libName]; ok {
+				libID := packageID(libName, resolvedDep.Version)
 				dependsOn = append(dependsOn, libID)
 				continue
 			}
 
 			// Try to resolve the version with the higher level dependencies
 			if ver, ok := versions[libName]; ok {
-				dependsOn = append(dependsOn, utils.PackageID(libName, ver))
+				dependsOn = append(dependsOn, packageID(libName, ver))
 				continue
 			}
 
 			// It should not reach here.
-			log.Logger.Warnf("Cannot resolve the version: %s@%s", libName, requiredVer)
+			p.logger.Warn("Unable to resolve the version",
+				log.String("name", libName), log.String("version", requiredVer))
 		}
 
 		if len(dependsOn) > 0 {
 			deps = append(deps, types.Dependency{
-				ID:        utils.PackageID(lib.Name, lib.Version),
+				ID:        packageID(lib.Name, lib.Version),
 				DependsOn: dependsOn,
 			})
 		}
 
-		if dependency.Dependencies != nil {
+		if dep.Dependencies != nil {
 			// Recursion
-			childLibs, childDeps := p.parseV1(dependency.Dependencies, maps.Clone(versions))
+			childLibs, childDeps := p.parseV1(dep.Dependencies, maps.Clone(versions))
 			libs = append(libs, childLibs...)
 			deps = append(deps, childDeps...)
 		}
 	}
 
 	return libs, deps
+}
+
+func (p *Parser) pkgNameFromPath(pkgPath string) string {
+	// lock file contains path to dependency in `node_modules`. e.g.:
+	// node_modules/string-width
+	// node_modules/string-width/node_modules/strip-ansi
+	// we renamed to `node_modules` directory prefixes `workspace` when resolving Links
+	// node_modules/function1
+	// node_modules/nested_func/node_modules/debug
+	if index := strings.LastIndex(pkgPath, nodeModulesDir); index != -1 {
+		return pkgPath[index+len(nodeModulesDir)+1:]
+	}
+	p.logger.Warn("Package path doesn't have `node_modules` prefix", log.String("pkg_path", pkgPath))
+	return pkgPath
 }
 
 func uniqueDeps(deps []types.Dependency) []types.Dependency {
@@ -340,20 +379,6 @@ func isIndirectLib(pkgPath string, directDeps map[string]struct{}) bool {
 	return true
 }
 
-func pkgNameFromPath(pkgPath string) string {
-	// lock file contains path to dependency in `node_modules`. e.g.:
-	// node_modules/string-width
-	// node_modules/string-width/node_modules/strip-ansi
-	// we renamed to `node_modules` directory prefixes `workspace` when resolving Links
-	// node_modules/function1
-	// node_modules/nested_func/node_modules/debug
-	if index := strings.LastIndex(pkgPath, nodeModulesDir); index != -1 {
-		return pkgPath[index+len(nodeModulesDir)+1:]
-	}
-	log.Logger.Warnf("npm %q package path doesn't have `node_modules` prefix", pkgPath)
-	return pkgPath
-}
-
 func joinPaths(paths ...string) string {
 	return strings.Join(paths, "/")
 }
@@ -378,4 +403,17 @@ func (t *Package) UnmarshalJSONWithMetadata(node jfather.Node) error {
 	t.StartLine = node.Range().Start.Line
 	t.EndLine = node.Range().End.Line
 	return nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Npm, name, version)
+}
+
+func sortExternalReferences(refs []types.ExternalRef) {
+	sort.Slice(refs, func(i, j int) bool {
+		if refs[i].Type != refs[j].Type {
+			return refs[i].Type < refs[j].Type
+		}
+		return refs[i].URL < refs[j].URL
+	})
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -158,5 +158,5 @@ func printLoopedPropertiesStack(env string, usedProps []string) {
 	for _, prop := range usedProps {
 		s += fmt.Sprintf("%s -> ", prop)
 	}
-	log.Logger.Warnf("Lopped properties were detected: %s%s", s, env)
+	log.Warn("Lopped properties were detected", log.String("prop", s+env))
 }

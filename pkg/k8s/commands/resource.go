@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
+	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
 	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // resourceRun runs scan on kubernetes cluster
@@ -24,7 +24,9 @@ func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster 
 
 	var trivyk trivyk8s.TrivyK8S
 
-	trivyk = trivyk8s.New(cluster, log.Logger, trivyk8s.WithExcludeOwned(opts.ExcludeOwned))
+	// TODO: replace with slog.Logger
+	logger, _ := zap.NewProduction()
+	trivyk = trivyk8s.New(cluster, logger.Sugar(), trivyk8s.WithExcludeOwned(opts.ExcludeOwned))
 
 	if opts.AllNamespaces {
 		trivyk = trivyk.AllNamespaces()

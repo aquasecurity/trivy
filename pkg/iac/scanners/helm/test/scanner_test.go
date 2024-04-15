@@ -318,3 +318,44 @@ deny[res] {
 	require.NoError(t, err)
 	assert.NotNil(t, code)
 }
+
+func TestScanSubchartOnce(t *testing.T) {
+	check := `# METADATA
+# title: "Test rego"
+# description: "Test rego"
+# scope: package
+# schemas:
+# - input: schema["kubernetes"]
+# custom:
+#   id: ID001
+#   avd_id: AVD-USR-ID001
+#   severity: LOW
+#   input:
+#     selector:
+#     - type: kubernetes
+#       subtypes:
+#         - kind: pod
+package user.kubernetes.ID001
+
+import data.lib.kubernetes
+
+deny[res] {
+	container := kubernetes.containers[_]
+	container.securityContext.readOnlyRootFilesystem == false
+	res := result.new("set 'securityContext.readOnlyRootFilesystem' to true", container)
+}
+`
+
+	scanner := helm.New(
+		options.ScannerWithEmbeddedPolicies(false),
+		options.ScannerWithEmbeddedLibraries(true),
+		options.ScannerWithPolicyNamespaces("user"),
+		options.ScannerWithPolicyReader(strings.NewReader(check)),
+	)
+
+	results, err := scanner.ScanFS(context.TODO(), os.DirFS("testdata/with-subchart"), ".")
+	require.NoError(t, err)
+	require.Len(t, results, 1)
+
+	assert.Len(t, results.GetFailed(), 0)
+}

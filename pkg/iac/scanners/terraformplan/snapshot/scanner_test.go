@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
+	tfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,6 +24,8 @@ func initScanner(opts ...options.ScannerOption) *Scanner {
 		options.ScannerWithPolicyNamespaces("user"),
 		options.ScannerWithPolicyDirs("."),
 		options.ScannerWithRegoOnly(true),
+		options.ScannerWithRegoErrorLimits(0),
+		tfscanner.ScannerWithSkipCachedModules(true),
 	}
 
 	opts = append(opts, defaultOpts...)
@@ -110,6 +113,7 @@ func Test_ScanFS(t *testing.T) {
 				options.ScannerWithEmbeddedLibraries(false),
 				options.ScannerWithEmbeddedPolicies(false),
 				options.ScannerWithRegoErrorLimits(0),
+				tfscanner.ScannerWithSkipCachedModules(true),
 			)
 
 			results, err := scanner.ScanFS(context.TODO(), fs, path.Join(tc.dir, "tfplan"))

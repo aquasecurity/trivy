@@ -12,7 +12,8 @@ import (
 
 func TestParseFS(t *testing.T) {
 	t.Run("source chart is located next to an same archived chart", func(t *testing.T) {
-		p := New(".")
+		p, err := New(".")
+		require.NoError(t, err)
 		require.NoError(t, p.ParseFS(context.TODO(), os.DirFS(filepath.Join("testdata", "chart-and-archived-chart")), "."))
 
 		expectedFiles := []string{
