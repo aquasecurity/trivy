@@ -23,6 +23,10 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/test.elf",
 			want: []types.Library{
 				{
+					Name:    "stdlib",
+					Version: "1.15.2",
+				},
+				{
 					Name:    "github.com/aquasecurity/go-pep440-version",
 					Version: "v0.0.0-20210121094942-22b2f8951d46",
 				},
@@ -40,6 +44,10 @@ func TestParse(t *testing.T) {
 			name:      "PE",
 			inputFile: "testdata/test.exe",
 			want: []types.Library{
+				{
+					Name:    "stdlib",
+					Version: "1.15.2",
+				},
 				{
 					Name:    "github.com/aquasecurity/go-pep440-version",
 					Version: "v0.0.0-20210121094942-22b2f8951d46",
@@ -59,6 +67,10 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/test.macho",
 			want: []types.Library{
 				{
+					Name:    "stdlib",
+					Version: "1.15.2",
+				},
+				{
 					Name:    "github.com/aquasecurity/go-pep440-version",
 					Version: "v0.0.0-20210121094942-22b2f8951d46",
 				},
@@ -76,6 +88,10 @@ func TestParse(t *testing.T) {
 			name:      "with replace directive",
 			inputFile: "testdata/replace.elf",
 			want: []types.Library{
+				{
+					Name:    "stdlib",
+					Version: "1.16.4",
+				},
 				{
 					Name:    "github.com/davecgh/go-spew",
 					Version: "v1.1.1",
