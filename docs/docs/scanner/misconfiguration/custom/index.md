@@ -101,9 +101,8 @@ In this case, `user.*` will be evaluated.
 Any package prefixes such as `main` and `user` are allowed.
 
 ### Metadata
-Metadata helps enrich Trivy's scan results with useful information.
 
-The annotation format is described in the [OPA documentation](https://www.openpolicyagent.org/docs/latest/annotations/).
+The check must contain a [Rego Metadata](https://www.openpolicyagent.org/docs/latest/policy-language/#metadata) section. Trivy uses standard rego metadata to define the new policy and general information about it.
 
 Trivy supports extra fields in the `custom` section as described below.
 

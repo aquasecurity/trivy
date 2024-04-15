@@ -22,18 +22,16 @@ Check out [the coverage document][coverage] for details.
 To enable extended license scanning, you can use `--license-full`.
 In addition to package licenses, Trivy scans source code files, Markdown documents, text files and `LICENSE` documents to identify license usage within the image or filesystem.
 
-By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 or more by the classifer.
+By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 or more by the classifier.
 To configure the confidence level, you can use `--license-confidence-level`. This enables us to classify licenses that might be matched with a lower confidence level by the classifer. 
 
 !!! note
     The full license scanning is expensive. It takes a while.
 
-Currently, the standard license scanning doesn't support filesystem and repository scanning.
-
-|   License scanning    | Image | Rootfs | Filesystem | Repository |
-| :-------------------: | :---: | :----: | :--------: | :--------: |
-|       Standard        |   ✅   |   ✅    |     -      |     -      |
-| Full (--license-full) |   ✅   |   ✅    |     ✅      |     ✅      |
+|   License scanning    | Image | Rootfs | Filesystem | Repository | SBOM |
+|:---------------------:|:-----:|:------:|:----------:|:----------:|:----:|
+|       Standard        |   ✅   |   ✅    | ✅[^1][^2]  | ✅[^1][^2]  |  ✅   |
+| Full (--license-full) |   ✅   |   ✅    |     ✅      |     ✅      |  -   |
 
 License checking classifies the identified licenses and map the classification to severity.
 
@@ -344,6 +342,8 @@ license:
   permissive: []
 ```
 
+[^1]: See the list of supported language files [here](../coverage/language/index.md).
+[^2]: Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check [coverage][coverage] for more information.
 
 [coverage]: ../coverage/index.md
 [google-license-classification]: https://opensource.google/documentation/reference/thirdparty/licenses

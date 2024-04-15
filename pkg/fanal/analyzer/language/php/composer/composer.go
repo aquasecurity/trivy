@@ -62,7 +62,8 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 
 		// Parse composer.json alongside composer.lock to identify the direct dependencies
 		if err = a.mergeComposerJson(input.FS, filepath.Dir(path), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.ComposerJson), err)
+			log.Warn("Unable to parse composer.json to identify direct dependencies",
+				log.String("path", filepath.Join(filepath.Dir(path), types.ComposerJson)), log.Err(err))
 		}
 		sort.Sort(app.Libraries)
 		apps = append(apps, *app)
@@ -109,7 +110,7 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 	p, err := a.parseComposerJson(fsys, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Assume all the packages are direct dependencies as it cannot identify them from composer.lock
-		log.Logger.Debugf("Unable to determine the direct dependencies: %s not found", path)
+		log.Debug("Unable to determine the direct dependencies, composer.json not found", log.String("path", path))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", path, err)

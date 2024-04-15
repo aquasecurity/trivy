@@ -88,7 +88,7 @@ func (w FS) walkFast(root string, walkFn fastWalkFunc) error {
 
 	// Multiple goroutines stat the filesystem concurrently. The provided
 	// walkFn must be safe for concurrent use.
-	log.Logger.Debugf("Walk the file tree rooted at '%s' in parallel", root)
+	log.Debug("Walking the file tree in parallel", log.String("root", root))
 	if err := swalker.Walk(root, walkFn, errorCallbackOption); err != nil {
 		return xerrors.Errorf("walk error: %w", err)
 	}
@@ -96,7 +96,7 @@ func (w FS) walkFast(root string, walkFn fastWalkFunc) error {
 }
 
 func (w FS) walkSlow(root string, walkFn fastWalkFunc) error {
-	log.Logger.Debugf("Walk the file tree rooted at '%s' in series", root)
+	log.Debug("Walking the file tree in series", log.String("root", root))
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return w.errCallback(path, err)

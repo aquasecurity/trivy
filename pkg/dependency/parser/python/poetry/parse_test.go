@@ -46,7 +46,7 @@ func TestParser_Parse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			p := &Parser{}
+			p := NewParser()
 			gotLibs, gotDeps, err := p.Parse(f)
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.file)) {
 				return
@@ -116,7 +116,7 @@ func TestParseDependency(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parseDependency(tt.packageName, tt.versionRange, tt.libsVersions)
+			got, err := NewParser().parseDependency(tt.packageName, tt.versionRange, tt.libsVersions)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

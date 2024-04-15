@@ -3,11 +3,11 @@ Trivy supports three types of Java scanning: `JAR/WAR/PAR/EAR`, `pom.xml` and `*
 
 Each artifact supports the following scanners:
 
-| Artifact         | SBOM  | Vulnerability | License |
-| ---------------- | :---: | :-----------: | :-----: |
-| JAR/WAR/PAR/EAR  |   ✓   |       ✓       |    -    |
-| pom.xml          |   ✓   |       ✓       |    ✓    |
-| *gradle.lockfile |   ✓   |       ✓       |    -    |
+| Artifact         | SBOM | Vulnerability | License |
+|------------------|:----:|:-------------:|:-------:|
+| JAR/WAR/PAR/EAR  |  ✓   |       ✓       |    -    |
+| pom.xml          |  ✓   |       ✓       |    ✓    |
+| *gradle.lockfile |  ✓   |       ✓       |    ✓    |
 
 The following table provides an outline of the features Trivy offers.
 
@@ -15,7 +15,7 @@ The following table provides an outline of the features Trivy offers.
 |------------------|:---------------------:|:----------------:|:------------------------------------:|:--------:|
 | JAR/WAR/PAR/EAR  |     Trivy Java DB     |     Include      |                  -                   |    -     |
 | pom.xml          | Maven repository [^1] |     Exclude      |                  ✓                   |  ✓[^7]   |
-| *gradle.lockfile |           -           |     Exclude      |                  -                   |    ✓     |
+| *gradle.lockfile |           -           |     Exclude      |                  ✓                   |    ✓     |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
@@ -64,11 +64,24 @@ If you need to show them, use the `--include-dev-deps` flag.
 
 
 ## Gradle.lock
-`gradle.lock` files contain all necessary information about used dependencies.
-Trivy simply parses the file, extract dependencies, and finds vulnerabilities for them.
-It doesn't require the internet access.
+`gradle.lock` files only contain information about used dependencies.
 
-[^1]: https://github.com/aquasecurity/trivy-java-db
+!!!note
+    All necessary files are checked locally. Gradle file scanning doesn't require internet access.
+
+### Dependency-tree
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+Trivy finds child dependencies from `*.pom` files in the cache[^8] directory.
+
+But there is no reliable way to determine direct dependencies (even using other files).
+Therefore, we mark all dependencies as indirect to use logic to guess direct dependencies and build a dependency tree.
+
+### Licenses
+Trity also can detect licenses for dependencies.
+
+Make sure that you have cache[^8] directory to find licenses from `*.pom` dependency files.
+
 [^1]: Uses maven repository to get information about dependencies. Internet access required.
 [^2]: It means `*.jar`, `*.war`, `*.par` and `*.ear` file
 [^3]: `ArtifactID`, `GroupID` and `Version`
@@ -76,6 +89,7 @@ It doesn't require the internet access.
 [^5]: When you use dependency path in `relativePath` field in pom.xml file
 [^6]: `/Users/<username>/.m2/repository` (for Linux and Mac) and `C:/Users/<username>/.m2/repository` (for Windows) by default
 [^7]: To avoid confusion, Trivy only finds locations for direct dependencies from the base pom.xml file.
+[^8]: The supported directories are `$GRADLE_USER_HOME/caches` and `$HOME/.gradle/caches` (`%HOMEPATH%\.gradle\caches` for Windows).
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [maven-invoker-plugin]: https://maven.apache.org/plugins/maven-invoker-plugin/usage.html

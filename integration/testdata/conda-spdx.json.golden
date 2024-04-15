@@ -3,7 +3,7 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "testdata/fixtures/repo/conda",
-  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000001",
+  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-3ff14136-e09f-4df9-80ea-000000000004",
   "creationInfo": {
     "creators": [
       "Organization: aquasecurity",
@@ -13,16 +13,8 @@
   },
   "packages": [
     {
-      "name": "conda-pkg",
-      "SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "downloadLocation": "NONE",
-      "filesAnalyzed": false,
-      "sourceInfo": "Conda",
-      "primaryPackagePurpose": "APPLICATION"
-    },
-    {
       "name": "openssl",
-      "SPDXID": "SPDXRef-Package-20b95c21bfbf9fc4",
+      "SPDXID": "SPDXRef-Package-b8061a5279413d55",
       "versionInfo": "1.1.1q",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -39,11 +31,14 @@
           "referenceLocator": "pkg:conda/openssl@1.1.1q"
         }
       ],
+      "attributionTexts": [
+        "PkgType: conda-pkg"
+      ],
       "primaryPackagePurpose": "LIBRARY"
     },
     {
       "name": "pip",
-      "SPDXID": "SPDXRef-Package-11a429ec3bd01d80",
+      "SPDXID": "SPDXRef-Package-84198b3828050c11",
       "versionInfo": "22.2.2",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -59,6 +54,9 @@
           "referenceType": "purl",
           "referenceLocator": "pkg:conda/pip@22.2.2"
         }
+      ],
+      "attributionTexts": [
+        "PkgType: conda-pkg"
       ],
       "primaryPackagePurpose": "LIBRARY"
     },
@@ -105,27 +103,22 @@
     },
     {
       "spdxElementId": "SPDXRef-Filesystem-2e2426fd0f2580ef",
-      "relatedSpdxElement": "SPDXRef-Application-ee5ef1aa4ac89125",
+      "relatedSpdxElement": "SPDXRef-Package-84198b3828050c11",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "relatedSpdxElement": "SPDXRef-Package-20b95c21bfbf9fc4",
+      "spdxElementId": "SPDXRef-Filesystem-2e2426fd0f2580ef",
+      "relatedSpdxElement": "SPDXRef-Package-b8061a5279413d55",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-20b95c21bfbf9fc4",
-      "relatedSpdxElement": "SPDXRef-File-600e5e0110a84891",
-      "relationshipType": "CONTAINS"
-    },
-    {
-      "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "relatedSpdxElement": "SPDXRef-Package-11a429ec3bd01d80",
-      "relationshipType": "CONTAINS"
-    },
-    {
-      "spdxElementId": "SPDXRef-Package-11a429ec3bd01d80",
+      "spdxElementId": "SPDXRef-Package-84198b3828050c11",
       "relatedSpdxElement": "SPDXRef-File-7eb62e2a3edddc0a",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-b8061a5279413d55",
+      "relatedSpdxElement": "SPDXRef-File-600e5e0110a84891",
       "relationshipType": "CONTAINS"
     }
   ]

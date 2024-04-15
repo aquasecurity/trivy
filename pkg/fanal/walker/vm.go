@@ -35,6 +35,7 @@ func AppendPermitDiskName(s ...string) {
 
 type VM struct {
 	walker
+	logger    *log.Logger
 	threshold int64
 	analyzeFn WalkFunc
 }
@@ -42,6 +43,7 @@ type VM struct {
 func NewVM(skipFiles, skipDirs []string) *VM {
 	threshold := defaultSizeThreshold
 	return &VM{
+		logger:    log.WithPrefix("vm"),
 		walker:    newWalker(skipFiles, skipDirs),
 		threshold: threshold,
 	}
@@ -72,7 +74,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
 
 		// Walk each partition
 		if err = w.diskWalk(root, partition); err != nil {
-			log.Logger.Warnf("Partition error: %s", err.Error())
+			w.logger.Warn("Partition error", log.Err(err))
 		}
 	}
 	return nil
@@ -80,7 +82,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
 
 // Inject disk partitioning processes from externally with diskWalk.
 func (w *VM) diskWalk(root string, partition types.Partition) error {
-	log.Logger.Debugf("Found partition: %s", partition.Name())
+	w.logger.Debug("Found partition", log.String("name", partition.Name()))
 
 	sr := partition.GetSectionReader()
 
@@ -89,7 +91,7 @@ func (w *VM) diskWalk(root string, partition types.Partition) error {
 	if err != nil {
 		return xerrors.Errorf("LVM detection error: %w", err)
 	} else if foundLVM {
-		log.Logger.Errorf("LVM is not supported, skip %s.img", partition.Name())
+		w.logger.Error("LVM is not supported, skipping", log.String("name", partition.Name()+".img"))
 		return nil
 	}
 

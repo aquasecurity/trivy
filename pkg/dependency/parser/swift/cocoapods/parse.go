@@ -16,17 +16,21 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() types.Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("cocoapods"),
+	}
 }
 
 type lockFile struct {
 	Pods []any `yaml:"PODS"` // pod can be string or map[string]interface{}
 }
 
-func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	lock := &lockFile{}
 	decoder := yaml.NewDecoder(r)
 	if err := decoder.Decode(&lock); err != nil {
@@ -36,19 +40,19 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 	parsedDeps := make(map[string]types.Library) // dependency name => Library
 	directDeps := make(map[string][]string)      // dependency name => slice of child dependency names
 	for _, pod := range lock.Pods {
-		switch p := pod.(type) {
+		switch dep := pod.(type) {
 		case string: // dependency with version number
-			lib, err := parseDep(p)
+			lib, err := parseDep(dep)
 			if err != nil {
-				log.Logger.Debug(err)
+				p.logger.Debug("Dependency parse error", log.Err(err))
 				continue
 			}
 			parsedDeps[lib.Name] = lib
 		case map[string]interface{}: // dependency with its child dependencies
-			for dep, childDeps := range p {
+			for dep, childDeps := range dep {
 				lib, err := parseDep(dep)
 				if err != nil {
-					log.Logger.Debug(err)
+					p.logger.Debug("Dependency parse error", log.Err(err))
 					continue
 				}
 				parsedDeps[lib.Name] = lib

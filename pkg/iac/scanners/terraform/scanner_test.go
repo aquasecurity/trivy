@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
-	"github.com/aquasecurity/trivy/pkg/iac/state"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -63,59 +62,9 @@ func scanWithOptions(t *testing.T, code string, opt ...options.ScannerOption) sc
 	})
 
 	scanner := New(opt...)
-	results, _, err := scanner.ScanFSWithMetrics(context.TODO(), fs, "project")
+	results, err := scanner.ScanFS(context.TODO(), fs, "project")
 	require.NoError(t, err)
 	return results
-}
-
-func Test_OptionWithAlternativeIDProvider(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	options := []options.ScannerOption{
-		ScannerWithAlternativeIDProvider(func(s string) []string {
-			return []string{"something", "altid", "blah"}
-		}),
-	}
-	results := scanWithOptions(t, `
-//tfsec:ignore:altid
-resource "something" "else" {}
-`, options...)
-	require.Len(t, results.GetFailed(), 0)
-	require.Len(t, results.GetIgnored(), 1)
-
-}
-
-func Test_TrivyOptionWithAlternativeIDProvider(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	options := []options.ScannerOption{
-		ScannerWithAlternativeIDProvider(func(s string) []string {
-			return []string{"something", "altid", "blah"}
-		}),
-	}
-	results := scanWithOptions(t, `
-//trivy:ignore:altid
-resource "something" "else" {}
-`, options...)
-	require.Len(t, results.GetFailed(), 0)
-	require.Len(t, results.GetIgnored(), 1)
-
-}
-
-func Test_OptionWithSeverityOverrides(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	options := []options.ScannerOption{
-		ScannerWithSeverityOverrides(map[string]string{"aws-service-abc": "LOW"}),
-	}
-	results := scanWithOptions(t, `
-resource "something" "else" {}
-`, options...)
-	require.Len(t, results.GetFailed(), 1)
-	assert.Equal(t, severity.Low, results.GetFailed()[0].Severity())
 }
 
 func Test_OptionWithDebugWriter(t *testing.T) {
@@ -131,67 +80,6 @@ func Test_OptionWithDebugWriter(t *testing.T) {
 resource "something" "else" {}
 `, scannerOpts...)
 	require.Greater(t, buffer.Len(), 0)
-}
-
-func Test_OptionNoIgnores(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	scannerOpts := []options.ScannerOption{
-		ScannerWithNoIgnores(),
-	}
-	results := scanWithOptions(t, `
-//tfsec:ignore:aws-service-abc
-resource "something" "else" {}
-`, scannerOpts...)
-	require.Len(t, results.GetFailed(), 1)
-	require.Len(t, results.GetIgnored(), 0)
-
-}
-
-func Test_OptionExcludeRules(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	options := []options.ScannerOption{
-		ScannerWithExcludedRules([]string{"aws-service-abc"}),
-	}
-	results := scanWithOptions(t, `
-resource "something" "else" {}
-`, options...)
-	require.Len(t, results.GetFailed(), 0)
-	require.Len(t, results.GetIgnored(), 1)
-
-}
-
-func Test_OptionIncludeRules(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	scannerOpts := []options.ScannerOption{
-		ScannerWithIncludedRules([]string{"this-only"}),
-	}
-	results := scanWithOptions(t, `
-resource "something" "else" {}
-`, scannerOpts...)
-	require.Len(t, results.GetFailed(), 0)
-	require.Len(t, results.GetIgnored(), 1)
-
-}
-
-func Test_OptionWithMinimumSeverity(t *testing.T) {
-	reg := rules.Register(alwaysFailRule)
-	defer rules.Deregister(reg)
-
-	scannerOpts := []options.ScannerOption{
-		ScannerWithMinimumSeverity(severity.Critical),
-	}
-	results := scanWithOptions(t, `
-resource "something" "else" {}
-`, scannerOpts...)
-	require.Len(t, results.GetFailed(), 0)
-	require.Len(t, results.GetIgnored(), 1)
-
 }
 
 func Test_OptionWithPolicyDirs(t *testing.T) {
@@ -374,7 +262,7 @@ cause := bucket.name
 				options.ScannerWithPolicyNamespaces(test.includedNamespaces...),
 			)
 
-			results, _, err := scanner.ScanFSWithMetrics(context.TODO(), fs, "code")
+			results, err := scanner.ScanFS(context.TODO(), fs, "code")
 			require.NoError(t, err)
 
 			var found bool
@@ -387,38 +275,6 @@ cause := bucket.name
 			assert.Equal(t, test.wantFailure, found)
 
 		})
-	}
-
-}
-
-func Test_OptionWithStateFunc(t *testing.T) {
-
-	fs := testutil.CreateFS(t, map[string]string{
-		"code/main.tf": `
-resource "aws_s3_bucket" "my-bucket" {
-	bucket = "evil"
-}
-`,
-	})
-
-	var actual state.State
-
-	debugLog := bytes.NewBuffer([]byte{})
-	scanner := New(
-		options.ScannerWithDebug(debugLog),
-		ScannerWithStateFunc(func(s *state.State) {
-			require.NotNil(t, s)
-			actual = *s
-		}),
-	)
-
-	_, _, err := scanner.ScanFSWithMetrics(context.TODO(), fs, "code")
-	require.NoError(t, err)
-
-	assert.Equal(t, 1, len(actual.AWS.S3.Buckets))
-
-	if t.Failed() {
-		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
 	}
 
 }
@@ -828,62 +684,6 @@ resource "aws_s3_bucket_public_access_block" "testB" {
 	if t.Failed() {
 		fmt.Printf("Debug logs:\n%s\n", debugLog.String())
 	}
-}
-
-func Test_RegoInput(t *testing.T) {
-
-	var regoInput interface{}
-
-	opts := []options.ScannerOption{
-		ScannerWithStateFunc(func(s *state.State) {
-			regoInput = s.ToRego()
-		}),
-	}
-	_ = scanWithOptions(t, `
-resource "aws_security_group" "example_security_group" {
-  name = "example_security_group"
-
-  description = "Example SG"
-
-  ingress {
-    description = "Allow SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["1.2.3.4", "5.6.7.8"]
-  }
-
-}
-`, opts...)
-
-	outer, ok := regoInput.(map[string]interface{})
-	require.True(t, ok)
-	aws, ok := outer["aws"].(map[string]interface{})
-	require.True(t, ok)
-	ec2, ok := aws["ec2"].(map[string]interface{})
-	require.True(t, ok)
-	sgs, ok := ec2["securitygroups"].([]interface{})
-	require.True(t, ok)
-	require.Len(t, sgs, 1)
-	sg0, ok := sgs[0].(map[string]interface{})
-	require.True(t, ok)
-	ingress, ok := sg0["ingressrules"].([]interface{})
-	require.True(t, ok)
-	require.Len(t, ingress, 1)
-	ingress0, ok := ingress[0].(map[string]interface{})
-	require.True(t, ok)
-	cidrs, ok := ingress0["cidrs"].([]interface{})
-	require.True(t, ok)
-	require.Len(t, cidrs, 2)
-
-	cidr0, ok := cidrs[0].(map[string]interface{})
-	require.True(t, ok)
-
-	cidr1, ok := cidrs[1].(map[string]interface{})
-	require.True(t, ok)
-
-	assert.Equal(t, "1.2.3.4", cidr0["value"])
-	assert.Equal(t, "5.6.7.8", cidr1["value"])
 }
 
 // PoC for replacing Go with Rego: AVD-AWS-0001

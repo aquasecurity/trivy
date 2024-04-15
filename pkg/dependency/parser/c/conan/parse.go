@@ -30,10 +30,14 @@ type Node struct {
 	EndLine   int
 }
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() types.Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("conan"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -60,7 +64,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		}
 		lib, err := parseRef(node)
 		if err != nil {
-			log.Logger.Debug(err)
+			p.logger.Debug("Parse ref error", log.Err(err))
 			continue
 		}
 

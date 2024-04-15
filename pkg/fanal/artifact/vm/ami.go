@@ -41,7 +41,7 @@ func newAMI(imageID string, storage Storage, region, endpoint string) (*AMI, err
 		if snapshotID == "" {
 			continue
 		}
-		log.Logger.Infof("Snapshot %s found", snapshotID)
+		log.WithPrefix("ami").Info("Snapshot found", log.String("snapshot_id", snapshotID))
 		ebs, err := newEBS(snapshotID, storage, region, endpoint)
 		if err != nil {
 			return nil, xerrors.Errorf("new EBS error: %w", err)

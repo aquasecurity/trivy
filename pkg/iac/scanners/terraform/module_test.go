@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/stretchr/testify/require"
@@ -88,13 +88,15 @@ resource "problem" "uhoh" {
 
 	debug := bytes.NewBuffer([]byte{})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true), options.ParserWithDebug(debug))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true), options.ParserWithDebug(debug))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, err := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
 	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 	if t.Failed() {
 		fmt.Println(debug.String())
@@ -119,12 +121,15 @@ resource "problem" "uhoh" {
 `},
 	)
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 
 }
@@ -148,12 +153,15 @@ resource "problem" "uhoh" {
 `},
 	)
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleNotFound(t, badRule.LongID(), results, "")
 
 }
@@ -175,12 +183,15 @@ resource "problem" "uhoh" {
 }
 `})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 
 }
@@ -202,12 +213,15 @@ resource "problem" "uhoh" {
 }
 `})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 
 }
@@ -238,12 +252,15 @@ resource "problem" "uhoh" {
 }
 `})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 
 }
@@ -276,12 +293,15 @@ resource "problem" "uhoh" {
 `,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true), options.ParserWithDebug(os.Stderr))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true), options.ParserWithDebug(os.Stderr))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 
 }
@@ -331,12 +351,15 @@ resource "problem" "uhoh" {
 `,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 }
 
@@ -380,12 +403,15 @@ resource "problem" "uhoh" {
 `,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 }
 
@@ -418,12 +444,15 @@ resource "problem" "uhoh" {
 `,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 
 }
@@ -473,12 +502,15 @@ resource "problem" "uhoh" {
 `,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, badRule.LongID(), results, "")
 
 }
@@ -523,12 +555,15 @@ resource "bad" "thing" {
 	reg := rules.Register(r1)
 	defer rules.Deregister(reg)
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleFound(t, r1.LongID(), results, "")
 }
 
@@ -572,12 +607,15 @@ resource "bad" "thing" {
 	reg := rules.Register(r1)
 	defer rules.Deregister(reg)
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleNotFound(t, r1.LongID(), results, "")
 }
 
@@ -621,12 +659,15 @@ data "aws_iam_policy_document" "policy" {
 }
 `})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	err := p.ParseFS(context.TODO(), "project")
 	require.NoError(t, err)
 	modules, _, err := p.EvaluateAll(context.TODO())
 	require.NoError(t, err)
-	results, _, _ := executor.New().Execute(modules)
+
+	results, err := executor.New().Execute(modules)
+	require.NoError(t, err)
+
 	testutil.AssertRuleNotFound(t, iam.CheckEnforceGroupMFA.LongID(), results, "")
 
 }

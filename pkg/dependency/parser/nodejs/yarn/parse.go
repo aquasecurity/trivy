@@ -142,13 +142,17 @@ func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (
 	return deps
 }
 
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func scanBlocks(data []byte, atEOF bool) (advance int, token []byte, err error) {
+func NewParser() types.Parser {
+	return &Parser{
+		logger: log.WithPrefix("yarn"),
+	}
+}
+
+func (p *Parser) scanBlocks(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
@@ -167,7 +171,7 @@ func scanBlocks(data []byte, atEOF bool) (advance int, token []byte, err error) 
 	return 0, nil, nil
 }
 
-func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine int, err error) {
+func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine int, err error) {
 	var (
 		emptyLines int // lib can start with empty lines first
 		skipBlock  bool
@@ -228,7 +232,7 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 	// in case an unsupported protocol is detected
 	// show warning and continue parsing
 	if err != nil {
-		log.Logger.Warnf("Yarn protocol error: %s", err)
+		p.logger.Warn("Protocol error", log.Err(err))
 		return Library{}, nil, scanner.LineNum(lineNum), nil
 	}
 
@@ -275,11 +279,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	patternIDs := make(map[string]string)
 
 	scanner := bufio.NewScanner(r)
-	scanner.Split(scanBlocks)
+	scanner.Split(p.scanBlocks)
 	dependsOn := make(map[string][]string)
 	for scanner.Scan() {
 		block := scanner.Bytes()
-		lib, deps, newLine, err := parseBlock(block, lineNumber)
+		lib, deps, newLine, err := p.parseBlock(block, lineNumber)
 		lineNumber = newLine + 2
 		if err != nil {
 			return nil, nil, err

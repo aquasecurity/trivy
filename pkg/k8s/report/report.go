@@ -1,6 +1,7 @@
 package report
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -260,7 +261,7 @@ func createK8sResource(artifact *artifacts.Artifact, scanResults types.Results) 
 func (r Report) PrintErrors() {
 	for _, resource := range r.Resources {
 		if resource.Error != "" {
-			log.Logger.Errorf("Error during vulnerabilities or misconfiguration scan: %s", resource.Error)
+			log.Error("Error during vulnerabilities or misconfiguration scan", log.Err(errors.New(resource.Error)))
 		}
 	}
 }

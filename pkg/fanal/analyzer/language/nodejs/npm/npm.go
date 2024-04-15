@@ -32,12 +32,14 @@ const (
 )
 
 type npmLibraryAnalyzer struct {
+	logger        *log.Logger
 	lockParser    godeptypes.Parser
 	packageParser *packagejson.Parser
 }
 
 func newNpmLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &npmLibraryAnalyzer{
+		logger:        log.WithPrefix("npm"),
 		lockParser:    npm.NewParser(),
 		packageParser: packagejson.NewParser(),
 	}, nil
@@ -54,7 +56,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		// Find all licenses from package.json files under node_modules dirs
 		licenses, err := a.findLicenses(input.FS, filePath)
 		if err != nil {
-			log.Logger.Errorf("Unable to collect licenses: %s", err)
+			a.logger.Error("Unable to collect licenses", log.Err(err))
 			licenses = make(map[string]string)
 		}
 
@@ -127,7 +129,8 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 	dir := path.Dir(lockPath)
 	root := path.Join(dir, "node_modules")
 	if _, err := fs.Stat(fsys, root); errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Infof(`To collect the license information of packages in %q, "npm install" needs to be performed beforehand`, lockPath)
+		a.logger.Info(`To collect the license information of packages, "npm install" needs to be performed beforehand`,
+			log.String("dir", root))
 		return nil, nil
 	}
 

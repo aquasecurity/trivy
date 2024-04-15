@@ -34,6 +34,7 @@ const version = 1
 
 func newPackagingAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &packagingAnalyzer{
+		logger:                           log.WithPrefix("python"),
 		pkgParser:                        packaging.NewParser(),
 		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
 	}, nil
@@ -54,6 +55,7 @@ var (
 )
 
 type packagingAnalyzer struct {
+	logger                           *log.Logger
 	pkgParser                        godeptypes.Parser
 	licenseClassifierConfidenceLevel float64
 }
@@ -99,7 +101,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 		}
 
 		if err := a.fillAdditionalData(input.FS, app); err != nil {
-			log.Logger.Warnf("Unable to collect additional info: %s", err)
+			a.logger.Warn("Unable to collect additional info", log.Err(err))
 		}
 
 		apps = append(apps, *app)

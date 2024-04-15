@@ -81,6 +81,14 @@ const (
 	OCP         LangType = "ocp" // Red Hat OpenShift Container Platform
 )
 
+var AggregatingTypes = []LangType{
+	PythonPkg,
+	CondaPkg,
+	GemSpec,
+	NodePkg,
+	Jar,
+}
+
 // Config files
 const (
 	JSON                  ConfigType = "json"

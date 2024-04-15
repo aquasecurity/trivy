@@ -1522,3 +1522,112 @@ func compareSets(a []int, b []int) bool {
 
 	return true
 }
+
+func TestModuleRefersToOutputOfAnotherModule(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+module "module2" {
+	source = "./modules/foo"
+}
+
+module "module1" {
+	source = "./modules/bar"
+	test_var = module.module2.test_out
+}
+`,
+		"modules/foo/main.tf": `
+output "test_out" {
+	value = "test_value"
+}
+`,
+		"modules/bar/main.tf": `
+variable "test_var" {}
+
+resource "test_resource" "this" {
+	dynamic "dynamic_block" {
+		for_each = [var.test_var]
+		content {
+			some_attr = dynamic_block.value
+		}
+	}
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, 3)
+
+	resources := modules.GetResourcesByType("test_resource")
+	require.Len(t, resources, 1)
+
+	attr, _ := resources[0].GetNestedAttribute("dynamic_block.some_attr")
+	require.NotNil(t, attr)
+
+	assert.Equal(t, "test_value", attr.GetRawValue())
+}
+
+func TestCyclicModules(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+module "module2" {
+	source = "./modules/foo"
+	test_var = passthru.handover.from_1
+}
+
+// Demonstrates need for evaluateSteps between submodule evaluations.
+resource "passthru" "handover" {
+	from_1 = module.module1.test_out
+	from_2 = module.module2.test_out
+}
+
+module "module1" {
+	source = "./modules/bar"
+	test_var = passthru.handover.from_2
+}
+`,
+		"modules/foo/main.tf": `
+variable "test_var" {}
+
+resource "test_resource" "this" {
+	dynamic "dynamic_block" {
+		for_each = [var.test_var]
+		content {
+			some_attr = dynamic_block.value
+		}
+	}
+}
+
+output "test_out" {
+	value = "test_value"
+}
+`,
+		"modules/bar/main.tf": `
+variable "test_var" {}
+
+resource "test_resource" "this" {
+	dynamic "dynamic_block" {
+		for_each = [var.test_var]
+		content {
+			some_attr = dynamic_block.value
+		}
+	}
+}
+
+output "test_out" {
+	value = test_resource.this.dynamic_block.some_attr
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, 3)
+
+	resources := modules.GetResourcesByType("test_resource")
+	require.Len(t, resources, 2)
+
+	for _, res := range resources {
+		attr, _ := res.GetNestedAttribute("dynamic_block.some_attr")
+		require.NotNil(t, attr, res.FullName())
+		assert.Equal(t, "test_value", attr.GetRawValue())
+	}
+}

@@ -50,16 +50,17 @@ func getBuckets(cfFile parser.FileContext) []s3.Bucket {
 }
 
 func getPublicAccessBlock(r *parser.Resource) *s3.PublicAccessBlock {
-	if block := r.GetProperty("PublicAccessBlockConfiguration"); block.IsNil() {
+	block := r.GetProperty("PublicAccessBlockConfiguration")
+	if block.IsNil() {
 		return nil
 	}
 
 	return &s3.PublicAccessBlock{
-		Metadata:              r.Metadata(),
-		BlockPublicACLs:       r.GetBoolProperty("PublicAccessBlockConfiguration.BlockPublicAcls"),
-		BlockPublicPolicy:     r.GetBoolProperty("PublicAccessBlockConfiguration.BlockPublicPolicy"),
-		IgnorePublicACLs:      r.GetBoolProperty("PublicAccessBlockConfiguration.IgnorePublicAcls"),
-		RestrictPublicBuckets: r.GetBoolProperty("PublicAccessBlockConfiguration.RestrictPublicBuckets"),
+		Metadata:              block.Metadata(),
+		BlockPublicACLs:       block.GetBoolProperty("BlockPublicAcls"),
+		BlockPublicPolicy:     block.GetBoolProperty("BlockPublicPolicy"),
+		IgnorePublicACLs:      block.GetBoolProperty("IgnorePublicAcls"),
+		RestrictPublicBuckets: block.GetBoolProperty("RestrictPublicBuckets"),
 	}
 }
 

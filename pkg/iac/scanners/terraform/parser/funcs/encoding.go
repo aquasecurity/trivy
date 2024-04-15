@@ -19,22 +19,25 @@ import (
 var Base64DecodeFunc = function.New(&function.Spec{
 	Params: []function.Parameter{
 		{
-			Name: "str",
-			Type: cty.String,
+			Name:        "str",
+			Type:        cty.String,
+			AllowMarked: true,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
-		s := args[0].AsString()
+		str, strMarks := args[0].Unmark()
+		s := str.AsString()
 		sDec, err := base64.StdEncoding.DecodeString(s)
 		if err != nil {
-			return cty.UnknownVal(cty.String), fmt.Errorf("failed to decode base64 data '%s'", s)
+			return cty.UnknownVal(cty.String), fmt.Errorf("failed to decode base64 data %s", redactIfSensitive(s, strMarks))
 		}
-		if !utf8.Valid(sDec) {
-			log.Printf("[DEBUG] the result of decoding the provided string is not valid UTF-8: %s", sDec)
+		if !utf8.Valid([]byte(sDec)) {
+			log.Printf("[DEBUG] the result of decoding the provided string is not valid UTF-8: %s", redactIfSensitive(sDec, strMarks))
 			return cty.UnknownVal(cty.String), fmt.Errorf("the result of decoding the provided string is not valid UTF-8")
 		}
-		return cty.StringVal(string(sDec)), nil
+		return cty.StringVal(string(sDec)).WithMarks(strMarks), nil
 	},
 })
 
@@ -46,7 +49,8 @@ var Base64EncodeFunc = function.New(&function.Spec{
 			Type: cty.String,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
 		return cty.StringVal(base64.StdEncoding.EncodeToString([]byte(args[0].AsString()))), nil
 	},
@@ -64,7 +68,8 @@ var TextEncodeBase64Func = function.New(&function.Spec{
 			Type: cty.String,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
 		encoding, err := ianaindex.IANA.Encoding(args[1].AsString())
 		if err != nil || encoding == nil {
@@ -107,7 +112,8 @@ var TextDecodeBase64Func = function.New(&function.Spec{
 			Type: cty.String,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
 		encoding, err := ianaindex.IANA.Encoding(args[1].AsString())
 		if err != nil || encoding == nil {
@@ -126,7 +132,7 @@ var TextDecodeBase64Func = function.New(&function.Spec{
 			case base64.CorruptInputError:
 				return cty.UnknownVal(cty.String), function.NewArgErrorf(0, "the given value is has an invalid base64 symbol at offset %d", int(err))
 			default:
-				return cty.UnknownVal(cty.String), function.NewArgErrorf(0, "invalid source string: %T", err)
+				return cty.UnknownVal(cty.String), function.NewArgErrorf(0, "invalid source string: %w", err)
 			}
 
 		}
@@ -150,20 +156,21 @@ var Base64GzipFunc = function.New(&function.Spec{
 			Type: cty.String,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
 		s := args[0].AsString()
 
 		var b bytes.Buffer
 		gz := gzip.NewWriter(&b)
 		if _, err := gz.Write([]byte(s)); err != nil {
-			return cty.UnknownVal(cty.String), fmt.Errorf("failed to write gzip raw data: '%s'", s)
+			return cty.UnknownVal(cty.String), fmt.Errorf("failed to write gzip raw data: %w", err)
 		}
 		if err := gz.Flush(); err != nil {
-			return cty.UnknownVal(cty.String), fmt.Errorf("failed to flush gzip writer: '%s'", s)
+			return cty.UnknownVal(cty.String), fmt.Errorf("failed to flush gzip writer: %w", err)
 		}
 		if err := gz.Close(); err != nil {
-			return cty.UnknownVal(cty.String), fmt.Errorf("failed to close gzip writer: '%s'", s)
+			return cty.UnknownVal(cty.String), fmt.Errorf("failed to close gzip writer: %w", err)
 		}
 		return cty.StringVal(base64.StdEncoding.EncodeToString(b.Bytes())), nil
 	},
@@ -177,78 +184,9 @@ var URLEncodeFunc = function.New(&function.Spec{
 			Type: cty.String,
 		},
 	},
-	Type: function.StaticReturnType(cty.String),
+	Type:         function.StaticReturnType(cty.String),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
 		return cty.StringVal(url.QueryEscape(args[0].AsString())), nil
 	},
 })
-
-// Base64Decode decodes a string containing a base64 sequence.
-//
-// Terraform uses the "standard" Base64 alphabet as defined in RFC 4648 section 4.
-//
-// Strings in the Terraform language are sequences of unicode characters rather
-// than bytes, so this function will also interpret the resulting bytes as
-// UTF-8. If the bytes after Base64 decoding are _not_ valid UTF-8, this function
-// produces an error.
-func Base64Decode(str cty.Value) (cty.Value, error) {
-	return Base64DecodeFunc.Call([]cty.Value{str})
-}
-
-// Base64Encode applies Base64 encoding to a string.
-//
-// Terraform uses the "standard" Base64 alphabet as defined in RFC 4648 section 4.
-//
-// Strings in the Terraform language are sequences of unicode characters rather
-// than bytes, so this function will first encode the characters from the string
-// as UTF-8, and then apply Base64 encoding to the result.
-func Base64Encode(str cty.Value) (cty.Value, error) {
-	return Base64EncodeFunc.Call([]cty.Value{str})
-}
-
-// Base64Gzip compresses a string with gzip and then encodes the result in
-// Base64 encoding.
-//
-// Terraform uses the "standard" Base64 alphabet as defined in RFC 4648 section 4.
-//
-// Strings in the Terraform language are sequences of unicode characters rather
-// than bytes, so this function will first encode the characters from the string
-// as UTF-8, then apply gzip compression, and then finally apply Base64 encoding.
-func Base64Gzip(str cty.Value) (cty.Value, error) {
-	return Base64GzipFunc.Call([]cty.Value{str})
-}
-
-// URLEncode applies URL encoding to a given string.
-//
-// This function identifies characters in the given string that would have a
-// special meaning when included as a query string argument in a URL and
-// escapes them using RFC 3986 "percent encoding".
-//
-// If the given string contains non-ASCII characters, these are first encoded as
-// UTF-8 and then percent encoding is applied separately to each UTF-8 byte.
-func URLEncode(str cty.Value) (cty.Value, error) {
-	return URLEncodeFunc.Call([]cty.Value{str})
-}
-
-// TextEncodeBase64 applies Base64 encoding to a string that was encoded before with a target encoding.
-//
-// Terraform uses the "standard" Base64 alphabet as defined in RFC 4648 section 4.
-//
-// First step is to apply the target IANA encoding (e.g. UTF-16LE).
-// Strings in the Terraform language are sequences of unicode characters rather
-// than bytes, so this function will first encode the characters from the string
-// as UTF-8, and then apply Base64 encoding to the result.
-func TextEncodeBase64(str, enc cty.Value) (cty.Value, error) {
-	return TextEncodeBase64Func.Call([]cty.Value{str, enc})
-}
-
-// TextDecodeBase64 decodes a string containing a base64 sequence whereas a specific encoding of the string is expected.
-//
-// Terraform uses the "standard" Base64 alphabet as defined in RFC 4648 section 4.
-//
-// Strings in the Terraform language are sequences of unicode characters rather
-// than bytes, so this function will also interpret the resulting bytes as
-// the target encoding.
-func TextDecodeBase64(str, enc cty.Value) (cty.Value, error) {
-	return TextDecodeBase64Func.Call([]cty.Value{str, enc})
-}

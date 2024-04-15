@@ -24,6 +24,6 @@ func main() {
 	cmd := commands.NewApp()
 	cmd.DisableAutoGenTag = true
 	if err := doc.GenMarkdownTree(cmd, "./docs/docs/references/configuration/cli"); err != nil {
-		log.Fatal(err)
+		log.Fatal("Fatal error", log.Err(err))
 	}
 }

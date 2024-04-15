@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"testing"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -19,6 +19,7 @@ func TestSBOM(t *testing.T) {
 		input        string
 		format       string
 		artifactType string
+		scanners     string
 	}
 	tests := []struct {
 		name     string
@@ -150,6 +151,16 @@ func TestSBOM(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "license check cyclonedx json",
+			args: args{
+				input:        "testdata/fixtures/sbom/license-cyclonedx.json",
+				format:       "json",
+				artifactType: "cyclonedx",
+				scanners:     "license",
+			},
+			golden: "testdata/license-cyclonedx.json.golden",
+		},
 	}
 
 	// Set up testing DB
@@ -157,6 +168,11 @@ func TestSBOM(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			scanners := "vuln"
+			if tt.args.scanners != "" {
+				scanners = tt.args.scanners
+			}
+
 			osArgs := []string{
 				"--cache-dir",
 				cacheDir,
@@ -165,6 +181,8 @@ func TestSBOM(t *testing.T) {
 				"--skip-db-update",
 				"--format",
 				tt.args.format,
+				"--scanners",
+				scanners,
 			}
 
 			// Set up the output file
@@ -223,5 +241,10 @@ func compareSBOMReports(t *testing.T, wantFile, gotFile string, overrideWant typ
 	}
 
 	got := readReport(t, gotFile)
+	// when running on Windows FS
+	got.ArtifactName = filepath.ToSlash(filepath.Clean(got.ArtifactName))
+	for i, result := range got.Results {
+		got.Results[i].Target = filepath.ToSlash(filepath.Clean(result.Target))
+	}
 	assert.Equal(t, want, got)
 }

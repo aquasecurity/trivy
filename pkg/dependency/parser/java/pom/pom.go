@@ -116,6 +116,7 @@ func (p pom) licenses() []string {
 }
 
 func (p pom) repositories(servers []Server) []string {
+	logger := log.WithPrefix("pom")
 	var urls []string
 	for _, rep := range p.content.Repositories.Repository {
 		// Add only enabled repositories
@@ -125,7 +126,7 @@ func (p pom) repositories(servers []Server) []string {
 
 		repoURL, err := url.Parse(rep.URL)
 		if err != nil {
-			log.Logger.Debugf("Unable to parse remote repository url: %s", err)
+			logger.Debug("Unable to parse remote repository url", log.Err(err))
 			continue
 		}
 
@@ -138,7 +139,7 @@ func (p pom) repositories(servers []Server) []string {
 			}
 		}
 
-		log.Logger.Debugf("Adding repository %s: %s", rep.ID, rep.URL)
+		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
 		urls = append(urls, repoURL.String())
 	}
 	return urls

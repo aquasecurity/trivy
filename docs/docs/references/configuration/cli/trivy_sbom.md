@@ -1,6 +1,6 @@
 ## trivy sbom
 
-Scan SBOM for vulnerabilities
+Scan SBOM for vulnerabilities and licenses
 
 ```
 trivy sbom [flags] SBOM_PATH
@@ -36,6 +36,7 @@ trivy sbom [flags] SBOM_PATH
       --ignore-policy string        specify the Rego file path to evaluate each vulnerability
       --ignore-status strings       comma-separated list of vulnerability status to ignore (unknown,not_affected,affected,fixed,under_investigation,will_not_fix,fix_deferred,end_of_life)
       --ignore-unfixed              display only fixed vulnerabilities
+      --ignored-licenses strings    specify a list of license to ignore
       --ignorefile string           specify .trivyignore file (default ".trivyignore")
       --java-db-repository string   OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
       --list-all-pkgs               enabling the option will output all packages regardless of vulnerability
@@ -50,6 +51,7 @@ trivy sbom [flags] SBOM_PATH
       --rekor-url string            [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --reset                       remove all caches and database
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
+      --scanners strings            comma-separated list of what security issues to detect (vuln,license) (default [vuln])
       --server string               server address in client mode
   -s, --severity strings            severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --show-suppressed             [EXPERIMENTAL] show suppressed vulnerabilities

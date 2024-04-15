@@ -2,48 +2,52 @@ package io
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Encoder struct {
-	bom *core.BOM
+	bom  *core.BOM
+	opts core.Options
 }
 
-func NewEncoder() *Encoder {
-	return &Encoder{}
+func NewEncoder(opts core.Options) *Encoder {
+	return &Encoder{opts: opts}
 }
 
-func (m *Encoder) Encode(report types.Report) (*core.BOM, error) {
+func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 	// Metadata component
-	root, err := m.rootComponent(report)
+	root, err := e.rootComponent(report)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create root component: %w", err)
 	}
 
-	m.bom = core.NewBOM()
-	m.bom.AddComponent(root)
+	e.bom = core.NewBOM(e.opts)
+	e.bom.AddComponent(root)
 
 	for _, result := range report.Results {
-		m.encodeResult(root, report.Metadata, result)
+		e.encodeResult(root, report.Metadata, result)
 	}
 
 	// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
-	if _, ok := m.bom.Relationships()[root.ID()]; !ok {
-		m.bom.AddRelationship(root, nil, "")
+	if _, ok := e.bom.Relationships()[root.ID()]; !ok {
+		e.bom.AddRelationship(root, nil, "")
 	}
-	return m.bom, nil
+	return e.bom, nil
 }
 
-func (m *Encoder) rootComponent(r types.Report) (*core.Component, error) {
+func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	root := &core.Component{
 		Root: true,
 		Name: r.ArtifactName,
@@ -58,7 +62,7 @@ func (m *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 
 	switch r.ArtifactType {
 	case ftypes.ArtifactContainerImage:
-		root.Type = core.TypeContainer
+		root.Type = core.TypeContainerImage
 		props = append(props, core.Property{
 			Name:  core.PropertyImageID,
 			Value: r.Metadata.ImageID,
@@ -73,9 +77,11 @@ func (m *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 		}
 
 	case ftypes.ArtifactVM:
-		root.Type = core.TypeContainer
-	case ftypes.ArtifactFilesystem, ftypes.ArtifactRepository:
-		root.Type = core.TypeApplication
+		root.Type = core.TypeVM
+	case ftypes.ArtifactFilesystem:
+		root.Type = core.TypeFilesystem
+	case ftypes.ArtifactRepository:
+		root.Type = core.TypeRepository
 	case ftypes.ArtifactCycloneDX:
 		return r.BOM.Root(), nil
 	}
@@ -113,9 +119,8 @@ func (m *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 	return root, nil
 }
 
-func (m *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result) {
-	if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
-		result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
+func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result) {
+	if slices.Contains(ftypes.AggregatingTypes, result.Type) {
 		// If a package is language-specific package that isn't associated with a lock file,
 		// it will be a dependency of a component under "metadata".
 		// e.g.
@@ -126,7 +131,7 @@ func (m *Encoder) encodeResult(root *core.Component, metadata types.Metadata, re
 		// ref. https://cyclonedx.org/use-cases/#inventory
 
 		// Dependency graph from #1 to #2
-		m.encodePackages(root, result)
+		e.encodePackages(root, result)
 	} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
 		// If a package is OS package, it will be a dependency of "Operating System" component.
 		// e.g.
@@ -146,21 +151,21 @@ func (m *Encoder) encodeResult(root *core.Component, metadata types.Metadata, re
 		//       -> etc.
 
 		// #2
-		appComponent := m.resultComponent(root, result, metadata.OS)
+		appComponent := e.resultComponent(root, result, metadata.OS)
 
 		// #3
-		m.encodePackages(appComponent, result)
+		e.encodePackages(appComponent, result)
 	}
 }
 
-func (m *Encoder) encodePackages(parent *core.Component, result types.Result) {
+func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 	// Get dependency parents first
 	parents := ftypes.Packages(result.Packages).ParentDeps()
 
 	// Group vulnerabilities by package ID
 	vulns := make(map[string][]core.Vulnerability)
 	for _, vuln := range result.Vulnerabilities {
-		v := m.vulnerability(vuln)
+		v := e.vulnerability(vuln)
 		vulns[v.PkgID] = append(vulns[v.PkgID], v)
 	}
 
@@ -171,15 +176,15 @@ func (m *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		result.Packages[i].ID = pkgID
 
 		// Convert packages to components
-		c := m.component(result.Type, pkg)
-		components[pkgID] = c
+		c := e.component(result, pkg)
+		components[pkgID+pkg.FilePath] = c
 
 		// Add a component
-		m.bom.AddComponent(c)
+		e.bom.AddComponent(c)
 
 		// Add vulnerabilities
 		if vv := vulns[pkgID]; vv != nil {
-			m.bom.AddVulnerabilities(c, vv)
+			e.bom.AddVulnerabilities(c, vv)
 		}
 	}
 
@@ -190,26 +195,26 @@ func (m *Encoder) encodePackages(parent *core.Component, result types.Result) {
 			continue
 		}
 
-		directPkg := components[pkg.ID]
-		m.bom.AddRelationship(parent, directPkg, core.RelationshipContains)
+		directPkg := components[pkg.ID+pkg.FilePath]
+		e.bom.AddRelationship(parent, directPkg, core.RelationshipContains)
 
 		for _, dep := range pkg.DependsOn {
 			indirectPkg, ok := components[dep]
 			if !ok {
 				continue
 			}
-			m.bom.AddRelationship(directPkg, indirectPkg, core.RelationshipDependsOn)
+			e.bom.AddRelationship(directPkg, indirectPkg, core.RelationshipDependsOn)
 		}
 
 		// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
 		// TODO: Should check if the component has actually no dependencies or the dependency graph is not supported.
 		if len(pkg.DependsOn) == 0 {
-			m.bom.AddRelationship(directPkg, nil, "")
+			e.bom.AddRelationship(directPkg, nil, "")
 		}
 	}
 }
 
-func (m *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
+func (e *Encoder) resultComponent(root *core.Component, r types.Result, osFound *ftypes.OS) *core.Component {
 	component := &core.Component{
 		Name: r.Target,
 		Properties: []core.Property{
@@ -235,18 +240,24 @@ func (m *Encoder) resultComponent(root *core.Component, r types.Result, osFound 
 		component.Type = core.TypeApplication
 	}
 
-	m.bom.AddRelationship(root, component, core.RelationshipContains)
+	e.bom.AddRelationship(root, component, core.RelationshipContains)
 	return component
 }
 
-func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.Component {
+func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Component {
 	name := pkg.Name
-	version := pkg.Version
+	version := utils.FormatVersion(pkg)
 	var group string
 	// there are cases when we can't build purl
 	// e.g. local Go packages
 	if pu := pkg.Identifier.PURL; pu != nil {
 		version = pu.Version
+		for _, q := range pu.Qualifiers {
+			if q.Key == "epoch" && q.Value != "0" {
+				version = fmt.Sprintf("%s:%s", q.Value, version)
+			}
+		}
+
 		// Use `group` field for GroupID and `name` for ArtifactID for java files
 		// https://github.com/aquasecurity/trivy/issues/4675
 		// Use `group` field for npm scopes
@@ -264,7 +275,7 @@ func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.C
 		},
 		{
 			Name:  core.PropertyPkgType,
-			Value: string(pkgType),
+			Value: string(result.Type),
 		},
 		{
 			Name:  core.PropertyFilePath,
@@ -303,16 +314,25 @@ func (*Encoder) component(pkgType ftypes.TargetType, pkg ftypes.Package) *core.C
 	var files []core.File
 	if pkg.FilePath != "" || pkg.Digest != "" {
 		files = append(files, core.File{
-			Path: pkg.FilePath,
-			Hash: pkg.Digest,
+			Path:    pkg.FilePath,
+			Digests: lo.Ternary(pkg.Digest != "", []digest.Digest{pkg.Digest}, nil),
 		})
 	}
 
+	// TODO(refactor): simplify the list of conditions
+	var srcFile string
+	if result.Class == types.ClassLangPkg && !slices.Contains(ftypes.AggregatingTypes, result.Type) {
+		srcFile = result.Target
+	}
+
 	return &core.Component{
-		Type:    core.TypeLibrary,
-		Name:    name,
-		Group:   group,
-		Version: version,
+		Type:       core.TypeLibrary,
+		Name:       name,
+		Group:      group,
+		Version:    version,
+		SrcName:    pkg.SrcName,
+		SrcVersion: utils.FormatSrcVersion(pkg),
+		SrcFile:    srcFile,
 		PkgID: core.PkgID{
 			PURL: pkg.Identifier.PURL,
 		},
