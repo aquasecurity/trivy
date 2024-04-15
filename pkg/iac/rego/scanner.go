@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
 	"strings"
 
 	"github.com/open-policy-agent/opa/ast"
@@ -41,6 +42,9 @@ type Scanner struct {
 	spec           string
 	inputSchema    interface{} // unmarshalled into this from a json schema document
 	sourceType     types.Source
+
+	embeddedLibs   map[string]*ast.Module
+	embeddedChecks map[string]*ast.Module
 }
 
 func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
@@ -135,13 +139,12 @@ func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		regoErrorLimit: ast.CompileErrorLimitDefault,
 		sourceType:     source,
-		ruleNamespaces: map[string]struct{}{
-			"builtin":   {},
-			"appshield": {},
-			"defsec":    {},
-		},
-		runtimeValues: addRuntimeValues(),
+		ruleNamespaces: make(map[string]struct{}),
+		runtimeValues:  addRuntimeValues(),
 	}
+
+	maps.Copy(s.ruleNamespaces, builtinNamespaces)
+
 	for _, opt := range opts {
 		opt(s)
 	}

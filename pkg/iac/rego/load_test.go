@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"embed"
 	"testing"
+	"testing/fstest"
 
+	trivy_policies "github.com/aquasecurity/trivy-policies"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -12,6 +15,9 @@ import (
 
 //go:embed all:testdata/policies
 var testEmbedFS embed.FS
+
+//go:embed testdata/embedded
+var embeddedPoliciesFS embed.FS
 
 func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 	t.Run("allow no errors", func(t *testing.T) {
@@ -42,5 +48,38 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 
 		assert.Contains(t, debugBuf.String(), "Error occurred while parsing: testdata/policies/invalid.rego, testdata/policies/invalid.rego:7")
 	})
+}
 
+func Test_FallbackToEmbedded(t *testing.T) {
+	scanner := NewScanner(
+		types.SourceDockerfile,
+		options.ScannerWithRegoErrorLimits(0),
+	)
+	fsys := fstest.MapFS{
+		"policies/my-policy2.rego": &fstest.MapFile{
+			Data: []byte(`# METADATA
+# schemas:
+# - input: schema["fooschema"]
+
+package builtin.test
+
+deny {
+input.evil == "foo bar"
+}`),
+		},
+		"schemas/fooschema.json": &fstest.MapFile{
+			Data: []byte(`{
+				"$schema": "http://json-schema.org/draft-07/schema#",
+				"type": "object",
+				"properties": {
+					"foo": {
+						"type": "string"
+					}
+				}
+			}`),
+		},
+	}
+	trivy_policies.EmbeddedPolicyFileSystem = embeddedPoliciesFS
+	err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
+	assert.NoError(t, err)
 }

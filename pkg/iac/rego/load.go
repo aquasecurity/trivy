@@ -5,11 +5,29 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"path/filepath"
 	"strings"
 
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/open-policy-agent/opa/bundle"
+	"github.com/samber/lo"
 )
+
+var builtinNamespaces = map[string]struct{}{
+	"builtin":   {},
+	"defsec":    {},
+	"appshield": {},
+}
+
+func BuiltinNamespaces() []string {
+	return lo.Keys(builtinNamespaces)
+}
+
+func IsBuiltinNamespace(namespace string) bool {
+	return lo.ContainsBy(BuiltinNamespaces(), func(ns string) bool {
+		return strings.HasPrefix(namespace, ns+".")
+	})
+}
 
 func IsRegoFile(name string) bool {
 	return strings.HasSuffix(name, bundle.RegoExt) && !strings.HasSuffix(name, "_test"+bundle.RegoExt)
@@ -38,28 +56,20 @@ func (s *Scanner) loadPoliciesFromReaders(readers []io.Reader) (map[string]*ast.
 	return modules, nil
 }
 
-func (s *Scanner) loadEmbedded(enableEmbeddedLibraries, enableEmbeddedPolicies bool) error {
-	if enableEmbeddedLibraries {
-		loadedLibs, errLoad := LoadEmbeddedLibraries()
-		if errLoad != nil {
-			return fmt.Errorf("failed to load embedded rego libraries: %w", errLoad)
-		}
-		for name, policy := range loadedLibs {
-			s.policies[name] = policy
-		}
-		s.debug.Log("Loaded %d embedded libraries.", len(loadedLibs))
+func (s *Scanner) loadEmbedded() error {
+	loaded, err := LoadEmbeddedLibraries()
+	if err != nil {
+		return fmt.Errorf("failed to load embedded rego libraries: %w", err)
 	}
+	s.embeddedLibs = loaded
+	s.debug.Log("Loaded %d embedded libraries.", len(loaded))
 
-	if enableEmbeddedPolicies {
-		loaded, err := LoadEmbeddedPolicies()
-		if err != nil {
-			return fmt.Errorf("failed to load embedded rego policies: %w", err)
-		}
-		for name, policy := range loaded {
-			s.policies[name] = policy
-		}
-		s.debug.Log("Loaded %d embedded policies.", len(loaded))
+	loaded, err = LoadEmbeddedPolicies()
+	if err != nil {
+		return fmt.Errorf("failed to load embedded rego policies: %w", err)
 	}
+	s.embeddedChecks = loaded
+	s.debug.Log("Loaded %d embedded policies.", len(loaded))
 
 	return nil
 }
@@ -75,7 +85,7 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 		srcFS = s.policyFS
 	}
 
-	if err := s.loadEmbedded(enableEmbeddedLibraries, enableEmbeddedPolicies); err != nil {
+	if err := s.loadEmbedded(); err != nil {
 		return err
 	}
 
@@ -124,7 +134,69 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 	}
 	s.store = store
 
+	if enableEmbeddedPolicies {
+		s.policies = lo.Assign(s.policies, s.embeddedChecks)
+	}
+
+	if enableEmbeddedLibraries {
+		s.policies = lo.Assign(s.policies, s.embeddedLibs)
+	}
+
 	return s.compilePolicies(srcFS, paths)
+}
+
+func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
+
+	var excludedFiles []string
+
+	for _, e := range compiler.Errors {
+		if _, ok := e.Details.(*ast.RefErrInvalidDetail); !ok {
+			continue
+		}
+
+		loc := e.Location.File
+
+		if lo.Contains(excludedFiles, loc) {
+			continue
+		}
+
+		badPolicy, exists := s.policies[loc]
+		if !exists || badPolicy == nil {
+			continue
+		}
+
+		if !IsBuiltinNamespace(getModuleNamespace(badPolicy)) {
+			continue
+		}
+
+		s.debug.Log("Error occurred while parsing: %s, %s. \nTry loading embedded policy.", loc, e.Error())
+
+		embedded := s.findMatchedEmbeddedCheck(badPolicy)
+		if embedded == nil {
+			s.debug.Log("Failed to find embedded policy: %s", loc)
+			continue
+		}
+
+		s.debug.Log("Found embedded policy: %s", embedded.Package.Location.File)
+		delete(s.policies, loc) // remove bad policy
+		s.policies[embedded.Package.Location.File] = embedded
+		delete(s.embeddedChecks, embedded.Package.Location.File) // avoid infinite loop if embedded check contains ref error
+		excludedFiles = append(excludedFiles, e.Location.File)
+	}
+
+	compiler.Errors = lo.Filter(compiler.Errors, func(e *ast.Error, _ int) bool {
+		return !lo.Contains(excludedFiles, e.Location.File)
+	})
+}
+
+func (s *Scanner) findMatchedEmbeddedCheck(module *ast.Module) *ast.Module {
+	for _, policy := range s.embeddedChecks {
+		if policy.Package.Path.String() == module.Package.Path.String() ||
+			filepath.Base(policy.Package.Location.File) == filepath.Base(module.Package.Location.File) {
+			return policy
+		}
+	}
+	return nil
 }
 
 func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
@@ -157,6 +229,7 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 
 	compiler.Compile(s.policies)
 	if compiler.Failed() {
+		s.fallbackChecks(compiler)
 		if err := s.prunePoliciesWithError(compiler); err != nil {
 			return err
 		}
