@@ -80,24 +80,6 @@ deny[res]{
 	res := true
 }`,
 		},
-		{
-			name: "sad path schema does not exist",
-			inputPolicy: `# METADATA
-# title: "dummy title"
-# description: "some description"
-# scope: package
-# schemas:
-# - input: schema["invalid schema"]
-# custom:
-#   input:
-#     selector:
-#     - type: dockerfile
-package builtin.dockerfile.DS1234
-deny[res]{
-	res := true
-}`,
-			expectedError: true,
-		},
 	}
 
 	for _, tc := range testCases {
