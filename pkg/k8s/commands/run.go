@@ -39,7 +39,7 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Logger.Warn("Increase --timeout value")
+			log.WarnContext(ctx, "Increase --timeout value")
 		}
 	}()
 	opts.K8sVersion = cluster.GetClusterVersion()
@@ -68,7 +68,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 	}
 	defer func() {
 		if err := runner.Close(ctx); err != nil {
-			log.Logger.Errorf("failed to close runner: %s", err)
+			log.ErrorContext(ctx, "failed to close runner: %s", err)
 		}
 	}()
 
