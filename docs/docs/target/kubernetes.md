@@ -103,18 +103,18 @@ Example:
 trivy k8s --report summary --tolerations  key1=value1:NoExecute,key2=value2:NoSchedule
 ```
 
-### Non-intrusive
+### Disable Node Collector
 
-You can control whether the node scan-job (`node-collector`) will run in the cluster. To disable it, add the `--non-intrusive` flag  
+You can control whether the node scan-job (`node-collector`) will run in the cluster. To disable it, add the `--disable-node-collector` flag  
 
-- `--non-intrusive` This flag will exclude findings related to Node (infra assessment) misconfigurations
+- `--disable-node-collector` This flag will exclude findings related to Node (infra assessment) misconfigurations
 
 By default, the node scan-job (`node-collector`) will run in the cluster.
 
 Example:
 
 ```sh
-trivy k8s --report summary --non-intrusive
+trivy k8s --report summary --disable-node-collector
 ```
 
 ### Skip-images
