@@ -77,14 +77,6 @@ func (Tool) Labeler() error {
 	return sh.Run("go", "install", "github.com/knqyf263/labeler@latest")
 }
 
-// EasyJSON installs easyjson
-func (Tool) EasyJSON() error {
-	if exists(filepath.Join(GOBIN, "easyjson")) {
-		return nil
-	}
-	return sh.Run("go", "install", "github.com/mailru/easyjson/...@v0.7.7")
-}
-
 // Kind installs kind cluster
 func (Tool) Kind() error {
 	return sh.RunWithV(ENV, "go", "install", "sigs.k8s.io/kind@v0.19.0")
@@ -162,12 +154,6 @@ func Protoc() error {
 func Yacc() error {
 	mg.Deps(Tool{}.Goyacc)
 	return sh.Run("go", "generate", "./pkg/licensing/expression/...")
-}
-
-// Easyjson generates JSON marshaler/unmarshaler for TinyGo/WebAssembly as TinyGo doesn't support encoding/json.
-func Easyjson() error {
-	mg.Deps(Tool{}.EasyJSON)
-	return sh.Run("easyjson", "./pkg/module/serialize/types.go")
 }
 
 type Test mg.Namespace

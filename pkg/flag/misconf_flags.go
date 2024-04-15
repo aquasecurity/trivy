@@ -45,6 +45,16 @@ var (
 		ConfigName: "misconfiguration.helm.set-string",
 		Usage:      "specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)",
 	}
+	HelmAPIVersionsFlag = Flag[[]string]{
+		Name:       "helm-api-versions",
+		ConfigName: "misconfiguration.helm.api-versions",
+		Usage:      "Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)",
+	}
+	HelmKubeVersionFlag = Flag[string]{
+		Name:       "helm-kube-version",
+		ConfigName: "misconfiguration.helm.kube-version",
+		Usage:      "Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.",
+	}
 	TfVarsFlag = Flag[[]string]{
 		Name:       "tf-vars",
 		ConfigName: "misconfiguration.terraform.vars",
@@ -86,6 +96,8 @@ type MisconfFlagGroup struct {
 	HelmValueFiles             *Flag[[]string]
 	HelmFileValues             *Flag[[]string]
 	HelmStringValues           *Flag[[]string]
+	HelmAPIVersions            *Flag[[]string]
+	HelmKubeVersion            *Flag[string]
 	TerraformTFVars            *Flag[[]string]
 	CloudformationParamVars    *Flag[[]string]
 	TerraformExcludeDownloaded *Flag[bool]
@@ -102,6 +114,8 @@ type MisconfOptions struct {
 	HelmValueFiles          []string
 	HelmFileValues          []string
 	HelmStringValues        []string
+	HelmAPIVersions         []string
+	HelmKubeVersion         string
 	TerraformTFVars         []string
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
@@ -118,6 +132,8 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		HelmFileValues:             HelmSetFileFlag.Clone(),
 		HelmStringValues:           HelmSetStringFlag.Clone(),
 		HelmValueFiles:             HelmValuesFileFlag.Clone(),
+		HelmAPIVersions:            HelmAPIVersionsFlag.Clone(),
+		HelmKubeVersion:            HelmKubeVersionFlag.Clone(),
 		TerraformTFVars:            TfVarsFlag.Clone(),
 		CloudformationParamVars:    CfParamsFlag.Clone(),
 		TerraformExcludeDownloaded: TerraformExcludeDownloaded.Clone(),
@@ -138,6 +154,8 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 		f.HelmValueFiles,
 		f.HelmFileValues,
 		f.HelmStringValues,
+		f.HelmAPIVersions,
+		f.HelmKubeVersion,
 		f.TerraformTFVars,
 		f.TerraformExcludeDownloaded,
 		f.CloudformationParamVars,
@@ -158,6 +176,8 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		HelmValueFiles:          f.HelmValueFiles.Value(),
 		HelmFileValues:          f.HelmFileValues.Value(),
 		HelmStringValues:        f.HelmStringValues.Value(),
+		HelmAPIVersions:         f.HelmAPIVersions.Value(),
+		HelmKubeVersion:         f.HelmKubeVersion.Value(),
 		TerraformTFVars:         f.TerraformTFVars.Value(),
 		CloudFormationParamVars: f.CloudformationParamVars.Value(),
 		TfExcludeDownloaded:     f.TerraformExcludeDownloaded.Value(),

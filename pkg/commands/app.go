@@ -114,7 +114,7 @@ func loadPluginCommands() []*cobra.Command {
 	var commands []*cobra.Command
 	plugins, err := plugin.LoadAll()
 	if err != nil {
-		log.Logger.Debugf("no plugins were loaded")
+		log.Debug("No plugins loaded")
 		return nil
 	}
 	for _, p := range plugins {
@@ -142,12 +142,12 @@ func initConfig(configFile string) error {
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Logger.Debugf("config file %q not found", configFile)
+			log.Debug("Config file not found", log.String("file_path", configFile))
 			return nil
 		}
 		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
 	}
-	log.Logger.Infof("Loaded %s", configFile)
+	log.Info("Loaded", log.String("file_path", configFile))
 	return nil
 }
 
@@ -196,9 +196,7 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 
 			// Initialize logger
-			if err := log.InitLogger(globalOptions.Debug, globalOptions.Quiet); err != nil {
-				return err
-			}
+			log.InitLogger(globalOptions.Debug, globalOptions.Quiet)
 
 			return nil
 		},
@@ -570,7 +568,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Logger.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
+			log.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
 
 			if err := clientFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -1040,7 +1038,7 @@ The following services are supported:
 			}
 			if opts.Timeout < time.Hour {
 				opts.Timeout = time.Hour
-				log.Logger.Debug("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
+				log.Info("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
 			}
 			return awscommands.Run(cmd.Context(), opts)
 		},
@@ -1106,7 +1104,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 			if options.Timeout < time.Minute*30 {
 				options.Timeout = time.Minute * 30
-				log.Logger.Debug("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
+				log.Info("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetVM)
 		},
@@ -1125,10 +1123,23 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
 
+	scanners := flag.ScannersFlag.Clone()
+	scanners.Values = xstrings.ToStringSlice(types.Scanners{
+		types.VulnerabilityScanner,
+		types.LicenseScanner,
+	})
+	scanners.Default = xstrings.ToStringSlice(types.Scanners{
+		types.VulnerabilityScanner,
+	})
 	scanFlagGroup := flag.NewScanFlagGroup()
-	scanFlagGroup.Scanners = nil       // disable '--scanners' as it always scans for vulnerabilities
+	scanFlagGroup.Scanners = scanners  // allow only 'vuln' and 'license' options for '--scanners'
 	scanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 	scanFlagGroup.Parallel = nil       // disable '--parallel'
+
+	licenseFlagGroup := flag.NewLicenseFlagGroup()
+	// License full-scan and confidence-level are for file content only
+	licenseFlagGroup.LicenseFull = nil
+	licenseFlagGroup.LicenseConfidenceLevel = nil
 
 	sbomFlags := &flag.Flags{
 		GlobalFlagGroup:        globalFlags,
@@ -1139,11 +1150,12 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ScanFlagGroup:          scanFlagGroup,
 		SBOMFlagGroup:          flag.NewSBOMFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+		LicenseFlagGroup:       licenseFlagGroup,
 	}
 
 	cmd := &cobra.Command{
 		Use:     "sbom [flags] SBOM_PATH",
-		Short:   "Scan SBOM for vulnerabilities",
+		Short:   "Scan SBOM for vulnerabilities and licenses",
 		GroupID: groupScanning,
 		Example: `  # Scan CycloneDX and show the result in tables
   $ trivy sbom /path/to/report.cdx
@@ -1165,9 +1177,6 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
-
-			// Scan vulnerabilities
-			options.Scanners = types.Scanners{types.VulnerabilityScanner}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},

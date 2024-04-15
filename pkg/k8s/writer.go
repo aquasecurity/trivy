@@ -46,7 +46,7 @@ func Write(ctx context.Context, k8sreport report.Report, option report.Option) e
 		return nil
 	case types.FormatCycloneDX:
 		w := report.NewCycloneDXWriter(option.Output, cdx.BOMFileFormatJSON, option.APIVersion)
-		return w.Write(ctx, k8sreport.RootComponent)
+		return w.Write(ctx, k8sreport.BOM)
 	}
 	return nil
 }

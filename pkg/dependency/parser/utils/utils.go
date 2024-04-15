@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/exp/maps"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func UniqueStrings(ss []string) []string {
@@ -64,8 +64,4 @@ func MergeMaps(parent, child map[string]string) map[string]string {
 		newParent[k] = v
 	}
 	return newParent
-}
-
-func PackageID(name, version string) string {
-	return fmt.Sprintf("%s@%s", name, version)
 }

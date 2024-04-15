@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -84,7 +84,7 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 	// Calculate the file digest when one of `spdx` formats is selected
 	d, err := calculateDigest(r)
 	if err != nil {
-		log.Logger.Warnf("Unable to get checksum for %s: %s", filePath, err)
+		log.Warn("Unable to get checksum", log.String("file_path", filePath), log.Err(err))
 	}
 
 	deps := make(map[string][]string)

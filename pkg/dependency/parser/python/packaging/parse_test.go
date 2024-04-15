@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/packaging"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func TestParse(t *testing.T) {
@@ -76,7 +76,23 @@ func TestParse(t *testing.T) {
 			// for single METADATA file with known name
 			// cat "{{ libname }}.METADATA | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
 			input: "testdata/distlib-0.3.1.METADATA",
-			want:  []types.Library{{Name: "distlib", Version: "0.3.1", License: "Python license"}},
+			want:  []types.Library{{Name: "distlib", Version: "0.3.1", License: "Python Software Foundation License"}},
+		},
+		{
+			name: "wheel METADATA",
+			// Input defines "Classifier: License" but it ends at "OSI Approved" which doesn't define any specific license, thus "License" field is added to results
+			input: "testdata/asyncssh-2.14.2.METADATA",
+
+			want: []types.Library{{Name: "asyncssh", Version: "2.14.2", License: "Eclipse Public License v2.0"}},
+		},
+		{
+			name: "wheel METADATA",
+			// Input defines multiple "Classifier: License"
+			input: "testdata/pyphen-0.14.0.METADATA",
+
+			want: []types.Library{
+				{Name: "pyphen", Version: "0.14.0", License: "GNU General Public License v2 or later (GPLv2+), GNU Lesser General Public License v2 or later (LGPLv2+), Mozilla Public License 1.1 (MPL 1.1)"},
+			},
 		},
 		{
 			name:    "invalid",

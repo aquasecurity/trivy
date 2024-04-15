@@ -9,20 +9,25 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 // Parser is a parser for Package.resolved files
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func NewParser() types.Parser {
+	return &Parser{
+		logger: log.WithPrefix("swift"),
+	}
+}
+
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockFile LockFile
 	input, err := io.ReadAll(r)
 	if err != nil {
@@ -42,7 +47,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 
 		// Skip packages for which we cannot resolve the version
 		if pin.State.Version == "" && pin.State.Branch == "" {
-			log.Logger.Warnf("Unable to resolve %q. Both the version and branch fields are empty.", name)
+			p.logger.Warn("Unable to resolve. Both the version and branch fields are empty.", log.String("name", name))
 			continue
 		}
 
@@ -51,7 +56,7 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		version := lo.Ternary(pin.State.Version != "", pin.State.Version, pin.State.Branch)
 
 		libs = append(libs, types.Library{
-			ID:      utils.PackageID(name, version),
+			ID:      dependency.ID(ftypes.Swift, name, version),
 			Name:    name,
 			Version: version,
 			Locations: []types.Location{

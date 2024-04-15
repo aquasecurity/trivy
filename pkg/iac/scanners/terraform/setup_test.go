@@ -7,7 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/stretchr/testify/require"
 )
@@ -17,7 +17,7 @@ func createModulesFromSource(t *testing.T, source string, ext string) terraform.
 		"source" + ext: source,
 	})
 
-	p := parser2.New(fs, "", parser2.OptionStopOnHCLError(true))
+	p := parser.New(fs, "", parser.OptionStopOnHCLError(true))
 	if err := p.ParseFS(context.TODO(), "."); err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +51,7 @@ func scanJSON(t *testing.T, source string) scan.Results {
 	})
 
 	s := New(options.ScannerWithEmbeddedPolicies(true), options.ScannerWithEmbeddedLibraries(true))
-	results, _, err := s.ScanFSWithMetrics(context.TODO(), fs, ".")
+	results, err := s.ScanFS(context.TODO(), fs, ".")
 	require.NoError(t, err)
 	return results
 }

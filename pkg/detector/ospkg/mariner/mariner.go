@@ -27,14 +27,12 @@ func NewScanner() *Scanner {
 }
 
 // Detect vulnerabilities in package using CBL-Mariner scanner
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting CBL-Mariner vulnerabilities...")
-
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	// e.g. 1.0.20210127
 	osVer = osver.Minor(osVer)
 
-	log.Logger.Debugf("CBL-Mariner: os version: %s", osVer)
-	log.Logger.Debugf("CBL-Mariner: the number of packages: %d", len(pkgs))
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {

@@ -27,10 +27,8 @@ func NewScanner() *Scanner {
 }
 
 // Detect vulnerabilities in package using Wolfi scanner
-func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Wolfi vulnerabilities...")
-
-	log.Logger.Debugf("wolfi: the number of packages: %d", len(pkgs))
+func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+	log.InfoContext(ctx, "Detecting vulnerabilities...", log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
@@ -46,12 +44,13 @@ func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) 
 		installed := utils.FormatVersion(pkg)
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
-			log.Logger.Debugf("failed to parse Wolfi Linux installed package version: %s", err)
+			log.DebugContext(ctx, "Failed to parse the installed package version",
+				log.String("version", installed), log.Err(err))
 			continue
 		}
 
 		for _, adv := range advisories {
-			if !s.isVulnerable(installedVersion, adv) {
+			if !s.isVulnerable(ctx, installedVersion, adv) {
 				continue
 			}
 			vulns = append(vulns, types.DetectedVulnerability{
@@ -70,11 +69,12 @@ func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) 
 	return vulns, nil
 }
 
-func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Advisory) bool {
+func (s *Scanner) isVulnerable(ctx context.Context, installedVersion version.Version, adv dbTypes.Advisory) bool {
 	// Compare versions for fixed vulnerabilities
 	fixedVersion, err := version.NewVersion(adv.FixedVersion)
 	if err != nil {
-		log.Logger.Debugf("failed to parse Wolfi Linux fixed version: %s", err)
+		log.DebugContext(ctx, "Failed to parse the fixed version",
+			log.String("version", adv.FixedVersion), log.Err(err))
 		return false
 	}
 

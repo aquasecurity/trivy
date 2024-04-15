@@ -57,7 +57,7 @@ func WithHTTPClient(client *http.Client) Option {
 func New(opts ...Option) Sonatype {
 	// for HTTP retry
 	retryClient := retryablehttp.NewClient()
-	retryClient.Logger = logger{}
+	retryClient.Logger = newLogger()
 	retryClient.RetryWaitMin = 20 * time.Second
 	retryClient.RetryWaitMax = 5 * time.Minute
 	retryClient.RetryMax = 5

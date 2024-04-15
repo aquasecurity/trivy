@@ -10,7 +10,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/aquasecurity/trivy/pkg/extrafs"
 	"github.com/aquasecurity/trivy/pkg/iac/debug"
@@ -21,7 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/executor"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -120,14 +118,6 @@ func (s *Scanner) SetDataFilesystem(_ fs.FS) {
 }
 func (s *Scanner) SetRegoErrorLimit(_ int) {}
 
-type Metrics struct {
-	Parser   parser.Metrics
-	Executor executor.Metrics
-	Timings  struct {
-		Total time.Duration
-	}
-}
-
 func New(opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		dirs:    make(map[string]struct{}),
@@ -137,11 +127,6 @@ func New(opts ...options.ScannerOption) *Scanner {
 		opt(s)
 	}
 	return s
-}
-
-func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Results, error) {
-	results, _, err := s.ScanFSWithMetrics(ctx, target, dir)
-	return results, err
 }
 
 func (s *Scanner) initRegoScanner(srcFS fs.FS) (*rego.Scanner, error) {
@@ -167,8 +152,7 @@ type terraformRootModule struct {
 	fsMap    map[string]fs.FS
 }
 
-func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir string) (scan.Results, Metrics, error) {
-	var metrics Metrics
+func (s *Scanner) ScanFS(ctx context.Context, target fs.FS, dir string) (scan.Results, error) {
 
 	s.debug.Log("Scanning [%s] at '%s'...", target, dir)
 
@@ -178,12 +162,12 @@ func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir strin
 
 	if len(modulePaths) == 0 {
 		s.debug.Log("no modules found")
-		return nil, metrics, nil
+		return nil, nil
 	}
 
 	regoScanner, err := s.initRegoScanner(target)
 	if err != nil {
-		return nil, metrics, err
+		return nil, err
 	}
 
 	s.execLock.Lock()
@@ -195,7 +179,7 @@ func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir strin
 	p := parser.New(target, "", s.parserOpt...)
 	rootDirs, err := p.FindRootModules(ctx, modulePaths)
 	if err != nil {
-		return nil, metrics, fmt.Errorf("failed to find root modules: %w", err)
+		return nil, fmt.Errorf("failed to find root modules: %w", err)
 	}
 
 	rootModules := make([]terraformRootModule, 0, len(rootDirs))
@@ -208,20 +192,13 @@ func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir strin
 		p := parser.New(target, "", s.parserOpt...)
 
 		if err := p.ParseFS(ctx, dir); err != nil {
-			return nil, metrics, err
+			return nil, err
 		}
 
 		modules, _, err := p.EvaluateAll(ctx)
 		if err != nil {
-			return nil, metrics, err
+			return nil, err
 		}
-
-		parserMetrics := p.Metrics()
-		metrics.Parser.Counts.Blocks += parserMetrics.Counts.Blocks
-		metrics.Parser.Counts.Modules += parserMetrics.Counts.Modules
-		metrics.Parser.Counts.Files += parserMetrics.Counts.Files
-		metrics.Parser.Timings.DiskIODuration += parserMetrics.Timings.DiskIODuration
-		metrics.Parser.Timings.ParseDuration += parserMetrics.Timings.ParseDuration
 
 		rootModules = append(rootModules, terraformRootModule{
 			rootPath: dir,
@@ -234,9 +211,9 @@ func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir strin
 		s.execLock.RLock()
 		e := executor.New(s.executorOpt...)
 		s.execLock.RUnlock()
-		results, execMetrics, err := e.Execute(module.childs)
+		results, err := e.Execute(module.childs)
 		if err != nil {
-			return nil, metrics, err
+			return nil, err
 		}
 
 		for i, result := range results {
@@ -256,27 +233,10 @@ func (s *Scanner) ScanFSWithMetrics(ctx context.Context, target fs.FS, dir strin
 			}
 		}
 
-		metrics.Executor.Counts.Passed += execMetrics.Counts.Passed
-		metrics.Executor.Counts.Failed += execMetrics.Counts.Failed
-		metrics.Executor.Counts.Ignored += execMetrics.Counts.Ignored
-		metrics.Executor.Counts.Critical += execMetrics.Counts.Critical
-		metrics.Executor.Counts.High += execMetrics.Counts.High
-		metrics.Executor.Counts.Medium += execMetrics.Counts.Medium
-		metrics.Executor.Counts.Low += execMetrics.Counts.Low
-		metrics.Executor.Timings.Adaptation += execMetrics.Timings.Adaptation
-		metrics.Executor.Timings.RunningChecks += execMetrics.Timings.RunningChecks
-
 		allResults = append(allResults, results...)
 	}
 
-	metrics.Parser.Counts.ModuleDownloads = resolvers.Remote.GetDownloadCount()
-
-	metrics.Timings.Total += metrics.Parser.Timings.DiskIODuration
-	metrics.Timings.Total += metrics.Parser.Timings.ParseDuration
-	metrics.Timings.Total += metrics.Executor.Timings.Adaptation
-	metrics.Timings.Total += metrics.Executor.Timings.RunningChecks
-
-	return allResults, metrics, nil
+	return allResults, nil
 }
 
 func (s *Scanner) removeNestedDirs(dirs []string) []string {

@@ -21,7 +21,6 @@ func getQueues(ctx parser.FileContext) (queues []sqs.Queue) {
 				ManagedEncryption: iacTypes.Bool(false, r.Metadata()),
 				KMSKeyID:          r.GetStringProperty("KmsMasterKeyId"),
 			},
-			Policies: []iam.Policy{},
 		}
 		if policy, err := getPolicy(r.ID(), ctx); err == nil {
 			queue.Policies = append(queue.Policies, *policy)

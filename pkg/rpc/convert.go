@@ -65,6 +65,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int32(pkg.SrcEpoch),
 			Licenses:   pkg.Licenses,
+			Locations:  ConvertToRPCLocations(pkg.Locations),
 			Layer:      ConvertToRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
@@ -90,12 +91,23 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 	}
 }
 
+func ConvertToRPCLocations(pkgLocs []ftypes.Location) []*common.Location {
+	var locations []*common.Location
+	for _, pkgLoc := range pkgLocs {
+		locations = append(locations, &common.Location{
+			StartLine: int32(pkgLoc.StartLine),
+			EndLine:   int32(pkgLoc.EndLine),
+		})
+	}
+	return locations
+}
+
 func ConvertToRPCCustomResources(resources []ftypes.CustomResource) []*common.CustomResource {
 	var rpcResources []*common.CustomResource
 	for _, r := range resources {
 		data, err := structpb.NewValue(r.Data)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Custom resource conversion error", log.Err(err))
 		}
 		rpcResources = append(rpcResources, &common.CustomResource{
 			Type:     r.Type,
@@ -207,6 +219,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int(pkg.SrcEpoch),
 			Licenses:   pkg.Licenses,
+			Locations:  ConvertFromRPCLocation(pkg.Locations),
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
@@ -229,12 +242,23 @@ func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier
 	if pkg.Purl != "" {
 		pu, err := packageurl.FromString(pkg.Purl)
 		if err != nil {
-			log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
+			log.Error("Failed to parse PURL", log.String("purl", pkg.Purl), log.Err(err))
 		}
 		pkgID.PURL = &pu
 	}
 
 	return pkgID
+}
+
+func ConvertFromRPCLocation(locs []*common.Location) []ftypes.Location {
+	var pkgLocs []ftypes.Location
+	for _, loc := range locs {
+		pkgLocs = append(pkgLocs, ftypes.Location{
+			StartLine: int(loc.StartLine),
+			EndLine:   int(loc.EndLine),
+		})
+	}
+	return pkgLocs
 }
 
 // ConvertToRPCVulns returns common.Vulnerability
@@ -243,7 +267,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 	for _, vuln := range vulns {
 		severity, err := dbTypes.NewSeverity(vuln.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Severity error", log.Err(err))
 		}
 		cvssMap := make(map[string]*common.CVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.CVSS {
@@ -312,7 +336,7 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 	for _, m := range misconfs {
 		severity, err := dbTypes.NewSeverity(m.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Severity conversion error", log.Err(err))
 		}
 
 		rpcMisconfs = append(rpcMisconfs, &common.DetectedMisconfiguration{
@@ -810,7 +834,7 @@ func ConvertToRPCArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *ca
 
 	t := timestamppb.New(imageInfo.Created)
 	if err := t.CheckValid(); err != nil {
-		log.Logger.Warnf("invalid timestamp: %s", err)
+		log.Warn("Invalid timestamp", log.Err(err))
 	}
 
 	return &cache.PutArtifactRequest{
@@ -949,7 +973,7 @@ func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLi
 	for _, l := range licenses {
 		severity, err := dbTypes.NewSeverity(l.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Severity conversion error", log.Err(err))
 		}
 		rpcLicenses = append(rpcLicenses, &common.DetectedLicense{
 			Severity:   common.Severity(severity),

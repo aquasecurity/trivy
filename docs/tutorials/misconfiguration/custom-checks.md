@@ -8,8 +8,8 @@ When you are writing a check, it's important to understand the input to the chec
 
 Since Rego is primarily tailored to query JSON objects, all incoming configuration files needs to be first converted to structured objects, which is available to the Rego code as the input variable. This is nothing that users have to do manually in Trivy. Instead, Rego makes it possible to pass in custom Schemas that detail how files are converted. Once Rego has access to a custom Schema, it will know in which format to access configuration files such as a Dockerfile. 
 
-[Here you can find the schemas](https://github.com/aquasecurity/defsec/tree/master/pkg/rego/schemas) that define how different configuration files are converted to JSON by Trivy.
-This tutorial will make use of the [dockerfile.json schema](https://github.com/aquasecurity/defsec/tree/master/pkg/rego/schemas). The schema will need to be parsed into your custom check. 
+[Here you can find the schemas](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas) that define how different configuration files are converted to JSON by Trivy.
+This tutorial will make use of the [dockerfile.json schema](https://github.com/aquasecurity/trivy/blob/main/pkg/iac/rego/schemas/dockerfile.json). The schema will need to be parsed into your custom check. 
 
 Users can also use the [Schema Explorer](https://aquasecurity.github.io/trivy-schemas/) to view the structure of the data provided to Rego.
 
