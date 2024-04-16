@@ -261,7 +261,7 @@ func (f *ReportFlagGroup) ToOptions() (ReportOptions, error) {
 }
 
 func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
-	if len(compliance) > 0 && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
+	if compliance != "" && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
 		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
 	}
 

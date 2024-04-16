@@ -2,7 +2,6 @@ package walker
 
 import (
 	"errors"
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -11,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 // FS is the filesystem walker
