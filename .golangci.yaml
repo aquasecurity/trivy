@@ -89,15 +89,15 @@ linters:
 
 run:
   go: '1.22'
-  skip-files:
+
+issues:
+  exclude-files:
     - ".*_mock.go$"
     - ".*_test.go$"
     - "integration/*"
     - "examples/*"
-  skip-dirs:
+  exclude-dirs:
     - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
-
-issues:
   exclude-rules:
     - linters:
         - gosec
