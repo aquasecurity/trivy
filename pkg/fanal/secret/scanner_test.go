@@ -917,6 +917,33 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 		{
+			name:          "add unknown severity when rule has no severity",
+			configPath:    filepath.Join("testdata", "config-with-incorrect-severity.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{wantFinding8},
+			},
+		},
+		{
+			name:          "update severity if rule severity is not in uppercase",
+			configPath:    filepath.Join("testdata", "config-with-non-uppercase-severity.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{wantFinding8},
+			},
+		},
+		{
+			name:          "use unknown severity when rule has incorrect severity",
+			configPath:    filepath.Join("testdata", "config-with-incorrect-severity.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{wantFinding8},
+			},
+		},
+		{
 			name:          "invalid aws secrets",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "invalid-aws-secrets.txt"),

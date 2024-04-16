@@ -30,8 +30,9 @@ const (
 )
 
 type options struct {
-	offline     bool
-	remoteRepos []string
+	offline             bool
+	releaseRemoteRepos  []string
+	snapshotRemoteRepos []string
 }
 
 type option func(*options)
@@ -42,26 +43,27 @@ func WithOffline(offline bool) option {
 	}
 }
 
-func WithRemoteRepos(repos []string) option {
+func WithReleaseRemoteRepos(repos []string) option {
 	return func(opts *options) {
-		opts.remoteRepos = repos
+		opts.releaseRemoteRepos = repos
 	}
 }
 
 type parser struct {
-	logger             *log.Logger
-	rootPath           string
-	cache              pomCache
-	localRepository    string
-	remoteRepositories []string
-	offline            bool
-	servers            []Server
+	logger              *log.Logger
+	rootPath            string
+	cache               pomCache
+	localRepository     string
+	releaseRemoteRepos  []string
+	snapshotRemoteRepos []string
+	offline             bool
+	servers             []Server
 }
 
 func NewParser(filePath string, opts ...option) types.Parser {
 	o := &options{
-		offline:     false,
-		remoteRepos: []string{centralURL},
+		offline:            false,
+		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
 	}
 
 	for _, opt := range opts {
@@ -76,13 +78,14 @@ func NewParser(filePath string, opts ...option) types.Parser {
 	}
 
 	return &parser{
-		logger:             log.WithPrefix("pom"),
-		rootPath:           filepath.Clean(filePath),
-		cache:              newPOMCache(),
-		localRepository:    localRepository,
-		remoteRepositories: o.remoteRepos,
-		offline:            o.offline,
-		servers:            s.Servers,
+		logger:              log.WithPrefix("pom"),
+		rootPath:            filepath.Clean(filePath),
+		cache:               newPOMCache(),
+		localRepository:     localRepository,
+		releaseRemoteRepos:  o.releaseRemoteRepos,
+		snapshotRemoteRepos: o.snapshotRemoteRepos,
+		offline:             o.offline,
+		servers:             s.Servers,
 	}
 }
 
@@ -324,7 +327,9 @@ func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	}
 
 	// Update remoteRepositories
-	p.remoteRepositories = utils.UniqueStrings(append(pom.repositories(p.servers), p.remoteRepositories...))
+	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.servers)
+	p.releaseRemoteRepos = lo.Uniq(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...))
+	p.snapshotRemoteRepos = lo.Uniq(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...))
 
 	// Parent
 	parent, err := p.parseParent(pom.filePath, pom.content.Parent)
@@ -615,7 +620,7 @@ func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error
 	}
 
 	// Search remote remoteRepositories
-	loaded, err = p.fetchPOMFromRemoteRepositories(paths)
+	loaded, err = p.fetchPOMFromRemoteRepositories(paths, isSnapshot(version))
 	if err == nil {
 		return loaded, nil
 	}
@@ -630,15 +635,21 @@ func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 	return p.openPom(localPath)
 }
 
-func (p *parser) fetchPOMFromRemoteRepositories(paths []string) (*pom, error) {
+func (p *parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
 	if p.offline {
 		p.logger.Debug("Fetching the remote pom.xml is skipped")
 		return nil, xerrors.New("offline mode")
 	}
 
+	remoteRepos := p.releaseRemoteRepos
+	// Maven uses only snapshot repos for snapshot artifacts
+	if snapshot {
+		remoteRepos = p.snapshotRemoteRepos
+	}
+
 	// try all remoteRepositories
-	for _, repo := range p.remoteRepositories {
+	for _, repo := range remoteRepos {
 		fetched, err := p.fetchPOMFromRemoteRepository(repo, paths)
 		if err != nil {
 			return nil, xerrors.Errorf("fetch repository error: %w", err)
@@ -702,4 +713,9 @@ func parsePom(r io.Reader) (*pomXML, error) {
 
 func packageID(name, version string) string {
 	return dependency.ID(ftypes.Pom, name, version)
+}
+
+// cf. https://github.com/apache/maven/blob/259404701402230299fe05ee889ecdf1c9dae816/maven-artifact/src/main/java/org/apache/maven/artifact/DefaultArtifact.java#L482-L486
+func isSnapshot(ver string) bool {
+	return strings.HasSuffix(ver, "SNAPSHOT") || ver == "LATEST"
 }

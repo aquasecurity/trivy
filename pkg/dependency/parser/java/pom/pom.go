@@ -115,12 +115,14 @@ func (p pom) licenses() []string {
 	})
 }
 
-func (p pom) repositories(servers []Server) []string {
+func (p pom) repositories(servers []Server) ([]string, []string) {
 	logger := log.WithPrefix("pom")
-	var urls []string
+	var releaseRepos, snapshotRepos []string
 	for _, rep := range p.content.Repositories.Repository {
+		snapshot := rep.Snapshots.Enabled == "true"
+		release := rep.Releases.Enabled == "true"
 		// Add only enabled repositories
-		if rep.Releases.Enabled == "false" && rep.Snapshots.Enabled == "false" {
+		if !release && !snapshot {
 			continue
 		}
 
@@ -140,9 +142,15 @@ func (p pom) repositories(servers []Server) []string {
 		}
 
 		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
-		urls = append(urls, repoURL.String())
+		if snapshot {
+			snapshotRepos = append(snapshotRepos, repoURL.String())
+		}
+		if release {
+			releaseRepos = append(releaseRepos, repoURL.String())
+		}
 	}
-	return urls
+
+	return releaseRepos, snapshotRepos
 }
 
 type pomXML struct {
