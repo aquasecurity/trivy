@@ -1,0 +1,9 @@
+<Project>
+    <ItemGroup>
+        <PackageReference Include="PackageOne" Version="$(Variable1)" />
+        <PackageReference Include="$(variable2)" Version="6.0.0" />
+        <PackageReference Include="" Version="2.4.1" />
+        <PackageReference Include="package" Version="" />
+        <PackageReference Include="PackageFour" Version="2.4.1" />
+    </ItemGroup>
+</Project>

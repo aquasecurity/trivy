@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -57,13 +57,13 @@ func TestBuildComplianceReport(t *testing.T) {
 										"https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
 										"https://avd.aquasec.com/misconfig/ksv001",
 									},
-									Status: types.StatusPassed,
+									Status: types.MisconfStatusPassed,
 								},
 								{
 									Type:   "Kubernetes Security Check",
 									ID:     "KSV002",
 									AVDID:  "AVD-KSV-9999",
-									Status: types.StatusFailure,
+									Status: types.MisconfStatusFailure,
 								},
 							},
 						},
@@ -98,7 +98,7 @@ func TestBuildComplianceReport(t *testing.T) {
 					},
 				},
 				cs: spec.ComplianceSpec{
-					Spec: defsecTypes.Spec{
+					Spec: iacTypes.Spec{
 						ID:          "1234",
 						Title:       "NSA",
 						Description: "National Security Agency - Kubernetes Hardening Guidance",
@@ -106,13 +106,13 @@ func TestBuildComplianceReport(t *testing.T) {
 						RelatedResources: []string{
 							"https://example.com",
 						},
-						Controls: []defsecTypes.Control{
+						Controls: []iacTypes.Control{
 							{
 								ID:          "1.0",
 								Name:        "Non-root containers",
 								Description: "Check that container is not running as root",
 								Severity:    "MEDIUM",
-								Checks: []defsecTypes.SpecCheck{
+								Checks: []iacTypes.SpecCheck{
 									{ID: "AVD-KSV-0001"},
 								},
 							},
@@ -121,7 +121,7 @@ func TestBuildComplianceReport(t *testing.T) {
 								Name:        "Immutable container file systems",
 								Description: "Check that container root file system is immutable",
 								Severity:    "LOW",
-								Checks: []defsecTypes.SpecCheck{
+								Checks: []iacTypes.SpecCheck{
 									{ID: "AVD-KSV-0002"},
 								},
 							},
@@ -130,7 +130,7 @@ func TestBuildComplianceReport(t *testing.T) {
 								Name:        "tzdata - new upstream version",
 								Description: "Bad tzdata package",
 								Severity:    "CRITICAL",
-								Checks: []defsecTypes.SpecCheck{
+								Checks: []iacTypes.SpecCheck{
 									{ID: "DLA-2424-1"},
 								},
 							},
@@ -179,7 +179,7 @@ func TestBuildComplianceReport(t *testing.T) {
 											"https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
 											"https://avd.aquasec.com/misconfig/ksv001",
 										},
-										Status: types.StatusPassed,
+										Status: types.MisconfStatusPassed,
 									},
 								},
 							},

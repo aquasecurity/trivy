@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	BundleVersion    = 0 // Latest released MAJOR version for defsec
+	BundleVersion    = 0 // Latest released MAJOR version for trivy-policies
 	BundleRepository = "ghcr.io/aquasecurity/trivy-policies"
 	policyMediaType  = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
 	updateInterval   = 24 * time.Hour
@@ -89,10 +89,10 @@ func NewClient(cacheDir string, quiet bool, policyBundleRepo string, opts ...Opt
 	}, nil
 }
 
-func (c *Client) populateOCIArtifact() error {
+func (c *Client) populateOCIArtifact(registryOpts types.RegistryOptions) error {
 	if c.artifact == nil {
-		log.Logger.Debugf("Using URL: %s to load policy bundle", c.policyBundleRepo)
-		art, err := oci.NewArtifact(c.policyBundleRepo, c.quiet, types.RegistryOptions{})
+		log.Debug("Loading policy bundle", log.String("repository", c.policyBundleRepo))
+		art, err := oci.NewArtifact(c.policyBundleRepo, c.quiet, registryOpts)
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
@@ -102,8 +102,8 @@ func (c *Client) populateOCIArtifact() error {
 }
 
 // DownloadBuiltinPolicies download default policies from GitHub Pages
-func (c *Client) DownloadBuiltinPolicies(ctx context.Context) error {
-	if err := c.populateOCIArtifact(); err != nil {
+func (c *Client) DownloadBuiltinPolicies(ctx context.Context, registryOpts types.RegistryOptions) error {
+	if err := c.populateOCIArtifact(registryOpts); err != nil {
 		return xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
@@ -116,7 +116,7 @@ func (c *Client) DownloadBuiltinPolicies(ctx context.Context) error {
 	if err != nil {
 		return xerrors.Errorf("digest error: %w", err)
 	}
-	log.Logger.Debugf("Digest of the built-in policies: %s", digest)
+	log.Debug("Digest of the built-in policies", log.String("digest", digest))
 
 	// Update metadata.json with the new digest and the current date
 	if err = c.updateMetadata(digest, c.clock.Now()); err != nil {
@@ -154,7 +154,7 @@ func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 }
 
 // NeedsUpdate returns if the default policy should be updated
-func (c *Client) NeedsUpdate(ctx context.Context) (bool, error) {
+func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOptions) (bool, error) {
 	meta, err := c.GetMetadata()
 	if err != nil {
 		return true, nil
@@ -165,7 +165,7 @@ func (c *Client) NeedsUpdate(ctx context.Context) (bool, error) {
 		return false, nil
 	}
 
-	if err = c.populateOCIArtifact(); err != nil {
+	if err = c.populateOCIArtifact(registryOpts); err != nil {
 		return false, xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
@@ -222,14 +222,14 @@ func (c *Client) updateMetadata(digest string, now time.Time) error {
 func (c *Client) GetMetadata() (*Metadata, error) {
 	f, err := os.Open(c.metadataPath())
 	if err != nil {
-		log.Logger.Debugf("Failed to open the policy metadata: %s", err)
+		log.Debug("Failed to open the policy metadata", log.Err(err))
 		return nil, err
 	}
 	defer f.Close()
 
 	var meta Metadata
 	if err = json.NewDecoder(f).Decode(&meta); err != nil {
-		log.Logger.Warnf("Policy metadata decode error: %s", err)
+		log.Warn("Policy metadata decode error", log.Err(err))
 		return nil, err
 	}
 
@@ -237,7 +237,7 @@ func (c *Client) GetMetadata() (*Metadata, error) {
 }
 
 func (c *Client) Clear() error {
-	log.Logger.Info("Removing policy bundle...")
+	log.Info("Removing policy bundle...")
 	if err := os.RemoveAll(c.policyDir); err != nil {
 		return xerrors.Errorf("failed to remove policy bundle: %w", err)
 	}

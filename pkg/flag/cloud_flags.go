@@ -3,13 +3,12 @@ package flag
 import "time"
 
 var (
-	cloudUpdateCacheFlag = Flag{
+	cloudUpdateCacheFlag = Flag[bool]{
 		Name:       "update-cache",
 		ConfigName: "cloud.update-cache",
-		Default:    false,
 		Usage:      "Update the cache for the applicable cloud provider instead of using cached results.",
 	}
-	cloudMaxCacheAgeFlag = Flag{
+	cloudMaxCacheAgeFlag = Flag[time.Duration]{
 		Name:       "max-cache-age",
 		ConfigName: "cloud.max-cache-age",
 		Default:    time.Hour * 24,
@@ -18,8 +17,8 @@ var (
 )
 
 type CloudFlagGroup struct {
-	UpdateCache *Flag
-	MaxCacheAge *Flag
+	UpdateCache *Flag[bool]
+	MaxCacheAge *Flag[time.Duration]
 }
 
 type CloudOptions struct {
@@ -29,8 +28,8 @@ type CloudOptions struct {
 
 func NewCloudFlagGroup() *CloudFlagGroup {
 	return &CloudFlagGroup{
-		UpdateCache: &cloudUpdateCacheFlag,
-		MaxCacheAge: &cloudMaxCacheAgeFlag,
+		UpdateCache: cloudUpdateCacheFlag.Clone(),
+		MaxCacheAge: cloudMaxCacheAgeFlag.Clone(),
 	}
 }
 
@@ -38,13 +37,19 @@ func (f *CloudFlagGroup) Name() string {
 	return "Cloud"
 }
 
-func (f *CloudFlagGroup) Flags() []*Flag {
-	return []*Flag{f.UpdateCache, f.MaxCacheAge}
+func (f *CloudFlagGroup) Flags() []Flagger {
+	return []Flagger{
+		f.UpdateCache,
+		f.MaxCacheAge,
+	}
 }
 
-func (f *CloudFlagGroup) ToOptions() CloudOptions {
-	return CloudOptions{
-		UpdateCache: getBool(f.UpdateCache),
-		MaxCacheAge: getDuration(f.MaxCacheAge),
+func (f *CloudFlagGroup) ToOptions() (CloudOptions, error) {
+	if err := parseFlags(f); err != nil {
+		return CloudOptions{}, err
 	}
+	return CloudOptions{
+		UpdateCache: f.UpdateCache.Value(),
+		MaxCacheAge: f.MaxCacheAge.Value(),
+	}, nil
 }

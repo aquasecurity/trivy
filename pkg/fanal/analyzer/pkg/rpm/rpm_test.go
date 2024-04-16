@@ -125,13 +125,20 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 			mock: mock{
 				packages: []*rpmdb.PackageInfo{
 					{
-						Name:       "glibc",
-						Version:    "2.17",
-						Release:    "307.el7.1",
-						Arch:       "x86_64",
-						SourceRpm:  "glibc-2.17-317.el7.src.rpm",
-						DirNames:   []string{"/etc", "/lib64"},
-						DirIndexes: []int32{0, 0, 1},
+						Name:      "glibc",
+						Version:   "2.17",
+						Release:   "307.el7.1",
+						Arch:      "x86_64",
+						SourceRpm: "glibc-2.17-317.el7.src.rpm",
+						DirNames: []string{
+							"/etc",
+							"/lib64",
+						},
+						DirIndexes: []int32{
+							0,
+							0,
+							1,
+						},
 						BaseNames: []string{
 							"ld.so.conf",
 							"rpc",
@@ -182,7 +189,13 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 							"/usr/lib/.build-id/aa/",
 							"/usr/share/man/man1/",
 						},
-						DirIndexes: []int32{0, 1, 2, 3, 4},
+						DirIndexes: []int32{
+							0,
+							1,
+							2,
+							3,
+							4,
+						},
 						BaseNames: []string{
 							"curl",
 							".build-id",
@@ -259,8 +272,8 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 				err:      tt.mock.err,
 			}
 
-			a := rpmPkgAnalyzer{}
-			gotPkgs, gotFiles, err := a.listPkgs(m)
+			a := newRPMPkgAnalyzer()
+			gotPkgs, gotFiles, err := a.listPkgs(context.Background(), m)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

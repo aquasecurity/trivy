@@ -2,6 +2,7 @@ package cyclonedx_test
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/package-url/packageurl-go"
 	"testing"
 	"time"
@@ -22,7 +23,23 @@ import (
 	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
-func TestMarshaler_Marshal(t *testing.T) {
+func TestMarshaler_MarshalReport(t *testing.T) {
+	testSBOM := core.NewBOM(core.Options{GenerateBOMRef: true})
+	testSBOM.AddComponent(&core.Component{
+		Root: true,
+		Type: core.TypeApplication,
+		Name: "jackson-databind-2.13.4.1.jar",
+		PkgID: core.PkgID{
+			BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8",
+		},
+		Properties: []core.Property{
+			{
+				Name:  "SchemaVersion",
+				Value: "2",
+			},
+		},
+	})
+
 	tests := []struct {
 		name        string
 		inputReport types.Report
@@ -139,6 +156,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
+								// This package conflicts
 								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
@@ -175,6 +193,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
+								// This package conflicts
 								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
@@ -238,7 +257,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_5,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000014",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -303,7 +322,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000004",
 						Type:    cdx.ComponentTypeApplication,
 						Name:    "app/subproject/Gemfile.lock",
 						Version: "",
@@ -319,7 +338,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000004",
+						BOMRef:     "3ff14136-e09f-4df9-80ea-000000000005",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actionpack",
+						Version:    "7.0.0",
+						PackageURL: "pkg:gem/actionpack@7.0.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.0",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "bundler",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000007",
 						Type:    cdx.ComponentTypeApplication,
 						Name:    "app/Gemfile.lock",
 						Version: "",
@@ -335,7 +371,24 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000005",
+						BOMRef:     "3ff14136-e09f-4df9-80ea-000000000008",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actionpack",
+						Version:    "7.0.0",
+						PackageURL: "pkg:gem/actionpack@7.0.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.0",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "bundler",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000009",
 						Type:    cdx.ComponentTypeApplication,
 						Name:    "app/datacollector.deps.json",
 						Version: "",
@@ -351,10 +404,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000006",
-						Type:    cdx.ComponentTypeApplication,
-						Name:    "usr/local/bin/tfsec",
-						Version: "",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000011",
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "usr/local/bin/tfsec",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:Class",
@@ -368,7 +420,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						// Use UUID for local Go packages
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000007",
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000013",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "./api",
 						Version: "(devel)",
@@ -389,23 +441,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:PkgID",
 								Value: "actioncontroller@7.0.0",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "bundler",
-							},
-						},
-					},
-					{
-						BOMRef:     "pkg:gem/actionpack@7.0.0",
-						Type:       cdx.ComponentTypeLibrary,
-						Name:       "actionpack",
-						Version:    "7.0.0",
-						PackageURL: "pkg:gem/actionpack@7.0.0",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:PkgID",
-								Value: "actionpack@7.0.0",
 							},
 							{
 								Name:  "aquasecurity:trivy:PkgType",
@@ -497,44 +532,48 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]string{
-							"pkg:gem/actioncontroller@7.0.0",
-							"pkg:gem/actionpack@7.0.0",
-						},
-					},
-					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
 						Dependencies: &[]string{
-							"pkg:gem/actionpack@7.0.0",
+							"3ff14136-e09f-4df9-80ea-000000000005",
+							"pkg:gem/actioncontroller@7.0.0",
 						},
 					},
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000005",
+						Ref:          "3ff14136-e09f-4df9-80ea-000000000005",
+						Dependencies: &[]string{},
+					},
+					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000007",
+						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000008",
+						},
+					},
+					{
+						Ref:          "3ff14136-e09f-4df9-80ea-000000000008",
+						Dependencies: &[]string{},
+					},
+					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000009",
 						Dependencies: &[]string{
 							"pkg:nuget/Newtonsoft.Json@9.0.1",
 						},
 					},
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
+						Ref: "3ff14136-e09f-4df9-80ea-000000000011",
 						Dependencies: &[]string{
-							"3ff14136-e09f-4df9-80ea-000000000007",
+							"3ff14136-e09f-4df9-80ea-000000000013",
 							"pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
 						},
 					},
 					{
-						Ref:          "3ff14136-e09f-4df9-80ea-000000000007",
+						Ref:          "3ff14136-e09f-4df9-80ea-000000000013",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
 						Ref: "pkg:gem/actioncontroller@7.0.0",
 						Dependencies: &[]string{
-							"pkg:gem/actionpack@7.0.0",
+							"3ff14136-e09f-4df9-80ea-000000000005",
 						},
-					},
-					{
-						Ref:          "pkg:gem/actionpack@7.0.0",
-						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
 						Ref:          "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
@@ -548,10 +587,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "pkg:oci/rails@sha256%3Aa27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000002",
-							"3ff14136-e09f-4df9-80ea-000000000003",
 							"3ff14136-e09f-4df9-80ea-000000000004",
-							"3ff14136-e09f-4df9-80ea-000000000005",
-							"3ff14136-e09f-4df9-80ea-000000000006",
+							"3ff14136-e09f-4df9-80ea-000000000007",
+							"3ff14136-e09f-4df9-80ea-000000000009",
+							"3ff14136-e09f-4df9-80ea-000000000011",
 						},
 					},
 					{
@@ -873,7 +912,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_5,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000007",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -889,7 +928,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					Component: &cdx.Component{
 						Type:       cdx.ComponentTypeContainer,
-						BOMRef:     "3ff14136-e09f-4df9-80ea-000000000002",
+						BOMRef:     "3ff14136-e09f-4df9-80ea-000000000001",
 						PackageURL: "",
 						Name:       "centos:latest",
 						Properties: &[]cdx.Property{
@@ -914,7 +953,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000002",
 						Type:    cdx.ComponentTypeOS,
 						Name:    string(ftypes.CentOS),
 						Version: "8.3.2011",
@@ -930,7 +969,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						BOMRef:     "pkg:gem/actionpack@7.0.0",
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actionpack",
 						Version:    "7.0.0",
@@ -955,7 +994,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						BOMRef:     "pkg:gem/actionpack@7.0.1",
 						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actionpack",
 						Version:    "7.0.1",
@@ -983,7 +1022,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "acl",
-						Version: "2.2.53-1.el8",
+						Version: "1:2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{
 								License: &cdx.License{
@@ -1070,15 +1109,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
+						Ref: "3ff14136-e09f-4df9-80ea-000000000001",
 						Dependencies: &[]string{
-							"3ff14136-e09f-4df9-80ea-000000000003",
-							"pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
-							"pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+							"3ff14136-e09f-4df9-80ea-000000000002",
+							"pkg:gem/actionpack@7.0.0",
+							"pkg:gem/actionpack@7.0.1",
 						},
 					},
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
+						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
 							// Trivy is unable to identify the direct OS packages as of today.
@@ -1086,11 +1125,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						Ref:          "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						Ref:          "pkg:gem/actionpack@7.0.0",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref:          "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						Ref:          "pkg:gem/actionpack@7.0.1",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
@@ -1163,7 +1202,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Updated:   "2022-02-22T21:47:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+								Ref: "pkg:gem/actionpack@7.0.0",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "7.0.0",
@@ -1172,7 +1211,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+								Ref: "pkg:gem/actionpack@7.0.1",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "7.0.1",
@@ -1257,7 +1296,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_5,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000007",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -1272,7 +1311,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					Component: &cdx.Component{
-						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
 						Type:   cdx.ComponentTypeApplication,
 						Name:   "masahiro331/CVE-2021-41098",
 						Properties: &[]cdx.Property{
@@ -1285,7 +1324,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef: "3ff14136-e09f-4df9-80ea-000000000003",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
 						Type:   cdx.ComponentTypeApplication,
 						Name:   "Gemfile.lock",
 						Properties: &[]cdx.Property{
@@ -1300,7 +1339,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef: "3ff14136-e09f-4df9-80ea-000000000004",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000005",
 						Type:   cdx.ComponentTypeApplication,
 						Name:   "yarn.lock",
 						Properties: &[]cdx.Property{
@@ -1328,7 +1367,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+						BOMRef:     "pkg:maven/org.springframework/spring-web@5.3.22",
 						Type:       "library",
 						Name:       "spring-web",
 						Group:      "org.springframework",
@@ -1367,21 +1406,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
+						Ref: "3ff14136-e09f-4df9-80ea-000000000001",
 						Dependencies: &[]string{
-							"3ff14136-e09f-4df9-80ea-000000000003",
-							"3ff14136-e09f-4df9-80ea-000000000004",
-							"pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+							"3ff14136-e09f-4df9-80ea-000000000002",
+							"3ff14136-e09f-4df9-80ea-000000000005",
+							"pkg:maven/org.springframework/spring-web@5.3.22",
 						},
 					},
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
+						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"pkg:gem/actioncable@6.1.4.1",
 						},
 					},
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
+						Ref: "3ff14136-e09f-4df9-80ea-000000000005",
 						Dependencies: &[]string{
 							"pkg:npm/%40babel/helper-string-parser@7.23.4",
 						},
@@ -1391,11 +1430,195 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
 						Ref:          "pkg:npm/%40babel/helper-string-parser@7.23.4",
+						Dependencies: lo.ToPtr([]string{}),
+					},
+				},
+			},
+		},
+		{
+			name: "happy path for sbom (cyclonedx) scan",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "./report.cdx.json",
+				ArtifactType:  ftypes.ArtifactCycloneDX,
+				Results: types.Results{
+					{
+						Target: "Java",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.Jar,
+						Packages: []ftypes.Package{
+							{
+								Name:    "com.fasterxml.jackson.core:jackson-databind",
+								Version: "2.13.4.1",
+								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.fasterxml.jackson.core",
+										Name:      "jackson-databind",
+										Version:   "2.13.4.1",
+									},
+								},
+								FilePath: "jackson-databind-2.13.4.1.jar",
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID: "CVE-2022-42003",
+								PkgName:         "com.fasterxml.jackson.core:jackson-databind",
+								PkgPath:         "jackson-databind-2.13.4.1.jar",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1?file_path=jackson-databind-2.13.4.1.jar",
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeMaven,
+										Namespace: "com.fasterxml.jackson.core",
+										Name:      "jackson-databind",
+										Version:   "2.13.4.1",
+									},
+								},
+								InstalledVersion: "2.13.4.1",
+								FixedVersion:     "2.12.7.1, 2.13.4.2",
+								Status:           dtypes.StatusFixed,
+								SeveritySource:   "ghsa",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-42003",
+								DataSource: &dtypes.DataSource{
+									ID:   vulnerability.GHSA,
+									Name: "GitHub Security Advisory Maven",
+									URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+								},
+								Vulnerability: dtypes.Vulnerability{
+									Title:       "jackson-databind: deep wrapper array nesting wrt UNWRAP_SINGLE_VALUE_ARRAYS",
+									Description: "In FasterXML jackson-databind before versions 2.13.4.1 and 2.12.17.1, resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled.",
+									Severity:    dtypes.SeverityHigh.String(),
+									VendorSeverity: dtypes.VendorSeverity{
+										vulnerability.GHSA: dtypes.SeverityHigh,
+									},
+									CVSS: dtypes.VendorCVSS{
+										vulnerability.GHSA: dtypes.CVSS{
+											V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+											V3Score:  7.5,
+										},
+									},
+									References: []string{
+										"https://access.redhat.com/security/cve/CVE-2022-42003",
+									},
+									PublishedDate:    lo.ToPtr(time.Date(2022, 10, 02, 05, 15, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2022, 12, 20, 10, 15, 0, 0, time.UTC)),
+								},
+							},
+						},
+					},
+				},
+				BOM: testSBOM,
+			},
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.5",
+				BOMFormat:    "CycloneDX",
+				SpecVersion:  cdx.SpecVersion1_5,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
+				Version:      1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30+00:00",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+							},
+						},
+					},
+					Component: &cdx.Component{
+						BOMRef: "aff65b54-6009-4c32-968d-748949ef46e8", // The original bom-ref is used
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "jackson-databind-2.13.4.1.jar",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:SchemaVersion",
+								Value: "2",
+							},
+						},
+					},
+				},
+				Components: &[]cdx.Component{
+					{
+						BOMRef:     "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						Type:       cdx.ComponentTypeLibrary,
+						Group:      "com.fasterxml.jackson.core",
+						Name:       "jackson-databind",
+						Version:    "2.13.4.1",
+						PackageURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "jackson-databind-2.13.4.1.jar",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "jar",
+							},
+						},
+					},
+				},
+				Vulnerabilities: &[]cdx.Vulnerability{
+					{
+						ID: "CVE-2022-42003",
+						Source: &cdx.Source{
+							Name: string(vulnerability.GHSA),
+							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+						},
+						Recommendation: "Upgrade com.fasterxml.jackson.core:jackson-databind to version 2.12.7.1, 2.13.4.2",
+						Ratings: &[]cdx.VulnerabilityRating{
+							{
+								Source: &cdx.Source{
+									Name: string(vulnerability.GHSA),
+								},
+								Score:    lo.ToPtr(7.5),
+								Severity: cdx.SeverityHigh,
+								Method:   cdx.ScoringMethodCVSSv31,
+								Vector:   "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+							},
+						},
+						Description: "In FasterXML jackson-databind before versions 2.13.4.1 and 2.12.17.1, resource exhaustion can occur because of a lack of a check in primitive value deserializers to avoid deep wrapper array nesting, when the UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled.",
+						Advisories: &[]cdx.Advisory{
+							{
+								URL: "https://avd.aquasec.com/nvd/cve-2022-42003",
+							},
+							{
+								URL: "https://access.redhat.com/security/cve/CVE-2022-42003",
+							},
+						},
+						Published: "2022-10-02T05:15:00+00:00",
+						Updated:   "2022-12-20T10:15:00+00:00",
+						Affects: &[]cdx.Affects{
+							{
+								Ref: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+								Range: &[]cdx.AffectedVersions{
+									{
+										Version: "2.13.4.1",
+										Status:  cdx.VulnerabilityStatusAffected,
+									},
+								},
+							},
+						},
+					},
+				},
+				Dependencies: &[]cdx.Dependency{
+					{
+						Ref: "aff65b54-6009-4c32-968d-748949ef46e8",
+						Dependencies: &[]string{
+							"pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+						},
+					},
+					{
+						Ref:          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1550,7 +1773,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_5,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000004",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -1565,7 +1788,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					Component: &cdx.Component{
-						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
 						Type:   cdx.ComponentTypeApplication,
 						Name:   "CVE-2023-34468",
 						Properties: &[]cdx.Property{
@@ -1578,7 +1801,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:     "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+						BOMRef:     "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 						Type:       "library",
 						Name:       "nifi-dbcp-base",
 						Group:      "org.apache.nifi",
@@ -1596,7 +1819,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+						BOMRef:     "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 						Type:       "library",
 						Name:       "nifi-hikari-dbcp-service",
 						Group:      "org.apache.nifi",
@@ -1616,18 +1839,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
+						Ref: "3ff14136-e09f-4df9-80ea-000000000001",
 						Dependencies: &[]string{
-							"pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
-							"pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+							"pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
+							"pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 						},
 					},
 					{
-						Ref:          "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+						Ref:          "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 					{
-						Ref:          "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+						Ref:          "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1676,7 +1899,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Updated:   "2023-06-21T02:20:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0?file_path=nifi-dbcp-base-1.20.0.jar",
+								Ref: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "1.20.0",
@@ -1685,7 +1908,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 							{
-								Ref: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0?file_path=nifi-hikari-dbcp-service-1.20.0.jar",
+								Ref: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "1.20.0",
@@ -1736,7 +1959,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_5,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000003",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -1753,7 +1976,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Component: &cdx.Component{
 						Type:   cdx.ComponentTypeApplication,
 						Name:   "test-aggregate",
-						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:SchemaVersion",
@@ -1764,7 +1987,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:     "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+						BOMRef:     "pkg:npm/ruby-typeprof@0.20.1",
 						Type:       "library",
 						Name:       "ruby-typeprof",
 						Version:    "0.20.1",
@@ -1799,13 +2022,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
+						Ref: "3ff14136-e09f-4df9-80ea-000000000001",
 						Dependencies: &[]string{
-							"pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+							"pkg:npm/ruby-typeprof@0.20.1",
 						},
 					},
 					{
-						Ref:          "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+						Ref:          "pkg:npm/ruby-typeprof@0.20.1",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1824,7 +2047,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_5,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.5.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -1841,7 +2064,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Component: &cdx.Component{
 						Type:   cdx.ComponentTypeApplication,
 						Name:   "empty/path",
-						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:SchemaVersion",
@@ -1850,11 +2073,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 				},
-				Components:      lo.ToPtr([]cdx.Component{}),
+				Components:      &[]cdx.Component{},
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref:          "3ff14136-e09f-4df9-80ea-000000000002",
+						Ref:          "3ff14136-e09f-4df9-80ea-000000000001",
 						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
@@ -1868,7 +2091,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 			marshaler := cyclonedx.NewMarshaler("dev")
-			got, err := marshaler.Marshal(ctx, tt.inputReport)
+			got, err := marshaler.MarshalReport(ctx, tt.inputReport)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

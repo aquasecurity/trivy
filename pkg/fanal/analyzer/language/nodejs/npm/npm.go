@@ -11,15 +11,15 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/npm"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/npm"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xpath "github.com/aquasecurity/trivy/pkg/x/path"
 )
 
@@ -32,12 +32,14 @@ const (
 )
 
 type npmLibraryAnalyzer struct {
+	logger        *log.Logger
 	lockParser    godeptypes.Parser
 	packageParser *packagejson.Parser
 }
 
 func newNpmLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &npmLibraryAnalyzer{
+		logger:        log.WithPrefix("npm"),
 		lockParser:    npm.NewParser(),
 		packageParser: packagejson.NewParser(),
 	}, nil
@@ -54,7 +56,7 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		// Find all licenses from package.json files under node_modules dirs
 		licenses, err := a.findLicenses(input.FS, filePath)
 		if err != nil {
-			log.Logger.Errorf("Unable to collect licenses: %s", err)
+			a.logger.Error("Unable to collect licenses", log.Err(err))
 			licenses = make(map[string]string)
 		}
 
@@ -114,7 +116,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, filePath string) (*types
 	}
 	defer func() { _ = f.Close() }()
 
-	file, ok := f.(dio.ReadSeekCloserAt)
+	file, ok := f.(xio.ReadSeekCloserAt)
 	if !ok {
 		return nil, xerrors.Errorf("type assertion error: %w", err)
 	}
@@ -127,7 +129,8 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 	dir := path.Dir(lockPath)
 	root := path.Join(dir, "node_modules")
 	if _, err := fs.Stat(fsys, root); errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Infof(`To collect the license information of packages in %q, "npm install" needs to be performed beforehand`, lockPath)
+		a.logger.Info(`To collect the license information of packages, "npm install" needs to be performed beforehand`,
+			log.String("dir", root))
 		return nil, nil
 	}
 

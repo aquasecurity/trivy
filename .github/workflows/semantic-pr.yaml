@@ -100,4 +100,5 @@ jobs:
             helm
             report
             db
+            parser
             deps

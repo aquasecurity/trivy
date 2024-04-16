@@ -14,9 +14,9 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var requiredDiskName = []string{
@@ -34,13 +34,16 @@ func AppendPermitDiskName(s ...string) {
 }
 
 type VM struct {
+	logger    *log.Logger
 	skipFiles []string
 	skipDirs  []string
 	analyzeFn WalkFunc
 }
 
 func NewVM() *VM {
-	return new(VM)
+	return &VM{
+		logger: log.WithPrefix("vm"),
+	}
 }
 
 func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFunc) error {
@@ -71,7 +74,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFun
 
 		// Walk each partition
 		if err = w.diskWalk(root, partition); err != nil {
-			log.Logger.Warnf("Partition error: %s", err.Error())
+			w.logger.Warn("Partition error", log.Err(err))
 		}
 	}
 	return nil
@@ -79,7 +82,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFun
 
 // Inject disk partitioning processes from externally with diskWalk.
 func (w *VM) diskWalk(root string, partition types.Partition) error {
-	log.Logger.Debugf("Found partition: %s", partition.Name())
+	w.logger.Debug("Found partition", log.String("name", partition.Name()))
 
 	sr := partition.GetSectionReader()
 
@@ -88,7 +91,7 @@ func (w *VM) diskWalk(root string, partition types.Partition) error {
 	if err != nil {
 		return xerrors.Errorf("LVM detection error: %w", err)
 	} else if foundLVM {
-		log.Logger.Errorf("LVM is not supported, skip %s.img", partition.Name())
+		w.logger.Error("LVM is not supported, skipping", log.String("name", partition.Name()+".img"))
 		return nil
 	}
 
@@ -164,7 +167,7 @@ func newCachedVMFile(fsys fs.FS, filePath string) *cachedVMFile {
 	}
 }
 
-func (cvf *cachedVMFile) Open() (dio.ReadSeekCloserAt, error) {
+func (cvf *cachedVMFile) Open() (xio.ReadSeekCloserAt, error) {
 	if cvf.cf != nil {
 		return cvf.cf.Open()
 	}

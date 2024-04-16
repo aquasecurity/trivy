@@ -114,7 +114,7 @@ func loadPluginCommands() []*cobra.Command {
 	var commands []*cobra.Command
 	plugins, err := plugin.LoadAll()
 	if err != nil {
-		log.Logger.Debugf("no plugins were loaded")
+		log.Debug("No plugins loaded")
 		return nil
 	}
 	for _, p := range plugins {
@@ -142,12 +142,12 @@ func initConfig(configFile string) error {
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Logger.Debugf("config file %q not found", configFile)
+			log.Debug("Config file not found", log.String("file_path", configFile))
 			return nil
 		}
 		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
 	}
-	log.Logger.Infof("Loaded %s", configFile)
+	log.Info("Loaded", log.String("file_path", configFile))
 	return nil
 }
 
@@ -190,17 +190,22 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				return err
 			}
 
-			globalOptions := globalFlags.ToOptions()
-
-			// Initialize logger
-			if err := log.InitLogger(globalOptions.Debug, globalOptions.Quiet); err != nil {
+			globalOptions, err := globalFlags.ToOptions()
+			if err != nil {
 				return err
 			}
+
+			// Initialize logger
+			log.InitLogger(globalOptions.Debug, globalOptions.Quiet)
 
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			globalOptions := globalFlags.ToOptions()
+			globalOptions, err := globalFlags.ToOptions()
+			if err != nil {
+				return err
+			}
+
 			if globalOptions.ShowVersion {
 				// Customize version output
 				return showVersion(globalOptions.CacheDir, versionFormat, cmd.OutOrStdout())
@@ -223,20 +228,21 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	reportFlagGroup := flag.NewReportFlagGroup()
-	report := flag.ReportFormatFlag
+	report := flag.ReportFormatFlag.Clone()
 	report.Default = "summary"                                   // override the default value as the summary is preferred for the compliance report
 	report.Usage = "specify a format for the compliance report." // "--report" works only with "--compliance"
-	reportFlagGroup.ReportFormat = &report
+	reportFlagGroup.ReportFormat = report
 
-	compliance := flag.ComplianceFlag
+	compliance := flag.ComplianceFlag.Clone()
 	compliance.Values = []string{types.ComplianceDockerCIS}
-	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
+	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 
 	misconfFlagGroup := flag.NewMisconfFlagGroup()
 	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
 	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
 
 	imageFlags := &flag.Flags{
+		GlobalFlagGroup:        globalFlags,
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
@@ -292,7 +298,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := imageFlags.ToOptions(args, globalFlags)
+			options, err := imageFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -311,12 +317,13 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFormat := flag.ReportFormatFlag
+	reportFormat := flag.ReportFormatFlag.Clone()
 	reportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
-	reportFlagGroup.ReportFormat = &reportFormat
+	reportFlagGroup.ReportFormat = reportFormat
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
 	fsFlags := &flag.Flags{
+		GlobalFlagGroup:        globalFlags,
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
@@ -351,7 +358,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := fsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := fsFlags.ToOptions(args, globalFlags)
+			options, err := fsFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -370,6 +377,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	rootfsFlags := &flag.Flags{
+		GlobalFlagGroup:        globalFlags,
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
@@ -410,7 +418,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := rootfsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := rootfsFlags.ToOptions(args, globalFlags)
+			options, err := rootfsFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -428,6 +436,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	repoFlags := &flag.Flags{
+		GlobalFlagGroup:        globalFlags,
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
@@ -465,7 +474,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := repoFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := repoFlags.ToOptions(args, globalFlags)
+			options, err := repoFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -483,6 +492,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	convertFlags := &flag.Flags{
+		GlobalFlagGroup: globalFlags,
 		ScanFlagGroup:   &flag.ScanFlagGroup{},
 		ReportFlagGroup: flag.NewReportFlagGroup(),
 	}
@@ -505,7 +515,7 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := convertFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			opts, err := convertFlags.ToOptions(args, globalFlags)
+			opts, err := convertFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -525,7 +535,7 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 // NewClientCommand returns the 'client' subcommand that is deprecated
 func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	remoteFlags := flag.NewClientFlags()
-	remoteAddr := flag.Flag{
+	remoteAddr := flag.Flag[string]{
 		Name:       "remote",
 		ConfigName: "server.addr",
 		Shorthand:  "",
@@ -535,6 +545,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	remoteFlags.ServerAddr = &remoteAddr // disable '--server' and enable '--remote' instead.
 
 	clientFlags := &flag.Flags{
+		GlobalFlagGroup:        globalFlags,
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
@@ -557,12 +568,12 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			return validateArgs(cmd, args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Logger.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
+			log.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
 
 			if err := clientFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := clientFlags.ToOptions(args, globalFlags)
+			options, err := clientFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -580,6 +591,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	serverFlags := &flag.Flags{
+		GlobalFlagGroup:   globalFlags,
 		CacheFlagGroup:    flag.NewCacheFlagGroup(),
 		DBFlagGroup:       flag.NewDBFlagGroup(),
 		ModuleFlagGroup:   flag.NewModuleFlagGroup(),
@@ -608,7 +620,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := serverFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := serverFlags.ToOptions(args, globalFlags)
+			options, err := serverFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -629,18 +641,20 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
-	reportFormat := flag.ReportFormatFlag
+	reportFlagGroup.ShowSuppressed = nil // disable '--show-suppressed'
+	reportFormat := flag.ReportFormatFlag.Clone()
 	reportFormat.Usage = "specify a compliance report format for the output" // @TODO: support --report summary for non compliance reports
-	reportFlagGroup.ReportFormat = &reportFormat
+	reportFlagGroup.ReportFormat = reportFormat
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
-		SkipDirs:     &flag.SkipDirsFlag,
-		SkipFiles:    &flag.SkipFilesFlag,
-		FilePatterns: &flag.FilePatternsFlag,
+		SkipDirs:     flag.SkipDirsFlag.Clone(),
+		SkipFiles:    flag.SkipFilesFlag.Clone(),
+		FilePatterns: flag.FilePatternsFlag.Clone(),
 	}
 
 	configFlags := &flag.Flags{
+		GlobalFlagGroup:   globalFlags,
 		CacheFlagGroup:    flag.NewCacheFlagGroup(),
 		MisconfFlagGroup:  flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:   flag.NewModuleFlagGroup(),
@@ -648,7 +662,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RegoFlagGroup:     flag.NewRegoFlagGroup(),
 		K8sFlagGroup: &flag.K8sFlagGroup{
 			// disable unneeded flags
-			K8sVersion: &flag.K8sVersionFlag,
+			K8sVersion: flag.K8sVersionFlag.Clone(),
 		},
 		ReportFlagGroup: reportFlagGroup,
 		ScanFlagGroup:   scanFlags,
@@ -669,7 +683,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := configFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := configFlags.ToOptions(args, globalFlags)
+			options, err := configFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -796,6 +810,7 @@ func NewPluginCommand() *cobra.Command {
 
 func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	moduleFlags := &flag.Flags{
+		GlobalFlagGroup: globalFlags,
 		ModuleFlagGroup: flag.NewModuleFlagGroup(),
 	}
 
@@ -827,7 +842,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				}
 
 				repo := args[0]
-				opts, err := moduleFlags.ToOptions(args, globalFlags)
+				opts, err := moduleFlags.ToOptions(args)
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
@@ -851,7 +866,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				}
 
 				repo := args[0]
-				opts, err := moduleFlags.ToOptions(args, globalFlags)
+				opts, err := moduleFlags.ToOptions(args)
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
@@ -866,7 +881,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := flag.NewScanFlagGroup()
-	scanners := flag.ScannersFlag
+	scanners := flag.ScannersFlag.Clone()
 	// overwrite the default scanners
 	scanners.Values = xstrings.ToStringSlice(types.Scanners{
 		types.VulnerabilityScanner,
@@ -875,36 +890,37 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		types.RBACScanner,
 	})
 	scanners.Default = scanners.Values
-	scanFlags.Scanners = &scanners
+	scanFlags.Scanners = scanners
 	scanFlags.IncludeDevDeps = nil // disable '--include-dev-deps'
 
 	// required only SourceFlag
-	imageFlags := &flag.ImageFlagGroup{ImageSources: &flag.SourceFlag}
+	imageFlags := &flag.ImageFlagGroup{ImageSources: flag.SourceFlag.Clone()}
 
 	reportFlagGroup := flag.NewReportFlagGroup()
-	compliance := flag.ComplianceFlag
+	compliance := flag.ComplianceFlag.Clone()
 	compliance.Values = []string{
 		types.ComplianceK8sNsa,
 		types.ComplianceK8sCIS,
 		types.ComplianceK8sPSSBaseline,
 		types.ComplianceK8sPSSRestricted,
 	}
-	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
+	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
+	reportFlagGroup.ExitOnEOL = nil         // disable '--exit-on-eol'
 
-	formatFlag := flag.FormatFlag
+	formatFlag := flag.FormatFlag.Clone()
 	formatFlag.Values = xstrings.ToStringSlice([]types.Format{
 		types.FormatTable,
 		types.FormatJSON,
 		types.FormatCycloneDX,
 	})
-	reportFlagGroup.Format = &formatFlag
+	reportFlagGroup.Format = formatFlag
 
 	misconfFlagGroup := flag.NewMisconfFlagGroup()
 	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
 	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
 
 	k8sFlags := &flag.Flags{
+		GlobalFlagGroup:        globalFlags,
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		ImageFlagGroup:         imageFlags,
@@ -945,7 +961,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := k8sFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			opts, err := k8sFlags.ToOptions(args, globalFlags)
+			opts, err := k8sFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -971,8 +987,10 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
+	reportFlagGroup.ShowSuppressed = nil     // disable '--show-suppressed'
 
 	awsFlags := &flag.Flags{
+		GlobalFlagGroup:  globalFlags,
 		AWSFlagGroup:     flag.NewAWSFlagGroup(),
 		CloudFlagGroup:   flag.NewCloudFlagGroup(),
 		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
@@ -1014,13 +1032,13 @@ The following services are supported:
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := awsFlags.ToOptions(args, globalFlags)
+			opts, err := awsFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
 			if opts.Timeout < time.Hour {
 				opts.Timeout = time.Hour
-				log.Logger.Debug("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
+				log.Info("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
 			}
 			return awscommands.Run(cmd.Context(), opts)
 		},
@@ -1036,6 +1054,7 @@ The following services are supported:
 
 func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	vmFlags := &flag.Flags{
+		GlobalFlagGroup:        globalFlags,
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
@@ -1046,10 +1065,9 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 		AWSFlagGroup: &flag.AWSFlagGroup{
-			Region: &flag.Flag{
+			Region: &flag.Flag[string]{
 				Name:       "aws-region",
 				ConfigName: "aws.region",
-				Default:    "",
 				Usage:      "AWS region to scan",
 			},
 		},
@@ -1080,13 +1098,13 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := vmFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := vmFlags.ToOptions(args, globalFlags)
+			options, err := vmFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
 			if options.Timeout < time.Minute*30 {
 				options.Timeout = time.Minute * 30
-				log.Logger.Debug("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
+				log.Info("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetVM)
 		},
@@ -1105,12 +1123,26 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
 
+	scanners := flag.ScannersFlag.Clone()
+	scanners.Values = xstrings.ToStringSlice(types.Scanners{
+		types.VulnerabilityScanner,
+		types.LicenseScanner,
+	})
+	scanners.Default = xstrings.ToStringSlice(types.Scanners{
+		types.VulnerabilityScanner,
+	})
 	scanFlagGroup := flag.NewScanFlagGroup()
-	scanFlagGroup.Scanners = nil       // disable '--scanners' as it always scans for vulnerabilities
+	scanFlagGroup.Scanners = scanners  // allow only 'vuln' and 'license' options for '--scanners'
 	scanFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
 	scanFlagGroup.Parallel = nil       // disable '--parallel'
 
+	licenseFlagGroup := flag.NewLicenseFlagGroup()
+	// License full-scan and confidence-level are for file content only
+	licenseFlagGroup.LicenseFull = nil
+	licenseFlagGroup.LicenseConfidenceLevel = nil
+
 	sbomFlags := &flag.Flags{
+		GlobalFlagGroup:        globalFlags,
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
@@ -1118,11 +1150,12 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ScanFlagGroup:          scanFlagGroup,
 		SBOMFlagGroup:          flag.NewSBOMFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+		LicenseFlagGroup:       licenseFlagGroup,
 	}
 
 	cmd := &cobra.Command{
 		Use:     "sbom [flags] SBOM_PATH",
-		Short:   "Scan SBOM for vulnerabilities",
+		Short:   "Scan SBOM for vulnerabilities and licenses",
 		GroupID: groupScanning,
 		Example: `  # Scan CycloneDX and show the result in tables
   $ trivy sbom /path/to/report.cdx
@@ -1140,13 +1173,10 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err := sbomFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
-			options, err := sbomFlags.ToOptions(args, globalFlags)
+			options, err := sbomFlags.ToOptions(args)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
-
-			// Scan vulnerabilities
-			options.Scanners = types.Scanners{types.VulnerabilityScanner}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},
@@ -1168,7 +1198,10 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		GroupID: groupUtility,
 		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options := globalFlags.ToOptions()
+			options, err := globalFlags.ToOptions()
+			if err != nil {
+				return err
+			}
 			return showVersion(options.CacheDir, versionFormat, cmd.OutOrStdout())
 		},
 		SilenceErrors: true,

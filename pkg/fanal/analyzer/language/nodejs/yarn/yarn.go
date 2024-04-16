@@ -18,9 +18,9 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
-	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/yarn"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/yarn"
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -42,6 +42,7 @@ const version = 2
 var fragmentRegexp = regexp.MustCompile(`(\S+):(@?.*?)(@(.*?)|)$`)
 
 type yarnAnalyzer struct {
+	logger            *log.Logger
 	packageJsonParser *packagejson.Parser
 	lockParser        godeptypes.Parser
 	comparer          npm.Comparer
@@ -50,6 +51,7 @@ type yarnAnalyzer struct {
 
 func newYarnAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &yarnAnalyzer{
+		logger:            log.WithPrefix("yarn"),
 		packageJsonParser: packagejson.NewParser(),
 		lockParser:        yarn.NewParser(),
 		comparer:          npm.Comparer{},
@@ -75,12 +77,13 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 		licenses, err := a.traverseLicenses(input.FS, filePath)
 		if err != nil {
-			log.Logger.Debugf("Unable to traverse licenses: %s", err)
+			a.logger.Debug("Unable to traverse licenses", log.Err(err))
 		}
 
 		// Parse package.json alongside yarn.lock to find direct deps and mark dev deps
 		if err = a.analyzeDependencies(input.FS, path.Dir(filePath), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to remove dev dependencies: %s", path.Join(path.Dir(filePath), types.NpmPkg), err)
+			a.logger.Warn("Unable to parse package.json to remove dev dependencies",
+				log.String("file_path", path.Join(path.Dir(filePath), types.NpmPkg)), log.Err(err))
 		}
 
 		// Fill licenses
@@ -156,7 +159,7 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	packageJsonPath := path.Join(dir, types.NpmPkg)
 	directDeps, directDevDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Yarn: %s not found", packageJsonPath)
+		a.logger.Debug("package.json not found", log.String("path", packageJsonPath))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", dir, err)
@@ -268,7 +271,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) 
 	devDependencies := rootPkg.DevDependencies
 
 	if len(rootPkg.Workspaces) > 0 {
-		pkgs, err := a.traverseWorkspaces(fsys, rootPkg.Workspaces)
+		pkgs, err := a.traverseWorkspaces(fsys, path.Dir(filePath), rootPkg.Workspaces)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("traverse workspaces error: %w", err)
 		}
@@ -281,7 +284,7 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, filePath string) 
 	return dependencies, devDependencies, nil
 }
 
-func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]packagejson.Package, error) {
+func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, dir string, workspaces []string) ([]packagejson.Package, error) {
 	var pkgs []packagejson.Package
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -298,6 +301,9 @@ func (a yarnAnalyzer) traverseWorkspaces(fsys fs.FS, workspaces []string) ([]pac
 	}
 
 	for _, workspace := range workspaces {
+		// We need to add the path to the `package.json` file
+		// to properly get the pattern to search in `fs`
+		workspace = path.Join(dir, workspace)
 		matches, err := fs.Glob(fsys, workspace)
 		if err != nil {
 			return nil, err

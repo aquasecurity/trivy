@@ -13,6 +13,10 @@ vulnerabilities:
     expired_at: 2023-01-01
   - id: CVE-2019-0006
     expired_at: 2020-01-01
+  - id: CVE-2019-0007
+    purls:
+      - "pkg:golang/github.com/aquasecurity/aaa@9.9.9"
+      - "pkg:golang/github.com/aquasecurity/bar" # Match
 
 misconfigurations:
   - id: ID100

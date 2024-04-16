@@ -1,0 +1,30 @@
+Metadata-Version: 1.1
+Name: distlib
+Version: 0.3.1
+Summary: Distribution utilities
+Home-page: https://bitbucket.org/pypa/distlib
+Author: Vinay Sajip
+Author-email: vinay_sajip@red-dove.com
+License: Python license
+Download-URL: https://bitbucket.org/pypa/distlib/downloads/distlib-0.3.1.zip
+Description: Low-level components of distutils2/packaging, augmented with higher-level APIs for making packaging easier.
+
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Python Software Foundation License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Topic :: Software Development
+Classifier: Topic :: Utilities

@@ -44,7 +44,7 @@ func SkipPath(path string, skipPaths []string) bool {
 		if err != nil {
 			return false // return early if bad pattern
 		} else if match {
-			log.Logger.Debugf("Skipping path: %s", path)
+			log.Debug("Skipping path", log.String("path", path))
 			return true
 		}
 	}

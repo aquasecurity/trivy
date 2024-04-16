@@ -4,17 +4,16 @@ import (
 	"context"
 	"io/fs"
 
-	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const defaultParallel = 5
 
-type onFile[T any] func(string, fs.FileInfo, dio.ReadSeekerAt) (T, error)
+type onFile[T any] func(string, fs.FileInfo, xio.ReadSeekerAt) (T, error)
 type onWalkResult[T any] func(T) error
 
 func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
@@ -40,7 +39,7 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 			if err != nil {
 				return err
 			} else if info.Size() == 0 {
-				log.Logger.Debugf("%s is empty, skip this file", path)
+				log.Debug("Skip the empty file", log.String("file_path", path))
 				return nil
 			}
 
@@ -100,13 +99,13 @@ func walk[T any](ctx context.Context, fsys fs.FS, path string, c chan T, onFile 
 		return xerrors.Errorf("stat error: %w", err)
 	}
 
-	rsa, ok := f.(dio.ReadSeekerAt)
+	rsa, ok := f.(xio.ReadSeekerAt)
 	if !ok {
 		return xerrors.New("type assertion failed")
 	}
 	res, err := onFile(path, info, rsa)
 	if err != nil {
-		log.Logger.Debugw("Walk error", zap.String("file_path", path), zap.Error(err))
+		log.Debug("Walk error", log.String("file_path", path), log.Err(err))
 		return nil
 	}
 

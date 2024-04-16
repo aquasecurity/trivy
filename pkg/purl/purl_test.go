@@ -31,12 +31,10 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "5.3.14",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeMaven,
-					Namespace: "org.springframework",
-					Name:      "spring-core",
-					Version:   "5.3.14",
-				},
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.3.14",
 			},
 		},
 		{
@@ -47,12 +45,10 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "5.3.14",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeMaven,
-					Namespace: "org.springframework",
-					Name:      "spring-core",
-					Version:   "5.3.14",
-				},
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.3.14",
 			},
 		},
 		{
@@ -63,12 +59,10 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "1.2.0",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeNPM,
-					Namespace: "@xtuc",
-					Name:      "ieee754",
-					Version:   "1.2.0",
-				},
+				Type:      packageurl.TypeNPM,
+				Namespace: "@xtuc",
+				Name:      "ieee754",
+				Version:   "1.2.0",
 			},
 		},
 		{
@@ -79,11 +73,9 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "4.17.21",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeNPM,
-					Name:    "lodash",
-					Version: "4.17.21",
-				},
+				Type:    packageurl.TypeNPM,
+				Name:    "lodash",
+				Version: "4.17.21",
 			},
 		},
 		{
@@ -94,12 +86,10 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "1.2.0",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeNPM,
-					Namespace: "@xtuc",
-					Name:      "ieee754",
-					Version:   "1.2.0",
-				},
+				Type:      packageurl.TypeNPM,
+				Namespace: "@xtuc",
+				Name:      "ieee754",
+				Version:   "1.2.0",
 			},
 		},
 		{
@@ -110,11 +100,9 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "4.17.21",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeNPM,
-					Name:    "lodash",
-					Version: "4.17.21",
-				},
+				Type:    packageurl.TypeNPM,
+				Name:    "lodash",
+				Version: "4.17.21",
 			},
 		},
 		{
@@ -125,11 +113,9 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "1.2.0",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypePyPi,
-					Name:    "django-test",
-					Version: "1.2.0",
-				},
+				Type:    packageurl.TypePyPi,
+				Name:    "django-test",
+				Version: "1.2.0",
 			},
 		},
 		{
@@ -140,11 +126,9 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "0.4.1",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeConda,
-					Name:    "absl-py",
-					Version: "0.4.1",
-				},
+				Type:    packageurl.TypeConda,
+				Name:    "absl-py",
+				Version: "0.4.1",
 			},
 		},
 		{
@@ -155,12 +139,10 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "v1.0.2",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeComposer,
-					Namespace: "symfony",
-					Name:      "contracts",
-					Version:   "v1.0.2",
-				},
+				Type:      packageurl.TypeComposer,
+				Namespace: "symfony",
+				Name:      "contracts",
+				Version:   "v1.0.2",
 			},
 		},
 		{
@@ -171,12 +153,10 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "v1.5.0",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeGolang,
-					Namespace: "github.com/go-sql-driver",
-					Name:      "mysql",
-					Version:   "v1.5.0",
-				},
+				Type:      packageurl.TypeGolang,
+				Namespace: "github.com/go-sql-driver",
+				Name:      "mysql",
+				Version:   "v1.5.0",
 			},
 		},
 		{
@@ -203,11 +183,9 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeHex,
-					Name:    "bunt",
-					Version: "0.2.0",
-				},
+				Type:    packageurl.TypeHex,
+				Name:    "bunt",
+				Version: "0.2.0",
 			},
 		},
 		{
@@ -218,11 +196,9 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "0.13.2",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypePub,
-					Name:    "http",
-					Version: "0.13.2",
-				},
+				Type:    packageurl.TypePub,
+				Name:    "http",
+				Version: "0.13.2",
 			},
 		},
 		{
@@ -234,12 +210,10 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "1.1.0",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeSwift,
-					Namespace: "github.com/apple",
-					Name:      "swift-atomics",
-					Version:   "1.1.0",
-				},
+				Type:      packageurl.TypeSwift,
+				Namespace: "github.com/apple",
+				Name:      "swift-atomics",
+				Version:   "1.1.0",
 			},
 		},
 		{
@@ -251,12 +225,10 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "7.5.2",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeCocoapods,
-					Name:    "GoogleUtilities",
-					Version: "7.5.2",
-					Subpath: "NSData+zlib",
-				},
+				Type:    packageurl.TypeCocoapods,
+				Name:    "GoogleUtilities",
+				Version: "7.5.2",
+				Subpath: "NSData+zlib",
 			},
 		},
 		{
@@ -268,11 +240,9 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "0.7.3",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeCargo,
-					Name:    "abomination",
-					Version: "0.7.3",
-				},
+				Type:    packageurl.TypeCargo,
+				Name:    "abomination",
+				Version: "0.7.3",
 			},
 		},
 		{
@@ -284,11 +254,9 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "9.0.1",
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeNuget,
-					Name:    "Newtonsoft.Json",
-					Version: "9.0.1",
-				},
+				Type:    packageurl.TypeNuget,
+				Name:    "Newtonsoft.Json",
+				Version: "9.0.1",
 			},
 		},
 		{
@@ -314,24 +282,22 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeRPM,
-					Namespace: "redhat",
-					Name:      "acl",
-					Version:   "2.2.53-1.el8",
-					Qualifiers: packageurl.Qualifiers{
-						{
-							Key:   "arch",
-							Value: "aarch64",
-						},
-						{
-							Key:   "epoch",
-							Value: "1",
-						},
-						{
-							Key:   "distro",
-							Value: "redhat-8",
-						},
+				Type:      packageurl.TypeRPM,
+				Namespace: "redhat",
+				Name:      "acl",
+				Version:   "2.2.53-1.el8",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "arch",
+						Value: "aarch64",
+					},
+					{
+						Key:   "epoch",
+						Value: "1",
+					},
+					{
+						Key:   "distro",
+						Value: "redhat-8",
 					},
 				},
 			},
@@ -352,20 +318,18 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeOCI,
-					Namespace: "",
-					Name:      "core",
-					Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
-					Qualifiers: packageurl.Qualifiers{
-						{
-							Key:   "repository_url",
-							Value: "cblmariner2preview.azurecr.io/base/core",
-						},
-						{
-							Key:   "arch",
-							Value: "amd64",
-						},
+				Type:      packageurl.TypeOCI,
+				Namespace: "",
+				Name:      "core",
+				Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "repository_url",
+						Value: "cblmariner2preview.azurecr.io/base/core",
+					},
+					{
+						Key:   "arch",
+						Value: "amd64",
 					},
 				},
 			},
@@ -400,20 +364,18 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 			want: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeOCI,
-					Namespace: "",
-					Name:      "alpine",
-					Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
-					Qualifiers: packageurl.Qualifiers{
-						{
-							Key:   "repository_url",
-							Value: "index.docker.io/library/alpine",
-						},
-						{
-							Key:   "arch",
-							Value: "amd64",
-						},
+				Type:      packageurl.TypeOCI,
+				Namespace: "",
+				Name:      "alpine",
+				Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "repository_url",
+						Value: "index.docker.io/library/alpine",
+					},
+					{
+						Key:   "arch",
+						Value: "amd64",
 					},
 				},
 			},
@@ -458,79 +420,65 @@ func TestFromString(t *testing.T) {
 			name: "happy path for maven",
 			purl: "pkg:maven/org.springframework/spring-core@5.0.4.RELEASE",
 			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeMaven,
-					Namespace: "org.springframework",
-					Version:   "5.0.4.RELEASE",
-					Name:      "spring-core",
-				},
-				FilePath: "",
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Version:   "5.0.4.RELEASE",
+				Name:      "spring-core",
 			},
 		},
 		{
 			name: "happy path for npm",
-			purl: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
+			purl: "pkg:npm/bootstrap@5.0.2",
 			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeNPM,
-					Name:    "bootstrap",
-					Version: "5.0.2",
-				},
-				FilePath: "app/app/package.json",
+				Type:    packageurl.TypeNPM,
+				Name:    "bootstrap",
+				Version: "5.0.2",
 			},
 		},
 		{
 			name: "happy path for coocapods",
 			purl: "pkg:cocoapods/GoogleUtilities@7.5.2#NSData+zlib",
 			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeCocoapods,
-					Name:    "GoogleUtilities",
-					Version: "7.5.2",
-					Subpath: "NSData+zlib",
-				},
+				Type:    packageurl.TypeCocoapods,
+				Name:    "GoogleUtilities",
+				Version: "7.5.2",
+				Subpath: "NSData+zlib",
 			},
 		},
 		{
 			name: "happy path for hex",
 			purl: "pkg:hex/plug@1.14.0",
 			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeHex,
-					Name:    "plug",
-					Version: "1.14.0",
-				},
+				Type:    packageurl.TypeHex,
+				Name:    "plug",
+				Version: "1.14.0",
 			},
 		},
 		{
 			name: "happy path for dart",
 			purl: "pkg:pub/http@0.13.2",
 			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypePub,
-					Name:    "http",
-					Version: "0.13.2",
-				},
+				Type:    packageurl.TypePub,
+				Name:    "http",
+				Version: "0.13.2",
 			},
 		},
 		{
 			name: "happy path for apk",
 			purl: "pkg:apk/alpine/alpine-baselayout@3.2.0-r16?distro=3.14.2&epoch=1",
 			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      string(analyzer.TypeApk),
-					Namespace: "alpine",
-					Name:      "alpine-baselayout",
-					Version:   "3.2.0-r16",
-					Qualifiers: packageurl.Qualifiers{
-						{
-							Key:   "distro",
-							Value: "3.14.2",
-						},
-						{
-							Key:   "epoch",
-							Value: "1",
-						},
+				Type:      string(analyzer.TypeApk),
+				Namespace: "alpine",
+				Name:      "alpine-baselayout",
+				Version:   "3.2.0-r16",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "distro",
+						Value: "3.14.2",
+					},
+					{
+						Key:   "epoch",
+						Value: "1",
 					},
 				},
 			},
@@ -539,35 +487,29 @@ func TestFromString(t *testing.T) {
 			name: "happy path for rpm",
 			purl: "pkg:rpm/redhat/containers-common@0.1.14",
 			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeRPM,
-					Namespace: "redhat",
-					Name:      "containers-common",
-					Version:   "0.1.14",
-				},
+				Type:      packageurl.TypeRPM,
+				Namespace: "redhat",
+				Name:      "containers-common",
+				Version:   "0.1.14",
 			},
 		},
 		{
 			name: "happy path for conda",
 			purl: "pkg:conda/absl-py@0.4.1",
 			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeConda,
-					Name:    "absl-py",
-					Version: "0.4.1",
-				},
+				Type:    packageurl.TypeConda,
+				Name:    "absl-py",
+				Version: "0.4.1",
 			},
 		},
 		{
 			name: "bad rpm",
 			purl: "pkg:rpm/redhat/a--@1.0.0",
 			want: purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeRPM,
-					Namespace: "redhat",
-					Name:      "a--",
-					Version:   "1.0.0",
-				},
+				Type:      packageurl.TypeRPM,
+				Namespace: "redhat",
+				Name:      "a--",
+				Version:   "1.0.0",
 			},
 		},
 	}
@@ -594,32 +536,31 @@ func TestPackageURL_Package(t *testing.T) {
 		{
 			name: "rpm + Qualifiers",
 			pkgURL: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeRPM,
-					Namespace: "redhat",
-					Name:      "nodejs-full-i18n",
-					Version:   "10.21.0-3.module_el8.2.0+391+8da3adc6",
-					Qualifiers: packageurl.Qualifiers{
-						{
-							Key:   "arch",
-							Value: "x86_64",
-						},
-						{
-							Key:   "epoch",
-							Value: "1",
-						},
-						{
-							Key:   "modularitylabel",
-							Value: "nodejs:10:8020020200707141642:6a468ee4",
-						},
-						{
-							Key:   "distro",
-							Value: "redhat-8",
-						},
+				Type:      packageurl.TypeRPM,
+				Namespace: "redhat",
+				Name:      "nodejs-full-i18n",
+				Version:   "10.21.0-3.module_el8.2.0+391+8da3adc6",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "arch",
+						Value: "x86_64",
+					},
+					{
+						Key:   "epoch",
+						Value: "1",
+					},
+					{
+						Key:   "modularitylabel",
+						Value: "nodejs:10:8020020200707141642:6a468ee4",
+					},
+					{
+						Key:   "distro",
+						Value: "redhat-8",
 					},
 				},
 			},
 			wantPkg: &ftypes.Package{
+				ID:              "nodejs-full-i18n@10.21.0-3.module_el8.2.0+391+8da3adc6",
 				Name:            "nodejs-full-i18n",
 				Version:         "10.21.0",
 				Release:         "3.module_el8.2.0+391+8da3adc6",
@@ -657,14 +598,14 @@ func TestPackageURL_Package(t *testing.T) {
 		{
 			name: "composer with namespace",
 			pkgURL: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeComposer,
-					Namespace: "symfony",
-					Name:      "contracts",
-					Version:   "1.0.2",
-				},
+				Type:      packageurl.TypeComposer,
+				Namespace: "symfony",
+				Name:      "contracts",
+				Version:   "1.0.2",
 			},
+
 			wantPkg: &ftypes.Package{
+				ID:      "symfony/contracts@1.0.2",
 				Name:    "symfony/contracts",
 				Version: "1.0.2",
 				Identifier: ftypes.PkgIdentifier{
@@ -680,14 +621,14 @@ func TestPackageURL_Package(t *testing.T) {
 		{
 			name: "maven with namespace",
 			pkgURL: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeMaven,
-					Namespace: "org.springframework",
-					Name:      "spring-core",
-					Version:   "5.0.4.RELEASE",
-				},
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.0.4.RELEASE",
 			},
+
 			wantPkg: &ftypes.Package{
+				ID:      "org.springframework:spring-core:5.0.4.RELEASE",
 				Name:    "org.springframework:spring-core",
 				Version: "5.0.4.RELEASE",
 				Identifier: ftypes.PkgIdentifier{
@@ -703,14 +644,14 @@ func TestPackageURL_Package(t *testing.T) {
 		{
 			name: "cocoapods with subpath",
 			pkgURL: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:    packageurl.TypeCocoapods,
-					Version: "4.2.0",
-					Name:    "AppCenter",
-					Subpath: "Analytics",
-				},
+				Type:    packageurl.TypeCocoapods,
+				Version: "4.2.0",
+				Name:    "AppCenter",
+				Subpath: "Analytics",
 			},
+
 			wantPkg: &ftypes.Package{
+				ID:      "AppCenter/Analytics@4.2.0",
 				Name:    "AppCenter/Analytics",
 				Version: "4.2.0",
 				Identifier: ftypes.PkgIdentifier{
@@ -726,20 +667,19 @@ func TestPackageURL_Package(t *testing.T) {
 		{
 			name: "wrong epoch",
 			pkgURL: &purl.PackageURL{
-				PackageURL: packageurl.PackageURL{
-					Type:      packageurl.TypeRPM,
-					Namespace: "redhat",
-					Name:      "acl",
-					Version:   "2.2.53-1.el8",
-					Qualifiers: packageurl.Qualifiers{
-						{
-							Key:   "epoch",
-							Value: "wrong",
-						},
+				Type:      packageurl.TypeRPM,
+				Namespace: "redhat",
+				Name:      "acl",
+				Version:   "2.2.53-1.el8",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "epoch",
+						Value: "wrong",
 					},
 				},
 			},
 			wantPkg: &ftypes.Package{
+				ID:      "acl@2.2.53-1.el8",
 				Name:    "acl",
 				Version: "2.2.53",
 				Release: "1.el8",
@@ -807,7 +747,7 @@ func TestPackageURL_LangType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &purl.PackageURL{PackageURL: tt.purl}
+			p := (purl.PackageURL)(tt.purl)
 			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
 		})
 	}

@@ -7,25 +7,23 @@ import (
 )
 
 var (
-	ArtifactTypeFlag = Flag{
+	ArtifactTypeFlag = Flag[string]{
 		Name:       "artifact-type",
 		ConfigName: "sbom.artifact-type",
-		Default:    "",
 		Usage:      "deprecated",
 		Deprecated: true,
 	}
-	SBOMFormatFlag = Flag{
+	SBOMFormatFlag = Flag[string]{
 		Name:       "sbom-format",
 		ConfigName: "sbom.format",
-		Default:    "",
 		Usage:      "deprecated",
 		Deprecated: true,
 	}
 )
 
 type SBOMFlagGroup struct {
-	ArtifactType *Flag // deprecated
-	SBOMFormat   *Flag // deprecated
+	ArtifactType *Flag[string] // deprecated
+	SBOMFormat   *Flag[string] // deprecated
 }
 
 type SBOMOptions struct {
@@ -33,8 +31,8 @@ type SBOMOptions struct {
 
 func NewSBOMFlagGroup() *SBOMFlagGroup {
 	return &SBOMFlagGroup{
-		ArtifactType: &ArtifactTypeFlag,
-		SBOMFormat:   &SBOMFormatFlag,
+		ArtifactType: ArtifactTypeFlag.Clone(),
+		SBOMFormat:   SBOMFormatFlag.Clone(),
 	}
 }
 
@@ -42,19 +40,23 @@ func (f *SBOMFlagGroup) Name() string {
 	return "SBOM"
 }
 
-func (f *SBOMFlagGroup) Flags() []*Flag {
-	return []*Flag{
+func (f *SBOMFlagGroup) Flags() []Flagger {
+	return []Flagger{
 		f.ArtifactType,
 		f.SBOMFormat,
 	}
 }
 
 func (f *SBOMFlagGroup) ToOptions() (SBOMOptions, error) {
-	artifactType := getString(f.ArtifactType)
-	sbomFormat := getString(f.SBOMFormat)
+	if err := parseFlags(f); err != nil {
+		return SBOMOptions{}, err
+	}
+
+	artifactType := f.ArtifactType.Value()
+	sbomFormat := f.SBOMFormat.Value()
 
 	if artifactType != "" || sbomFormat != "" {
-		log.Logger.Error("'trivy sbom' is now for scanning SBOM. " +
+		log.Error("'trivy sbom' is now for scanning SBOM. " +
 			"See https://github.com/aquasecurity/trivy/discussions/2407 for the detail")
 		return SBOMOptions{}, xerrors.New("'--artifact-type' and '--sbom-format' are no longer available")
 	}

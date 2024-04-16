@@ -77,17 +77,15 @@ func NewScanner() *Scanner {
 }
 
 // Detect scans and returns redhat vulnerabilities
-func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting RHEL/CentOS vulnerabilities...")
-
+func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	osVer = osver.Major(osVer)
-	log.Logger.Debugf("Red Hat: os version: %s", osVer)
-	log.Logger.Debugf("Red Hat: the number of packages: %d", len(pkgs))
+	log.InfoContext(ctx, "Detecting RHEL/CentOS vulnerabilities...", log.String("os_version", osVer),
+		log.Int("pkg_num", len(pkgs)))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
 		if !isFromSupportedVendor(pkg) {
-			log.Logger.Debugf("Skipping %s: unsupported vendor", pkg.Name)
+			log.DebugContext(ctx, "Skipping the package with unsupported vendor", log.String("package", pkg.Name))
 			continue
 		}
 

@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -9,6 +10,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 type OS struct {
@@ -156,6 +158,13 @@ func (id *PkgIdentifier) Empty() bool {
 }
 
 func (id *PkgIdentifier) Match(s string) bool {
+	// Encode string as PURL
+	if strings.HasPrefix(s, "pkg:") {
+		if p, err := packageurl.FromString(s); err == nil {
+			s = p.String()
+		}
+	}
+
 	switch {
 	case id.BOMRef == s:
 		return true
@@ -269,7 +278,7 @@ type ArtifactReference struct {
 	ImageMetadata ImageMetadata
 
 	// SBOM
-	CycloneDX *CycloneDX
+	BOM *core.BOM
 }
 
 type ImageMetadata struct {

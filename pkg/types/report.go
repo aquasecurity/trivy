@@ -6,6 +6,7 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
 // Report represents a scan result
@@ -17,8 +18,8 @@ type Report struct {
 	Metadata      Metadata            `json:",omitempty"`
 	Results       Results             `json:",omitempty"`
 
-	// SBOM
-	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
+	// parsed SBOM
+	BOM *core.BOM `json:"-"` // Just for internal usage, not exported in JSON
 }
 
 // Metadata represents a metadata of artifact
@@ -108,14 +109,19 @@ type Result struct {
 	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
-	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
+	Secrets           []DetectedSecret           `json:"Secrets,omitempty"`
 	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
+
+	// ModifiedFindings holds a list of findings that have been modified from their original state.
+	// This can include vulnerabilities that have been marked as ignored, not affected, or have had
+	// their severity adjusted. It is currently available only in the table format.
+	ModifiedFindings []ModifiedFinding `json:"-"`
 }
 
 func (r *Result) IsEmpty() bool {
 	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
-		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0
+		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0 && len(r.ModifiedFindings) == 0
 }
 
 type MisconfSummary struct {
@@ -135,7 +141,7 @@ func (results Results) Failed() bool {
 			return true
 		}
 		for _, m := range r.Misconfigurations {
-			if m.Status == StatusFailure {
+			if m.Status == MisconfStatusFailure {
 				return true
 			}
 		}

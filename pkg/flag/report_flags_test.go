@@ -1,19 +1,16 @@
 package flag_test
 
 import (
+	"github.com/aquasecurity/trivy/pkg/log"
 	"testing"
 
-	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
-
-	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/log"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestReportFlagGroup_ToOptions(t *testing.T) {
@@ -67,7 +64,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 			wantLogs: []string{
 				`["cyclonedx" "spdx" "spdx-json" "github"] automatically enables '--list-all-pkgs'.`,
-				`Severities: ["CRITICAL"]`,
+				`Parsed severities	severities=[CRITICAL]`,
 			},
 			want: flag.ReportOptions{
 				Severities: []dbTypes.Severity{
@@ -161,17 +158,17 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 			want: flag.ReportOptions{
 				Compliance: spec.ComplianceSpec{
-					Spec: defsecTypes.Spec{
+					Spec: iacTypes.Spec{
 						ID:          "0001",
 						Title:       "my-custom-spec",
 						Description: "My fancy spec",
 						Version:     "1.2",
-						Controls: []defsecTypes.Control{
+						Controls: []iacTypes.Control{
 							{
 								ID:          "1.1",
 								Name:        "Unencrypted S3 bucket",
 								Description: "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.",
-								Checks: []defsecTypes.SpecCheck{
+								Checks: []iacTypes.SpecCheck{
 									{ID: "AVD-AWS-0088"},
 								},
 								Severity: "HIGH",
@@ -185,41 +182,42 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			level := zap.WarnLevel
-			if tt.fields.debug {
-				level = zap.DebugLevel
-			}
-			core, obs := observer.New(level)
-			log.Logger = zap.New(core).Sugar()
+			t.Cleanup(viper.Reset)
 
-			viper.Set(flag.FormatFlag.ConfigName, string(tt.fields.format))
-			viper.Set(flag.TemplateFlag.ConfigName, tt.fields.template)
-			viper.Set(flag.DependencyTreeFlag.ConfigName, tt.fields.dependencyTree)
-			viper.Set(flag.ListAllPkgsFlag.ConfigName, tt.fields.listAllPkgs)
-			viper.Set(flag.IgnoreFileFlag.ConfigName, tt.fields.ignoreFile)
-			viper.Set(flag.IgnoreUnfixedFlag.ConfigName, tt.fields.ignoreUnfixed)
-			viper.Set(flag.IgnorePolicyFlag.ConfigName, tt.fields.ignorePolicy)
-			viper.Set(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
-			viper.Set(flag.ExitOnEOLFlag.ConfigName, tt.fields.exitOnEOSL)
-			viper.Set(flag.OutputFlag.ConfigName, tt.fields.output)
-			viper.Set(flag.OutputPluginArgFlag.ConfigName, tt.fields.outputPluginArgs)
-			viper.Set(flag.SeverityFlag.ConfigName, tt.fields.severities)
-			viper.Set(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
+			level := log.LevelWarn
+			if tt.fields.debug {
+				level = log.LevelDebug
+			}
+			out := newLogger(level)
+
+			setValue(flag.FormatFlag.ConfigName, string(tt.fields.format))
+			setValue(flag.TemplateFlag.ConfigName, tt.fields.template)
+			setValue(flag.DependencyTreeFlag.ConfigName, tt.fields.dependencyTree)
+			setValue(flag.ListAllPkgsFlag.ConfigName, tt.fields.listAllPkgs)
+			setValue(flag.IgnoreFileFlag.ConfigName, tt.fields.ignoreFile)
+			setValue(flag.IgnoreUnfixedFlag.ConfigName, tt.fields.ignoreUnfixed)
+			setValue(flag.IgnorePolicyFlag.ConfigName, tt.fields.ignorePolicy)
+			setValue(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
+			setValue(flag.ExitOnEOLFlag.ConfigName, tt.fields.exitOnEOSL)
+			setValue(flag.OutputFlag.ConfigName, tt.fields.output)
+			setValue(flag.OutputPluginArgFlag.ConfigName, tt.fields.outputPluginArgs)
+			setValue(flag.SeverityFlag.ConfigName, tt.fields.severities)
+			setValue(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
 
 			// Assert options
 			f := &flag.ReportFlagGroup{
-				Format:          &flag.FormatFlag,
-				Template:        &flag.TemplateFlag,
-				DependencyTree:  &flag.DependencyTreeFlag,
-				ListAllPkgs:     &flag.ListAllPkgsFlag,
-				IgnoreFile:      &flag.IgnoreFileFlag,
-				IgnorePolicy:    &flag.IgnorePolicyFlag,
-				ExitCode:        &flag.ExitCodeFlag,
-				ExitOnEOL:       &flag.ExitOnEOLFlag,
-				Output:          &flag.OutputFlag,
-				OutputPluginArg: &flag.OutputPluginArgFlag,
-				Severity:        &flag.SeverityFlag,
-				Compliance:      &flag.ComplianceFlag,
+				Format:          flag.FormatFlag.Clone(),
+				Template:        flag.TemplateFlag.Clone(),
+				DependencyTree:  flag.DependencyTreeFlag.Clone(),
+				ListAllPkgs:     flag.ListAllPkgsFlag.Clone(),
+				IgnoreFile:      flag.IgnoreFileFlag.Clone(),
+				IgnorePolicy:    flag.IgnorePolicyFlag.Clone(),
+				ExitCode:        flag.ExitCodeFlag.Clone(),
+				ExitOnEOL:       flag.ExitOnEOLFlag.Clone(),
+				Output:          flag.OutputFlag.Clone(),
+				OutputPluginArg: flag.OutputPluginArgFlag.Clone(),
+				Severity:        flag.SeverityFlag.Clone(),
+				Compliance:      flag.ComplianceFlag.Clone(),
 			}
 
 			got, err := f.ToOptions()
@@ -227,11 +225,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
-			var gotMessages []string
-			for _, entry := range obs.AllUntimed() {
-				gotMessages = append(gotMessages, entry.Message)
-			}
-			assert.Equal(t, tt.wantLogs, gotMessages, tt.name)
+			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)
 		})
 	}
 }

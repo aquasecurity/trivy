@@ -112,6 +112,14 @@ Nix package manager for Linux and MacOS.
 References: 
 -  <https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/trivy/default.nix>
 
+### FreeBSD (Official)
+
+[Pkg](https://freebsd.org) for FreeBSD.
+
+```bash
+pkg install trivy
+```
+
 ## Install from GitHub Release (Official)
 
 ### Download Binary

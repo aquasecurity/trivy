@@ -28,12 +28,12 @@ func NewScanKubernetes(s local.Scanner) *ScanKubernetes {
 	return &ScanKubernetes{localScanner: s}
 }
 
-// NewKubenetesScanner is the factory method for scanner
-func NewKubenetesScanner() *ScanKubernetes {
+// NewKubernetesScanner is the factory method for scanner
+func NewKubernetesScanner() *ScanKubernetes {
 	return initializeScanK8s(nil)
 }
 
-// // Scan scans k8s core components and return it findings
+// Scan scans k8s core components and return it findings
 func (sk ScanKubernetes) Scan(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	return sk.localScanner.ScanTarget(ctx, target, options)
 }

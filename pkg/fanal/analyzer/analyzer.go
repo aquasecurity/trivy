@@ -15,11 +15,11 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -92,7 +92,7 @@ const GroupBuiltin Group = "builtin"
 
 func RegisterAnalyzer(analyzer analyzer) {
 	if _, ok := analyzers[analyzer.Type()]; ok {
-		log.Logger.Fatalf("analyzer %s is registered twice", analyzer.Type())
+		log.Fatal("Analyzer is registered twice", log.String("type", string(analyzer.Type())))
 	}
 	analyzers[analyzer.Type()] = analyzer
 }
@@ -101,7 +101,7 @@ type postAnalyzerInitialize func(options AnalyzerOptions) (PostAnalyzer, error)
 
 func RegisterPostAnalyzer(t Type, initializer postAnalyzerInitialize) {
 	if _, ok := postAnalyzers[t]; ok {
-		log.Logger.Fatalf("analyzer %s is registered twice", t)
+		log.Fatal("Analyzer is registered twice", log.String("type", string(t)))
 	}
 	postAnalyzers[t] = initializer
 }
@@ -117,9 +117,10 @@ type CustomGroup interface {
 	Group() Group
 }
 
-type Opener func() (dio.ReadSeekCloserAt, error)
+type Opener func() (xio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
+	logger        *log.Logger
 	analyzers     []analyzer
 	postAnalyzers []PostAnalyzer
 	filePatterns  map[Type][]*regexp.Regexp
@@ -133,7 +134,7 @@ type AnalysisInput struct {
 	Dir      string
 	FilePath string
 	Info     os.FileInfo
-	Content  dio.ReadSeekerAt
+	Content  xio.ReadSeekerAt
 
 	Options AnalysisOptions
 }
@@ -318,6 +319,7 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 	}
 
 	group := AnalyzerGroup{
+		logger:       log.WithPrefix("analyzer"),
 		filePatterns: make(map[Type][]*regexp.Regexp),
 	}
 	for _, p := range opt.FilePatterns {
@@ -411,7 +413,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 		}
 		rc, err := opener()
 		if errors.Is(err, fs.ErrPermission) {
-			log.Logger.Debugf("Permission error: %s", filePath)
+			ag.logger.Debug("Permission error", log.String("file_path", filePath))
 			break
 		} else if err != nil {
 			return xerrors.Errorf("unable to open %s: %w", filePath, err)
@@ -422,7 +424,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 		}
 		wg.Add(1)
 
-		go func(a analyzer, rc dio.ReadSeekCloserAt) {
+		go func(a analyzer, rc xio.ReadSeekCloserAt) {
 			defer limit.Release(1)
 			defer wg.Done()
 			defer rc.Close()
@@ -435,7 +437,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 				Options:  opts,
 			})
 			if err != nil && !errors.Is(err, fos.AnalyzeOSError) {
-				log.Logger.Debugf("Analysis error: %s", err)
+				ag.logger.Debug("Analysis error", log.Err(err))
 				return
 			}
 			result.Merge(ret)

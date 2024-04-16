@@ -30,10 +30,13 @@ type License struct {
 }
 
 type nuspecParser struct {
+	logger      *log.Logger
 	packagesDir string // global packages folder - https: //learn.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders
 }
 
 func newNuspecParser() nuspecParser {
+	logger := log.WithPrefix("nuget")
+
 	// cf. https: //learn.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders
 	packagesDir := os.Getenv("NUGET_PACKAGES")
 	if packagesDir == "" {
@@ -41,11 +44,12 @@ func newNuspecParser() nuspecParser {
 	}
 
 	if !fsutils.DirExists(packagesDir) {
-		log.Logger.Debugf("The nuget packages directory couldn't be found. License search disabled")
+		logger.Debug("The nuget packages directory couldn't be found. License search disabled")
 		return nuspecParser{}
 	}
 
 	return nuspecParser{
+		logger:      logger,
 		packagesDir: packagesDir,
 	}
 }

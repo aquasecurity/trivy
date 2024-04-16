@@ -3,27 +3,26 @@ package vex
 import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/samber/lo"
-	"go.uber.org/zap"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type CycloneDX struct {
-	sbom       *ftypes.CycloneDX
+	sbom       *core.BOM
 	statements []Statement
-	logger     *zap.SugaredLogger
+	logger     *log.Logger
 }
 
 type Statement struct {
 	VulnerabilityID string
 	Affects         []string
-	Status          Status
-	Justification   string // TODO: define a type
+	Status          types.FindingStatus
+	Justification   string
 }
 
-func newCycloneDX(cdxSBOM *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
+func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 	var stmts []Statement
 	for _, vuln := range lo.FromPtr(vex.Vulnerabilities) {
 		affects := lo.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects, index int) string {
@@ -39,21 +38,26 @@ func newCycloneDX(cdxSBOM *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
 		})
 	}
 	return &CycloneDX{
-		sbom:       cdxSBOM,
+		sbom:       sbom,
 		statements: stmts,
-		logger:     log.Logger.With(zap.String("VEX format", "CycloneDX")),
+		logger:     log.WithPrefix("vex").With(log.String("format", "CycloneDX")),
 	}
 }
 
-func (v *CycloneDX) Filter(vulns []types.DetectedVulnerability) []types.DetectedVulnerability {
-	return lo.Filter(vulns, func(vuln types.DetectedVulnerability, _ int) bool {
+func (v *CycloneDX) Filter(result *types.Result, _ *core.BOM) {
+	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
 		stmt, ok := lo.Find(v.statements, func(item Statement) bool {
 			return item.VulnerabilityID == vuln.VulnerabilityID
 		})
 		if !ok {
 			return true
 		}
-		return v.affected(vuln, stmt)
+		if !v.affected(vuln, stmt) {
+			result.ModifiedFindings = append(result.ModifiedFindings,
+				types.NewModifiedFinding(vuln, stmt.Status, stmt.Justification, "CycloneDX VEX"))
+			return false
+		}
+		return true
 	})
 }
 
@@ -62,33 +66,32 @@ func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) b
 		// Affect must be BOM-Link at the moment
 		link, err := cdx.ParseBOMLink(affect)
 		if err != nil {
-			v.logger.Warnw("Unable to parse BOM-Link", zap.String("affect", affect))
+			v.logger.Warn("Unable to parse BOM-Link", log.String("affect", affect))
 			continue
 		}
 		if v.sbom.SerialNumber != link.SerialNumber() || v.sbom.Version != link.Version() {
-			v.logger.Warnw("URN doesn't match with SBOM", zap.String("serial number", link.SerialNumber()),
-				zap.Int("version", link.Version()))
+			v.logger.Warn("URN doesn't match with SBOM",
+				log.String("serial number", link.SerialNumber()),
+				log.Int("version", link.Version()))
 			continue
 		}
-		if vuln.PkgIdentifier.Match(link.Reference()) && (stmt.Status == StatusNotAffected || stmt.Status == StatusFixed) {
-			v.logger.Infow("Filtered out the detected vulnerability", zap.String("vulnerability-id", vuln.VulnerabilityID),
-				zap.String("status", string(stmt.Status)), zap.String("justification", stmt.Justification))
+		if vuln.PkgIdentifier.Match(link.Reference()) && (stmt.Status == types.FindingStatusNotAffected || stmt.Status == types.FindingStatusFixed) {
 			return false
 		}
 	}
 	return true
 }
 
-func cdxStatus(s cdx.ImpactAnalysisState) Status {
+func cdxStatus(s cdx.ImpactAnalysisState) types.FindingStatus {
 	switch s {
 	case cdx.IASResolved, cdx.IASResolvedWithPedigree:
-		return StatusFixed
+		return types.FindingStatusFixed
 	case cdx.IASExploitable:
-		return StatusAffected
+		return types.FindingStatusAffected
 	case cdx.IASInTriage:
-		return StatusUnderInvestigation
+		return types.FindingStatusUnderInvestigation
 	case cdx.IASFalsePositive, cdx.IASNotAffected:
-		return StatusNotAffected
+		return types.FindingStatusNotAffected
 	}
-	return StatusUnknown
+	return types.FindingStatusUnknown
 }
