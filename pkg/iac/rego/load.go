@@ -89,6 +89,14 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 		return err
 	}
 
+	if enableEmbeddedPolicies {
+		s.policies = lo.Assign(s.policies, s.embeddedChecks)
+	}
+
+	if enableEmbeddedLibraries {
+		s.policies = lo.Assign(s.policies, s.embeddedLibs)
+	}
+
 	var err error
 	if len(paths) > 0 {
 		loaded, err := LoadPoliciesFromDirs(srcFS, paths...)
@@ -133,14 +141,6 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 		return fmt.Errorf("unable to load data: %w", err)
 	}
 	s.store = store
-
-	if enableEmbeddedPolicies {
-		s.policies = lo.Assign(s.policies, s.embeddedChecks)
-	}
-
-	if enableEmbeddedLibraries {
-		s.policies = lo.Assign(s.policies, s.embeddedLibs)
-	}
 
 	return s.compilePolicies(srcFS, paths)
 }
