@@ -650,7 +650,7 @@ func (p *parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (
 
 	// try all remoteRepositories
 	for _, repo := range remoteRepos {
-		fetched, err := fetchPOMFromRemoteRepository(repo, paths)
+		fetched, err := p.fetchPOMFromRemoteRepository(repo, paths)
 		if err != nil {
 			return nil, xerrors.Errorf("fetch repository error: %w", err)
 		} else if fetched == nil {
