@@ -286,14 +286,30 @@ func ParseConfig(configPath string) (*Config, error) {
 	}
 	defer f.Close()
 
-	logger.Info("Loading the config file s for secret scanning...")
+	logger.Info("Loading the config file for secret scanning...")
 
 	var config Config
 	if err = yaml.NewDecoder(f).Decode(&config); err != nil {
 		return nil, xerrors.Errorf("secrets config decode error: %w", err)
 	}
 
+	// Update severity for custom rules
+	for i := range config.CustomRules {
+		config.CustomRules[i].Severity = convertSeverity(logger, config.CustomRules[i].Severity)
+	}
+
 	return &config, nil
+}
+
+// convertSeverity checks the severity and converts it to uppercase or uses "UNKNOWN" for the wrong severity.
+func convertSeverity(logger *log.Logger, severity string) string {
+	switch strings.ToLower(severity) {
+	case "low", "medium", "high", "critical", "unknown":
+		return strings.ToUpper(severity)
+	default:
+		logger.Warn("Incorrect severity", log.String("severity", severity))
+		return "UNKNOWN"
+	}
 }
 
 func NewScanner(config *Config) Scanner {
