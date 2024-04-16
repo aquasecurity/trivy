@@ -5,11 +5,11 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/iam"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getStateMachines(cfFile parser2.FileContext) (stateMachines []sam.StateMachine) {
+func getStateMachines(cfFile parser.FileContext) (stateMachines []sam.StateMachine) {
 
 	stateMachineResources := cfFile.GetResourcesByType("AWS::Serverless::StateMachine")
 	for _, r := range stateMachineResources {
@@ -25,6 +25,7 @@ func getStateMachines(cfFile parser2.FileContext) (stateMachines []sam.StateMach
 			Tracing:         getTracingConfiguration(r),
 		}
 
+		// TODO: By default, the level is set to OFF
 		if logging := r.GetProperty("Logging"); logging.IsNotNil() {
 			stateMachine.LoggingConfiguration.Metadata = logging.Metadata()
 			if level := logging.GetProperty("Level"); level.IsNotNil() {
@@ -39,7 +40,7 @@ func getStateMachines(cfFile parser2.FileContext) (stateMachines []sam.StateMach
 	return stateMachines
 }
 
-func getTracingConfiguration(r *parser2.Resource) sam.TracingConfiguration {
+func getTracingConfiguration(r *parser.Resource) sam.TracingConfiguration {
 	tracing := r.GetProperty("Tracing")
 	if tracing.IsNil() {
 		return sam.TracingConfiguration{
@@ -54,7 +55,7 @@ func getTracingConfiguration(r *parser2.Resource) sam.TracingConfiguration {
 	}
 }
 
-func setStateMachinePolicies(r *parser2.Resource, stateMachine *sam.StateMachine) {
+func setStateMachinePolicies(r *parser.Resource, stateMachine *sam.StateMachine) {
 	policies := r.GetProperty("Policies")
 	if policies.IsNotNil() {
 		if policies.IsString() {

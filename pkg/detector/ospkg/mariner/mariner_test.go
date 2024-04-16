@@ -105,8 +105,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "broken advisory",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "broken advisory",
+			fixtures: []string{
+				"testdata/fixtures/invalid.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1.0",
 				pkgs: []ftypes.Package{
@@ -134,7 +137,7 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := mariner.NewScanner()
-			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

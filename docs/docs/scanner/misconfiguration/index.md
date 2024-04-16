@@ -381,7 +381,7 @@ If multiple variables evaluate to the same hostname, Trivy will choose the envir
 
 ### Skipping resources by inline comments
 
-Trivy supports ignoring misconfigured resources by inline comments for Terraform configuration files only.
+Trivy supports ignoring misconfigured resources by inline comments for Terraform and CloudFormation configuration files only.
 
 In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned). The format for these comments is `trivy:ignore:<rule>` immediately following the format-specific line-comment [token](https://developer.hashicorp.com/terraform/language/syntax/configuration#comments).
 
@@ -421,6 +421,17 @@ As an example, consider the following check metadata:
 ```
 
 Long ID would look like the following: `aws-s3-enable-logging`.
+
+Example for CloudFromation:
+```yaml
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+#trivy:ignore:*
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: test-bucket
+```
 
 #### Expiration Date
 
@@ -494,8 +505,21 @@ resource "aws_security_group_rule" "example" {
 }
 ```
 
-!!! note
-    Currently nested attributes are not supported. For example you will not be able to reference the `each.key` attribute.
+Checks can also be ignored by nested attributes, but certain restrictions apply:
+
+- You cannot access an individual block using indexes, for example when working with dynamic blocks.
+- Special variables like [each](https://developer.hashicorp.com/terraform/language/meta-arguments/for_each#the-each-object) and [count](https://developer.hashicorp.com/terraform/language/meta-arguments/count#the-count-object) cannot be accessed.
+
+```tf
+#trivy:ignore:*[logging_config.prefix=myprefix]
+resource "aws_cloudfront_distribution" "example" {
+  logging_config {
+    include_cookies = false
+    bucket          = "mylogs.s3.amazonaws.com"
+    prefix          = "myprefix"
+  }
+}
+```
 
 #### Ignoring module issues
 
@@ -523,4 +547,15 @@ module "s3_bucket" {
   bucket   = each.value
 }
 ```
+
+#### Support for Wildcards
+
+You can use wildcards in the `ws` (workspace) and `ignore` sections of the ignore rules.
+
+```tf
+# trivy:ignore:aws-s3-*:ws:dev-*
+```
+
+This example ignores all checks starting with `aws-s3-` for workspaces matching the pattern `dev-*`.
+
 [custom]: custom/index.md

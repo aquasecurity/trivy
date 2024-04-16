@@ -35,11 +35,13 @@ const (
 
 // pubSpecLockAnalyzer analyzes `pubspec.lock`
 type pubSpecLockAnalyzer struct {
+	logger *log.Logger
 	parser godeptypes.Parser
 }
 
 func newPubSpecLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return pubSpecLockAnalyzer{
+		logger: log.WithPrefix("pub"),
 		parser: pub.NewParser(),
 	}, nil
 }
@@ -49,9 +51,9 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 
 	// get all DependsOn from cache dir
 	// lib ID -> DependsOn names
-	allDependsOn, err := findDependsOn()
+	allDependsOn, err := a.findDependsOn()
 	if err != nil {
-		log.Logger.Warnf("Unable to parse cache dir: %s", err)
+		a.logger.Warn("Unable to parse cache dir", log.Err(err))
 	}
 
 	required := func(path string, d fs.DirEntry) bool {
@@ -98,10 +100,11 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 	}, nil
 }
 
-func findDependsOn() (map[string][]string, error) {
+func (a pubSpecLockAnalyzer) findDependsOn() (map[string][]string, error) {
 	dir := cacheDir()
 	if !fsutils.DirExists(dir) {
-		log.Logger.Debugf("Cache dir (%s) not found. Need 'dart pub get' to fill dependency relationships", dir)
+		a.logger.Debug("Cache dir not found. Need 'dart pub get' to fill dependency relationships",
+			log.String("dir", dir))
 		return nil, nil
 	}
 
@@ -113,7 +116,7 @@ func findDependsOn() (map[string][]string, error) {
 	if err := fsutils.WalkDir(os.DirFS(dir), ".", required, func(path string, d fs.DirEntry, r io.Reader) error {
 		id, dependsOn, err := parsePubSpecYaml(r)
 		if err != nil {
-			log.Logger.Debugf("Unable to parse %q: %s", path, err)
+			a.logger.Debug("Unable to parse pubspec.yaml", log.String("path", path), log.Err(err))
 			return nil
 		}
 		if id != "" {

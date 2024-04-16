@@ -49,7 +49,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM format: %w", err)
 	}
-	log.Logger.Infof("Detected SBOM format: %s", format)
+	log.Info("Detected SBOM format", log.String("format", string(format)))
 
 	bom, err := sbom.Decode(f, format)
 	if err != nil {

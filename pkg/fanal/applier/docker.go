@@ -253,7 +253,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *packageurl.PackageURL {
 	p, err := purl.New(pkgType, metadata, pkg)
 	if err != nil {
-		log.Logger.Errorf("Failed to create PackageURL: %s", err)
+		log.Error("Failed to create PackageURL", log.Err(err))
 		return nil
 	}
 	return p.Unwrap()

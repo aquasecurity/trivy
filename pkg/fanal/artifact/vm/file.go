@@ -49,8 +49,9 @@ func newFile(filePath string, storage Storage) (*ImageFile, error) {
 			return nil, err
 		}
 
-		log.Logger.Debugf("VM image not detected: %s", err)
-		log.Logger.Debugf("Assume raw image")
+		logger := log.WithPrefix("vm")
+		logger.Debug("VM image not detected", log.Err(err))
+		logger.Debug("Assume raw image")
 		fi, err := f.Stat()
 		if err != nil {
 			return nil, xerrors.Errorf("file stat error: %w", err)

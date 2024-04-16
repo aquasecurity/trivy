@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
@@ -34,6 +33,7 @@ type Client interface {
 }
 
 type Parser struct {
+	logger       *log.Logger
 	rootFilePath string
 	offline      bool
 	size         int64
@@ -63,6 +63,7 @@ func WithSize(size int64) Option {
 
 func NewParser(c Client, opts ...Option) types.Parser {
 	p := &Parser{
+		logger: log.WithPrefix("jar"),
 		client: c,
 	}
 
@@ -82,7 +83,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 }
 
 func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	log.Logger.Debugw("Parsing Java artifacts...", zap.String("file", filePath))
+	p.logger.Debug("Parsing Java artifacts...", log.String("file", filePath))
 
 	// Try to extract artifactId and version from the file name
 	// e.g. spring-core-5.3.4-SNAPSHOT.jar => sprint-core, 5.3.4-SNAPSHOT
@@ -103,7 +104,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	if p.offline {
 		// In offline mode, we will not check if the artifact information is correct.
 		if !manifestProps.Valid() {
-			log.Logger.Debugw("Unable to identify POM in offline mode", zap.String("file", fileName))
+			p.logger.Debug("Unable to identify POM in offline mode", log.String("file", fileName))
 			return libs, nil, nil
 		}
 		return append(libs, manifestProps.Library()), nil, nil
@@ -126,7 +127,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 		return nil, nil, xerrors.Errorf("failed to search by SHA1: %w", err)
 	}
 
-	log.Logger.Debugw("No such POM in the central repositories", zap.String("file", fileName))
+	p.logger.Debug("No such POM in the central repositories", log.String("file", fileName))
 
 	// Return when artifactId or version from the file name are empty
 	if fileProps.ArtifactID == "" || fileProps.Version == "" {
@@ -137,8 +138,8 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	// When some artifacts have the same groupIds, it might result in false detection.
 	fileProps.GroupID, err = p.client.SearchByArtifactID(fileProps.ArtifactID, fileProps.Version)
 	if err == nil {
-		log.Logger.Debugw("POM was determined in a heuristic way", zap.String("file", fileName),
-			zap.String("artifact", fileProps.String()))
+		p.logger.Debug("POM was determined in a heuristic way", log.String("file", fileName),
+			log.String("artifact", fileProps.String()))
 		libs = append(libs, fileProps.Library())
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
 		return nil, nil, xerrors.Errorf("failed to search by artifact id: %w", err)
@@ -182,7 +183,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 		case isArtifact(fileInJar.Name):
 			innerLibs, _, err := p.parseInnerJar(fileInJar, filePath) // TODO process inner deps
 			if err != nil {
-				log.Logger.Debugf("Failed to parse %s: %s", fileInJar.Name, err)
+				p.logger.Debug("Failed to parse", log.String("file", fileInJar.Name), log.Err(err))
 				continue
 			}
 			libs = append(libs, innerLibs...)

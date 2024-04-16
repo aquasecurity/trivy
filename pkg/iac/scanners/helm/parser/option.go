@@ -9,6 +9,7 @@ type ConfigurableHelmParser interface {
 	SetFileValues(...string)
 	SetStringValues(...string)
 	SetAPIVersions(...string)
+	SetKubeVersion(string)
 }
 
 func OptionWithValuesFile(paths ...string) options.ParserOption {
@@ -47,6 +48,14 @@ func OptionWithAPIVersions(values ...string) options.ParserOption {
 	return func(p options.ConfigurableParser) {
 		if helmParser, ok := p.(ConfigurableHelmParser); ok {
 			helmParser.SetAPIVersions(values...)
+		}
+	}
+}
+
+func OptionWithKubeVersion(value string) options.ParserOption {
+	return func(p options.ConfigurableParser) {
+		if helmParser, ok := p.(ConfigurableHelmParser); ok {
+			helmParser.SetKubeVersion(value)
 		}
 	}
 }

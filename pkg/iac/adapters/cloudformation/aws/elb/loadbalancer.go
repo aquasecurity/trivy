@@ -2,11 +2,11 @@ package elb
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elb"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getLoadBalancers(ctx parser2.FileContext) (loadbalancers []elb.LoadBalancer) {
+func getLoadBalancers(ctx parser.FileContext) (loadbalancers []elb.LoadBalancer) {
 
 	loadBalanacerResources := ctx.GetResourcesByType("AWS::ElasticLoadBalancingV2::LoadBalancer")
 
@@ -24,7 +24,7 @@ func getLoadBalancers(ctx parser2.FileContext) (loadbalancers []elb.LoadBalancer
 	return loadbalancers
 }
 
-func getListeners(lbr *parser2.Resource, ctx parser2.FileContext) (listeners []elb.Listener) {
+func getListeners(lbr *parser.Resource, ctx parser.FileContext) (listeners []elb.Listener) {
 
 	listenerResources := ctx.GetResourcesByType("AWS::ElasticLoadBalancingV2::Listener")
 
@@ -43,7 +43,7 @@ func getListeners(lbr *parser2.Resource, ctx parser2.FileContext) (listeners []e
 	return listeners
 }
 
-func getDefaultListenerActions(r *parser2.Resource) (actions []elb.Action) {
+func getDefaultListenerActions(r *parser.Resource) (actions []elb.Action) {
 	defaultActionsProp := r.GetProperty("DefaultActions")
 	if defaultActionsProp.IsNotList() {
 		return actions
@@ -57,15 +57,15 @@ func getDefaultListenerActions(r *parser2.Resource) (actions []elb.Action) {
 	return actions
 }
 
-func isInternal(r *parser2.Resource) types.BoolValue {
+func isInternal(r *parser.Resource) types.BoolValue {
 	schemeProp := r.GetProperty("Scheme")
 	if schemeProp.IsNotString() {
 		return r.BoolDefault(false)
 	}
-	return types.Bool(schemeProp.EqualTo("internal", parser2.IgnoreCase), schemeProp.Metadata())
+	return types.Bool(schemeProp.EqualTo("internal", parser.IgnoreCase), schemeProp.Metadata())
 }
 
-func checkForDropInvalidHeaders(r *parser2.Resource) types.BoolValue {
+func checkForDropInvalidHeaders(r *parser.Resource) types.BoolValue {
 	attributesProp := r.GetProperty("LoadBalancerAttributes")
 	if attributesProp.IsNotList() {
 		return types.BoolDefault(false, r.Metadata())

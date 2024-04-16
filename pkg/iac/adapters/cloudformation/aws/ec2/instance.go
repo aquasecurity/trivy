@@ -2,11 +2,11 @@ package ec2
 
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/ec2"
-	parser2 "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func getInstances(ctx parser2.FileContext) (instances []ec2.Instance) {
+func getInstances(ctx parser.FileContext) (instances []ec2.Instance) {
 	instanceResources := ctx.GetResourcesByType("AWS::EC2::Instance")
 
 	for _, r := range instanceResources {
@@ -48,7 +48,7 @@ func getInstances(ctx parser2.FileContext) (instances []ec2.Instance) {
 	return instances
 }
 
-func findRelatedLaunchTemplate(fctx parser2.FileContext, r *parser2.Resource) (ec2.LaunchTemplate, bool) {
+func findRelatedLaunchTemplate(fctx parser.FileContext, r *parser.Resource) (ec2.LaunchTemplate, bool) {
 	launchTemplateRef := r.GetProperty("LaunchTemplate.LaunchTemplateName")
 	if launchTemplateRef.IsString() {
 		res := findLaunchTemplateByName(fctx, launchTemplateRef)
@@ -69,7 +69,7 @@ func findRelatedLaunchTemplate(fctx parser2.FileContext, r *parser2.Resource) (e
 	return adaptLaunchTemplate(resource), true
 }
 
-func findLaunchTemplateByName(fctx parser2.FileContext, prop *parser2.Property) *parser2.Resource {
+func findLaunchTemplateByName(fctx parser.FileContext, prop *parser.Property) *parser.Resource {
 	for _, res := range fctx.GetResourcesByType("AWS::EC2::LaunchTemplate") {
 		templateName := res.GetProperty("LaunchTemplateName")
 		if templateName.IsNotString() {
@@ -84,7 +84,7 @@ func findLaunchTemplateByName(fctx parser2.FileContext, prop *parser2.Property) 
 	return nil
 }
 
-func getBlockDevices(r *parser2.Resource) []*ec2.BlockDevice {
+func getBlockDevices(r *parser.Resource) []*ec2.BlockDevice {
 	var blockDevices []*ec2.BlockDevice
 
 	devicesProp := r.GetProperty("BlockDeviceMappings")

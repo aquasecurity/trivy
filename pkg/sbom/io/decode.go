@@ -9,7 +9,6 @@ import (
 	debver "github.com/knqyf263/go-deb-version"
 	rpmver "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
-	"go.uber.org/zap"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
@@ -178,15 +177,15 @@ func (m *Decoder) decodeApplication(c *core.Component) *ftypes.Application {
 func (m *Decoder) decodeLibrary(c *core.Component) (*ftypes.Package, error) {
 	p := (*purl.PackageURL)(c.PkgID.PURL)
 	if p == nil {
-		log.Logger.Debugw("Skipping a component without PURL",
-			zap.String("name", c.Name), zap.String("version", c.Version))
+		log.Debug("Skipping a component without PURL",
+			log.String("name", c.Name), log.String("version", c.Version))
 		return nil, ErrPURLEmpty
 	}
 
 	pkg := p.Package()
 	if p.Class() == types.ClassUnknown {
-		log.Logger.Debugw("Skipping a component with an unsupported type",
-			zap.String("name", c.Name), zap.String("version", c.Version), zap.String("type", p.Type))
+		log.Debug("Skipping a component with an unsupported type",
+			log.String("name", c.Name), log.String("version", c.Version), log.String("type", p.Type))
 		return nil, ErrUnsupportedType
 	}
 	pkg.Name = m.pkgName(pkg, c)
@@ -292,7 +291,7 @@ func (m *Decoder) parseSrcVersion(pkg *ftypes.Package, ver string) {
 	case packageurl.TypeDebian:
 		v, err := debver.NewVersion(ver)
 		if err != nil {
-			log.Logger.Debugw("Failed to parse Debian version", zap.Error(err))
+			log.Debug("Failed to parse Debian version", log.Err(err))
 			return
 		}
 		pkg.SrcEpoch = v.Epoch()
@@ -356,7 +355,7 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	// Add OS packages only when OS is detected.
 	for _, pkgs := range osPkgMap {
 		if sbom.Metadata.OS == nil || !sbom.Metadata.OS.Detected() {
-			log.Logger.Warn("Ignore the OS package as no OS is detected.")
+			log.Warn("Ignore the OS package as no OS is detected.")
 			break
 		}
 
