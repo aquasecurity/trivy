@@ -10,9 +10,10 @@ The following scanners are supported.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File           | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
-|-----------------|----------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
-| Conan           | conan.lock[^1] |            ✓ [^3]       |     Excluded     |                  ✓                   |    ✓     |
+| Package manager       | File           | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
+|-----------------------|----------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
+| Conan (lockfile v1)   | conan.lock[^2] |            ✓            |     Excluded     |                  ✓                   |    ✓     |
+| Conan (lockfile v2)   | conan.lock[^2] |            ✓ [^3]       |     Excluded     |                  -                   |    ✓     |
 
 ## Conan
 In order to detect dependencies, Trivy searches for `conan.lock`[^1].

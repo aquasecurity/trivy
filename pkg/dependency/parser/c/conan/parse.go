@@ -43,7 +43,6 @@ type Parser struct {
 	logger *log.Logger
 }
 
-
 func NewParser() types.Parser {
 	return &Parser{
 		logger: log.WithPrefix("conan"),
@@ -108,7 +107,7 @@ func (p *Parser) parseV2(lock LockFile) ([]types.Library, []types.Dependency, er
 	for _, req := range lock.Requires {
 		lib, err := toLibrary(req.Dependency, req.StartLine, req.EndLine)
 		if err != nil {
-			log.Logger.Debug(err)
+			p.logger.Debug("Creating library entry from requirement failed", err)
 			continue
 		}
 
@@ -130,11 +129,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 	// try to parse requirements as conan v1.x
 	if lock.GraphLock.Nodes != nil {
-		log.Logger.Debug("Handling conan lockfile as v1.x")
+		p.logger.Debug("Handling conan lockfile as v1.x")
 		return p.parseV1(lock)
 	} else {
 		// try to parse requirements as conan v2.x
-		log.Logger.Debug("Handling conan lockfile as v2.x")
+		p.logger.Debug("Handling conan lockfile as v2.x")
 		return p.parseV2(lock)
 	}
 }
