@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-	semaphore "github.com/aquasecurity/trivy/pkg/semaphore"
+	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Type string
