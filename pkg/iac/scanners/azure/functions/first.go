@@ -9,7 +9,7 @@ func First(args ...interface{}) interface{} {
 
 	switch cType := container.(type) {
 	case string:
-		if len(cType) > 0 {
+		if cType != "" {
 			return string(cType[0])
 		}
 	case interface{}:

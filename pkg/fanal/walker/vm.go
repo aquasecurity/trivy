@@ -34,22 +34,22 @@ func AppendPermitDiskName(s ...string) {
 }
 
 type VM struct {
-	walker
 	logger    *log.Logger
-	threshold int64
+	skipFiles []string
+	skipDirs  []string
 	analyzeFn WalkFunc
 }
 
-func NewVM(skipFiles, skipDirs []string) *VM {
-	threshold := defaultSizeThreshold
+func NewVM() *VM {
 	return &VM{
-		logger:    log.WithPrefix("vm"),
-		walker:    newWalker(skipFiles, skipDirs),
-		threshold: threshold,
+		logger: log.WithPrefix("vm"),
 	}
 }
 
-func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
+func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFunc) error {
+	w.skipFiles = opt.SkipFiles
+	w.skipDirs = append(opt.SkipDirs, defaultSkipDirs...)
+
 	// This function will be called on each file.
 	w.analyzeFn = fn
 
@@ -123,13 +123,13 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 	pathName := strings.TrimPrefix(filepath.Clean(path), "/")
 	switch {
 	case fi.IsDir():
-		if w.shouldSkipDir(pathName) {
+		if SkipPath(pathName, w.skipDirs) {
 			return filepath.SkipDir
 		}
 		return nil
 	case !fi.Mode().IsRegular():
 		return nil
-	case w.shouldSkipFile(pathName):
+	case SkipPath(pathName, w.skipFiles):
 		return nil
 	case fi.Mode()&0x1000 == 0x1000 ||
 		fi.Mode()&0x2000 == 0x2000 ||
@@ -144,7 +144,7 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 		return nil
 	}
 
-	cvf := newCachedVMFile(fsys, pathName, w.threshold)
+	cvf := newCachedVMFile(fsys, pathName)
 	defer cvf.Clean()
 
 	if err = w.analyzeFn(path, fi, cvf.Open); err != nil {
@@ -154,18 +154,16 @@ func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 }
 
 type cachedVMFile struct {
-	fs        fs.FS
-	filePath  string
-	threshold int64
+	fs       fs.FS
+	filePath string
 
 	cf *cachedFile
 }
 
-func newCachedVMFile(fsys fs.FS, filePath string, threshold int64) *cachedVMFile {
+func newCachedVMFile(fsys fs.FS, filePath string) *cachedVMFile {
 	return &cachedVMFile{
-		fs:        fsys,
-		filePath:  filePath,
-		threshold: threshold,
+		fs:       fsys,
+		filePath: filePath,
 	}
 }
 
@@ -183,7 +181,7 @@ func (cvf *cachedVMFile) Open() (xio.ReadSeekCloserAt, error) {
 		return nil, xerrors.Errorf("file stat error: %w", err)
 	}
 
-	cvf.cf = newCachedFile(fi.Size(), f, cvf.threshold)
+	cvf.cf = newCachedFile(fi.Size(), f)
 	return cvf.cf.Open()
 }
 

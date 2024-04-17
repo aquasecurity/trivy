@@ -18,6 +18,9 @@ type onWalkResult[T any] func(T) error
 
 func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 	onFile onFile[T], onResult onWalkResult[T]) error {
+	if parallel == 0 {
+		parallel = defaultParallel // Set the default value
+	}
 
 	g, ctx := errgroup.WithContext(ctx)
 	paths := make(chan string)
@@ -55,9 +58,6 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 
 	// Start a fixed number of goroutines to read and digest files.
 	c := make(chan T)
-	if parallel == 0 {
-		parallel = defaultParallel
-	}
 	for i := 0; i < parallel; i++ {
 		g.Go(func() error {
 			for path := range paths {

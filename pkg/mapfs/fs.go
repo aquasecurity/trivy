@@ -235,7 +235,7 @@ func (m *FS) RemoveAll(path string) error {
 
 func cleanPath(path string) string {
 	// Convert the volume name like 'C:' into dir like 'C\'
-	if vol := filepath.VolumeName(path); len(vol) > 0 {
+	if vol := filepath.VolumeName(path); vol != "" {
 		newVol := strings.TrimSuffix(vol, ":")
 		newVol = fmt.Sprintf("%s%c", newVol, filepath.Separator)
 		path = strings.Replace(path, vol, newVol, 1)
