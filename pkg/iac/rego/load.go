@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"path/filepath"
 	"strings"
 
 	"github.com/open-policy-agent/opa/ast"
@@ -81,7 +80,7 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 	}
 
 	if s.policyFS != nil {
-		s.debug.Log("Overriding filesystem for policies!")
+		s.debug.Log("Overriding filesystem for checks!")
 		srcFS = s.policyFS
 	}
 
@@ -112,12 +111,12 @@ func (s *Scanner) LoadPolicies(enableEmbeddedLibraries, enableEmbeddedPolicies b
 	if len(readers) > 0 {
 		loaded, err := s.loadPoliciesFromReaders(readers)
 		if err != nil {
-			return fmt.Errorf("failed to load rego policies from reader(s): %w", err)
+			return fmt.Errorf("failed to load rego checks from reader(s): %w", err)
 		}
 		for name, policy := range loaded {
 			s.policies[name] = policy
 		}
-		s.debug.Log("Loaded %d policies from reader(s).", len(loaded))
+		s.debug.Log("Loaded %d checks from reader(s).", len(loaded))
 	}
 
 	// gather namespaces
@@ -169,15 +168,15 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 			continue
 		}
 
-		s.debug.Log("Error occurred while parsing: %s, %s. \nTry loading embedded policy.", loc, e.Error())
+		s.debug.Log("Error occurred while parsing: %s, %s. Trying to fallback to embedded check.", loc, e.Error())
 
 		embedded := s.findMatchedEmbeddedCheck(badPolicy)
 		if embedded == nil {
-			s.debug.Log("Failed to find embedded policy: %s", loc)
+			s.debug.Log("Failed to find embedded check: %s", loc)
 			continue
 		}
 
-		s.debug.Log("Found embedded policy: %s", embedded.Package.Location.File)
+		s.debug.Log("Found embedded check: %s", embedded.Package.Location.File)
 		delete(s.policies, loc) // remove bad policy
 		s.policies[embedded.Package.Location.File] = embedded
 		delete(s.embeddedChecks, embedded.Package.Location.File) // avoid infinite loop if embedded check contains ref error
@@ -189,11 +188,25 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 	})
 }
 
-func (s *Scanner) findMatchedEmbeddedCheck(module *ast.Module) *ast.Module {
-	for _, policy := range s.embeddedChecks {
-		if policy.Package.Path.String() == module.Package.Path.String() ||
-			filepath.Base(policy.Package.Location.File) == filepath.Base(module.Package.Location.File) {
-			return policy
+func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
+	for _, embeddedCheck := range s.embeddedChecks {
+		if embeddedCheck.Package.Path.String() == badPolicy.Package.Path.String() {
+			return embeddedCheck
+		}
+	}
+
+	badPolicyMeta, err := metadataFromRegoModule(badPolicy)
+	if err != nil {
+		return nil
+	}
+
+	for _, embeddedCheck := range s.embeddedChecks {
+		meta, err := metadataFromRegoModule(embeddedCheck)
+		if err != nil {
+			continue
+		}
+		if badPolicyMeta.AVDID != "" && badPolicyMeta.AVDID == meta.AVDID {
+			return embeddedCheck
 		}
 	}
 	return nil
@@ -201,7 +214,7 @@ func (s *Scanner) findMatchedEmbeddedCheck(module *ast.Module) *ast.Module {
 
 func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
 	if len(compiler.Errors) > s.regoErrorLimit {
-		s.debug.Log("Error(s) occurred while loading policies")
+		s.debug.Log("Error(s) occurred while loading checks")
 		return compiler.Errors
 	}
 

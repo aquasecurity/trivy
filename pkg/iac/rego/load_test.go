@@ -21,7 +21,7 @@ import (
 var testEmbedFS embed.FS
 
 //go:embed testdata/embedded
-var embeddedPoliciesFS embed.FS
+var embeddedChecksFS embed.FS
 
 func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 	t.Run("allow no errors", func(t *testing.T) {
@@ -34,7 +34,7 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 
 		err := scanner.LoadPolicies(false, false, testEmbedFS, []string{"."}, nil)
 		require.ErrorContains(t, err, `want (one of): ["Cmd" "EndLine" "Flags" "JSON" "Original" "Path" "Stage" "StartLine" "SubCmd" "Value"]`)
-		assert.Contains(t, debugBuf.String(), "Error(s) occurred while loading policies")
+		assert.Contains(t, debugBuf.String(), "Error(s) occurred while loading checks")
 	})
 
 	t.Run("allow up to max 1 error", func(t *testing.T) {
@@ -101,35 +101,94 @@ deny {
 }
 
 func Test_FallbackToEmbedded(t *testing.T) {
-	scanner := rego.NewScanner(
-		types.SourceDockerfile,
-		options.ScannerWithRegoErrorLimits(0),
-	)
-	fsys := fstest.MapFS{
-		"policies/my-policy2.rego": &fstest.MapFile{
-			Data: []byte(`# METADATA
+	tests := []struct {
+		name        string
+		files       map[string]*fstest.MapFile
+		expectedErr string
+	}{
+		{
+			name: "match by namespace",
+			files: map[string]*fstest.MapFile{
+				"policies/my-check2.rego": {
+					Data: []byte(`# METADATA
 # schemas:
 # - input: schema["fooschema"]
 
 package builtin.test
 
 deny {
-input.evil == "foo bar"
-}`),
+	input.evil == "foo bar"
+}`,
+					),
+				},
+			},
 		},
-		"schemas/fooschema.json": &fstest.MapFile{
-			Data: []byte(`{
-				"$schema": "http://json-schema.org/draft-07/schema#",
-				"type": "object",
-				"properties": {
-					"foo": {
-						"type": "string"
-					}
-				}
-			}`),
+		{
+			name: "match by check ID",
+			files: map[string]*fstest.MapFile{
+				"policies/my-check2.rego": {
+					Data: []byte(`# METADATA
+# schemas:
+# - input: schema["fooschema"]
+# custom:
+#   avd_id: test-001
+package builtin.test2
+
+deny {
+	input.evil == "foo bar"
+}`,
+					),
+				},
+			},
+		},
+		{
+			name: "bad embedded check",
+			files: map[string]*fstest.MapFile{
+				"policies/my-check2.rego": {
+					Data: []byte(`# METADATA
+# schemas:
+# - input: schema["fooschema"]
+package builtin.bad.test
+
+deny {
+  input.evil == "foo bar"
+}`,
+					),
+				},
+			},
+			expectedErr: "testdata/embedded/bad-check.rego:8: rego_type_error: undefined ref",
 		},
 	}
-	trivy_policies.EmbeddedPolicyFileSystem = embeddedPoliciesFS
-	err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
-	assert.NoError(t, err)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			scanner := rego.NewScanner(
+				types.SourceDockerfile,
+				options.ScannerWithRegoErrorLimits(0),
+				options.ScannerWithEmbeddedPolicies(false),
+			)
+
+			tt.files["schemas/fooschema.json"] = &fstest.MapFile{
+				Data: []byte(`{
+						"$schema": "http://json-schema.org/draft-07/schema#",
+						"type": "object",
+						"properties": {
+							"foo": {
+								"type": "string"
+							}
+						}
+					}`),
+			}
+
+			fsys := fstest.MapFS(tt.files)
+			trivy_policies.EmbeddedPolicyFileSystem = embeddedChecksFS
+			err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
+
+			if tt.expectedErr != "" {
+				assert.ErrorContains(t, err, tt.expectedErr)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
