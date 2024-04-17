@@ -48,7 +48,7 @@ func NewVM() *VM {
 
 func (w *VM) Walk(vreader *io.SectionReader, root string, opt Option, fn WalkFunc) error {
 	w.skipFiles = opt.SkipFiles
-	w.skipDirs = append(w.skipDirs, defaultSkipDirs...)
+	w.skipDirs = append(opt.SkipDirs, defaultSkipDirs...)
 
 	// This function will be called on each file.
 	w.analyzeFn = fn
