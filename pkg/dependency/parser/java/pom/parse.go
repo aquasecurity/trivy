@@ -592,6 +592,7 @@ func (p *parser) openPom(filePath string) (*pom, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("file open error (%s): %w", filePath, err)
 	}
+	defer f.Close()
 
 	content, err := parsePom(f)
 	if err != nil {
