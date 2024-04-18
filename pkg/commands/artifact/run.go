@@ -585,9 +585,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		var downloadedPolicyPaths []string
 		var disableEmbedded bool
 
-		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
+		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
 		if err != nil {
-			if !opts.SkipPolicyUpdate {
+			if !opts.SkipCheckUpdate {
 				log.Logger.Errorf("Falling back to embedded policies: %s", err)
 			}
 		} else {
@@ -597,8 +597,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		configScannerOptions = misconf.ScannerOption{
 			Debug:                    opts.Debug,
 			Trace:                    opts.Trace,
-			Namespaces:               append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
+			Namespaces:               append(opts.CheckNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
 			DataPaths:                opts.DataPaths,
 			HelmValues:               opts.HelmValues,
 			HelmValueFiles:           opts.HelmValueFiles,

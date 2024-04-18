@@ -306,7 +306,7 @@ func Test_VersionEndpoint(t *testing.T) {
 			UpdatedAt:    time.Date(2023, 7, 20, 12, 11, 37, 696263932, time.UTC),
 			DownloadedAt: time.Date(2023, 7, 25, 7, 1, 41, 239158000, time.UTC),
 		},
-		PolicyBundle: &policy.Metadata{
+		CheckBundle: &policy.Metadata{
 			Digest:       "sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43",
 			DownloadedAt: time.Date(2023, 7, 23, 16, 40, 33, 122462000, time.UTC),
 		},

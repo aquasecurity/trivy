@@ -977,7 +977,7 @@ func Test_Run(t *testing.T) {
 		{
 			name: "succeed with cached infra",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
 					Services: []string{"s3"},
@@ -1005,16 +1005,16 @@ func Test_Run(t *testing.T) {
 				},
 				RegoOptions: flag.RegoOptions{
 					Trace: true,
-					PolicyPaths: []string{
+					CheckPaths: []string{
 						filepath.Join(regoDir, "policies"),
 					},
-					PolicyNamespaces: []string{
+					CheckNamespaces: []string{
 						"user",
 					},
 					DataPaths: []string{
 						filepath.Join(regoDir, "data"),
 					},
-					SkipPolicyUpdate: true,
+					SkipCheckUpdate: true,
 				},
 				MisconfOptions: flag.MisconfOptions{IncludeNonFailures: true},
 			},
@@ -1082,7 +1082,7 @@ deny {
 					Format:       "table",
 					ReportFormat: "summary",
 				},
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 			},
 			cacheContent: "testdata/s3onlycache.json",
 			allServices:  []string{"s3"},
@@ -1098,7 +1098,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "scan an unsupported service",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
 					Account:  "123456789",
@@ -1115,7 +1115,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "scan every service",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:  "us-east-1",
 					Account: "123456789",
@@ -1135,7 +1135,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "skip certain services and include specific services",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:       "us-east-1",
 					Services:     []string{"s3"},
@@ -1158,7 +1158,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "only skip certain services but scan the rest",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region: "us-east-1",
 					SkipServices: []string{
@@ -1183,7 +1183,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "fail - service specified to both include and exclude",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:       "us-east-1",
 					Services:     []string{"s3"},
@@ -1201,7 +1201,7 @@ Summary Report for compliance: my-custom-spec
 		{
 			name: "ignore findings with .trivyignore",
 			options: flag.Options{
-				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+				RegoOptions: flag.RegoOptions{SkipCheckUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
 					Services: []string{"s3"},

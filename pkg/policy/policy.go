@@ -49,9 +49,9 @@ type Option func(*options)
 // Client implements policy operations
 type Client struct {
 	*options
-	policyDir        string
-	policyBundleRepo string
-	quiet            bool
+	policyDir       string
+	checkBundleRepo string
+	quiet           bool
 }
 
 // Metadata holds default policy metadata
@@ -61,14 +61,14 @@ type Metadata struct {
 }
 
 func (m Metadata) String() string {
-	return fmt.Sprintf(`Policy Bundle:
+	return fmt.Sprintf(`Check Bundle:
   Digest: %s
   DownloadedAt: %s
 `, m.Digest, m.DownloadedAt.UTC())
 }
 
 // NewClient is the factory method for policy client
-func NewClient(cacheDir string, quiet bool, policyBundleRepo string, opts ...Option) (*Client, error) {
+func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Option) (*Client, error) {
 	o := &options{
 		clock: clock.RealClock{},
 	}
@@ -77,22 +77,22 @@ func NewClient(cacheDir string, quiet bool, policyBundleRepo string, opts ...Opt
 		opt(o)
 	}
 
-	if policyBundleRepo == "" {
-		policyBundleRepo = fmt.Sprintf("%s:%d", BundleRepository, BundleVersion)
+	if checkBundleRepo == "" {
+		checkBundleRepo = fmt.Sprintf("%s:%d", BundleRepository, BundleVersion)
 	}
 
 	return &Client{
-		options:          o,
-		policyDir:        filepath.Join(cacheDir, "policy"),
-		policyBundleRepo: policyBundleRepo,
-		quiet:            quiet,
+		options:         o,
+		policyDir:       filepath.Join(cacheDir, "policy"),
+		checkBundleRepo: checkBundleRepo,
+		quiet:           quiet,
 	}, nil
 }
 
 func (c *Client) populateOCIArtifact(registryOpts types.RegistryOptions) error {
 	if c.artifact == nil {
-		log.Logger.Debugf("Using URL: %s to load policy bundle", c.policyBundleRepo)
-		art, err := oci.NewArtifact(c.policyBundleRepo, c.quiet, registryOpts)
+		log.Logger.Debugf("Using URL: %s to load check bundle", c.checkBundleRepo)
+		art, err := oci.NewArtifact(c.checkBundleRepo, c.quiet, registryOpts)
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
@@ -182,7 +182,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOpt
 	// Otherwise, if there are no updates in the remote registry,
 	// the digest will be fetched every time even after this.
 	if err = c.updateMetadata(meta.Digest, time.Now()); err != nil {
-		return false, xerrors.Errorf("unable to update the policy metadata: %w", err)
+		return false, xerrors.Errorf("unable to update the check metadata: %w", err)
 	}
 
 	return false, nil
@@ -203,7 +203,7 @@ func (c *Client) manifestPath() string {
 func (c *Client) updateMetadata(digest string, now time.Time) error {
 	f, err := os.Create(c.metadataPath())
 	if err != nil {
-		return xerrors.Errorf("failed to open a policy manifest: %w", err)
+		return xerrors.Errorf("failed to open a check manifest: %w", err)
 	}
 	defer f.Close()
 
@@ -222,14 +222,14 @@ func (c *Client) updateMetadata(digest string, now time.Time) error {
 func (c *Client) GetMetadata() (*Metadata, error) {
 	f, err := os.Open(c.metadataPath())
 	if err != nil {
-		log.Logger.Debugf("Failed to open the policy metadata: %s", err)
+		log.Logger.Debugf("Failed to open the check metadata: %s", err)
 		return nil, err
 	}
 	defer f.Close()
 
 	var meta Metadata
 	if err = json.NewDecoder(f).Decode(&meta); err != nil {
-		log.Logger.Warnf("Policy metadata decode error: %s", err)
+		log.Logger.Warnf("Check metadata decode error: %s", err)
 		return nil, err
 	}
 
@@ -237,9 +237,9 @@ func (c *Client) GetMetadata() (*Metadata, error) {
 }
 
 func (c *Client) Clear() error {
-	log.Logger.Info("Removing policy bundle...")
+	log.Logger.Info("Removing check bundle...")
 	if err := os.RemoveAll(c.policyDir); err != nil {
-		return xerrors.Errorf("failed to remove policy bundle: %w", err)
+		return xerrors.Errorf("failed to remove check bundle: %w", err)
 	}
 	return nil
 }

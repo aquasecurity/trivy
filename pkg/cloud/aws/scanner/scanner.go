@@ -70,9 +70,9 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	var downloadedPolicyPaths []string
 	var err error
 
-	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate, option.MisconfOptions.ChecksBundleRepository, option.RegistryOpts())
+	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipCheckUpdate, option.MisconfOptions.ChecksBundleRepository, option.RegistryOpts())
 	if err != nil {
-		if !option.SkipPolicyUpdate {
+		if !option.SkipCheckUpdate {
 			log.Logger.Errorf("Falling back to embedded policies: %s", err)
 		}
 	} else {
@@ -84,7 +84,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	}
 
 	var policyFS fs.FS
-	policyFS, policyPaths, err = misconf.CreatePolicyFS(append(policyPaths, option.RegoOptions.PolicyPaths...))
+	policyFS, policyPaths, err = misconf.CreatePolicyFS(append(policyPaths, option.RegoOptions.CheckPaths...))
 	if err != nil {
 		return nil, false, xerrors.Errorf("unable to create policyfs: %w", err)
 	}
@@ -103,7 +103,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		options.ScannerWithDataFilesystem(dataFS),
 	)
 
-	scannerOpts = addPolicyNamespaces(option.RegoOptions.PolicyNamespaces, scannerOpts)
+	scannerOpts = addPolicyNamespaces(option.RegoOptions.CheckNamespaces, scannerOpts)
 
 	if option.Compliance.Spec.ID != "" {
 		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance.Spec.ID))
