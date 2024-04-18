@@ -158,6 +158,22 @@ deny {
 			},
 			expectedErr: "testdata/embedded/bad-check.rego:8: rego_type_error: undefined ref",
 		},
+		{
+			name: "with non existent function",
+			files: map[string]*fstest.MapFile{
+				"policies/my-check2.rego": {
+					Data: []byte(`# METADATA
+# schemas:
+# - input: schema["fooschema"]
+package builtin.test
+
+deny {
+  input.foo == fn.is_foo("foo")
+}`,
+					),
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

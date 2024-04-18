@@ -149,10 +149,6 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 	var excludedFiles []string
 
 	for _, e := range compiler.Errors {
-		if _, ok := e.Details.(*ast.RefErrInvalidDetail); !ok {
-			continue
-		}
-
 		loc := e.Location.File
 
 		if lo.Contains(excludedFiles, loc) {
