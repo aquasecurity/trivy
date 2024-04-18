@@ -55,7 +55,7 @@ By default, Trivy doesn't report development dependencies. Use the `--include-de
 ### pnpm
 Trivy parses `pnpm-lock.yaml`, then finds production dependencies and builds a [tree][dependency-graph] of dependencies with vulnerabilities.
 
-!!! warning
+!!! note
     Trivy currently only supports Lockfile [v6][pnpm-lockfile-v6] or earlier.
 
 ### Bun
