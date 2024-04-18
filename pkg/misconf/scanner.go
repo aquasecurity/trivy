@@ -153,12 +153,12 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, nil
 	}
 
-	log.Logger.Debugf("Scanning %s files for misconfigurations...", s.scanner.Name())
+	log.Debug("Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
 		var invalidContentError *cfparser.InvalidContentError
 		if errors.As(err, &invalidContentError) {
-			log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", s.scanner.Name(), err)
+			log.Error("scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
 			return nil, nil
 		}
 		return nil, xerrors.Errorf("scan config error: %w", err)
@@ -237,7 +237,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	)
 
 	if opt.Debug {
-		opts = append(opts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "misconf"}))
+		opts = append(opts, options.ScannerWithDebug(log.NewWriteLogger(log.WithPrefix("misconf"))))
 	}
 
 	if opt.Trace {

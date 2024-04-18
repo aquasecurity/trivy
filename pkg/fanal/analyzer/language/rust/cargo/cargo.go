@@ -41,12 +41,14 @@ var requiredFiles = []string{
 }
 
 type cargoAnalyzer struct {
+	logger     *log.Logger
 	lockParser godeptypes.Parser
 	comparer   compare.GenericComparer
 }
 
 func newCargoAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &cargoAnalyzer{
+		logger:     log.WithPrefix("cargo"),
 		lockParser: cargo.NewParser(),
 		comparer:   compare.GenericComparer{},
 	}, nil
@@ -70,7 +72,8 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 
 		// Parse Cargo.toml alongside Cargo.lock to identify the direct dependencies
 		if err = a.removeDevDependencies(input.FS, path.Dir(filePath), app); err != nil {
-			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", path.Join(path.Dir(filePath), types.CargoToml), err)
+			a.logger.Warn("Unable to parse Cargo.toml q to identify direct dependencies",
+				log.String("path", path.Join(path.Dir(filePath), types.CargoToml)), log.Err(err))
 		}
 		sort.Sort(app.Libraries)
 		apps = append(apps, *app)
@@ -107,7 +110,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	cargoTOMLPath := path.Join(dir, types.CargoToml)
 	directDeps, err := a.parseRootCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Cargo: %s not found", cargoTOMLPath)
+		a.logger.Debug("Cargo.toml not found", log.String("path", cargoTOMLPath))
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
@@ -128,7 +131,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 			}
 
 			if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
-				log.Logger.Warnf("Unable to match Cargo version: package: %s, error: %s", pkg.ID, err)
+				a.logger.Warn("Unable to match Cargo version", log.String("package", pkg.ID), log.Err(err))
 				continue
 			} else if match {
 				// Mark as a direct dependency
@@ -179,7 +182,7 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (map[stri
 		memberPath := path.Join(path.Dir(filePath), member, types.CargoToml)
 		memberDeps, _, err := parseCargoTOML(fsys, memberPath)
 		if err != nil {
-			log.Logger.Warnf("Unable to parse %q: %s", memberPath, err)
+			a.logger.Warn("Unable to parse Cargo.toml", log.String("member_path", memberPath), log.Err(err))
 			continue
 		}
 		// Member dependencies shouldn't overwrite dependencies from root cargo.toml file

@@ -26,10 +26,14 @@ type Lockfile struct {
 	Packages []cargoPkg `toml:"package"`
 }
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() types.Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("cargo"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -71,7 +75,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		}
 
 		libs = append(libs, lib)
-		dep := parseDependencies(pkgID, pkg, pkgs)
+		dep := p.parseDependencies(pkgID, pkg, pkgs)
 		if dep != nil {
 			deps = append(deps, *dep)
 		}
@@ -80,7 +84,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	sort.Sort(types.Dependencies(deps))
 	return libs, deps, nil
 }
-func parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *types.Dependency {
+func (p *Parser) parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *types.Dependency {
 	var dependOn []string
 
 	for _, pkgDep := range pkg.Dependencies {
@@ -99,7 +103,7 @@ func parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *ty
 			name := fields[0]
 			version, ok := pkgs[name]
 			if !ok {
-				log.Logger.Debugf("can't find version for %s", name)
+				p.logger.Debug("Cannot find version", log.String("name", name))
 				continue
 			}
 			dependOn = append(dependOn, packageID(name, version.Version))
@@ -108,7 +112,7 @@ func parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *ty
 		case 2, 3:
 			dependOn = append(dependOn, packageID(fields[0], fields[1]))
 		default:
-			log.Logger.Debugf("wrong dependency format for %s", pkgDep)
+			p.logger.Debug("Wrong dependency format", log.String("dep", pkgDep))
 			continue
 		}
 	}

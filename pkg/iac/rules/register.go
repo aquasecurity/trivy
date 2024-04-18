@@ -125,7 +125,7 @@ func GetFrameworkRules(fw ...framework.Framework) []ruleTypes.RegisteredRule {
 }
 
 func GetSpecRules(spec string) []ruleTypes.RegisteredRule {
-	if len(spec) > 0 {
+	if spec != "" {
 		return coreRegistry.getSpecRules(spec)
 	}
 

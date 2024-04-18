@@ -55,7 +55,7 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 	mc := metadata.NewClient(cacheDir)
 	meta, err := mc.Get()
 	if err != nil {
-		log.Logger.Debugw("Failed to get DB metadata", "error", err)
+		log.Debug("Failed to get DB metadata", log.Err(err))
 	}
 	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
 		dbMeta = &metadata.Metadata{
@@ -69,7 +69,7 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
 	metaJava, err := mcJava.Get()
 	if err != nil {
-		log.Logger.Debugw("Failed to get Java DB metadata", "error", err)
+		log.Debug("Failed to get Java DB metadata", log.Err(err))
 	}
 	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
 		javadbMeta = &metadata.Metadata{
@@ -83,13 +83,13 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 	var pbMeta *policy.Metadata
 	pc, err := policy.NewClient(cacheDir, false, "")
 	if err != nil {
-		log.Logger.Debugw("Failed to instantiate policy client", "error", err)
+		log.Debug("Failed to instantiate policy client", log.Err(err))
 	}
 	if pc != nil && err == nil {
 		pbMetaRaw, err := pc.GetMetadata()
 
 		if err != nil {
-			log.Logger.Debugw("Failed to get policy metadata", "error", err)
+			log.Debug("Failed to get policy metadata", log.Err(err))
 		} else {
 			pbMeta = &policy.Metadata{
 				Digest:       pbMetaRaw.Digest,

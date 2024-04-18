@@ -52,6 +52,8 @@ type gomodAnalyzer struct {
 	leafModParser godeptypes.Parser
 
 	licenseClassifierConfidenceLevel float64
+
+	logger *log.Logger
 }
 
 func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -60,6 +62,7 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 		sumParser:                        sum.NewParser(),
 		leafModParser:                    mod.NewParser(false),
 		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
+		logger:                           log.WithPrefix("golang"),
 	}, nil
 }
 
@@ -97,7 +100,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 	}
 
 	if err = a.fillAdditionalData(apps); err != nil {
-		log.Logger.Warnf("Unable to collect additional info: %s", err)
+		a.logger.Warn("Unable to collect additional info", log.Err(err))
 	}
 
 	return &analyzer.AnalysisResult{
@@ -128,7 +131,8 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	// $GOPATH/pkg/mod
 	modPath := filepath.Join(gopath, "pkg", "mod")
 	if !fsutils.DirExists(modPath) {
-		log.Logger.Debugf("GOPATH (%s) not found. Need 'go mod download' to fill licenses and dependency relationships", modPath)
+		a.logger.Debug("GOPATH not found. Need 'go mod download' to fill licenses and dependency relationships",
+			log.String("GOPATH", modPath))
 		return nil
 	}
 
@@ -185,7 +189,8 @@ func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (godeptypes.Dependency
 	modPath := filepath.Join(modDir, "go.mod")
 	f, err := os.Open(modPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Unable to identify dependencies of %s as it doesn't support Go modules", pkgID)
+		a.logger.Debug("Unable to identify dependencies as it doesn't support Go modules",
+			log.String("module", pkgID))
 		return godeptypes.Dependency{}, nil
 	} else if err != nil {
 		return godeptypes.Dependency{}, xerrors.Errorf("file open error: %w", err)

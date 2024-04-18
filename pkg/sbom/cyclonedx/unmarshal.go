@@ -9,7 +9,6 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
@@ -35,7 +34,7 @@ func DecodeJSON(r io.Reader) (*cdx.BOM, error) {
 }
 
 func (b *BOM) UnmarshalJSON(data []byte) error {
-	log.Logger.Debug("Unmarshalling CycloneDX JSON...")
+	log.Debug("Unmarshalling CycloneDX JSON...")
 	if b.BOM == nil {
 		b.BOM = core.NewBOM(core.Options{GenerateBOMRef: true})
 	}
@@ -46,8 +45,8 @@ func (b *BOM) UnmarshalJSON(data []byte) error {
 	}
 
 	if !IsTrivySBOM(cdxBOM) {
-		log.Logger.Warnf("Third-party SBOM may lead to inaccurate vulnerability detection")
-		log.Logger.Warnf("Recommend using Trivy to generate SBOMs")
+		log.Warn("Third-party SBOM may lead to inaccurate vulnerability detection")
+		log.Warn("Recommend using Trivy to generate SBOMs")
 	}
 
 	if err = b.parseBOM(cdxBOM); err != nil {
@@ -108,11 +107,11 @@ func (b *BOM) parseComponents(cdxComponents *[]cdx.Component) map[string]*core.C
 	for _, component := range lo.FromPtr(cdxComponents) {
 		c, err := b.parseComponent(component)
 		if errors.Is(err, ErrUnsupportedType) {
-			log.Logger.Infow("Skipping the component with the unsupported type",
-				zap.String("bom-ref", component.BOMRef), zap.String("type", string(component.Type)))
+			log.Info("Skipping the component with the unsupported type",
+				log.String("bom-ref", component.BOMRef), log.String("type", string(component.Type)))
 			continue
 		} else if err != nil {
-			log.Logger.Warnw("Failed to parse component: %s", zap.Error(err))
+			log.Warn("Failed to parse component", log.Err(err))
 			continue
 		}
 
@@ -217,7 +216,7 @@ func (b *BOM) unmarshalHashes(hashes *[]cdx.Hash) []digest.Digest {
 		case cdx.HashAlgoMD5:
 			alg = digest.MD5
 		default:
-			log.Logger.Warnf("Unsupported hash algorithm: %s", h.Algorithm)
+			log.Warn("Unsupported hash algorithm", log.String("algorithm", string(h.Algorithm)))
 		}
 		digests = append(digests, digest.NewDigestFromString(alg, h.Value))
 	}

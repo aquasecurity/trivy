@@ -4,7 +4,6 @@ import (
 	csaf "github.com/csaf-poc/csaf_distribution/v3/csaf"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
-	"go.uber.org/zap"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -14,13 +13,13 @@ import (
 
 type CSAF struct {
 	advisory csaf.Advisory
-	logger   *zap.SugaredLogger
+	logger   *log.Logger
 }
 
 func newCSAF(advisory csaf.Advisory) VEX {
 	return &CSAF{
 		advisory: advisory,
-		logger:   log.Logger.With(zap.String("VEX format", "CSAF")),
+		logger:   log.WithPrefix("vex").With(log.String("format", "CSAF")),
 	}
 }
 
@@ -63,17 +62,17 @@ func (v *CSAF) match(vuln *csaf.Vulnerability, pkgURL *packageurl.PackageURL) ty
 	for status, productRange := range productStatusMap {
 		for _, product := range productRange {
 			if matchProduct(v.getProductPurls(lo.FromPtr(product)), pkgURL) {
-				v.logger.Infow("Filtered out the detected vulnerability",
-					zap.String("vulnerability-id", string(*vuln.CVE)),
-					zap.String("status", string(status)))
+				v.logger.Info("Filtered out the detected vulnerability",
+					log.String("vulnerability-id", string(*vuln.CVE)),
+					log.String("status", string(status)))
 				return status
 			}
 			for relationship, purls := range v.inspectProductRelationships(lo.FromPtr(product)) {
 				if matchProduct(purls, pkgURL) {
-					v.logger.Warnw("Filtered out the detected vulnerability",
-						zap.String("vulnerability-id", string(*vuln.CVE)),
-						zap.String("status", string(status)),
-						zap.String("relationship", string(relationship)))
+					v.logger.Warn("Filtered out the detected vulnerability",
+						log.String("vulnerability-id", string(*vuln.CVE)),
+						log.String("status", string(status)),
+						log.String("relationship", string(relationship)))
 					return status
 				}
 			}
@@ -130,7 +129,7 @@ func purlsFromProductIdentificationHelpers(helpers []*csaf.ProductIdentification
 		}
 		p, err := purl.FromString(string(*helper.PURL))
 		if err != nil {
-			log.Logger.Errorw("Invalid PURL", zap.String("purl", string(*helper.PURL)), zap.Error(err))
+			log.Error("Invalid PURL", log.String("purl", string(*helper.PURL)), log.Err(err))
 			return nil, false
 		}
 		return p, true

@@ -207,7 +207,7 @@ func TestReportWrite_Summary(t *testing.T) {
 		expectedOutput string
 	}{
 		{
-			name: "Only config, all serverities",
+			name: "Only config, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployOrionWithMisconfigs},
@@ -229,7 +229,7 @@ Workload Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only vuln, all serverities",
+			name: "Only vuln, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployOrionWithVulns},
@@ -251,7 +251,7 @@ Workload Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only rbac, all serverities",
+			name: "Only rbac, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{roleWithMisconfig},
@@ -272,7 +272,7 @@ RBAC Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only secret, all serverities",
+			name: "Only secret, all severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployLuaWithSecrets},
@@ -294,7 +294,7 @@ Workload Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, only infra and serverities",
+			name: "apiserver, only infra and severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
@@ -316,7 +316,7 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, vuln,config,secret and serverities",
+			name: "apiserver, vuln,config,secret and severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
@@ -342,7 +342,7 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, all misconfig and vuln scanners and serverities",
+			name: "apiserver, all misconfig and vuln scanners and severities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},

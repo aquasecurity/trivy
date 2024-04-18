@@ -194,7 +194,7 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := chainguard.NewScanner()
-			got, err := s.Detect("", tt.args.repo, tt.args.pkgs)
+			got, err := s.Detect(nil, "", tt.args.repo, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

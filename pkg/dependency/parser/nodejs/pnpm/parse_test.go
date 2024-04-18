@@ -215,7 +215,8 @@ func Test_parsePackage(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotName, gotVersion := parsePackage(tt.pkg, tt.lockFileVer)
+			p := NewParser()
+			gotName, gotVersion := p.parsePackage(tt.pkg, tt.lockFileVer)
 			assert.Equal(t, tt.wantName, gotName)
 			assert.Equal(t, tt.wantVersion, gotVersion)
 		})

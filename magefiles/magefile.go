@@ -61,7 +61,7 @@ func (Tool) Wire() error {
 
 // GolangciLint installs golangci-lint
 func (Tool) GolangciLint() error {
-	const version = "v1.54.2"
+	const version = "v1.57.2"
 	if exists(filepath.Join(GOBIN, "golangci-lint")) {
 		return nil
 	}

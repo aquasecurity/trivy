@@ -12,10 +12,14 @@ import (
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() types.Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("dotnet"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -38,7 +42,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		split := strings.Split(nameVer, "/")
 		if len(split) != 2 {
 			// Invalid name
-			log.Logger.Warnf("Cannot parse .NET library version from: %s", nameVer)
+			p.logger.Warn("Cannot parse .NET library version", log.String("library", nameVer))
 			continue
 		}
 

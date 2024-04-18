@@ -63,13 +63,13 @@ func (s Server) ListenAndServe(ctx context.Context, serverCache cache.Cache, ski
 		for {
 			time.Sleep(updateInterval)
 			if err := worker.update(ctx, s.appVersion, s.cacheDir, skipDBUpdate, dbUpdateWg, requestWg, s.RegistryOptions); err != nil {
-				log.Logger.Errorf("%+v\n", err)
+				log.Errorf("%+v\n", err)
 			}
 		}
 	}()
 
 	mux := newServeMux(ctx, serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.cacheDir)
-	log.Logger.Infof("Listening %s...", s.addr)
+	log.Infof("Listening %s...", s.addr)
 
 	return http.ListenAndServe(s.addr, mux)
 }
@@ -102,7 +102,7 @@ func newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, reque
 
 	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
 		if _, err := rw.Write([]byte("ok")); err != nil {
-			log.Logger.Errorf("health check error: %s", err)
+			log.Error("Health check error", log.Err(err))
 		}
 	})
 
@@ -110,7 +110,7 @@ func newServeMux(ctx context.Context, serverCache cache.Cache, dbUpdateWg, reque
 		w.Header().Add("Content-Type", "application/json")
 
 		if err := json.NewEncoder(w).Encode(version.NewVersionInfo(cacheDir)); err != nil {
-			log.Logger.Errorf("get version error: %s", err)
+			log.Error("Version error", log.Err(err))
 		}
 	})
 
@@ -137,7 +137,7 @@ func newDBWorker(dbClient dbc.Operation) dbWorker {
 
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup, opt types.RegistryOptions) error {
-	log.Logger.Debug("Check for DB update...")
+	log.Debug("Check for DB update...")
 	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, skipDBUpdate)
 	if err != nil {
 		return xerrors.Errorf("failed to check if db needs an update")
@@ -145,7 +145,7 @@ func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 		return nil
 	}
 
-	log.Logger.Info("Updating DB...")
+	log.Info("Updating DB...")
 	if err = w.hotUpdate(ctx, cacheDir, dbUpdateWg, requestWg, opt); err != nil {
 		return xerrors.Errorf("failed DB hot update: %w", err)
 	}
@@ -163,11 +163,11 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
-	log.Logger.Info("Suspending all requests during DB update")
+	log.Info("Suspending all requests during DB update")
 	dbUpdateWg.Add(1)
 	defer dbUpdateWg.Done()
 
-	log.Logger.Info("Waiting for all requests to be processed before DB update...")
+	log.Info("Waiting for all requests to be processed before DB update...")
 	requestWg.Wait()
 
 	if err = db.Close(); err != nil {
@@ -184,7 +184,7 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 		return xerrors.Errorf("failed to copy the metadata file: %w", err)
 	}
 
-	log.Logger.Info("Reopening DB...")
+	log.Info("Reopening DB...")
 	if err = db.Init(cacheDir); err != nil {
 		return xerrors.Errorf("failed to open DB: %w", err)
 	}

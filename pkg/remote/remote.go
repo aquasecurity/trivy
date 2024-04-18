@@ -185,7 +185,7 @@ func resolvePlatform(ref name.Reference, p types.Platform, options []remote.Opti
 	switch d.MediaType {
 	case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
 		// We want an index but the registry has an image, not multi-arch. We just ignore "--platform".
-		log.Logger.Debug("Ignore --platform as the image is not multi-arch")
+		log.Debug("Ignore `--platform` as the image is not multi-arch")
 		return types.Platform{}, nil
 	case v1types.OCIImageIndex, v1types.DockerManifestList:
 		// These are expected.
@@ -201,7 +201,7 @@ func resolvePlatform(ref name.Reference, p types.Platform, options []remote.Opti
 		return types.Platform{}, xerrors.Errorf("remote index manifest error: %w", err)
 	}
 	if len(m.Manifests) == 0 {
-		log.Logger.Debug("Ignore '--platform' as the image is not multi-arch")
+		log.Debug("Ignore '--platform' as the image is not multi-arch")
 		return types.Platform{}, nil
 	}
 	if m.Manifests[0].Platform != nil {

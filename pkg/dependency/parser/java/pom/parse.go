@@ -14,7 +14,6 @@ import (
 
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
-	"go.uber.org/zap"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
@@ -31,8 +30,9 @@ const (
 )
 
 type options struct {
-	offline     bool
-	remoteRepos []string
+	offline             bool
+	releaseRemoteRepos  []string
+	snapshotRemoteRepos []string
 }
 
 type option func(*options)
@@ -43,25 +43,27 @@ func WithOffline(offline bool) option {
 	}
 }
 
-func WithRemoteRepos(repos []string) option {
+func WithReleaseRemoteRepos(repos []string) option {
 	return func(opts *options) {
-		opts.remoteRepos = repos
+		opts.releaseRemoteRepos = repos
 	}
 }
 
 type parser struct {
-	rootPath           string
-	cache              pomCache
-	localRepository    string
-	remoteRepositories []string
-	offline            bool
-	servers            []Server
+	logger              *log.Logger
+	rootPath            string
+	cache               pomCache
+	localRepository     string
+	releaseRemoteRepos  []string
+	snapshotRemoteRepos []string
+	offline             bool
+	servers             []Server
 }
 
 func NewParser(filePath string, opts ...option) types.Parser {
 	o := &options{
-		offline:     false,
-		remoteRepos: []string{centralURL},
+		offline:            false,
+		releaseRemoteRepos: []string{centralURL}, // Maven doesn't use central repository for snapshot dependencies
 	}
 
 	for _, opt := range opts {
@@ -76,12 +78,14 @@ func NewParser(filePath string, opts ...option) types.Parser {
 	}
 
 	return &parser{
-		rootPath:           filepath.Clean(filePath),
-		cache:              newPOMCache(),
-		localRepository:    localRepository,
-		remoteRepositories: o.remoteRepos,
-		offline:            o.offline,
-		servers:            s.Servers,
+		logger:              log.WithPrefix("pom"),
+		rootPath:            filepath.Clean(filePath),
+		cache:               newPOMCache(),
+		localRepository:     localRepository,
+		releaseRemoteRepos:  o.releaseRemoteRepos,
+		snapshotRemoteRepos: o.snapshotRemoteRepos,
+		offline:             o.offline,
+		servers:             s.Servers,
 	}
 }
 
@@ -186,7 +190,8 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 		for _, relativePath := range result.modules {
 			moduleArtifact, err := p.parseModule(result.filePath, relativePath)
 			if err != nil {
-				log.Logger.Debugf("Unable to parse %q module: %s", result.filePath, err)
+				p.logger.Debug("Unable to parse the module",
+					log.String("file_path", result.filePath), log.Err(err))
 				continue
 			}
 
@@ -283,10 +288,11 @@ func (p *parser) resolve(art artifact, rootDepManagement []pomDependency) (analy
 		return *result, nil
 	}
 
-	log.Logger.Debugf("Resolving %s:%s:%s...", art.GroupID, art.ArtifactID, art.Version)
+	p.logger.Debug("Resolving...", log.String("group_id", art.GroupID),
+		log.String("artifact_id", art.ArtifactID), log.String("version", art.Version.String()))
 	pomContent, err := p.tryRepository(art.GroupID, art.ArtifactID, art.Version.String())
 	if err != nil {
-		log.Logger.Debug(err)
+		p.logger.Debug("Repository error", log.Err(err))
 	}
 	result, err := p.analyze(pomContent, analysisOptions{
 		exclusions:    art.Exclusions,
@@ -321,7 +327,9 @@ func (p *parser) analyze(pom *pom, opts analysisOptions) (analysisResult, error)
 	}
 
 	// Update remoteRepositories
-	p.remoteRepositories = utils.UniqueStrings(append(pom.repositories(p.servers), p.remoteRepositories...))
+	pomReleaseRemoteRepos, pomSnapshotRemoteRepos := pom.repositories(p.servers)
+	p.releaseRemoteRepos = lo.Uniq(append(pomReleaseRemoteRepos, p.releaseRemoteRepos...))
+	p.snapshotRemoteRepos = lo.Uniq(append(pomSnapshotRemoteRepos, p.snapshotRemoteRepos...))
 
 	// Parent
 	parent, err := p.parseParent(pom.filePath, pom.content.Parent)
@@ -472,10 +480,10 @@ func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResu
 	if target.IsEmpty() && !isProperty(parent.Version) {
 		return analysisResult{}, nil
 	}
-	log.Logger.Debugf("Start parent: %s", target.String())
-	defer func() {
-		log.Logger.Debugf("Exit parent: %s", target.String())
-	}()
+
+	logger := p.logger.With("artifact", target.String())
+	logger.Debug("Start parent")
+	defer logger.Debug("Exit parent")
 
 	// If the artifact is found in cache, it is returned.
 	if result := p.cache.get(target); result != nil {
@@ -484,7 +492,7 @@ func (p *parser) parseParent(currentPath string, parent pomParent) (analysisResu
 
 	parentPOM, err := p.retrieveParent(currentPath, parent.RelativePath, target)
 	if err != nil {
-		log.Logger.Debugf("parent POM not found: %s", err)
+		logger.Debug("Parent POM not found", log.Err(err))
 	}
 
 	result, err := p.analyze(parentPOM, analysisOptions{})
@@ -584,6 +592,7 @@ func (p *parser) openPom(filePath string) (*pom, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("file open error (%s): %w", filePath, err)
 	}
+	defer f.Close()
 
 	content, err := parsePom(f)
 	if err != nil {
@@ -612,7 +621,7 @@ func (p *parser) tryRepository(groupID, artifactID, version string) (*pom, error
 	}
 
 	// Search remote remoteRepositories
-	loaded, err = p.fetchPOMFromRemoteRepositories(paths)
+	loaded, err = p.fetchPOMFromRemoteRepositories(paths, isSnapshot(version))
 	if err == nil {
 		return loaded, nil
 	}
@@ -627,16 +636,22 @@ func (p *parser) loadPOMFromLocalRepository(paths []string) (*pom, error) {
 	return p.openPom(localPath)
 }
 
-func (p *parser) fetchPOMFromRemoteRepositories(paths []string) (*pom, error) {
+func (p *parser) fetchPOMFromRemoteRepositories(paths []string, snapshot bool) (*pom, error) {
 	// Do not try fetching pom.xml from remote repositories in offline mode
 	if p.offline {
-		log.Logger.Debug("Fetching the remote pom.xml is skipped")
+		p.logger.Debug("Fetching the remote pom.xml is skipped")
 		return nil, xerrors.New("offline mode")
 	}
 
+	remoteRepos := p.releaseRemoteRepos
+	// Maven uses only snapshot repos for snapshot artifacts
+	if snapshot {
+		remoteRepos = p.snapshotRemoteRepos
+	}
+
 	// try all remoteRepositories
-	for _, repo := range p.remoteRepositories {
-		fetched, err := fetchPOMFromRemoteRepository(repo, paths)
+	for _, repo := range remoteRepos {
+		fetched, err := p.fetchPOMFromRemoteRepository(repo, paths)
 		if err != nil {
 			return nil, xerrors.Errorf("fetch repository error: %w", err)
 		} else if fetched == nil {
@@ -647,20 +662,21 @@ func (p *parser) fetchPOMFromRemoteRepositories(paths []string) (*pom, error) {
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
 }
 
-func fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
+func (p *parser) fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
 	repoURL, err := url.Parse(repo)
 	if err != nil {
-		log.Logger.Errorw("URL parse error", zap.String("repo", repo))
+		p.logger.Error("URL parse error", log.String("repo", repo))
 		return nil, nil
 	}
 
 	paths = append([]string{repoURL.Path}, paths...)
 	repoURL.Path = path.Join(paths...)
 
+	logger := p.logger.With(log.String("host", repoURL.Host), log.String("path", repoURL.Path))
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", repoURL.String(), http.NoBody)
 	if err != nil {
-		log.Logger.Debugf("Request failed for %s%s", repoURL.Host, repoURL.Path)
+		logger.Debug("HTTP request failed")
 		return nil, nil
 	}
 	if repoURL.User != nil {
@@ -670,7 +686,7 @@ func fetchPOMFromRemoteRepository(repo string, paths []string) (*pom, error) {
 
 	resp, err := client.Do(req)
 	if err != nil || resp.StatusCode != http.StatusOK {
-		log.Logger.Debugf("Failed to fetch from %s%s", repoURL.Host, repoURL.Path)
+		logger.Debug("Failed to fetch")
 		return nil, nil
 	}
 	defer resp.Body.Close()
@@ -698,4 +714,9 @@ func parsePom(r io.Reader) (*pomXML, error) {
 
 func packageID(name, version string) string {
 	return dependency.ID(ftypes.Pom, name, version)
+}
+
+// cf. https://github.com/apache/maven/blob/259404701402230299fe05ee889ecdf1c9dae816/maven-artifact/src/main/java/org/apache/maven/artifact/DefaultArtifact.java#L482-L486
+func isSnapshot(ver string) bool {
+	return strings.HasSuffix(ver, "SNAPSHOT") || ver == "LATEST"
 }

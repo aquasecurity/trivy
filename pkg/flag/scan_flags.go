@@ -48,7 +48,7 @@ var (
 				case "misconf", "misconfiguration":
 					return string(types.MisconfigScanner)
 				case "config":
-					log.Logger.Warn("'--scanners config' is deprecated. Use '--scanners misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.")
+					log.Warn("'--scanners config' is deprecated. Use '--scanners misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.")
 					return string(types.MisconfigScanner)
 				}
 				return s
@@ -175,7 +175,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 
 	parallel := f.Parallel.Value()
 	if f.Parallel != nil && parallel == 0 {
-		log.Logger.Infof("Set '--parallel' to the number of CPUs (%d)", runtime.NumCPU())
+		log.Info("Set '--parallel' to the number of CPUs", log.Int("parallel", runtime.NumCPU()))
 		parallel = runtime.NumCPU()
 	}
 

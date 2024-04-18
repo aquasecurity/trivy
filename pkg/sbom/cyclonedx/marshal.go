@@ -268,7 +268,7 @@ func (*Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 		case digest.MD5:
 			alg = cdx.HashAlgoMD5
 		default:
-			log.Logger.Debugf("Unable to convert %q algorithm to CycloneDX format", d.Algorithm())
+			log.Debug("Unable to convert algorithm to CycloneDX format", log.Any("alg", d.Algorithm()))
 			continue
 		}
 
@@ -298,7 +298,7 @@ func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
 	cdxProps := make([]cdx.Property, 0, len(properties))
 	for _, property := range properties {
 		namespace := Namespace
-		if len(property.Namespace) > 0 {
+		if property.Namespace != "" {
 			namespace = property.Namespace
 		}
 
@@ -390,7 +390,7 @@ func (*Marshaler) cwes(cweIDs []string) *[]int {
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
-			log.Logger.Debugf("cwe id parse error: %s", err)
+			log.Debug("CWE-ID parse error", log.Err(err))
 			continue
 		}
 		ret = append(ret, number)

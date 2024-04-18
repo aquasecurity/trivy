@@ -107,7 +107,7 @@ func ConvertToRPCCustomResources(resources []ftypes.CustomResource) []*common.Cu
 	for _, r := range resources {
 		data, err := structpb.NewValue(r.Data)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Custom resource conversion error", log.Err(err))
 		}
 		rpcResources = append(rpcResources, &common.CustomResource{
 			Type:     r.Type,
@@ -242,7 +242,7 @@ func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier
 	if pkg.Purl != "" {
 		pu, err := packageurl.FromString(pkg.Purl)
 		if err != nil {
-			log.Logger.Error("Failed to parse PURL (%s): %s", pkg.Purl, err)
+			log.Error("Failed to parse PURL", log.String("purl", pkg.Purl), log.Err(err))
 		}
 		pkgID.PURL = &pu
 	}
@@ -267,7 +267,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 	for _, vuln := range vulns {
 		severity, err := dbTypes.NewSeverity(vuln.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Severity error", log.Err(err))
 		}
 		cvssMap := make(map[string]*common.CVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.CVSS {
@@ -336,7 +336,7 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 	for _, m := range misconfs {
 		severity, err := dbTypes.NewSeverity(m.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Severity conversion error", log.Err(err))
 		}
 
 		rpcMisconfs = append(rpcMisconfs, &common.DetectedMisconfiguration{
@@ -834,7 +834,7 @@ func ConvertToRPCArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *ca
 
 	t := timestamppb.New(imageInfo.Created)
 	if err := t.CheckValid(); err != nil {
-		log.Logger.Warnf("invalid timestamp: %s", err)
+		log.Warn("Invalid timestamp", log.Err(err))
 	}
 
 	return &cache.PutArtifactRequest{
@@ -973,7 +973,7 @@ func ConvertToRPCLicenses(licenses []types.DetectedLicense) []*common.DetectedLi
 	for _, l := range licenses {
 		severity, err := dbTypes.NewSeverity(l.Severity)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Warn("Severity conversion error", log.Err(err))
 		}
 		rpcLicenses = append(rpcLicenses, &common.DetectedLicense{
 			Severity:   common.Severity(severity),
