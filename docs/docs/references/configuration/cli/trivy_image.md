@@ -36,11 +36,12 @@ trivy image [flags] IMAGE_NAME
 ```
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
+      --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate (docker-cis)
-      --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
+      --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
+      --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --custom-headers strings            custom headers in client mode
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
@@ -82,7 +83,6 @@ trivy image [flags] IMAGE_NAME
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --platform string                   set platform in the form os/arch if image is multi-platform capable
       --podman-host string                unix podman socket path to use for podman scanning
-      --policy-namespaces strings         Rego namespaces
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
@@ -99,11 +99,11 @@ trivy image [flags] IMAGE_NAME
       --server string                     server address in client mode
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --show-suppressed                   [EXPERIMENTAL] show suppressed vulnerabilities
+      --skip-check-update                 skip fetching rego check updates
       --skip-db-update                    skip updating vulnerability database
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
-      --skip-policy-update                skip fetching rego policy updates
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
