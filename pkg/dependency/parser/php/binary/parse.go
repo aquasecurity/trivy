@@ -32,7 +32,7 @@ func Parse(r io.Reader) ([]types.Library, error) {
 }
 
 // findVers finds and returns the PHP version in the executable x.
-func findVers(x exe) (vers string, mod string) {
+func findVers(x exe) (vers, mod string) {
 	text, size := x.DataStart()
 	data, err := x.ReadData(text, size)
 	if err != nil {
