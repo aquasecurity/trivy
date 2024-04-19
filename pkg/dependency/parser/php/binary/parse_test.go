@@ -1,4 +1,4 @@
-package phpbinary
+package binary
 
 import (
 	"os"

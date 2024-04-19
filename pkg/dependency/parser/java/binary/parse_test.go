@@ -1,4 +1,4 @@
-package javabinary
+package binary
 
 import (
 	"os"
