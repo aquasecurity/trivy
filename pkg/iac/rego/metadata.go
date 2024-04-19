@@ -393,3 +393,16 @@ func (m *MetadataRetriever) queryInputOptions(ctx context.Context, module *ast.M
 func getModuleNamespace(module *ast.Module) string {
 	return strings.TrimPrefix(module.Package.Path.String(), "data.")
 }
+
+func metadataFromRegoModule(module *ast.Module) (*StaticMetadata, error) {
+	meta := new(StaticMetadata)
+	for _, annotation := range module.Annotations {
+		if annotation.Scope == "package" {
+			if err := meta.FromAnnotations(annotation); err != nil {
+				return nil, err
+			}
+			break
+		}
+	}
+	return meta, nil
+}

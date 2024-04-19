@@ -21,6 +21,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
@@ -50,11 +51,6 @@ const (
 )
 
 var (
-	defaultPolicyNamespaces = []string{
-		"appshield",
-		"defsec",
-		"builtin",
-	}
 	SkipScan = errors.New("skip subsequent processes")
 )
 
@@ -598,7 +594,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		configScannerOptions = misconf.ScannerOption{
 			Debug:                    opts.Debug,
 			Trace:                    opts.Trace,
-			Namespaces:               append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
+			Namespaces:               append(opts.PolicyNamespaces, rego.BuiltinNamespaces()...),
 			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
 			DataPaths:                opts.DataPaths,
 			HelmValues:               opts.HelmValues,
