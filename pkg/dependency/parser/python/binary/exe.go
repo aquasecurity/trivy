@@ -32,7 +32,7 @@ func openExe(r io.Reader) (exe, error) {
 	if _, err := io.ReadFull(br, data); err != nil {
 		return nil, err
 	}
-	_, err := br.Seek(0, 0)
+	_, err = br.Seek(0, 0)
 	if err != nil {
 		return nil, err
 	}
