@@ -47,7 +47,7 @@ func findVers(x exe) (vers, mod string) {
 		// Extract the version number
 		match := re.FindSubmatch(s)
 		if match != nil {
-			vers = string(match[1])
+			vers = string(match[0])
 			break
 		}
 	}
