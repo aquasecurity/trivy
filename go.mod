@@ -115,7 +115,38 @@ require (
 	github.com/twitchtv/twirp v8.1.3+incompatible
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xlab/treeprint v1.2.0
-	github.com/zclconf/go-cty v1.14.4
+	go.etcd.io/bbolt v1.3.9
+	go.uber.org/zap v1.27.0
+	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
+	golang.org/x/mod v0.15.0
+	golang.org/x/net v0.21.0
+	golang.org/x/sync v0.6.0
+	golang.org/x/term v0.17.0
+	golang.org/x/text v0.14.0
+	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
+	google.golang.org/protobuf v1.33.0
+	gopkg.in/yaml.v3 v3.0.1
+	k8s.io/api v0.29.1
+	k8s.io/utils v0.0.0-20231127182322-b307cd553661
+	modernc.org/sqlite v1.28.0
+)
+
+require (
+	github.com/alecthomas/chroma v0.10.0
+	github.com/antchfx/htmlquery v1.3.0
+	github.com/apparentlymart/go-cidr v1.1.0
+	github.com/aquasecurity/go-dep-parser v0.0.0-20240213093706-423cd04548a5
+	github.com/aws/smithy-go v1.20.2
+	github.com/hashicorp/go-uuid v1.0.3
+	github.com/hashicorp/go-version v1.6.0
+	github.com/hashicorp/hc-install v0.6.3
+	github.com/hashicorp/hcl/v2 v2.19.1
+	github.com/hashicorp/terraform-exec v0.20.0
+	github.com/liamg/iamgo v0.0.9
+	github.com/liamg/memoryfs v1.6.0
+	github.com/mitchellh/go-homedir v1.1.0
+	github.com/owenrumney/squealer v1.2.2
+	github.com/zclconf/go-cty v1.14.1
 	github.com/zclconf/go-cty-yaml v1.0.3
 	go.etcd.io/bbolt v1.3.10
 	golang.org/x/crypto v0.23.0
