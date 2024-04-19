@@ -32,7 +32,10 @@ func openExe(r io.Reader) (exe, error) {
 	if _, err := io.ReadFull(br, data); err != nil {
 		return nil, err
 	}
-	br.Seek(0, 0)
+	_, err := br.Seek(0, 0)
+	if err != nil {
+		return nil, err
+	}
 
 	if bytes.HasPrefix(data, []byte("\x7FELF")) {
 		e, err := elf.NewFile(br)
@@ -52,18 +55,20 @@ type elfExe struct {
 
 func (x *elfExe) ReadData(addr, size uint64) ([]byte, error) {
 	for _, prog := range x.f.Progs {
-		if prog.Vaddr <= addr && addr <= prog.Vaddr+prog.Filesz-1 {
-			n := prog.Vaddr + prog.Filesz - addr
-			if n > size {
-				n = size
-			}
-			data := make([]byte, n)
-			_, err := prog.ReadAt(data, int64(addr-prog.Vaddr))
-			if err != nil {
-				return nil, err
-			}
-			return data, nil
+		if prog.Vaddr > addr || addr > prog.Vaddr+prog.Filesz-1 {
+			continue
 		}
+		n := prog.Vaddr + prog.Filesz - addr
+		if n > size {
+			n = size
+		}
+		data := make([]byte, n)
+		_, err := prog.ReadAt(data, int64(addr-prog.Vaddr))
+		if err != nil {
+			return nil, err
+		}
+		return data, nil
+
 	}
 	return nil, fmt.Errorf("address not mapped")
 }
