@@ -50,17 +50,20 @@ const (
 
 	// PHP
 	TypeComposer Type = "composer"
+	TypePHP      Type = "php"
 
 	// Java
 	TypeJar        Type = "jar"
 	TypePom        Type = "pom"
 	TypeGradleLock Type = "gradle-lockfile"
+	TypeJavaBinary Type = "java"
 
 	// Node.js
 	TypeNpmPkgLock Type = "npm"
 	TypeNodePkg    Type = "node-pkg"
 	TypeYarn       Type = "yarn"
 	TypePnpm       Type = "pnpm"
+	TypeNodeJsBin  Type = "nodejs"
 
 	// .NET
 	TypeNuget         Type = "nuget"
@@ -75,6 +78,7 @@ const (
 	TypePip       Type = "pip"
 	TypePipenv    Type = "pipenv"
 	TypePoetry    Type = "poetry"
+	TypePythonBin Type = "python"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
@@ -166,11 +170,14 @@ var (
 		TypeGemSpec,
 		TypeCargo,
 		TypeComposer,
+		TypePHP,
 		TypeJar,
 		TypePom,
 		TypeGradleLock,
+		TypeJavaBinary,
 		TypeNpmPkgLock,
 		TypeNodePkg,
+		TypeNodeJsBin,
 		TypeYarn,
 		TypePnpm,
 		TypeNuget,
@@ -181,6 +188,7 @@ var (
 		TypePip,
 		TypePipenv,
 		TypePoetry,
+		TypePythonBin,
 		TypeGoBinary,
 		TypeGoMod,
 		TypeRustBinary,

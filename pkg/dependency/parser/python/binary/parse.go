@@ -4,35 +4,51 @@ package binary
 
 import (
 	"bytes"
-	"io"
 	"regexp"
+	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
+var (
+	ErrUnrecognizedExe = xerrors.New("unrecognized executable format")
+	ErrNonPythonBinary = xerrors.New("non Python binary")
+)
+
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
 // Parse scans file to try to report the Python version.
-func Parse(r io.Reader) ([]types.Library, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	x, err := openExe(r)
 	if err != nil {
-		return nil, err
+		return nil, nil, ErrUnrecognizedExe
 	}
 
-	vers, mod := findVers(x)
+	name, vers := findVers(x)
 	if vers == "" {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	var libs []types.Library
 	libs = append(libs, types.Library{
-		Name:    mod,
+		ID: packageID(name, vers),
+		Name:    name,
 		Version: vers,
 	})
+	var deps []types.Dependency
 
-	return libs, nil
+	return libs, deps, nil
 }
 
 // findVers finds and returns the Python version in the executable x.
-func findVers(x exe) (vers, mod string) {
+func findVers(x exe) (mod, vers string) {
 	text, size := x.DataStart()
 	data, err := x.ReadData(text, size)
 	if err != nil {
@@ -52,5 +68,9 @@ func findVers(x exe) (vers, mod string) {
 		}
 	}
 
-	return vers, "python"
+	return "python", vers
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.PythonBin, name, version)
 }
