@@ -1,4 +1,4 @@
-package nodejsbinary
+package binary
 
 import (
 	"os"

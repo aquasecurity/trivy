@@ -1,4 +1,4 @@
-package pythonbinary
+package binary
 
 import (
 	"os"
