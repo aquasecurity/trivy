@@ -324,6 +324,8 @@ github.com/apparentlymart/go-textseg/v15 v15.0.0 h1:uYvfpb3DyLSCGWnctWKGj857c6ew
 github.com/apparentlymart/go-textseg/v15 v15.0.0/go.mod h1:K8XmNZdhEBkdlyDdvbmmsvpAG721bKi0joRfFdHIWJ4=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
+github.com/aquasecurity/go-dep-parser v0.0.0-20240213093706-423cd04548a5 h1:VhlDpfiVYpjCJt+tL2IpJV/T0OkAAKM545yMP4Hlsl0=
+github.com/aquasecurity/go-dep-parser v0.0.0-20240213093706-423cd04548a5/go.mod h1:6sh6f0Ixlt+oIMEPGxJyDOmzB03tK2v2rsAlc/9q12g=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-mock-aws v0.0.0-20240109054747-49e4b5da33cb h1:dNxUB2bSbiLGNYcXkbBKrrfuY96+dXhA9FahEFZ4THQ=
