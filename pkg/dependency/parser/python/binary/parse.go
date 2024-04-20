@@ -42,9 +42,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		Name:    name,
 		Version: vers,
 	})
-	var deps []types.Dependency
 
-	return libs, deps, nil
+	return libs, nil, nil
 }
 
 // findVers finds and returns the Python version in the executable x.
@@ -72,5 +71,5 @@ func findVers(x exe) (mod, vers string) {
 }
 
 func packageID(name, version string) string {
-	return dependency.ID(ftypes.PythonBin, name, version)
+	return dependency.ID(ftypes.PythonGeneric, name, version)
 }
