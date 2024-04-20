@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func TestParse(t *testing.T) {
@@ -22,6 +22,7 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/php.elf",
 			want: []types.Library{
 				{
+					ID: 	 "php@8.0.7",
 					Name:    "php",
 					Version: "8.0.7",
 				},
@@ -38,7 +39,8 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 
-			got, err := Parse(f)
+			parser := NewParser()
+			got, _, err := parser.Parse(f)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

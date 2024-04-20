@@ -4,31 +4,45 @@ package binary
 
 import (
 	"bytes"
-	"io"
 	"regexp"
+	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
+var (
+	ErrUnrecognizedExe = xerrors.New("unrecognized executable format")
+)
+
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
 // Parse scans file to try to report the NodeJS version.
-func Parse(r io.Reader) ([]types.Library, error) {
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	x, err := openExe(r)
 	if err != nil {
-		return nil, err
+		return nil, nil, ErrUnrecognizedExe
 	}
 
-	vers, mod := findVers(x)
+	mod, vers := findVers(x)
 	if vers == "" {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	var libs []types.Library
 	libs = append(libs, types.Library{
+		ID: packageID(mod, vers),
 		Name:    mod,
 		Version: vers,
 	})
 
-	return libs, nil
+	return libs, nil, nil
 }
 
 // findVers finds and returns the NodeJS version in the executable x.
@@ -51,5 +65,9 @@ func findVers(x exe) (vers, mod string) {
 		}
 	}
 
-	return vers, "node.js"
+	return "node", vers
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.NodeJsGeneric, name, version)
 }

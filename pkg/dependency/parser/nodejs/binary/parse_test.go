@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func TestParse(t *testing.T) {
@@ -15,14 +15,16 @@ func TestParse(t *testing.T) {
 		name      string
 		inputFile string
 		want      []types.Library
+		wantDep   []types.Dependency
 		wantErr   string
 	}{
 		{
-			name:      "ELF",
+			name:      "ELF12",
 			inputFile: "testdata/node.12.elf",
 			want: []types.Library{
 				{
-					Name:    "node.js",
+					ID: 	 "node@12.16.3",
+					Name:    "node",
 					Version: "12.16.3",
 				},
 			},
@@ -37,8 +39,8 @@ func TestParse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
-
-			got, err := Parse(f)
+			parser := NewParser()
+			got, _, err := parser.Parse(f)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
