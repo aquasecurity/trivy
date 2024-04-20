@@ -4,31 +4,46 @@ package binary
 
 import (
 	"bytes"
-	"io"
 	"regexp"
+	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-// Parse scans file to try to report the PHP version.
-func Parse(r io.Reader) ([]types.Library, error) {
+var (
+	ErrUnrecognizedExe = xerrors.New("unrecognized executable format")
+	ErrNonPythonBinary = xerrors.New("non Python binary")
+)
+
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
+// Parse scans file to try to report the Python version.
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	x, err := openExe(r)
 	if err != nil {
-		return nil, err
+		return nil, nil, ErrUnrecognizedExe
 	}
 
-	vers, mod := findVers(x)
+	name, vers := findVers(x)
 	if vers == "" {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	var libs []types.Library
 	libs = append(libs, types.Library{
-		Name:    mod,
+		ID: packageID(name, vers),
+		Name:    name,
 		Version: vers,
 	})
 
-	return libs, nil
+	return libs, nil, nil
 }
 
 // findVers finds and returns the PHP version in the executable x.
@@ -39,7 +54,7 @@ func findVers(x exe) (vers, mod string) {
 		return
 	}
 
-	re := regexp.MustCompile(`X-Powered-By: PHP\/(\d{1,3}\.\d{1,3}\.\d{1,3})`)
+	re := regexp.MustCompile(`(?m)X-Powered-By: PHP\/(?P<version>[0-9]+\.[0-9]+\.[0-9]+(beta[0-9]+|alpha[0-9]+|RC[0-9]+)?)`)
 	// split by null characters
 	items := bytes.Split(data, []byte("\000"))
 	for _, s := range items {
@@ -51,5 +66,9 @@ func findVers(x exe) (vers, mod string) {
 		}
 	}
 
-	return vers, "php"
+	return "php", vers
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.PhpGeneric, name, version)
 }
