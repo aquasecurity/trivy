@@ -65,7 +65,6 @@ func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Resu
 		}
 
 		logger := log.WithPrefix(string(app.Type))
-
 		// Prevent the same log messages from being displayed many times for the same type.
 		if _, ok := printedTypes[app.Type]; !ok {
 			logger.Info("Detecting vulnerabilities...")

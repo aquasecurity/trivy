@@ -1,4 +1,4 @@
-package binary
+package generic
 
 import (
 	"context"
@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+
 func init() {
 	analyzer.RegisterAnalyzer(&pythonBinaryAnalyzer{})
 }
@@ -26,7 +27,7 @@ const version = 1
 type pythonBinaryAnalyzer struct{}
 
 func (a pythonBinaryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.PythonBin, input.FilePath, input.Content, binary.NewParser())
+	res, err := language.Analyze(types.PythonGeneric, input.FilePath, input.Content, binary.NewParser())
 	if errors.Is(err, binary.ErrUnrecognizedExe) || errors.Is(err, binary.ErrNonPythonBinary) {
 		return nil, nil
 	} else if err != nil {
@@ -45,7 +46,7 @@ func (a pythonBinaryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
 }
 
 func (a pythonBinaryAnalyzer) Type() analyzer.Type {
-	return analyzer.TypePythonBin
+	return analyzer.TypePythonGeneric //Since we don't know the exact type of the binary and ecosystem, we need to use TypeGeneric which will query NVD for vulns
 }
 
 func (a pythonBinaryAnalyzer) Version() int {

@@ -1,4 +1,4 @@
-package binary
+package generic
 
 import (
 	"context"
@@ -26,11 +26,11 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.PythonBin,
+						Type:     types.PythonGeneric,
 						FilePath: "testdata/python3.10",
 						Libraries: types.Packages{
 							{
-								ID:        "FASZA",
+								ID:        "python@3.10.12",
 								Name:      "python",
 								Version:   "3.10.12",
 							},

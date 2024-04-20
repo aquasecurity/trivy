@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func TestParse(t *testing.T) {
@@ -15,6 +15,7 @@ func TestParse(t *testing.T) {
 		name      string
 		inputFile string
 		want      []types.Library
+		wantDep   []types.Dependency
 		wantErr   string
 	}{
 		{
@@ -22,6 +23,7 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/python2.7.elf",
 			want: []types.Library{
 				{
+					ID: 	 "python@2.7.18",
 					Name:    "python",
 					Version: "2.7.18",
 				},
@@ -32,6 +34,7 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/python3.9.elf",
 			want: []types.Library{
 				{
+					ID: 	 "python@3.9.19",
 					Name:    "python",
 					Version: "3.9.19",
 				},
@@ -42,6 +45,7 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/python3.10.elf",
 			want: []types.Library{
 				{
+					ID: 	 "python@3.10.12",
 					Name:    "python",
 					Version: "3.10.12",
 				},
@@ -57,8 +61,8 @@ func TestParse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
-
-			got, err := Parse(f)
+			parser := NewParser()
+			got, _, err := parser.Parse(f)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

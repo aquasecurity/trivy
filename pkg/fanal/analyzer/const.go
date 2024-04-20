@@ -74,11 +74,11 @@ const (
 	TypeCondaPkg Type = "conda-pkg"
 
 	// Python
-	TypePythonPkg Type = "python-pkg"
-	TypePip       Type = "pip"
-	TypePipenv    Type = "pipenv"
-	TypePoetry    Type = "poetry"
-	TypePythonBin Type = "python"
+	TypePythonPkg 	  Type = "python-pkg"
+	TypePip       	  Type = "pip"
+	TypePipenv    	  Type = "pipenv"
+	TypePoetry    	  Type = "poetry"
+	TypePythonGeneric Type = "generic"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
@@ -188,7 +188,6 @@ var (
 		TypePip,
 		TypePipenv,
 		TypePoetry,
-		TypePythonBin,
 		TypeGoBinary,
 		TypeGoMod,
 		TypeRustBinary,
@@ -197,6 +196,7 @@ var (
 		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypePythonGeneric,
 	}
 
 	// TypeLockfiles has all lock file analyzers
