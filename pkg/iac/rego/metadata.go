@@ -8,6 +8,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/open-policy-agent/opa/rego"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/providers"
@@ -15,6 +16,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
+
+const annotationScopePackage = "package"
 
 type StaticMetadata struct {
 	ID                 string
@@ -234,17 +237,9 @@ func NewMetadataRetriever(compiler *ast.Compiler) *MetadataRetriever {
 }
 
 func (m *MetadataRetriever) findPackageAnnotations(module *ast.Module) *ast.Annotations {
-	annotationSet := m.compiler.GetAnnotationSet()
-	if annotationSet == nil {
-		return nil
-	}
-	for _, annotation := range annotationSet.Flatten() {
-		if annotation.GetPackage().Path.String() != module.Package.Path.String() || annotation.Annotations.Scope != "package" {
-			continue
-		}
-		return annotation.Annotations
-	}
-	return nil
+	return lo.FindOrElse(module.Annotations, nil, func(a *ast.Annotations) bool {
+		return a.Scope == annotationScopePackage
+	})
 }
 
 func (m *MetadataRetriever) RetrieveMetadata(ctx context.Context, module *ast.Module, contents ...any) (*StaticMetadata, error) {
