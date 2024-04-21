@@ -68,7 +68,7 @@ func (a *Attribute) GetRawValue() interface{} {
 		return float
 	default:
 		switch {
-		case typ.IsTupleType(), typ.IsListType():
+		case typ.IsTupleType(), typ.IsListType(), typ.IsSetType():
 			values := a.Value().AsValueSlice()
 			if len(values) == 0 {
 				return []string{}

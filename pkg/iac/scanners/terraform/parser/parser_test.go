@@ -1631,3 +1631,37 @@ output "test_out" {
 		assert.Equal(t, "test_value", attr.GetRawValue())
 	}
 }
+
+func TestExtractSetValue(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+resource "test" "set-value" {
+	value = toset(["x", "y", "x"])
+}
+`,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+	attr := resources[0].GetAttribute("value")
+	require.NotNil(t, attr)
+	assert.Equal(t, []string{"x", "y"}, attr.GetRawValue())
+}
+
+func TestFunc_fileset(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+resource "test" "fileset-func" {
+	value = fileset(path.module, "**/*.py")
+}
+`,
+		"a.py":      ``,
+		"path/b.py": ``,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+	attr := resources[0].GetAttribute("value")
+	require.NotNil(t, attr)
+	assert.Equal(t, []string{"a.py", "path/b.py"}, attr.GetRawValue())
+}
