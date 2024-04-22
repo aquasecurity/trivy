@@ -1056,7 +1056,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Packages: []ftypes.Package{
 							{
 								Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
-								Version: "(devel)",
+								Version: "",
 							},
 							{
 								Name:    "golang.org/x/crypto",
@@ -1105,10 +1105,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						PackageSPDXIdentifier:   spdx.ElementID("Package-9a16e221e11f8a90"),
+						PackageSPDXIdentifier:   spdx.ElementID("Package-b1c3b9e2363f5ff7"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "./private_repos/cnrm.googlesource.com/cnrm/",
-						PackageVersion:          "(devel)",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
@@ -1152,7 +1151,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Relationships: []*spdx.Relationship{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-aab0f4e8cf174c67"},
-						RefB:         spdx.DocElementID{ElementRefID: "Package-9a16e221e11f8a90"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-b1c3b9e2363f5ff7"},
 						Relationship: "CONTAINS",
 					},
 					{
