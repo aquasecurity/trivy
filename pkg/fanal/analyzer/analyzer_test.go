@@ -3,6 +3,7 @@ package analyzer_test
 import (
 	"context"
 	"fmt"
+	"github.com/google/go-containerregistry/pkg/name"
 	"os"
 	"sync"
 	"testing"
@@ -12,11 +13,11 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/java/jar"
@@ -335,15 +336,18 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/lib/apk/db/installed",
 						Packages: types.Packages{
 							{
-								ID:             "musl@1.1.24-r2",
-								Name:           "musl",
-								Version:        "1.1.24-r2",
-								SrcName:        "musl",
-								SrcVersion:     "1.1.24-r2",
-								Licenses:       []string{"MIT"},
-								Arch:           "x86_64",
-								Digest:         "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
-								InstalledFiles: []string{"lib/libc.musl-x86_64.so.1", "lib/ld-musl-x86_64.so.1"},
+								ID:         "musl@1.1.24-r2",
+								Name:       "musl",
+								Version:    "1.1.24-r2",
+								SrcName:    "musl",
+								SrcVersion: "1.1.24-r2",
+								Licenses:   []string{"MIT"},
+								Arch:       "x86_64",
+								Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+								InstalledFiles: []string{
+									"lib/libc.musl-x86_64.so.1",
+									"lib/ld-musl-x86_64.so.1",
+								},
 							},
 						},
 					},
@@ -615,7 +619,9 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 
 			if tt.analyzerType == analyzer.TypeJar {
 				// init java-trivy-db with skip update
-				javadb.Init("./language/java/jar/testdata", "ghcr.io/aquasecurity/trivy-java-db", true, false, types.RegistryOptions{Insecure: false})
+				repo, err := name.NewTag(javadb.DefaultRepository)
+				require.NoError(t, err)
+				javadb.Init("./language/java/jar/testdata", repo, true, false, types.RegistryOptions{Insecure: false})
 			}
 
 			ctx := context.Background()

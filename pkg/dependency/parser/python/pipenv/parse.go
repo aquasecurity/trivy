@@ -7,7 +7,7 @@ import (
 	"github.com/liamg/jfather"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -39,9 +39,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	var libs []types.Library
 	for pkgName, dependency := range lockFile.Default {
 		libs = append(libs, types.Library{
-			Name:      pkgName,
-			Version:   strings.TrimLeft(dependency.Version, "="),
-			Locations: []types.Location{{StartLine: dependency.StartLine, EndLine: dependency.EndLine}},
+			Name:    pkgName,
+			Version: strings.TrimLeft(dependency.Version, "="),
+			Locations: []types.Location{
+				{
+					StartLine: dependency.StartLine,
+					EndLine:   dependency.EndLine,
+				},
+			},
 		})
 	}
 	return libs, nil, nil

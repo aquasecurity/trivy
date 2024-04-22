@@ -26,7 +26,8 @@ import (
 	k8sscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/kubernetes"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform"
-	tfpscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan"
+	tfprawscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
+	tfpjsonscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/tfjson"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 
@@ -34,13 +35,14 @@ import (
 )
 
 var enablediacTypes = map[detection.FileType]types.ConfigType{
-	detection.FileTypeAzureARM:       types.AzureARM,
-	detection.FileTypeCloudFormation: types.CloudFormation,
-	detection.FileTypeTerraform:      types.Terraform,
-	detection.FileTypeDockerfile:     types.Dockerfile,
-	detection.FileTypeKubernetes:     types.Kubernetes,
-	detection.FileTypeHelm:           types.Helm,
-	detection.FileTypeTerraformPlan:  types.TerraformPlan,
+	detection.FileTypeAzureARM:              types.AzureARM,
+	detection.FileTypeCloudFormation:        types.CloudFormation,
+	detection.FileTypeTerraform:             types.Terraform,
+	detection.FileTypeDockerfile:            types.Dockerfile,
+	detection.FileTypeKubernetes:            types.Kubernetes,
+	detection.FileTypeHelm:                  types.Helm,
+	detection.FileTypeTerraformPlanJSON:     types.TerraformPlanJSON,
+	detection.FileTypeTerraformPlanSnapshot: types.TerraformPlanSnapshot,
 }
 
 type ScannerOption struct {
@@ -57,6 +59,8 @@ type ScannerOption struct {
 	HelmValueFiles          []string
 	HelmFileValues          []string
 	HelmStringValues        []string
+	HelmAPIVersions         []string
+	HelmKubeVersion         string
 	TerraformTFVars         []string
 	CloudFormationParamVars []string
 	TfExcludeDownloaded     bool
@@ -99,8 +103,12 @@ func NewTerraformScanner(filePatterns []string, opt ScannerOption) (*Scanner, er
 	return newScanner(detection.FileTypeTerraform, filePatterns, opt)
 }
 
-func NewTerraformPlanScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
-	return newScanner(detection.FileTypeTerraformPlan, filePatterns, opt)
+func NewTerraformPlanJSONScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
+	return newScanner(detection.FileTypeTerraformPlanJSON, filePatterns, opt)
+}
+
+func NewTerraformPlanSnapshotScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
+	return newScanner(detection.FileTypeTerraformPlanSnapshot, filePatterns, opt)
 }
 
 func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) (*Scanner, error) {
@@ -123,8 +131,10 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 		scanner = k8sscanner.NewScanner(opts...)
 	case detection.FileTypeTerraform:
 		scanner = terraform.New(opts...)
-	case detection.FileTypeTerraformPlan:
-		scanner = tfpscanner.New(opts...)
+	case detection.FileTypeTerraformPlanJSON:
+		scanner = tfpjsonscanner.New(opts...)
+	case detection.FileTypeTerraformPlanSnapshot:
+		scanner = tfprawscanner.New(opts...)
 	}
 
 	return &Scanner{
@@ -143,12 +153,12 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, nil
 	}
 
-	log.Logger.Debugf("Scanning %s files for misconfigurations...", s.scanner.Name())
+	log.Debug("Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
 		var invalidContentError *cfparser.InvalidContentError
 		if errors.As(err, &invalidContentError) {
-			log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", s.scanner.Name(), err)
+			log.Error("scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
 			return nil, nil
 		}
 		return nil, xerrors.Errorf("scan config error: %w", err)
@@ -227,7 +237,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	)
 
 	if opt.Debug {
-		opts = append(opts, options.ScannerWithDebug(&log.PrefixedLogger{Name: "misconf"}))
+		opts = append(opts, options.ScannerWithDebug(log.NewWriteLogger(log.WithPrefix("misconf"))))
 	}
 
 	if opt.Trace {
@@ -253,7 +263,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 	switch t {
 	case detection.FileTypeHelm:
 		return addHelmOpts(opts, opt), nil
-	case detection.FileTypeTerraform:
+	case detection.FileTypeTerraform, detection.FileTypeTerraformPlanSnapshot:
 		return addTFOpts(opts, opt)
 	case detection.FileTypeCloudFormation:
 		return addCFOpts(opts, opt)
@@ -322,6 +332,14 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []op
 
 	if len(scannerOption.HelmStringValues) > 0 {
 		opts = append(opts, helm2.ScannerWithStringValues(scannerOption.HelmStringValues...))
+	}
+
+	if len(scannerOption.HelmAPIVersions) > 0 {
+		opts = append(opts, helm2.ScannerWithAPIVersions(scannerOption.HelmAPIVersions...))
+	}
+
+	if scannerOption.HelmKubeVersion != "" {
+		opts = append(opts, helm2.ScannerWithKubeVersion(scannerOption.HelmKubeVersion))
 	}
 
 	return opts

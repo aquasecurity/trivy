@@ -4,16 +4,13 @@ package integration
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
-	dockercontainer "github.com/docker/docker/api/types/container"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/modules/localstack"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/flag"
 )
@@ -53,7 +50,8 @@ func TestAwsCommandRun(t *testing.T) {
 
 	ctx := context.Background()
 
-	localstackC, addr := setupLocalStack(t, ctx)
+	localstackC, addr, err := testutil.SetupLocalStack(ctx, "2.2.0")
+	require.NoError(t, err)
 	defer localstackC.Terminate(ctx)
 
 	for _, tt := range tests {
@@ -76,34 +74,5 @@ func TestAwsCommandRun(t *testing.T) {
 			assert.NoError(t, err)
 		})
 	}
-
-}
-
-func setupLocalStack(t *testing.T, ctx context.Context) (*localstack.LocalStackContainer, string) {
-	t.Helper()
-	t.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
-	container, err := localstack.RunContainer(ctx, testcontainers.CustomizeRequest(
-		testcontainers.GenericContainerRequest{
-			ContainerRequest: testcontainers.ContainerRequest{
-				Image: "localstack/localstack:2.2.0",
-				HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
-					hostConfig.AutoRemove = true
-				},
-			},
-		},
-	))
-	require.NoError(t, err)
-
-	p, err := container.MappedPort(ctx, "4566/tcp")
-	require.NoError(t, err)
-
-	provider, err := testcontainers.NewDockerProvider()
-	require.NoError(t, err)
-	defer provider.Close()
-
-	host, err := provider.DaemonHost(ctx)
-	require.NoError(t, err)
-
-	return container, fmt.Sprintf("http://%s:%d", host, p.Int())
 
 }

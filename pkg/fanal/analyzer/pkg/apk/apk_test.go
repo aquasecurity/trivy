@@ -2,6 +2,7 @@ package apk
 
 import (
 	"bufio"
+	"context"
 	"os"
 	"testing"
 
@@ -51,9 +52,12 @@ var pkgs = []types.Package{
 		SrcName:    "alpine-baselayout",
 		SrcVersion: "3.0.3-r0",
 		Licenses:   []string{"GPL-2.0"},
-		DependsOn:  []string{"busybox@1.24.2-r9", "musl@1.1.14-r10"},
-		Arch:       "x86_64",
-		Digest:     "sha1:a214896150411d72dd1fafdb32d1c6c4855cccfa",
+		DependsOn: []string{
+			"busybox@1.24.2-r9",
+			"musl@1.1.14-r10",
+		},
+		Arch:   "x86_64",
+		Digest: "sha1:a214896150411d72dd1fafdb32d1c6c4855cccfa",
 		InstalledFiles: []string{
 			"etc/hosts",
 			"etc/sysctl.conf",
@@ -121,9 +125,12 @@ var pkgs = []types.Package{
 		SrcName:    "openssl",
 		SrcVersion: "1.0.2h-r1",
 		Licenses:   []string{"openssl"},
-		DependsOn:  []string{"musl@1.1.14-r10", "zlib@1.2.8-r2"},
-		Arch:       "x86_64",
-		Digest:     "sha1:65c860ff8f103b664f40ba849a3f5a51c69c8beb",
+		DependsOn: []string{
+			"musl@1.1.14-r10",
+			"zlib@1.2.8-r2",
+		},
+		Arch:   "x86_64",
+		Digest: "sha1:65c860ff8f103b664f40ba849a3f5a51c69c8beb",
 		InstalledFiles: []string{
 			"lib/libcrypto.so.1.0.0",
 			"usr/bin/c_rehash",
@@ -199,8 +206,12 @@ var pkgs = []types.Package{
 		Version:    "1.1.14-r10",
 		SrcName:    "musl",
 		SrcVersion: "1.1.14-r10",
-		Licenses:   []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
-		Digest:     "sha1:608aa1dd39eff7bc6615d3e5e33383750f8f5ecc",
+		Licenses: []string{
+			"MIT",
+			"BSD-3-Clause",
+			"GPL-2.0",
+		},
+		Digest: "sha1:608aa1dd39eff7bc6615d3e5e33383750f8f5ecc",
 		DependsOn: []string{
 			"musl@1.1.14-r10",
 			"scanelf@1.1.6-r0",
@@ -288,8 +299,12 @@ var pkgs = []types.Package{
 		Version:    "2.7.4-r0",
 		SrcName:    "ada",
 		SrcVersion: "2.7.4-r0",
-		Licenses:   []string{"Apache-2.0", "MIT", "MPL-2.0"},
-		Digest:     "sha1:593154f80c440685448e0f52479725d7bc9b678d",
+		Licenses: []string{
+			"Apache-2.0",
+			"MIT",
+			"MPL-2.0",
+		},
+		Digest: "sha1:593154f80c440685448e0f52479725d7bc9b678d",
 		DependsOn: []string{
 			"musl@1.1.14-r10",
 		},
@@ -431,7 +446,7 @@ func TestParseApkInfo(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 			scanner := bufio.NewScanner(f)
-			gotPkgs, gotFiles := a.parseApkInfo(scanner)
+			gotPkgs, gotFiles := a.parseApkInfo(context.Background(), scanner)
 
 			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantFiles, gotFiles)

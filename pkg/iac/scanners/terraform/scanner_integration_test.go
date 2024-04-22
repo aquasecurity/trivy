@@ -161,6 +161,7 @@ deny[cause] {
 
 	t.Run("without skip", func(t *testing.T) {
 		scanner := New(
+			ScannerWithSkipCachedModules(true),
 			options.ScannerWithPolicyDirs("rules"),
 			options.ScannerWithRegoOnly(true),
 			options.ScannerWithEmbeddedPolicies(false),
@@ -176,6 +177,7 @@ deny[cause] {
 	t.Run("with skip", func(t *testing.T) {
 		scanner := New(
 			ScannerWithSkipDownloaded(true),
+			ScannerWithSkipCachedModules(true),
 			options.ScannerWithPolicyDirs("rules"),
 			options.ScannerWithRegoOnly(true),
 			options.ScannerWithEmbeddedPolicies(false),
@@ -229,6 +231,7 @@ deny[res] {
 
 	scanner := New(
 		ScannerWithSkipDownloaded(true),
+		ScannerWithSkipCachedModules(true),
 		options.ScannerWithPolicyDirs("rules"),
 		options.ScannerWithRegoOnly(true),
 		options.ScannerWithEmbeddedLibraries(true),

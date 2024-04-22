@@ -69,7 +69,7 @@ jobs:
           password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
 
       - name: Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.2
         with:
           fetch-depth: 0
 
@@ -90,6 +90,11 @@ jobs:
         run: |
           echo "$GPG_KEY" > gpg.key
 
+      # Create tmp dir for GoReleaser
+      - name: "create tmp dir"
+        run: |
+          mkdir tmp    
+
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
@@ -99,6 +104,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_FILE: "gpg.key"
+          TMPDIR: "tmp"
 
       - name: "remove gpg key"
         run: |
@@ -121,7 +127,7 @@ jobs:
             public.ecr.aws/aquasecurity/trivy:canary
 
       - name: Cache Trivy binaries
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4.0.2
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.

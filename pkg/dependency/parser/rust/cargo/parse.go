@@ -9,8 +9,9 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -25,10 +26,14 @@ type Lockfile struct {
 	Packages []cargoPkg `toml:"package"`
 }
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() types.Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("cargo"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -54,18 +59,23 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	var libs []types.Library
 	var deps []types.Dependency
 	for _, pkg := range lockfile.Packages {
-		pkgID := utils.PackageID(pkg.Name, pkg.Version)
+		pkgID := packageID(pkg.Name, pkg.Version)
 		lib := types.Library{
 			ID:      pkgID,
 			Name:    pkg.Name,
 			Version: pkg.Version,
 		}
 		if pos, ok := lineNumIdx[pkgID]; ok {
-			lib.Locations = []types.Location{{StartLine: pos.start, EndLine: pos.end}}
+			lib.Locations = []types.Location{
+				{
+					StartLine: pos.start,
+					EndLine:   pos.end,
+				},
+			}
 		}
 
 		libs = append(libs, lib)
-		dep := parseDependencies(pkgID, pkg, pkgs)
+		dep := p.parseDependencies(pkgID, pkg, pkgs)
 		if dep != nil {
 			deps = append(deps, *dep)
 		}
@@ -74,7 +84,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	sort.Sort(types.Dependencies(deps))
 	return libs, deps, nil
 }
-func parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *types.Dependency {
+func (p *Parser) parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *types.Dependency {
 	var dependOn []string
 
 	for _, pkgDep := range pkg.Dependencies {
@@ -93,16 +103,16 @@ func parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *ty
 			name := fields[0]
 			version, ok := pkgs[name]
 			if !ok {
-				log.Logger.Debugf("can't find version for %s", name)
+				p.logger.Debug("Cannot find version", log.String("name", name))
 				continue
 			}
-			dependOn = append(dependOn, utils.PackageID(name, version.Version))
+			dependOn = append(dependOn, packageID(name, version.Version))
 		// 2: non-unique dependency in new lock file
 		// 3: old lock file
 		case 2, 3:
-			dependOn = append(dependOn, utils.PackageID(fields[0], fields[1]))
+			dependOn = append(dependOn, packageID(fields[0], fields[1]))
 		default:
-			log.Logger.Debugf("wrong dependency format for %s", pkgDep)
+			p.logger.Debug("Wrong dependency format", log.String("dep", pkgDep))
 			continue
 		}
 	}
@@ -115,4 +125,8 @@ func parseDependencies(pkgId string, pkg cargoPkg, pkgs map[string]cargoPkg) *ty
 	} else {
 		return nil
 	}
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Cargo, name, version)
 }

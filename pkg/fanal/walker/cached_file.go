@@ -19,17 +19,14 @@ type cachedFile struct {
 	size   int64
 	reader io.Reader
 
-	threshold int64 //　Files larger than this threshold are written to file without being read into memory.
-
 	content  []byte // It will be populated if this file is small
 	filePath string // It will be populated if this file is large
 }
 
-func newCachedFile(size int64, r io.Reader, threshold int64) *cachedFile {
+func newCachedFile(size int64, r io.Reader) *cachedFile {
 	return &cachedFile{
-		size:      size,
-		reader:    r,
-		threshold: threshold,
+		size:   size,
+		reader: r,
 	}
 }
 
@@ -39,7 +36,7 @@ func newCachedFile(size int64, r io.Reader, threshold int64) *cachedFile {
 func (o *cachedFile) Open() (xio.ReadSeekCloserAt, error) {
 	o.once.Do(func() {
 		// When the file is large, it will be written down to a temp file.
-		if o.size >= o.threshold {
+		if o.size >= defaultSizeThreshold {
 			f, err := os.CreateTemp("", "fanal-*")
 			if err != nil {
 				o.err = xerrors.Errorf("failed to create the temp file: %w", err)

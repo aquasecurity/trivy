@@ -3,6 +3,7 @@ package terraform
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strings"
 	"text/template"
 )
@@ -91,13 +92,7 @@ func renderPrimitive(val interface{}) string {
 	case PlanReference:
 		return fmt.Sprintf("%v", t.Value)
 	case string:
-		if strings.Contains(t, "\n") {
-			return fmt.Sprintf(`<<EOF
-%s
-EOF
-`, t)
-		}
-		return fmt.Sprintf("%q", t)
+		return parseStringPrimitive(t)
 	case map[string]interface{}:
 		return renderMap(t)
 	case []interface{}:
@@ -106,6 +101,24 @@ EOF
 		return fmt.Sprintf("%#v", t)
 	}
 
+}
+
+func parseStringPrimitive(input string) string {
+	// we must escape templating
+	// ref: https://developer.hashicorp.com/terraform/language/expressions/strings#escape-sequences-1
+	r := regexp.MustCompile(`((\$|\%)\{.+\})`)
+	ff := r.ReplaceAllStringFunc(input, func(s string) string {
+		s = strings.Replace(s, "$", "$$", 1)
+		s = strings.Replace(s, "%", "%%", 1)
+		return s
+	})
+	if strings.Contains(ff, "\n") {
+		return fmt.Sprintf(`<<EOF
+		%s
+		EOF
+		`, ff)
+	}
+	return fmt.Sprintf("%q", ff)
 }
 
 func isMapSlice(vars []interface{}) bool {

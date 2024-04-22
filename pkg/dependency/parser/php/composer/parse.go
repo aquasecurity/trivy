@@ -9,8 +9,9 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -27,10 +28,14 @@ type packageInfo struct {
 	EndLine   int
 }
 
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() types.Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("composer"),
+	}
 }
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -47,7 +52,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	foundDeps := make(map[string][]string)
 	for _, pkg := range lockFile.Packages {
 		lib := types.Library{
-			ID:       utils.PackageID(pkg.Name, pkg.Version),
+			ID:       dependency.ID(ftypes.Composer, pkg.Name, pkg.Version),
 			Name:     pkg.Name,
 			Version:  pkg.Version,
 			Indirect: false, // composer.lock file doesn't have info about Direct/Indirect deps. Will think that all dependencies are Direct
@@ -84,7 +89,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				dependsOn = append(dependsOn, lib.ID)
 				continue
 			}
-			log.Logger.Debugf("unable to find version of %s", depName)
+			p.logger.Debug("Unable to find version", log.String("name", depName))
 		}
 		sort.Strings(dependsOn)
 		deps = append(deps, types.Dependency{

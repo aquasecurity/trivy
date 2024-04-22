@@ -4,6 +4,7 @@ package repo
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"net/http/httptest"
 	"testing"
 
@@ -165,7 +166,7 @@ func TestNewArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.target, tt.args.c, artifact.Option{
+			_, cleanup, err := NewArtifact(tt.args.target, tt.args.c, walker.NewFS(), artifact.Option{
 				NoProgress: tt.args.noProgress,
 				RepoBranch: tt.args.repoBranch,
 				RepoTag:    tt.args.repoTag,
@@ -194,9 +195,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: ts.URL + "/test.git",
 				Type: types.ArtifactRepository,
-				ID:   "sha256:1fa928c33b16a335015ce96e1384127f8463c4f27ed0786806a6d4584b63d091",
+				ID:   "sha256:6a89d4fcd50f840a79da64523c255da80171acd3d286df2acc60056c778d9304",
 				BlobIDs: []string{
-					"sha256:1fa928c33b16a335015ce96e1384127f8463c4f27ed0786806a6d4584b63d091",
+					"sha256:6a89d4fcd50f840a79da64523c255da80171acd3d286df2acc60056c778d9304",
 				},
 			},
 		},
@@ -207,7 +208,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fsCache, err := cache.NewFSCache(t.TempDir())
 			require.NoError(t, err)
 
-			art, cleanup, err := NewArtifact(tt.rawurl, fsCache, artifact.Option{})
+			art, cleanup, err := NewArtifact(tt.rawurl, fsCache, walker.NewFS(), artifact.Option{})
 			require.NoError(t, err)
 			defer cleanup()
 

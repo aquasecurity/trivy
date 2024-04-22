@@ -36,7 +36,7 @@ type mockWalker struct {
 	root string
 }
 
-func (m *mockWalker) Walk(_ *io.SectionReader, _ string, fn walker.WalkFunc) error {
+func (m *mockWalker) Walk(_ *io.SectionReader, _ string, _ walker.Option, fn walker.WalkFunc) error {
 	return filepath.WalkDir(m.root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -94,7 +94,7 @@ func TestNewArtifact(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := &mockWalker{root: "testdata"}
-			_, err := vm.NewArtifact(tt.target, nil, w, artifact.Option{})
+			_, err := vm.NewArtifact(tt.target, nil, w, artifact.Option{Parallel: 3})
 			tt.wantErr(t, err, fmt.Sprintf("NewArtifact(%v, nil, nil)", tt.target))
 		})
 	}

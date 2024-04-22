@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 
 func Parse(r io.Reader) (lib types.Library, err error) {

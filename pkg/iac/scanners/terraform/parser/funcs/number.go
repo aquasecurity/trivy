@@ -22,7 +22,8 @@ var LogFunc = function.New(&function.Spec{
 			Type: cty.Number,
 		},
 	},
-	Type: function.StaticReturnType(cty.Number),
+	Type:         function.StaticReturnType(cty.Number),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 		var num float64
 		if err := gocty.FromCtyValue(args[0], &num); err != nil {
@@ -50,7 +51,8 @@ var PowFunc = function.New(&function.Spec{
 			Type: cty.Number,
 		},
 	},
-	Type: function.StaticReturnType(cty.Number),
+	Type:         function.StaticReturnType(cty.Number),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 		var num float64
 		if err := gocty.FromCtyValue(args[0], &num); err != nil {
@@ -75,7 +77,8 @@ var SignumFunc = function.New(&function.Spec{
 			Type: cty.Number,
 		},
 	},
-	Type: function.StaticReturnType(cty.Number),
+	Type:         function.StaticReturnType(cty.Number),
+	RefineResult: refineNotNull,
 	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
 		var num int
 		if err := gocty.FromCtyValue(args[0], &num); err != nil {
@@ -96,12 +99,14 @@ var SignumFunc = function.New(&function.Spec{
 var ParseIntFunc = function.New(&function.Spec{
 	Params: []function.Parameter{
 		{
-			Name: "number",
-			Type: cty.DynamicPseudoType,
+			Name:        "number",
+			Type:        cty.DynamicPseudoType,
+			AllowMarked: true,
 		},
 		{
-			Name: "base",
-			Type: cty.Number,
+			Name:        "base",
+			Type:        cty.Number,
+			AllowMarked: true,
 		},
 	},
 
@@ -111,17 +116,20 @@ var ParseIntFunc = function.New(&function.Spec{
 		}
 		return cty.Number, nil
 	},
+	RefineResult: refineNotNull,
 
 	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
 		var numstr string
 		var base int
 		var err error
 
-		if err = gocty.FromCtyValue(args[0], &numstr); err != nil {
+		numArg, numMarks := args[0].Unmark()
+		if err = gocty.FromCtyValue(numArg, &numstr); err != nil {
 			return cty.UnknownVal(cty.String), function.NewArgError(0, err)
 		}
 
-		if err = gocty.FromCtyValue(args[1], &base); err != nil {
+		baseArg, baseMarks := args[1].Unmark()
+		if err = gocty.FromCtyValue(baseArg, &base); err != nil {
 			return cty.UnknownVal(cty.Number), function.NewArgError(1, err)
 		}
 
@@ -136,35 +144,14 @@ var ParseIntFunc = function.New(&function.Spec{
 		if !ok {
 			return cty.UnknownVal(cty.Number), function.NewArgErrorf(
 				0,
-				"cannot parse %q as a base %d integer",
-				numstr,
-				base,
+				"cannot parse %s as a base %s integer",
+				redactIfSensitive(numstr, numMarks),
+				redactIfSensitive(base, baseMarks),
 			)
 		}
 
-		parsedNum := cty.NumberVal((&big.Float{}).SetInt(num))
+		parsedNum := cty.NumberVal((&big.Float{}).SetInt(num)).WithMarks(numMarks, baseMarks)
 
 		return parsedNum, nil
 	},
 })
-
-// Log returns returns the logarithm of a given number in a given base.
-func Log(num, base cty.Value) (cty.Value, error) {
-	return LogFunc.Call([]cty.Value{num, base})
-}
-
-// Pow returns the logarithm of a given number in a given base.
-func Pow(num, power cty.Value) (cty.Value, error) {
-	return PowFunc.Call([]cty.Value{num, power})
-}
-
-// Signum determines the sign of a number, returning a number between -1 and
-// 1 to represent the sign.
-func Signum(num cty.Value) (cty.Value, error) {
-	return SignumFunc.Call([]cty.Value{num})
-}
-
-// ParseInt parses a string argument and returns an integer of the specified base.
-func ParseInt(num, base cty.Value) (cty.Value, error) {
-	return ParseIntFunc.Call([]cty.Value{num, base})
-}

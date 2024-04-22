@@ -108,7 +108,7 @@ func TestScanner_Detect(t *testing.T) {
 				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
-				osVer: "2023",
+				osVer: "2023.3.20240304",
 				pkgs: []ftypes.Package{
 					{
 						Name:    "protobuf",
@@ -177,7 +177,7 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := amazon.NewScanner()
-			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
+			got, err := s.Detect(nil, tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

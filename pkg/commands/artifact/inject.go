@@ -5,8 +5,6 @@ package artifact
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
-
 	"github.com/google/wire"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -57,7 +55,7 @@ func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache c
 }
 
 func initializeVMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, walker vm.Walker, artifactOption artifact.Option) (
+	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneVMSet)
 	return scanner.Scanner{}, nil, nil
@@ -108,7 +106,7 @@ func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache
 
 // initializeRemoteVMScanner is for vm scanning in client/server mode
 func initializeRemoteVMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
-	walker vm.Walker, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteVMSet)
 	return scanner.Scanner{}, nil, nil
 }

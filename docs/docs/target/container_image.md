@@ -110,7 +110,7 @@ It is disabled by default.
 You can enable it with `--image-config-scanners config`.
 
 ```
-$ trivy image --image-config-scanners config [YOUR_IMAGE_NAME]
+$ trivy image --image-config-scanners misconfig [YOUR_IMAGE_NAME]
 ```
 
 <details>
@@ -499,4 +499,11 @@ You can configure Docker daemon socket with `DOCKER_HOST` or `--docker-host`.
 
 ```shell
 $ trivy image --docker-host tcp://127.0.0.1:2375 YOUR_IMAGE
+```
+
+### Configure Podman daemon socket to connect to.
+You can configure Podman daemon socket with `--podman-host`.
+
+```shell
+$ trivy image --podman-host /run/user/1000/podman/podman.sock YOUR_IMAGE
 ```

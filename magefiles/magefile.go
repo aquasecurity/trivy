@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -60,7 +61,7 @@ func (Tool) Wire() error {
 
 // GolangciLint installs golangci-lint
 func (Tool) GolangciLint() error {
-	const version = "v1.54.2"
+	const version = "v1.57.2"
 	if exists(filepath.Join(GOBIN, "golangci-lint")) {
 		return nil
 	}
@@ -74,14 +75,6 @@ func (Tool) Labeler() error {
 		return nil
 	}
 	return sh.Run("go", "install", "github.com/knqyf263/labeler@latest")
-}
-
-// EasyJSON installs easyjson
-func (Tool) EasyJSON() error {
-	if exists(filepath.Join(GOBIN, "easyjson")) {
-		return nil
-	}
-	return sh.Run("go", "install", "github.com/mailru/easyjson/...@v0.7.7")
 }
 
 // Kind installs kind cluster
@@ -163,12 +156,6 @@ func Yacc() error {
 	return sh.Run("go", "generate", "./pkg/licensing/expression/...")
 }
 
-// Easyjson generates JSON marshaler/unmarshaler for TinyGo/WebAssembly as TinyGo doesn't support encoding/json.
-func Easyjson() error {
-	mg.Deps(Tool{}.EasyJSON)
-	return sh.Run("easyjson", "./pkg/module/serialize/types.go")
-}
-
 type Test mg.Namespace
 
 // FixtureContainerImages downloads and extracts required images
@@ -179,6 +166,11 @@ func (Test) FixtureContainerImages() error {
 // FixtureVMImages downloads and extracts required VM images
 func (Test) FixtureVMImages() error {
 	return fixtureVMImages()
+}
+
+// FixtureTerraformPlanSnapshots generates Terraform Plan files in test folders
+func (Test) FixtureTerraformPlanSnapshots() error {
+	return fixtureTerraformPlanSnapshots(context.TODO())
 }
 
 // GenerateModules compiles WASM modules for unit tests

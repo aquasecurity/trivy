@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/google/wire"
 	"github.com/samber/lo"
@@ -16,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/langpkg"
@@ -62,7 +64,7 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
-		log.Logger.Debug("OS is not detected.")
+		log.Debug("OS is not detected.")
 
 		// Packages may contain OS-independent binary information even though OS is not detected.
 		if len(detail.Packages) != 0 {
@@ -71,16 +73,18 @@ func (s Scanner) Scan(ctx context.Context, targetName, artifactKey string, blobK
 
 		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
 		if detail.Repository != nil {
-			log.Logger.Debugf("Package repository: %s %s", detail.Repository.Family, detail.Repository.Release)
-			log.Logger.Debugf("Assuming OS is %s %s.", detail.Repository.Family, detail.Repository.Release)
+			log.Debug("Package repository", log.String("family", string(detail.Repository.Family)),
+				log.String("version", detail.Repository.Release))
+			log.Debug("Assuming OS", log.String("family", string(detail.Repository.Family)),
+				log.String("version", detail.Repository.Release))
 			detail.OS = ftypes.OS{
 				Family: detail.Repository.Family,
 				Name:   detail.Repository.Release,
 			}
 		}
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
-		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
-		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
+		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
+		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
 		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
@@ -221,10 +225,10 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 
 // MisconfsToResults is exported for trivy-plugin-aqua purposes only
 func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
-	log.Logger.Infof("Detected config files: %d", len(misconfs))
+	log.Info("Detected config files", log.Int("num", len(misconfs)))
 	var results types.Results
 	for _, misconf := range misconfs {
-		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
+		log.Debug("Scanned config file", log.String("path", misconf.FilePath))
 
 		var detected []types.DetectedMisconfiguration
 
@@ -263,7 +267,7 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 
 	var results types.Results
 	for _, secret := range secrets {
-		log.Logger.Debugf("Secret file: %s", secret.FilePath)
+		log.Debug("Secret file", log.String("path", secret.FilePath))
 
 		results = append(results, types.Result{
 			Target: secret.FilePath,
@@ -297,7 +301,6 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 				Confidence: 1.0,
 			})
 		}
-
 	}
 	results = append(results, types.Result{
 		Target:   "OS Packages",
@@ -312,10 +315,13 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 			for _, license := range lib.Licenses {
 				category, severity := scanner.Scan(license)
 				langLicenses = append(langLicenses, types.DetectedLicense{
-					Severity:   severity,
-					Category:   category,
-					PkgName:    lib.Name,
-					Name:       license,
+					Severity: severity,
+					Category: category,
+					PkgName:  lib.Name,
+					Name:     license,
+					// Lock files use app.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
+					// Applications use lib.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
+					FilePath:   lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath),
 					Confidence: 1.0,
 				})
 			}
@@ -364,7 +370,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	severity := defaultSeverity
 	sev, err := dbTypes.NewSeverity(res.Severity)
 	if err != nil {
-		log.Logger.Warnf("severity must be %s, but %s", dbTypes.SeverityNames, res.Severity)
+		log.Warn("Unsupported severity", log.String("severity", res.Severity))
 	} else {
 		severity = sev
 	}
@@ -378,7 +384,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 
 	// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule
 	// this ensures we don't generate bad links for custom policies
-	if res.Namespace == "" || strings.HasPrefix(res.Namespace, "builtin.") {
+	if res.Namespace == "" || rego.IsBuiltinNamespace(res.Namespace) {
 		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
 		res.References = append(res.References, primaryURL)
 	}
@@ -424,8 +430,15 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 	if include {
 		return
 	}
+
+	onceInfo := sync.OnceFunc(func() {
+		log.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
+	})
 	for i := range apps {
 		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
+			if lib.Dev {
+				onceInfo()
+			}
 			return !lib.Dev
 		})
 	}

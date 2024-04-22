@@ -8,18 +8,23 @@ Trivy supports the scanners listed in the table below.
 
 It supports the following formats:
 
-|  Format   | Supported |
-|:---------:|:---------:|
-|   JSON    |     ✓     |
-|    HCL    |     ✓     |
-| Plan JSON |     ✓     |
+|     Format    | Supported |
+|:-------------:|:---------:|
+|     JSON      |     ✓     |
+|      HCL      |     ✓     |
+| Plan Snapshot |     ✓     |
+|   Plan JSON   |     ✓     |
 
-Trivy can scan the results of `terraform plan`.
-You can scan by passing the file generated as shown below to Trivy:
-
+Trivy can scan Terraform Plan files (snapshots) or their JSON representations. To create a Terraform Plan and scan it, run the following command:
+```bash
+terraform plan --out tfplan
+trivy conf tfplan
 ```
-$ terraform plan --out tfplan.binary
-$ terraform show -json tfplan.binary > tfplan.json
+
+To scan a Terraform Plan representation in JSON format, run the following command:
+```bash
+terraform show -json tfplan > tfplan.json
+trivy conf tfplan.json
 ```
 
 ## Misconfiguration

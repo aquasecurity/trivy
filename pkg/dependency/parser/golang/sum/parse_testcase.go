@@ -1,6 +1,6 @@
 package sum
 
-import "github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+import "github.com/aquasecurity/trivy/pkg/dependency/types"
 
 var (
 	// docker run --name gomod --rm -it golang:1.15 bash

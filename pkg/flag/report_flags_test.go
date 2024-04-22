@@ -1,19 +1,16 @@
 package flag_test
 
 import (
+	"github.com/aquasecurity/trivy/pkg/log"
 	"testing"
-
-	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestReportFlagGroup_ToOptions(t *testing.T) {
@@ -67,7 +64,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 			wantLogs: []string{
 				`["cyclonedx" "spdx" "spdx-json" "github"] automatically enables '--list-all-pkgs'.`,
-				`Severities: ["CRITICAL"]`,
+				`Parsed severities	severities=[CRITICAL]`,
 			},
 			want: flag.ReportOptions{
 				Severities: []dbTypes.Severity{
@@ -187,12 +184,11 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Cleanup(viper.Reset)
 
-			level := zap.WarnLevel
+			level := log.LevelWarn
 			if tt.fields.debug {
-				level = zap.DebugLevel
+				level = log.LevelDebug
 			}
-			core, obs := observer.New(level)
-			log.Logger = zap.New(core).Sugar()
+			out := newLogger(level)
 
 			setValue(flag.FormatFlag.ConfigName, string(tt.fields.format))
 			setValue(flag.TemplateFlag.ConfigName, tt.fields.template)
@@ -229,11 +225,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
-			var gotMessages []string
-			for _, entry := range obs.AllUntimed() {
-				gotMessages = append(gotMessages, entry.Message)
-			}
-			assert.Equal(t, tt.wantLogs, gotMessages, tt.name)
+			assert.Equal(t, tt.wantLogs, out.Messages(), tt.name)
 		})
 	}
 }

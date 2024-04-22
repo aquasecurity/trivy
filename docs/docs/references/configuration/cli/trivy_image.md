@@ -41,7 +41,7 @@ trivy image [flags] IMAGE_NAME
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
       --custom-headers strings            custom headers in client mode
-      --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
+      --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --docker-host string                unix domain socket path to use for docker scanning
       --download-db-only                  download/update vulnerability database but don't run a scan
@@ -51,6 +51,8 @@ trivy image [flags] IMAGE_NAME
       --exit-on-eol int                   exit with the specified code when the OS reaches end of service/life
       --file-patterns strings             specify config file patterns
   -f, --format string                     format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
+      --helm-api-versions strings         Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)
+      --helm-kube-version string          Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
       --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-set-file strings             specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings           specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
@@ -65,11 +67,11 @@ trivy image [flags] IMAGE_NAME
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --input string                      input file path instead of image name
-      --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
+      --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
       --license-confidence-level float    specify license classifier's confidence level (default 0.9)
       --license-full                      eagerly look for licenses in source code headers and license files
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
-      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan])
+      --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
       --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
       --no-progress                       suppress progress bar
       --offline-scan                      do not issue API requests to identify dependencies
@@ -78,6 +80,7 @@ trivy image [flags] IMAGE_NAME
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --platform string                   set platform in the form os/arch if image is multi-platform capable
+      --podman-host string                unix podman socket path to use for podman scanning
       --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
       --policy-namespaces strings         Rego namespaces
       --redis-ca string                   redis ca file location, if using redis as cache backend

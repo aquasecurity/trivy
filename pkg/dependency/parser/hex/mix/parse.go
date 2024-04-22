@@ -2,24 +2,29 @@ package mix
 
 import (
 	"bufio"
-	"fmt"
 	"strings"
 	"unicode"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 // Parser is a parser for mix.lock
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func NewParser() types.Parser {
+	return &Parser{
+		logger: log.WithPrefix("mix"),
+	}
+}
+
+func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var libs []types.Library
 	scanner := bufio.NewScanner(r)
 	var lineNumber int // It is used to save dependency location
@@ -42,18 +47,23 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 			// git repository doesn't have dependency version
 			// skip these dependencies
 			if !strings.Contains(ss[0], ":git") {
-				log.Logger.Warnf("Cannot parse dependency: %s", line)
+				p.logger.Warn("Cannot parse dependency", log.String("line", line))
 			} else {
-				log.Logger.Debugf("Skip git dependencies: %s", name)
+				p.logger.Debug("Skip git dependencies", log.String("name", name))
 			}
 			continue
 		}
 		version := strings.Trim(ss[2], `"`)
 		libs = append(libs, types.Library{
-			ID:        fmt.Sprintf("%s@%s", name, version),
-			Name:      name,
-			Version:   version,
-			Locations: []types.Location{{StartLine: lineNumber, EndLine: lineNumber}},
+			ID:      dependency.ID(ftypes.Hex, name, version),
+			Name:    name,
+			Version: version,
+			Locations: []types.Location{
+				{
+					StartLine: lineNumber,
+					EndLine:   lineNumber,
+				},
+			},
 		})
 
 	}

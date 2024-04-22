@@ -10,8 +10,9 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/types"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
@@ -86,7 +87,7 @@ func parsePackagePatterns(target string) (packagename, protocol string, patterns
 	}
 	patterns = lo.Map(patternsSplit, func(pattern string, _ int) string {
 		_, _, version, _ := parsePattern(pattern)
-		return utils.PackageID(packagename, version)
+		return packageID(packagename, version)
 	})
 	return
 }
@@ -141,13 +142,17 @@ func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (
 	return deps
 }
 
-type Parser struct{}
-
-func NewParser() types.Parser {
-	return &Parser{}
+type Parser struct {
+	logger *log.Logger
 }
 
-func scanBlocks(data []byte, atEOF bool) (advance int, token []byte, err error) {
+func NewParser() types.Parser {
+	return &Parser{
+		logger: log.WithPrefix("yarn"),
+	}
+}
+
+func (p *Parser) scanBlocks(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
@@ -166,7 +171,7 @@ func scanBlocks(data []byte, atEOF bool) (advance int, token []byte, err error) 
 	return 0, nil, nil
 }
 
-func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine int, err error) {
+func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine int, err error) {
 	var (
 		emptyLines int // lib can start with empty lines first
 		skipBlock  bool
@@ -227,7 +232,7 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 	// in case an unsupported protocol is detected
 	// show warning and continue parsing
 	if err != nil {
-		log.Logger.Warnf("Yarn protocol error: %s", err)
+		p.logger.Warn("Protocol error", log.Err(err))
 		return Library{}, nil, scanner.LineNum(lineNum), nil
 	}
 
@@ -261,7 +266,7 @@ func parseDependency(line string) (string, error) {
 	if name, version, err := getDependency(line); err != nil {
 		return "", err
 	} else {
-		return utils.PackageID(name, version), nil
+		return packageID(name, version), nil
 	}
 }
 
@@ -274,11 +279,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	patternIDs := make(map[string]string)
 
 	scanner := bufio.NewScanner(r)
-	scanner.Split(scanBlocks)
+	scanner.Split(p.scanBlocks)
 	dependsOn := make(map[string][]string)
 	for scanner.Scan() {
 		block := scanner.Bytes()
-		lib, deps, newLine, err := parseBlock(block, lineNumber)
+		lib, deps, newLine, err := p.parseBlock(block, lineNumber)
 		lineNumber = newLine + 2
 		if err != nil {
 			return nil, nil, err
@@ -286,7 +291,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 
-		libID := utils.PackageID(lib.Name, lib.Version)
+		libID := packageID(lib.Name, lib.Version)
 		libs = append(libs, types.Library{
 			ID:        libID,
 			Name:      lib.Name,
@@ -313,4 +318,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
 	deps := parseResults(patternIDs, dependsOn)
 	return libs, deps, nil
+}
+
+func packageID(name, version string) string {
+	return dependency.ID(ftypes.Yarn, name, version)
 }
