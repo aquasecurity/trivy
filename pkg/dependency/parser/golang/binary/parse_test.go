@@ -23,10 +23,6 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/test.elf",
 			want: []types.Library{
 				{
-					Name:    "stdlib",
-					Version: "1.15.2",
-				},
-				{
 					Name:    "github.com/aquasecurity/go-pep440-version",
 					Version: "v0.0.0-20210121094942-22b2f8951d46",
 				},
@@ -35,8 +31,16 @@ func TestParse(t *testing.T) {
 					Version: "v0.0.0-20210121072130-637058cfe492",
 				},
 				{
+					Name:    "github.com/aquasecurity/test",
+					Version: "",
+				},
+				{
 					Name:    "golang.org/x/xerrors",
 					Version: "v0.0.0-20200804184101-5ec99f83aff1",
+				},
+				{
+					Name:    "stdlib",
+					Version: "1.15.2",
 				},
 			},
 		},
@@ -45,10 +49,6 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/test.exe",
 			want: []types.Library{
 				{
-					Name:    "stdlib",
-					Version: "1.15.2",
-				},
-				{
 					Name:    "github.com/aquasecurity/go-pep440-version",
 					Version: "v0.0.0-20210121094942-22b2f8951d46",
 				},
@@ -57,8 +57,16 @@ func TestParse(t *testing.T) {
 					Version: "v0.0.0-20210121072130-637058cfe492",
 				},
 				{
+					Name:    "github.com/aquasecurity/test",
+					Version: "",
+				},
+				{
 					Name:    "golang.org/x/xerrors",
 					Version: "v0.0.0-20200804184101-5ec99f83aff1",
+				},
+				{
+					Name:    "stdlib",
+					Version: "1.15.2",
 				},
 			},
 		},
@@ -67,10 +75,6 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/test.macho",
 			want: []types.Library{
 				{
-					Name:    "stdlib",
-					Version: "1.15.2",
-				},
-				{
 					Name:    "github.com/aquasecurity/go-pep440-version",
 					Version: "v0.0.0-20210121094942-22b2f8951d46",
 				},
@@ -79,8 +83,16 @@ func TestParse(t *testing.T) {
 					Version: "v0.0.0-20210121072130-637058cfe492",
 				},
 				{
+					Name:    "github.com/aquasecurity/test",
+					Version: "",
+				},
+				{
 					Name:    "golang.org/x/xerrors",
 					Version: "v0.0.0-20200804184101-5ec99f83aff1",
+				},
+				{
+					Name:    "stdlib",
+					Version: "1.15.2",
 				},
 			},
 		},
@@ -89,16 +101,34 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/replace.elf",
 			want: []types.Library{
 				{
-					Name:    "stdlib",
-					Version: "1.16.4",
-				},
-				{
 					Name:    "github.com/davecgh/go-spew",
 					Version: "v1.1.1",
 				},
 				{
+					Name:    "github.com/ebati/trivy-mod-parse",
+					Version: "",
+				},
+				{
 					Name:    "github.com/go-sql-driver/mysql",
 					Version: "v1.5.0",
+				},
+				{
+					Name:    "stdlib",
+					Version: "1.16.4",
+				},
+			},
+		},
+		{
+			name:      "with semver main module version",
+			inputFile: "testdata/semver-main-module-version.macho",
+			want: []types.Library{
+				{
+					Name:    "go.etcd.io/bbolt",
+					Version: "v1.3.5",
+				},
+				{
+					Name:    "stdlib",
+					Version: "1.20.6",
 				},
 			},
 		},
