@@ -74,7 +74,7 @@ $ trivy rootfs ./your_binary
 !!! note
     It doesn't work with UPX-compressed binaries.
 
-#### (devel) versions
+#### Empty versions
 There are times when Go uses the `(devel)` version for modules/dependencies and Trivy can't resolve them:
 
 - Only Go binaries installed using the `go install` command contain correct (semver) version for the main module. 
