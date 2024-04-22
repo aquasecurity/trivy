@@ -1901,6 +1901,19 @@ You're not viewing the latest version.
     Go binaries
   </a>
   
+    <nav class="md-nav" aria-label="Go binaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#empty-versions" class="md-nav__link">
+    Empty versions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -3605,6 +3618,19 @@ You're not viewing the latest version.
     Go binaries
   </a>
   
+    <nav class="md-nav" aria-label="Go binaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#empty-versions" class="md-nav__link">
+    Empty versions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -3746,6 +3772,14 @@ If there is a Go binary in your container image, Trivy automatically finds and s
 <p class="admonition-title">Note</p>
 <p>It doesn't work with UPX-compressed binaries.</p>
 </div>
+<h4 id="empty-versions">Empty versions</h4>
+<p>There are times when Go uses the <code>(devel)</code> version for modules/dependencies and Trivy can't resolve them:</p>
+<ul>
+<li>Only Go binaries installed using the <code>go install</code> command contain correct (semver) version for the main module. 
+  In other cases, Go uses the <code>(devel)</code> version<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>.</li>
+<li>Dependencies replaced with local ones use the <code>(devel)</code> versions.</li>
+</ul>
+<p>In these cases, the version of such packages is empty.</p>
 <div class="footnote">
 <hr />
 <ol>
@@ -3754,6 +3788,9 @@ If there is a Go binary in your container image, Trivy automatically finds and s
 </li>
 <li id="fn:2">
 <p>Need to download modules to local cache beforehand&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
