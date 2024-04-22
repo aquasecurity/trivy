@@ -250,7 +250,7 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 			// Allow clients to supply an FS with a Path() escape hatch if they want;
 			// if they did so, use it, to enable modules to reference outside paths
 			// without restriction.
-			if pathfs, ok := target.(interface{ Path() string }); ok && runtime.GOOS != "windows" {
+			if pathfs, ok := target.(interface{ Path() string }); ok {
 				if !filepath.IsAbs(path) {
 					path = filepath.Join(pathfs.Path(), baseDir, path)
 					var err error
@@ -262,24 +262,24 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 
 			// If we got an absolute path, make it relative to an FS that can handle it.
 			if filepath.IsAbs(path) {
+				rootpath := "/"
 				if runtime.GOOS != "windows" {
-					useTarget = os.DirFS("/")
-					if relpath, err := filepath.Rel("/", path); err == nil {
-						path = relpath
-					} else {
-						return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to handle absolute path: %s", err)
-					}
+					rootpath = filepath.VolumeName(path)
+				}
+				useTarget = os.DirFS(rootpath)
+				if relpath, err := filepath.Rel(rootpath, path); err == nil {
+					path = relpath
+				} else {
+					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to handle absolute path: %s", err)
 				}
 			} else {
 				// Otherwise, only respect relative paths within the supplied FS.
 				path = filepath.Join(baseDir, path)
 			}
 
-			// Join the path to the glob pattern, while ensuring the full
-			// pattern is canonical for the host OS. The joined path is
-			// automatically cleaned during this operation.
+			// Join the path to the glob pattern, and ensure both path and pattern
+			// agree on path separators, so the globbing works as expected.
 			pattern = filepath.ToSlash(filepath.Join(path, pattern))
-			// Trivy uses a virtual file system
 			path = filepath.ToSlash(path)
 
 			matches, err := doublestar.Glob(useTarget, pattern)
