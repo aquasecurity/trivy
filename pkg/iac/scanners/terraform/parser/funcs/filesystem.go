@@ -278,7 +278,7 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 			// Join the path to the glob pattern, while ensuring the full
 			// pattern is canonical for the host OS. The joined path is
 			// automatically cleaned during this operation.
-			pattern = filepath.Join(path, pattern)
+			pattern = filepath.ToSlash(filepath.Join(path, pattern))
 			// Trivy uses a virtual file system
 			path = filepath.ToSlash(path)
 
