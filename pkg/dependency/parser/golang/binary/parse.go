@@ -52,7 +52,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	// Add main module
 	libs = append(libs, types.Library{
 		Name: info.Main.Path,
-		// Only binaries installed with `go install` contain the correct version of the core module.
+		// Only binaries installed with `go install` contain semver version of the main module.
 		// Other binaries use the `(devel)` version.
 		// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
 		Version: info.Main.Version,
