@@ -2,6 +2,7 @@ package binary
 
 import (
 	"debug/buildinfo"
+	"sort"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -76,5 +77,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		})
 	}
 
+	sort.Sort(types.Libraries(libs))
 	return libs, nil, nil
 }
