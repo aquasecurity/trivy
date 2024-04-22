@@ -264,7 +264,7 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 			if filepath.IsAbs(path) {
 				rootpath := "/"
 				if runtime.GOOS == "windows" {
-					rootpath = os.Getenv("SystemDrive")
+					rootpath = filepath.VolumeName(path)
 				}
 				useTarget = os.DirFS(rootpath)
 				if relpath, err := filepath.Rel(rootpath, path); err == nil {
