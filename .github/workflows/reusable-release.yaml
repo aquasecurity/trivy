@@ -108,7 +108,7 @@ jobs:
 
       - name: "remove gpg key"
         run: |
-          rm gpg.key      
+          rm gpg.key
 
       # Push images to registries (only for canary build)
       # The custom Dockerfile.canary is necessary
