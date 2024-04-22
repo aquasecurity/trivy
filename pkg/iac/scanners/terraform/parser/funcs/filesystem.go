@@ -263,7 +263,7 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 			// If we got an absolute path, make it relative to an FS that can handle it.
 			if filepath.IsAbs(path) {
 				rootpath := "/"
-				if runtime.GOOS != "windows" {
+				if runtime.GOOS == "windows" {
 					rootpath = filepath.VolumeName(path)
 				}
 				useTarget = os.DirFS(rootpath)
