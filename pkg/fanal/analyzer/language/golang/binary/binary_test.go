@@ -39,7 +39,7 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 							},
 							{
 								Name:    "github.com/aquasecurity/test",
-								Version: "(devel)",
+								Version: "",
 							},
 							{
 								Name:    "golang.org/x/xerrors",

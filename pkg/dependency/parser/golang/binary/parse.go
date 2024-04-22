@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
@@ -56,7 +57,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			// Only binaries installed with `go install` contain semver version of the main module.
 			// Other binaries use the `(devel)` version.
 			// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
-			Version: info.Main.Version,
+			Version: lo.Ternary(info.Main.Version != "(devel)", info.Main.Version, ""), // Use empty string instead of `(devel)`
 		},
 	}...)
 
@@ -75,7 +76,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 		libs = append(libs, types.Library{
 			Name:    mod.Path,
-			Version: mod.Version,
+			Version: lo.Ternary(mod.Version != "(devel)", mod.Version, ""), // Use empty string instead of `(devel)`,
 		})
 	}
 

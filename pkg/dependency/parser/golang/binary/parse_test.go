@@ -32,7 +32,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name:    "github.com/aquasecurity/test",
-					Version: "(devel)",
+					Version: "",
 				},
 				{
 					Name:    "golang.org/x/xerrors",
@@ -58,7 +58,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name:    "github.com/aquasecurity/test",
-					Version: "(devel)",
+					Version: "",
 				},
 				{
 					Name:    "golang.org/x/xerrors",
@@ -84,7 +84,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name:    "github.com/aquasecurity/test",
-					Version: "(devel)",
+					Version: "",
 				},
 				{
 					Name:    "golang.org/x/xerrors",
@@ -106,7 +106,7 @@ func TestParse(t *testing.T) {
 				},
 				{
 					Name:    "github.com/ebati/trivy-mod-parse",
-					Version: "(devel)",
+					Version: "",
 				},
 				{
 					Name:    "github.com/go-sql-driver/mysql",

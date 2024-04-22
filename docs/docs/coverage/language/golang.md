@@ -81,6 +81,7 @@ There are times when Go uses the `(devel)` version for modules/dependencies and 
   In other cases, Go uses the `(devel)` version[^3].
 - Dependencies replaced with local ones use the `(devel)` versions.
 
+In these cases, the version of such packages is empty.
 
 [^1]: It doesn't require the Internet access.
 [^2]: Need to download modules to local cache beforehand
