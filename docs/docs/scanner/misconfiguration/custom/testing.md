@@ -22,7 +22,7 @@ For more details, see [Policy Testing][opa-testing].
     }
     ```
 
-To write tests for custom policies, you can refer to existing tests under [trivy-policies][trivy-policies].
+To write tests for custom policies, you can refer to existing tests under [trivy-checks][trivy-checks].
 
 ## Go testing
 [Fanal][fanal] which is a core library of Trivy can be imported as a Go library.

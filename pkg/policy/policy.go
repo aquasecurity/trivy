@@ -91,8 +91,8 @@ func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Opti
 
 func (c *Client) populateOCIArtifact(registryOpts types.RegistryOptions) error {
 	if c.artifact == nil {
-		log.Debug("Loading check bundle", log.String("repository", c.policyBundleRepo))
-		art, err := oci.NewArtifact(c.policyBundleRepo, c.quiet, registryOpts)
+		log.Debug("Loading check bundle", log.String("repository", c.checkBundleRepo))
+		art, err := oci.NewArtifact(c.checkBundleRepo, c.quiet, registryOpts)
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
