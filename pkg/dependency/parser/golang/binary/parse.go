@@ -43,7 +43,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, convertError(err)
 	}
 
-	libs := make([]types.Library, 0, len(info.Deps)+1)
+	libs := make([]types.Library, 0, len(info.Deps)+2)
 	libs = append(libs, []types.Library{
 		{
 			// Add the Go version used to build this binary.
