@@ -164,7 +164,7 @@ func TestNewPackageURL(t *testing.T) {
 			typ:  ftypes.GoModule,
 			pkg: ftypes.Package{
 				Name:    "./private_repos/cnrm.googlesource.com/cnrm/",
-				Version: "(devel)",
+				Version: "",
 			},
 			want: nil,
 		},
