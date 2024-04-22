@@ -9,6 +9,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"unicode/utf8"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -261,8 +262,12 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 
 			// If we got an absolute path, make it relative to an FS that can handle it.
 			if filepath.IsAbs(path) {
-				useTarget = os.DirFS("/")
-				if relpath, err := filepath.Rel("/", path); err == nil {
+				rootpath := "/"
+				if runtime.GOOS == "windows" {
+					rootpath = os.Getenv("SystemDrive")
+				}
+				useTarget = os.DirFS(rootpath)
+				if relpath, err := filepath.Rel(rootpath, path); err == nil {
 					path = relpath
 				} else {
 					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to handle absolute path: %s", err)
