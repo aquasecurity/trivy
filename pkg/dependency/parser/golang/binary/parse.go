@@ -48,6 +48,15 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		Version: strings.TrimPrefix(info.GoVersion, "go"),
 	})
 
+	// Add main module
+	libs = append(libs, types.Library{
+		Name: info.Main.Path,
+		// Only binaries installed with `go install` contain the correct version of the core module.
+		// Other binaries use the `(devel)` version.
+		// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
+		Version: info.Main.Version,
+	})
+
 	for _, dep := range info.Deps {
 		// binaries with old go version may incorrectly add module in Deps
 		// In this case Path == "", Version == "Devel"
