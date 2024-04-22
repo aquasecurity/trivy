@@ -119,6 +119,20 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "with semver main module version",
+			inputFile: "testdata/semver-main-module-version.macho",
+			want: []types.Library{
+				{
+					Name:    "go.etcd.io/bbolt",
+					Version: "v1.3.5",
+				},
+				{
+					Name:    "stdlib",
+					Version: "1.20.6",
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/dummy",
 			wantErr:   "unrecognized executable format",
