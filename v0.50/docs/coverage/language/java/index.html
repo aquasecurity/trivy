@@ -1911,6 +1911,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#remote-repositories" class="md-nav__link">
+    remote repositories
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#maven-invoker-plugin" class="md-nav__link">
     maven-invoker-plugin
   </a>
@@ -3628,6 +3635,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#remote-repositories" class="md-nav__link">
+    remote repositories
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#maven-invoker-plugin" class="md-nav__link">
     maven-invoker-plugin
   </a>
@@ -3773,7 +3787,24 @@ To find information about these JARs<sup id="fnref7:2"><a class="footnote-ref" h
 <li>relativePath field<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></li>
 <li>local repository directory<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup>.</li>
 </ul>
-<p>If your machine doesn't have the necessary files - Trivy tries to find the information about these dependencies in the <a href="https://repo.maven.apache.org/maven2/">maven repository</a>.</p>
+<h3 id="remote-repositories">remote repositories</h3>
+<p>If your machine doesn't have the necessary files - Trivy tries to find the information about these dependencies in the remote repositories:</p>
+<ul>
+<li><a href="https://maven.apache.org/settings.html#repositories">repositories from pom files</a></li>
+<li><a href="https://repo.maven.apache.org/maven2/">maven central repository</a></li>
+</ul>
+<p>Trivy reproduces Maven's repository selection and priority:</p>
+<ul>
+<li>for snapshot artifacts:<ul>
+<li>check only snapshot repositories from pom files (if exists)</li>
+</ul>
+</li>
+<li>for other artifacts:<ul>
+<li>check release repositories from pom files (if exists)</li>
+<li>check <a href="https://repo.maven.apache.org/maven2/">maven central</a></li>
+</ul>
+</li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Trivy only takes information about packages. We don't take a list of vulnerabilities for packages from the <code>maven repository</code>.
