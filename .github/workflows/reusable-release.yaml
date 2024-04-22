@@ -90,6 +90,11 @@ jobs:
         run: |
           echo "$GPG_KEY" > gpg.key
 
+      # Create tmp dir for GoReleaser
+      - name: "create tmp dir"
+        run: |
+          mkdir tmp    
+
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
@@ -99,10 +104,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_FILE: "gpg.key"
+          TMPDIR: "tmp"
 
       - name: "remove gpg key"
         run: |
-          rm gpg.key
+          rm gpg.key      
 
       # Push images to registries (only for canary build)
       # The custom Dockerfile.canary is necessary
