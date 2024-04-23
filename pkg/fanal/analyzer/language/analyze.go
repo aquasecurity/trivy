@@ -117,16 +117,17 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		}
 
 		newPkg := types.Package{
-			ID:        lib.ID,
-			Name:      lib.Name,
-			Version:   lib.Version,
-			Dev:       lib.Dev,
-			FilePath:  libPath,
-			Indirect:  lib.Indirect,
-			Licenses:  licenses,
-			DependsOn: deps[lib.ID],
-			Locations: locs,
-			Digest:    d,
+			ID:           lib.ID,
+			Name:         lib.Name,
+			Version:      lib.Version,
+			Dev:          lib.Dev,
+			FilePath:     libPath,
+			Indirect:     lib.Indirect,
+			Relationship: lib.Relationship,
+			Licenses:     licenses,
+			DependsOn:    deps[lib.ID],
+			Locations:    locs,
+			Digest:       d,
 		}
 		pkgs = append(pkgs, newPkg)
 	}

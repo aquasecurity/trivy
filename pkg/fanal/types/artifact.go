@@ -9,6 +9,7 @@ import (
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
+	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
@@ -83,7 +84,9 @@ type Package struct {
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
-	Indirect        bool       `json:",omitempty"` // this package is direct dependency of the project or not
+
+	Indirect     bool                    `json:",omitempty"` // Deprecated: Use relationship
+	Relationship godeptypes.Relationship `json:",omitempty"`
 
 	// Dependencies of this package
 	// Note:　it may have interdependencies, which may lead to infinite loops.

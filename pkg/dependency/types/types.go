@@ -8,8 +8,9 @@ type Library struct {
 	ID                 string `json:",omitempty"`
 	Name               string
 	Version            string
-	Dev                bool
-	Indirect           bool          `json:",omitempty"`
+	Dev                bool          `json:",omitempty"`
+	Indirect           bool          `json:",omitempty"` // deprecated: Use Relationship
+	Relationship       Relationship  `json:",omitempty"`
 	License            string        `json:",omitempty"`
 	ExternalReferences []ExternalRef `json:",omitempty"`
 	Locations          Locations     `json:",omitempty"`
@@ -72,3 +73,27 @@ const (
 	RefVCS   RefType = "vcs"
 	RefOther RefType = "other"
 )
+
+type Relationship int
+
+const (
+	RelationshipUnknown Relationship = iota
+	RelationshipRuntime
+	RelationshipRoot
+	RelationshipDirect
+	RelationshipIndirect
+)
+
+func (r Relationship) String() string {
+	names := [...]string{
+		"unknown",
+		"runtime",
+		"root",
+		"direct",
+		"indirect",
+	}
+	if r < RelationshipRoot || r > RelationshipIndirect {
+		return "unknown"
+	}
+	return names[r]
+}
