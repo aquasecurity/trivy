@@ -43,7 +43,7 @@ Java DB:
   UpdatedAt: 2023-03-14 00:47:02.774253754 +0000 UTC
   NextUpdate: 2023-03-17 00:47:02.774253254 +0000 UTC
   DownloadedAt: 2023-03-14 03:04:55.058541039 +0000 UTC
-Policy Bundle:
+Check Bundle:
   Digest: sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd
   DownloadedAt: 2023-03-02 01:06:08.191725 +0000 UTC
 `,
@@ -81,7 +81,7 @@ Java DB:
   UpdatedAt: 2023-03-14 00:47:02.774253754 +0000 UTC
   NextUpdate: 2023-03-17 00:47:02.774253254 +0000 UTC
   DownloadedAt: 2023-03-14 03:04:55.058541039 +0000 UTC
-Policy Bundle:
+Check Bundle:
   Digest: sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd
   DownloadedAt: 2023-03-02 01:06:08.191725 +0000 UTC
 `
