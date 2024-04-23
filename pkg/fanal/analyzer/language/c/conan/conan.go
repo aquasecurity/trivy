@@ -109,15 +109,19 @@ func licensesFromCache() (map[string]string, error) {
 			line := strings.TrimSpace(scanner.Text())
 
 			if strings.HasPrefix(line, "name") { // cf. https://docs.conan.io/1/reference/conanfile/attributes.html#name
-				// trim extra characters - e.g. `name = "openssl"` -> `openssl`
-				name = strings.TrimSuffix(strings.TrimPrefix(line, `name = "`), `"`)
+				// remove spaces before and after `=` (if used). e.g. `name = "openssl"` -> `name="openssl"`
+				name = strings.ReplaceAll(line, " ", "")
+				// trim extra characters - e.g. `name="openssl"` -> `openssl`
+				name = strings.TrimSuffix(strings.TrimPrefix(name, `name="`), `"`)
 				// Check that the license is already found
 				if license != "" {
 					break
 				}
 			} else if strings.HasPrefix(line, "license") { // cf. https://docs.conan.io/1/reference/conanfile/attributes.html#license
+				// remove spaces before and after `=` (if used). e.g. `license = "Apache-2.0"` -> `license="Apache-2.0"`
+				license = strings.ReplaceAll(line, " ", "")
 				// trim extra characters - e.g. `license = "Apache-2.0"` -> `Apache-2.0`
-				license = strings.TrimSuffix(strings.TrimPrefix(line, `license = "`), `"`)
+				license = strings.TrimSuffix(strings.TrimPrefix(license, `license="`), `"`)
 				// Check that the name is already found
 				if name != "" {
 					break
