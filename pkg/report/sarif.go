@@ -97,7 +97,15 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 			"security-severity": data.cvssScore,
 		})
 	if data.url != "" {
-		r.WithHelpURI(data.url)
+		// according to SARIF standards, the HelpURI should be an absolute path
+
+		// check if already an absolute path
+		if strings.HasPrefix(data.url, "https://") || strings.HasPrefix(data.url, "http://") {
+			r.WithHelpURI(data.url)
+		} else {
+			// add prefix https://
+			r.WithHelpURI("https://" + data.url)
+		}
 	}
 }
 
