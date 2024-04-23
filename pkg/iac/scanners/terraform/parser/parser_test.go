@@ -1631,3 +1631,71 @@ output "test_out" {
 		assert.Equal(t, "test_value", attr.GetRawValue())
 	}
 }
+
+func TestExtractSetValue(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+resource "test" "set-value" {
+	value = toset(["x", "y", "x"])
+}
+`,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+	attr := resources[0].GetAttribute("value")
+	require.NotNil(t, attr)
+	assert.Equal(t, []string{"x", "y"}, attr.GetRawValue())
+}
+
+func TestFunc_fileset(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+resource "test" "fileset-func" {
+	value = fileset(path.module, "**/*.py")
+}
+`,
+		"a.py":      ``,
+		"path/b.py": ``,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+	attr := resources[0].GetAttribute("value")
+	require.NotNil(t, attr)
+	assert.Equal(t, []string{"a.py", "path/b.py"}, attr.GetRawValue())
+}
+
+func TestVarTypeShortcut(t *testing.T) {
+	files := map[string]string{
+		"main.tf": `
+variable "magic_list" {
+	type    = list
+	default = ["x", "y"]
+}
+
+variable "magic_map" {
+	type    = map
+	default = {a = 1, b = 2}
+}
+
+resource "test" "values" {
+	l = var.magic_list
+	m = var.magic_map
+}
+`,
+	}
+
+	resources := parse(t, files).GetResourcesByType("test")
+	require.Len(t, resources, 1)
+
+	list_attr := resources[0].GetAttribute("l")
+	require.NotNil(t, list_attr)
+	assert.Equal(t, []string{"x", "y"}, list_attr.GetRawValue())
+
+	map_attr := resources[0].GetAttribute("m")
+	require.NotNil(t, map_attr)
+	assert.True(t, map_attr.Value().RawEquals(cty.MapVal(map[string]cty.Value{
+		"a": cty.NumberIntVal(1), "b": cty.NumberIntVal(2),
+	})))
+}
