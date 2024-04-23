@@ -161,3 +161,56 @@ func Test_conanLockAnalyzer_Required(t *testing.T) {
 		})
 	}
 }
+
+func Test_detectAttribute(t *testing.T) {
+	tests := []struct {
+		name     string
+		attrName string
+		line     string
+		want     string
+	}{
+		{
+			name:     "without spaces near `=`",
+			attrName: "license",
+			line:     `license="bar"`,
+			want:     "bar",
+		},
+		{
+			name:     "with space before `=`",
+			attrName: "license",
+			line:     `license ="bar"`,
+			want:     "bar",
+		},
+		{
+			name:     "with space after `=`",
+			attrName: "license",
+			line:     `license= "bar"`,
+			want:     "bar",
+		},
+		{
+			name:     "with space before and after `=`",
+			attrName: "license",
+			line:     `license = "bar"`,
+			want:     "bar",
+		},
+		{
+			name:     "license with spaces",
+			attrName: "license",
+			line:     `license = "foo and bar"`,
+			want:     "foo and bar",
+		},
+		{
+			name:     "another attribute",
+			attrName: "license",
+			line:     `license_contents = "foo"`,
+			want:     "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := detectAttribute(tt.attrName, tt.line)
+			require.Equal(t, tt.want, got)
+		})
+	}
+}
