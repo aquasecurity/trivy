@@ -66,6 +66,17 @@ type Layer struct {
 	CreatedBy string `json:",omitempty"`
 }
 
+// TODO: merge pkg/dependency/types/types.go into this file
+type Relationship = godeptypes.Relationship
+
+const (
+	RelationshipUnknown  = godeptypes.RelationshipUnknown
+	RelationshipRuntime  = godeptypes.RelationshipRuntime
+	RelationshipRoot     = godeptypes.RelationshipRoot
+	RelationshipDirect   = godeptypes.RelationshipDirect
+	RelationshipIndirect = godeptypes.RelationshipIndirect
+)
+
 type Package struct {
 	ID         string        `json:",omitempty"`
 	Name       string        `json:",omitempty"`
@@ -85,8 +96,8 @@ type Package struct {
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
 
-	Indirect     bool                    `json:",omitempty"` // Deprecated: Use relationship
-	Relationship godeptypes.Relationship `json:",omitempty"`
+	Indirect     bool         `json:",omitempty"` // Deprecated: Use relationship
+	Relationship Relationship `json:",omitempty"`
 
 	// Dependencies of this package
 	// Note:　it may have interdependencies, which may lead to infinite loops.

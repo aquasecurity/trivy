@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/xerrors"
@@ -84,6 +85,24 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		skipIndirect = lessThan117(modFileParsed.Go.Version)
 	}
 
+	// Main module
+	var mainModID string
+	if m := modFileParsed.Module; m != nil {
+		ver := m.Mod.Version
+		if ver != "" {
+			ver = ver[1:]
+		}
+		mainModID = packageID(m.Mod.Path, ver)
+		libs[m.Mod.Path] = types.Library{
+			ID:                 mainModID,
+			Name:               m.Mod.Path,
+			Version:            ver,
+			Relationship:       types.RelationshipRoot,
+			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
+		}
+	}
+
+	// Required modules
 	for _, require := range modFileParsed.Require {
 		// Skip indirect dependencies less than Go 1.17
 		if skipIndirect && require.Indirect {
@@ -94,6 +113,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			Name:               require.Mod.Path,
 			Version:            require.Mod.Version[1:],
 			Indirect:           require.Indirect,
+			Relationship:       lo.Ternary(require.Indirect, types.RelationshipIndirect, types.RelationshipDirect),
 			ExternalReferences: p.GetExternalRefs(require.Mod.Path),
 		}
 	}
@@ -129,12 +149,24 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				Name:               rep.New.Path,
 				Version:            rep.New.Version[1:],
 				Indirect:           old.Indirect,
+				Relationship:       old.Relationship,
 				ExternalReferences: p.GetExternalRefs(rep.New.Path),
 			}
 		}
 	}
 
-	return maps.Values(libs), nil, nil
+	// Build a dependency graph from the main module to its direct dependencies.
+	var deps []types.Dependency
+	if mainModID != "" {
+		deps = append(deps, types.Dependency{
+			ID: mainModID,
+			DependsOn: lo.FilterMap(maps.Values(libs), func(lib types.Library, index int) (string, bool) {
+				return lib.ID, lib.Relationship == types.RelationshipDirect
+			}),
+		})
+	}
+
+	return maps.Values(libs), deps, nil
 }
 
 // Check if the Go version is less than 1.17
