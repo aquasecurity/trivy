@@ -9,7 +9,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"runtime"
 	"unicode/utf8"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -230,6 +229,7 @@ func MakeFileExistsFunc(target fs.FS, baseDir string) function.Function {
 // MakeFileSetFunc constructs a function that takes a glob pattern
 // and enumerates a file set from that pattern
 func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
+	baseDir = filepath.ToSlash(baseDir)
 	return function.New(&function.Spec{
 		Params: []function.Parameter{
 			{
@@ -243,8 +243,8 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 		},
 		Type: function.StaticReturnType(cty.Set(cty.String)),
 		Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
-			path := args[0].AsString()
-			pattern := args[1].AsString()
+			path := filepath.ToSlash(args[0].AsString())
+			pattern := filepath.ToSlash(args[1].AsString())
 			useTarget := target
 
 			// Allow clients to supply an FS with a Path() escape hatch if they want;
@@ -252,7 +252,7 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 			// without restriction.
 			if pathfs, ok := target.(interface{ Path() string }); ok {
 				if !filepath.IsAbs(path) {
-					path = filepath.Join(pathfs.Path(), baseDir, path)
+					path = filepath.Join(filepath.ToSlash(pathfs.Path()), baseDir, path)
 					var err error
 					if path, err = filepath.Abs(path); err != nil {
 						return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to escape fs jail: %s", err)
@@ -262,10 +262,7 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 
 			// If we got an absolute path, make it relative to an FS that can handle it.
 			if filepath.IsAbs(path) {
-				rootpath := "/"
-				if runtime.GOOS == "windows" {
-					rootpath = filepath.VolumeName(path)
-				}
+				rootpath := fmt.Sprintf("%s/", filepath.VolumeName(path))
 				useTarget = os.DirFS(rootpath)
 				if relpath, err := filepath.Rel(rootpath, path); err == nil {
 					path = relpath
@@ -277,11 +274,8 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 				path = filepath.Join(baseDir, path)
 			}
 
-			// Join the path to the glob pattern, and ensure both path and pattern
-			// agree on path separators, so the globbing works as expected.
-			pattern = filepath.ToSlash(filepath.Join(path, pattern))
-			path = filepath.ToSlash(path)
-
+			// Join the path to the glob pattern; all vars should aready be /-style.
+			pattern = filepath.Join(path, pattern)
 			matches, err := doublestar.Glob(useTarget, pattern)
 			if err != nil {
 				return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to glob pattern (%s): %s", pattern, err)
@@ -289,26 +283,16 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 
 			var matchVals []cty.Value
 			for _, match := range matches {
-				fi, err := fs.Stat(useTarget, match)
-
-				if err != nil {
+				if fi, err := fs.Stat(useTarget, match); err != nil {
 					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to stat (%s): %s", match, err)
-				}
-
-				if !fi.Mode().IsRegular() {
+				} else if !fi.Mode().IsRegular() {
 					continue
 				}
 
 				// Remove the path and file separator from matches.
-				match, err = filepath.Rel(path, match)
-
-				if err != nil {
+				if match, err = filepath.Rel(path, match); err != nil {
 					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to trim path of match (%s): %s", match, err)
 				}
-
-				// Replace any remaining file separators with forward slash (/)
-				// separators for cross-system compatibility.
-				match = filepath.ToSlash(match)
 
 				matchVals = append(matchVals, cty.StringVal(match))
 			}
