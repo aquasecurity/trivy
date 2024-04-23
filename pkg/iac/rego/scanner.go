@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
 	"strings"
 
 	"github.com/open-policy-agent/opa/ast"
@@ -41,6 +42,9 @@ type Scanner struct {
 	spec           string
 	inputSchema    interface{} // unmarshalled into this from a json schema document
 	sourceType     types.Source
+
+	embeddedLibs   map[string]*ast.Module
+	embeddedChecks map[string]*ast.Module
 }
 
 func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
@@ -135,13 +139,12 @@ func NewScanner(source types.Source, opts ...options.ScannerOption) *Scanner {
 	s := &Scanner{
 		regoErrorLimit: ast.CompileErrorLimitDefault,
 		sourceType:     source,
-		ruleNamespaces: map[string]struct{}{
-			"builtin":   {},
-			"appshield": {},
-			"defsec":    {},
-		},
-		runtimeValues: addRuntimeValues(),
+		ruleNamespaces: make(map[string]struct{}),
+		runtimeValues:  addRuntimeValues(),
 	}
+
+	maps.Copy(s.ruleNamespaces, builtinNamespaces)
+
 	for _, opt := range opts {
 		opt(s)
 	}
@@ -238,7 +241,10 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 
 		staticMeta, err := s.retriever.RetrieveMetadata(ctx, module, GetInputsContents(inputs)...)
 		if err != nil {
-			return nil, err
+			s.debug.Log(
+				"Error occurred while retrieving metadata from check %q: %s",
+				module.Package.Location.File, err)
+			continue
 		}
 
 		if isPolicyWithSubtype(s.sourceType) {
@@ -264,7 +270,10 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 			if isEnforcedRule(ruleName) {
 				ruleResults, err := s.applyRule(ctx, namespace, ruleName, inputs, staticMeta.InputOptions.Combined)
 				if err != nil {
-					return nil, err
+					s.debug.Log(
+						"Error occurred while applying rule %q from check %q: %s",
+						ruleName, module.Package.Location.File, err)
+					continue
 				}
 				results = append(results, s.embellishResultsWithRuleMetadata(ruleResults, *staticMeta)...)
 			}

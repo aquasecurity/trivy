@@ -246,7 +246,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							// dependency has been replaced with local directory
 							{
 								Name:    "./api",
-								Version: "(devel)",
+								Version: "",
 							},
 						},
 					},
@@ -423,7 +423,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000013",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "./api",
-						Version: "(devel)",
+						Version: "",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgType",
