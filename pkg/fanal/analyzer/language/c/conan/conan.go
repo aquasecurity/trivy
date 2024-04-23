@@ -109,7 +109,7 @@ func licensesFromCache() (map[string]string, error) {
 			line := strings.TrimSpace(scanner.Text())
 
 			// cf. https://docs.conan.io/1/reference/conanfile/attributes.html#name
-			if n, ok := detectAttribute("name", line); ok {
+			if n := detectAttribute("name", line); n != "" {
 				name = n
 				// Check that the license is already found
 				if license != "" {
@@ -117,7 +117,7 @@ func licensesFromCache() (map[string]string, error) {
 				}
 			}
 			// cf. https://docs.conan.io/1/reference/conanfile/attributes.html#license
-			if l, ok := detectAttribute("license", line); ok {
+			if l := detectAttribute("license", line); l != "" {
 				license = l
 				// Check that the name is already found
 				if name != "" {
@@ -141,18 +141,18 @@ func licensesFromCache() (map[string]string, error) {
 
 // detectAttribute detects conan attribute (name, license, etc.) from line
 // cf. https://docs.conan.io/1/reference/conanfile/attributes.html
-func detectAttribute(attributeName, line string) (string, bool) {
+func detectAttribute(attributeName, line string) string {
 	if !strings.HasPrefix(line, attributeName) {
-		return "", false
+		return ""
 	}
 
 	// e.g. `license = "Apache or MIT"` -> ` "Apache or MIT"` -> `"Apache or MIT"` -> `Apache or MIT`
 	if name, v, ok := strings.Cut(line, "="); ok && strings.TrimSpace(name) == attributeName {
 		attr := strings.TrimSpace(v)
-		return strings.TrimPrefix(strings.TrimSuffix(attr, "\""), "\""), true
+		return strings.TrimPrefix(strings.TrimSuffix(attr, "\""), "\"")
 	}
 
-	return "", false
+	return ""
 }
 
 func (a conanLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
