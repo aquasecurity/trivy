@@ -1,6 +1,7 @@
 package conan
 
 import (
+	"github.com/samber/lo"
 	"io"
 	"strings"
 
@@ -71,6 +72,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		// Determine if the package is a direct dependency or not
 		direct := slices.Contains(directDeps, i)
 		lib.Indirect = !direct
+		lib.Relationship = lo.Ternary(direct, types.RelationshipDirect, types.RelationshipIndirect)
 
 		parsed[i] = lib
 	}
