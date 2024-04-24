@@ -1830,6 +1830,19 @@ You're not viewing the latest version.
     Conan
   </a>
   
+    <nav class="md-nav" aria-label="Conan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    Licenses
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3570,6 +3583,19 @@ You're not viewing the latest version.
     Conan
   </a>
   
+    <nav class="md-nav" aria-label="Conan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    Licenses
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3607,7 +3633,7 @@ You're not viewing the latest version.
 <td>Conan</td>
 <td align="center">✓</td>
 <td align="center">✓</td>
-<td align="center">-</td>
+<td align="center">✓<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
 </tr>
 </tbody>
 </table>
@@ -3626,7 +3652,7 @@ You're not viewing the latest version.
 <tbody>
 <tr>
 <td>Conan</td>
-<td>conan.lock<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
+<td>conan.lock<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
 <td align="center">✓</td>
 <td align="center">Excluded</td>
 <td align="center">✓</td>
@@ -3636,11 +3662,18 @@ You're not viewing the latest version.
 </table>
 <h2 id="conan">Conan</h2>
 <p>In order to detect dependencies, Trivy searches for <code>conan.lock</code><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<h3 id="licenses">Licenses</h3>
+<p>The Conan lock file doesn't contain any license information.
+To obtain licenses we parse the <code>conanfile.py</code> files from the <a href="https://docs.conan.io/1/mastering/custom_cache.html">conan cache directory</a>.
+To correctly detection licenses, ensure that the cache directory contains all dependencies used.</p>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
-<p><code>conan.lock</code> is default name. To scan a custom filename use <a href="../../../configuration/skipping/#file-patterns">file-patterns</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>The local cache should contain the dependencies used. See <a href="#licenses">licenses</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p><code>conan.lock</code> is default name. To scan a custom filename use <a href="../../../configuration/skipping/#file-patterns">file-patterns</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
