@@ -87,7 +87,7 @@ trivy aws [flags]
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
-      --max-cache-age duration            The maximum age of the cloud cache. Cached data will be requeried from the cloud provider if it is older than this. (default 24h0m0s)
+      --max-cache-age duration            The maximum age of the cloud cache. Cached data will be required from the cloud provider if it is older than this. (default 24h0m0s)
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
