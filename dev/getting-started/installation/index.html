@@ -3800,11 +3800,10 @@ You're not viewing the latest version.
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Add repository setting to <code>/etc/yum.repos.d</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="nv">RELEASE_VERSION</span><span class="o">=</span><span class="k">$(</span>grep -Po <span class="s1">&#39;(?&lt;=VERSION_ID=&quot;)[0-9]&#39;</span> /etc/os-release<span class="k">)</span>
-cat <span class="s">&lt;&lt; EOF | sudo tee -a /etc/yum.repos.d/trivy.repo</span>
+<div class="highlight"><pre><span></span><code>cat <span class="s">&lt;&lt; EOF | sudo tee -a /etc/yum.repos.d/trivy.repo</span>
 <span class="s">[trivy]</span>
 <span class="s">name=Trivy repository</span>
-<span class="s">baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$RELEASE_VERSION/\$basearch/</span>
+<span class="s">baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/</span>
 <span class="s">gpgcheck=1</span>
 <span class="s">enabled=1</span>
 <span class="s">gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key</span>
