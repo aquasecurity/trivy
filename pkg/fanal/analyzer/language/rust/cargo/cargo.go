@@ -136,6 +136,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 			} else if match {
 				// Mark as a direct dependency
 				pkg.Indirect = false
+				pkg.Relationship = types.RelationshipDirect
 				pkgs[pkg.ID] = pkg
 				break
 			}
@@ -224,6 +225,7 @@ func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps 
 		}
 
 		dep.Indirect = true
+		dep.Relationship = types.RelationshipIndirect
 		deps[dep.ID] = dep
 		a.walkIndirectDependencies(dep, pkgIDs, deps)
 	}
