@@ -5,6 +5,7 @@ import (
 	"slices"
 	"sort"
 	"strconv"
+	"sync"
 
 	debver "github.com/knqyf263/go-deb-version"
 	rpmver "github.com/knqyf263/go-rpm-version"
@@ -107,11 +108,16 @@ func (m *Decoder) decodeRoot(s *types.SBOM) error {
 }
 
 func (m *Decoder) decodeComponents(sbom *types.SBOM) error {
+	onceMultiOSWarn := sync.OnceFunc(func() {
+		log.Logger.Warn("Multiple OS components are not supported, taking the first one and ignoring the rest")
+	})
+
 	for id, c := range m.bom.Components() {
 		switch c.Type {
 		case core.TypeOS:
 			if m.osID != uuid.Nil {
-				return xerrors.New("multiple OS components are not supported")
+				onceMultiOSWarn()
+				continue
 			}
 			m.osID = id
 			sbom.Metadata.OS = &ftypes.OS{
