@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	godeptypes "github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
@@ -36,7 +35,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
-								Relationship: godeptypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
 								},
@@ -45,7 +44,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
 								Name:         "github.com/aquasecurity/go-dep-parser",
 								Version:      "0.0.0-20220406074731-71021a481237",
-								Relationship: godeptypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								Licenses: []string{
 									"MIT",
 								},
@@ -57,7 +56,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 								Name:         "golang.org/x/xerrors",
 								Version:      "0.0.0-20200804184101-5ec99f83aff1",
-								Relationship: godeptypes.RelationshipIndirect,
+								Relationship: types.RelationshipIndirect,
 								Indirect:     true,
 							},
 						},
@@ -79,7 +78,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
-								Relationship: godeptypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"github.com/sad/sad@v0.0.1",
 								},
@@ -88,7 +87,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "github.com/sad/sad@v0.0.1",
 								Name:         "github.com/sad/sad",
 								Version:      "0.0.1",
-								Relationship: godeptypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 							},
 						},
 					},
@@ -110,7 +109,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
-								Relationship: godeptypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
 								},
@@ -119,7 +118,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
 								Name:         "github.com/aquasecurity/go-dep-parser",
 								Version:      "0.0.0-20230219131432-590b1dfb6edd",
-								Relationship: godeptypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"github.com/BurntSushi/toml@v0.3.1",
 								},
@@ -128,7 +127,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "github.com/BurntSushi/toml@v0.3.1",
 								Name:         "github.com/BurntSushi/toml",
 								Version:      "0.3.1",
-								Relationship: godeptypes.RelationshipIndirect,
+								Relationship: types.RelationshipIndirect,
 								Indirect:     true,
 								Licenses: []string{
 									"MIT",
@@ -153,7 +152,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 							{
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
-								Relationship: godeptypes.RelationshipRoot,
+								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
 								},
@@ -162,7 +161,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
 								Name:         "github.com/aquasecurity/go-dep-parser",
 								Version:      "0.0.0-20230219131432-590b1dfb6edd",
-								Relationship: godeptypes.RelationshipDirect,
+								Relationship: types.RelationshipDirect,
 								DependsOn:    []string{},
 							},
 						},
