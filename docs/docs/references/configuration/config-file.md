@@ -459,19 +459,28 @@ kubernetes:
     - workload
     - infra
 
+  # Same as '--k8s-version'
+  # Default is empty
+  k8s-version: 1.21.0
+
   # Same as '--tolerations'
   # Default is empty
   tolerations:
     - key1=value1:NoExecute
     - key2=value2:NoSchedule
 
-  # Same as '--qps'
-  # Default is 5.0
-  qps: 5.0
+  # Same as '--all-namespaces'
+  # Default is false
+  all-namespaces: false
 
-  # Same as '--burst'
-  # Default is 10
-  burst: 10
+  node-collector:
+    # Same as '--node-collector-namespace'
+    # Default is 'trivy-temp'
+    namespace: ~/.kube/config2
+
+    # Same as '--node-collector-imageref'
+    # Default is 'ghcr.io/aquasecurity/node-collector:0.0.9'
+    imageref: ghcr.io/aquasecurity/node-collector:0.0.9
 
   exclude:
     # Same as '--exclude-owned'
@@ -484,27 +493,13 @@ kubernetes:
       - kubernetes.io/arch:arm64
       - team:dev
 
-  # Same as '--all-namespaces'
-  # Default is false
-  all:
-    namespaces: false
+  # Same as '--qps'
+  # Default is 5.0
+  qps: 5.0
 
-  # Same as '--k8s-version'
-  # Default is empty
-  k8s:
-    version: 1.21.0
-    
-  # Same as '--node-collector-imageref'
-  # Default is 'ghcr.io/aquasecurity/node-collector:0.0.9'
-  node:
-    collector:
-      imageref: ghcr.io/aquasecurity/node-collector:0.0.9
-
-# Same as '--node-collector-namespace'
-# Default is 'trivy-temp'
-node:
-  collector:
-    namespace: ~/.kube/config2
+  # Same as '--burst'
+  # Default is 10
+  burst: 10
 ```
 
 ## Repository Options
