@@ -1,6 +1,7 @@
 package langpkg
 
 import (
+	"context"
 	"sort"
 
 	"golang.org/x/xerrors"
@@ -24,7 +25,7 @@ var (
 
 type Scanner interface {
 	Packages(target types.ScanTarget, options types.ScanOptions) types.Results
-	Scan(target types.ScanTarget, options types.ScanOptions) (types.Results, error)
+	Scan(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Results, error)
 }
 
 type scanner struct{}
@@ -50,7 +51,7 @@ func (s *scanner) Packages(target types.ScanTarget, _ types.ScanOptions) types.R
 	return results
 }
 
-func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Results, error) {
+func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, _ types.ScanOptions) (types.Results, error) {
 	apps := target.Applications
 	log.Info("Number of language-specific files", log.Int("num", len(apps)))
 	if len(apps) == 0 {
@@ -64,16 +65,16 @@ func (s *scanner) Scan(target types.ScanTarget, _ types.ScanOptions) (types.Resu
 			continue
 		}
 
-		logger := log.WithPrefix(string(app.Type))
+		ctx = log.WithContextPrefix(ctx, string(app.Type))
 
 		// Prevent the same log messages from being displayed many times for the same type.
 		if _, ok := printedTypes[app.Type]; !ok {
-			logger.Info("Detecting vulnerabilities...")
+			log.InfoContext(ctx, "Detecting vulnerabilities...")
 			printedTypes[app.Type] = struct{}{}
 		}
 
-		logger.Debug("Scanning packages from the file", log.String("file_path", app.FilePath))
-		vulns, err := library.Detect(app.Type, app.Libraries)
+		log.DebugContext(ctx, "Scanning packages from the file", log.String("file_path", app.FilePath))
+		vulns, err := library.Detect(ctx, app.Type, app.Libraries)
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		} else if len(vulns) == 0 {

@@ -186,7 +186,7 @@ func (s Scanner) scanVulnerabilities(ctx context.Context, target types.ScanTarge
 	}
 
 	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
-		vulns, err := s.langPkgScanner.Scan(target, options)
+		vulns, err := s.langPkgScanner.Scan(ctx, target, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
 		}
