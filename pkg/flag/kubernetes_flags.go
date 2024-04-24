@@ -63,22 +63,22 @@ var (
 
 	ExcludeKinds = Flag[[]string]{
 		Name:       "exclude-kinds",
-		ConfigName: "kubernetes.exclude.kinds",
+		ConfigName: "kubernetes.excludeKinds",
 		Usage:      "indicate the kinds exclude from scanning (example: node)",
 	}
 	IncludeKinds = Flag[[]string]{
 		Name:       "include-kinds",
-		ConfigName: "kubernetes.include.kinds",
+		ConfigName: "kubernetes.includeKinds",
 		Usage:      "indicate the kinds included in scanning (example: node)",
 	}
 	ExcludeNamespaces = Flag[[]string]{
 		Name:       "exclude-namespaces",
-		ConfigName: "kubernetes.exclude.namespaces",
+		ConfigName: "kubernetes.excludeNamespaces",
 		Usage:      "indicate the namespaces excluded from scanning (example: kube-system)",
 	}
 	IncludeNamespaces = Flag[[]string]{
 		Name:       "include-namespaces",
-		ConfigName: "kubernetes.include.namespaces",
+		ConfigName: "kubernetes.includeNamespaces",
 		Usage:      "indicate the namespaces included in scanning (example: kube-system)",
 	}
 	NodeCollectorImageRef = Flag[string]{
