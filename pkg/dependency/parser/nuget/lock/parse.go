@@ -1,6 +1,7 @@
 package lock
 
 import (
+	"github.com/samber/lo"
 	"io"
 
 	"github.com/liamg/jfather"
@@ -56,10 +57,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			depId := packageID(packageName, packageContent.Resolved)
 
 			lib := types.Library{
-				ID:       depId,
-				Name:     packageName,
-				Version:  packageContent.Resolved,
-				Indirect: packageContent.Type != "Direct",
+				ID:           depId,
+				Name:         packageName,
+				Version:      packageContent.Resolved,
+				Indirect:     packageContent.Type != "Direct",
+				Relationship: lo.Ternary(packageContent.Type == "Direct", types.RelationshipDirect, types.RelationshipIndirect),
 				Locations: []types.Location{
 					{
 						StartLine: packageContent.StartLine,
