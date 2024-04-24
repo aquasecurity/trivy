@@ -38,8 +38,7 @@ var (
 	}
 	DisableNodeCollector = Flag[bool]{
 		Name:       "disable-node-collector",
-		ConfigName: "kubernetes.disable.node.collector",
->>>>>>> 660c113f6 (feat: change flag name to disable-node-collector)
+		ConfigName: "kubernetes.disableNodeCollector",
 		Usage:      "When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.",
 	}
 	NodeCollectorNamespace = Flag[string]{
