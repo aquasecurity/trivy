@@ -149,7 +149,7 @@ func detectAttribute(attributeName, line string) string {
 	// e.g. `license = "Apache or MIT"` -> ` "Apache or MIT"` -> `"Apache or MIT"` -> `Apache or MIT`
 	if name, v, ok := strings.Cut(line, "="); ok && strings.TrimSpace(name) == attributeName {
 		attr := strings.TrimSpace(v)
-		return strings.TrimPrefix(strings.TrimSuffix(attr, "\""), "\"")
+		return strings.Trim(attr, `"`)
 	}
 
 	return ""
