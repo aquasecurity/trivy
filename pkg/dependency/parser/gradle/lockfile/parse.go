@@ -49,7 +49,8 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 			// There is no reliable way to determine direct dependencies (even using other files).
 			// Therefore, we mark all dependencies as Indirect.
 			// This is necessary to try to guess direct dependencies and build a dependency tree.
-			Indirect: true,
+			Indirect:     true,
+			Relationship: types.RelationshipUnknown,
 		})
 
 	}
