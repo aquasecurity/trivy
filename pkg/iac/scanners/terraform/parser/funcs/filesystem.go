@@ -9,6 +9,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"unicode/utf8"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -244,8 +245,35 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 		Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
 			path := args[0].AsString()
 			pattern := args[1].AsString()
+			useTarget := target
 
-			if !filepath.IsAbs(path) {
+			// Allow clients to supply an FS with a Path() escape hatch if they want;
+			// if they did so, use it, to enable modules to reference outside paths
+			// without restriction.
+			if pathfs, ok := target.(interface{ Path() string }); ok {
+				if !filepath.IsAbs(path) {
+					path = filepath.Join(pathfs.Path(), baseDir, path)
+					var err error
+					if path, err = filepath.Abs(path); err != nil {
+						return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to escape fs jail: %s", err)
+					}
+				}
+			}
+
+			// If we got an absolute path, make it relative to an FS that can handle it.
+			if filepath.IsAbs(path) {
+				rootpath := "/"
+				if runtime.GOOS == "windows" {
+					rootpath = filepath.VolumeName(path)
+				}
+				useTarget = os.DirFS(rootpath)
+				if relpath, err := filepath.Rel(rootpath, path); err == nil {
+					path = relpath
+				} else {
+					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to handle absolute path: %s", err)
+				}
+			} else {
+				// Otherwise, only respect relative paths within the supplied FS.
 				path = filepath.Join(baseDir, path)
 			}
 
@@ -254,14 +282,14 @@ func MakeFileSetFunc(target fs.FS, baseDir string) function.Function {
 			pattern = filepath.ToSlash(filepath.Join(path, pattern))
 			path = filepath.ToSlash(path)
 
-			matches, err := doublestar.Glob(target, pattern)
+			matches, err := doublestar.Glob(useTarget, pattern)
 			if err != nil {
 				return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to glob pattern (%s): %s", pattern, err)
 			}
 
 			var matchVals []cty.Value
 			for _, match := range matches {
-				fi, err := fs.Stat(target, match)
+				fi, err := fs.Stat(useTarget, match)
 
 				if err != nil {
 					return cty.UnknownVal(cty.Set(cty.String)), fmt.Errorf("failed to stat (%s): %s", match, err)
