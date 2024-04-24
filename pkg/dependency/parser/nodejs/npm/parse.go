@@ -136,6 +136,9 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 		if savedLib, ok := libs[pkgID]; ok {
 			savedLib.Dev = savedLib.Dev && pkg.Dev
 			savedLib.Indirect = savedLib.Indirect && pkgIndirect
+			if savedLib.Relationship == types.RelationshipIndirect && !pkgIndirect {
+				savedLib.Relationship = types.RelationshipDirect
+			}
 
 			if ref.URL != "" && !slices.Contains(savedLib.ExternalReferences, ref) {
 				savedLib.ExternalReferences = append(savedLib.ExternalReferences, ref)
@@ -154,6 +157,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 			Name:               pkgName,
 			Version:            pkg.Version,
 			Indirect:           pkgIndirect,
+			Relationship:       lo.Ternary(pkgIndirect, types.RelationshipIndirect, types.RelationshipDirect),
 			Dev:                pkg.Dev,
 			ExternalReferences: lo.Ternary(ref.URL != "", []types.ExternalRef{ref}, nil),
 			Locations:          []types.Location{location},
@@ -280,11 +284,12 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 	var deps []types.Dependency
 	for pkgName, dep := range dependencies {
 		lib := types.Library{
-			ID:       packageID(pkgName, dep.Version),
-			Name:     pkgName,
-			Version:  dep.Version,
-			Dev:      dep.Dev,
-			Indirect: true, // lockfile v1 schema doesn't have information about Direct dependencies
+			ID:           packageID(pkgName, dep.Version),
+			Name:         pkgName,
+			Version:      dep.Version,
+			Dev:          dep.Dev,
+			Indirect:     true, // lockfile v1 schema doesn't have information about Direct dependencies
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
