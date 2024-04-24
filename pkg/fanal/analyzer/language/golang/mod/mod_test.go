@@ -36,9 +36,6 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
 								Relationship: types.RelationshipRoot,
-								DependsOn: []string{
-									"github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
-								},
 							},
 							{
 								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
@@ -79,9 +76,6 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
 								Relationship: types.RelationshipRoot,
-								DependsOn: []string{
-									"github.com/sad/sad@v0.0.1",
-								},
 							},
 							{
 								ID:           "github.com/sad/sad@v0.0.1",
@@ -110,9 +104,6 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
 								Relationship: types.RelationshipRoot,
-								DependsOn: []string{
-									"github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
-								},
 							},
 							{
 								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
@@ -153,9 +144,6 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
 								Relationship: types.RelationshipRoot,
-								DependsOn: []string{
-									"github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
-								},
 							},
 							{
 								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",

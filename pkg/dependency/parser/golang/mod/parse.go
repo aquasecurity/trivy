@@ -155,18 +155,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		}
 	}
 
-	// Build a dependency graph from the main module to its direct dependencies.
-	var deps []types.Dependency
-	if mainModID != "" {
-		deps = append(deps, types.Dependency{
-			ID: mainModID,
-			DependsOn: lo.FilterMap(maps.Values(libs), func(lib types.Library, index int) (string, bool) {
-				return lib.ID, lib.Relationship == types.RelationshipDirect
-			}),
-		})
-	}
-
-	return maps.Values(libs), deps, nil
+	return maps.Values(libs), nil, nil
 }
 
 // Check if the Go version is less than 1.17
