@@ -16,16 +16,18 @@ import (
 var (
 	libs = []types.Library{
 		{
-			ID:       "crate_with_features@0.1.0",
-			Name:     "crate_with_features",
-			Version:  "0.1.0",
-			Indirect: false,
+			ID:           "crate_with_features@0.1.0",
+			Name:         "crate_with_features",
+			Version:      "0.1.0",
+			Indirect:     false,
+			Relationship: types.RelationshipRoot,
 		},
 		{
-			ID:       "library_crate@0.1.0",
-			Name:     "library_crate",
-			Version:  "0.1.0",
-			Indirect: true,
+			ID:           "library_crate@0.1.0",
+			Name:         "library_crate",
+			Version:      "0.1.0",
+			Indirect:     true,
+			Relationship: types.RelationshipUnknown, // TODO: Determine it by checking the dependencies of the root crate
 		},
 	}
 
