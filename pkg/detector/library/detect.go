@@ -29,7 +29,8 @@ func detect(ctx context.Context, driver Driver, pkgs []ftypes.Package) ([]types.
 	var vulnerabilities []types.DetectedVulnerability
 	for _, pkg := range pkgs {
 		if pkg.Version == "" {
-			log.DebugContext(ctx, "Skipping package without version", log.String("name", pkg.Name))
+			log.DebugContext(ctx, "Skipping vulnerability scan as no version is detected for the package",
+				log.String("name", pkg.Name))
 			continue
 		}
 		vulns, err := driver.DetectVulnerabilities(pkg.ID, pkg.Name, pkg.Version)
