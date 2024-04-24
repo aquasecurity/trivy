@@ -25,19 +25,19 @@ type artifact struct {
 
 	Exclusions map[string]struct{}
 
-	Module bool
-	Root   bool
-	Direct bool
+	Module       bool
+	Relationship types.Relationship
 
 	Locations types.Locations
 }
 
 func newArtifact(groupID, artifactID, version string, licenses []string, props map[string]string) artifact {
 	return artifact{
-		GroupID:    evaluateVariable(groupID, props, nil),
-		ArtifactID: evaluateVariable(artifactID, props, nil),
-		Version:    newVersion(evaluateVariable(version, props, nil)),
-		Licenses:   licenses,
+		GroupID:      evaluateVariable(groupID, props, nil),
+		ArtifactID:   evaluateVariable(artifactID, props, nil),
+		Version:      newVersion(evaluateVariable(version, props, nil)),
+		Licenses:     licenses,
+		Relationship: types.RelationshipIndirect, // default
 	}
 }
 
