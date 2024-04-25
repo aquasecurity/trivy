@@ -40,7 +40,6 @@ func TestParser_Parse(t *testing.T) {
 					ID:           "uuid@3.0.6",
 					Name:         "uuid",
 					Version:      "3.0.6",
-					Indirect:     true,
 					Relationship: types.RelationshipIndirect,
 				},
 			},

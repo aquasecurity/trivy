@@ -60,7 +60,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				ID:           depId,
 				Name:         packageName,
 				Version:      packageContent.Resolved,
-				Indirect:     packageContent.Type != "Direct",
 				Relationship: lo.Ternary(packageContent.Type == "Direct", types.RelationshipDirect, types.RelationshipIndirect),
 				Locations: []types.Location{
 					{

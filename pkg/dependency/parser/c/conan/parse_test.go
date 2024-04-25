@@ -40,7 +40,6 @@ func TestParse(t *testing.T) {
 					ID:           "pkgb/system",
 					Name:         "pkgb",
 					Version:      "system",
-					Indirect:     true,
 					Relationship: types.RelationshipIndirect,
 					Locations: []types.Location{
 						{
@@ -91,7 +90,6 @@ func TestParse(t *testing.T) {
 					ID:           "zlib/1.2.12",
 					Name:         "zlib",
 					Version:      "1.2.12",
-					Indirect:     true,
 					Relationship: types.RelationshipIndirect,
 					Locations: []types.Location{
 						{

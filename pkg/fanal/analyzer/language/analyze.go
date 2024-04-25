@@ -122,7 +122,7 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 			Version:      lib.Version,
 			Dev:          lib.Dev,
 			FilePath:     libPath,
-			Indirect:     lib.Indirect,
+			Indirect:     isIndirect(lib.Relationship), // For backward compatibility
 			Relationship: lib.Relationship,
 			Licenses:     licenses,
 			DependsOn:    deps[lib.ID],
@@ -149,4 +149,13 @@ func calculateDigest(r xio.ReadSeekerAt) (digest.Digest, error) {
 	}
 
 	return digest.CalcSHA1(r)
+}
+
+func isIndirect(rel types.Relationship) bool {
+	switch rel {
+	case types.RelationshipIndirect:
+		return true
+	default:
+		return false
+	}
 }

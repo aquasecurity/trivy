@@ -48,7 +48,6 @@ func (p Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, 
 			ID:           dependency.ID(ftypes.Pub, name, dep.Version),
 			Name:         name,
 			Version:      dep.Version,
-			Indirect:     dep.Dependency == transitiveDep,
 			Relationship: p.relationship(dep.Dependency),
 		}
 		libs = append(libs, lib)

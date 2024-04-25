@@ -8,7 +8,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -21,7 +20,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20211224170007-df43bca6b6ff",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -34,14 +32,12 @@ var (
 			ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 			Name:         "golang.org/x/xerrors",
 			Version:      "0.0.0-20200804184101-5ec99f83aff1",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 		},
 		{
 			ID:           "gopkg.in/yaml.v3@v3.0.0-20210107192922-496545a6307b",
 			Name:         "gopkg.in/yaml.v3",
 			Version:      "3.0.0-20210107192922-496545a6307b",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -57,7 +53,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -70,7 +65,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20220406074731-71021a481237",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -83,7 +77,6 @@ var (
 			ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 			Name:         "golang.org/x/xerrors",
 			Version:      "0.0.0-20200804184101-5ec99f83aff1",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 		},
 	}
@@ -93,7 +86,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -106,7 +98,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211110174639-8257534ffed3",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20211110174639-8257534ffed3",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -119,7 +110,6 @@ var (
 			ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 			Name:         "golang.org/x/xerrors",
 			Version:      "0.0.0-20200804184101-5ec99f83aff1",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 		},
 	}
@@ -129,7 +119,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -142,7 +131,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20220406074731-71021a481237",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -155,7 +143,6 @@ var (
 			ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 			Name:         "golang.org/x/xerrors",
 			Version:      "0.0.0-20200804184101-5ec99f83aff1",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 		},
 	}
@@ -165,7 +152,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -178,7 +164,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20211224170007-df43bca6b6ff",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -191,14 +176,12 @@ var (
 			ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 			Name:         "golang.org/x/xerrors",
 			Version:      "0.0.0-20200804184101-5ec99f83aff1",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 		},
 		{
 			ID:           "gopkg.in/yaml.v3@v3.0.0-20210107192922-496545a6307b",
 			Name:         "gopkg.in/yaml.v3",
 			Version:      "3.0.0-20210107192922-496545a6307b",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -214,7 +197,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -227,7 +209,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20211224170007-df43bca6b6ff",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -240,7 +221,6 @@ var (
 			ID:           "gopkg.in/yaml.v3@v3.0.0-20210107192922-496545a6307b",
 			Name:         "gopkg.in/yaml.v3",
 			Version:      "3.0.0-20210107192922-496545a6307b",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -256,7 +236,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -269,7 +248,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20211224170007-df43bca6b6ff",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -282,7 +260,6 @@ var (
 			ID:           "gopkg.in/yaml.v3@v3.0.0-20210107192922-496545a6307b",
 			Name:         "gopkg.in/yaml.v3",
 			Version:      "3.0.0-20210107192922-496545a6307b",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -298,7 +275,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -311,7 +287,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20211224170007-df43bca6b6ff",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -324,14 +299,12 @@ var (
 			ID:           "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 			Name:         "golang.org/x/xerrors",
 			Version:      "0.0.0-20200804184101-5ec99f83aff1",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 		},
 		{
 			ID:           "gopkg.in/yaml.v3@v3.0.0-20210107192922-496545a6307b",
 			Name:         "gopkg.in/yaml.v3",
 			Version:      "3.0.0-20210107192922-496545a6307b",
-			Indirect:     true,
 			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -347,7 +320,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -360,7 +332,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20211224170007-df43bca6b6ff",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -376,7 +347,6 @@ var (
 		{
 			ID:           "github.com/org/repo",
 			Name:         "github.com/org/repo",
-			Indirect:     false,
 			Relationship: types.RelationshipRoot,
 			ExternalReferences: []types.ExternalRef{
 				{
@@ -389,7 +359,6 @@ var (
 			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
 			Name:         "github.com/aquasecurity/go-dep-parser",
 			Version:      "0.0.0-20211224170007-df43bca6b6ff",
-			Indirect:     false,
 			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{

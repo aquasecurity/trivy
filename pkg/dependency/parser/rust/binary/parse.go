@@ -55,7 +55,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			ID:           pkgID,
 			Name:         pkg.Name,
 			Version:      pkg.Version,
-			Indirect:     !pkg.Root,
 			Relationship: lo.Ternary(pkg.Root, types.RelationshipRoot, types.RelationshipUnknown),
 		})
 

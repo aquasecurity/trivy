@@ -38,7 +38,6 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:       "@babel/parser@7.23.6",
 								Name:     "@babel/parser",
 								Version:  "7.23.6",
-								Indirect: true,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
@@ -48,11 +47,10 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "ansi-colors@3.2.3",
-								Name:     "ansi-colors",
-								Version:  "3.2.3",
-								Dev:      true,
-								Indirect: true,
+								ID:      "ansi-colors@3.2.3",
+								Name:    "ansi-colors",
+								Version: "3.2.3",
+								Dev:     true,
 								Locations: []types.Location{
 									{
 										StartLine: 11,
@@ -61,10 +59,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "array-flatten@1.1.1",
-								Name:     "array-flatten",
-								Version:  "1.1.1",
-								Indirect: true,
+								ID:      "array-flatten@1.1.1",
+								Name:    "array-flatten",
+								Version: "1.1.1",
 								Locations: []types.Location{
 									{
 										StartLine: 17,
@@ -76,7 +73,6 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:        "body-parser@1.18.3",
 								Name:      "body-parser",
 								Version:   "1.18.3",
-								Indirect:  true,
 								DependsOn: []string{"debug@2.6.9"},
 								Licenses:  []string{"MIT"},
 								Locations: []types.Location{
@@ -90,7 +86,6 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:        "debug@2.6.9",
 								Name:      "debug",
 								Version:   "2.6.9",
-								Indirect:  true,
 								DependsOn: []string{"ms@2.0.0"},
 								Licenses:  []string{"MIT"},
 								Locations: []types.Location{
@@ -108,7 +103,6 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:        "express@4.16.4",
 								Name:      "express",
 								Version:   "4.16.4",
-								Indirect:  true,
 								DependsOn: []string{"debug@2.6.9"},
 								Licenses:  []string{"MIT"},
 								Locations: []types.Location{
@@ -122,7 +116,6 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:       "ms@2.0.0",
 								Name:     "ms",
 								Version:  "2.0.0",
-								Indirect: true,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
@@ -139,7 +132,6 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:       "ms@2.1.1",
 								Name:     "ms",
 								Version:  "2.1.1",
-								Indirect: true,
 								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
@@ -163,10 +155,9 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "package-lock.json",
 						Libraries: types.Packages{
 							{
-								ID:       "ms@2.1.1",
-								Name:     "ms",
-								Version:  "2.1.1",
-								Indirect: true,
+								ID:      "ms@2.1.1",
+								Name:    "ms",
+								Version: "2.1.1",
 								Locations: []types.Location{
 									{
 										StartLine: 6,

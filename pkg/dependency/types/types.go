@@ -9,7 +9,6 @@ type Library struct {
 	Name               string
 	Version            string
 	Dev                bool          `json:",omitempty"`
-	Indirect           bool          `json:",omitempty"` // deprecated: Use Relationship
 	Relationship       Relationship  `json:",omitempty"`
 	License            string        `json:",omitempty"`
 	ExternalReferences []ExternalRef `json:",omitempty"`

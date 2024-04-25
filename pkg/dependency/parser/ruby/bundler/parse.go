@@ -53,7 +53,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				ID:           pkgID,
 				Name:         name,
 				Version:      version,
-				Indirect:     true,
 				Relationship: types.RelationshipIndirect,
 				Locations: []types.Location{
 					{
@@ -87,7 +86,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	// Identify which are direct dependencies
 	for _, d := range directDeps {
 		if l, ok := libs[d]; ok {
-			l.Indirect = false
 			l.Relationship = types.RelationshipDirect
 			libs[d] = l
 		}
