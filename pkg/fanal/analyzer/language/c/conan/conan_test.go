@@ -81,6 +81,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{
 									"zlib/1.2.12",
 								},
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 12,
@@ -95,7 +96,8 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 								Licenses: []string{
 									"Zlib",
 								},
-								Indirect: true,
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
 										StartLine: 22,
