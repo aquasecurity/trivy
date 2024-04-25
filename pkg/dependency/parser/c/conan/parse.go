@@ -1,11 +1,11 @@
 package conan
 
 import (
-	"github.com/samber/lo"
 	"io"
 	"strings"
 
 	"github.com/liamg/jfather"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 

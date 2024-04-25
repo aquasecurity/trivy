@@ -2,10 +2,10 @@ package pnpm
 
 import (
 	"fmt"
-	"github.com/samber/lo"
 	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 

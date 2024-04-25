@@ -1,10 +1,10 @@
 package lock
 
 import (
-	"github.com/samber/lo"
 	"io"
 
 	"github.com/liamg/jfather"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"

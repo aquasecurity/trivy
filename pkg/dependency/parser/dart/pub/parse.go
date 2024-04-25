@@ -56,8 +56,8 @@ func (p Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, 
 	return libs, nil, nil
 }
 
-func (p Parser) relationship(dependency string) types.Relationship {
-	switch dependency {
+func (p Parser) relationship(dep string) types.Relationship {
+	switch dep {
 	case directMain, directDev:
 		return types.RelationshipDirect
 	case transitiveDep:
