@@ -3193,6 +3193,13 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#license-options" class="md-nav__link">
+    License Options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#secret-options" class="md-nav__link">
     Secret Options
   </a>
@@ -3237,6 +3244,13 @@ You're not viewing the latest version.
         <li class="md-nav__item">
   <a href="#cloud-options" class="md-nav__link">
     Cloud Options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-options" class="md-nav__link">
+    Module Options
   </a>
   
 </li>
@@ -3720,6 +3734,13 @@ You're not viewing the latest version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#license-options" class="md-nav__link">
+    License Options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#secret-options" class="md-nav__link">
     Secret Options
   </a>
@@ -3764,6 +3785,13 @@ You're not viewing the latest version.
         <li class="md-nav__item">
   <a href="#cloud-options" class="md-nav__link">
     Cloud Options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-options" class="md-nav__link">
+    Module Options
   </a>
   
 </li>
@@ -3861,6 +3889,15 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MEDIUM</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HIGH</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CRITICAL</span><span class="w"></span>
+
+<span class="nt">scan</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Same as &#39;--compliance&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty  </span><span class="w"></span>
+<span class="w">  </span><span class="nt">compliance</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--show-suppressed&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false  </span><span class="w"></span>
+<span class="w">  </span><span class="nt">show-suppressed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 </code></pre></div>
 <h2 id="scan-options">Scan Options</h2>
 <p>Available in client/server mode</p>
@@ -3883,7 +3920,7 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--offline-scan&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
-<span class="w">  </span><span class="nt">offline-scan</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">offline</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--scanners&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default depends on subcommand</span><span class="w"></span>
@@ -3892,6 +3929,24 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">misconfig</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">license</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span>
+<span class="w">  </span><span class="c1"># Same as &#39;--parallel&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is 5</span><span class="w"></span>
+<span class="w">  </span><span class="nt">parallel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--sbom-sources&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">sbom-sources</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">oci</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rekor</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--rekor-url&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;https://rekor.sigstore.dev&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">rekor-url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://rekor.sigstore.dev</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--include-dev-deps&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">include-dev-deps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 </code></pre></div>
 <h2 id="cache-options">Cache Options</h2>
 <div class="highlight"><pre><span></span><code><span class="nt">cache</span><span class="p">:</span><span class="w"></span>
@@ -3905,6 +3960,9 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 
 <span class="w">  </span><span class="c1"># Redis options</span><span class="w"></span>
 <span class="w">  </span><span class="nt">redis</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Same as &#39;--redis-tls&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">    </span><span class="nt">tls</span><span class="p">:</span><span class="w">    </span>
 <span class="w">    </span><span class="c1"># Same as &#39;--redis-ca&#39;</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Default is empty</span><span class="w"></span>
 <span class="w">    </span><span class="nt">ca</span><span class="p">:</span><span class="w"></span>
@@ -3919,21 +3977,25 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 </code></pre></div>
 <h2 id="db-options">DB Options</h2>
 <div class="highlight"><pre><span></span><code><span class="nt">db</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Same as &#39;--skip-db-update&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
-<span class="w">  </span><span class="nt">skip-update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-
 <span class="w">  </span><span class="c1"># Same as &#39;--no-progress&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
 <span class="w">  </span><span class="nt">no-progress</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 
+<span class="w">  </span><span class="c1"># Same as &#39;--skip-db-update&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">skip-update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+
 <span class="w">  </span><span class="c1"># Same as &#39;--db-repository&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is &#39;ghcr.io/aquasecurity/trivy-db&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-db</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;ghcr.io/aquasecurity/trivy-db:2&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-db:2</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--skip-java-db-update&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">java-skip-update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">  </span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--java-db-repository&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is &#39;ghcr.io/aquasecurity/trivy-java-db&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">java-repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-java-db</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;ghcr.io/aquasecurity/trivy-java-db:1&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">java-repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-java-db:1</span><span class="w"></span>
 </code></pre></div>
 <h2 id="registry-options">Registry Options</h2>
 <div class="highlight"><pre><span></span><code><span class="nt">registry</span><span class="p">:</span><span class="w"></span>
@@ -3962,7 +4024,19 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--platform&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
-<span class="w">  </span><span class="nt">platform</span><span class="p">:</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">platform</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--image-src&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;docker,containerd,podman,remote&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">source</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">podman</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--image-config-scanners&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">image-config-scanners</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">misconfig</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret</span><span class="w">      </span>
 
 <span class="w">  </span><span class="nt">docker</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Same as &#39;--docker-host&#39;</span><span class="w"></span>
@@ -3986,6 +4060,64 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">  </span><span class="c1"># Same as &#39;--ignore-unfixed&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
 <span class="w">  </span><span class="nt">ignore-unfixed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--ignore-unfixed&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ignore-status</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end_of_life</span><span class="w"></span>
+</code></pre></div>
+<h2 id="license-options">License Options</h2>
+<p>Available with license scanning</p>
+<div class="highlight"><pre><span></span><code><span class="nt">license</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Same as &#39;--license-full&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">full</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--ignored-licenses&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ignored</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MPL-2.0</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MIT</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--license-confidence-level&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is 0.9</span><span class="w"></span>
+<span class="w">  </span><span class="nt">confidenceLevel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.9</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Set list of forbidden licenses</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L171</span><span class="w"></span>
+<span class="w">  </span><span class="nt">forbidden</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-1.0</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-3.0</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Set list of restricted licenses</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L199</span><span class="w"></span>
+<span class="w">  </span><span class="nt">restricted</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-1.0</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-3.0</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Set list of reciprocal licenses</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L238</span><span class="w"></span>
+<span class="w">  </span><span class="nt">reciprocal</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-1.0</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-3.0</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Set list of notice licenses</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L260</span><span class="w"></span>
+<span class="w">  </span><span class="nt">notice</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-1.0</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-3.0</span><span class="w">  </span>
+
+<span class="w">  </span><span class="c1"># Set list of permissive licenses</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">permissive</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-1.0</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-3.0</span><span class="w">  </span>
+
+<span class="w">  </span><span class="c1"># Set list of unencumbered licenses</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is https://github.com/aquasecurity/trivy/blob/164b025413c5fb9c6759491e9a306b46b869be93/pkg/licensing/category.go#L334</span><span class="w"></span>
+<span class="w">  </span><span class="nt">unencumbered</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-1.0</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AGPL-3.0</span><span class="w">    </span>
 </code></pre></div>
 <h2 id="secret-options">Secret Options</h2>
 <p>Available with secret scanning</p>
@@ -3995,21 +4127,25 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">  </span><span class="nt">config</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/trivy/secret.yaml</span><span class="w"></span>
 </code></pre></div>
 <h2 id="rego-options">Rego Options</h2>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">rego</span><span class="w"></span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain"># Same as &#39;--trace&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain"># Default is false</span><span class="w"></span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">trace</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">rego</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Same as &#39;--trace&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">trace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain"># Same as &#39;--config-policy&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain"># Default is empty</span><span class="w"></span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">policy</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Same as &#39;--skip-policy-update&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">skip-policy-update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--config-policy&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">policy</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/repository</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/custom</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/some-policy.rego</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--config-data&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
-<span class="w w-Error">  </span><span class="nt">data</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">data</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data/</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--policy-namespaces&#39;</span><span class="w"></span>
@@ -4024,6 +4160,10 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">  </span><span class="c1"># Same as &#39;--include-non-failures&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
 <span class="w">  </span><span class="nt">include-non-failures</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--policy-bundle-repository&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;ghcr.io/aquasecurity/trivy-checks:0&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">policy-bundle-repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-checks:0</span><span class="w">  </span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--miconfig-scanners&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is all scanners</span><span class="w"></span>
@@ -4066,6 +4206,12 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">    </span><span class="c1"># Same as &#39;--tf-exclude-downloaded-modules&#39;</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Default is false</span><span class="w"></span>
 <span class="w">    </span><span class="nt">exclude-downloaded-modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1"># Same as &#39;--cf-params&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">cloudformation</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">params</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">params.json</span><span class="w"></span>
 </code></pre></div>
 <h2 id="kubernetes-options">Kubernetes Options</h2>
 <p>Available with Kubernetes scanning</p>
@@ -4077,6 +4223,58 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 <span class="w">  </span><span class="c1"># Same as &#39;--namespace&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
 <span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--kubeconfig&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">kubeconfig</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/.kube/config2</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--components&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;workload,infra&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">components</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">workload</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">infra</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--k8s-version&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">k8s-version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.21.0</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--tolerations&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">tolerations</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">key1=value1:NoExecute</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">key2=value2:NoSchedule</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--all-namespaces&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">all-namespaces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">node-collector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Same as &#39;--node-collector-namespace&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Default is &#39;trivy-temp&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/.kube/config2</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1"># Same as &#39;--node-collector-imageref&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Default is &#39;ghcr.io/aquasecurity/node-collector:0.0.9&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">imageref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/node-collector:0.0.9</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">exclude</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Same as &#39;--exclude-owned&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">    </span><span class="nt">owned</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1"># Same as &#39;--exclude-nodes&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">    </span><span class="nt">nodes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes.io/arch:arm64</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">team:dev</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--qps&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is 5.0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">qps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--burst&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is 10</span><span class="w"></span>
+<span class="w">  </span><span class="nt">burst</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
 </code></pre></div>
 <h2 id="repository-options">Repository Options</h2>
 <p>Available with git repository scanning (<code>trivy repo</code>)</p>
@@ -4137,6 +4335,32 @@ The config path can be overridden by the <code>--config</code> flag.</p>
 
 <span class="w">    </span><span class="c1"># the aws account to use (this will be determined from your environment when not set)</span><span class="w"></span>
 <span class="w">    </span><span class="nt">account</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123456789012</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1"># the aws specific services</span><span class="w"></span>
+<span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ec2</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1"># the aws specific arn</span><span class="w"></span>
+<span class="w">    </span><span class="nt">arn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arn:aws:s3:::example-bucket</span><span class="w">      </span>
+
+<span class="w">    </span><span class="c1"># skip the aws specific services</span><span class="w"></span>
+<span class="w">    </span><span class="nt">skip-service</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ec2</span><span class="w"> </span>
+</code></pre></div>
+<h2 id="module-options">Module Options</h2>
+<p>Available for modules</p>
+<div class="highlight"><pre><span></span><code><span class="nt">module</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Same as &#39;--module-dir&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;$HOME/.trivy/modules&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$HOME/.trivy/modules</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--enable-modules&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="nt">enable-modules</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trivy-module-spring4shell</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trivy-module-wordpress</span><span class="w"></span>
 </code></pre></div>
 
               
