@@ -384,8 +384,8 @@ misconfiguration:
   include-non-failures: false
 
   # Same as '--policy-bundle-repository'
-  # Default is 'ghcr.io/aquasecurity/trivy-policies:0'
-  policy-bundle-repository: ghcr.io/aquasecurity/trivy-policies:0  
+  # Default is 'ghcr.io/aquasecurity/trivy-checks:0'
+  policy-bundle-repository: ghcr.io/aquasecurity/trivy-checks:0  
   
   # Same as '--miconfig-scanners'
   # Default is all scanners
