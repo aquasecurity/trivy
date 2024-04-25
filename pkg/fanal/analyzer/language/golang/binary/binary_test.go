@@ -38,16 +38,18 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 								Version: "v0.0.0-20210121072130-637058cfe492",
 							},
 							{
-								Name:    "github.com/aquasecurity/test",
-								Version: "",
+								Name:         "github.com/aquasecurity/test",
+								Version:      "",
+								Relationship: types.RelationshipRoot,
 							},
 							{
 								Name:    "golang.org/x/xerrors",
 								Version: "v0.0.0-20200804184101-5ec99f83aff1",
 							},
 							{
-								Name:    "stdlib",
-								Version: "1.15.2",
+								Name:         "stdlib",
+								Version:      "1.15.2",
+								Relationship: types.RelationshipRuntime,
 							},
 						},
 					},
