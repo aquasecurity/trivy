@@ -98,7 +98,7 @@ var (
 	}
 	IncludeDevDepsFlag = Flag[bool]{
 		Name:       "include-dev-deps",
-		ConfigName: "include-dev-deps",
+		ConfigName: "scan.include-dev-deps",
 		Usage:      "include development dependencies in the report (supported: npm, yarn)",
 	}
 )

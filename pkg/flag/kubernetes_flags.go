@@ -44,7 +44,7 @@ var (
 	}
 	K8sVersionFlag = Flag[string]{
 		Name:       "k8s-version",
-		ConfigName: "kubernetes.k8s.version",
+		ConfigName: "kubernetes.k8s-version",
 		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
 	}
 	TolerationsFlag = Flag[[]string]{
@@ -54,15 +54,21 @@ var (
 	}
 	AllNamespaces = Flag[bool]{
 		Name:       "all-namespaces",
-		ConfigName: "kubernetes.all.namespaces",
+		ConfigName: "kubernetes.all-namespaces",
 		Shorthand:  "A",
 		Usage:      "fetch resources from all cluster namespaces",
 	}
 	NodeCollectorNamespace = Flag[string]{
 		Name:       "node-collector-namespace",
-		ConfigName: "node.collector.namespace",
+		ConfigName: "kubernetes.node-collector.namespace",
 		Default:    "trivy-temp",
 		Usage:      "specify the namespace in which the node-collector job should be deployed",
+	}
+	NodeCollectorImageRef = Flag[string]{
+		Name:       "node-collector-imageref",
+		ConfigName: "kubernetes.node-collector.imageref",
+		Default:    "ghcr.io/aquasecurity/node-collector:0.0.9",
+		Usage:      "indicate the image reference for the node-collector scan job",
 	}
 	ExcludeOwned = Flag[bool]{
 		Name:       "exclude-owned",
@@ -73,12 +79,6 @@ var (
 		Name:       "exclude-nodes",
 		ConfigName: "kubernetes.exclude.nodes",
 		Usage:      "indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)",
-	}
-	NodeCollectorImageRef = Flag[string]{
-		Name:       "node-collector-imageref",
-		ConfigName: "kubernetes.node.collector.imageref",
-		Default:    "ghcr.io/aquasecurity/node-collector:0.0.9",
-		Usage:      "indicate the image reference for the node-collector scan job",
 	}
 	QPS = Flag[float64]{
 		Name:       "qps",
