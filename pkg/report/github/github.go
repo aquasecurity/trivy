@@ -176,7 +176,7 @@ func getMetadata(report types.Report) Metadata {
 }
 
 func getPkgRelationshipType(pkg ftypes.Package) string {
-	if pkg.Indirect {
+	if pkg.Relationship == ftypes.RelationshipIndirect {
 		return IndirectRelationship
 	}
 	return DirectRelationship

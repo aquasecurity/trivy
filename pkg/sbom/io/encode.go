@@ -382,16 +382,16 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	//         All packages are included in the parent (RelationshipContains or RelationshipDependsOn).
 	switch {
 	// Case 1-1: direct packages
-	case pkg.Relationship == ftypes.RelationshipDirect || (!pkg.Indirect && len(parents[pkg.ID]) == 0):
+	case pkg.Relationship == ftypes.RelationshipDirect:
 		return true
 	// Case 1-2: indirect packages
-	case (pkg.Indirect || pkg.Relationship == ftypes.RelationshipIndirect) && len(parents[pkg.ID]) != 0:
+	case pkg.Relationship == ftypes.RelationshipIndirect && len(parents[pkg.ID]) != 0:
 		return false
 	// Case 2 & 3:
-	case !pkg.Indirect && pkg.Relationship == ftypes.RelationshipUnknown:
+	case pkg.Relationship == ftypes.RelationshipUnknown:
 		return true
 	// Case 4:
-	case (pkg.Indirect || pkg.Relationship == ftypes.RelationshipIndirect) && len(parents[pkg.ID]) == 0:
+	case pkg.Relationship == ftypes.RelationshipIndirect && len(parents[pkg.ID]) == 0:
 		return true
 	default:
 		return true
