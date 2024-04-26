@@ -55,7 +55,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			ID:           pkgID,
 			Name:         pkg.Name,
 			Version:      pkg.Version,
-			Relationship: lo.Ternary(pkg.Root, types.RelationshipRoot, types.RelationshipUnknown),
+			Relationship: lo.Ternary(pkg.Root, types.RelationshipRoot, types.RelationshipUnknown), // TODO: Determine the direct dependencies by checking the dependencies of the root crate
 		})
 
 		var childDeps []string
