@@ -1,0 +1,76 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "testdata/fixtures/repo/conda-environment",
+  "documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/repo/conda-environment-3ff14136-e09f-4df9-80ea-000000000004",
+  "creationInfo": {
+    "creators": [
+      "Organization: aquasecurity",
+      "Tool: trivy-dev"
+    ],
+    "created": "2021-08-25T12:20:30Z"
+  },
+  "packages": [
+    {
+      "name": "environment.yaml",
+      "SPDXID": "SPDXRef-Application-202c31aa4648bfc2",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "attributionTexts": [
+        "Class: lang-pkgs",
+        "Type: conda-environment"
+      ],
+      "primaryPackagePurpose": "APPLICATION"
+    },
+    {
+      "name": "bzip2",
+      "SPDXID": "SPDXRef-Package-cba4fb2800432780",
+      "versionInfo": "1.0.8",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "sourceInfo": "package found in: environment.yaml",
+      "licenseConcluded": "NONE",
+      "licenseDeclared": "NONE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:conda/bzip2@1.0.8"
+        }
+      ],
+      "attributionTexts": [
+        "PkgType: conda-environment"
+      ],
+      "primaryPackagePurpose": "LIBRARY"
+    },
+    {
+      "name": "testdata/fixtures/repo/conda-environment",
+      "SPDXID": "SPDXRef-Filesystem-2702076b98393e0b",
+      "downloadLocation": "NONE",
+      "filesAnalyzed": false,
+      "attributionTexts": [
+        "SchemaVersion: 2"
+      ],
+      "primaryPackagePurpose": "SOURCE"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Application-202c31aa4648bfc2",
+      "relatedSpdxElement": "SPDXRef-Package-cba4fb2800432780",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Filesystem-2702076b98393e0b",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-Filesystem-2702076b98393e0b",
+      "relatedSpdxElement": "SPDXRef-Application-202c31aa4648bfc2",
+      "relationshipType": "CONTAINS"
+    }
+  ]
+}

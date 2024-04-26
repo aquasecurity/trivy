@@ -342,6 +342,15 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/conda-cyclonedx.json.golden",
 		},
 		{
+			name: "conda environment.yaml generating CycloneDX SBOM",
+			args: args{
+				command: "fs",
+				format:  "cyclonedx",
+				input:   "testdata/fixtures/repo/conda-environment",
+			},
+			golden: "testdata/conda-environment-cyclonedx.json.golden",
+		},
+		{
 			name: "pom.xml generating CycloneDX SBOM (with vulnerabilities)",
 			args: args{
 				command: "fs",
@@ -359,6 +368,15 @@ func TestRepository(t *testing.T) {
 				input:   "testdata/fixtures/repo/conda",
 			},
 			golden: "testdata/conda-spdx.json.golden",
+		},
+		{
+			name: "conda environment.yaml generating SPDX SBOM",
+			args: args{
+				command: "fs",
+				format:  "spdx-json",
+				input:   "testdata/fixtures/repo/conda-environment",
+			},
+			golden: "testdata/conda-environment-spdx.json.golden",
 		},
 		{
 			name: "gomod with fs subcommand",
