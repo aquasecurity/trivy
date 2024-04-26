@@ -1,7 +1,9 @@
 package binary
 
 import (
+	"cmp"
 	"debug/buildinfo"
+	"runtime/debug"
 	"sort"
 	"strings"
 
@@ -10,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	"github.com/spf13/pflag"
 )
 
 var (
@@ -48,15 +51,18 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, convertError(err)
 	}
 
+	ldflags := p.ldFlags(info.Settings)
 	libs := make([]types.Library, 0, len(info.Deps)+2)
 	libs = append(libs, []types.Library{
 		{
 			// Add main module
 			Name: info.Main.Path,
 			// Only binaries installed with `go install` contain semver version of the main module.
-			// Other binaries use the `(devel)` version.
+			// Other binaries use the `(devel)` version, but still may contain a stamped version
+			// set via `go build -ldflags='-X main.version=<semver>'`, so we fallback to this as.
+			// as a secondary source.
 			// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
-			Version:      p.checkVersion(info.Main.Path, info.Main.Version),
+			Version:      cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.parseLDFlags(ldflags)),
 			Relationship: types.RelationshipRoot,
 		},
 		{
@@ -97,4 +103,58 @@ func (p *Parser) checkVersion(name, version string) string {
 		return ""
 	}
 	return version
+}
+
+func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
+	for _, setting := range settings {
+		if setting.Key != "-ldflags" {
+			continue
+		}
+
+		return strings.Fields(setting.Value)
+	}
+	return nil
+}
+
+// parseLDFlags attempts to parse the binary's version from any `-ldflags` passed to `go build` at build time.
+func (p *Parser) parseLDFlags(flags []string) string {
+	fset := pflag.NewFlagSet("ldflags", pflag.ContinueOnError)
+	// This prevents the flag set from erroring out if other flags were provided.
+	// This helps keep the implementation small, so that only the -X flag is needed.
+	fset.ParseErrorsWhitelist.UnknownFlags = true
+	// The shorthand name is needed here because setting the full name
+	// to `X` will cause the flag set to look for `--X` instead of `-X`.
+	// The flag can also be set multiple times, so a string slice is needed
+	// to handle that edge case.
+	var x []string
+	fset.StringSliceVarP(&x, "", "X", nil, `Set the value of the string variable in importpath named name to value.
+	This is only effective if the variable is declared in the source code either uninitialized
+	or initialized to a constant string expression. -X will not work if the initializer makes
+	a function call or refers to other variables.
+	Note that before Go 1.5 this option took two separate arguments.`)
+	fset.Parse(flags)
+
+	for _, xx := range x {
+		// It's valid to set the -X flags with quotes so we trim any that might
+		// have been provided: Ex:
+		//
+		// -X main.version=1.0.0
+		// -X=main.version=1.0.0
+		// -X 'main.version=1.0.0'
+		// -X='main.version=1.0.0'
+		// -X="main.version=1.0.0"
+		// -X "main.version=1.0.0"
+		xx = strings.Trim(xx, `'"`)
+		key, val, found := strings.Cut(xx, "=")
+		if !found {
+			p.logger.Debug("Unable to parse an -ldflags -X flag value", "got", xx)
+			continue
+		}
+
+		if strings.EqualFold(key, "main.version") {
+			return val
+		}
+	}
+
+	return ""
 }

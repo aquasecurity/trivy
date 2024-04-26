@@ -99,6 +99,20 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "with -ldflags=\"-X main.version=v1.0.0\"",
+			inputFile: "testdata/main-version-via-ldflags.elf",
+			want: []types.Library{
+				{
+					Name:    "github.com/aquasecurity/test",
+					Version: "v1.0.0",
+				},
+				{
+					Name:    "stdlib",
+					Version: "1.22.1",
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/dummy",
 			wantErr:   "unrecognized executable format",
