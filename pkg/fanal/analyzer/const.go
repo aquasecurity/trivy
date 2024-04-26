@@ -178,6 +178,7 @@ var (
 		TypeDotNetCore,
 		TypePackagesProps,
 		TypeCondaPkg,
+		TypeCondaEnv,
 		TypePythonPkg,
 		TypePip,
 		TypePipenv,
@@ -209,6 +210,7 @@ var (
 		TypeSwift,
 		TypePubSpecLock,
 		TypeMixLock,
+		TypeCondaEnv,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
