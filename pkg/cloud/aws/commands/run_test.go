@@ -3,6 +3,7 @@ package commands
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -144,30 +145,6 @@ const expectedS3ScanResult = `{
         },
         {
           "Type": "AWS",
-          "ID": "AVD-AWS-0132",
-          "AVDID": "AVD-AWS-0132",
-          "Title": "S3 encryption should use Customer Managed Keys",
-          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
-          "Message": "Bucket does not encrypt data with a customer managed key.",
-          "Resolution": "Enable encryption using customer managed keys",
-          "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0132"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
           "ID": "AVD-AWS-0091",
           "AVDID": "AVD-AWS-0091",
           "Title": "S3 Access Block should Ignore Public Acl",
@@ -249,6 +226,30 @@ const expectedS3ScanResult = `{
           "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0094",
           "References": [
             "https://avd.aquasec.com/misconfig/avd-aws-0094"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-0132",
+          "AVDID": "AVD-AWS-0132",
+          "Title": "S3 encryption should use Customer Managed Keys",
+          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
+          "Message": "Bucket does not encrypt data with a customer managed key.",
+          "Resolution": "Enable encryption using customer managed keys",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0132"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -482,30 +483,6 @@ const expectedCustomScanResult = `{
         },
         {
           "Type": "AWS",
-          "ID": "AVD-AWS-0132",
-          "AVDID": "AVD-AWS-0132",
-          "Title": "S3 encryption should use Customer Managed Keys",
-          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
-          "Message": "Bucket does not encrypt data with a customer managed key.",
-          "Resolution": "Enable encryption using customer managed keys",
-          "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0132"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
           "ID": "AVD-AWS-0091",
           "AVDID": "AVD-AWS-0091",
           "Title": "S3 Access Block should Ignore Public Acl",
@@ -598,6 +575,30 @@ const expectedCustomScanResult = `{
               "Lines": null
             }
           }
+        },
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-0132",
+          "AVDID": "AVD-AWS-0132",
+          "Title": "S3 encryption should use Customer Managed Keys",
+          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
+          "Message": "Bucket does not encrypt data with a customer managed key.",
+          "Resolution": "Enable encryption using customer managed keys",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0132"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
         }
       ]
     }
@@ -657,16 +658,16 @@ const expectedS3AndCloudTrailResult = `{
         },
         {
           "Type": "AWS",
-          "ID": "AVD-AWS-0016",
-          "AVDID": "AVD-AWS-0016",
-          "Title": "Cloudtrail log validation should be enabled to prevent tampering of log data",
-          "Description": "Log validation should be activated on Cloudtrail logs to prevent the tampering of the underlying data in the S3 bucket. It is feasible that a rogue actor compromising an AWS account might want to modify the log data to remove trace of their actions.",
-          "Message": "Trail does not have log validation enabled.",
-          "Resolution": "Turn on log validation for Cloudtrail",
+          "ID": "AVD-AWS-0015",
+          "AVDID": "AVD-AWS-0015",
+          "Title": "CloudTrail should use Customer managed keys to encrypt the logs",
+          "Description": "Using Customer managed keys provides comprehensive control over cryptographic keys, enabling management of policies, permissions, and rotation, thus enhancing security and compliance measures for sensitive data and systems.",
+          "Message": "CloudTrail does not use a customer managed key to encrypt the logs.",
+          "Resolution": "Use Customer managed key",
           "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0016",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0015",
           "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0016"
+            "https://avd.aquasec.com/misconfig/avd-aws-0015"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -681,16 +682,16 @@ const expectedS3AndCloudTrailResult = `{
         },
         {
           "Type": "AWS",
-          "ID": "AVD-AWS-0015",
-          "AVDID": "AVD-AWS-0015",
-          "Title": "CloudTrail should use Customer managed keys to encrypt the logs",
-          "Description": "Using Customer managed keys provides comprehensive control over cryptographic keys, enabling management of policies, permissions, and rotation, thus enhancing security and compliance measures for sensitive data and systems.",
-          "Message": "CloudTrail does not use a customer managed key to encrypt the logs.",
-          "Resolution": "Use Customer managed key",
+          "ID": "AVD-AWS-0016",
+          "AVDID": "AVD-AWS-0016",
+          "Title": "Cloudtrail log validation should be enabled to prevent tampering of log data",
+          "Description": "Log validation should be activated on Cloudtrail logs to prevent the tampering of the underlying data in the S3 bucket. It is feasible that a rogue actor compromising an AWS account might want to modify the log data to remove trace of their actions.",
+          "Message": "Trail does not have log validation enabled.",
+          "Resolution": "Turn on log validation for Cloudtrail",
           "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0015",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0016",
           "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0015"
+            "https://avd.aquasec.com/misconfig/avd-aws-0016"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -837,30 +838,6 @@ const expectedS3AndCloudTrailResult = `{
         },
         {
           "Type": "AWS",
-          "ID": "AVD-AWS-0132",
-          "AVDID": "AVD-AWS-0132",
-          "Title": "S3 encryption should use Customer Managed Keys",
-          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
-          "Message": "Bucket does not encrypt data with a customer managed key.",
-          "Resolution": "Enable encryption using customer managed keys",
-          "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-0132"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:s3:::examplebucket",
-            "Provider": "aws",
-            "Service": "s3",
-            "Code": {
-              "Lines": null
-            }
-          }
-        },
-        {
-          "Type": "AWS",
           "ID": "AVD-AWS-0091",
           "AVDID": "AVD-AWS-0091",
           "Title": "S3 Access Block should Ignore Public Acl",
@@ -942,6 +919,30 @@ const expectedS3AndCloudTrailResult = `{
           "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0094",
           "References": [
             "https://avd.aquasec.com/misconfig/avd-aws-0094"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:s3:::examplebucket",
+            "Provider": "aws",
+            "Service": "s3",
+            "Code": {
+              "Lines": null
+            }
+          }
+        },
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-0132",
+          "AVDID": "AVD-AWS-0132",
+          "Title": "S3 encryption should use Customer Managed Keys",
+          "Description": "Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.",
+          "Message": "Bucket does not encrypt data with a customer managed key.",
+          "Resolution": "Enable encryption using customer managed keys",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-0132",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-0132"
           ],
           "Status": "FAIL",
           "Layer": {},
@@ -1279,6 +1280,7 @@ Summary Report for compliance: my-custom-spec
 				return
 			}
 			assert.NoError(t, err)
+			fmt.Println(output.String())
 			assert.Equal(t, test.want, output.String())
 		})
 	}
