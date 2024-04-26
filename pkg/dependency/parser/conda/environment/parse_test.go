@@ -23,20 +23,49 @@ func TestParse(t *testing.T) {
 			input: "testdata/happy.yaml",
 			want: []types.Library{
 				{
-					Name:    "_libgcc_mutex",
-					Version: "0.1",
+					Name: "_libgcc_mutex",
+					Locations: types.Locations{
+						{
+							StartLine: 5,
+							EndLine:   5,
+						},
+					},
+				},
+				{
+					Name:    "_openmp_mutex",
+					Version: "5.1",
+					Locations: types.Locations{
+						{
+							StartLine: 6,
+							EndLine:   6,
+						},
+					},
+				}, {
+					Name:    "blas",
+					Version: "1.0",
+					Locations: types.Locations{
+						{
+							StartLine: 7,
+							EndLine:   7,
+						},
+					},
+				},
+				{
+					Name:    "bzip2",
+					Version: "1.0.8",
+					Locations: types.Locations{
+						{
+							StartLine: 8,
+							EndLine:   8,
+						},
+					},
 				},
 			},
 		},
 		{
 			name:    "invalid_json",
-			input:   "testdata/invalid_json.json",
-			wantErr: "JSON decode error: invalid character",
-		},
-		{
-			name:    "invalid_package",
-			input:   "testdata/invalid_package.json",
-			wantErr: "unable to parse conda package",
+			input:   "testdata/invalid.yaml",
+			wantErr: "unable to decode conda environment.yml file",
 		},
 	}
 	for _, tt := range tests {
