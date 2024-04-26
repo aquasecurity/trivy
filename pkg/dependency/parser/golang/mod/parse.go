@@ -85,23 +85,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		skipIndirect = lessThan117(modFileParsed.Go.Version)
 	}
 
-	// Main module
-	var mainModID string
-	if m := modFileParsed.Module; m != nil {
-		ver := m.Mod.Version
-		if ver != "" {
-			ver = ver[1:]
-		}
-		mainModID = packageID(m.Mod.Path, ver)
-		libs[m.Mod.Path] = types.Library{
-			ID:                 mainModID,
-			Name:               m.Mod.Path,
-			Version:            ver,
-			Relationship:       types.RelationshipRoot,
-			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
-		}
-	}
-
 	// Required modules
 	for _, require := range modFileParsed.Require {
 		// Skip indirect dependencies less than Go 1.17
