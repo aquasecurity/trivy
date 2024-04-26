@@ -1,6 +1,10 @@
 package types
 
 import (
+	"encoding/json"
+
+	"golang.org/x/xerrors"
+
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -91,16 +95,35 @@ const (
 	RelationshipIndirect
 )
 
+var relationshipNames = [...]string{
+	"unknown",
+	"runtime",
+	"root",
+	"direct",
+	"indirect",
+}
+
 func (r Relationship) String() string {
-	names := [...]string{
-		"unknown",
-		"runtime",
-		"root",
-		"direct",
-		"indirect",
-	}
-	if r < RelationshipRoot || r > RelationshipIndirect {
+	if r <= RelationshipUnknown || int(r) >= len(relationshipNames) {
 		return "unknown"
 	}
-	return names[r]
+	return relationshipNames[r]
+}
+
+func (r Relationship) MarshalJSON() ([]byte, error) {
+	return json.Marshal(r.String())
+}
+
+func (r *Relationship) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	for i, name := range relationshipNames {
+		if s == name {
+			*r = Relationship(i)
+			return nil
+		}
+	}
+	return xerrors.Errorf("invalid relationship (%s)", s)
 }
