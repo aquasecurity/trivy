@@ -62,14 +62,14 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			// set via `go build -ldflags='-X main.version=<semver>'`, so we fallback to this as.
 			// as a secondary source.
 			// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
-			Version:      cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.parseLDFlags(ldflags)),
+			Version:      cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.parseLDFlags(info.Main.Path, ldflags)),
 			Relationship: types.RelationshipRoot,
 		},
 		{
 			// Add the Go version used to build this binary.
 			Name:         "stdlib",
 			Version:      strings.TrimPrefix(info.GoVersion, "go"),
-			Relationship: types.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
+			Relationship: types.RelationshipDirect, // Considered a direct dependency as the main
 		},
 	}...)
 
@@ -99,7 +99,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 // checkVersion detects `(devel)` versions, removes them and adds a debug message about it.
 func (p *Parser) checkVersion(name, version string) string {
 	if version == "(devel)" {
-		p.logger.Debug("Unable to detect dependency version (`(devel)` is used). Version will be empty.", log.String("dependency", name))
+		p.logger.Debug("Unable to detect main module's dependency version - `(devel)` is used", log.String("dependency", name))
 		return ""
 	}
 	return version
@@ -117,7 +117,8 @@ func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
 }
 
 // parseLDFlags attempts to parse the binary's version from any `-ldflags` passed to `go build` at build time.
-func (p *Parser) parseLDFlags(flags []string) string {
+func (p *Parser) parseLDFlags(name string, flags []string) string {
+	log.Debug("Parsing dependency's build info settings", "dependency", name, "-ldflags", flags)
 	fset := pflag.NewFlagSet("ldflags", pflag.ContinueOnError)
 	// This prevents the flag set from erroring out if other flags were provided.
 	// This helps keep the implementation small, so that only the -X flag is needed.
@@ -133,7 +134,7 @@ func (p *Parser) parseLDFlags(flags []string) string {
 	a function call or refers to other variables.
 	Note that before Go 1.5 this option took two separate arguments.`)
 	if err := fset.Parse(flags); err != nil {
-		p.logger.Error("Could not parse -ldflags found in Go binary build info", "err", err)
+		p.logger.Error("Could not parse -ldflags found in build info", "err", err)
 		return ""
 	}
 
@@ -154,10 +155,13 @@ func (p *Parser) parseLDFlags(flags []string) string {
 			continue
 		}
 
-		if strings.EqualFold(key, "main.version") {
+		key = strings.ToLower(key)
+		// The check for a 'ver' prefix enables the parser to pick up Trivy's own version value that's set.
+		if strings.HasSuffix(key, "version") || strings.HasSuffix(key, "ver") {
 			return val
 		}
 	}
 
+	p.logger.Debug("Unable to detect dependency version used in `-ldflags` build info settings. Empty version used.", log.String("dependency", name))
 	return ""
 }
