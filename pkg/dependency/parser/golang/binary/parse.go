@@ -7,12 +7,12 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/spf13/pflag"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
-	"github.com/spf13/pflag"
 )
 
 var (
@@ -132,7 +132,10 @@ func (p *Parser) parseLDFlags(flags []string) string {
 	or initialized to a constant string expression. -X will not work if the initializer makes
 	a function call or refers to other variables.
 	Note that before Go 1.5 this option took two separate arguments.`)
-	fset.Parse(flags)
+	if err := fset.Parse(flags); err != nil {
+		p.logger.Error("Could not parse -ldflags found in Go binary build info", "err", err)
+		return ""
+	}
 
 	for _, xx := range x {
 		// It's valid to set the -X flags with quotes so we trim any that might
