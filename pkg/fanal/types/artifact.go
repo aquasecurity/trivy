@@ -95,7 +95,7 @@ type Package struct {
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
 
-	Indirect     bool         `json:",omitempty"` // Deprecated: Use relationship
+	Indirect     bool         `json:",omitempty"` // Deprecated: Use relationship. Kept for backward compatibility.
 	Relationship Relationship `json:",omitempty"`
 
 	// Dependencies of this package
