@@ -248,7 +248,7 @@ func (s *Scanner) ScanInput(ctx context.Context, inputs ...Input) (scan.Results,
 		}
 
 		if isPolicyWithSubtype(s.sourceType) {
-			// skip if policy isn't relevant to what is being scanned
+			// skip if check isn't relevant to what is being scanned
 			if !isPolicyApplicable(staticMeta, inputs...) {
 				continue
 			}
@@ -326,7 +326,7 @@ func isPolicyApplicable(staticMetadata *StaticMetadata, inputs ...Input) bool {
 					continue
 				}
 
-				if len(staticMetadata.InputOptions.Selectors) == 0 { // policy always applies if no selectors
+				if len(staticMetadata.InputOptions.Selectors) == 0 { // check always applies if no selectors
 					return true
 				}
 

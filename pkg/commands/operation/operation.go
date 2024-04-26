@@ -155,7 +155,7 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 
 	client, err := policy.NewClient(cacheDir, quiet, checkBundleRepository)
 	if err != nil {
-		return nil, xerrors.Errorf("policy client error: %w", err)
+		return nil, xerrors.Errorf("check client error: %w", err)
 	}
 
 	needsUpdate := false
@@ -177,11 +177,11 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 	policyPaths, err := client.LoadBuiltinPolicies()
 	if err != nil {
 		if skipUpdate {
-			msg := "No downloadable policies were loaded as --skip-policy-update is enabled"
+			msg := "No downloadable policies were loaded as --skip-check-update is enabled"
 			log.Info(msg)
 			return nil, xerrors.Errorf(msg)
 		}
-		return nil, xerrors.Errorf("policy load error: %w", err)
+		return nil, xerrors.Errorf("check load error: %w", err)
 	}
 	return policyPaths, nil
 }

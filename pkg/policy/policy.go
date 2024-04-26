@@ -46,7 +46,7 @@ func WithClock(c clock.Clock) Option {
 // Option is a functional option
 type Option func(*options)
 
-// Client implements policy operations
+// Client implements check operations
 type Client struct {
 	*options
 	policyDir       string
@@ -54,7 +54,7 @@ type Client struct {
 	quiet           bool
 }
 
-// Metadata holds default policy metadata
+// Metadata holds default check metadata
 type Metadata struct {
 	Digest       string
 	DownloadedAt time.Time
@@ -67,7 +67,7 @@ func (m Metadata) String() string {
 `, m.Digest, m.DownloadedAt.UTC())
 }
 
-// NewClient is the factory method for policy client
+// NewClient is the factory method for check client
 func NewClient(cacheDir string, quiet bool, checkBundleRepo string, opts ...Option) (*Client, error) {
 	o := &options{
 		clock: clock.RealClock{},
@@ -120,7 +120,7 @@ func (c *Client) DownloadBuiltinPolicies(ctx context.Context, registryOpts types
 
 	// Update metadata.json with the new digest and the current date
 	if err = c.updateMetadata(digest, c.clock.Now()); err != nil {
-		return xerrors.Errorf("unable to update the policy metadata: %w", err)
+		return xerrors.Errorf("unable to update the check metadata: %w", err)
 	}
 
 	return nil
@@ -140,7 +140,7 @@ func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 	}
 
 	// If the "roots" field is not included in the manifest it defaults to [""]
-	// which means that ALL data and policy must come from the bundle.
+	// which means that ALL data and check must come from the bundle.
 	if manifest.Roots == nil || len(*manifest.Roots) == 0 {
 		return []string{c.contentDir()}, nil
 	}
@@ -153,7 +153,7 @@ func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 	return policyPaths, nil
 }
 
-// NeedsUpdate returns if the default policy should be updated
+// NeedsUpdate returns if the default check should be updated
 func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOptions) (bool, error) {
 	meta, err := c.GetMetadata()
 	if err != nil {

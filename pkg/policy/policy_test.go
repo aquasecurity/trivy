@@ -243,7 +243,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				},
 			}, nil)
 
-			// Create a policy directory
+			// Create a check directory
 			err := os.MkdirAll(filepath.Join(tmpDir, "policy"), os.ModePerm)
 			require.NoError(t, err)
 

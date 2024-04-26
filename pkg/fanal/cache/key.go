@@ -36,7 +36,7 @@ func CalcKey(id string, analyzerVersions analyzer.Versions, hookVersions map[str
 		return "", xerrors.Errorf("json encode error: %w", err)
 	}
 
-	// Write policy, data contents and secret config file
+	// Write check, data contents and secret config file
 	paths := append(artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths...)
 
 	// Check if the secret config exists.

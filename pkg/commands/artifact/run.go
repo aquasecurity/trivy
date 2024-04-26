@@ -370,7 +370,7 @@ func (r *runner) initCache(opts flag.Options) error {
 	if opts.ResetChecksBundle {
 		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.ChecksBundleRepository)
 		if err != nil {
-			return xerrors.Errorf("failed to instantiate policy client: %w", err)
+			return xerrors.Errorf("failed to instantiate check client: %w", err)
 		}
 		if err := c.Clear(); err != nil {
 			return xerrors.Errorf("failed to remove the cache: %w", err)
