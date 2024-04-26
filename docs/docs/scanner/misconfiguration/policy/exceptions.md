@@ -85,8 +85,8 @@ If you want to apply rule-based exceptions to built-in policies, you have to def
     }
     ```
 
-This exception is applied to [KSV012][ksv012] in trivy-policies.
-You can get the package names in the [trivy-policies repository][trivy-checks] or the JSON output from Trivy.
+This exception is applied to [KSV012][ksv012] in trivy-checks.
+You can get the package names in the [trivy-checks repository][trivy-checks] or the JSON output from Trivy.
 
 [ksv012]: https://github.com/aquasecurity/trivy-checks/blob/f36a5b732c4b1293a720c40baab0a7c106ea455e/checks/kubernetes/pss/restricted/3_runs_as_root.rego 
 [trivy-checks]: https://github.com/aquasecurity/trivy-checks/
