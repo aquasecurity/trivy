@@ -1,0 +1,34 @@
+name: test-env
+channels:
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - _openmp_mutex=5.1=51_gnu
+  - blas=1.0=openblas
+  - bzip2=1.0.8=h998d150_5
+  - ca-certificates=2024.3.11=hd43f75c_0
+  - expat=2.6.2=h419075a_0
+  - ld_impl_linux-aarch64=2.38=h8131f2d_1
+  - libffi=3.4.4=h419075a_0
+  - libgcc-ng=11.2.0=h1234567_1
+  - libgfortran-ng=11.2.0=h6e398d7_1
+  - libgfortran5=11.2.0=h1234567_1
+  - libgomp=11.2.0=h1234567_1
+  - libopenblas=0.3.21=hc2e42e2_0
+  - libstdcxx-ng=11.2.0=h1234567_1
+  - libuuid=1.41.5=h998d150_0
+  - ncurses=6.4=h419075a_0
+  - numpy=1.26.4=py312hdb1dca2_0
+  - numpy-base=1.26.4=py312h6f96b8b_0
+  - openssl=3.0.13=h2f4d8fa_0
+  - pip=23.3.1=py312hd43f75c_0
+  - python=3.12.3=h8edadfe_0
+  - readline=8.2=h998d150_0
+  - scipy=1.12.0=py312hdb1dca2_0
+  - setuptools=68.2.2=py312hd43f75c_0
+  - sqlite=3.41.2=h998d150_0
+  - tk=8.6.12=h241ca14_0
+  - tzdata=2024a=h04d1e81_0
+  - wheel=0.41.2=py312hd43f75c_0
+  - xz=5.4.6=h998d150_0
+  - zlib=1.2.13=h998d150_0
