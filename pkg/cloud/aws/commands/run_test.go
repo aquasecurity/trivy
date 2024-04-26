@@ -355,7 +355,7 @@ const expectedCustomScanResult = `{
           "Type": "AWS",
           "Title": "Bad input data",
           "Description": "Just failing rule with input data",
-          "Message": "Rego policy resulted in DENY",
+          "Message": "Rego check resulted in DENY",
           "Namespace": "user.whatever",
           "Query": "deny",
           "Severity": "LOW",
