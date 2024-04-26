@@ -71,7 +71,6 @@ type Relationship = godeptypes.Relationship
 
 const (
 	RelationshipUnknown  = godeptypes.RelationshipUnknown
-	RelationshipRuntime  = godeptypes.RelationshipRuntime
 	RelationshipRoot     = godeptypes.RelationshipRoot
 	RelationshipDirect   = godeptypes.RelationshipDirect
 	RelationshipIndirect = godeptypes.RelationshipIndirect

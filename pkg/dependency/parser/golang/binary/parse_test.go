@@ -14,14 +14,14 @@ import (
 func TestParse(t *testing.T) {
 	wantLibs := []types.Library{
 		{
-			Name:         "stdlib",
-			Version:      "1.15.2",
-			Relationship: types.RelationshipRuntime,
-		},
-		{
 			Name:         "github.com/aquasecurity/test",
 			Version:      "",
 			Relationship: types.RelationshipRoot,
+		},
+		{
+			Name:         "stdlib",
+			Version:      "1.15.2",
+			Relationship: types.RelationshipDirect,
 		},
 		{
 			Name:    "github.com/aquasecurity/go-pep440-version",
@@ -63,14 +63,14 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/replace.elf",
 			want: []types.Library{
 				{
-					Name:         "stdlib",
-					Version:      "1.16.4",
-					Relationship: types.RelationshipRuntime,
-				},
-				{
 					Name:         "github.com/ebati/trivy-mod-parse",
 					Version:      "",
 					Relationship: types.RelationshipRoot,
+				},
+				{
+					Name:         "stdlib",
+					Version:      "1.16.4",
+					Relationship: types.RelationshipDirect,
 				},
 				{
 					Name:    "github.com/davecgh/go-spew",
@@ -87,14 +87,14 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/semver-main-module-version.macho",
 			want: []types.Library{
 				{
-					Name:         "stdlib",
-					Version:      "1.20.6",
-					Relationship: types.RelationshipRuntime,
-				},
-				{
 					Name:         "go.etcd.io/bbolt",
 					Version:      "v1.3.5",
 					Relationship: types.RelationshipRoot,
+				},
+				{
+					Name:         "stdlib",
+					Version:      "1.20.6",
+					Relationship: types.RelationshipDirect,
 				},
 			},
 		},

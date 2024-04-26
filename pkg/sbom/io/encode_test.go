@@ -351,6 +351,19 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 								Relationship: ftypes.RelationshipIndirect,
 							},
+							{
+								ID:      "stdlib@1.22.1",
+								Name:    "stdlib",
+								Version: "1.22.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "1.22.1",
+									},
+								},
+								Relationship: ftypes.RelationshipDirect,
+							},
 						},
 					},
 				},
@@ -460,6 +473,30 @@ func TestEncoder_Encode(t *testing.T) {
 						BOMRef: "pkg:golang/github.com/org/indirect@2.0.0",
 					},
 				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): {
+					Type:    core.TypeLibrary,
+					Name:    "stdlib",
+					Version: "1.22.1",
+					SrcFile: "test",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "stdlib@1.22.1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "gobinary",
+						},
+					},
+					PkgID: core.PkgID{
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeGolang,
+							Name:    "stdlib",
+							Version: "1.22.1",
+						},
+						BOMRef: "pkg:golang/stdlib@1.22.1",
+					},
+				},
 			},
 			wantRels: map[uuid.UUID][]core.Relationship{
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
@@ -479,6 +516,10 @@ func TestEncoder_Encode(t *testing.T) {
 						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
 						Type:       core.RelationshipDependsOn,
 					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"),
+						Type:       core.RelationshipDependsOn,
+					},
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
 					{
@@ -487,6 +528,7 @@ func TestEncoder_Encode(t *testing.T) {
 					},
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): nil,
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000006"): nil,
 			},
 			wantVulns: map[uuid.UUID][]core.Vulnerability{},
 		},

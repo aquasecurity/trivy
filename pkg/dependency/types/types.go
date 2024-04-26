@@ -89,7 +89,6 @@ type Relationship int
 
 const (
 	RelationshipUnknown Relationship = iota
-	RelationshipRuntime
 	RelationshipRoot
 	RelationshipDirect
 	RelationshipIndirect
@@ -97,7 +96,6 @@ const (
 
 var relationshipNames = [...]string{
 	"unknown",
-	"runtime",
 	"root",
 	"direct",
 	"indirect",

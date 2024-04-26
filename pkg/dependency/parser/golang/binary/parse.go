@@ -51,12 +51,6 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	libs := make([]types.Library, 0, len(info.Deps)+2)
 	libs = append(libs, []types.Library{
 		{
-			// Add the Go version used to build this binary.
-			Name:         "stdlib",
-			Version:      strings.TrimPrefix(info.GoVersion, "go"),
-			Relationship: types.RelationshipRuntime,
-		},
-		{
 			// Add main module
 			Name: info.Main.Path,
 			// Only binaries installed with `go install` contain semver version of the main module.
@@ -64,6 +58,12 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
 			Version:      p.checkVersion(info.Main.Path, info.Main.Version),
 			Relationship: types.RelationshipRoot,
+		},
+		{
+			// Add the Go version used to build this binary.
+			Name:         "stdlib",
+			Version:      strings.TrimPrefix(info.GoVersion, "go"),
+			Relationship: types.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
 		},
 	}...)
 
