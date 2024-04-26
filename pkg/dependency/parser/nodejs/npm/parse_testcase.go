@@ -720,25 +720,6 @@ var (
 			},
 		},
 		{
-			ID:           "asap@2.0.6",
-			Name:         "asap",
-			Version:      "2.0.6",
-			Dev:          false,
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 32,
-					EndLine:   37,
-				},
-			},
-		},
-		{
 			ID:           "body-parser@1.18.3",
 			Name:         "body-parser",
 			Version:      "1.18.3",
@@ -754,6 +735,101 @@ var (
 				{
 					StartLine: 38,
 					EndLine:   57,
+				},
+			},
+		},
+		{
+			ID:           "debug@2.5.2",
+			Name:         "debug",
+			Version:      "2.5.2",
+			Dev:          true,
+			Relationship: types.RelationshipDirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/debug/-/debug-2.5.2.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 87,
+					EndLine:   95,
+				},
+			},
+		},
+		{
+			ID:           "finalhandler@1.1.1",
+			Name:         "finalhandler",
+			Version:      "1.1.1",
+			Dev:          false,
+			Relationship: types.RelationshipDirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/finalhandler/-/finalhandler-1.1.1.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 128,
+					EndLine:   144,
+				},
+			},
+		},
+		{
+			ID:           "ms@1.0.0",
+			Name:         "ms",
+			Version:      "1.0.0",
+			Dev:          false,
+			Relationship: types.RelationshipDirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/ms/-/ms-1.0.0.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 215,
+					EndLine:   219,
+				},
+			},
+		},
+		{
+			ID:           "promise@8.3.0",
+			Name:         "promise",
+			Version:      "8.3.0",
+			Dev:          false,
+			Relationship: types.RelationshipDirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/promise/-/promise-8.3.0.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 239,
+					EndLine:   247,
+				},
+			},
+		},
+		{
+			ID:           "asap@2.0.6",
+			Name:         "asap",
+			Version:      "2.0.6",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 32,
+					EndLine:   37,
 				},
 			},
 		},
@@ -792,25 +868,6 @@ var (
 				{
 					StartLine: 79,
 					EndLine:   86,
-				},
-			},
-		},
-		{
-			ID:           "debug@2.5.2",
-			Name:         "debug",
-			Version:      "2.5.2",
-			Dev:          true,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/debug/-/debug-2.5.2.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 87,
-					EndLine:   95,
 				},
 			},
 		},
@@ -910,25 +967,6 @@ var (
 				{
 					StartLine: 123,
 					EndLine:   127,
-				},
-			},
-		},
-		{
-			ID:           "finalhandler@1.1.1",
-			Name:         "finalhandler",
-			Version:      "1.1.1",
-			Dev:          false,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/finalhandler/-/finalhandler-1.1.1.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 128,
-					EndLine:   144,
 				},
 			},
 		},
@@ -1066,25 +1104,6 @@ var (
 			},
 		},
 		{
-			ID:           "ms@1.0.0",
-			Name:         "ms",
-			Version:      "1.0.0",
-			Dev:          false,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/ms/-/ms-1.0.0.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 215,
-					EndLine:   219,
-				},
-			},
-		},
-		{
 			ID:           "ms@2.0.0",
 			Name:         "ms",
 			Version:      "2.0.0",
@@ -1142,25 +1161,6 @@ var (
 				{
 					StartLine: 231,
 					EndLine:   238,
-				},
-			},
-		},
-		{
-			ID:           "promise@8.3.0",
-			Name:         "promise",
-			Version:      "8.3.0",
-			Dev:          false,
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/promise/-/promise-8.3.0.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 239,
-					EndLine:   247,
 				},
 			},
 		},
@@ -1333,24 +1333,6 @@ var (
 			},
 		},
 		{
-			ID:           "debug@2.6.9",
-			Name:         "debug",
-			Version:      "2.6.9",
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 31,
-					EndLine:   38,
-				},
-			},
-		},
-		{
 			ID:           "function1",
 			Name:         "function1",
 			Version:      "",
@@ -1365,6 +1347,42 @@ var (
 				{
 					StartLine: 18,
 					EndLine:   23,
+				},
+			},
+		},
+		{
+			ID:           "nested_func@1.0.0",
+			Name:         "nested_func",
+			Version:      "1.0.0",
+			Relationship: types.RelationshipDirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "functions/nested_func",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 24,
+					EndLine:   30,
+				},
+			},
+		},
+		{
+			ID:           "debug@2.6.9",
+			Name:         "debug",
+			Version:      "2.6.9",
+			Relationship: types.RelationshipIndirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 31,
+					EndLine:   38,
 				},
 			},
 		},
@@ -1404,24 +1422,6 @@ var (
 				},
 			},
 		},
-		{
-			ID:           "nested_func@1.0.0",
-			Name:         "nested_func",
-			Version:      "1.0.0",
-			Relationship: types.RelationshipDirect,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "functions/nested_func",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 24,
-					EndLine:   30,
-				},
-			},
-		},
 	}
 
 	npmV3WithWorkspaceDeps = []types.Dependency{
@@ -1451,24 +1451,6 @@ var (
 	// libraries are filled manually
 	npmV3WithoutRootDepsField = []types.Library{
 		{
-			ID:           "debug@2.6.9",
-			Name:         "debug",
-			Version:      "2.6.9",
-			Relationship: types.RelationshipIndirect,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 22,
-					EndLine:   29,
-				},
-			},
-		},
-		{
 			ID:           "func1@1.0.0",
 			Name:         "func1",
 			Version:      "1.0.0",
@@ -1483,6 +1465,24 @@ var (
 				{
 					StartLine: 15,
 					EndLine:   21,
+				},
+			},
+		},
+		{
+			ID:           "debug@2.6.9",
+			Name:         "debug",
+			Version:      "2.6.9",
+			Relationship: types.RelationshipIndirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 22,
+					EndLine:   29,
 				},
 			},
 		},

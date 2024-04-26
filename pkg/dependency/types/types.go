@@ -20,9 +20,17 @@ type Libraries []Library
 
 func (libs Libraries) Len() int { return len(libs) }
 func (libs Libraries) Less(i, j int) bool {
-	if libs[i].ID != libs[j].ID { // ID could be empty
+	switch {
+	case libs[i].Relationship != libs[j].Relationship:
+		if libs[i].Relationship == RelationshipUnknown {
+			return false
+		} else if libs[j].Relationship == RelationshipUnknown {
+			return true
+		}
+		return libs[i].Relationship < libs[j].Relationship
+	case libs[i].ID != libs[j].ID: // ID could be empty
 		return libs[i].ID < libs[j].ID
-	} else if libs[i].Name != libs[j].Name { // Name could be the same
+	case libs[i].Name != libs[j].Name: // Name could be the same
 		return libs[i].Name < libs[j].Name
 	}
 	return libs[i].Version < libs[j].Version

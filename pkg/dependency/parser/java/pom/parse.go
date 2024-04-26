@@ -273,7 +273,7 @@ func (p *parser) parseModule(currentPath, relativePath string) (artifact, error)
 	}
 
 	moduleArtifact := module.artifact()
-	moduleArtifact.Module = true
+	moduleArtifact.Module = true // TODO: introduce RelationshipModule?
 
 	p.cache.put(moduleArtifact, result)
 

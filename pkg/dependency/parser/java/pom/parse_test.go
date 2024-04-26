@@ -288,12 +288,6 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: types.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:4.0.0",
-					Name:         "org.example:example-api",
-					Version:      "4.0.0",
-					Relationship: types.RelationshipIndirect,
-				},
-				{
 					ID:           "org.example:example-dependency:1.2.3",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
@@ -304,6 +298,12 @@ func TestPom_Parse(t *testing.T) {
 							EndLine:   26,
 						},
 					},
+				},
+				{
+					ID:           "org.example:example-api:4.0.0",
+					Name:         "org.example:example-api",
+					Version:      "4.0.0",
+					Relationship: types.RelationshipIndirect,
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -398,13 +398,6 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: types.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
-					Name:         "org.example:example-api",
-					Version:      "1.7.30",
-					License:      "The Apache Software License, Version 2.0",
-					Relationship: types.RelationshipIndirect,
-				},
-				{
 					ID:           "org.example:example-child:2.0.0",
 					Name:         "org.example:example-child",
 					Version:      "2.0.0",
@@ -416,6 +409,13 @@ func TestPom_Parse(t *testing.T) {
 							EndLine:   32,
 						},
 					},
+				},
+				{
+					ID:           "org.example:example-api:1.7.30",
+					Name:         "org.example:example-api",
+					Version:      "1.7.30",
+					License:      "The Apache Software License, Version 2.0",
+					Relationship: types.RelationshipIndirect,
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -613,13 +613,6 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: types.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
-					Name:         "org.example:example-api",
-					Version:      "2.0.0",
-					License:      "The Apache Software License, Version 2.0",
-					Relationship: types.RelationshipIndirect,
-				},
-				{
 					ID:           "org.example:example-dependency2:2.3.4",
 					Name:         "org.example:example-dependency2",
 					Version:      "2.3.4",
@@ -642,6 +635,13 @@ func TestPom_Parse(t *testing.T) {
 							EndLine:   17,
 						},
 					},
+				},
+				{
+					ID:           "org.example:example-api:2.0.0",
+					Name:         "org.example:example-api",
+					Version:      "2.0.0",
+					License:      "The Apache Software License, Version 2.0",
+					Relationship: types.RelationshipIndirect,
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -685,13 +685,6 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: types.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:2.0.0",
-					Name:         "org.example:example-api",
-					Version:      "2.0.0",
-					License:      "The Apache Software License, Version 2.0",
-					Relationship: types.RelationshipIndirect,
-				},
-				{
 					ID:           "org.example:example-dependency:1.2.3",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
@@ -714,6 +707,13 @@ func TestPom_Parse(t *testing.T) {
 							EndLine:   32,
 						},
 					},
+				},
+				{
+					ID:           "org.example:example-api:2.0.0",
+					Name:         "org.example:example-api",
+					Version:      "2.0.0",
+					License:      "The Apache Software License, Version 2.0",
+					Relationship: types.RelationshipIndirect,
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -834,12 +834,6 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: types.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-dependency:1.2.3",
-					Name:         "org.example:example-dependency",
-					Version:      "1.2.3",
-					Relationship: types.RelationshipIndirect,
-				},
-				{
 					ID:           "org.example:example-nested:3.3.3",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
@@ -850,6 +844,12 @@ func TestPom_Parse(t *testing.T) {
 							EndLine:   28,
 						},
 					},
+				},
+				{
+					ID:           "org.example:example-dependency:1.2.3",
+					Name:         "org.example:example-dependency",
+					Version:      "1.2.3",
+					Relationship: types.RelationshipIndirect,
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -879,19 +879,6 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: types.RelationshipRoot,
 				},
 				{
-					ID:           "org.example:example-api:1.7.30",
-					Name:         "org.example:example-api",
-					Version:      "1.7.30",
-					Relationship: types.RelationshipIndirect,
-					License:      "The Apache Software License, Version 2.0",
-				},
-				{
-					ID:           "org.example:example-dependency:1.2.3",
-					Name:         "org.example:example-dependency",
-					Version:      "1.2.3",
-					Relationship: types.RelationshipIndirect,
-				},
-				{
 					ID:           "org.example:example-exclusions:4.0.0",
 					Name:         "org.example:example-exclusions",
 					Version:      "4.0.0",
@@ -902,6 +889,19 @@ func TestPom_Parse(t *testing.T) {
 							EndLine:   14,
 						},
 					},
+				},
+				{
+					ID:           "org.example:example-api:1.7.30",
+					Name:         "org.example:example-api",
+					Version:      "1.7.30",
+					License:      "The Apache Software License, Version 2.0",
+					Relationship: types.RelationshipIndirect,
+				},
+				{
+					ID:           "org.example:example-dependency:1.2.3",
+					Name:         "org.example:example-dependency",
+					Version:      "1.2.3",
+					Relationship: types.RelationshipIndirect,
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -999,17 +999,17 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: types.RelationshipRoot, // TODO: Several root modules break SBOM relationships
 				},
 				{
+					ID:           "org.example:example-dependency:1.2.3",
+					Name:         "org.example:example-dependency",
+					Version:      "1.2.3",
+					Relationship: types.RelationshipDirect,
+				},
+				{
 					ID:           "org.example:example-api:2.0.0",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
 					License:      "The Apache Software License, Version 2.0",
 					Relationship: types.RelationshipIndirect,
-				},
-				{
-					ID:           "org.example:example-dependency:1.2.3",
-					Name:         "org.example:example-dependency",
-					Version:      "1.2.3",
-					Relationship: types.RelationshipDirect,
 				},
 			},
 			// maven doesn't include modules in dep tree of root pom
@@ -1049,13 +1049,6 @@ func TestPom_Parse(t *testing.T) {
 			inputFile: filepath.Join("testdata", "modules-infinity-loop", "pom.xml"),
 			local:     true,
 			want: []types.Library{
-				// as dependency
-				{
-					ID:           "org.example:module-1:2.0.0",
-					Name:         "org.example:module-1",
-					Version:      "2.0.0",
-					Relationship: types.RelationshipDirect,
-				},
 				// as module
 				{
 					ID:           "org.example:module-1:2.0.0",
@@ -1074,6 +1067,13 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:root",
 					Version:      "1.0.0",
 					Relationship: types.RelationshipRoot, // TODO: Several root modules break SBOM relationships
+				},
+				// as dependency
+				{
+					ID:           "org.example:module-1:2.0.0",
+					Name:         "org.example:module-1",
+					Version:      "2.0.0",
+					Relationship: types.RelationshipDirect,
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -1150,6 +1150,18 @@ func TestPom_Parse(t *testing.T) {
 					Relationship: types.RelationshipRoot,
 				},
 				{
+					ID:           "org.example:example-nested:3.3.3",
+					Name:         "org.example:example-nested",
+					Version:      "3.3.3",
+					Relationship: types.RelationshipDirect,
+					Locations: types.Locations{
+						{
+							StartLine: 20,
+							EndLine:   24,
+						},
+					},
+				},
+				{
 					ID:           "org.example:example-api:2.0.0",
 					Name:         "org.example:example-api",
 					Version:      "2.0.0",
@@ -1163,18 +1175,6 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.4",
 					Relationship: types.RelationshipIndirect,
-				},
-				{
-					ID:           "org.example:example-nested:3.3.3",
-					Name:         "org.example:example-nested",
-					Version:      "3.3.3",
-					Relationship: types.RelationshipDirect,
-					Locations: types.Locations{
-						{
-							StartLine: 20,
-							EndLine:   24,
-						},
-					},
 				},
 			},
 			wantDeps: []types.Dependency{
@@ -1203,14 +1203,11 @@ func TestPom_Parse(t *testing.T) {
 			inputFile: filepath.Join("testdata", "transitive-dependency-management", "pom.xml"),
 			local:     true,
 			want: []types.Library{
-				// Managed dependencies (org.example:example-api:1.7.30) in org.example:example-dependency-management3
-				// should not affect dependencies of example-dependency (org.example:example-api:2.0.0)
 				{
-					ID:           "org.example:example-api:2.0.0",
-					Name:         "org.example:example-api",
+					ID:           "org.example:transitive-dependency-management:2.0.0",
+					Name:         "org.example:transitive-dependency-management",
 					Version:      "2.0.0",
-					License:      "The Apache Software License, Version 2.0",
-					Relationship: types.RelationshipIndirect,
+					Relationship: types.RelationshipRoot,
 				},
 				{
 					ID:           "org.example:example-dependency-management3:1.1.1",
@@ -1224,17 +1221,20 @@ func TestPom_Parse(t *testing.T) {
 						},
 					},
 				},
+				// Managed dependencies (org.example:example-api:1.7.30) in org.example:example-dependency-management3
+				// should not affect dependencies of example-dependency (org.example:example-api:2.0.0)
+				{
+					ID:           "org.example:example-api:2.0.0",
+					Name:         "org.example:example-api",
+					Version:      "2.0.0",
+					License:      "The Apache Software License, Version 2.0",
+					Relationship: types.RelationshipIndirect,
+				},
 				{
 					ID:           "org.example:example-dependency:1.2.3",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: types.RelationshipIndirect,
-				},
-				{
-					ID:           "org.example:transitive-dependency-management:2.0.0",
-					Name:         "org.example:transitive-dependency-management",
-					Version:      "2.0.0",
-					Relationship: types.RelationshipRoot,
 				},
 			},
 			wantDeps: []types.Dependency{
