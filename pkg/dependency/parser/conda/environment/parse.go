@@ -29,7 +29,6 @@ func NewParser() types.Parser {
 	}
 }
 
-// TODO add comment
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var env environment
 	if err := yaml.NewDecoder(r).Decode(&env); err != nil {
@@ -50,11 +49,29 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 }
 
 func (p *Parser) toLibrary(dep Dependency) (types.Library, error) {
+	// Default format for files created using the `conda Export` command: `<Name>=<Version>=<Build>
+	// e.g. `bzip2=1.0.8=h998d150_5`
+	// But it is also possible to set only the dependency name
 	ss := strings.Split(dep.Value, "=")
-	if len(ss) == 1 {
-		p.logger.Debug("Unable to detect version", log.String("dependency", dep.Value))
+
+	lib := types.Library{
+		Name: ss[0],
+		Locations: types.Locations{
+			{
+				StartLine: dep.Line,
+				EndLine:   dep.Line,
+			},
+		},
 	}
-	return types.Library{}, nil
+
+	// Version can be omitted
+	if len(ss) == 1 {
+		p.logger.Warn("Unable to detect the version as it is not pinned", log.String("name", dep.Value))
+		return lib, nil
+	}
+
+	lib.Version = ss[1]
+	return lib, nil
 }
 
 func (d *Dependency) UnmarshalYAML(node *yaml.Node) error {
