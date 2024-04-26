@@ -35,9 +35,9 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 		return xerrors.Errorf("failed getting k8s cluster: %w", err)
 	}
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
-	defer cancel()
 
 	defer func() {
+		cancel()
 		if errors.Is(err, context.DeadlineExceeded) {
 			log.WarnContext(ctx, "Increase --timeout value")
 		}

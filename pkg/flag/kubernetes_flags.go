@@ -81,12 +81,6 @@ var (
 		ConfigName: "kubernetes.includeNamespaces",
 		Usage:      "indicate the namespaces included in scanning (example: kube-system)",
 	}
-	NodeCollectorImageRef = Flag[string]{
-		Name:       "node-collector-imageref",
-		ConfigName: "kubernetes.node.collector.imageref",
-		Default:    "ghcr.io/aquasecurity/node-collector:0.0.9",
-		Usage:      "indicate the image reference for the node-collector scan job",
-	}
 	QPS = Flag[float64]{
 		Name:       "qps",
 		ConfigName: "kubernetes.qps",
