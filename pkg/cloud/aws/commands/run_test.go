@@ -3,7 +3,6 @@ package commands
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -1280,7 +1279,6 @@ Summary Report for compliance: my-custom-spec
 				return
 			}
 			assert.NoError(t, err)
-			fmt.Println(output.String())
 			assert.Equal(t, test.want, output.String())
 		})
 	}
