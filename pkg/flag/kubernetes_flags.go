@@ -25,17 +25,6 @@ var (
 		ConfigName: "kubernetes.tolerations",
 		Usage:      "specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)",
 	}
-<<<<<<< HEAD
-	DisableNodeCollector = Flag[bool]{
-		Name:       "disable-node-collector",
-		ConfigName: "kubernetes.disableNodeCollector",
-=======
-	AllNamespaces = Flag[bool]{
-		Name:       "all-namespaces",
-		ConfigName: "kubernetes.all.namespaces",
-		Shorthand:  "A",
-		Usage:      "fetch resources from all cluster namespaces",
-	}
 	DisableNodeCollector = Flag[bool]{
 		Name:       "disable-node-collector",
 		ConfigName: "kubernetes.disableNodeCollector",
@@ -138,10 +127,6 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		K8sVersion:             K8sVersionFlag.Clone(),
 		Tolerations:            TolerationsFlag.Clone(),
 		DisableNodeCollector:   DisableNodeCollector.Clone(),
-<<<<<<< HEAD
-=======
-		AllNamespaces:          AllNamespaces.Clone(),
->>>>>>> 660c113f6 (feat: change flag name to disable-node-collector)
 		NodeCollectorNamespace: NodeCollectorNamespace.Clone(),
 		ExcludeOwned:           ExcludeOwned.Clone(),
 		ExcludeNodes:           ExcludeNodes.Clone(),
@@ -209,10 +194,6 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		K8sVersion:             f.K8sVersion.Value(),
 		Tolerations:            tolerations,
 		DisableNodeCollector:   f.DisableNodeCollector.Value(),
-<<<<<<< HEAD
-=======
-		AllNamespaces:          f.AllNamespaces.Value(),
->>>>>>> 660c113f6 (feat: change flag name to disable-node-collector)
 		NodeCollectorNamespace: f.NodeCollectorNamespace.Value(),
 		ExcludeOwned:           f.ExcludeOwned.Value(),
 		ExcludeNodes:           exludeNodeLabels,

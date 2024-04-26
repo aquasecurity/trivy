@@ -517,7 +517,7 @@ func Test_separateMisconfigReports(t *testing.T) {
 		scanners        types.Scanners
 		expectedReports []Report
 	}{
-		/*{
+		{
 			name:      "Config, Rbac, and Infra Reports",
 			k8sReport: k8sReport,
 			scanners: types.Scanners{
@@ -558,7 +558,7 @@ func Test_separateMisconfigReports(t *testing.T) {
 			expectedReports: []Report{
 				{Resources: []Resource{{Kind: "Role"}}},
 			},
-		},*/
+		},
 		{
 			name:      "Config Report Only",
 			k8sReport: k8sReport,
@@ -577,14 +577,24 @@ func Test_separateMisconfigReports(t *testing.T) {
 				},
 			},
 		},
-		/*	{
-			name:       "Infra Report Only",
-			k8sReport:  k8sReport,
-			scanners:   types.Scanners{types.MisconfigScanner},
+		{
+			name:      "Infra Report Only",
+			k8sReport: k8sReport,
+			scanners:  types.Scanners{types.MisconfigScanner},
 			expectedReports: []Report{
-				{Resources: []Resource{{Kind: "Pod"}}},
+				{
+					Resources: []Resource{
+						{Kind: "Deployment"},
+						{Kind: "StatefulSet"},
+					},
+				},
+				{
+					Resources: []Resource{
+						{Kind: "Pod"},
+					},
+				},
 			},
-		},*/
+		},
 
 		// TODO: add vuln only
 		// TODO: add secret only
