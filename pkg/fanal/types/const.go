@@ -55,6 +55,7 @@ const (
 	Pipenv        LangType = "pipenv"
 	Poetry        LangType = "poetry"
 	CondaPkg      LangType = "conda-pkg"
+	CondaEnv      LangType = "conda-environment"
 	PythonPkg     LangType = "python-pkg"
 	NodePkg       LangType = "node-pkg"
 	Yarn          LangType = "yarn"

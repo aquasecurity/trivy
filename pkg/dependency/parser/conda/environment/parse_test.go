@@ -1,13 +1,13 @@
 package environment_test
 
 import (
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/conda/environment"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/conda/environment"
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
 )
 

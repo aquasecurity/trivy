@@ -69,6 +69,7 @@ const (
 
 	// Conda
 	TypeCondaPkg Type = "conda-pkg"
+	TypeCondaEnv Type = "conda-environment"
 
 	// Python
 	TypePythonPkg Type = "python-pkg"
