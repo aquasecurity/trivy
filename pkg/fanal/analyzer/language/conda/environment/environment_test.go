@@ -36,8 +36,7 @@ func Test_environmentAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								Name:    "_openmp_mutex",
-								Version: "5.1",
+								Name: "_openmp_mutex",
 								Locations: []types.Location{
 									{
 										StartLine: 6,

@@ -29,7 +29,7 @@ func (a environmentAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	return res, nil
 }
 func (a environmentAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return filepath.Base(filePath) == "environment.yaml" || filepath.Base(filePath) == "environment.yml"
+	return filepath.Base(filePath) == types.CondaEnvYml || filepath.Base(filePath) == types.CondaEnvYaml
 }
 
 func (a environmentAnalyzer) Type() analyzer.Type {

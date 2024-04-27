@@ -140,4 +140,7 @@ const (
 	PubSpecLock = "pubspec.lock"
 
 	MixLock = "mix.lock"
+
+	CondaEnvYaml = "environment.yaml"
+	CondaEnvYml  = "environment.yml"
 )
