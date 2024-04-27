@@ -77,6 +77,7 @@ nav:
               - CBL-Mariner: docs/coverage/os/cbl-mariner.md
               - CentOS: docs/coverage/os/centos.md
               - Chainguard: docs/coverage/os/chainguard.md
+              - Conda: docs/coverage/os/conda.md
               - Debian: docs/coverage/os/debian.md
               - Oracle Linux: docs/coverage/os/oracle.md
               - Photon OS: docs/coverage/os/photon.md
