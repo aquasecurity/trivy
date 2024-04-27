@@ -89,7 +89,6 @@ func Test_environmentAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.Error(t, err)
 				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
