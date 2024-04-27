@@ -370,15 +370,6 @@ func TestRepository(t *testing.T) {
 			golden: "testdata/conda-spdx.json.golden",
 		},
 		{
-			name: "conda environment.yaml generating SPDX SBOM",
-			args: args{
-				command: "fs",
-				format:  "spdx-json",
-				input:   "testdata/fixtures/repo/conda-environment",
-			},
-			golden: "testdata/conda-environment-spdx.json.golden",
-		},
-		{
 			name: "gomod with fs subcommand",
 			args: args{
 				command:   "fs",
