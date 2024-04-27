@@ -1,8 +1,10 @@
 package environment
 
 import (
+	"regexp"
 	"sort"
 	"strings"
+	"sync"
 
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
@@ -23,13 +25,17 @@ type Dependency struct {
 
 type Parser struct {
 	logger *log.Logger
+	once   sync.Once
 }
 
 func NewParser() types.Parser {
 	return &Parser{
 		logger: log.WithPrefix("conda"),
+		once:   sync.Once{},
 	}
 }
+
+var manuallyCreatedPkgRegexp = regexp.MustCompile(`(?P<name>[A-Za-z0-9-_]+)( |>|<|=|!|$)`)
 
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var env environment
@@ -39,9 +45,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 	var libs []types.Library
 	for _, dep := range env.Dependencies {
-		lib, err := p.toLibrary(dep)
-		if err != nil {
-			return nil, nil, xerrors.Errorf("unable to parse dependency: %w", err)
+		lib := p.toLibrary(dep)
+		// Skip empty libs
+		if lib.Name == "" {
+			continue
 		}
 		libs = append(libs, lib)
 	}
@@ -50,14 +57,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	return libs, nil, nil
 }
 
-func (p *Parser) toLibrary(dep Dependency) (types.Library, error) {
-	// Default format for files created using the `conda Export` command: `<Name>=<Version>=<Build>
-	// e.g. `bzip2=1.0.8=h998d150_5`
-	// But it is also possible to set only the dependency name
-	ss := strings.Split(dep.Value, "=")
-
+func (p *Parser) toLibrary(dep Dependency) types.Library {
 	lib := types.Library{
-		Name: ss[0],
 		Locations: types.Locations{
 			{
 				StartLine: dep.Line,
@@ -66,14 +67,33 @@ func (p *Parser) toLibrary(dep Dependency) (types.Library, error) {
 		},
 	}
 
-	// Version can be omitted
-	if len(ss) == 1 {
-		p.logger.Warn("Unable to detect the version as it is not pinned", log.String("name", dep.Value))
-		return lib, nil
+	// `Conda env export` command returns `<pkg_name>=<version><build>` format.
+	ss := strings.Split(dep.Value, "=")
+	// But `environment.yml` supports version range (for manually created files).
+	// cf. https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html#examples-of-package-specs
+	if len(ss) != 3 || strings.ContainsAny(dep.Value, "<>!*") || strings.Contains(dep.Value, "==") {
+		p.once.Do(func() {
+			p.logger.Warn("Unable to detect the versions of dependencies from `environment.yml` as they are not pinned. Use `conda env export` to pin versions.")
+		})
+
+		// Detect only name for manually created dependencies.
+		var name string
+		matches := manuallyCreatedPkgRegexp.FindStringSubmatch(dep.Value)
+		if matches != nil {
+			name = matches[manuallyCreatedPkgRegexp.SubexpIndex("name")]
+		}
+		if name == "" {
+			p.logger.Debug("Unable to parse dependency", log.String("dep", dep.Value))
+			return types.Library{}
+		}
+
+		lib.Name = name
+		return lib
 	}
 
+	lib.Name = ss[0]
 	lib.Version = ss[1]
-	return lib, nil
+	return lib
 }
 
 func (d *Dependency) UnmarshalYAML(node *yaml.Node) error {
