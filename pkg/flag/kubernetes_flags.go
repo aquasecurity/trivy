@@ -221,7 +221,6 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		IncludeKinds:           f.IncludeKinds.Value(),
 		ExcludeNamespaces:      f.ExcludeNamespaces.Value(),
 		IncludeNamespaces:      f.IncludeNamespaces.Value(),
-		SkipDeep:               f.SkipDeep.Value(),
 		Burst:                  f.Burst.Value(),
 	}, nil
 }
