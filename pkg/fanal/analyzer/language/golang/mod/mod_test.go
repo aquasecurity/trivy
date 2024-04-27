@@ -33,6 +33,11 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 						FilePath: "go.mod",
 						Libraries: types.Packages{
 							{
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+							},
+							{
 								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
 								Name:         "github.com/aquasecurity/go-dep-parser",
 								Version:      "0.0.0-20220406074731-71021a481237",
@@ -68,6 +73,11 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 						FilePath: "go.mod",
 						Libraries: types.Packages{
 							{
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+							},
+							{
 								ID:           "github.com/sad/sad@v0.0.1",
 								Name:         "github.com/sad/sad",
 								Version:      "0.0.1",
@@ -90,6 +100,11 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 						Type:     types.GoModule,
 						FilePath: "go.mod",
 						Libraries: types.Packages{
+							{
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+							},
 							{
 								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
 								Name:         "github.com/aquasecurity/go-dep-parser",
@@ -125,6 +140,11 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 						Type:     types.GoModule,
 						FilePath: "go.mod",
 						Libraries: types.Packages{
+							{
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+							},
 							{
 								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
 								Name:         "github.com/aquasecurity/go-dep-parser",
