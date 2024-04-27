@@ -4025,6 +4025,10 @@ It displays "fixed" vulnerabilities only.</p>
 <li><a href="#by-vulnerability-exploitability-exchange-vex">Vulnerability Exploitability Exchange (VEX)</a></li>
 </ul>
 <p>To show the suppressed results, use the <code>--show-suppressed</code> flag.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This flag is currently available only in the table format.</p>
+</div>
 <div class="highlight"><pre><span></span><code>$ trivy image --vex debian11.csaf.vex --ignorefile .trivyignore.yaml --show-suppressed debian:11
 ...
 
