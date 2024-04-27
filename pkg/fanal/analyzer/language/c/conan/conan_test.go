@@ -29,9 +29,10 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 						FilePath: "conan.lock",
 						Libraries: types.Packages{
 							{
-								ID:      "openssl/3.0.5",
-								Name:    "openssl",
-								Version: "3.0.5",
+								ID:           "openssl/3.0.5",
+								Name:         "openssl",
+								Version:      "3.0.5",
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"zlib/1.2.12",
 								},
@@ -43,10 +44,11 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "zlib/1.2.12",
-								Name:     "zlib",
-								Version:  "1.2.12",
-								Indirect: true,
+								ID:           "zlib/1.2.12",
+								Name:         "zlib",
+								Version:      "1.2.12",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
 										StartLine: 22,
@@ -79,6 +81,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{
 									"zlib/1.2.12",
 								},
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 12,
@@ -93,7 +96,8 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 								Licenses: []string{
 									"Zlib",
 								},
-								Indirect: true,
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
 										StartLine: 22,

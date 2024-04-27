@@ -25,9 +25,10 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/happy.lock",
 			wantLibs: []types.Library{
 				{
-					ID:      "pkga/0.0.1",
-					Name:    "pkga",
-					Version: "0.0.1",
+					ID:           "pkga/0.0.1",
+					Name:         "pkga",
+					Version:      "0.0.1",
+					Relationship: types.RelationshipDirect,
 					Locations: []types.Location{
 						{
 							StartLine: 13,
@@ -36,10 +37,10 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					ID:       "pkgb/system",
-					Name:     "pkgb",
-					Version:  "system",
-					Indirect: true,
+					ID:           "pkgb/system",
+					Name:         "pkgb",
+					Version:      "system",
+					Relationship: types.RelationshipIndirect,
 					Locations: []types.Location{
 						{
 							StartLine: 23,
@@ -48,9 +49,10 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					ID:      "pkgc/0.1.1",
-					Name:    "pkgc",
-					Version: "0.1.1",
+					ID:           "pkgc/0.1.1",
+					Name:         "pkgc",
+					Version:      "0.1.1",
+					Relationship: types.RelationshipDirect,
 					Locations: []types.Location{
 						{
 							StartLine: 30,
@@ -73,9 +75,10 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/happy2.lock",
 			wantLibs: []types.Library{
 				{
-					ID:      "openssl/3.0.3",
-					Name:    "openssl",
-					Version: "3.0.3",
+					ID:           "openssl/3.0.3",
+					Name:         "openssl",
+					Version:      "3.0.3",
+					Relationship: types.RelationshipDirect,
 					Locations: []types.Location{
 						{
 							StartLine: 12,
@@ -84,10 +87,10 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					ID:       "zlib/1.2.12",
-					Name:     "zlib",
-					Version:  "1.2.12",
-					Indirect: true,
+					ID:           "zlib/1.2.12",
+					Name:         "zlib",
+					Version:      "1.2.12",
+					Relationship: types.RelationshipIndirect,
 					Locations: []types.Location{
 						{
 							StartLine: 23,

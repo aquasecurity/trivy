@@ -205,7 +205,7 @@ func (a *gomodAnalyzer) collectDeps(modDir, pkgID string) (godeptypes.Dependency
 
 	// Filter out indirect dependencies
 	dependsOn := lo.FilterMap(libs, func(lib godeptypes.Library, index int) (string, bool) {
-		return lib.Name, !lib.Indirect
+		return lib.Name, lib.Relationship == types.RelationshipDirect
 	})
 
 	return godeptypes.Dependency{
@@ -233,7 +233,7 @@ func parse(fsys fs.FS, path string, parser godeptypes.Parser) (*types.Applicatio
 func lessThanGo117(gomod *types.Application) bool {
 	for _, lib := range gomod.Libraries {
 		// The indirect field is populated only in Go 1.17+
-		if lib.Indirect {
+		if lib.Relationship == types.RelationshipIndirect {
 			return false
 		}
 	}
@@ -259,6 +259,7 @@ func mergeGoSum(gomod, gosum *types.Application) {
 
 		// This dependency doesn't exist in go.mod, so it must be an indirect dependency.
 		lib.Indirect = true
+		lib.Relationship = types.RelationshipIndirect
 		uniq[lib.Name] = lib
 	}
 

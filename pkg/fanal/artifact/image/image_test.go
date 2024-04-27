@@ -910,10 +910,11 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "ruby-app/Gemfile.lock",
 									Libraries: types.Packages{
 										{
-											ID:       "actioncable@5.2.3",
-											Name:     "actioncable",
-											Version:  "5.2.3",
-											Indirect: true,
+											ID:           "actioncable@5.2.3",
+											Name:         "actioncable",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"actionpack@5.2.3",
 												"nio4r@2.3.1",
@@ -927,10 +928,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "actionmailer@5.2.3",
-											Name:     "actionmailer",
-											Version:  "5.2.3",
-											Indirect: true,
+											ID:           "actionmailer@5.2.3",
+											Name:         "actionmailer",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"actionpack@5.2.3",
 												"actionview@5.2.3",
@@ -946,10 +948,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "actionpack@5.2.3",
-											Name:     "actionpack",
-											Version:  "5.2.3",
-											Indirect: true,
+											ID:           "actionpack@5.2.3",
+											Name:         "actionpack",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"actionview@5.2.3",
 												"activesupport@5.2.3",
@@ -966,10 +969,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "actionview@5.2.3",
-											Name:     "actionview",
-											Version:  "5.2.3",
-											Indirect: true,
+											ID:           "actionview@5.2.3",
+											Name:         "actionview",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"activesupport@5.2.3",
 												"builder@3.2.3",
@@ -985,10 +989,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "activejob@5.2.3",
-											Name:     "activejob",
-											Version:  "5.2.3",
-											Indirect: true,
+											ID:           "activejob@5.2.3",
+											Name:         "activejob",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"activesupport@5.2.3",
 												"globalid@0.4.2",
@@ -1001,11 +1006,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "activemodel@5.2.3",
-											Name:      "activemodel",
-											Version:   "5.2.3",
-											Indirect:  true,
-											DependsOn: []string{"activesupport@5.2.3"},
+											ID:           "activemodel@5.2.3",
+											Name:         "activemodel",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"activesupport@5.2.3"},
 											Locations: []types.Location{
 												{
 													StartLine: 30,
@@ -1014,10 +1020,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "activerecord@5.2.3",
-											Name:     "activerecord",
-											Version:  "5.2.3",
-											Indirect: true,
+											ID:           "activerecord@5.2.3",
+											Name:         "activerecord",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"activemodel@5.2.3",
 												"activesupport@5.2.3",
@@ -1031,10 +1038,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "activestorage@5.2.3",
-											Name:     "activestorage",
-											Version:  "5.2.3",
-											Indirect: true,
+											ID:           "activestorage@5.2.3",
+											Name:         "activestorage",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"actionpack@5.2.3",
 												"activerecord@5.2.3",
@@ -1048,10 +1056,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "activesupport@5.2.3",
-											Name:     "activesupport",
-											Version:  "5.2.3",
-											Indirect: true,
+											ID:           "activesupport@5.2.3",
+											Name:         "activesupport",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"concurrent-ruby@1.1.5",
 												"i18n@1.6.0",
@@ -1066,11 +1075,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "arel@9.0.0",
-											Name:      "arel",
-											Version:   "9.0.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "arel@9.0.0",
+											Name:         "arel",
+											Version:      "9.0.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 45,
@@ -1079,11 +1089,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "ast@2.4.0",
-											Name:      "ast",
-											Version:   "2.4.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "ast@2.4.0",
+											Name:         "ast",
+											Version:      "2.4.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 46,
@@ -1092,11 +1103,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "builder@3.2.3",
-											Name:      "builder",
-											Version:   "3.2.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "builder@3.2.3",
+											Name:         "builder",
+											Version:      "3.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 47,
@@ -1105,11 +1117,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "coderay@1.1.2",
-											Name:      "coderay",
-											Version:   "1.1.2",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "coderay@1.1.2",
+											Name:         "coderay",
+											Version:      "1.1.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 48,
@@ -1118,11 +1131,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "concurrent-ruby@1.1.5",
-											Name:      "concurrent-ruby",
-											Version:   "1.1.5",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "concurrent-ruby@1.1.5",
+											Name:         "concurrent-ruby",
+											Version:      "1.1.5",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 49,
@@ -1131,11 +1145,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "crass@1.0.4",
-											Name:      "crass",
-											Version:   "1.0.4",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "crass@1.0.4",
+											Name:         "crass",
+											Version:      "1.0.4",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 50,
@@ -1144,11 +1159,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "dotenv@2.7.2",
-											Name:      "dotenv",
-											Version:   "2.7.2",
-											Indirect:  false,
-											DependsOn: []string(nil),
+											ID:           "dotenv@2.7.2",
+											Name:         "dotenv",
+											Version:      "2.7.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 51,
@@ -1157,11 +1173,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "erubi@1.8.0",
-											Name:      "erubi",
-											Version:   "1.8.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "erubi@1.8.0",
+											Name:         "erubi",
+											Version:      "1.8.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 52,
@@ -1170,11 +1187,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "faker@1.9.3",
-											Name:      "faker",
-											Version:   "1.9.3",
-											Indirect:  false,
-											DependsOn: []string{"i18n@1.6.0"},
+											ID:           "faker@1.9.3",
+											Name:         "faker",
+											Version:      "1.9.3",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string{"i18n@1.6.0"},
 											Locations: []types.Location{
 												{
 													StartLine: 53,
@@ -1183,11 +1201,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "globalid@0.4.2",
-											Name:      "globalid",
-											Version:   "0.4.2",
-											Indirect:  true,
-											DependsOn: []string{"activesupport@5.2.3"},
+											ID:           "globalid@0.4.2",
+											Name:         "globalid",
+											Version:      "0.4.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"activesupport@5.2.3"},
 											Locations: []types.Location{
 												{
 													StartLine: 55,
@@ -1196,11 +1215,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "i18n@1.6.0",
-											Name:      "i18n",
-											Version:   "1.6.0",
-											Indirect:  true,
-											DependsOn: []string{"concurrent-ruby@1.1.5"},
+											ID:           "i18n@1.6.0",
+											Name:         "i18n",
+											Version:      "1.6.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"concurrent-ruby@1.1.5"},
 											Locations: []types.Location{
 												{
 													StartLine: 57,
@@ -1209,11 +1229,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "jaro_winkler@1.5.2",
-											Name:      "jaro_winkler",
-											Version:   "1.5.2",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "jaro_winkler@1.5.2",
+											Name:         "jaro_winkler",
+											Version:      "1.5.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 59,
@@ -1222,11 +1243,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "json@2.2.0",
-											Name:      "json",
-											Version:   "2.2.0",
-											Indirect:  false,
-											DependsOn: []string(nil),
+											ID:           "json@2.2.0",
+											Name:         "json",
+											Version:      "2.2.0",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 60,
@@ -1235,10 +1257,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "loofah@2.2.3",
-											Name:     "loofah",
-											Version:  "2.2.3",
-											Indirect: true,
+											ID:           "loofah@2.2.3",
+											Name:         "loofah",
+											Version:      "2.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"crass@1.0.4",
 												"nokogiri@1.10.3",
@@ -1251,11 +1274,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "mail@2.7.1",
-											Name:      "mail",
-											Version:   "2.7.1",
-											Indirect:  true,
-											DependsOn: []string{"mini_mime@1.0.1"},
+											ID:           "mail@2.7.1",
+											Name:         "mail",
+											Version:      "2.7.1",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"mini_mime@1.0.1"},
 											Locations: []types.Location{
 												{
 													StartLine: 64,
@@ -1264,11 +1288,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "marcel@0.3.3",
-											Name:      "marcel",
-											Version:   "0.3.3",
-											Indirect:  true,
-											DependsOn: []string{"mimemagic@0.3.3"},
+											ID:           "marcel@0.3.3",
+											Name:         "marcel",
+											Version:      "0.3.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"mimemagic@0.3.3"},
 											Locations: []types.Location{
 												{
 													StartLine: 66,
@@ -1277,11 +1302,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "method_source@0.9.2",
-											Name:      "method_source",
-											Version:   "0.9.2",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "method_source@0.9.2",
+											Name:         "method_source",
+											Version:      "0.9.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 68,
@@ -1290,11 +1316,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "mimemagic@0.3.3",
-											Name:      "mimemagic",
-											Version:   "0.3.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "mimemagic@0.3.3",
+											Name:         "mimemagic",
+											Version:      "0.3.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 69,
@@ -1303,11 +1330,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "mini_mime@1.0.1",
-											Name:      "mini_mime",
-											Version:   "1.0.1",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "mini_mime@1.0.1",
+											Name:         "mini_mime",
+											Version:      "1.0.1",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 70,
@@ -1316,11 +1344,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "mini_portile2@2.4.0",
-											Name:      "mini_portile2",
-											Version:   "2.4.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "mini_portile2@2.4.0",
+											Name:         "mini_portile2",
+											Version:      "2.4.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 71,
@@ -1329,11 +1358,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "minitest@5.11.3",
-											Name:      "minitest",
-											Version:   "5.11.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "minitest@5.11.3",
+											Name:         "minitest",
+											Version:      "5.11.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 72,
@@ -1342,11 +1372,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "nio4r@2.3.1",
-											Name:      "nio4r",
-											Version:   "2.3.1",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "nio4r@2.3.1",
+											Name:         "nio4r",
+											Version:      "2.3.1",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 73,
@@ -1355,11 +1386,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "nokogiri@1.10.3",
-											Name:      "nokogiri",
-											Version:   "1.10.3",
-											Indirect:  true,
-											DependsOn: []string{"mini_portile2@2.4.0"},
+											ID:           "nokogiri@1.10.3",
+											Name:         "nokogiri",
+											Version:      "1.10.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"mini_portile2@2.4.0"},
 											Locations: []types.Location{
 												{
 													StartLine: 74,
@@ -1368,11 +1400,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "parallel@1.17.0",
-											Name:      "parallel",
-											Version:   "1.17.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "parallel@1.17.0",
+											Name:         "parallel",
+											Version:      "1.17.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 76,
@@ -1381,11 +1414,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "parser@2.6.3.0",
-											Name:      "parser",
-											Version:   "2.6.3.0",
-											Indirect:  true,
-											DependsOn: []string{"ast@2.4.0"},
+											ID:           "parser@2.6.3.0",
+											Name:         "parser",
+											Version:      "2.6.3.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"ast@2.4.0"},
 											Locations: []types.Location{
 												{
 													StartLine: 77,
@@ -1394,10 +1428,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "pry@0.12.2",
-											Name:     "pry",
-											Version:  "0.12.2",
-											Indirect: false,
+											ID:           "pry@0.12.2",
+											Name:         "pry",
+											Version:      "0.12.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
 											DependsOn: []string{
 												"coderay@1.1.2",
 												"method_source@0.9.2",
@@ -1410,11 +1445,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "psych@3.1.0",
-											Name:      "psych",
-											Version:   "3.1.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "psych@3.1.0",
+											Name:         "psych",
+											Version:      "3.1.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 82,
@@ -1423,11 +1459,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rack@2.0.7",
-											Name:      "rack",
-											Version:   "2.0.7",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "rack@2.0.7",
+											Name:         "rack",
+											Version:      "2.0.7",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 83,
@@ -1436,11 +1473,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rack-test@1.1.0",
-											Name:      "rack-test",
-											Version:   "1.1.0",
-											Indirect:  true,
-											DependsOn: []string{"rack@2.0.7"},
+											ID:           "rack-test@1.1.0",
+											Name:         "rack-test",
+											Version:      "1.1.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"rack@2.0.7"},
 											Locations: []types.Location{
 												{
 													StartLine: 84,
@@ -1449,10 +1487,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "rails@5.2.0",
-											Name:     "rails",
-											Version:  "5.2.0",
-											Indirect: false,
+											ID:           "rails@5.2.0",
+											Name:         "rails",
+											Version:      "5.2.0",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
 											DependsOn: []string{
 												"actioncable@5.2.3",
 												"actionmailer@5.2.3",
@@ -1474,10 +1513,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "rails-dom-testing@2.0.3",
-											Name:     "rails-dom-testing",
-											Version:  "2.0.3",
-											Indirect: true,
+											ID:           "rails-dom-testing@2.0.3",
+											Name:         "rails-dom-testing",
+											Version:      "2.0.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"activesupport@5.2.3",
 												"nokogiri@1.10.3",
@@ -1490,11 +1530,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rails-html-sanitizer@1.0.3",
-											Name:      "rails-html-sanitizer",
-											Version:   "1.0.3",
-											Indirect:  true,
-											DependsOn: []string{"loofah@2.2.3"},
+											ID:           "rails-html-sanitizer@1.0.3",
+											Name:         "rails-html-sanitizer",
+											Version:      "1.0.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"loofah@2.2.3"},
 											Locations: []types.Location{
 												{
 													StartLine: 102,
@@ -1503,10 +1544,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "railties@5.2.3",
-											Name:     "railties",
-											Version:  "5.2.3",
-											Indirect: true,
+											ID:           "railties@5.2.3",
+											Name:         "railties",
+											Version:      "5.2.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"actionpack@5.2.3",
 												"activesupport@5.2.3",
@@ -1522,11 +1564,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rainbow@3.0.0",
-											Name:      "rainbow",
-											Version:   "3.0.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "rainbow@3.0.0",
+											Name:         "rainbow",
+											Version:      "3.0.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 110,
@@ -1535,11 +1578,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "rake@12.3.2",
-											Name:      "rake",
-											Version:   "12.3.2",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "rake@12.3.2",
+											Name:         "rake",
+											Version:      "12.3.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 111,
@@ -1548,10 +1592,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "rubocop@0.67.2",
-											Name:     "rubocop",
-											Version:  "0.67.2",
-											Indirect: false,
+											ID:           "rubocop@0.67.2",
+											Name:         "rubocop",
+											Version:      "0.67.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
 											DependsOn: []string{
 												"jaro_winkler@1.5.2",
 												"parallel@1.17.0",
@@ -1569,11 +1614,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "ruby-progressbar@1.10.0",
-											Name:      "ruby-progressbar",
-											Version:   "1.10.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "ruby-progressbar@1.10.0",
+											Name:         "ruby-progressbar",
+											Version:      "1.10.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 120,
@@ -1582,10 +1628,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "sprockets@3.7.2",
-											Name:     "sprockets",
-											Version:  "3.7.2",
-											Indirect: true,
+											ID:           "sprockets@3.7.2",
+											Name:         "sprockets",
+											Version:      "3.7.2",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"concurrent-ruby@1.1.5",
 												"rack@2.0.7",
@@ -1598,10 +1645,11 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:       "sprockets-rails@3.2.1",
-											Name:     "sprockets-rails",
-											Version:  "3.2.1",
-											Indirect: true,
+											ID:           "sprockets-rails@3.2.1",
+											Name:         "sprockets-rails",
+											Version:      "3.2.1",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
 											DependsOn: []string{
 												"actionpack@5.2.3",
 												"activesupport@5.2.3",
@@ -1615,11 +1663,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "thor@0.20.3",
-											Name:      "thor",
-											Version:   "0.20.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "thor@0.20.3",
+											Name:         "thor",
+											Version:      "0.20.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 128,
@@ -1628,11 +1677,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "thread_safe@0.3.6",
-											Name:      "thread_safe",
-											Version:   "0.3.6",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "thread_safe@0.3.6",
+											Name:         "thread_safe",
+											Version:      "0.3.6",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 129,
@@ -1641,11 +1691,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "tzinfo@1.2.5",
-											Name:      "tzinfo",
-											Version:   "1.2.5",
-											Indirect:  true,
-											DependsOn: []string{"thread_safe@0.3.6"},
+											ID:           "tzinfo@1.2.5",
+											Name:         "tzinfo",
+											Version:      "1.2.5",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"thread_safe@0.3.6"},
 											Locations: []types.Location{
 												{
 													StartLine: 130,
@@ -1654,11 +1705,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "unicode-display_width@1.5.0",
-											Name:      "unicode-display_width",
-											Version:   "1.5.0",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "unicode-display_width@1.5.0",
+											Name:         "unicode-display_width",
+											Version:      "1.5.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 132,
@@ -1667,11 +1719,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "websocket-driver@0.7.0",
-											Name:      "websocket-driver",
-											Version:   "0.7.0",
-											Indirect:  true,
-											DependsOn: []string{"websocket-extensions@0.1.3"},
+											ID:           "websocket-driver@0.7.0",
+											Name:         "websocket-driver",
+											Version:      "0.7.0",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string{"websocket-extensions@0.1.3"},
 											Locations: []types.Location{
 												{
 													StartLine: 133,
@@ -1680,11 +1733,12 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:        "websocket-extensions@0.1.3",
-											Name:      "websocket-extensions",
-											Version:   "0.1.3",
-											Indirect:  true,
-											DependsOn: []string(nil),
+											ID:           "websocket-extensions@0.1.3",
+											Name:         "websocket-extensions",
+											Version:      "0.1.3",
+											Indirect:     true,
+											Relationship: types.RelationshipIndirect,
+											DependsOn:    []string(nil),
 											Locations: []types.Location{
 												{
 													StartLine: 135,

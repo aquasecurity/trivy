@@ -30,6 +30,16 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/executable_gobinary",
 						Libraries: types.Packages{
 							{
+								Name:         "github.com/aquasecurity/test",
+								Version:      "",
+								Relationship: types.RelationshipRoot,
+							},
+							{
+								Name:         "stdlib",
+								Version:      "1.15.2",
+								Relationship: types.RelationshipDirect,
+							},
+							{
 								Name:    "github.com/aquasecurity/go-pep440-version",
 								Version: "v0.0.0-20210121094942-22b2f8951d46",
 							},
@@ -38,16 +48,8 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 								Version: "v0.0.0-20210121072130-637058cfe492",
 							},
 							{
-								Name:    "github.com/aquasecurity/test",
-								Version: "",
-							},
-							{
 								Name:    "golang.org/x/xerrors",
 								Version: "v0.0.0-20200804184101-5ec99f83aff1",
-							},
-							{
-								Name:    "stdlib",
-								Version: "1.15.2",
 							},
 						},
 					},

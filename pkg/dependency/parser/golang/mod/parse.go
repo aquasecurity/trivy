@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/xerrors"
@@ -84,6 +85,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		skipIndirect = lessThan117(modFileParsed.Go.Version)
 	}
 
+	// Required modules
 	for _, require := range modFileParsed.Require {
 		// Skip indirect dependencies less than Go 1.17
 		if skipIndirect && require.Indirect {
@@ -93,7 +95,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			ID:                 packageID(require.Mod.Path, require.Mod.Version[1:]),
 			Name:               require.Mod.Path,
 			Version:            require.Mod.Version[1:],
-			Indirect:           require.Indirect,
+			Relationship:       lo.Ternary(require.Indirect, types.RelationshipIndirect, types.RelationshipDirect),
 			ExternalReferences: p.GetExternalRefs(require.Mod.Path),
 		}
 	}
@@ -128,7 +130,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				ID:                 packageID(rep.New.Path, rep.New.Version[1:]),
 				Name:               rep.New.Path,
 				Version:            rep.New.Version[1:],
-				Indirect:           old.Indirect,
+				Relationship:       old.Relationship,
 				ExternalReferences: p.GetExternalRefs(rep.New.Path),
 			}
 		}

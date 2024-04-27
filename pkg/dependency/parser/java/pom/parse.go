@@ -117,7 +117,7 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 	queue := newArtifactQueue()
 
 	// Enqueue root POM
-	root.Root = true
+	root.Relationship = types.RelationshipRoot
 	root.Module = false
 	queue.enqueue(root)
 
@@ -160,8 +160,8 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 			}
 			// mark artifact as Direct, if saved artifact is Direct
 			// take a look `hard requirement for the specified version` test
-			if uniqueArt.Direct {
-				art.Direct = true
+			if uniqueArt.Relationship == types.RelationshipRoot || uniqueArt.Relationship == types.RelationshipDirect {
+				art.Relationship = uniqueArt.Relationship
 			}
 			// We don't need to overwrite dependency location for hard links
 			if uniqueArt.Locations != nil {
@@ -174,14 +174,13 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 			return nil, nil, xerrors.Errorf("resolve error (%s): %w", art, err)
 		}
 
-		if art.Root {
+		if art.Relationship == types.RelationshipRoot {
 			// Managed dependencies in the root POM affect transitive dependencies
 			rootDepManagement = p.resolveDepManagement(result.properties, result.dependencyManagement)
 
-			// mark root artifact and its dependencies as Direct
-			art.Direct = true
+			// mark its dependencies as "direct"
 			result.dependencies = lo.Map(result.dependencies, func(dep artifact, _ int) artifact {
-				dep.Direct = true
+				dep.Relationship = types.RelationshipDirect
 				return dep
 			})
 		}
@@ -205,11 +204,10 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 		if !art.IsEmpty() {
 			// Override the version
 			uniqArtifacts[art.Name()] = artifact{
-				Version:   art.Version,
-				Licenses:  result.artifact.Licenses,
-				Direct:    art.Direct,
-				Root:      art.Root,
-				Locations: art.Locations,
+				Version:      art.Version,
+				Licenses:     result.artifact.Licenses,
+				Relationship: art.Relationship,
+				Locations:    art.Locations,
 			}
 
 			// save only dependency names
@@ -224,12 +222,12 @@ func (p *parser) parseRoot(root artifact, uniqModules map[string]struct{}) ([]ty
 	// Convert to []types.Library and []types.Dependency
 	for name, art := range uniqArtifacts {
 		lib := types.Library{
-			ID:        packageID(name, art.Version.String()),
-			Name:      name,
-			Version:   art.Version.String(),
-			License:   art.JoinLicenses(),
-			Indirect:  !art.Direct,
-			Locations: art.Locations,
+			ID:           packageID(name, art.Version.String()),
+			Name:         name,
+			Version:      art.Version.String(),
+			License:      art.JoinLicenses(),
+			Relationship: art.Relationship,
+			Locations:    art.Locations,
 		}
 		libs = append(libs, lib)
 
@@ -275,7 +273,7 @@ func (p *parser) parseModule(currentPath, relativePath string) (artifact, error)
 	}
 
 	moduleArtifact := module.artifact()
-	moduleArtifact.Module = true
+	moduleArtifact.Module = true // TODO: introduce RelationshipModule?
 
 	p.cache.put(moduleArtifact, result)
 

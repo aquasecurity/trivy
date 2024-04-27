@@ -14,11 +14,11 @@ var (
 
 	npmV1Libs = []types.Library{
 		{
-			ID:       "@babel/helper-string-parser@7.19.4",
-			Name:     "@babel/helper-string-parser",
-			Version:  "7.19.4",
-			Dev:      false,
-			Indirect: true,
+			ID:           "@babel/helper-string-parser@7.19.4",
+			Name:         "@babel/helper-string-parser",
+			Version:      "7.19.4",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -33,11 +33,11 @@ var (
 			},
 		},
 		{
-			ID:       "asap@2.0.6",
-			Name:     "asap",
-			Version:  "2.0.6",
-			Dev:      false,
-			Indirect: true,
+			ID:           "asap@2.0.6",
+			Name:         "asap",
+			Version:      "2.0.6",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -52,11 +52,11 @@ var (
 			},
 		},
 		{
-			ID:       "body-parser@1.18.3",
-			Name:     "body-parser",
-			Version:  "1.18.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "body-parser@1.18.3",
+			Name:         "body-parser",
+			Version:      "1.18.3",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -71,11 +71,11 @@ var (
 			},
 		},
 		{
-			ID:       "bytes@3.0.0",
-			Name:     "bytes",
-			Version:  "3.0.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "bytes@3.0.0",
+			Name:         "bytes",
+			Version:      "3.0.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -90,11 +90,11 @@ var (
 			},
 		},
 		{
-			ID:       "content-type@1.0.5",
-			Name:     "content-type",
-			Version:  "1.0.5",
-			Dev:      false,
-			Indirect: true,
+			ID:           "content-type@1.0.5",
+			Name:         "content-type",
+			Version:      "1.0.5",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -109,11 +109,11 @@ var (
 			},
 		},
 		{
-			ID:       "debug@2.5.2",
-			Name:     "debug",
-			Version:  "2.5.2",
-			Dev:      true,
-			Indirect: true,
+			ID:           "debug@2.5.2",
+			Name:         "debug",
+			Version:      "2.5.2",
+			Dev:          true,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -128,11 +128,11 @@ var (
 			},
 		},
 		{
-			ID:       "debug@2.6.9",
-			Name:     "debug",
-			Version:  "2.6.9",
-			Dev:      false,
-			Indirect: true,
+			ID:           "debug@2.6.9",
+			Name:         "debug",
+			Version:      "2.6.9",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -151,11 +151,11 @@ var (
 			},
 		},
 		{
-			ID:       "depd@1.1.2",
-			Name:     "depd",
-			Version:  "1.1.2",
-			Dev:      false,
-			Indirect: true,
+			ID:           "depd@1.1.2",
+			Name:         "depd",
+			Version:      "1.1.2",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -170,11 +170,11 @@ var (
 			},
 		},
 		{
-			ID:       "ee-first@1.1.1",
-			Name:     "ee-first",
-			Version:  "1.1.1",
-			Dev:      false,
-			Indirect: true,
+			ID:           "ee-first@1.1.1",
+			Name:         "ee-first",
+			Version:      "1.1.1",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -189,11 +189,11 @@ var (
 			},
 		},
 		{
-			ID:       "encodeurl@1.0.2",
-			Name:     "encodeurl",
-			Version:  "1.0.2",
-			Dev:      false,
-			Indirect: true,
+			ID:           "encodeurl@1.0.2",
+			Name:         "encodeurl",
+			Version:      "1.0.2",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -208,11 +208,11 @@ var (
 			},
 		},
 		{
-			ID:       "escape-html@1.0.3",
-			Name:     "escape-html",
-			Version:  "1.0.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "escape-html@1.0.3",
+			Name:         "escape-html",
+			Version:      "1.0.3",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -227,11 +227,11 @@ var (
 			},
 		},
 		{
-			ID:       "finalhandler@1.1.1",
-			Name:     "finalhandler",
-			Version:  "1.1.1",
-			Dev:      false,
-			Indirect: true,
+			ID:           "finalhandler@1.1.1",
+			Name:         "finalhandler",
+			Version:      "1.1.1",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -246,11 +246,11 @@ var (
 			},
 		},
 		{
-			ID:       "http-errors@1.6.3",
-			Name:     "http-errors",
-			Version:  "1.6.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "http-errors@1.6.3",
+			Name:         "http-errors",
+			Version:      "1.6.3",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -265,11 +265,11 @@ var (
 			},
 		},
 		{
-			ID:       "iconv-lite@0.4.23",
-			Name:     "iconv-lite",
-			Version:  "0.4.23",
-			Dev:      false,
-			Indirect: true,
+			ID:           "iconv-lite@0.4.23",
+			Name:         "iconv-lite",
+			Version:      "0.4.23",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -284,11 +284,11 @@ var (
 			},
 		},
 		{
-			ID:       "inherits@2.0.3",
-			Name:     "inherits",
-			Version:  "2.0.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "inherits@2.0.3",
+			Name:         "inherits",
+			Version:      "2.0.3",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -303,11 +303,11 @@ var (
 			},
 		},
 		{
-			ID:       "media-typer@0.3.0",
-			Name:     "media-typer",
-			Version:  "0.3.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "media-typer@0.3.0",
+			Name:         "media-typer",
+			Version:      "0.3.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -322,11 +322,11 @@ var (
 			},
 		},
 		{
-			ID:       "mime-db@1.52.0",
-			Name:     "mime-db",
-			Version:  "1.52.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "mime-db@1.52.0",
+			Name:         "mime-db",
+			Version:      "1.52.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -341,11 +341,11 @@ var (
 			},
 		},
 		{
-			ID:       "mime-types@2.1.35",
-			Name:     "mime-types",
-			Version:  "2.1.35",
-			Dev:      false,
-			Indirect: true,
+			ID:           "mime-types@2.1.35",
+			Name:         "mime-types",
+			Version:      "2.1.35",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -360,11 +360,11 @@ var (
 			},
 		},
 		{
-			ID:       "ms@0.7.2",
-			Name:     "ms",
-			Version:  "0.7.2",
-			Dev:      true,
-			Indirect: true,
+			ID:           "ms@0.7.2",
+			Name:         "ms",
+			Version:      "0.7.2",
+			Dev:          true,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -379,11 +379,11 @@ var (
 			},
 		},
 		{
-			ID:       "ms@1.0.0",
-			Name:     "ms",
-			Version:  "1.0.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "ms@1.0.0",
+			Name:         "ms",
+			Version:      "1.0.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -398,11 +398,11 @@ var (
 			},
 		},
 		{
-			ID:       "ms@2.0.0",
-			Name:     "ms",
-			Version:  "2.0.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "ms@2.0.0",
+			Name:         "ms",
+			Version:      "2.0.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -421,11 +421,11 @@ var (
 			},
 		},
 		{
-			ID:       "on-finished@2.3.0",
-			Name:     "on-finished",
-			Version:  "2.3.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "on-finished@2.3.0",
+			Name:         "on-finished",
+			Version:      "2.3.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -440,11 +440,11 @@ var (
 			},
 		},
 		{
-			ID:       "parseurl@1.3.3",
-			Name:     "parseurl",
-			Version:  "1.3.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "parseurl@1.3.3",
+			Name:         "parseurl",
+			Version:      "1.3.3",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -459,11 +459,11 @@ var (
 			},
 		},
 		{
-			ID:       "promise@8.3.0",
-			Name:     "promise",
-			Version:  "8.3.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "promise@8.3.0",
+			Name:         "promise",
+			Version:      "8.3.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -478,11 +478,11 @@ var (
 			},
 		},
 		{
-			ID:       "qs@6.5.2",
-			Name:     "qs",
-			Version:  "6.5.2",
-			Dev:      false,
-			Indirect: true,
+			ID:           "qs@6.5.2",
+			Name:         "qs",
+			Version:      "6.5.2",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -497,11 +497,11 @@ var (
 			},
 		},
 		{
-			ID:       "raw-body@2.3.3",
-			Name:     "raw-body",
-			Version:  "2.3.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "raw-body@2.3.3",
+			Name:         "raw-body",
+			Version:      "2.3.3",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -516,11 +516,11 @@ var (
 			},
 		},
 		{
-			ID:       "safer-buffer@2.1.2",
-			Name:     "safer-buffer",
-			Version:  "2.1.2",
-			Dev:      false,
-			Indirect: true,
+			ID:           "safer-buffer@2.1.2",
+			Name:         "safer-buffer",
+			Version:      "2.1.2",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -535,11 +535,11 @@ var (
 			},
 		},
 		{
-			ID:       "setprototypeof@1.1.0",
-			Name:     "setprototypeof",
-			Version:  "1.1.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "setprototypeof@1.1.0",
+			Name:         "setprototypeof",
+			Version:      "1.1.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -554,11 +554,11 @@ var (
 			},
 		},
 		{
-			ID:       "statuses@1.4.0",
-			Name:     "statuses",
-			Version:  "1.4.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "statuses@1.4.0",
+			Name:         "statuses",
+			Version:      "1.4.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -573,11 +573,11 @@ var (
 			},
 		},
 		{
-			ID:       "type-is@1.6.18",
-			Name:     "type-is",
-			Version:  "1.6.18",
-			Dev:      false,
-			Indirect: true,
+			ID:           "type-is@1.6.18",
+			Name:         "type-is",
+			Version:      "1.6.18",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -592,11 +592,11 @@ var (
 			},
 		},
 		{
-			ID:       "unpipe@1.0.0",
-			Name:     "unpipe",
-			Version:  "1.0.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "unpipe@1.0.0",
+			Name:         "unpipe",
+			Version:      "1.0.0",
+			Dev:          false,
+			Relationship: types.RelationshipUnknown,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -701,11 +701,11 @@ var (
 	// same as npmV2Libs.
 	npmV2Libs = []types.Library{
 		{
-			ID:       "@babel/helper-string-parser@7.19.4",
-			Name:     "@babel/helper-string-parser",
-			Version:  "7.19.4",
-			Dev:      false,
-			Indirect: false,
+			ID:           "@babel/helper-string-parser@7.19.4",
+			Name:         "@babel/helper-string-parser",
+			Version:      "7.19.4",
+			Dev:          false,
+			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -720,30 +720,11 @@ var (
 			},
 		},
 		{
-			ID:       "asap@2.0.6",
-			Name:     "asap",
-			Version:  "2.0.6",
-			Dev:      false,
-			Indirect: true,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 32,
-					EndLine:   37,
-				},
-			},
-		},
-		{
-			ID:       "body-parser@1.18.3",
-			Name:     "body-parser",
-			Version:  "1.18.3",
-			Dev:      false,
-			Indirect: false,
+			ID:           "body-parser@1.18.3",
+			Name:         "body-parser",
+			Version:      "1.18.3",
+			Dev:          false,
+			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -758,49 +739,11 @@ var (
 			},
 		},
 		{
-			ID:       "bytes@3.0.0",
-			Name:     "bytes",
-			Version:  "3.0.0",
-			Dev:      false,
-			Indirect: true,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/bytes/-/bytes-3.0.0.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 71,
-					EndLine:   78,
-				},
-			},
-		},
-		{
-			ID:       "content-type@1.0.5",
-			Name:     "content-type",
-			Version:  "1.0.5",
-			Dev:      false,
-			Indirect: true,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 79,
-					EndLine:   86,
-				},
-			},
-		},
-		{
-			ID:       "debug@2.5.2",
-			Name:     "debug",
-			Version:  "2.5.2",
-			Dev:      true,
-			Indirect: false,
+			ID:           "debug@2.5.2",
+			Name:         "debug",
+			Version:      "2.5.2",
+			Dev:          true,
+			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -815,11 +758,125 @@ var (
 			},
 		},
 		{
-			ID:       "debug@2.6.9",
-			Name:     "debug",
-			Version:  "2.6.9",
-			Dev:      false,
-			Indirect: true,
+			ID:           "finalhandler@1.1.1",
+			Name:         "finalhandler",
+			Version:      "1.1.1",
+			Dev:          false,
+			Relationship: types.RelationshipDirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/finalhandler/-/finalhandler-1.1.1.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 128,
+					EndLine:   144,
+				},
+			},
+		},
+		{
+			ID:           "ms@1.0.0",
+			Name:         "ms",
+			Version:      "1.0.0",
+			Dev:          false,
+			Relationship: types.RelationshipDirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/ms/-/ms-1.0.0.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 215,
+					EndLine:   219,
+				},
+			},
+		},
+		{
+			ID:           "promise@8.3.0",
+			Name:         "promise",
+			Version:      "8.3.0",
+			Dev:          false,
+			Relationship: types.RelationshipDirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/promise/-/promise-8.3.0.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 239,
+					EndLine:   247,
+				},
+			},
+		},
+		{
+			ID:           "asap@2.0.6",
+			Name:         "asap",
+			Version:      "2.0.6",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 32,
+					EndLine:   37,
+				},
+			},
+		},
+		{
+			ID:           "bytes@3.0.0",
+			Name:         "bytes",
+			Version:      "3.0.0",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/bytes/-/bytes-3.0.0.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 71,
+					EndLine:   78,
+				},
+			},
+		},
+		{
+			ID:           "content-type@1.0.5",
+			Name:         "content-type",
+			Version:      "1.0.5",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 79,
+					EndLine:   86,
+				},
+			},
+		},
+		{
+			ID:           "debug@2.6.9",
+			Name:         "debug",
+			Version:      "2.6.9",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -838,11 +895,11 @@ var (
 			},
 		},
 		{
-			ID:       "depd@1.1.2",
-			Name:     "depd",
-			Version:  "1.1.2",
-			Dev:      false,
-			Indirect: true,
+			ID:           "depd@1.1.2",
+			Name:         "depd",
+			Version:      "1.1.2",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -857,11 +914,11 @@ var (
 			},
 		},
 		{
-			ID:       "ee-first@1.1.1",
-			Name:     "ee-first",
-			Version:  "1.1.1",
-			Dev:      false,
-			Indirect: true,
+			ID:           "ee-first@1.1.1",
+			Name:         "ee-first",
+			Version:      "1.1.1",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -876,11 +933,11 @@ var (
 			},
 		},
 		{
-			ID:       "encodeurl@1.0.2",
-			Name:     "encodeurl",
-			Version:  "1.0.2",
-			Dev:      false,
-			Indirect: true,
+			ID:           "encodeurl@1.0.2",
+			Name:         "encodeurl",
+			Version:      "1.0.2",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -895,11 +952,11 @@ var (
 			},
 		},
 		{
-			ID:       "escape-html@1.0.3",
-			Name:     "escape-html",
-			Version:  "1.0.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "escape-html@1.0.3",
+			Name:         "escape-html",
+			Version:      "1.0.3",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -914,30 +971,11 @@ var (
 			},
 		},
 		{
-			ID:       "finalhandler@1.1.1",
-			Name:     "finalhandler",
-			Version:  "1.1.1",
-			Dev:      false,
-			Indirect: false,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/finalhandler/-/finalhandler-1.1.1.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 128,
-					EndLine:   144,
-				},
-			},
-		},
-		{
-			ID:       "http-errors@1.6.3",
-			Name:     "http-errors",
-			Version:  "1.6.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "http-errors@1.6.3",
+			Name:         "http-errors",
+			Version:      "1.6.3",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -952,11 +990,11 @@ var (
 			},
 		},
 		{
-			ID:       "iconv-lite@0.4.23",
-			Name:     "iconv-lite",
-			Version:  "0.4.23",
-			Dev:      false,
-			Indirect: true,
+			ID:           "iconv-lite@0.4.23",
+			Name:         "iconv-lite",
+			Version:      "0.4.23",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -971,11 +1009,11 @@ var (
 			},
 		},
 		{
-			ID:       "inherits@2.0.3",
-			Name:     "inherits",
-			Version:  "2.0.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "inherits@2.0.3",
+			Name:         "inherits",
+			Version:      "2.0.3",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -990,11 +1028,11 @@ var (
 			},
 		},
 		{
-			ID:       "media-typer@0.3.0",
-			Name:     "media-typer",
-			Version:  "0.3.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "media-typer@0.3.0",
+			Name:         "media-typer",
+			Version:      "0.3.0",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1009,11 +1047,11 @@ var (
 			},
 		},
 		{
-			ID:       "mime-db@1.52.0",
-			Name:     "mime-db",
-			Version:  "1.52.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "mime-db@1.52.0",
+			Name:         "mime-db",
+			Version:      "1.52.0",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1028,11 +1066,11 @@ var (
 			},
 		},
 		{
-			ID:       "mime-types@2.1.35",
-			Name:     "mime-types",
-			Version:  "2.1.35",
-			Dev:      false,
-			Indirect: true,
+			ID:           "mime-types@2.1.35",
+			Name:         "mime-types",
+			Version:      "2.1.35",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1047,11 +1085,11 @@ var (
 			},
 		},
 		{
-			ID:       "ms@0.7.2",
-			Name:     "ms",
-			Version:  "0.7.2",
-			Dev:      true,
-			Indirect: true,
+			ID:           "ms@0.7.2",
+			Name:         "ms",
+			Version:      "0.7.2",
+			Dev:          true,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1066,30 +1104,11 @@ var (
 			},
 		},
 		{
-			ID:       "ms@1.0.0",
-			Name:     "ms",
-			Version:  "1.0.0",
-			Dev:      false,
-			Indirect: false,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/ms/-/ms-1.0.0.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 215,
-					EndLine:   219,
-				},
-			},
-		},
-		{
-			ID:       "ms@2.0.0",
-			Name:     "ms",
-			Version:  "2.0.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "ms@2.0.0",
+			Name:         "ms",
+			Version:      "2.0.0",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1108,11 +1127,11 @@ var (
 			},
 		},
 		{
-			ID:       "on-finished@2.3.0",
-			Name:     "on-finished",
-			Version:  "2.3.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "on-finished@2.3.0",
+			Name:         "on-finished",
+			Version:      "2.3.0",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1127,11 +1146,11 @@ var (
 			},
 		},
 		{
-			ID:       "parseurl@1.3.3",
-			Name:     "parseurl",
-			Version:  "1.3.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "parseurl@1.3.3",
+			Name:         "parseurl",
+			Version:      "1.3.3",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1146,30 +1165,11 @@ var (
 			},
 		},
 		{
-			ID:       "promise@8.3.0",
-			Name:     "promise",
-			Version:  "8.3.0",
-			Dev:      false,
-			Indirect: false,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/promise/-/promise-8.3.0.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 239,
-					EndLine:   247,
-				},
-			},
-		},
-		{
-			ID:       "qs@6.5.2",
-			Name:     "qs",
-			Version:  "6.5.2",
-			Dev:      false,
-			Indirect: true,
+			ID:           "qs@6.5.2",
+			Name:         "qs",
+			Version:      "6.5.2",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1184,11 +1184,11 @@ var (
 			},
 		},
 		{
-			ID:       "raw-body@2.3.3",
-			Name:     "raw-body",
-			Version:  "2.3.3",
-			Dev:      false,
-			Indirect: true,
+			ID:           "raw-body@2.3.3",
+			Name:         "raw-body",
+			Version:      "2.3.3",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1203,11 +1203,11 @@ var (
 			},
 		},
 		{
-			ID:       "safer-buffer@2.1.2",
-			Name:     "safer-buffer",
-			Version:  "2.1.2",
-			Dev:      false,
-			Indirect: true,
+			ID:           "safer-buffer@2.1.2",
+			Name:         "safer-buffer",
+			Version:      "2.1.2",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1222,11 +1222,11 @@ var (
 			},
 		},
 		{
-			ID:       "setprototypeof@1.1.0",
-			Name:     "setprototypeof",
-			Version:  "1.1.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "setprototypeof@1.1.0",
+			Name:         "setprototypeof",
+			Version:      "1.1.0",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1241,11 +1241,11 @@ var (
 			},
 		},
 		{
-			ID:       "statuses@1.4.0",
-			Name:     "statuses",
-			Version:  "1.4.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "statuses@1.4.0",
+			Name:         "statuses",
+			Version:      "1.4.0",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1260,11 +1260,11 @@ var (
 			},
 		},
 		{
-			ID:       "type-is@1.6.18",
-			Name:     "type-is",
-			Version:  "1.6.18",
-			Dev:      false,
-			Indirect: true,
+			ID:           "type-is@1.6.18",
+			Name:         "type-is",
+			Version:      "1.6.18",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1279,11 +1279,11 @@ var (
 			},
 		},
 		{
-			ID:       "unpipe@1.0.0",
-			Name:     "unpipe",
-			Version:  "1.0.0",
-			Dev:      false,
-			Indirect: true,
+			ID:           "unpipe@1.0.0",
+			Name:         "unpipe",
+			Version:      "1.0.0",
+			Dev:          false,
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1315,10 +1315,10 @@ var (
 	// libraries are filled manually
 	npmV3WithWorkspaceLibs = []types.Library{
 		{
-			ID:       "debug@2.5.2",
-			Name:     "debug",
-			Version:  "2.5.2",
-			Indirect: false,
+			ID:           "debug@2.5.2",
+			Name:         "debug",
+			Version:      "2.5.2",
+			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1333,28 +1333,10 @@ var (
 			},
 		},
 		{
-			ID:       "debug@2.6.9",
-			Name:     "debug",
-			Version:  "2.6.9",
-			Indirect: true,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 31,
-					EndLine:   38,
-				},
-			},
-		},
-		{
-			ID:       "function1",
-			Name:     "function1",
-			Version:  "",
-			Indirect: false,
+			ID:           "function1",
+			Name:         "function1",
+			Version:      "",
+			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1369,10 +1351,46 @@ var (
 			},
 		},
 		{
-			ID:       "ms@0.7.2",
-			Name:     "ms",
-			Version:  "0.7.2",
-			Indirect: true,
+			ID:           "nested_func@1.0.0",
+			Name:         "nested_func",
+			Version:      "1.0.0",
+			Relationship: types.RelationshipDirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "functions/nested_func",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 24,
+					EndLine:   30,
+				},
+			},
+		},
+		{
+			ID:           "debug@2.6.9",
+			Name:         "debug",
+			Version:      "2.6.9",
+			Relationship: types.RelationshipIndirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 31,
+					EndLine:   38,
+				},
+			},
+		},
+		{
+			ID:           "ms@0.7.2",
+			Name:         "ms",
+			Version:      "0.7.2",
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1387,10 +1405,10 @@ var (
 			},
 		},
 		{
-			ID:       "ms@2.0.0",
-			Name:     "ms",
-			Version:  "2.0.0",
-			Indirect: true,
+			ID:           "ms@2.0.0",
+			Name:         "ms",
+			Version:      "2.0.0",
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1401,24 +1419,6 @@ var (
 				{
 					StartLine: 56,
 					EndLine:   60,
-				},
-			},
-		},
-		{
-			ID:       "nested_func@1.0.0",
-			Name:     "nested_func",
-			Version:  "1.0.0",
-			Indirect: false,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "functions/nested_func",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 24,
-					EndLine:   30,
 				},
 			},
 		},
@@ -1451,28 +1451,10 @@ var (
 	// libraries are filled manually
 	npmV3WithoutRootDepsField = []types.Library{
 		{
-			ID:       "debug@2.6.9",
-			Name:     "debug",
-			Version:  "2.6.9",
-			Indirect: true,
-			ExternalReferences: []types.ExternalRef{
-				{
-					Type: types.RefOther,
-					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
-				},
-			},
-			Locations: []types.Location{
-				{
-					StartLine: 22,
-					EndLine:   29,
-				},
-			},
-		},
-		{
-			ID:       "func1@1.0.0",
-			Name:     "func1",
-			Version:  "1.0.0",
-			Indirect: false,
+			ID:           "func1@1.0.0",
+			Name:         "func1",
+			Version:      "1.0.0",
+			Relationship: types.RelationshipDirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1487,10 +1469,28 @@ var (
 			},
 		},
 		{
-			ID:       "ms@2.0.0",
-			Name:     "ms",
-			Version:  "2.0.0",
-			Indirect: true,
+			ID:           "debug@2.6.9",
+			Name:         "debug",
+			Version:      "2.6.9",
+			Relationship: types.RelationshipIndirect,
+			ExternalReferences: []types.ExternalRef{
+				{
+					Type: types.RefOther,
+					URL:  "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+				},
+			},
+			Locations: []types.Location{
+				{
+					StartLine: 22,
+					EndLine:   29,
+				},
+			},
+		},
+		{
+			ID:           "ms@2.0.0",
+			Name:         "ms",
+			Version:      "2.0.0",
+			Relationship: types.RelationshipIndirect,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1519,10 +1519,11 @@ var (
 
 	npmV3WithSameDevAndNonDevLibs = []types.Library{
 		{
-			ID:      "fsevents@1.2.9",
-			Name:    "fsevents",
-			Version: "1.2.9",
-			Dev:     true,
+			ID:           "fsevents@1.2.9",
+			Name:         "fsevents",
+			Version:      "1.2.9",
+			Relationship: types.RelationshipDirect,
+			Dev:          true,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1537,11 +1538,11 @@ var (
 			},
 		},
 		{
-			ID:       "minimist@0.0.8",
-			Name:     "minimist",
-			Version:  "0.0.8",
-			Indirect: false,
-			Dev:      false,
+			ID:           "minimist@0.0.8",
+			Name:         "minimist",
+			Version:      "0.0.8",
+			Relationship: types.RelationshipDirect,
+			Dev:          false,
 			ExternalReferences: []types.ExternalRef{
 				{
 					Type: types.RefOther,
@@ -1560,11 +1561,11 @@ var (
 			},
 		},
 		{
-			ID:       "mkdirp@0.5.1",
-			Name:     "mkdirp",
-			Version:  "0.5.1",
-			Indirect: true,
-			Dev:      true,
+			ID:           "mkdirp@0.5.1",
+			Name:         "mkdirp",
+			Version:      "0.5.1",
+			Relationship: types.RelationshipIndirect,
+			Dev:          true,
 			Locations: []types.Location{
 				{
 					StartLine: 44,
@@ -1573,11 +1574,11 @@ var (
 			},
 		},
 		{
-			ID:       "node-pre-gyp@0.12.0",
-			Name:     "node-pre-gyp",
-			Version:  "0.12.0",
-			Indirect: true,
-			Dev:      true,
+			ID:           "node-pre-gyp@0.12.0",
+			Name:         "node-pre-gyp",
+			Version:      "0.12.0",
+			Relationship: types.RelationshipIndirect,
+			Dev:          true,
 			Locations: []types.Location{
 				{
 					StartLine: 56,

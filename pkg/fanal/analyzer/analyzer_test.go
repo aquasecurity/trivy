@@ -380,10 +380,11 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/app/Gemfile.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "actioncable@5.2.3",
-								Name:     "actioncable",
-								Version:  "5.2.3",
-								Indirect: false,
+								ID:           "actioncable@5.2.3",
+								Name:         "actioncable",
+								Version:      "5.2.3",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"actionpack@5.2.3",
 								},
@@ -395,10 +396,11 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								},
 							},
 							{
-								ID:       "actionpack@5.2.3",
-								Name:     "actionpack",
-								Version:  "5.2.3",
-								Indirect: true,
+								ID:           "actionpack@5.2.3",
+								Name:         "actionpack",
+								Version:      "5.2.3",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
 										StartLine: 6,
@@ -441,10 +443,11 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/app/Gemfile-dev.lock",
 						Libraries: types.Packages{
 							{
-								ID:       "actioncable@5.2.3",
-								Name:     "actioncable",
-								Version:  "5.2.3",
-								Indirect: false,
+								ID:           "actioncable@5.2.3",
+								Name:         "actioncable",
+								Version:      "5.2.3",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"actionpack@5.2.3",
 								},
@@ -456,10 +459,11 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								},
 							},
 							{
-								ID:       "actionpack@5.2.3",
-								Name:     "actionpack",
-								Version:  "5.2.3",
-								Indirect: true,
+								ID:           "actionpack@5.2.3",
+								Name:         "actionpack",
+								Version:      "5.2.3",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
 										StartLine: 6,

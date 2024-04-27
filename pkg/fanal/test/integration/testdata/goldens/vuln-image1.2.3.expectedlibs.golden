@@ -11,6 +11,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "actionpack@5.2.3",
           "nio4r@2.3.1",
@@ -32,6 +33,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "actionpack@5.2.3",
           "actionview@5.2.3",
@@ -55,6 +57,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "actionview@5.2.3",
           "activesupport@5.2.3",
@@ -79,6 +82,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "activesupport@5.2.3",
           "builder@3.2.3",
@@ -102,6 +106,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "activesupport@5.2.3",
           "globalid@0.4.2"
@@ -122,6 +127,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "activesupport@5.2.3"
         ],
@@ -141,6 +147,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "activemodel@5.2.3",
           "activesupport@5.2.3",
@@ -162,6 +169,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "actionpack@5.2.3",
           "activerecord@5.2.3",
@@ -183,6 +191,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "concurrent-ruby@1.1.5",
           "i18n@1.6.0",
@@ -205,6 +214,7 @@
         },
         "Version": "9.0.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -221,6 +231,7 @@
         },
         "Version": "2.4.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -237,6 +248,7 @@
         },
         "Version": "3.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -253,6 +265,7 @@
         },
         "Version": "1.1.2",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -269,6 +282,7 @@
         },
         "Version": "1.1.5",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -285,6 +299,7 @@
         },
         "Version": "1.0.4",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -300,6 +315,7 @@
           "PURL": "pkg:gem/dotenv@2.7.2"
         },
         "Version": "2.7.2",
+        "Relationship": "direct",
         "Layer": {},
         "Locations": [
           {
@@ -316,6 +332,7 @@
         },
         "Version": "1.8.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -331,6 +348,7 @@
           "PURL": "pkg:gem/faker@1.9.3"
         },
         "Version": "1.9.3",
+        "Relationship": "direct",
         "DependsOn": [
           "i18n@1.6.0"
         ],
@@ -350,6 +368,7 @@
         },
         "Version": "0.4.2",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "activesupport@5.2.3"
         ],
@@ -369,6 +388,7 @@
         },
         "Version": "1.6.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "concurrent-ruby@1.1.5"
         ],
@@ -388,6 +408,7 @@
         },
         "Version": "1.5.2",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -403,6 +424,7 @@
           "PURL": "pkg:gem/json@2.2.0"
         },
         "Version": "2.2.0",
+        "Relationship": "direct",
         "Layer": {},
         "Locations": [
           {
@@ -419,6 +441,7 @@
         },
         "Version": "2.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "crass@1.0.4",
           "nokogiri@1.10.3"
@@ -439,6 +462,7 @@
         },
         "Version": "2.7.1",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "mini_mime@1.0.1"
         ],
@@ -458,6 +482,7 @@
         },
         "Version": "0.3.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "mimemagic@0.3.3"
         ],
@@ -477,6 +502,7 @@
         },
         "Version": "0.9.2",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -493,6 +519,7 @@
         },
         "Version": "0.3.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -509,6 +536,7 @@
         },
         "Version": "1.0.1",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -525,6 +553,7 @@
         },
         "Version": "2.4.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -541,6 +570,7 @@
         },
         "Version": "5.11.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -557,6 +587,7 @@
         },
         "Version": "2.3.1",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -573,6 +604,7 @@
         },
         "Version": "1.10.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "mini_portile2@2.4.0"
         ],
@@ -592,6 +624,7 @@
         },
         "Version": "1.17.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -608,6 +641,7 @@
         },
         "Version": "2.6.3.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "ast@2.4.0"
         ],
@@ -626,6 +660,7 @@
           "PURL": "pkg:gem/pry@0.12.2"
         },
         "Version": "0.12.2",
+        "Relationship": "direct",
         "DependsOn": [
           "coderay@1.1.2",
           "method_source@0.9.2"
@@ -646,6 +681,7 @@
         },
         "Version": "3.1.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -662,6 +698,7 @@
         },
         "Version": "2.0.7",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -678,6 +715,7 @@
         },
         "Version": "1.1.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "rack@2.0.7"
         ],
@@ -696,6 +734,7 @@
           "PURL": "pkg:gem/rails@5.2.0"
         },
         "Version": "5.2.0",
+        "Relationship": "direct",
         "DependsOn": [
           "actioncable@5.2.3",
           "actionmailer@5.2.3",
@@ -725,6 +764,7 @@
         },
         "Version": "2.0.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "activesupport@5.2.3",
           "nokogiri@1.10.3"
@@ -745,6 +785,7 @@
         },
         "Version": "1.0.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "loofah@2.2.3"
         ],
@@ -764,6 +805,7 @@
         },
         "Version": "5.2.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "actionpack@5.2.3",
           "activesupport@5.2.3",
@@ -787,6 +829,7 @@
         },
         "Version": "3.0.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -803,6 +846,7 @@
         },
         "Version": "12.3.2",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -818,6 +862,7 @@
           "PURL": "pkg:gem/rubocop@0.67.2"
         },
         "Version": "0.67.2",
+        "Relationship": "direct",
         "DependsOn": [
           "jaro_winkler@1.5.2",
           "parallel@1.17.0",
@@ -843,6 +888,7 @@
         },
         "Version": "1.10.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -859,6 +905,7 @@
         },
         "Version": "3.7.2",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "concurrent-ruby@1.1.5",
           "rack@2.0.7"
@@ -879,6 +926,7 @@
         },
         "Version": "3.2.1",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "actionpack@5.2.3",
           "activesupport@5.2.3",
@@ -900,6 +948,7 @@
         },
         "Version": "0.20.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -916,6 +965,7 @@
         },
         "Version": "0.3.6",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -932,6 +982,7 @@
         },
         "Version": "1.2.5",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "thread_safe@0.3.6"
         ],
@@ -951,6 +1002,7 @@
         },
         "Version": "1.5.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -967,6 +1019,7 @@
         },
         "Version": "0.7.0",
         "Indirect": true,
+        "Relationship": "indirect",
         "DependsOn": [
           "websocket-extensions@0.1.3"
         ],
@@ -986,6 +1039,7 @@
         },
         "Version": "0.1.3",
         "Indirect": true,
+        "Relationship": "indirect",
         "Layer": {},
         "Locations": [
           {
@@ -2627,7 +2681,6 @@
           "PURL": "pkg:npm/asap@2.0.6"
         },
         "Version": "2.0.6",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2643,7 +2696,6 @@
           "PURL": "pkg:npm/jquery@3.3.9"
         },
         "Version": "3.3.9",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2659,7 +2711,6 @@
           "PURL": "pkg:npm/js-tokens@4.0.0"
         },
         "Version": "4.0.0",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2675,7 +2726,6 @@
           "PURL": "pkg:npm/lodash@4.17.4"
         },
         "Version": "4.17.4",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2691,7 +2741,6 @@
           "PURL": "pkg:npm/loose-envify@1.4.0"
         },
         "Version": "1.4.0",
-        "Indirect": true,
         "DependsOn": [
           "js-tokens@4.0.0"
         ],
@@ -2710,7 +2759,6 @@
           "PURL": "pkg:npm/object-assign@4.1.1"
         },
         "Version": "4.1.1",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2726,7 +2774,6 @@
           "PURL": "pkg:npm/promise@8.0.3"
         },
         "Version": "8.0.3",
-        "Indirect": true,
         "DependsOn": [
           "asap@2.0.6"
         ],
@@ -2745,7 +2792,6 @@
           "PURL": "pkg:npm/prop-types@15.7.2"
         },
         "Version": "15.7.2",
-        "Indirect": true,
         "DependsOn": [
           "loose-envify@1.4.0",
           "object-assign@4.1.1",
@@ -2766,7 +2812,6 @@
           "PURL": "pkg:npm/react@16.8.6"
         },
         "Version": "16.8.6",
-        "Indirect": true,
         "DependsOn": [
           "loose-envify@1.4.0",
           "object-assign@4.1.1",
@@ -2788,7 +2833,6 @@
           "PURL": "pkg:npm/react-is@16.8.6"
         },
         "Version": "16.8.6",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {
@@ -2804,7 +2848,6 @@
           "PURL": "pkg:npm/redux@4.0.1"
         },
         "Version": "4.0.1",
-        "Indirect": true,
         "DependsOn": [
           "loose-envify@1.4.0",
           "symbol-observable@1.2.0"
@@ -2824,7 +2867,6 @@
           "PURL": "pkg:npm/scheduler@0.13.6"
         },
         "Version": "0.13.6",
-        "Indirect": true,
         "DependsOn": [
           "loose-envify@1.4.0",
           "object-assign@4.1.1"
@@ -2844,7 +2886,6 @@
           "PURL": "pkg:npm/symbol-observable@1.2.0"
         },
         "Version": "1.2.0",
-        "Indirect": true,
         "Layer": {},
         "Locations": [
           {

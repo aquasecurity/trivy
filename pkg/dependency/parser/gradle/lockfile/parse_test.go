@@ -21,10 +21,9 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/happy.lockfile",
 			want: []types.Library{
 				{
-					ID:       "cglib:cglib-nodep:2.1.2",
-					Name:     "cglib:cglib-nodep",
-					Version:  "2.1.2",
-					Indirect: true,
+					ID:      "cglib:cglib-nodep:2.1.2",
+					Name:    "cglib:cglib-nodep",
+					Version: "2.1.2",
 					Locations: []types.Location{
 						{
 							StartLine: 4,
@@ -33,10 +32,9 @@ func TestParser_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:       "org.springframework:spring-asm:3.1.3.RELEASE",
-					Name:     "org.springframework:spring-asm",
-					Version:  "3.1.3.RELEASE",
-					Indirect: true,
+					ID:      "org.springframework:spring-asm:3.1.3.RELEASE",
+					Name:    "org.springframework:spring-asm",
+					Version: "3.1.3.RELEASE",
 					Locations: []types.Location{
 						{
 							StartLine: 5,
@@ -45,10 +43,9 @@ func TestParser_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:       "org.springframework:spring-beans:5.0.5.RELEASE",
-					Name:     "org.springframework:spring-beans",
-					Version:  "5.0.5.RELEASE",
-					Indirect: true,
+					ID:      "org.springframework:spring-beans:5.0.5.RELEASE",
+					Name:    "org.springframework:spring-beans",
+					Version: "5.0.5.RELEASE",
 					Locations: []types.Location{
 						{
 							StartLine: 6,
