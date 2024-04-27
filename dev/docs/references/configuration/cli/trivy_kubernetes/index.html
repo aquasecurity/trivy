@@ -2898,6 +2898,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#synopsis" class="md-nav__link">
+    Synopsis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     Examples
   </a>
@@ -3604,6 +3611,13 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#synopsis" class="md-nav__link">
+    Synopsis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     Examples
   </a>
@@ -3658,25 +3672,22 @@ You're not viewing the latest version.
 
 <h2 id="trivy-kubernetes">trivy kubernetes</h2>
 <p>[EXPERIMENTAL] Scan kubernetes cluster</p>
-<div class="highlight"><pre><span></span><code>trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }
+<h3 id="synopsis">Synopsis</h3>
+<p>Default context in kube configuration will be used unless specified</p>
+<div class="highlight"><pre><span></span><code>trivy kubernetes [flags] [CONTEXT]
 </code></pre></div>
 <h3 id="examples">Examples</h3>
 <div class="highlight"><pre><span></span><code>  # cluster scanning
-  $ trivy k8s --report summary cluster
+  $ trivy k8s --report summary
 
-  # namespace scanning:
-  $ trivy k8s -n kube-system --report summary all
+  # cluster scanning with specific namespace:
+  $ trivy k8s --include-namespaces kube-system --report summary 
 
-  # resources scanning:
-  $ trivy k8s --report=summary deploy
-  $ trivy k8s --namespace=kube-system --report=summary deploy,configmaps
-
-  # resource scanning:
-  $ trivy k8s deployment/orion
+  # cluster with specific context:
+  $ trivy k8s kind-kind --report summary 
 </code></pre></div>
 <h3 id="options">Options</h3>
-<div class="highlight"><pre><span></span><code>  -A, --all-namespaces                    fetch resources from all cluster namespaces
-      --burst int                         specify the maximum burst for throttle (default 10)
+<div class="highlight"><pre><span></span><code>      --burst int                         specify the maximum burst for throttle (default 10)
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default &quot;fs&quot;)
       --cache-ttl duration                cache TTL when using redis as cache backend
       --clear-cache                       clear image caches without scanning
@@ -3684,11 +3695,12 @@ You're not viewing the latest version.
       --components strings                specify which components to scan (workload,infra) (default [workload,infra])
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
-      --context string                    specify a context to scan
       --db-repository string              OCI repository to retrieve trivy-db from (default &quot;ghcr.io/aquasecurity/trivy-db:2&quot;)
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --download-db-only                  download/update vulnerability database but don&#39;t run a scan
       --download-java-db-only             download/update Java index database but don&#39;t run a scan
+      --exclude-kinds strings             indicate the kinds exclude from scanning (example: node)
+      --exclude-namespaces strings        indicate the namespaces excluded from scanning (example: kube-system)
       --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
       --exclude-owned                     exclude resources that have an owner reference
       --exit-code int                     specify exit code when any security issues are found
@@ -3706,13 +3718,14 @@ You're not viewing the latest version.
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default &quot;.trivyignore&quot;)
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
+      --include-kinds strings             indicate the kinds included in scanning (example: node)
+      --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
       --include-non-failures              include successes and exceptions, available with &#39;--scanners misconfig&#39;
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default &quot;ghcr.io/aquasecurity/trivy-java-db:1&quot;)
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
-  -n, --namespace string                  specify a namespace to scan
       --no-progress                       suppress progress bar
       --node-collector-imageref string    indicate the image reference for the node-collector scan job (default &quot;ghcr.io/aquasecurity/node-collector:0.0.9&quot;)
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default &quot;trivy-temp&quot;)
