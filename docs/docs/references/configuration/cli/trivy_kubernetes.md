@@ -2,32 +2,33 @@
 
 [EXPERIMENTAL] Scan kubernetes cluster
 
+### Synopsis
+
+Default context in kube configuration will be used unless specified
+
 ```
-trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }
+trivy kubernetes [flags] [CONTEXT]
 ```
 
 ### Examples
 
 ```
   # cluster scanning
-  $ trivy k8s --report summary cluster
+  $ trivy k8s --report summary
 
-  # namespace scanning:
-  $ trivy k8s -n kube-system --report summary all
+  # cluster scanning with specific namespace:
+  $ trivy k8s --include-namespaces kube-system --report summary 
 
-  # resources scanning:
-  $ trivy k8s --report=summary deploy
-  $ trivy k8s --namespace=kube-system --report=summary deploy,configmaps
-
-  # resource scanning:
-  $ trivy k8s deployment/orion
+  # cluster with specific context:
+  $ trivy k8s kind-kind --report summary 
+  
+  
 
 ```
 
 ### Options
 
 ```
-  -A, --all-namespaces                    fetch resources from all cluster namespaces
       --burst int                         specify the maximum burst for throttle (default 10)
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration                cache TTL when using redis as cache backend
@@ -36,11 +37,12 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --components strings                specify which components to scan (workload,infra) (default [workload,infra])
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
-      --context string                    specify a context to scan
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
+      --exclude-kinds strings             indicate the kinds exclude from scanning (example: node)
+      --exclude-namespaces strings        indicate the namespaces excluded from scanning (example: kube-system)
       --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
       --exclude-owned                     exclude resources that have an owner reference
       --exit-code int                     specify exit code when any security issues are found
@@ -58,13 +60,14 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignorefile string                 specify .trivyignore file (default ".trivyignore")
       --image-src strings                 image source(s) to use, in priority order (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
+      --include-kinds strings             indicate the kinds included in scanning (example: node)
+      --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
       --include-non-failures              include successes and exceptions, available with '--scanners misconfig'
       --java-db-repository string         OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db:1")
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     enabling the option will output all packages regardless of vulnerability
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
-  -n, --namespace string                  specify a namespace to scan
       --no-progress                       suppress progress bar
       --node-collector-imageref string    indicate the image reference for the node-collector scan job (default "ghcr.io/aquasecurity/node-collector:0.0.9")
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")

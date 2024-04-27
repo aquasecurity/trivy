@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 
-	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -16,9 +15,6 @@ import (
 
 // clusterRun runs scan on kubernetes cluster
 func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) error {
-	// TODO: replace with log.Logger
-	logger, _ := zap.NewProduction()
-
 	if err := validateReportArguments(opts); err != nil {
 		return err
 	}
@@ -26,13 +22,20 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 	var err error
 	switch opts.Format {
 	case types.FormatCycloneDX:
-		artifacts, err = trivyk8s.New(cluster, logger.Sugar()).ListClusterBomInfo(ctx)
+		artifacts, err = trivyk8s.New(cluster).ListClusterBomInfo(ctx)
 		if err != nil {
 			return xerrors.Errorf("get k8s artifacts with node info error: %w", err)
 		}
 	case types.FormatJSON, types.FormatTable:
+		k8sOpts := []trivyk8s.K8sOption{
+			trivyk8s.WithExcludeNamespaces(opts.ExcludeNamespaces),
+			trivyk8s.WithIncludeNamespaces(opts.IncludeNamespaces),
+			trivyk8s.WithExcludeKinds(opts.ExcludeKinds),
+			trivyk8s.WithIncludeKinds(opts.IncludeKinds),
+			trivyk8s.WithExcludeOwned(opts.ExcludeOwned),
+		}
 		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && slices.Contains(opts.Components, "infra") {
-			artifacts, err = trivyk8s.New(cluster, logger.Sugar(), trivyk8s.WithExcludeOwned(opts.ExcludeOwned)).ListArtifactAndNodeInfo(ctx,
+			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifactAndNodeInfo(ctx,
 				trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
 				trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),
 				trivyk8s.WithScanJobImageRef(opts.NodeCollectorImageRef),
@@ -41,7 +44,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 				return xerrors.Errorf("get k8s artifacts with node info error: %w", err)
 			}
 		} else {
-			artifacts, err = trivyk8s.New(cluster, logger.Sugar()).ListArtifacts(ctx)
+			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifacts(ctx)
 			if err != nil {
 				return xerrors.Errorf("get k8s artifacts error: %w", err)
 			}
