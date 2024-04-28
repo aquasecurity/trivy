@@ -1,6 +1,10 @@
 package types
 
 import (
+	"encoding/json"
+
+	"golang.org/x/xerrors"
+
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -8,8 +12,8 @@ type Library struct {
 	ID                 string `json:",omitempty"`
 	Name               string
 	Version            string
-	Dev                bool
-	Indirect           bool          `json:",omitempty"`
+	Dev                bool          `json:",omitempty"`
+	Relationship       Relationship  `json:",omitempty"`
 	License            string        `json:",omitempty"`
 	ExternalReferences []ExternalRef `json:",omitempty"`
 	Locations          Locations     `json:",omitempty"`
@@ -20,9 +24,17 @@ type Libraries []Library
 
 func (libs Libraries) Len() int { return len(libs) }
 func (libs Libraries) Less(i, j int) bool {
-	if libs[i].ID != libs[j].ID { // ID could be empty
+	switch {
+	case libs[i].Relationship != libs[j].Relationship:
+		if libs[i].Relationship == RelationshipUnknown {
+			return false
+		} else if libs[j].Relationship == RelationshipUnknown {
+			return true
+		}
+		return libs[i].Relationship < libs[j].Relationship
+	case libs[i].ID != libs[j].ID: // ID could be empty
 		return libs[i].ID < libs[j].ID
-	} else if libs[i].Name != libs[j].Name { // Name could be the same
+	case libs[i].Name != libs[j].Name: // Name could be the same
 		return libs[i].Name < libs[j].Name
 	}
 	return libs[i].Version < libs[j].Version
@@ -72,3 +84,44 @@ const (
 	RefVCS   RefType = "vcs"
 	RefOther RefType = "other"
 )
+
+type Relationship int
+
+const (
+	RelationshipUnknown Relationship = iota
+	RelationshipRoot
+	RelationshipDirect
+	RelationshipIndirect
+)
+
+var relationshipNames = [...]string{
+	"unknown",
+	"root",
+	"direct",
+	"indirect",
+}
+
+func (r Relationship) String() string {
+	if r <= RelationshipUnknown || int(r) >= len(relationshipNames) {
+		return "unknown"
+	}
+	return relationshipNames[r]
+}
+
+func (r Relationship) MarshalJSON() ([]byte, error) {
+	return json.Marshal(r.String())
+}
+
+func (r *Relationship) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	for i, name := range relationshipNames {
+		if s == name {
+			*r = Relationship(i)
+			return nil
+		}
+	}
+	return xerrors.Errorf("invalid relationship (%s)", s)
+}

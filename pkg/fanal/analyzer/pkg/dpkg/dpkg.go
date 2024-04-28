@@ -115,31 +115,42 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 // parseDpkgInfoList parses /var/lib/dpkg/info/*.list
 func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) ([]string, error) {
-	var installedFiles []string
-	var previous string
+	var (
+		allLines       []string
+		installedFiles []string
+		previous       string
+	)
+
 	for scanner.Scan() {
 		current := scanner.Text()
 		if current == "/." {
 			continue
 		}
+		allLines = append(allLines, current)
+	}
 
-		// Add the file if it is not directory.
-		// e.g.
-		//  /usr/sbin
-		//  /usr/sbin/tarcat
-		//
-		// In the above case, we should take only /usr/sbin/tarcat since /usr/sbin is a directory
+	if err := scanner.Err(); err != nil {
+		return nil, xerrors.Errorf("scan error: %w", err)
+	}
+
+	// Add the file if it is not directory.
+	// e.g.
+	//  /usr/sbin
+	//  /usr/sbin/tarcat
+	//
+	// In the above case, we should take only /usr/sbin/tarcat since /usr/sbin is a directory
+	// sort first,see here:https://github.com/aquasecurity/trivy/discussions/6543
+	sort.Strings(allLines)
+	for _, current := range allLines {
 		if !strings.HasPrefix(current, previous+"/") {
 			installedFiles = append(installedFiles, previous)
 		}
 		previous = current
 	}
 
-	// Add the last file
-	installedFiles = append(installedFiles, previous)
-
-	if err := scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+	// // Add the last file
+	if previous != "" && !strings.HasSuffix(previous, "/") {
+		installedFiles = append(installedFiles, previous)
 	}
 
 	return installedFiles, nil

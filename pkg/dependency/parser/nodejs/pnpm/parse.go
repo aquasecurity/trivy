@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -90,10 +91,10 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []t
 		}
 
 		libs = append(libs, types.Library{
-			ID:       pkgID,
-			Name:     name,
-			Version:  version,
-			Indirect: isIndirectLib(name, lockFile.Dependencies),
+			ID:           pkgID,
+			Name:         name,
+			Version:      version,
+			Relationship: lo.Ternary(isDirectLib(name, lockFile.Dependencies), types.RelationshipDirect, types.RelationshipIndirect),
 		})
 
 		if len(dependencies) > 0 {
@@ -178,9 +179,9 @@ func (p *Parser) parseDepPath(depPath, versionSep string) (string, string) {
 	return name, version
 }
 
-func isIndirectLib(name string, directDeps map[string]interface{}) bool {
+func isDirectLib(name string, directDeps map[string]interface{}) bool {
 	_, ok := directDeps[name]
-	return !ok
+	return ok
 }
 
 func packageID(name, version string) string {

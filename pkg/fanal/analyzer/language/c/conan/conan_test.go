@@ -1,9 +1,8 @@
 package conan
 
 import (
+	"context"
 	"os"
-	"path/filepath"
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,23 +14,25 @@ import (
 
 func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
+		name     string
+		dir      string
+		cacheDir string
+		want     *analyzer.AnalysisResult
 	}{
 		{
-			name:      "happy path",
-			inputFile: "testdata/happy.lock",
+			name: "happy path",
+			dir:  "testdata/happy",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Conan,
-						FilePath: "testdata/happy.lock",
+						FilePath: "conan.lock",
 						Libraries: types.Packages{
 							{
-								ID:      "openssl/3.0.5",
-								Name:    "openssl",
-								Version: "3.0.5",
+								ID:           "openssl/3.0.5",
+								Name:         "openssl",
+								Version:      "3.0.5",
+								Relationship: types.RelationshipDirect,
 								DependsOn: []string{
 									"zlib/1.2.12",
 								},
@@ -43,10 +44,11 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:       "zlib/1.2.12",
-								Name:     "zlib",
-								Version:  "1.2.12",
-								Indirect: true,
+								ID:           "zlib/1.2.12",
+								Name:         "zlib",
+								Version:      "1.2.12",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
 										StartLine: 22,
@@ -60,31 +62,75 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "empty file",
-			inputFile: "testdata/empty.lock",
+			name:     "happy path with cache dir",
+			dir:      "testdata/happy",
+			cacheDir: "testdata/cacheDir",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Conan,
+						FilePath: "conan.lock",
+						Libraries: types.Packages{
+							{
+								ID:      "openssl/3.0.5",
+								Name:    "openssl",
+								Version: "3.0.5",
+								Licenses: []string{
+									"Apache-2.0",
+								},
+								DependsOn: []string{
+									"zlib/1.2.12",
+								},
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 12,
+										EndLine:   21,
+									},
+								},
+							},
+							{
+								ID:      "zlib/1.2.12",
+								Name:    "zlib",
+								Version: "1.2.12",
+								Licenses: []string{
+									"Zlib",
+								},
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 22,
+										EndLine:   28,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "empty file",
+			dir:  "testdata/empty",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
+			if tt.cacheDir != "" {
+				t.Setenv("CONAN_USER_HOME", tt.cacheDir)
+			}
+			a, err := newConanLockAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
-			defer f.Close()
 
-			a := conanLockAnalyzer{}
-			got, err := a.Analyze(nil, analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Content:  f,
+			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
+				FS: os.DirFS(tt.dir),
 			})
 
-			if got != nil {
-				for _, app := range got.Applications {
-					sort.Sort(app.Libraries)
-				}
-			}
-
-			assert.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			require.NoError(t, err)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -113,17 +159,62 @@ func Test_conanLockAnalyzer_Required(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir := t.TempDir()
-			f, err := os.Create(filepath.Join(dir, tt.filePath))
-			require.NoError(t, err)
-			defer f.Close()
-
-			fi, err := f.Stat()
-			require.NoError(t, err)
-
 			a := conanLockAnalyzer{}
-			got := a.Required("", fi)
+			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_detectAttribute(t *testing.T) {
+	tests := []struct {
+		name     string
+		attrName string
+		line     string
+		want     string
+	}{
+		{
+			name:     "without spaces near `=`",
+			attrName: "license",
+			line:     `license="bar"`,
+			want:     "bar",
+		},
+		{
+			name:     "with space before `=`",
+			attrName: "license",
+			line:     `license ="bar"`,
+			want:     "bar",
+		},
+		{
+			name:     "with space after `=`",
+			attrName: "license",
+			line:     `license= "bar"`,
+			want:     "bar",
+		},
+		{
+			name:     "with space before and after `=`",
+			attrName: "license",
+			line:     `license = "bar"`,
+			want:     "bar",
+		},
+		{
+			name:     "license with spaces",
+			attrName: "license",
+			line:     `license = "foo and bar"`,
+			want:     "foo and bar",
+		},
+		{
+			name:     "another attribute",
+			attrName: "license",
+			line:     `license_contents = "foo"`,
+			want:     "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := detectAttribute(tt.attrName, tt.line)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }

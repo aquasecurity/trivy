@@ -57,9 +57,10 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "packages.lock.json",
 						Libraries: types.Packages{
 							{
-								ID:      "Newtonsoft.Json@12.0.3",
-								Name:    "Newtonsoft.Json",
-								Version: "12.0.3",
+								ID:           "Newtonsoft.Json@12.0.3",
+								Name:         "Newtonsoft.Json",
+								Version:      "12.0.3",
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 5,
@@ -69,9 +70,10 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 								Licenses: []string{"MIT"},
 							},
 							{
-								ID:      "NuGet.Frameworks@5.7.0",
-								Name:    "NuGet.Frameworks",
-								Version: "5.7.0",
+								ID:           "NuGet.Frameworks@5.7.0",
+								Name:         "NuGet.Frameworks",
+								Version:      "5.7.0",
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 11,
@@ -98,9 +100,10 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "packages.lock.json",
 						Libraries: types.Packages{
 							{
-								ID:      "Newtonsoft.Json@12.0.3",
-								Name:    "Newtonsoft.Json",
-								Version: "12.0.3",
+								ID:           "Newtonsoft.Json@12.0.3",
+								Name:         "Newtonsoft.Json",
+								Version:      "12.0.3",
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 5,
@@ -110,9 +113,10 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 								Licenses: []string{"MIT"},
 							},
 							{
-								ID:      "NuGet.Frameworks@5.7.0",
-								Name:    "NuGet.Frameworks",
-								Version: "5.7.0",
+								ID:           "NuGet.Frameworks@5.7.0",
+								Name:         "NuGet.Frameworks",
+								Version:      "5.7.0",
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 11,
@@ -139,9 +143,10 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "packages.lock.json",
 						Libraries: types.Packages{
 							{
-								ID:      "Newtonsoft.Json@12.0.3",
-								Name:    "Newtonsoft.Json",
-								Version: "12.0.3",
+								ID:           "Newtonsoft.Json@12.0.3",
+								Name:         "Newtonsoft.Json",
+								Version:      "12.0.3",
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 5,
@@ -150,9 +155,10 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								ID:      "NuGet.Frameworks@5.7.0",
-								Name:    "NuGet.Frameworks",
-								Version: "5.7.0",
+								ID:           "NuGet.Frameworks@5.7.0",
+								Name:         "NuGet.Frameworks",
+								Version:      "5.7.0",
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 11,

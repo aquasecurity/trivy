@@ -52,11 +52,11 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	foundDeps := make(map[string][]string)
 	for _, pkg := range lockFile.Packages {
 		lib := types.Library{
-			ID:       dependency.ID(ftypes.Composer, pkg.Name, pkg.Version),
-			Name:     pkg.Name,
-			Version:  pkg.Version,
-			Indirect: false, // composer.lock file doesn't have info about Direct/Indirect deps. Will think that all dependencies are Direct
-			License:  strings.Join(pkg.License, ", "),
+			ID:           dependency.ID(ftypes.Composer, pkg.Name, pkg.Version),
+			Name:         pkg.Name,
+			Version:      pkg.Version,
+			Relationship: types.RelationshipUnknown, // composer.lock file doesn't have info about direct/indirect dependencies
+			License:      strings.Join(pkg.License, ", "),
 			Locations: []types.Location{
 				{
 					StartLine: pkg.StartLine,

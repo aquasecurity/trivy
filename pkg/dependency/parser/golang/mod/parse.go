@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/xerrors"
@@ -84,16 +85,30 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		skipIndirect = lessThan117(modFileParsed.Go.Version)
 	}
 
+	// Main module
+	if m := modFileParsed.Module; m != nil {
+		ver := strings.TrimPrefix(m.Mod.Version, "v")
+		libs[m.Mod.Path] = types.Library{
+			ID:                 packageID(m.Mod.Path, ver),
+			Name:               m.Mod.Path,
+			Version:            ver,
+			ExternalReferences: p.GetExternalRefs(m.Mod.Path),
+			Relationship:       types.RelationshipRoot,
+		}
+	}
+
+	// Required modules
 	for _, require := range modFileParsed.Require {
 		// Skip indirect dependencies less than Go 1.17
 		if skipIndirect && require.Indirect {
 			continue
 		}
+		ver := strings.TrimPrefix(require.Mod.Version, "v")
 		libs[require.Mod.Path] = types.Library{
-			ID:                 packageID(require.Mod.Path, require.Mod.Version[1:]),
+			ID:                 packageID(require.Mod.Path, ver),
 			Name:               require.Mod.Path,
-			Version:            require.Mod.Version[1:],
-			Indirect:           require.Indirect,
+			Version:            ver,
+			Relationship:       lo.Ternary(require.Indirect, types.RelationshipIndirect, types.RelationshipDirect),
 			ExternalReferences: p.GetExternalRefs(require.Mod.Path),
 		}
 	}
@@ -128,7 +143,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				ID:                 packageID(rep.New.Path, rep.New.Version[1:]),
 				Name:               rep.New.Path,
 				Version:            rep.New.Version[1:],
-				Indirect:           old.Indirect,
+				Relationship:       old.Relationship,
 				ExternalReferences: p.GetExternalRefs(rep.New.Path),
 			}
 		}

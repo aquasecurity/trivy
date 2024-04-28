@@ -28,6 +28,7 @@
             "PURL": "pkg:pypi/click@8.1.3"
           },
           "Version": "8.1.3",
+          "Relationship": "direct",
           "DependsOn": [
             "colorama@0.4.6"
           ],
@@ -41,6 +42,7 @@
           },
           "Version": "0.4.6",
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {}
         },
         {
@@ -50,6 +52,7 @@
             "PURL": "pkg:pypi/werkzeug@0.14"
           },
           "Version": "0.14",
+          "Relationship": "direct",
           "Layer": {}
         }
       ],

@@ -31,6 +31,7 @@
           "Licenses": [
             "MIT"
           ],
+          "Relationship": "direct",
           "DependsOn": [
             "guzzlehttp/psr7@1.8.3"
           ],
@@ -53,6 +54,7 @@
             "MIT"
           ],
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {

@@ -25,20 +25,22 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/happy.lock",
 			want: []types.Library{
 				{
-					ID:      "crypto@3.0.2",
-					Name:    "crypto",
-					Version: "3.0.2",
+					ID:           "crypto@3.0.2",
+					Name:         "crypto",
+					Version:      "3.0.2",
+					Relationship: types.RelationshipDirect,
 				},
 				{
-					ID:      "flutter_test@0.0.0",
-					Name:    "flutter_test",
-					Version: "0.0.0",
+					ID:           "flutter_test@0.0.0",
+					Name:         "flutter_test",
+					Version:      "0.0.0",
+					Relationship: types.RelationshipDirect,
 				},
 				{
-					ID:       "uuid@3.0.6",
-					Name:     "uuid",
-					Version:  "3.0.6",
-					Indirect: true,
+					ID:           "uuid@3.0.6",
+					Name:         "uuid",
+					Version:      "3.0.6",
+					Relationship: types.RelationshipIndirect,
 				},
 			},
 			wantErr: assert.NoError,
@@ -66,10 +68,7 @@ func TestParser_Parse(t *testing.T) {
 				return
 			}
 
-			sort.Slice(gotLibs, func(i, j int) bool {
-				return gotLibs[i].ID < gotLibs[j].ID
-			})
-
+			sort.Sort(types.Libraries(gotLibs))
 			assert.Equal(t, tt.want, gotLibs)
 		})
 	}

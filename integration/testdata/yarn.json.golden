@@ -31,6 +31,7 @@
           "Licenses": [
             "MIT"
           ],
+          "Relationship": "direct",
           "Layer": {},
           "Locations": [
             {

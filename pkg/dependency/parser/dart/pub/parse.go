@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	idFormat      = "%s@%s"
+	directMain    = "direct main"
+	directDev     = "direct dev"
 	transitiveDep = "transitive"
 )
 
@@ -31,7 +32,7 @@ type Dep struct {
 	Version    string `yaml:"version"`
 }
 
-func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+func (p Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	l := &lock{}
 	if err := yaml.NewDecoder(r).Decode(&l); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode pubspec.lock: %w", err)
@@ -44,13 +45,23 @@ func (Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, er
 		// It will be confusing if we exclude direct dev dependencies and include transitive dev dependencies.
 		// We decided to keep all dev dependencies until Pub will add support for "transitive main" and "transitive dev".
 		lib := types.Library{
-			ID:       dependency.ID(ftypes.Pub, name, dep.Version),
-			Name:     name,
-			Version:  dep.Version,
-			Indirect: dep.Dependency == transitiveDep,
+			ID:           dependency.ID(ftypes.Pub, name, dep.Version),
+			Name:         name,
+			Version:      dep.Version,
+			Relationship: p.relationship(dep.Dependency),
 		}
 		libs = append(libs, lib)
 	}
 
 	return libs, nil, nil
+}
+
+func (p Parser) relationship(dep string) types.Relationship {
+	switch dep {
+	case directMain, directDev:
+		return types.RelationshipDirect
+	case transitiveDep:
+		return types.RelationshipIndirect
+	}
+	return types.RelationshipUnknown
 }

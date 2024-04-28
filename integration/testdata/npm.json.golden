@@ -28,7 +28,6 @@
             "PURL": "pkg:npm/asap@2.0.6"
           },
           "Version": "2.0.6",
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -47,7 +46,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -63,7 +61,6 @@
             "PURL": "pkg:npm/js-tokens@4.0.0"
           },
           "Version": "4.0.0",
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -79,7 +76,6 @@
             "PURL": "pkg:npm/loose-envify@1.4.0"
           },
           "Version": "1.4.0",
-          "Indirect": true,
           "DependsOn": [
             "js-tokens@4.0.0"
           ],
@@ -98,7 +94,6 @@
             "PURL": "pkg:npm/object-assign@4.1.1"
           },
           "Version": "4.1.1",
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -117,7 +112,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "DependsOn": [
             "asap@2.0.6"
           ],
@@ -136,7 +130,6 @@
             "PURL": "pkg:npm/prop-types@15.7.2"
           },
           "Version": "15.7.2",
-          "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "object-assign@4.1.1",
@@ -160,7 +153,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "object-assign@4.1.1",
@@ -185,7 +177,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {
@@ -204,7 +195,6 @@
           "Licenses": [
             "MIT"
           ],
-          "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "symbol-observable@1.2.0"
@@ -224,7 +214,6 @@
             "PURL": "pkg:npm/scheduler@0.13.6"
           },
           "Version": "0.13.6",
-          "Indirect": true,
           "DependsOn": [
             "loose-envify@1.4.0",
             "object-assign@4.1.1"
@@ -244,7 +233,6 @@
             "PURL": "pkg:npm/symbol-observable@1.2.0"
           },
           "Version": "1.2.0",
-          "Indirect": true,
           "Layer": {},
           "Locations": [
             {

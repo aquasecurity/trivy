@@ -29,6 +29,7 @@
           },
           "Version": "1.0.8",
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
@@ -45,6 +46,7 @@
           },
           "Version": "2.4.8",
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
@@ -61,6 +63,7 @@
           },
           "Version": "1.1.1q",
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
@@ -77,6 +80,7 @@
           },
           "Version": "8.43",
           "Indirect": true,
+          "Relationship": "indirect",
           "DependsOn": [
             "bzip2/1.0.8",
             "zlib/1.2.12"
@@ -96,6 +100,7 @@
             "PURL": "pkg:conan/poco@1.9.4"
           },
           "Version": "1.9.4",
+          "Relationship": "direct",
           "DependsOn": [
             "pcre/8.43",
             "zlib/1.2.12",
@@ -119,6 +124,7 @@
           },
           "Version": "3.39.2",
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {
@@ -135,6 +141,7 @@
           },
           "Version": "1.2.12",
           "Indirect": true,
+          "Relationship": "indirect",
           "Layer": {},
           "Locations": [
             {

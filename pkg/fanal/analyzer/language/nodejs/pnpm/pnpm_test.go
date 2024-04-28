@@ -29,9 +29,10 @@ func Test_pnpmPkgLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/pnpm-lock.yaml",
 						Libraries: types.Packages{
 							{
-								ID:      "lodash@4.17.21",
-								Name:    "lodash",
-								Version: "4.17.21",
+								ID:           "lodash@4.17.21",
+								Name:         "lodash",
+								Version:      "4.17.21",
+								Relationship: types.RelationshipDirect,
 							},
 						},
 					},

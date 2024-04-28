@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/liamg/jfather"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -56,10 +57,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			depId := packageID(packageName, packageContent.Resolved)
 
 			lib := types.Library{
-				ID:       depId,
-				Name:     packageName,
-				Version:  packageContent.Resolved,
-				Indirect: packageContent.Type != "Direct",
+				ID:           depId,
+				Name:         packageName,
+				Version:      packageContent.Resolved,
+				Relationship: lo.Ternary(packageContent.Type == "Direct", types.RelationshipDirect, types.RelationshipIndirect),
 				Locations: []types.Location{
 					{
 						StartLine: packageContent.StartLine,

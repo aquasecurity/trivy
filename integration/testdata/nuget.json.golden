@@ -28,6 +28,7 @@
             "PURL": "pkg:nuget/Newtonsoft.Json@12.0.3"
           },
           "Version": "12.0.3",
+          "Relationship": "direct",
           "Layer": {},
           "Locations": [
             {
@@ -43,6 +44,7 @@
             "PURL": "pkg:nuget/NuGet.Frameworks@5.7.0"
           },
           "Version": "5.7.0",
+          "Relationship": "direct",
           "DependsOn": [
             "Newtonsoft.Json@12.0.3"
           ],

@@ -297,11 +297,12 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 	}
 
 	return artifact{
-		GroupID:    d.GroupID,
-		ArtifactID: d.ArtifactID,
-		Version:    newVersion(d.Version),
-		Exclusions: exclusions,
-		Locations:  locations,
+		GroupID:      d.GroupID,
+		ArtifactID:   d.ArtifactID,
+		Version:      newVersion(d.Version),
+		Exclusions:   exclusions,
+		Locations:    locations,
+		Relationship: types.RelationshipIndirect, // default
 	}
 }
 

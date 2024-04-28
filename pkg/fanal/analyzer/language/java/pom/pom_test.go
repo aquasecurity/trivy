@@ -30,23 +30,25 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy/pom.xml",
 						Libraries: types.Packages{
 							{
-								ID:      "com.example:example-api:2.0.0",
-								Name:    "com.example:example-api",
-								Version: "2.0.0",
+								ID:           "com.example:example:1.0.0",
+								Name:         "com.example:example",
+								Version:      "1.0.0",
+								Licenses:     []string{"Apache-2.0"},
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"com.example:example-api:2.0.0",
+								},
+							},
+							{
+								ID:           "com.example:example-api:2.0.0",
+								Name:         "com.example:example-api",
+								Version:      "2.0.0",
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 28,
 										EndLine:   32,
 									},
-								},
-							},
-							{
-								ID:       "com.example:example:1.0.0",
-								Name:     "com.example:example",
-								Version:  "1.0.0",
-								Licenses: []string{"Apache-2.0"},
-								DependsOn: []string{
-									"com.example:example-api:2.0.0",
 								},
 							},
 						},
@@ -65,23 +67,25 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "pom.xml",
 						Libraries: types.Packages{
 							{
-								ID:      "com.example:example-api:2.0.0",
-								Name:    "com.example:example-api",
-								Version: "2.0.0",
+								ID:           "com.example:example:1.0.0",
+								Name:         "com.example:example",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipRoot,
+								Licenses:     []string{"Apache-2.0"},
+								DependsOn: []string{
+									"com.example:example-api:2.0.0",
+								},
+							},
+							{
+								ID:           "com.example:example-api:2.0.0",
+								Name:         "com.example:example-api",
+								Version:      "2.0.0",
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 28,
 										EndLine:   32,
 									},
-								},
-							},
-							{
-								ID:       "com.example:example:1.0.0",
-								Name:     "com.example:example",
-								Version:  "1.0.0",
-								Licenses: []string{"Apache-2.0"},
-								DependsOn: []string{
-									"com.example:example-api:2.0.0",
 								},
 							},
 						},
@@ -99,24 +103,26 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/mark-as-dev/src/it/example/pom.xml",
 						Libraries: types.Packages{
 							{
-								ID:      "com.example:example-api:@example.version@",
-								Name:    "com.example:example-api",
-								Version: "@example.version@",
+								ID:           "com.example:example:1.0.0",
+								Name:         "com.example:example",
+								Version:      "1.0.0",
+								Licenses:     []string{"Apache-2.0"},
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"com.example:example-api:@example.version@",
+								},
+								Dev: true,
+							},
+							{
+								ID:           "com.example:example-api:@example.version@",
+								Name:         "com.example:example-api",
+								Version:      "@example.version@",
+								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
 										StartLine: 28,
 										EndLine:   32,
 									},
-								},
-								Dev: true,
-							},
-							{
-								ID:       "com.example:example:1.0.0",
-								Name:     "com.example:example",
-								Version:  "1.0.0",
-								Licenses: []string{"Apache-2.0"},
-								DependsOn: []string{
-									"com.example:example-api:@example.version@",
 								},
 								Dev: true,
 							},
@@ -135,10 +141,11 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/requirements/pom.xml",
 						Libraries: types.Packages{
 							{
-								ID:       "com.example:example:2.0.0",
-								Name:     "com.example:example",
-								Version:  "2.0.0",
-								Licenses: []string{"Apache-2.0"},
+								ID:           "com.example:example:2.0.0",
+								Name:         "com.example:example",
+								Version:      "2.0.0",
+								Licenses:     []string{"Apache-2.0"},
+								Relationship: types.RelationshipRoot,
 							},
 						},
 					},

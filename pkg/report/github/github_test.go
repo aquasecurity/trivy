@@ -39,17 +39,19 @@ func TestWriter_Write(t *testing.T) {
 						Type:   "yarn",
 						Packages: []ftypes.Package{
 							{
-								Name:    "@xtuc/ieee754",
-								Version: "1.2.0",
+								Name:         "@xtuc/ieee754",
+								Version:      "1.2.0",
+								Relationship: ftypes.RelationshipDirect,
 							},
 							{
-								Name:    "@xtuc/long",
-								Version: "4.2.2",
+								Name:         "@xtuc/long",
+								Version:      "4.2.2",
+								Relationship: ftypes.RelationshipDirect,
 							},
 							{
-								Name:     "@xtuc/binaryen",
-								Version:  "1.37.33",
-								Indirect: true,
+								Name:         "@xtuc/binaryen",
+								Version:      "1.37.33",
+								Relationship: ftypes.RelationshipIndirect,
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{

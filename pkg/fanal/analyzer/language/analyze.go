@@ -117,16 +117,17 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		}
 
 		newPkg := types.Package{
-			ID:        lib.ID,
-			Name:      lib.Name,
-			Version:   lib.Version,
-			Dev:       lib.Dev,
-			FilePath:  libPath,
-			Indirect:  lib.Indirect,
-			Licenses:  licenses,
-			DependsOn: deps[lib.ID],
-			Locations: locs,
-			Digest:    d,
+			ID:           lib.ID,
+			Name:         lib.Name,
+			Version:      lib.Version,
+			Dev:          lib.Dev,
+			FilePath:     libPath,
+			Indirect:     isIndirect(lib.Relationship), // For backward compatibility
+			Relationship: lib.Relationship,
+			Licenses:     licenses,
+			DependsOn:    deps[lib.ID],
+			Locations:    locs,
+			Digest:       d,
 		}
 		pkgs = append(pkgs, newPkg)
 	}
@@ -148,4 +149,13 @@ func calculateDigest(r xio.ReadSeekerAt) (digest.Digest, error) {
 	}
 
 	return digest.CalcSHA1(r)
+}
+
+func isIndirect(rel types.Relationship) bool {
+	switch rel {
+	case types.RelationshipIndirect:
+		return true
+	default:
+		return false
+	}
 }

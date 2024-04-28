@@ -3,6 +3,7 @@ package binary
 
 import (
 	rustaudit "github.com/microsoft/go-rustaudit"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -51,10 +52,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		}
 		pkgID := packageID(pkg.Name, pkg.Version)
 		libs = append(libs, types.Library{
-			ID:       pkgID,
-			Name:     pkg.Name,
-			Version:  pkg.Version,
-			Indirect: !pkg.Root,
+			ID:           pkgID,
+			Name:         pkg.Name,
+			Version:      pkg.Version,
+			Relationship: lo.Ternary(pkg.Root, types.RelationshipRoot, types.RelationshipUnknown), // TODO: Determine the direct dependencies by checking the dependencies of the root crate
 		})
 
 		var childDeps []string

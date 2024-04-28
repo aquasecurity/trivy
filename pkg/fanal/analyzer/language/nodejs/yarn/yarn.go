@@ -222,6 +222,7 @@ func (a yarnAnalyzer) walkDependencies(libs []types.Package, pkgIDs map[string]t
 
 		// Mark as a direct dependency
 		pkg.Indirect = false
+		pkg.Relationship = types.RelationshipDirect
 		pkg.Dev = dev
 		pkgs[pkg.ID] = pkg
 
@@ -247,6 +248,7 @@ func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps m
 		}
 
 		dep.Indirect = true
+		dep.Relationship = types.RelationshipIndirect
 		dep.Dev = pkg.Dev
 		deps[dep.ID] = dep
 		a.walkIndirectDependencies(dep, pkgIDs, deps)

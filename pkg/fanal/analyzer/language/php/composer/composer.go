@@ -118,8 +118,11 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 
 	for i, lib := range app.Libraries {
 		// Identify the direct/transitive dependencies
-		if _, ok := p[lib.Name]; !ok {
+		if _, ok := p[lib.Name]; ok {
+			app.Libraries[i].Relationship = types.RelationshipDirect
+		} else {
 			app.Libraries[i].Indirect = true
+			app.Libraries[i].Relationship = types.RelationshipIndirect
 		}
 	}
 
