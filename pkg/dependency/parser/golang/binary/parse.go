@@ -69,7 +69,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			// Add the Go version used to build this binary.
 			Name:         "stdlib",
 			Version:      strings.TrimPrefix(info.GoVersion, "go"),
-			Relationship: types.RelationshipDirect, // Considered a direct dependency as the main
+			Relationship: types.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
 		},
 	}...)
 
