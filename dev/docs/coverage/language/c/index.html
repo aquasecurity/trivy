@@ -3631,7 +3631,7 @@ You're not viewing the latest version.
 
 
 <h1 id="cc">C/C++</h1>
-<p>Trivy supports <a href="https://docs.conan.io/1/index.html">Conan</a> C/C++ Package Manager.</p>
+<p>Trivy supports Conan C/C++ Package Manager (<a href="https://docs.conan.io/1/index.html">v1</a> and <a href="https://docs.conan.io/2/">v2</a> with limitations).</p>
 <p>The following scanners are supported.</p>
 <table>
 <thead>
@@ -3665,11 +3665,19 @@ You're not viewing the latest version.
 </thead>
 <tbody>
 <tr>
-<td>Conan</td>
-<td>conan.lock<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+<td>Conan (lockfile v1)</td>
+<td>conan.lock<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
 <td align="center">✓</td>
 <td align="center">Excluded</td>
 <td align="center">✓</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td>Conan (lockfile v2)</td>
+<td>conan.lock<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+<td align="center">✓ <sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></td>
+<td align="center">Excluded</td>
+<td align="center">-</td>
 <td align="center">✓</td>
 </tr>
 </tbody>
@@ -3687,7 +3695,10 @@ To correctly detection licenses, ensure that the cache directory contains all de
 <p>The local cache should contain the dependencies used. See <a href="#licenses">licenses</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p><code>conan.lock</code> is default name. To scan a custom filename use <a href="../../../configuration/skipping/#file-patterns">file-patterns</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p><code>conan.lock</code> is default name. To scan a custom filename use <a href="../../../configuration/skipping/#file-patterns">file-patterns</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>For <code>conan.lock</code> in version 2, indirect dependencies are included in analysis but not flagged explicitly in dependency tree&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
