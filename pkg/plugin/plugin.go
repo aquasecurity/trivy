@@ -354,6 +354,7 @@ func loadMetadata(dir string) (Plugin, error) {
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("file open error: %w", err)
 	}
+	defer f.Close()
 
 	var plugin Plugin
 	if err = yaml.NewDecoder(f).Decode(&plugin); err != nil {
