@@ -103,12 +103,14 @@ func TestParse(t *testing.T) {
 			inputFile: "testdata/main-version-via-ldflags.elf",
 			want: []types.Library{
 				{
-					Name:    "github.com/aquasecurity/test",
-					Version: "v1.0.0",
+					Name:         "github.com/aquasecurity/test",
+					Version:      "v1.0.0",
+					Relationship: types.RelationshipRoot,
 				},
 				{
-					Name:    "stdlib",
-					Version: "1.22.1",
+					Name:         "stdlib",
+					Version:      "1.22.1",
+					Relationship: types.RelationshipDirect,
 				},
 			},
 		},
