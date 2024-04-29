@@ -1,7 +1,6 @@
 package environment
 
 import (
-	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -9,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -35,8 +35,6 @@ func NewParser() types.Parser {
 	}
 }
 
-var manuallyCreatedPkgRegexp = regexp.MustCompile(`(?P<name>[A-Za-z0-9-_]+)( |>|<|=|!|$)`)
-
 func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var env environment
 	if err := yaml.NewDecoder(r).Decode(&env); err != nil {
@@ -58,7 +56,15 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 }
 
 func (p *Parser) toLibrary(dep Dependency) types.Library {
-	lib := types.Library{
+	name, ver := p.parseDependency(dep.Value)
+	if ver == "" {
+		p.once.Do(func() {
+			p.logger.Warn("Unable to detect the dependency versions from `environment.yml` as those versions are not pinned. Use `conda env export` to pin versions.")
+		})
+	}
+	return types.Library{
+		Name:    name,
+		Version: ver,
 		Locations: types.Locations{
 			{
 				StartLine: dep.Line,
@@ -66,34 +72,28 @@ func (p *Parser) toLibrary(dep Dependency) types.Library {
 			},
 		},
 	}
+}
 
-	// `Conda env export` command returns `<pkg_name>=<version><build>` format.
-	ss := strings.Split(dep.Value, "=")
-	// But `environment.yml` supports version range (for manually created files).
-	// cf. https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html#examples-of-package-specs
-	if len(ss) != 3 || strings.ContainsAny(dep.Value, "<>!*") || strings.Contains(dep.Value, "==") {
-		p.once.Do(func() {
-			p.logger.Warn("Unable to detect the versions of dependencies from `environment.yml` as they are not pinned. Use `conda env export` to pin versions.")
-		})
-
-		// Detect only name for manually created dependencies.
-		var name string
-		matches := manuallyCreatedPkgRegexp.FindStringSubmatch(dep.Value)
-		if matches != nil {
-			name = matches[manuallyCreatedPkgRegexp.SubexpIndex("name")]
-		}
-		if name == "" {
-			p.logger.Debug("Unable to parse dependency", log.String("dep", dep.Value))
-			return types.Library{}
-		}
-
-		lib.Name = name
-		return lib
+// parseDependency parses the dependency line and returns the name and the pinned version.
+// The version range is not supported. It parses only the pinned version.
+// e.g.
+//   - numpy 1.8.1
+//   - numpy ==1.8.1
+//   - numpy 1.8.1 py27_0
+//   - numpy=1.8.1=py27_0
+//
+// cf. https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html#examples-of-package-specs
+func (*Parser) parseDependency(line string) (string, string) {
+	line = strings.NewReplacer(">", " >", "<", " <", "=", " ").Replace(line)
+	parts := strings.Fields(line)
+	name := parts[0]
+	if len(parts) == 1 {
+		return name, ""
 	}
-
-	lib.Name = ss[0]
-	lib.Version = ss[1]
-	return lib
+	if _, err := version.Parse(parts[1]); err != nil {
+		return name, ""
+	}
+	return name, parts[1]
 }
 
 func (d *Dependency) UnmarshalYAML(node *yaml.Node) error {

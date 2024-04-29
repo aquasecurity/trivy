@@ -36,14 +36,16 @@ func Test_environmentAnalyzer_Analyze(t *testing.T) {
 								},
 							},
 							{
-								Name: "_openmp_mutex",
+								Name:    "_openmp_mutex",
+								Version: "5.1",
 								Locations: []types.Location{
 									{
 										StartLine: 6,
 										EndLine:   6,
 									},
 								},
-							}, {
+							},
+							{
 								Name:    "blas",
 								Version: "1.0",
 								Locations: []types.Location{

@@ -19,9 +19,18 @@ func TestParse(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name:  "happy path. Automatically created environment.yml file",
+			name:  "happy path",
 			input: "testdata/happy.yaml",
 			want: []types.Library{
+				{
+					Name: "_openmp_mutex",
+					Locations: types.Locations{
+						{
+							StartLine: 6,
+							EndLine:   6,
+						},
+					},
+				},
 				{
 					Name:    "blas",
 					Version: "1.0",
@@ -37,37 +46,14 @@ func TestParse(t *testing.T) {
 					Version: "1.0.8",
 					Locations: types.Locations{
 						{
-							StartLine: 6,
-							EndLine:   6,
-						},
-					},
-				},
-			},
-		},
-		{
-			name:  "happy path. Manually created environment.yml file",
-			input: "testdata/happy-manually.yaml",
-			want: []types.Library{
-				{
-					Name: "_openmp_mutex",
-					Locations: types.Locations{
-						{
-							StartLine: 5,
-							EndLine:   5,
+							StartLine: 19,
+							EndLine:   19,
 						},
 					},
 				},
 				{
-					Name: "bzip2",
-					Locations: types.Locations{
-						{
-							StartLine: 6,
-							EndLine:   6,
-						},
-					},
-				},
-				{
-					Name: "ca-certificates",
+					Name:    "ca-certificates",
+					Version: "2024.2",
 					Locations: types.Locations{
 						{
 							StartLine: 7,
@@ -103,7 +89,8 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Name: "libexpat",
+					Name:    "libexpat",
+					Version: "2.6.2",
 					Locations: types.Locations{
 						{
 							StartLine: 11,
@@ -112,7 +99,8 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Name: "libffi",
+					Name:    "libffi",
+					Version: "3.4.2",
 					Locations: types.Locations{
 						{
 							StartLine: 12,
@@ -148,7 +136,8 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Name: "libgomp",
+					Name:    "libgomp",
+					Version: "13.2.0",
 					Locations: types.Locations{
 						{
 							StartLine: 16,
