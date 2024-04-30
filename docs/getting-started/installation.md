@@ -86,31 +86,29 @@ References:
 Nix package manager for Linux and MacOS.
 
 === "Command line"
-
-`nix-env --install -A nixpkgs.trivy`
+    `nix-env --install -A nixpkgs.trivy`
 
 === "Configuration"
-
-```nix
-  # your other config ...
-  environment.systemPackages = with pkgs; [
-    # your other packages ...
-    trivy
-  ];
-```
+    ```nix
+    # your other config ...
+    environment.systemPackages = with pkgs; [
+      # your other packages ...
+      trivy
+    ];
+    ```
 
 === "Home Manager"
-
-```nix
-  # your other config ...
-  home.packages = with pkgs; [
-    # your other packages ...
-    trivy
-  ];
-```
+    ```nix
+    # your other config ...
+    home.packages = with pkgs; [
+      # your other packages ...
+      trivy
+    ];
+    ```
 
 References: 
--  <https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/trivy/default.nix>
+
+-  https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/trivy/default.nix
 
 ### FreeBSD (Official)
 
@@ -120,60 +118,45 @@ References:
 pkg install trivy
 ```
 
-## Installation using "asdf" or "mise"
+### asdf/mise (Community)
 
-[asdf](https://github.com/asdf-vm/asdf) and [mise](https://github.com/jdx/mise) are quite similar tools you can use to install trivy. See their respective documentation for more information of how to install them and use them:
+[asdf](https://github.com/asdf-vm/asdf) and [mise](https://github.com/jdx/mise) are quite similar tools you can use to install trivy.
+See their respective documentation for more information of how to install them and use them:
 
 - [asdf](https://asdf-vm.com/guide/getting-started.html)
 - [mise](https://mise.jdx.dev/getting-started.html)
 
 The plugin used by both tools is developped [here](https://github.com/zufardhiyaulhaq/asdf-trivy)
 
-A basic global installation is shown below, for specific version or/and local version to a directory see "asdf" or "mise" documentation.
 
-### asdf
-
-#### asdf/Install plugin
+=== "asdf"
+    A basic global installation is shown below, for specific version or/and local version to a directory see "asdf" documentation.
 
     ```shell
+    # Install plugin
     asdf plugin add trivy https://github.com/zufardhiyaulhaq/asdf-trivy.git
-    ```
 
-#### asdf/Install latest version
-
-    ```shell
+    # Install latest version
     asdf install trivy latest
-    ```
 
-#### asdf/Set a version globally (on your ~/.tool-versions file)
-
-    ```shell
+    # Set a version globally (on your ~/.tool-versions file)
     asdf global trivy latest
-    ```
 
-#### asdf/Now trivy commands are available
-
-    ```shell
+    # Now trivy commands are available
     trivy --version
     ```
 
-### mise
+=== "mise"
+    A basic global installation is shown below, for specific version or/and local version to a directory see "mise" documentation.
 
-#### mise/Install plugin and install latest version
-
-    ```shell
+    ``` shell
+    # Install plugin and install latest version
     mise install trivy@latest
-    ```
 
-#### mise/Set a version globally (on your ~/.tool-versions file)
-
-    ```shell
+    # Set a version globally (on your ~/.tool-versions file)
     mise use -g trivy@latest
-    ```
 
-#### mise/Now trivy commands are available
-
-    ```shell
+    # Now trivy commands are available
     trivy --version
     ```
 
