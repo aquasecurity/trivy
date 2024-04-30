@@ -30,15 +30,6 @@ Kubernetes resource definition is scanned for:
 
 Trivy follows the behavior of the `kubectl` tool as much as possible.
 
-### Scope
-
-The command expects an argument that selects the scope of the scan (similarly to how `kubectl` expects an argument after `kubectl get`). This argument can be:
-
-1. A Kubernetes Kind. e.g `pod`, `deployment`, etc.
-2. A Kubernetes Resource. e.g `pods/mypod`, etc.
-
-Examples:
-
 ```sh
 trivy k8s --report summary
 ```
@@ -48,73 +39,6 @@ You can also specify a `kubeconfig` using the `--kubeconfig` flag:
 
 ```sh
 trivy k8s --kubeconfig ~/.kube/config2
-```
-
-### Namespace
-
-By default Trivy will scan all namespaces (following `kubectl` behavior). To specify a namespace use the `--namespace` flag:
-
-```sh
-trivy k8s --kubeconfig ~/.kube/config2 --namespace default
-```
-
-### Node
-
-You can exclude specific nodes from the scan using the `--exclude-nodes` flag, which takes a label in the format `label-name:label-value` and excludes all matching nodes:
-
-```sh
-trivy k8s --report summary --exclude-nodes kubernetes.io/arch:arm6
-```
-
-## Control Plane and Node Components Vulnerability Scanning
-
-Trivy is capable of discovering Kubernetes control plane (apiserver, controller-manager and etc) and node components(kubelet, kube-proxy and etc), matching them against the [official Kubernetes vulnerability database feed](https://github.com/aquasecurity/vuln-list-k8s), and reporting any vulnerabilities it finds
-
-```sh
-trivy k8s --scanners vuln  --report all
-
-NodeComponents/kind-control-plane (kubernetes)
-
-Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 2, CRITICAL: 0)
-
-┌────────────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────────┬───────────────────────────────────────────────────┐
-│    Library     │ Vulnerability  │ Severity │ Status │ Installed Version │          Fixed Version           │                       Title                       │
-├────────────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────────┼───────────────────────────────────────────────────┤
-│ k8s.io/kubelet │ CVE-2023-2431  │ LOW      │ fixed  │ 1.21.1            │ 1.24.14, 1.25.10, 1.26.5, 1.27.2 │ Bypass of seccomp profile enforcement             │
-│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2023-2431         │
-│                ├────────────────┼──────────┤        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
-│                │ CVE-2021-25741 │ HIGH     │        │                   │ 1.19.16, 1.20.11, 1.21.5, 1.22.1 │ Symlink exchange can allow host filesystem access │
-│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25741        │
-│                ├────────────────┤          │        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
-│                │ CVE-2021-25749 │          │        │                   │ 1.22.14, 1.23.11, 1.24.5         │ runAsNonRoot logic bypass for Windows containers  │
-│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25749        │
-└────────────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┘
-```
-
-### Taints and Tolerations
-
-The node-collector scan-job will run on every node. In case the node has been tainted, it is possible to add toleration to the scan job for it to be scheduled on the tainted node. for more details [see k8s docs](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
-
-- `--tolerations  key1=value1:NoExecute,key2=value2:NoSchedule` this flag wil enable node-collector to be schedule on tainted Node
-
-Example:
-
-```sh
-trivy k8s --report summary --tolerations  key1=value1:NoExecute,key2=value2:NoSchedule
-```
-
-### Disable Node Collector
-
-You can control whether the node scan-job (`node-collector`) will run in the cluster. To disable it, add the `--disable-node-collector` flag  
-
-- `--disable-node-collector` This flag will exclude findings related to Node (infra assessment) misconfigurations
-
-By default, the node scan-job (`node-collector`) will run in the cluster.
-
-Example:
-
-```sh
-trivy k8s --report summary --disable-node-collector
 ```
 
 ### Skip-images
@@ -163,6 +87,71 @@ Example:
 
 ```sh
 trivy k8s --report summary --exclude-namespace dev-system,staging-system
+```
+
+## Control Plane and Node Components Vulnerability Scanning
+
+Trivy is capable of discovering Kubernetes control plane (apiserver, controller-manager and etc) and node components(kubelet, kube-proxy and etc), matching them against the [official Kubernetes vulnerability database feed](https://github.com/aquasecurity/vuln-list-k8s), and reporting any vulnerabilities it finds.
+
+To read more about KBOM, see the [documentation for Kubernetes scanning](./sbom.md#kbom).
+
+```sh
+trivy k8s --scanners vuln  --report all
+
+NodeComponents/kind-control-plane (kubernetes)
+
+Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 2, CRITICAL: 0)
+
+┌────────────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────────┬───────────────────────────────────────────────────┐
+│    Library     │ Vulnerability  │ Severity │ Status │ Installed Version │          Fixed Version           │                       Title                       │
+├────────────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────────┼───────────────────────────────────────────────────┤
+│ k8s.io/kubelet │ CVE-2023-2431  │ LOW      │ fixed  │ 1.21.1            │ 1.24.14, 1.25.10, 1.26.5, 1.27.2 │ Bypass of seccomp profile enforcement             │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2023-2431         │
+│                ├────────────────┼──────────┤        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
+│                │ CVE-2021-25741 │ HIGH     │        │                   │ 1.19.16, 1.20.11, 1.21.5, 1.22.1 │ Symlink exchange can allow host filesystem access │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25741        │
+│                ├────────────────┤          │        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
+│                │ CVE-2021-25749 │          │        │                   │ 1.22.14, 1.23.11, 1.24.5         │ runAsNonRoot logic bypass for Windows containers  │
+│                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25749        │
+└────────────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┘
+```
+
+## Node-Collector
+
+Node-collector is a scan job that collects node configuration parameters and permission information. This information will be evaluated against Kubernetes hardening (e.g. CIS benchmark) and best practices values. The scan results will be output in infrastructure assessment and CIS benchmark compliance reports.
+
+### Disable Node Collector
+
+You can control whether the node scan-job (`node-collector`) will run in the cluster. To disable it, add the `--disable-node-collector` flag  
+
+- `--disable-node-collector` This flag will exclude findings related to Node (infra assessment) misconfigurations
+
+By default, the node scan-job (`node-collector`) will run in the cluster.
+
+Example:
+
+```sh
+trivy k8s --report summary --disable-node-collector
+```
+
+### Taints and Tolerations
+
+The node-collector scan-job will run on every node. In case the node has been tainted, it is possible to add toleration to the scan job for it to be scheduled on the tainted node. for more details [see k8s docs](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+
+- `--tolerations  key1=value1:NoExecute,key2=value2:NoSchedule` this flag wil enable node-collector to be schedule on tainted Node
+
+Example:
+
+```sh
+trivy k8s --report summary --tolerations  key1=value1:NoExecute,key2=value2:NoSchedule
+```
+
+### Exclude Nodes by Label
+
+You can exclude specific nodes from the scan using the `--exclude-nodes` flag, which takes a label in the format `label-name:label-value` and excludes all matching nodes:
+
+```sh
+trivy k8s --report summary --exclude-nodes kubernetes.io/arch:arm6
 ```
 
 ## Reporting and filtering
