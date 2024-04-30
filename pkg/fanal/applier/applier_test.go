@@ -1,10 +1,10 @@
 package applier_test
 
 import (
-	"github.com/package-url/packageurl-go"
 	"sort"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
