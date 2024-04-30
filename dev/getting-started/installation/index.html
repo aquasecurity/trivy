@@ -448,6 +448,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#asdfmise-community" class="md-nav__link">
+    asdf/mise (Community)
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3735,6 +3742,13 @@ You're not viewing the latest version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#asdfmise-community" class="md-nav__link">
+    asdf/mise (Community)
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3870,40 +3884,76 @@ sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
 - <a href="https://ports.macports.org/port/trivy/details/">https://ports.macports.org/port/trivy/details/</a></p>
 <h3 id="nixnixos-community">Nix/NixOS (Community)</h3>
 <p>Nix package manager for Linux and MacOS.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Command line</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Command line</label><label for="__tabbed_3_2">Configuration</label><label for="__tabbed_3_3">Home Manager</label></div>
 <div class="tabbed-content">
-<div class="tabbed-block"></div>
-</div>
-</div>
+<div class="tabbed-block">
 <p><code>nix-env --install -A nixpkgs.trivy</code></p>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Configuration</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block"></div>
 </div>
-</div>
-<div class="highlight"><pre><span></span><code>  <span class="c1"># your other config ...</span>
-  environment<span class="o">.</span><span class="ss">systemPackages =</span> <span class="k">with</span> pkgs<span class="p">;</span> <span class="p">[</span>
-    <span class="c1"># your other packages ...</span>
-    trivy
-  <span class="p">];</span>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1"># your other config ...</span>
+environment<span class="o">.</span><span class="ss">systemPackages =</span> <span class="k">with</span> pkgs<span class="p">;</span> <span class="p">[</span>
+  <span class="c1"># your other packages ...</span>
+  trivy
+<span class="p">];</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:1"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Home Manager</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block"></div>
 </div>
-</div>
-<div class="highlight"><pre><span></span><code>  <span class="c1"># your other config ...</span>
-  home<span class="o">.</span><span class="ss">packages =</span> <span class="k">with</span> pkgs<span class="p">;</span> <span class="p">[</span>
-    <span class="c1"># your other packages ...</span>
-    trivy
-  <span class="p">];</span>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="c1"># your other config ...</span>
+home<span class="o">.</span><span class="ss">packages =</span> <span class="k">with</span> pkgs<span class="p">;</span> <span class="p">[</span>
+  <span class="c1"># your other packages ...</span>
+  trivy
+<span class="p">];</span>
 </code></pre></div>
-<p>References: 
--  <a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/trivy/default.nix">https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/trivy/default.nix</a></p>
+</div>
+</div>
+</div>
+<p>References: </p>
+<ul>
+<li>https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/trivy/default.nix</li>
+</ul>
 <h3 id="freebsd-official">FreeBSD (Official)</h3>
 <p><a href="https://freebsd.org">Pkg</a> for FreeBSD.</p>
 <div class="highlight"><pre><span></span><code>pkg install trivy
 </code></pre></div>
+<h3 id="asdfmise-community">asdf/mise (Community)</h3>
+<p><a href="https://github.com/asdf-vm/asdf">asdf</a> and <a href="https://github.com/jdx/mise">mise</a> are quite similar tools you can use to install trivy.
+See their respective documentation for more information of how to install them and use them:</p>
+<ul>
+<li><a href="https://asdf-vm.com/guide/getting-started.html">asdf</a></li>
+<li><a href="https://mise.jdx.dev/getting-started.html">mise</a></li>
+</ul>
+<p>The plugin used by both tools is developped <a href="https://github.com/zufardhiyaulhaq/asdf-trivy">here</a></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">asdf</label><label for="__tabbed_4_2">mise</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>A basic global installation is shown below, for specific version or/and local version to a directory see "asdf" documentation.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Install plugin</span>
+asdf plugin add trivy https://github.com/zufardhiyaulhaq/asdf-trivy.git
+
+<span class="c1"># Install latest version</span>
+asdf install trivy latest
+
+<span class="c1"># Set a version globally (on your ~/.tool-versions file)</span>
+asdf global trivy latest
+
+<span class="c1"># Now trivy commands are available</span>
+trivy --version
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>A basic global installation is shown below, for specific version or/and local version to a directory see "mise" documentation.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Install plugin and install latest version</span>
+mise install trivy@latest
+
+<span class="c1"># Set a version globally (on your ~/.tool-versions file)</span>
+mise use -g trivy@latest
+
+<span class="c1"># Now trivy commands are available</span>
+trivy --version
+</code></pre></div>
+</div>
+</div>
+</div>
 <h2 id="install-from-github-release-official">Install from GitHub Release (Official)</h2>
 <h3 id="download-binary">Download Binary</h3>
 <ol>
