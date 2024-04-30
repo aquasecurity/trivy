@@ -119,6 +119,7 @@ type Package struct {
 
 // PkgIdentifier represents a software identifiers in one of more of the supported formats.
 type PkgIdentifier struct {
+	Hash   string                 `json:",omitempty"` // Calculated by the package struct
 	PURL   *packageurl.PackageURL `json:"-"`
 	BOMRef string                 `json:",omitempty"` // For CycloneDX
 }
