@@ -6,8 +6,10 @@ import (
 	"os"
 
 	csaf "github.com/csaf-poc/csaf_distribution/v3/csaf"
+	"github.com/google/uuid"
 	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
+	"github.com/samber/lo"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 
@@ -103,4 +105,66 @@ func decodeCSAF(r io.ReadSeeker) (VEX, error) {
 		return nil, nil
 	}
 	return newCSAF(adv), nil
+}
+
+type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
+
+func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) {
+	components := lo.MapEntries(bom.Components(), func(id uuid.UUID, component *core.Component) (string, *core.Component) {
+		return component.PkgID.Hash, component
+	})
+
+	result.Vulnerabilities = lo.Filter(result.Vulnerabilities, func(vuln types.DetectedVulnerability, _ int) bool {
+		if vuln.PkgIdentifier.PURL == nil {
+			return true
+		}
+
+		c, ok := components[vuln.PkgIdentifier.Hash]
+		if !ok {
+			return true // Should never reach here
+		}
+
+		notAffectedFn := func(c, leaf *core.Component) bool {
+			modified, notAffected := fn(vuln, c, leaf)
+			if notAffected {
+				result.ModifiedFindings = append(result.ModifiedFindings, modified)
+				return true
+			}
+			return false
+		}
+
+		return reachRoot(c, bom.Components(), bom.Parents(), notAffectedFn)
+	})
+}
+
+func reachRoot(leaf *core.Component, components map[uuid.UUID]*core.Component, parents map[uuid.UUID][]uuid.UUID,
+	notAffected func(c, leaf *core.Component) bool) bool {
+
+	if notAffected(leaf, nil) {
+		return false
+	}
+
+	visited := make(map[uuid.UUID]bool)
+
+	var dfs func(c *core.Component) bool
+	dfs = func(c *core.Component) bool {
+		if notAffected(c, leaf) {
+			return false
+		} else if c.Root {
+			return true
+		}
+
+		visited[c.ID()] = true
+		for _, parent := range parents[c.ID()] {
+			if visited[parent] {
+				continue
+			}
+			if dfs(components[parent]) {
+				return true
+			}
+		}
+		return false
+	}
+
+	return dfs(leaf)
 }

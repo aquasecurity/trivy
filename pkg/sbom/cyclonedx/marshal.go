@@ -60,7 +60,7 @@ func (m *Marshaler) MarshalReport(ctx context.Context, report types.Report) (*cd
 // Marshal converts the Trivy component to the CycloneDX format
 func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*cdx.BOM, error) {
 	m.bom = bom
-	m.componentIDs = make(map[uuid.UUID]string, m.bom.NumComponents())
+	m.componentIDs = make(map[uuid.UUID]string, len(m.bom.Components()))
 
 	cdxBOM := cdx.NewBOM()
 	cdxBOM.SerialNumber = uuid.New().URN()

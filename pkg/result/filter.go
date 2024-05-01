@@ -89,7 +89,7 @@ func filterByVEX(report types.Report, opt FilterOption) error {
 		return nil
 	}
 
-	bom, err := sbomio.NewEncoder(core.Options{}).Encode(report)
+	bom, err := sbomio.NewEncoder(core.Options{Parents: true}).Encode(report)
 	if err != nil {
 		return xerrors.Errorf("unable to encode the SBOM: %w", err)
 	}

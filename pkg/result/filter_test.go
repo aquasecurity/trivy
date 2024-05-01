@@ -18,10 +18,12 @@ import (
 
 func TestFilter(t *testing.T) {
 	var (
-		vuln1 = types.DetectedVulnerability{
-			VulnerabilityID: "CVE-2019-0001",
-			PkgName:         "foo",
-			PkgIdentifier: ftypes.PkgIdentifier{
+		pkg1 = ftypes.Package{
+			ID:      "foo@1.2.3",
+			Name:    "foo",
+			Version: "1.2.3",
+			Identifier: ftypes.PkgIdentifier{
+				Hash: "01",
 				PURL: &packageurl.PackageURL{
 					Type:      packageurl.TypeGolang,
 					Namespace: "github.com/aquasecurity",
@@ -29,25 +31,29 @@ func TestFilter(t *testing.T) {
 					Version:   "1.2.3",
 				},
 			},
-			InstalledVersion: "1.2.3",
+		}
+		vuln1 = types.DetectedVulnerability{
+			VulnerabilityID:  "CVE-2019-0001",
+			PkgName:          pkg1.Name,
+			InstalledVersion: pkg1.Version,
 			FixedVersion:     "1.2.4",
+			PkgIdentifier: ftypes.PkgIdentifier{
+				Hash: pkg1.Identifier.Hash,
+				PURL: pkg1.Identifier.PURL,
+			},
 			Vulnerability: dbTypes.Vulnerability{
 				Severity: dbTypes.SeverityLow.String(),
 			},
 		}
 		vuln2 = types.DetectedVulnerability{
-			VulnerabilityID: "CVE-2019-0002",
-			PkgName:         "foo",
-			PkgIdentifier: ftypes.PkgIdentifier{
-				PURL: &packageurl.PackageURL{
-					Type:      packageurl.TypeGolang,
-					Namespace: "github.com/aquasecurity",
-					Name:      "foo",
-					Version:   "4.5.6",
-				},
-			},
-			InstalledVersion: "1.2.3",
+			VulnerabilityID:  "CVE-2019-0002",
+			PkgName:          pkg1.Name,
+			InstalledVersion: pkg1.Version,
 			FixedVersion:     "1.2.4",
+			PkgIdentifier: ftypes.PkgIdentifier{
+				Hash: pkg1.Identifier.Hash,
+				PURL: pkg1.Identifier.PURL,
+			},
 			Vulnerability: dbTypes.Vulnerability{
 				Severity: dbTypes.SeverityCritical.String(),
 			},
@@ -243,8 +249,14 @@ func TestFilter(t *testing.T) {
 			name: "filter by VEX",
 			args: args{
 				report: types.Report{
+					ArtifactName: ".",
+					ArtifactType: ftypes.ArtifactFilesystem,
 					Results: types.Results{
 						types.Result{
+							Target:   "gobinary",
+							Class:    types.ClassLangPkg,
+							Type:     ftypes.GoBinary,
+							Packages: []ftypes.Package{pkg1},
 							Vulnerabilities: []types.DetectedVulnerability{
 								vuln1,
 								vuln2,
@@ -262,8 +274,14 @@ func TestFilter(t *testing.T) {
 				vexPath: "testdata/openvex.json",
 			},
 			want: types.Report{
+				ArtifactName: ".",
+				ArtifactType: ftypes.ArtifactFilesystem,
 				Results: types.Results{
 					types.Result{
+						Target:   "gobinary",
+						Class:    types.ClassLangPkg,
+						Type:     ftypes.GoBinary,
+						Packages: []ftypes.Package{pkg1},
 						Vulnerabilities: []types.DetectedVulnerability{
 							vuln2,
 						},
