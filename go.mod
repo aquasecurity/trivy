@@ -40,7 +40,7 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.6.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.4
-	github.com/containerd/containerd v1.7.13
+	github.com/containerd/containerd v1.7.16
 	github.com/csaf-poc/csaf_distribution/v3 v3.0.0
 	github.com/docker/docker v25.0.5+incompatible
 	github.com/docker/go-connections v0.5.0
@@ -235,7 +235,7 @@ require (
 	github.com/containerd/fifo v1.1.0 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.14.3 // indirect
-	github.com/containerd/ttrpc v1.2.2 // indirect
+	github.com/containerd/ttrpc v1.2.3 // indirect
 	github.com/containerd/typeurl/v2 v2.1.1 // indirect
 	github.com/cpuguy83/dockercfg v0.3.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
