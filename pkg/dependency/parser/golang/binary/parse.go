@@ -119,7 +119,7 @@ func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
 
 // parseLDFlags attempts to parse the binary's version from any `-ldflags` passed to `go build` at build time.
 func (p *Parser) parseLDFlags(name string, flags []string) string {
-	log.Debug("Parsing dependency's build info settings", "dependency", name, "-ldflags", flags)
+	p.logger.Debug("Parsing dependency's build info settings", "dependency", name, "-ldflags", flags)
 	fset := pflag.NewFlagSet("ldflags", pflag.ContinueOnError)
 	// This prevents the flag set from erroring out if other flags were provided.
 	// This helps keep the implementation small, so that only the -X flag is needed.
