@@ -72,6 +72,49 @@ func TestAnalyzer_PostAnalyze(t *testing.T) {
 			},
 		},
 		{
+			name: "dockerfile but with causes disabled",
+			fields: fields{
+				typ:        analyzer.TypeDockerfile,
+				newScanner: misconf.NewDockerfileScanner,
+				opts: analyzer.AnalyzerOptions{
+					MisconfScannerOption: misconf.ScannerOption{
+						Namespaces:              []string{"user"},
+						PolicyPaths:             []string{"testdata/rego"},
+						DisableEmbeddedPolicies: true,
+						DisableCauses:           true,
+					},
+				},
+			},
+			dir: "testdata/src",
+			want: &analyzer.AnalysisResult{
+				Misconfigurations: []types.Misconfiguration{
+					{
+						FileType: types.Dockerfile,
+						FilePath: "Dockerfile",
+						Successes: types.MisconfResults{
+							types.MisconfResult{
+								Namespace: "user.something",
+								Query:     "data.user.something.deny",
+								PolicyMetadata: types.PolicyMetadata{
+									ID:                 "TEST001",
+									AVDID:              "AVD-TEST-0001",
+									Type:               "Dockerfile Security Check",
+									Title:              "Test policy",
+									Description:        "This is a test policy.",
+									Severity:           "LOW",
+									RecommendedActions: "Have a cup of tea.",
+									References:         []string{"https://trivy.dev/"},
+								},
+								CauseMetadata: types.CauseMetadata{
+									// this should be empty
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "non-existent dir",
 			fields: fields{
 				typ:        analyzer.TypeDockerfile,

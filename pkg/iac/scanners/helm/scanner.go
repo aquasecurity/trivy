@@ -43,6 +43,8 @@ type Scanner struct {
 	mu                    sync.Mutex
 }
 
+func (s *Scanner) SetDisableCauses(b bool) {}
+
 func (s *Scanner) SetSpec(spec string) {
 	s.spec = spec
 }

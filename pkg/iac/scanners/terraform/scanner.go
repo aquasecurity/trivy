@@ -30,20 +30,25 @@ var _ ConfigurableTerraformScanner = (*Scanner)(nil)
 
 type Scanner struct { // nolint: gocritic
 	sync.Mutex
-	options               []options.ScannerOption
-	parserOpt             []options.ParserOption
-	executorOpt           []executor.Option
-	dirs                  map[string]struct{}
-	forceAllDirs          bool
-	policyDirs            []string
-	policyReaders         []io.Reader
-	regoScanner           *rego.Scanner
-	execLock              sync.RWMutex
-	debug                 debug.Logger
-	frameworks            []framework.Framework
-	spec                  string
-	loadEmbeddedLibraries bool
-	loadEmbeddedPolicies  bool
+	options                 []options.ScannerOption
+	parserOpt               []options.ParserOption
+	executorOpt             []executor.Option
+	dirs                    map[string]struct{}
+	forceAllDirs            bool
+	policyDirs              []string
+	policyReaders           []io.Reader
+	regoScanner             *rego.Scanner
+	execLock                sync.RWMutex
+	debug                   debug.Logger
+	frameworks              []framework.Framework
+	spec                    string
+	loadEmbeddedLibraries   bool
+	loadEmbeddedPolicies    bool
+	disableCodeHighlighting bool
+}
+
+func (s *Scanner) SetDisableCauses(b bool) {
+	s.disableCodeHighlighting = b
 }
 
 func (s *Scanner) SetSpec(spec string) {

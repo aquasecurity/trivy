@@ -24,6 +24,7 @@ type ConfigurableScanner interface {
 	SetRegoOnly(regoOnly bool)
 	SetRegoErrorLimit(limit int)
 	SetUseEmbeddedLibraries(bool)
+	SetDisableCauses(bool)
 }
 
 type ScannerOption func(s ConfigurableScanner)
@@ -62,6 +63,12 @@ func ScannerWithEmbeddedPolicies(embedded bool) ScannerOption {
 func ScannerWithEmbeddedLibraries(enabled bool) ScannerOption {
 	return func(s ConfigurableScanner) {
 		s.SetUseEmbeddedLibraries(enabled)
+	}
+}
+
+func ScannerWithDisabledCodeHighlighting(disabled bool) ScannerOption {
+	return func(s ConfigurableScanner) {
+		s.SetDisableCauses(disabled)
 	}
 }
 

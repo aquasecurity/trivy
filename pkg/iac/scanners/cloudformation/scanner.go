@@ -68,6 +68,8 @@ func (s *Scanner) addParserOptions(opt options.ParserOption) {
 	s.parserOptions = append(s.parserOptions, opt)
 }
 
+func (s *Scanner) SetDisableCauses(b bool) {}
+
 func (s *Scanner) SetFrameworks(frameworks []framework.Framework) {
 	s.frameworks = frameworks
 }

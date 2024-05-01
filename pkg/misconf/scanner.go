@@ -54,6 +54,7 @@ type ScannerOption struct {
 	DataPaths                []string
 	DisableEmbeddedPolicies  bool
 	DisableEmbeddedLibraries bool
+	DisableCauses            bool
 
 	HelmValues              []string
 	HelmValueFiles          []string
@@ -77,6 +78,7 @@ type Scanner struct {
 	fileType       detection.FileType
 	scanner        scanners.FSScanner
 	hasFilePattern bool
+	hasCause       bool
 }
 
 func NewAzureARMScanner(filePatterns []string, opt ScannerOption) (*Scanner, error) {
@@ -140,6 +142,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 	return &Scanner{
 		fileType:       t,
 		scanner:        scanner,
+		hasCause:       !opt.DisableCauses,
 		hasFilePattern: hasFilePattern(t, filePatterns),
 	}, nil
 }
@@ -165,7 +168,8 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 	}
 
 	configType := enablediacTypes[s.fileType]
-	misconfs := ResultsToMisconf(configType, s.scanner.Name(), results)
+
+	misconfs := processResults(configType, s.scanner.Name(), results, s.hasCause)
 
 	// Sort misconfigurations
 	for _, misconf := range misconfs {
@@ -217,6 +221,7 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		options.ScannerWithSkipRequiredCheck(true),
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
 		options.ScannerWithEmbeddedLibraries(!opt.DisableEmbeddedLibraries),
+		options.ScannerWithDisabledCodeHighlighting(opt.DisableCauses),
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -423,65 +428,76 @@ func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {
 	return fsys, dataPaths, nil
 }
 
-// ResultsToMisconf is exported for trivy-plugin-aqua purposes only
-func ResultsToMisconf(configType types.ConfigType, scannerName string, results scan.Results) []types.Misconfiguration {
+func processResults(configType types.ConfigType, scannerName string, results scan.Results, hasCause bool) []types.Misconfiguration {
 	misconfs := make(map[string]types.Misconfiguration)
 
 	for _, result := range results {
-		flattened := result.Flatten()
-
-		query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
-
-		ruleID := result.Rule().AVDID
-		if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
-			ruleID = result.Rule().Aliases[0]
-		}
-
-		cause := NewCauseWithCode(result)
-
-		misconfResult := types.MisconfResult{
-			Namespace: result.RegoNamespace(),
-			Query:     query,
-			Message:   flattened.Description,
-			PolicyMetadata: types.PolicyMetadata{
-				ID:                 ruleID,
-				AVDID:              result.Rule().AVDID,
-				Type:               fmt.Sprintf("%s Security Check", scannerName),
-				Title:              result.Rule().Summary,
-				Description:        result.Rule().Explanation,
-				Severity:           string(flattened.Severity),
-				RecommendedActions: flattened.Resolution,
-				References:         flattened.Links,
-			},
-			CauseMetadata: cause,
-			Traces:        result.Traces(),
-		}
-
-		filePath := flattened.Location.Filename
-		misconf, ok := misconfs[filePath]
-		if !ok {
-			misconf = types.Misconfiguration{
-				FileType: configType,
-				FilePath: filepath.ToSlash(filePath), // defsec return OS-aware path
-			}
-		}
-
-		if flattened.Warning {
-			misconf.Warnings = append(misconf.Warnings, misconfResult)
-		} else {
-			switch flattened.Status {
-			case scan.StatusPassed:
-				misconf.Successes = append(misconf.Successes, misconfResult)
-			case scan.StatusIgnored:
-				misconf.Exceptions = append(misconf.Exceptions, misconfResult)
-			case scan.StatusFailed:
-				misconf.Failures = append(misconf.Failures, misconfResult)
-			}
-		}
-		misconfs[filePath] = misconf
+		process(configType, scannerName, result, hasCause, misconfs)
 	}
 
 	return types.ToMisconfigurations(misconfs)
+}
+
+func process(configType types.ConfigType, scannerName string, result scan.Result, hasCause bool, misconfs map[string]types.Misconfiguration) {
+	flattened := result.Flatten()
+
+	query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
+
+	ruleID := result.Rule().AVDID
+	if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
+		ruleID = result.Rule().Aliases[0]
+	}
+
+	var cause types.CauseMetadata
+	if hasCause {
+		cause = NewCauseWithCode(result)
+	}
+
+	misconfResult := types.MisconfResult{
+		Namespace: result.RegoNamespace(),
+		Query:     query,
+		Message:   flattened.Description,
+		PolicyMetadata: types.PolicyMetadata{
+			ID:                 ruleID,
+			AVDID:              result.Rule().AVDID,
+			Type:               fmt.Sprintf("%s Security Check", scannerName),
+			Title:              result.Rule().Summary,
+			Description:        result.Rule().Explanation,
+			Severity:           string(flattened.Severity),
+			RecommendedActions: flattened.Resolution,
+			References:         flattened.Links,
+		},
+		CauseMetadata: cause,
+		Traces:        result.Traces(),
+	}
+
+	filePath := flattened.Location.Filename
+	misconf, ok := misconfs[filePath]
+	if !ok {
+		misconf = types.Misconfiguration{
+			FileType: configType,
+			FilePath: filepath.ToSlash(filePath), // defsec return OS-aware path
+		}
+	}
+
+	if flattened.Warning {
+		misconf.Warnings = append(misconf.Warnings, misconfResult)
+	} else {
+		switch flattened.Status {
+		case scan.StatusPassed:
+			misconf.Successes = append(misconf.Successes, misconfResult)
+		case scan.StatusIgnored:
+			misconf.Exceptions = append(misconf.Exceptions, misconfResult)
+		case scan.StatusFailed:
+			misconf.Failures = append(misconf.Failures, misconfResult)
+		}
+	}
+	misconfs[filePath] = misconf
+}
+
+// ResultsToMisconf is exported for trivy-plugin-aqua purposes only
+func ResultsToMisconf(configType types.ConfigType, scannerName string, results scan.Results) []types.Misconfiguration {
+	return processResults(configType, scannerName, results, true)
 }
 
 func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {

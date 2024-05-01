@@ -608,6 +608,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			K8sVersion:               opts.K8sVersion,
 			DisableEmbeddedPolicies:  disableEmbedded,
 			DisableEmbeddedLibraries: disableEmbedded,
+			DisableCauses:            opts.DisableCauses,
 			TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		}
 	}

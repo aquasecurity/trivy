@@ -47,6 +47,8 @@ type Scanner struct {
 	embeddedChecks map[string]*ast.Module
 }
 
+func (s *Scanner) SetDisableCauses(b bool) {}
+
 func (s *Scanner) SetUseEmbeddedLibraries(b bool) {
 	// handled externally
 }

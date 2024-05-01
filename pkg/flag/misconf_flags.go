@@ -77,6 +77,12 @@ var (
 		Default:    fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
 		Usage:      "OCI registry URL to retrieve policy bundle from",
 	}
+	DisableCauses = Flag[bool]{
+		Name:       "disable-causes",
+		ConfigName: "misconfiguration.disable-causes",
+		Default:    false,
+		Usage:      "disables cause output, useful if scanning large number of files at once",
+	}
 	MisconfigScannersFlag = Flag[[]string]{
 		Name:       "misconfig-scanners",
 		ConfigName: "misconfiguration.scanners",
@@ -90,6 +96,7 @@ type MisconfFlagGroup struct {
 	IncludeNonFailures     *Flag[bool]
 	ResetPolicyBundle      *Flag[bool]
 	PolicyBundleRepository *Flag[string]
+	DisableCauses          *Flag[bool]
 
 	// Values Files
 	HelmValues                 *Flag[[]string]
@@ -108,6 +115,7 @@ type MisconfOptions struct {
 	IncludeNonFailures     bool
 	ResetPolicyBundle      bool
 	PolicyBundleRepository string
+	DisableCauses          bool
 
 	// Values Files
 	HelmValues              []string
@@ -127,6 +135,7 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		IncludeNonFailures:     IncludeNonFailuresFlag.Clone(),
 		ResetPolicyBundle:      ResetPolicyBundleFlag.Clone(),
 		PolicyBundleRepository: PolicyBundleRepositoryFlag.Clone(),
+		DisableCauses:          DisableCauses.Clone(),
 
 		HelmValues:                 HelmSetFlag.Clone(),
 		HelmFileValues:             HelmSetFileFlag.Clone(),
@@ -160,6 +169,7 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 		f.TerraformExcludeDownloaded,
 		f.CloudformationParamVars,
 		f.MisconfigScanners,
+		f.DisableCauses,
 	}
 }
 
@@ -172,6 +182,7 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		IncludeNonFailures:      f.IncludeNonFailures.Value(),
 		ResetPolicyBundle:       f.ResetPolicyBundle.Value(),
 		PolicyBundleRepository:  f.PolicyBundleRepository.Value(),
+		DisableCauses:           f.DisableCauses.Value(),
 		HelmValues:              f.HelmValues.Value(),
 		HelmValueFiles:          f.HelmValueFiles.Value(),
 		HelmFileValues:          f.HelmFileValues.Value(),
