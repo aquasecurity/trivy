@@ -138,3 +138,108 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
+func TestParser_ParseLDFlags(t *testing.T) {
+	type args struct {
+		name  string
+		flags []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "with version suffix",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-s",
+					"-w",
+					"-X=foo=bar",
+					"-X='github.com/aquasecurity/trivy/pkg/version.version=v0.50.1'",
+				},
+			},
+			want: "v0.50.1",
+		},
+		{
+			name: "with version suffix titlecased",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-s",
+					"-w",
+					"-X=foo=bar",
+					"-X='github.com/aquasecurity/trivy/pkg/version.Version=v0.50.1'",
+				},
+			},
+			want: "v0.50.1",
+		},
+		{
+			name: "with ver suffix",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-s",
+					"-w",
+					"-X=foo=bar",
+					"-X='github.com/aquasecurity/trivy/pkg/version.ver=v0.50.1'",
+				},
+			},
+			want: "v0.50.1",
+		},
+		{
+			name: "with ver suffix titlecased",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-s",
+					"-w",
+					"-X=foo=bar",
+					"-X='github.com/aquasecurity/trivy/pkg/version.Ver=v0.50.1'",
+				},
+			},
+			want: "v0.50.1",
+		},
+		{
+			name: "with double quotted flag",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-s",
+					"-w",
+					"-X=foo=bar",
+					"-X=\"github.com/aquasecurity/trivy/pkg/version.Ver=0.50.1\"",
+				},
+			},
+			want: "0.50.1",
+		},
+		{
+			name: "with semver version without v prefix",
+			args: args{
+				name: "github.com/aquasecurity/trivy",
+				flags: []string{
+					"-s",
+					"-w",
+					"-X=foo=bar",
+					"-X='github.com/aquasecurity/trivy/pkg/version.Ver=0.50.1'",
+				},
+			},
+			want: "0.50.1",
+		},
+		{
+			name: "with no flags",
+			args: args{
+				name:  "github.com/aquasecurity/test",
+				flags: []string{},
+			},
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := binary.NewParser().(*binary.Parser)
+			assert.Equal(t, tt.want, p.ParseLDFlags(tt.args.name, tt.args.flags))
+		})
+	}
+}

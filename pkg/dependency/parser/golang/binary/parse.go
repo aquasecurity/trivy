@@ -63,7 +63,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			// set via `go build -ldflags='-X main.version=<semver>'`, so we fallback to this as.
 			// as a secondary source.
 			// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
-			Version:      cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.parseLDFlags(info.Main.Path, ldflags)),
+			Version:      cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.ParseLDFlags(info.Main.Path, ldflags)),
 			Relationship: types.RelationshipRoot,
 		},
 		{
@@ -117,8 +117,8 @@ func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
 	return nil
 }
 
-// parseLDFlags attempts to parse the binary's version from any `-ldflags` passed to `go build` at build time.
-func (p *Parser) parseLDFlags(name string, flags []string) string {
+// ParseLDFlags attempts to parse the binary's version from any `-ldflags` passed to `go build` at build time.
+func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	p.logger.Debug("Parsing dependency's build info settings", "dependency", name, "-ldflags", flags)
 	fset := pflag.NewFlagSet("ldflags", pflag.ContinueOnError)
 	// This prevents the flag set from erroring out if other flags were provided.
@@ -128,14 +128,14 @@ func (p *Parser) parseLDFlags(name string, flags []string) string {
 	// to `X` will cause the flag set to look for `--X` instead of `-X`.
 	// The flag can also be set multiple times, so a string slice is needed
 	// to handle that edge case.
-	var x []string
-	fset.StringSliceVarP(&x, "", "X", nil, "")
+	var x map[string]string
+	fset.StringToStringVarP(&x, "", "X", nil, "")
 	if err := fset.Parse(flags); err != nil {
 		p.logger.Error("Could not parse -ldflags found in build info", "err", err)
 		return ""
 	}
 
-	for _, xx := range x {
+	for key, val := range x {
 		// It's valid to set the -X flags with quotes so we trim any that might
 		// have been provided: Ex:
 		//
@@ -145,20 +145,26 @@ func (p *Parser) parseLDFlags(name string, flags []string) string {
 		// -X='main.version=1.0.0'
 		// -X="main.version=1.0.0"
 		// -X "main.version=1.0.0"
-		xx = strings.Trim(xx, `'"`)
-		key, val, found := strings.Cut(xx, "=")
-		if !found {
-			p.logger.Debug("Unable to parse an -ldflags -X flag value", "got", xx)
-			continue
-		}
-
-		key = strings.ToLower(key)
-		// The check for a 'ver' prefix enables the parser to pick up Trivy's own version value that's set.
-		if (strings.HasSuffix(key, "version") || strings.HasSuffix(key, "ver")) && semver.IsValid(val) {
+		key = strings.TrimLeft(key, `'"`)
+		val = strings.TrimRight(val, `'"`)
+		if isValidXKey(key) && isValidSemVer(val) {
 			return val
 		}
 	}
 
 	p.logger.Debug("Unable to detect dependency version used in `-ldflags` build info settings. Empty version used.", log.String("dependency", name))
 	return ""
+}
+
+func isValidXKey(key string) bool {
+	key = strings.ToLower(key)
+	// The check for a 'ver' prefix enables the parser to pick up Trivy's own version value that's set.
+	return strings.HasSuffix(key, "version") || strings.HasSuffix(key, "ver")
+}
+
+func isValidSemVer(ver string) bool {
+	// semver.IsValid strictly checks for the v prefix so prepending 'v'
+	// here and checking validaty again increases the chances that we
+	// parse a valid semver version.
+	return semver.IsValid(ver) || semver.IsValid("v"+ver)
 }
