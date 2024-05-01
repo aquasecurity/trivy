@@ -16,6 +16,7 @@ trivy config [flags] DIR
       --compliance string                 compliance report to generate
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
+      --disable-causes                    disables cause output, useful if scanning large number of files at once
       --enable-modules strings            [EXPERIMENTAL] module names to enable
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns

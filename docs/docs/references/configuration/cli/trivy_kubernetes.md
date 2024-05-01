@@ -39,6 +39,7 @@ trivy kubernetes [flags] [CONTEXT]
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
       --db-repository string              OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db:2")
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
+      --disable-causes                    disables cause output, useful if scanning large number of files at once
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
       --exclude-kinds strings             indicate the kinds exclude from scanning (example: node)

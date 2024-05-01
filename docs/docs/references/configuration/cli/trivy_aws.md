@@ -73,6 +73,7 @@ trivy aws [flags]
       --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
+      --disable-causes                    disables cause output, useful if scanning large number of files at once
       --endpoint string                   AWS Endpoint override
       --exit-code int                     specify exit code when any security issues are found
   -f, --format string                     format (table,json,template,sarif,cyclonedx,spdx,spdx-json,github,cosign-vuln) (default "table")
