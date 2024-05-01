@@ -202,7 +202,7 @@ func TestParser_ParseLDFlags(t *testing.T) {
 			want: "v0.50.1",
 		},
 		{
-			name: "with double quotted flag",
+			name: "with double quoted flag",
 			args: args{
 				name: "github.com/aquasecurity/trivy",
 				flags: []string{

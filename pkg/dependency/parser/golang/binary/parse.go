@@ -131,7 +131,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	var x map[string]string
 	fset.StringToStringVarP(&x, "", "X", nil, "")
 	if err := fset.Parse(flags); err != nil {
-		p.logger.Error("Could not parse -ldflags found in build info", "err", err)
+		p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
 		return ""
 	}
 
@@ -145,8 +145,8 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 		// -X='main.version=1.0.0'
 		// -X="main.version=1.0.0"
 		// -X "main.version=1.0.0"
-		key = strings.TrimLeft(key, `'"`)
-		val = strings.TrimRight(val, `'"`)
+		key = strings.TrimLeft(key, `'`)
+		val = strings.TrimRight(val, `'`)
 		if isValidXKey(key) && isValidSemVer(val) {
 			return val
 		}
@@ -164,7 +164,7 @@ func isValidXKey(key string) bool {
 
 func isValidSemVer(ver string) bool {
 	// semver.IsValid strictly checks for the v prefix so prepending 'v'
-	// here and checking validaty again increases the chances that we
+	// here and checking validity again increases the chances that we
 	// parse a valid semver version.
 	return semver.IsValid(ver) || semver.IsValid("v"+ver)
 }
