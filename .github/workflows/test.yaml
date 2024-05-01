@@ -43,7 +43,7 @@ jobs:
 
       - name: Lint
         id: lint
-        uses: golangci/golangci-lint-action@v4.0.0
+        uses: golangci/golangci-lint-action@v5.1.0
         with:
           version: v1.54
           args: --deadline=30m --out-format=line-number
