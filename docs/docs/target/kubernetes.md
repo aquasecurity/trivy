@@ -41,13 +41,13 @@ You can also specify a `kubeconfig` using the `--kubeconfig` flag:
 trivy k8s --kubeconfig ~/.kube/config2
 ```
 
+By default, all cluster resource images will be downloaded and scanned.
+
 ### Skip-images
 
 You can control whether Trivy will scan and download the cluster resource images. To disable this feature, add the --skip-images flag.
 
 - `--skip-images` flag will prevent the downloading and scanning of images (including vulnerabilities and secrets) in the cluster resources.
-
-By default, all cluster resource images will be downloaded and scanned.
 
 Example:
 
