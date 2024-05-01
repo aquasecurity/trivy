@@ -128,11 +128,7 @@ func (p *Parser) parseLDFlags(name string, flags []string) string {
 	// The flag can also be set multiple times, so a string slice is needed
 	// to handle that edge case.
 	var x []string
-	fset.StringSliceVarP(&x, "", "X", nil, `Set the value of the string variable in importpath named name to value.
-	This is only effective if the variable is declared in the source code either uninitialized
-	or initialized to a constant string expression. -X will not work if the initializer makes
-	a function call or refers to other variables.
-	Note that before Go 1.5 this option took two separate arguments.`)
+	fset.StringSliceVarP(&x, "", "X", nil, "")
 	if err := fset.Parse(flags); err != nil {
 		p.logger.Error("Could not parse -ldflags found in build info", "err", err)
 		return ""
