@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/spf13/pflag"
+	"golang.org/x/mod/semver"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
@@ -153,7 +154,7 @@ func (p *Parser) parseLDFlags(name string, flags []string) string {
 
 		key = strings.ToLower(key)
 		// The check for a 'ver' prefix enables the parser to pick up Trivy's own version value that's set.
-		if strings.HasSuffix(key, "version") || strings.HasSuffix(key, "ver") {
+		if (strings.HasSuffix(key, "version") || strings.HasSuffix(key, "ver")) && semver.IsValid(val) {
 			return val
 		}
 	}
