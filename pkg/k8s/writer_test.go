@@ -23,9 +23,6 @@ const (
 	tableFormat     = "table"
 	jsonFormat      = "json"
 	cycloneDXFormat = "cyclonedx"
-
-	workloadComponent = "workload"
-	infraComponent    = "infra"
 )
 
 var (
@@ -202,18 +199,16 @@ func TestReportWrite_Summary(t *testing.T) {
 		report         report.Report
 		opt            report.Option
 		scanners       types.Scanners
-		components     []string
 		severities     []dbTypes.Severity
 		expectedOutput string
 	}{
 		{
-			name: "Only config, all severities",
+			name: "Only config, all serverities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployOrionWithMisconfigs},
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{workloadComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
@@ -226,16 +221,24 @@ Workload Assessment
 ├───────────┼──────────────┼───┼───┼───┼───┼───┤
 │ default   │ Deploy/orion │ 1 │ 2 │ 1 │ 2 │ 1 │
 └───────────┴──────────────┴───┴───┴───┴───┴───┘
+Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+
+
+Infra Assessment
+┌───────────┬──────────┬───────────────────┐
+│ Namespace │ Resource │ Misconfigurations │
+│           │          ├───┬───┬───┬───┬───┤
+│           │          │ C │ H │ M │ L │ U │
+└───────────┴──────────┴───┴───┴───┴───┴───┘
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only vuln, all severities",
+			name: "Only vuln, all serverities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployOrionWithVulns},
 			},
 			scanners:   types.Scanners{types.VulnerabilityScanner},
-			components: []string{workloadComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
@@ -248,10 +251,19 @@ Workload Assessment
 ├───────────┼──────────────┼───┼───┼───┼───┼───┤
 │ default   │ Deploy/orion │ 2 │ 1 │ 2 │ 1 │ 1 │
 └───────────┴──────────────┴───┴───┴───┴───┴───┘
+Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+
+
+Infra Assessment
+┌───────────┬──────────┬───────────────────┐
+│ Namespace │ Resource │  Vulnerabilities  │
+│           │          ├───┬───┬───┬───┬───┤
+│           │          │ C │ H │ M │ L │ U │
+└───────────┴──────────┴───┴───┴───┴───┴───┘
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only rbac, all severities",
+			name: "Only rbac, all serverities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{roleWithMisconfig},
@@ -272,13 +284,12 @@ RBAC Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "Only secret, all severities",
+			name: "Only secret, all serverities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{deployLuaWithSecrets},
 			},
 			scanners:   types.Scanners{types.SecretScanner},
-			components: []string{workloadComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
@@ -291,19 +302,36 @@ Workload Assessment
 ├───────────┼────────────┼───┼───┼───┼───┼───┤
 │ default   │ Deploy/lua │ 1 │   │ 1 │   │   │
 └───────────┴────────────┴───┴───┴───┴───┴───┘
+Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+
+
+Infra Assessment
+┌───────────┬──────────┬───────────────────┐
+│ Namespace │ Resource │      Secrets      │
+│           │          ├───┬───┬───┬───┬───┤
+│           │          │ C │ H │ M │ L │ U │
+└───────────┴──────────┴───┴───┴───┴───┴───┘
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, only infra and severities",
+			name: "apiserver, only infra and serverities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
 			},
 			scanners:   types.Scanners{types.MisconfigScanner},
-			components: []string{infraComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
+
+Workload Assessment
+┌───────────┬──────────┬───────────────────┐
+│ Namespace │ Resource │ Misconfigurations │
+│           │          ├───┬───┬───┬───┬───┤
+│           │          │ C │ H │ M │ L │ U │
+└───────────┴──────────┴───┴───┴───┴───┴───┘
+Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+
 
 Infra Assessment
 ┌─────────────┬────────────────────┬───────────────────┐
@@ -316,7 +344,7 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, vuln,config,secret and severities",
+			name: "apiserver, vuln,config,secret and serverities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
@@ -326,10 +354,18 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				types.MisconfigScanner,
 				types.SecretScanner,
 			},
-			components: []string{infraComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
+
+Workload Assessment
+┌───────────┬──────────┬───────────────────┬───────────────────┬───────────────────┐
+│ Namespace │ Resource │  Vulnerabilities  │ Misconfigurations │      Secrets      │
+│           │          ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
+│           │          │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │ C │ H │ M │ L │ U │
+└───────────┴──────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+
 
 Infra Assessment
 ┌─────────────┬────────────────────┬───────────────────┬───────────────────┬───────────────────┐
@@ -342,7 +378,7 @@ Infra Assessment
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 		},
 		{
-			name: "apiserver, all misconfig and vuln scanners and severities",
+			name: "apiserver, all misconfig and vuln scanners and serverities",
 			report: report.Report{
 				ClusterName: "test",
 				Resources:   []report.Resource{apiseverPodWithMisconfigAndInfra},
@@ -350,10 +386,6 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			scanners: types.Scanners{
 				types.MisconfigScanner,
 				types.VulnerabilityScanner,
-			},
-			components: []string{
-				workloadComponent,
-				infraComponent,
 			},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
@@ -390,7 +422,6 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				Output:     &output,
 				Scanners:   tc.scanners,
 				Severities: tc.severities,
-				Components: tc.components,
 			}
 
 			err := Write(context.Background(), tc.report, opt)
