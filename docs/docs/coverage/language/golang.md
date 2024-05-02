@@ -1,5 +1,9 @@
 # Go
 
+## Data Sources
+The data sources are listed [here](../../scanner/vulnerability.md#data-sources-1).
+Trivy uses Go Vulnerability Database for standard packages, such as `net/http`, and uses GitHub Advisory Database for third-party packages.
+
 ## Features
 Trivy supports two types of Go scanning, Go Modules and binaries built by Go.
 
