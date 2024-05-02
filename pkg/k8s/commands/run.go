@@ -122,9 +122,7 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	operation.Exit(r.flagOpts, rpt.Failed())
-
-	return nil
+	return operation.Exit(r.flagOpts, rpt.Failed(), types.Metadata{})
 }
 
 // Full-cluster scanning with '--format table' without explicit '--report all' is not allowed so that it won't mess up user's terminal.

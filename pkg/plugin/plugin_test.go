@@ -140,7 +140,7 @@ func TestPlugin_Run(t *testing.T) {
 				GOOS:   "linux",
 				GOARCH: "amd64",
 			},
-			wantErr: "plugin exec: exit status 1",
+			wantErr: "exit status 1",
 		},
 	}
 	for _, tt := range tests {

@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var allSupportedServicesFunc = awsScanner.AllSupportedServices
@@ -170,6 +171,5 @@ func Run(ctx context.Context, opt flag.Options) error {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	operation.Exit(opt, r.Failed())
-	return nil
+	return operation.Exit(opt, r.Failed(), types.Metadata{})
 }
