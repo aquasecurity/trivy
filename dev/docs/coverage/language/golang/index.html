@@ -3787,13 +3787,14 @@ If there is a Go binary in your container image, Trivy automatically finds and s
 <p>It doesn't work with UPX-compressed binaries.</p>
 </div>
 <h4 id="empty-versions">Empty versions</h4>
-<p>There are times when Go uses the <code>(devel)</code> version for modules/dependencies and Trivy can't resolve them:</p>
+<p>There are times when Go uses the <code>(devel)</code> version for modules/dependencies.</p>
 <ul>
 <li>Only Go binaries installed using the <code>go install</code> command contain correct (semver) version for the main module. 
   In other cases, Go uses the <code>(devel)</code> version<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>.</li>
 <li>Dependencies replaced with local ones use the <code>(devel)</code> versions.</li>
 </ul>
-<p>In these cases, the version of such packages is empty.</p>
+<p>In the first case, Trivy will attempt to parse any <code>-ldflags</code> as a secondary source, and will leave the version
+empty if it cannot do so<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup>. For the second case, the version of such packages is empty.</p>
 <div class="footnote">
 <hr />
 <ol>
@@ -3805,6 +3806,9 @@ If there is a Go binary in your container image, Trivy automatically finds and s
 </li>
 <li id="fn:3">
 <p>See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>See https://github.com/golang/go/issues/63432#issuecomment-1751610604&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
