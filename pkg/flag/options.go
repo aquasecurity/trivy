@@ -360,13 +360,8 @@ func (o *Options) Align() {
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) && len(o.K8sOptions.Components) == 0 { // remove K8sOptions.Components validation check when vuln scan is supported for k8s report with cycloneDX
+	if o.Format == types.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
 		log.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
-		o.Scanners = nil
-	}
-
-	if o.Format == types.FormatCycloneDX && len(o.K8sOptions.Components) > 0 {
-		log.Info(`"k8s with --format cyclonedx" disable security scanning`)
 		o.Scanners = nil
 	}
 }

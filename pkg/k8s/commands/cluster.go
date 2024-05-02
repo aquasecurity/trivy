@@ -3,13 +3,13 @@ package commands
 import (
 	"context"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -34,7 +34,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 			trivyk8s.WithIncludeKinds(opts.IncludeKinds),
 			trivyk8s.WithExcludeOwned(opts.ExcludeOwned),
 		}
-		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && slices.Contains(opts.Components, "infra") {
+		if opts.Scanners.AnyEnabled(types.MisconfigScanner) && !opts.DisableNodeCollector {
 			artifacts, err = trivyk8s.New(cluster, k8sOpts...).ListArtifactAndNodeInfo(ctx,
 				trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
 				trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),
@@ -53,6 +53,10 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 		return xerrors.Errorf(`unknown format %q. Use "json" or "table" or "cyclonedx"`, opts.Format)
 	}
 
+	if !opts.DisableNodeCollector && !opts.Quiet {
+		log.InfoContext(ctx, "Node scanning is enabled")
+		log.InfoContext(ctx, "If you want to disable Node scanning via an in-cluster Job, please try '--disable-node-collector' to disable the Node-Collector job.")
+	}
 	runner := newRunner(opts, cluster.GetCurrentContext())
 	return runner.run(ctx, artifacts)
 }

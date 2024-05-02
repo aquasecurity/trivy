@@ -204,16 +204,15 @@ func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Cer
 	return caCertPool, cert, nil
 }
 
-func Exit(opts flag.Options, failedResults bool) {
-	if opts.ExitCode != 0 && failedResults {
-		os.Exit(opts.ExitCode)
-	}
-}
-
-func ExitOnEOL(opts flag.Options, m types.Metadata) {
+func Exit(opts flag.Options, failedResults bool, m types.Metadata) error {
 	if opts.ExitOnEOL != 0 && m.OS != nil && m.OS.Eosl {
 		log.Error("Detected EOL OS", log.String("family", string(m.OS.Family)),
 			log.String("version", m.OS.Name))
-		os.Exit(opts.ExitOnEOL)
+		return &types.ExitError{Code: opts.ExitOnEOL}
 	}
+
+	if opts.ExitCode != 0 && failedResults {
+		return &types.ExitError{Code: opts.ExitCode}
+	}
+	return nil
 }

@@ -15,19 +15,6 @@ var (
 		ConfigName: "kubernetes.kubeconfig",
 		Usage:      "specify the kubeconfig file path to use",
 	}
-	ComponentsFlag = Flag[[]string]{
-		Name:       "components",
-		ConfigName: "kubernetes.components",
-		Default: []string{
-			"workload",
-			"infra",
-		},
-		Values: []string{
-			"workload",
-			"infra",
-		},
-		Usage: "specify which components to scan",
-	}
 	K8sVersionFlag = Flag[string]{
 		Name:       "k8s-version",
 		ConfigName: "kubernetes.k8s-version",
@@ -37,6 +24,11 @@ var (
 		Name:       "tolerations",
 		ConfigName: "kubernetes.tolerations",
 		Usage:      "specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)",
+	}
+	DisableNodeCollector = Flag[bool]{
+		Name:       "disable-node-collector",
+		ConfigName: "kubernetes.disableNodeCollector",
+		Usage:      "When the flag is activated, the node-collector job will not be executed, thus skipping misconfiguration findings on the node.",
 	}
 	NodeCollectorNamespace = Flag[string]{
 		Name:       "node-collector-namespace",
@@ -54,6 +46,11 @@ var (
 		Name:       "exclude-owned",
 		ConfigName: "kubernetes.exclude.owned",
 		Usage:      "exclude resources that have an owner reference",
+	}
+	SkipImages = Flag[bool]{
+		Name:       "skip-images",
+		ConfigName: "kubernetes.skipImages",
+		Usage:      "skip the downloading and scanning of images (vulnerabilities and secrets) in the cluster resources",
 	}
 	ExcludeNodes = Flag[[]string]{
 		Name:       "exclude-nodes",
@@ -97,12 +94,13 @@ var (
 
 type K8sFlagGroup struct {
 	KubeConfig             *Flag[string]
-	Components             *Flag[[]string]
 	K8sVersion             *Flag[string]
 	Tolerations            *Flag[[]string]
+	DisableNodeCollector   *Flag[bool]
 	NodeCollectorImageRef  *Flag[string]
 	NodeCollectorNamespace *Flag[string]
 	ExcludeOwned           *Flag[bool]
+	SkipImages             *Flag[bool]
 	ExcludeNodes           *Flag[[]string]
 	ExcludeKinds           *Flag[[]string]
 	IncludeKinds           *Flag[[]string]
@@ -114,27 +112,28 @@ type K8sFlagGroup struct {
 
 type K8sOptions struct {
 	KubeConfig             string
-	Components             []string
 	K8sVersion             string
 	Tolerations            []corev1.Toleration
 	NodeCollectorImageRef  string
 	NodeCollectorNamespace string
 	ExcludeOwned           bool
+	DisableNodeCollector   bool
 	ExcludeNodes           map[string]string
 	ExcludeKinds           []string
 	IncludeKinds           []string
 	ExcludeNamespaces      []string
 	IncludeNamespaces      []string
 	QPS                    float32
+	SkipImages             bool
 	Burst                  int
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
 	return &K8sFlagGroup{
 		KubeConfig:             KubeConfigFlag.Clone(),
-		Components:             ComponentsFlag.Clone(),
 		K8sVersion:             K8sVersionFlag.Clone(),
 		Tolerations:            TolerationsFlag.Clone(),
+		DisableNodeCollector:   DisableNodeCollector.Clone(),
 		NodeCollectorNamespace: NodeCollectorNamespace.Clone(),
 		ExcludeOwned:           ExcludeOwned.Clone(),
 		ExcludeNodes:           ExcludeNodes.Clone(),
@@ -144,6 +143,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		IncludeNamespaces:      IncludeNamespaces.Clone(),
 		NodeCollectorImageRef:  NodeCollectorImageRef.Clone(),
 		QPS:                    QPS.Clone(),
+		SkipImages:             SkipImages.Clone(),
 		Burst:                  Burst.Clone(),
 	}
 }
@@ -155,8 +155,8 @@ func (f *K8sFlagGroup) Name() string {
 func (f *K8sFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.KubeConfig,
-		f.Components,
 		f.K8sVersion,
+		f.DisableNodeCollector,
 		f.Tolerations,
 		f.NodeCollectorNamespace,
 		f.ExcludeOwned,
@@ -167,6 +167,7 @@ func (f *K8sFlagGroup) Flags() []Flagger {
 		f.ExcludeNamespaces,
 		f.IncludeNamespaces,
 		f.QPS,
+		f.SkipImages,
 		f.Burst,
 	}
 }
@@ -199,14 +200,15 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 
 	return K8sOptions{
 		KubeConfig:             f.KubeConfig.Value(),
-		Components:             f.Components.Value(),
 		K8sVersion:             f.K8sVersion.Value(),
 		Tolerations:            tolerations,
+		DisableNodeCollector:   f.DisableNodeCollector.Value(),
 		NodeCollectorNamespace: f.NodeCollectorNamespace.Value(),
 		ExcludeOwned:           f.ExcludeOwned.Value(),
 		ExcludeNodes:           exludeNodeLabels,
 		NodeCollectorImageRef:  f.NodeCollectorImageRef.Value(),
 		QPS:                    float32(f.QPS.Value()),
+		SkipImages:             f.SkipImages.Value(),
 		ExcludeKinds:           f.ExcludeKinds.Value(),
 		IncludeKinds:           f.IncludeKinds.Value(),
 		ExcludeNamespaces:      f.ExcludeNamespaces.Value(),

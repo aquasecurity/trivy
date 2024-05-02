@@ -22,7 +22,7 @@ func TestParse(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/happy.lock",
+			inputFile: "testdata/happy_v1_case1.lock",
 			wantLibs: []types.Library{
 				{
 					ID:           "pkga/0.0.1",
@@ -72,7 +72,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name:      "happy path. lock file with revisions support",
-			inputFile: "testdata/happy2.lock",
+			inputFile: "testdata/happy_v1_case2.lock",
 			wantLibs: []types.Library{
 				{
 					ID:           "openssl/3.0.3",
@@ -109,12 +109,41 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path conan v2",
+			inputFile: "testdata/happy_v2.lock",
+			wantLibs: []types.Library{
+				{
+					ID:      "matrix/1.3",
+					Name:    "matrix",
+					Version: "1.3",
+					Locations: []types.Location{
+						{
+							StartLine: 5,
+							EndLine:   5,
+						},
+					},
+				},
+				{
+					ID:      "sound32/1.0",
+					Name:    "sound32",
+					Version: "1.0",
+					Locations: []types.Location{
+						{
+							StartLine: 4,
+							EndLine:   4,
+						},
+					},
+				},
+			},
+			wantDeps: []types.Dependency{},
+		},
+		{
 			name:      "happy path. lock file without dependencies",
-			inputFile: "testdata/empty.lock",
+			inputFile: "testdata/empty_v1.lock",
 		},
 		{
 			name:      "sad path. wrong ref format",
-			inputFile: "testdata/sad.lock",
+			inputFile: "testdata/sad_v1.lock",
 		},
 	}
 

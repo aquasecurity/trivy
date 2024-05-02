@@ -115,16 +115,13 @@ func (r *runner) run(ctx context.Context, artifacts []*k8sArtifacts.Artifact) er
 		Report:     r.flagOpts.ReportFormat,
 		Output:     output,
 		Severities: r.flagOpts.Severities,
-		Components: r.flagOpts.Components,
 		Scanners:   r.flagOpts.ScanOptions.Scanners,
 		APIVersion: r.flagOpts.AppVersion,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	operation.Exit(r.flagOpts, rpt.Failed())
-
-	return nil
+	return operation.Exit(r.flagOpts, rpt.Failed(), types.Metadata{})
 }
 
 // Full-cluster scanning with '--format table' without explicit '--report all' is not allowed so that it won't mess up user's terminal.

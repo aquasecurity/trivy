@@ -130,6 +130,8 @@ func loadPluginCommands() []*cobra.Command {
 				return nil
 			},
 			DisableFlagParsing: true,
+			SilenceUsage:       true,
+			SilenceErrors:      true,
 		}
 		commands = append(commands, cmd)
 	}

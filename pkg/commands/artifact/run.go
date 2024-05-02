@@ -452,10 +452,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return xerrors.Errorf("report error: %w", err)
 	}
 
-	operation.ExitOnEOL(opts, report.Metadata)
-	operation.Exit(opts, report.Results.Failed())
-
-	return nil
+	return operation.Exit(opts, report.Results.Failed(), report.Metadata)
 }
 
 func disabledAnalyzers(opts flag.Options) []analyzer.Type {
