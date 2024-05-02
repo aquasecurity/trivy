@@ -75,16 +75,18 @@ $ trivy rootfs ./your_binary
     It doesn't work with UPX-compressed binaries.
 
 #### Empty versions
-There are times when Go uses the `(devel)` version for modules/dependencies and Trivy can't resolve them:
+There are times when Go uses the `(devel)` version for modules/dependencies.
 
 - Only Go binaries installed using the `go install` command contain correct (semver) version for the main module. 
   In other cases, Go uses the `(devel)` version[^3].
 - Dependencies replaced with local ones use the `(devel)` versions.
 
-In these cases, the version of such packages is empty.
+In the first case, Trivy will attempt to parse any `-ldflags` as a secondary source, and will leave the version
+empty if it cannot do so[^4]. For the second case, the version of such packages is empty.
 
 [^1]: It doesn't require the Internet access.
 [^2]: Need to download modules to local cache beforehand
 [^3]: See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477
+[^4]: See https://github.com/golang/go/issues/63432#issuecomment-1751610604
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
