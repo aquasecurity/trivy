@@ -1896,6 +1896,13 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#data-sources" class="md-nav__link">
+    Data Sources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#features" class="md-nav__link">
     Features
   </a>
@@ -3613,6 +3620,13 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#data-sources" class="md-nav__link">
+    Data Sources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#features" class="md-nav__link">
     Features
   </a>
@@ -3671,6 +3685,9 @@ You're not viewing the latest version.
 
 
 <h1 id="go">Go</h1>
+<h2 id="data-sources">Data Sources</h2>
+<p>The data sources are listed <a href="../../../scanner/vulnerability/#data-sources-1">here</a>.
+Trivy uses Go Vulnerability Database for standard packages, such as <code>net/http</code>, and uses GitHub Advisory Database for third-party packages.</p>
 <h2 id="features">Features</h2>
 <p>Trivy supports two types of Go scanning, Go Modules and binaries built by Go.</p>
 <p>The following scanners are supported.</p>
@@ -3706,6 +3723,7 @@ You're not viewing the latest version.
 <th align="center">Offline<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></th>
 <th align="left">Dev dependencies</th>
 <th align="center"><a href="../../../configuration/reporting/#show-origins-of-vulnerable-dependencies">Dependency graph</a></th>
+<th align="center">Stdlib</th>
 </tr>
 </thead>
 <tbody>
@@ -3714,12 +3732,14 @@ You're not viewing the latest version.
 <td align="center">✅</td>
 <td align="left">Include</td>
 <td align="center">✅<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+<td align="center">-</td>
 </tr>
 <tr>
 <td>Binaries</td>
 <td align="center">✅</td>
 <td align="left">Exclude</td>
 <td align="center">-</td>
+<td align="center">✅<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></td>
 </tr>
 </tbody>
 </table>
@@ -3794,7 +3814,7 @@ If there is a Go binary in your container image, Trivy automatically finds and s
 <li>Dependencies replaced with local ones use the <code>(devel)</code> versions.</li>
 </ul>
 <p>In the first case, Trivy will attempt to parse any <code>-ldflags</code> as a secondary source, and will leave the version
-empty if it cannot do so<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup>. For the second case, the version of such packages is empty.</p>
+empty if it cannot do so<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup>. For the second case, the version of such packages is empty.</p>
 <div class="footnote">
 <hr />
 <ol>
@@ -3808,7 +3828,10 @@ empty if it cannot do so<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4
 <p>See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
-<p>See https://github.com/golang/go/issues/63432#issuecomment-1751610604&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p>Identify the Go version used to compile the binary and detect its vulnerabilities&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:5">
+<p>See https://github.com/golang/go/issues/63432#issuecomment-1751610604&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
