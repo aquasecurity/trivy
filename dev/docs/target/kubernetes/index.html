@@ -1114,29 +1114,22 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#scope" class="md-nav__link">
-    Scope
+  <a href="#skip-images" class="md-nav__link">
+    Skip-images
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#cluster" class="md-nav__link">
-    Cluster
+  <a href="#includeexclude-kinds" class="md-nav__link">
+    Include/Exclude Kinds
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#namespace" class="md-nav__link">
-    Namespace
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#node" class="md-nav__link">
-    Node
+  <a href="#includeexclude-namespaces" class="md-nav__link">
+    Include/Exclude Namespaces
   </a>
   
 </li>
@@ -1151,12 +1144,33 @@ You're not viewing the latest version.
     Control Plane and Node Components Vulnerability Scanning
   </a>
   
-    <nav class="md-nav" aria-label="Control Plane and Node Components Vulnerability Scanning">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#node-collector" class="md-nav__link">
+    Node-Collector
+  </a>
+  
+    <nav class="md-nav" aria-label="Node-Collector">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#components-types" class="md-nav__link">
-    Components types
+  <a href="#disable-node-collector" class="md-nav__link">
+    Disable Node Collector
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#taints-and-tolerations" class="md-nav__link">
+    Taints and Tolerations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exclude-nodes-by-label" class="md-nav__link">
+    Exclude Nodes by Label
   </a>
   
 </li>
@@ -3661,29 +3675,22 @@ You're not viewing the latest version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#scope" class="md-nav__link">
-    Scope
+  <a href="#skip-images" class="md-nav__link">
+    Skip-images
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#cluster" class="md-nav__link">
-    Cluster
+  <a href="#includeexclude-kinds" class="md-nav__link">
+    Include/Exclude Kinds
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#namespace" class="md-nav__link">
-    Namespace
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#node" class="md-nav__link">
-    Node
+  <a href="#includeexclude-namespaces" class="md-nav__link">
+    Include/Exclude Namespaces
   </a>
   
 </li>
@@ -3698,12 +3705,33 @@ You're not viewing the latest version.
     Control Plane and Node Components Vulnerability Scanning
   </a>
   
-    <nav class="md-nav" aria-label="Control Plane and Node Components Vulnerability Scanning">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#node-collector" class="md-nav__link">
+    Node-Collector
+  </a>
+  
+    <nav class="md-nav" aria-label="Node-Collector">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#components-types" class="md-nav__link">
-    Components types
+  <a href="#disable-node-collector" class="md-nav__link">
+    Disable Node Collector
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#taints-and-tolerations" class="md-nav__link">
+    Taints and Tolerations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exclude-nodes-by-label" class="md-nav__link">
+    Exclude Nodes by Label
   </a>
   
 </li>
@@ -3762,7 +3790,7 @@ Trivy can also be installed <em>inside</em> your cluster as a Kubernetes Operato
 <p>When scanning a Kubernetes cluster, Trivy differentiates between the following:</p>
 <ol>
 <li>Cluster infrastructure (e.g api-server, kubelet, addons)</li>
-<li>Cluster configuration (e.g Roles, ClusterRoles). </li>
+<li>Cluster configuration (e.g Roles, ClusterRoles).</li>
 <li>Application workloads (e.g nginx, postgresql).</li>
 </ol>
 <p>When scanning any of the above, the container image is scanned separately to the Kubernetes resource definition (the YAML manifest) that defines the resource.</p>
@@ -3780,75 +3808,106 @@ Trivy can also be installed <em>inside</em> your cluster as a Kubernetes Operato
 </ul>
 <h2 id="kubernetes-target-configurations">Kubernetes target configurations</h2>
 <p>Trivy follows the behavior of the <code>kubectl</code> tool as much as possible.</p>
-<h3 id="scope">Scope</h3>
-<p>The command expects an argument that selects the scope of the scan (similarly to how <code>kubectl</code> expects an argument after <code>kubectl get</code>). This argument can be:
-1. A Kubernetes Kind. e.g <code>pod</code>, <code>deployment</code>, etc. 
-2. A Kubernetes Resource. e.g <code>pods/mypod</code>, etc.
-3. <code>all</code>. Scan common workload kinds, as listed <a href="https://github.com/aquasecurity/trivy-kubernetes/blob/bf8cc2a00d9772e0aa271f06d375b936152b54b1/pkg/k8s/k8s.go#L296:L314">here</a>
-4. <code>cluster</code> scan the entire cluster including all namespaced resources and cluster level resources.</p>
-<p>Examples:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s all
-trivy k8s pods
-trivy k8s deploy myapp
-trivy k8s pod/mypod
-trivy k8s pods,deploy
-trivy k8s cluster
+<div class="highlight"><pre><span></span><code>trivy k8s <span class="o">[</span>flags<span class="o">]</span> <span class="o">[</span>CONTEXT<span class="o">]</span> -  <span class="k">if</span> the target name <span class="o">[</span>CONTEXT<span class="o">]</span> is not specified, the default will be used.
 </code></pre></div>
-<p>Note that the scope argument must appear last in the command line, after any other flag.</p>
-<h3 id="cluster">Cluster</h3>
+<p>for example:</p>
+<div class="highlight"><pre><span></span><code>trivy k8s --report summary
+</code></pre></div>
 <p>By default Trivy will look for a <a href="https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/"><code>kubeconfig</code> configuration file in the default location</a>, and use the default cluster that is specified.<br />
 You can also specify a <code>kubeconfig</code> using the <code>--kubeconfig</code> flag:</p>
 <div class="highlight"><pre><span></span><code>trivy k8s --kubeconfig ~/.kube/config2
 </code></pre></div>
-<h3 id="namespace">Namespace</h3>
-<p>By default Trivy will scan all namespaces (following <code>kubectl</code> behavior). To specify a namespace use the <code>--namespace</code> flag:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s --kubeconfig ~/.kube/config2 --namespace default
+<p>By default, all cluster resource images will be downloaded and scanned.</p>
+<h3 id="skip-images">Skip-images</h3>
+<p>You can control whether Trivy will scan and download the cluster resource images. To disable this feature, add the --skip-images flag.</p>
+<ul>
+<li><code>--skip-images</code> flag will prevent the downloading and scanning of images (including vulnerabilities and secrets) in the cluster resources.</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>trivy k8s --report summary --skip-images
 </code></pre></div>
-<h3 id="node">Node</h3>
-<p>You can exclude specific nodes from the scan using the <code>--exclude-nodes</code> flag, which takes a label in the format <code>label-name:label-value</code> and excludes all matching nodes:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s cluster --report summary --exclude-nodes kubernetes.io/arch:arm6
+<h3 id="includeexclude-kinds">Include/Exclude Kinds</h3>
+<p>You can control which kinds of resources will be discovered using the <code>--include-kinds</code> or <code>--exclude-kinds</code> comma-separated flags:</p>
+<p><strong><em>Note:</em></strong> Both flags (<code>--include-kinds</code> or <code>--exclude-kinds</code>) cannot be set in conjunction.</p>
+<ul>
+<li><code>--include-kinds</code> will include the listed kinds in cluster scanning.</li>
+<li><code>--exclude-kinds</code> will exclude the listed kinds from cluster scanning.</li>
+</ul>
+<p>By default, all kinds will be included in cluster scanning.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>trivy k8s --report summary --exclude-kinds node,pod
+</code></pre></div>
+<h3 id="includeexclude-namespaces">Include/Exclude Namespaces</h3>
+<p>You can control which namespaces will be discovered using the <code>--include-namespaces</code> or <code>--exclude-namespaces</code> comma-separated flags:</p>
+<p><strong><em>Note:</em></strong> Both flags (<code>--include-namespaces</code> or <code>--exclude-namespaces</code>) cannot be set in conjunction.</p>
+<ul>
+<li><code>--include-namespaces</code> will include the listed namespaces in cluster scanning.</li>
+<li><code>--exclude-namespaces</code> will exclude the listed namespaces from cluster scanning.</li>
+</ul>
+<p>By default, all namespaces will be included in cluster scanning.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>trivy k8s --report summary --exclude-namespace dev-system,staging-system
 </code></pre></div>
 <h2 id="control-plane-and-node-components-vulnerability-scanning">Control Plane and Node Components Vulnerability Scanning</h2>
-<p>Trivy is capable of discovering Kubernetes control plane (apiserver, controller-manager and etc) and node components(kubelet, kube-proxy and etc), matching them against the <a href="https://github.com/aquasecurity/vuln-list-k8s">official Kubernetes vulnerability database feed</a>, and reporting any vulnerabilities it finds</p>
-<div class="highlight"><pre><span></span><code>trivy k8s cluster --scanners vuln  --report all
+<p>Trivy is capable of discovering Kubernetes control plane (apiserver, controller-manager and etc) and node components(kubelet, kube-proxy and etc), matching them against the <a href="https://github.com/aquasecurity/vuln-list-k8s">official Kubernetes vulnerability database feed</a>, and reporting any vulnerabilities it finds.</p>
+<p>To read more about KBOM, see the <a href="../sbom/#kbom">documentation for Kubernetes scanning</a>.</p>
+<div class="highlight"><pre><span></span><code>trivy k8s --scanners vuln  --report all
 
-NodeComponents/kind-control-plane (kubernetes)
+NodeComponents/kind-control-plane <span class="o">(</span>kubernetes<span class="o">)</span>
 
-Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 2, CRITICAL: 0)
+Total: <span class="m">3</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">1</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">2</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 ┌────────────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────────┬───────────────────────────────────────────────────┐
 │    Library     │ Vulnerability  │ Severity │ Status │ Installed Version │          Fixed Version           │                       Title                       │
 ├────────────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────────┼───────────────────────────────────────────────────┤
-│ k8s.io/kubelet │ CVE-2023-2431  │ LOW      │ fixed  │ 1.21.1            │ 1.24.14, 1.25.10, 1.26.5, 1.27.2 │ Bypass of seccomp profile enforcement             │
+│ k8s.io/kubelet │ CVE-2023-2431  │ LOW      │ fixed  │ <span class="m">1</span>.21.1            │ <span class="m">1</span>.24.14, <span class="m">1</span>.25.10, <span class="m">1</span>.26.5, <span class="m">1</span>.27.2 │ Bypass of seccomp profile enforcement             │
 │                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2023-2431         │
 │                ├────────────────┼──────────┤        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
-│                │ CVE-2021-25741 │ HIGH     │        │                   │ 1.19.16, 1.20.11, 1.21.5, 1.22.1 │ Symlink exchange can allow host filesystem access │
+│                │ CVE-2021-25741 │ HIGH     │        │                   │ <span class="m">1</span>.19.16, <span class="m">1</span>.20.11, <span class="m">1</span>.21.5, <span class="m">1</span>.22.1 │ Symlink exchange can allow host filesystem access │
 │                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25741        │
 │                ├────────────────┤          │        │                   ├──────────────────────────────────┼───────────────────────────────────────────────────┤
-│                │ CVE-2021-25749 │          │        │                   │ 1.22.14, 1.23.11, 1.24.5         │ runAsNonRoot logic bypass for Windows containers  │
+│                │ CVE-2021-25749 │          │        │                   │ <span class="m">1</span>.22.14, <span class="m">1</span>.23.11, <span class="m">1</span>.24.5         │ runAsNonRoot logic bypass <span class="k">for</span> Windows containers  │
 │                │                │          │        │                   │                                  │ https://avd.aquasec.com/nvd/cve-2021-25749        │
 └────────────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┘
 </code></pre></div>
-<h3 id="components-types">Components types</h3>
-<p>You can control what kinds of components are discovered using the <code>--components</code> flag:
-- <code>--components infra</code> will discover only cluster infrastructure components.
-- <code>--components workload</code> will discover only application workloads.
-- If the flag is omitted: infra, workloads, and RBAC are discovered.</p>
+<h2 id="node-collector">Node-Collector</h2>
+<p>Node-collector is a scan job that collects node configuration parameters and permission information. This information will be evaluated against Kubernetes hardening (e.g. CIS benchmark) and best practices values. The scan results will be output in infrastructure assessment and CIS benchmark compliance reports.</p>
+<h3 id="disable-node-collector">Disable Node Collector</h3>
+<p>You can control whether the node scan-job (<code>node-collector</code>) will run in the cluster. To disable it, add the <code>--disable-node-collector</code> flag  </p>
+<ul>
+<li><code>--disable-node-collector</code> This flag will exclude findings related to Node (infra assessment) misconfigurations</li>
+</ul>
+<p>By default, the node scan-job (<code>node-collector</code>) will run in the cluster.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>trivy k8s --report summary --disable-node-collector
+</code></pre></div>
+<h3 id="taints-and-tolerations">Taints and Tolerations</h3>
+<p>The node-collector scan-job will run on every node. In case the node has been tainted, it is possible to add toleration to the scan job for it to be scheduled on the tainted node. for more details <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">see k8s docs</a></p>
+<ul>
+<li><code>--tolerations  key1=value1:NoExecute,key2=value2:NoSchedule</code> this flag wil enable node-collector to be schedule on tainted Node</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>trivy k8s --report summary --tolerations  <span class="nv">key1</span><span class="o">=</span>value1:NoExecute,key2<span class="o">=</span>value2:NoSchedule
+</code></pre></div>
+<h3 id="exclude-nodes-by-label">Exclude Nodes by Label</h3>
+<p>You can exclude specific nodes from the scan using the <code>--exclude-nodes</code> flag, which takes a label in the format <code>label-name:label-value</code> and excludes all matching nodes:</p>
+<div class="highlight"><pre><span></span><code>trivy k8s --report summary --exclude-nodes kubernetes.io/arch:arm6
+</code></pre></div>
 <h2 id="reporting-and-filtering">Reporting and filtering</h2>
 <p>Since scanning an entire cluster for any security issue can be overwhelming, By default Trivy summarizes the results in a simple "summary" view.
 By scoping the scan on a specific resource, you can see the detailed report.
 You can always choose the report granularity using the <code>--report summary</code>/<code>--report all</code> flag.</p>
 <p>Scan a full cluster and generate a simple summary report:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s --report=summary cluster
+<div class="highlight"><pre><span></span><code>trivy k8s --report<span class="o">=</span>summary
 </code></pre></div>
 <p><img alt="k8s Summary Report" src="../../../imgs/trivy-k8s.png" /></p>
 <p>Filter by severity:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s --severity=CRITICAL --report=all cluster
+<div class="highlight"><pre><span></span><code>trivy k8s --severity=CRITICAL --report=all
 </code></pre></div>
 <p>Filter by scanners (Vulnerabilities, Secrets or Misconfigurations):</p>
-<div class="highlight"><pre><span></span><code>trivy k8s --scanners=secret --report=summary cluster
+<div class="highlight"><pre><span></span><code>trivy k8s --scanners=secret --report=summary
 # or
-trivy k8s --scanners=misconfig --report=summary cluster
+trivy k8s --scanners=misconfig --report=summary
 </code></pre></div>
 <p>The supported output formats are <code>table</code>, which is the default, and <code>json</code>.</p>
 <div class="highlight"><pre><span></span><code>trivy k8s --format json -o results.json cluster
@@ -4044,25 +4103,25 @@ For an overview of Trivy's Compliance feature, including working with custom com
 </table>
 <p>Examples:</p>
 <p>Scan the cluster for Kubernetes Pod Security Standards Baseline compliance:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=k8s-pss-baseline --report summary
+<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-pss-baseline --report summary
 </code></pre></div>
 <p>Get the detailed report for checks:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=k8s-cis --report all
+<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-cis --report all
 </code></pre></div>
 <p>Get summary report in JSON format:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=k8s-cis --report summary --format json
+<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-cis --report summary --format json
 </code></pre></div>
 <p>Get detailed report in JSON format:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=k8s-cis --report all --format json
+<div class="highlight"><pre><span></span><code>trivy k8s --compliance=k8s-cis --report all --format json
 </code></pre></div>
 <h2 id="kbom">KBOM</h2>
 <p>KBOM, Kubernetes Bill of Materials, is a manifest of all the important components that make up your Kubernetes cluster – Control plane components, Node Components, and Addons, including their versions and images. Which “api-server” version are you currently running? Which flavor of "kubelet" is running on each node? What kind of etcd or storage are you currently using? And most importantly – are there any vulnerabilities known to affect these components? These are all questions that KBOM can help you answer.<br />
 For more background on KBOM, see <a href="https://blog.aquasec.com/introducing-kbom-kubernetes-bill-of-materials">here</a>.</p>
 <p>Trivy can generate KBOM in CycloneDX format:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --format cyclonedx --output mykbom.cdx.json
+<div class="highlight"><pre><span></span><code>trivy k8s --format cyclonedx --output mykbom.cdx.json
 </code></pre></div>
 <p>Trivy can also scan that generated KBOM (or any SBOM) for vulnerabilities:</p>
-<div class="highlight"><pre><span></span><code>$ trivy sbom mykbom.cdx.json
+<div class="highlight"><pre><span></span><code>trivy sbom mykbom.cdx.json
 </code></pre></div>
 <details>
 <summary>Result</summary>
