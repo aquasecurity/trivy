@@ -96,6 +96,7 @@ trivy kubernetes [flags] [CONTEXT]
       --skip-db-update                    skip updating vulnerability database
       --skip-dirs strings                 specify the directories or glob patterns to skip
       --skip-files strings                specify the files or glob patterns to skip
+      --skip-images                       skip the downloading and scanning of images (vulnerabilities and secrets) in the cluster resources
       --skip-java-db-update               skip updating Java index database
       --skip-policy-update                skip fetching rego policy updates
   -t, --template string                   output template
