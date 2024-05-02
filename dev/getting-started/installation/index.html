@@ -3851,9 +3851,9 @@ sudo yum -y install trivy
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Add repository setting to <code>/etc/apt/sources.list.d</code>.</p>
-<div class="highlight"><pre><span></span><code>sudo apt-get install wget apt-transport-https gnupg lsb-release
+<div class="highlight"><pre><span></span><code>sudo apt-get install wget apt-transport-https gnupg
 wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key <span class="p">|</span> gpg --dearmor <span class="p">|</span> sudo tee /usr/share/keyrings/trivy.gpg &gt; /dev/null
-<span class="nb">echo</span> <span class="s2">&quot;deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb </span><span class="k">$(</span>lsb_release -sc<span class="k">)</span><span class="s2"> main&quot;</span> <span class="p">|</span> sudo tee -a /etc/apt/sources.list.d/trivy.list
+<span class="nb">echo</span> <span class="s2">&quot;deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main&quot;</span> <span class="p">|</span> sudo tee -a /etc/apt/sources.list.d/trivy.list
 sudo apt-get update
 sudo apt-get install trivy
 </code></pre></div>
