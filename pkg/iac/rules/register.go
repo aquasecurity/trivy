@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy-policies/specs"
+	"github.com/aquasecurity/trivy-checks/specs"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	dftypes "github.com/aquasecurity/trivy/pkg/iac/types"

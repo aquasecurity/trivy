@@ -28,8 +28,6 @@ The `exception` rule must be defined under `namespace.exceptions`.
 
 This example exempts all built-in policies for Kubernetes.
 
-For more details, see [an example][ns-example].
-
 ## Rule-based exceptions
 There are some cases where you need more flexibility and granularity in defining which cases to exempt.
 Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.
@@ -87,12 +85,8 @@ If you want to apply rule-based exceptions to built-in policies, you have to def
     }
     ```
 
-This exception is applied to [KSV012][ksv012] in trivy-policies.
-You can get the package names in the [trivy-policies repository][trivy-policies] or the JSON output from Trivy.
+This exception is applied to [KSV012][ksv012] in trivy-checks.
+You can get the package names in the [trivy-checks repository][trivy-checks] or the JSON output from Trivy.
 
-For more details, see [an example][rule-example].
-
-[ns-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/namespace-exception
-[rule-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/rule-exception
-[ksv012]: https://github.com/aquasecurity/trivy-policies/blob/main/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego 
-[trivy-policies]: https://github.com/aquasecurity/trivy-policies/
+[ksv012]: https://github.com/aquasecurity/trivy-checks/blob/f36a5b732c4b1293a720c40baab0a7c106ea455e/checks/kubernetes/pss/restricted/3_runs_as_root.rego 
+[trivy-checks]: https://github.com/aquasecurity/trivy-checks/

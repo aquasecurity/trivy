@@ -149,13 +149,13 @@ func showDBInfo(cacheDir string) error {
 }
 
 // InitBuiltinPolicies downloads the built-in policies and loads them
-func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool, policyBundleRepository string, registryOpts ftypes.RegistryOptions) ([]string, error) {
+func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool, checkBundleRepository string, registryOpts ftypes.RegistryOptions) ([]string, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	client, err := policy.NewClient(cacheDir, quiet, policyBundleRepository)
+	client, err := policy.NewClient(cacheDir, quiet, checkBundleRepository)
 	if err != nil {
-		return nil, xerrors.Errorf("policy client error: %w", err)
+		return nil, xerrors.Errorf("check client error: %w", err)
 	}
 
 	needsUpdate := false
@@ -177,11 +177,11 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 	policyPaths, err := client.LoadBuiltinPolicies()
 	if err != nil {
 		if skipUpdate {
-			msg := "No downloadable policies were loaded as --skip-policy-update is enabled"
+			msg := "No downloadable policies were loaded as --skip-check-update is enabled"
 			log.Info(msg)
 			return nil, xerrors.Errorf(msg)
 		}
-		return nil, xerrors.Errorf("policy load error: %w", err)
+		return nil, xerrors.Errorf("check load error: %w", err)
 	}
 	return policyPaths, nil
 }

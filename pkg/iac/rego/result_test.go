@@ -17,7 +17,7 @@ func Test_parseResult(t *testing.T) {
 			input: nil,
 			want: regoResult{
 				Managed: true,
-				Message: "Rego policy resulted in DENY",
+				Message: "Rego check resulted in DENY",
 			},
 		},
 		{

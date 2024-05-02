@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"sort"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/sts"
@@ -160,6 +161,10 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	log.DebugContext(ctx, "Writing report to output...")
+
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Rule().AVDID < results[j].Rule().AVDID
+	})
 
 	res := results.GetFailed()
 	if opt.MisconfOptions.IncludeNonFailures {

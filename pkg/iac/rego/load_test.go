@@ -8,7 +8,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	trivy_policies "github.com/aquasecurity/trivy-policies"
+	checks "github.com/aquasecurity/trivy-checks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -197,7 +197,7 @@ deny {
 			}
 
 			fsys := fstest.MapFS(tt.files)
-			trivy_policies.EmbeddedPolicyFileSystem = embeddedChecksFS
+			checks.EmbeddedPolicyFileSystem = embeddedChecksFS
 			err := scanner.LoadPolicies(false, false, fsys, []string{"."}, nil)
 
 			if tt.expectedErr != "" {

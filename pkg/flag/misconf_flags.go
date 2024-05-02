@@ -15,10 +15,17 @@ import (
 //	  config-policy: "custom-policy/policy"
 //	  policy-namespaces: "user"
 var (
-	ResetPolicyBundleFlag = Flag[bool]{
-		Name:       "reset-policy-bundle",
-		ConfigName: "misconfiguration.reset-policy-bundle",
-		Usage:      "remove policy bundle",
+	ResetChecksBundleFlag = Flag[bool]{
+		Name:       "reset-checks-bundle",
+		ConfigName: "misconfiguration.reset-checks-bundle",
+		Usage:      "remove checks bundle",
+		Aliases: []Alias{
+			{
+				Name:       "reset-policy-bundle",
+				ConfigName: "misconfiguration.reset-policy-bundle",
+				Deprecated: true,
+			},
+		},
 	}
 	IncludeNonFailuresFlag = Flag[bool]{
 		Name:       "include-non-failures",
@@ -71,11 +78,18 @@ var (
 		ConfigName: "misconfiguration.terraform.exclude-downloaded-modules",
 		Usage:      "exclude misconfigurations for downloaded terraform modules",
 	}
-	PolicyBundleRepositoryFlag = Flag[string]{
-		Name:       "policy-bundle-repository",
-		ConfigName: "misconfiguration.policy-bundle-repository",
+	ChecksBundleRepositoryFlag = Flag[string]{
+		Name:       "checks-bundle-repository",
+		ConfigName: "misconfiguration.checks-bundle-repository",
 		Default:    fmt.Sprintf("%s:%d", policy.BundleRepository, policy.BundleVersion),
-		Usage:      "OCI registry URL to retrieve policy bundle from",
+		Usage:      "OCI registry URL to retrieve checks bundle from",
+		Aliases: []Alias{
+			{
+				Name:       "policy-bundle-repository",
+				ConfigName: "misconfiguration.policy-bundle-repository",
+				Deprecated: true,
+			},
+		},
 	}
 	MisconfigScannersFlag = Flag[[]string]{
 		Name:       "misconfig-scanners",
@@ -88,8 +102,8 @@ var (
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfiguration scanning.
 type MisconfFlagGroup struct {
 	IncludeNonFailures     *Flag[bool]
-	ResetPolicyBundle      *Flag[bool]
-	PolicyBundleRepository *Flag[string]
+	ResetChecksBundle      *Flag[bool]
+	ChecksBundleRepository *Flag[string]
 
 	// Values Files
 	HelmValues                 *Flag[[]string]
@@ -106,8 +120,8 @@ type MisconfFlagGroup struct {
 
 type MisconfOptions struct {
 	IncludeNonFailures     bool
-	ResetPolicyBundle      bool
-	PolicyBundleRepository string
+	ResetChecksBundle      bool
+	ChecksBundleRepository string
 
 	// Values Files
 	HelmValues              []string
@@ -125,8 +139,8 @@ type MisconfOptions struct {
 func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
 		IncludeNonFailures:     IncludeNonFailuresFlag.Clone(),
-		ResetPolicyBundle:      ResetPolicyBundleFlag.Clone(),
-		PolicyBundleRepository: PolicyBundleRepositoryFlag.Clone(),
+		ResetChecksBundle:      ResetChecksBundleFlag.Clone(),
+		ChecksBundleRepository: ChecksBundleRepositoryFlag.Clone(),
 
 		HelmValues:                 HelmSetFlag.Clone(),
 		HelmFileValues:             HelmSetFileFlag.Clone(),
@@ -148,8 +162,8 @@ func (f *MisconfFlagGroup) Name() string {
 func (f *MisconfFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.IncludeNonFailures,
-		f.ResetPolicyBundle,
-		f.PolicyBundleRepository,
+		f.ResetChecksBundle,
+		f.ChecksBundleRepository,
 		f.HelmValues,
 		f.HelmValueFiles,
 		f.HelmFileValues,
@@ -170,8 +184,8 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 
 	return MisconfOptions{
 		IncludeNonFailures:      f.IncludeNonFailures.Value(),
-		ResetPolicyBundle:       f.ResetPolicyBundle.Value(),
-		PolicyBundleRepository:  f.PolicyBundleRepository.Value(),
+		ResetChecksBundle:       f.ResetChecksBundle.Value(),
+		ChecksBundleRepository:  f.ChecksBundleRepository.Value(),
 		HelmValues:              f.HelmValues.Value(),
 		HelmValueFiles:          f.HelmValueFiles.Value(),
 		HelmFileValues:          f.HelmFileValues.Value(),
