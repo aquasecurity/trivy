@@ -28,8 +28,6 @@ Kubernetes resource definition is scanned for:
 
 ## Kubernetes target configurations
 
-Trivy follows the behavior of the `kubectl` tool as much as possible.
-
 ```sh
 trivy k8s [flags] [CONTEXT] -  if the target name [CONTEXT] is not specified, the default will be used.
 ```
