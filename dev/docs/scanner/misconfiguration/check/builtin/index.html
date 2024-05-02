@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/policy/builtin/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/scanner/misconfiguration/check/builtin/">
       
       <link rel="icon" href="../../../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Built-in Policies - Trivy</title>
+        <title>Built-in Checks - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#built-in-policies" class="md-skip">
+        <a href="#built-in-checks" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@ You're not viewing the latest version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Built-in Policies
+              Built-in Checks
             
           </span>
         </div>
@@ -1243,12 +1243,12 @@ You're not viewing the latest version.
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Built-in Policies
+          Built-in Checks
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Built-in Policies
+        Built-in Checks
       </a>
       
         
@@ -1267,15 +1267,15 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#policy-sources" class="md-nav__link">
-    Policy Sources
+  <a href="#check-sources" class="md-nav__link">
+    Check Sources
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#policy-distribution" class="md-nav__link">
-    Policy Distribution
+  <a href="#check-distribution" class="md-nav__link">
+    Check Distribution
   </a>
   
 </li>
@@ -3596,15 +3596,15 @@ You're not viewing the latest version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#policy-sources" class="md-nav__link">
-    Policy Sources
+  <a href="#check-sources" class="md-nav__link">
+    Check Sources
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#policy-distribution" class="md-nav__link">
-    Policy Distribution
+  <a href="#check-distribution" class="md-nav__link">
+    Check Distribution
   </a>
   
 </li>
@@ -3628,23 +3628,23 @@ You're not viewing the latest version.
             <article class="md-content__inner md-typeset">
               
                 
-  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/scanner/misconfiguration/policy/builtin.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/aquasecurity/trivy/blob/main/docs/docs/scanner/misconfiguration/check/builtin.md" title="Edit this page" class="md-content__button md-icon">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
 
-<h1 id="built-in-policies">Built-in Policies</h1>
-<h2 id="policy-sources">Policy Sources</h2>
-<p>Built-in policies are mainly written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a> and Go.
-Those policies are managed under <a href="https://github.com/aquasecurity/trivy-policies">trivy-policies repository</a>.
+<h1 id="built-in-checks">Built-in Checks</h1>
+<h2 id="check-sources">Check Sources</h2>
+<p>Built-in checks are mainly written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a> and Go.
+Those checks are managed under <a href="https://github.com/aquasecurity/trivy-checks">trivy-checks repository</a>.
 See <a href="../../../../coverage/iac/">here</a> for the list of supported config types.</p>
-<p>For suggestions or issues regarding policy content, please open an issue under the <a href="https://github.com/aquasecurity/trivy-policies">trivy-policies</a> repository.</p>
-<h2 id="policy-distribution">Policy Distribution</h2>
-<p>Trivy policies are distributed as an OPA bundle on <a href="https://github.com/aquasecurity/trivy-policies/pkgs/container/trivy-policies">GitHub Container Registry</a> (GHCR).
+<p>For suggestions or issues regarding policy content, please open an issue under the <a href="https://github.com/aquasecurity/trivy-checks">trivy-checks</a> repository.</p>
+<h2 id="check-distribution">Check Distribution</h2>
+<p>Trivy checks are distributed as an OPA bundle on <a href="https://github.com/aquasecurity/trivy-checks/pkgs/container/trivy-checks">GitHub Container Registry</a> (GHCR).
 When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.
-Those policies are then loaded into Trivy OPA engine and used for detecting misconfigurations.
-If Trivy is unable to pull down newer policies, it will use the embedded set of policies as a fallback. This is also the case in air-gap environments where <code>--skip-policy-update</code> might be passed.</p>
+Those checks are then loaded into Trivy OPA engine and used for detecting misconfigurations.
+If Trivy is unable to pull down newer checks, it will use the embedded set of checks as a fallback. This is also the case in air-gap environments where <code>--skip-policy-update</code> might be passed.</p>
 <h2 id="update-interval">Update Interval</h2>
 <p>Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.</p>
 

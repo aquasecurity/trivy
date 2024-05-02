@@ -1227,8 +1227,8 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../../../scanner/misconfiguration/policy/builtin/" class="md-nav__link">
-        Built-in Policies
+      <a href="../../../../scanner/misconfiguration/check/builtin/" class="md-nav__link">
+        Built-in Checks
       </a>
     </li>
   
@@ -1241,7 +1241,7 @@ You're not viewing the latest version.
   
   
     <li class="md-nav__item">
-      <a href="../../../../scanner/misconfiguration/policy/exceptions/" class="md-nav__link">
+      <a href="../../../../scanner/misconfiguration/check/exceptions/" class="md-nav__link">
         Exceptions
       </a>
     </li>
@@ -3685,6 +3685,7 @@ You're not viewing the latest version.
 <div class="highlight"><pre><span></span><code>      --aws-region string                 AWS region to scan
       --cache-backend string              cache backend (e.g. redis://localhost:6379) (default &quot;fs&quot;)
       --cache-ttl duration                cache TTL when using redis as cache backend
+      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default &quot;ghcr.io/aquasecurity/trivy-checks:0&quot;)
       --clear-cache                       clear image caches without scanning
       --compliance string                 compliance report to generate
       --custom-headers strings            custom headers in client mode
@@ -3718,14 +3719,13 @@ You're not viewing the latest version.
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default &quot;ghcr.io/aquasecurity/trivy-policies:0&quot;)
       --redis-ca string                   redis ca file location, if using redis as cache backend
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default &quot;https://rekor.sigstore.dev&quot;)
       --reset                             remove all caches and database
-      --reset-policy-bundle               remove policy bundle
+      --reset-checks-bundle               remove checks bundle
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (vuln,misconfig,secret,license) (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default &quot;trivy-secret.yaml&quot;)
