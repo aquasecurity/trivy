@@ -15,6 +15,8 @@ import (
 	"github.com/magefile/mage/target"
 )
 
+const golangciLintVersion = "1.57.2"
+
 var (
 	GOPATH = os.Getenv("GOPATH")
 	GOBIN  = filepath.Join(GOPATH, "bin")
@@ -61,11 +63,10 @@ func (Tool) Wire() error {
 
 // GolangciLint installs golangci-lint
 func (Tool) GolangciLint() error {
-	const version = "v1.57.2"
 	if exists(filepath.Join(GOBIN, "golangci-lint")) {
 		return nil
 	}
-	command := fmt.Sprintf("curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b %s %s", GOBIN, version)
+	command := fmt.Sprintf("curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b %s %s", GOBIN, golangciLintVersion)
 	return sh.Run("bash", "-c", command)
 }
 
@@ -280,14 +281,12 @@ type Lint mg.Namespace
 
 // Run runs linters
 func (Lint) Run() error {
-	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--timeout", "5m")
+	return execGolangciLint("run", "--timeout", "10m", "-v")
 }
 
 // Fix auto fixes linters
 func (Lint) Fix() error {
-	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--timeout", "5m", "--fix")
+	return execGolangciLint("run", "--timeout", "10m", "--fix", "-v")
 }
 
 // Fmt formats Go code and proto files
@@ -435,4 +434,25 @@ type CloudActions mg.Namespace
 // Generate generates the list of possible cloud actions with AWS
 func (CloudActions) Generate() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_cloudactions", "./magefiles")
+}
+
+func isDockerRunning() bool {
+	return sh.Run("docker", "info") == nil
+}
+
+func execGolangciLint(args ...string) error {
+	if !isDockerRunning() {
+		mg.Deps(Tool{}.GolangciLint)
+		return sh.RunV("golangci-lint", args...)
+	}
+
+	args = append([]string{
+		"run", "-t", "--rm", "-v", "${PWD}:/app",
+		"-v", fmt.Sprintf("${HOME}/.cache/golangci-lint/v%s:/root/.cache", golangciLintVersion),
+		"-v", fmt.Sprintf("%s/pkg:/go/pkg", GOPATH),
+		"-w", "/app",
+		fmt.Sprintf("golangci/golangci-lint:v%s", golangciLintVersion),
+		"golangci-lint",
+	}, args...)
+	return sh.RunV("docker", args...)
 }
