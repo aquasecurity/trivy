@@ -533,25 +533,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		target = opts.Input
 	}
 
-	if opts.Compliance.Spec.ID != "" {
-		// set scanners types by spec
-		scanners, err := opts.Compliance.Scanners()
-		if err != nil {
-			return ScannerConfig{}, types.ScanOptions{}, xerrors.Errorf("scanner error: %w", err)
-		}
-
-		opts.Scanners = scanners
-		opts.ImageConfigScanners = nil
-		// TODO: define image-config-scanners in the spec
-		if opts.Compliance.Spec.ID == "docker-cis" {
-			opts.Scanners = types.Scanners{types.VulnerabilityScanner}
-			opts.ImageConfigScanners = types.Scanners{
-				types.MisconfigScanner,
-				types.SecretScanner,
-			}
-		}
-	}
-
 	scanOptions := types.ScanOptions{
 		VulnType:            opts.VulnType,
 		Scanners:            opts.Scanners,
