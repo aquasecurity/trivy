@@ -145,7 +145,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.4",
 						Release: "4.5.8",
 						Identifier: types.PkgIdentifier{
-							Hash: "108c0f3943d7bc9",
+							UID: "108c0f3943d7bc9",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeApk,
 								Namespace: "alpine",
@@ -169,7 +169,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.3",
 						Release: "4.5.6",
 						Identifier: types.PkgIdentifier{
-							Hash: "9d77cb17d1fc8736",
+							UID: "9d77cb17d1fc8736",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeApk,
 								Namespace: "alpine",
@@ -202,7 +202,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
-									Hash: "b3549e98a3094a66",
+									UID: "b3549e98a3094a66",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "activesupport",
@@ -219,7 +219,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
-									Hash: "f27f3b46e09fc2e2",
+									UID: "f27f3b46e09fc2e2",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "gon",
@@ -241,7 +241,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
-									Hash: "a3363562b587cfa2",
+									UID: "a3363562b587cfa2",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "gemlibrary1",
@@ -316,7 +316,7 @@ func TestApplyLayers(t *testing.T) {
 							DiffID: "sha256:633f5bf471f7595b236a21e62dc60beef321db45916363a02ad5af02d794d497",
 						},
 						Identifier: types.PkgIdentifier{
-							Hash: "e984be704d7e13ef",
+							UID: "e984be704d7e13ef",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeDebian,
 								Namespace: "debian",
@@ -348,7 +348,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:1def056a3160854c9395aa76282dd62172ec08c18a5fa03bb7d50a777c15ba99",
 								},
 								Identifier: types.PkgIdentifier{
-									Hash: "8d8c54cecea3dd33",
+									UID: "8d8c54cecea3dd33",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypePyPi,
 										Name:    "pip",
@@ -494,7 +494,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
-									Hash: "9744e21755aea0ef",
+									UID: "9744e21755aea0ef",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "rack",
@@ -510,7 +510,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 								},
 								Identifier: types.PkgIdentifier{
-									Hash: "7e9712137f044ffe",
+									UID: "7e9712137f044ffe",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "rails",
@@ -532,7 +532,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 								},
 								Identifier: types.PkgIdentifier{
-									Hash: "940351428c1fed49",
+									UID: "940351428c1fed49",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeComposer,
 										Name:    "phplibrary1",
@@ -796,7 +796,7 @@ func TestApplyLayers(t *testing.T) {
 						Release:  "4.5.7",
 						Licenses: []string{"GPL-2"},
 						Identifier: types.PkgIdentifier{
-							Hash: "c3c9ea1442ead294",
+							UID: "c3c9ea1442ead294",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeDebian,
 								Namespace: "debian",
@@ -821,7 +821,7 @@ func TestApplyLayers(t *testing.T) {
 						Release:  "4.5.6",
 						Licenses: []string{"OpenSSL"},
 						Identifier: types.PkgIdentifier{
-							Hash: "9d77cb17d1fc8736",
+							UID: "9d77cb17d1fc8736",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeDebian,
 								Namespace: "debian",
@@ -972,7 +972,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "5.6.7",
 						Release: "8",
 						Identifier: types.PkgIdentifier{
-							Hash: "3982c06acacff066",
+							UID: "3982c06acacff066",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeRPM,
 								Namespace: "redhat",
@@ -1000,7 +1000,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.4",
 						Release: "5",
 						Identifier: types.PkgIdentifier{
-							Hash: "8a72001605297eac",
+							UID: "8a72001605297eac",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeRPM,
 								Namespace: "redhat",
@@ -1030,7 +1030,7 @@ func TestApplyLayers(t *testing.T) {
 						Version: "1.2.3",
 						Release: "4",
 						Identifier: types.PkgIdentifier{
-							Hash: "8de1ca1c33881bac",
+							UID: "8de1ca1c33881bac",
 							PURL: &packageurl.PackageURL{
 								Type:      packageurl.TypeRPM,
 								Namespace: "redhat",
@@ -1103,7 +1103,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
-									Hash: "176111c6c0c6488", // different hash
+									UID: "176111c6c0c6488", // different hash
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "gemlibrary1",
@@ -1125,7 +1125,7 @@ func TestApplyLayers(t *testing.T) {
 									DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 								},
 								Identifier: types.PkgIdentifier{
-									Hash: "e1416731a0829253", // different hash
+									UID: "e1416731a0829253", // different hash
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGem,
 										Name:    "gemlibrary1",

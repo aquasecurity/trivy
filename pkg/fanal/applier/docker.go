@@ -221,7 +221,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		if mergedLayer.OS.Family != "" {
 			mergedLayer.Packages[i].Identifier.PURL = newPURL(mergedLayer.OS.Family, types.Metadata{OS: &mergedLayer.OS}, pkg)
 		}
-		mergedLayer.Packages[i].Identifier.Hash = calcPkgHash("", pkg)
+		mergedLayer.Packages[i].Identifier.UID = calcPkgUID("", pkg)
 
 		// Only debian packages
 		if licenses, ok := dpkgLicenses[pkg.Name]; ok {
@@ -242,7 +242,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			if lib.Identifier.PURL == nil {
 				app.Libraries[i].Identifier.PURL = newPURL(app.Type, types.Metadata{}, lib)
 			}
-			app.Libraries[i].Identifier.Hash = calcPkgHash(app.FilePath, lib)
+			app.Libraries[i].Identifier.UID = calcPkgUID(app.FilePath, lib)
 		}
 	}
 
@@ -261,7 +261,8 @@ func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Pack
 	return p.Unwrap()
 }
 
-func calcPkgHash(filePath string, pkg ftypes.Package) string {
+// calcPkgUID calculates the hash of the package for the unique ID
+func calcPkgUID(filePath string, pkg ftypes.Package) string {
 	v := map[string]any{
 		"filePath": filePath, // To differentiate the hash of the same package but different file path
 		"pkg":      pkg,
