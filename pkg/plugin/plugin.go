@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -111,8 +113,11 @@ func (p Plugin) Run(ctx context.Context, opts RunOptions) error {
 	// out if the error was from not being able to execute the plugin or
 	// an error set by the plugin itself.
 	if err = cmd.Run(); err != nil {
-		if _, ok := err.(*exec.ExitError); !ok {
-			return xerrors.Errorf("exit: %w", err)
+		var execError *exec.ExitError
+		if errors.As(err, &execError) {
+			return &types.ExitError{
+				Code: execError.ExitCode(),
+			}
 		}
 		return xerrors.Errorf("plugin exec: %w", err)
 	}

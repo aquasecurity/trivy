@@ -44,8 +44,5 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	operation.ExitOnEOL(opts, r.Metadata)
-	operation.Exit(opts, r.Results.Failed())
-
-	return nil
+	return operation.Exit(opts, r.Results.Failed(), r.Metadata)
 }

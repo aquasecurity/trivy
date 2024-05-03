@@ -173,7 +173,7 @@ func (s *Scanner) fallbackChecks(compiler *ast.Compiler) {
 		}
 
 		s.debug.Log("Found embedded check: %s", embedded.Package.Location.File)
-		delete(s.policies, loc) // remove bad policy
+		delete(s.policies, loc) // remove bad check
 		s.policies[embedded.Package.Location.File] = embedded
 		delete(s.embeddedChecks, embedded.Package.Location.File) // avoid infinite loop if embedded check contains ref error
 		excludedFiles = append(excludedFiles, e.Location.File)
@@ -228,7 +228,7 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 		return err
 	}
 	if custom {
-		s.inputSchema = nil // discard auto detected input schema in favor of policy defined schema
+		s.inputSchema = nil // discard auto detected input schema in favor of check defined schema
 	}
 
 	compiler := ast.NewCompiler().

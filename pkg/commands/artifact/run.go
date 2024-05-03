@@ -367,10 +367,10 @@ func (r *runner) initCache(opts flag.Options) error {
 		return SkipScan
 	}
 
-	if opts.ResetPolicyBundle {
-		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.PolicyBundleRepository)
+	if opts.ResetChecksBundle {
+		c, err := policy.NewClient(fsutils.CacheDir(), true, opts.MisconfOptions.ChecksBundleRepository)
 		if err != nil {
-			return xerrors.Errorf("failed to instantiate policy client: %w", err)
+			return xerrors.Errorf("failed to instantiate check client: %w", err)
 		}
 		if err := c.Clear(); err != nil {
 			return xerrors.Errorf("failed to remove the cache: %w", err)
@@ -452,10 +452,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return xerrors.Errorf("report error: %w", err)
 	}
 
-	operation.ExitOnEOL(opts, report.Metadata)
-	operation.Exit(opts, report.Results.Failed())
-
-	return nil
+	return operation.Exit(opts, report.Results.Failed(), report.Metadata)
 }
 
 func disabledAnalyzers(opts flag.Options) []analyzer.Type {
@@ -582,10 +579,11 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 		var downloadedPolicyPaths []string
 		var disableEmbedded bool
-		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate, opts.MisconfOptions.PolicyBundleRepository, opts.RegistryOpts())
+
+		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipCheckUpdate, opts.MisconfOptions.ChecksBundleRepository, opts.RegistryOpts())
 		if err != nil {
-			if !opts.SkipPolicyUpdate {
-				log.Error("Falling back to embedded policies", log.Err(err))
+			if !opts.SkipCheckUpdate {
+				log.Error("Falling back to embedded checks", log.Err(err))
 			}
 		} else {
 			log.Debug("Policies successfully loaded from disk")
@@ -594,8 +592,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		configScannerOptions = misconf.ScannerOption{
 			Debug:                    opts.Debug,
 			Trace:                    opts.Trace,
-			Namespaces:               append(opts.PolicyNamespaces, rego.BuiltinNamespaces()...),
-			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
+			Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
+			PolicyPaths:              append(opts.CheckPaths, downloadedPolicyPaths...),
 			DataPaths:                opts.DataPaths,
 			HelmValues:               opts.HelmValues,
 			HelmValueFiles:           opts.HelmValueFiles,

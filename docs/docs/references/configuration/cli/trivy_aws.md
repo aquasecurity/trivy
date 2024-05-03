@@ -69,9 +69,11 @@ trivy aws [flags]
       --account string                    The AWS account to scan. It's useful to specify this when reviewing cached results for multiple accounts.
       --arn string                        The AWS ARN to show results for. Useful to filter results once a scan is cached.
       --cf-params strings                 specify paths to override the CloudFormation parameters files
+      --check-namespaces strings          Rego namespaces
+      --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "ghcr.io/aquasecurity/trivy-checks:0")
       --compliance string                 compliance report to generate (aws-cis-1.2,aws-cis-1.4)
-      --config-data strings               specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings             specify the paths to the Rego policy files or to the directories containing them, applying config files
+      --config-check strings              specify the paths to the Rego check files or to the directories containing them, applying config files
+      --config-data strings               specify paths from which data for the Rego checks will be recursively loaded
       --dependency-tree                   [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --endpoint string                   AWS Endpoint override
       --exit-code int                     specify exit code when any security issues are found
@@ -91,14 +93,12 @@ trivy aws [flags]
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot])
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
-      --policy-bundle-repository string   OCI registry URL to retrieve policy bundle from (default "ghcr.io/aquasecurity/trivy-policies:0")
-      --policy-namespaces strings         Rego namespaces
       --region string                     AWS Region to scan
       --report string                     specify a report format for the output (all,summary) (default "all")
-      --reset-policy-bundle               remove policy bundle
+      --reset-checks-bundle               remove checks bundle
       --service strings                   Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.
   -s, --severity strings                  severities of security issues to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL) (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
-      --skip-policy-update                skip fetching rego policy updates
+      --skip-check-update                 skip fetching rego check updates
       --skip-service strings              Skip selected AWS Service(s) specified with this flag. Can specify multiple services using --skip-service A --skip-service B etc.
   -t, --template string                   output template
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules

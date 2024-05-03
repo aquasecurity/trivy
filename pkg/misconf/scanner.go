@@ -390,7 +390,7 @@ func CreatePolicyFS(policyPaths []string) (fs.FS, []string, error) {
 		}
 	}
 
-	// policy paths are no longer needed as fs.FS contains only needed files now.
+	// check paths are no longer needed as fs.FS contains only needed files now.
 	policyPaths = []string{"."}
 
 	return mfs, policyPaths, nil

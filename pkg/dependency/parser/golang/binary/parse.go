@@ -1,10 +1,14 @@
 package binary
 
 import (
+	"cmp"
 	"debug/buildinfo"
+	"runtime/debug"
 	"sort"
 	"strings"
 
+	"github.com/spf13/pflag"
+	"golang.org/x/mod/semver"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/types"
@@ -48,15 +52,18 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, convertError(err)
 	}
 
+	ldflags := p.ldFlags(info.Settings)
 	libs := make([]types.Library, 0, len(info.Deps)+2)
 	libs = append(libs, []types.Library{
 		{
 			// Add main module
 			Name: info.Main.Path,
 			// Only binaries installed with `go install` contain semver version of the main module.
-			// Other binaries use the `(devel)` version.
+			// Other binaries use the `(devel)` version, but still may contain a stamped version
+			// set via `go build -ldflags='-X main.version=<semver>'`, so we fallback to this as.
+			// as a secondary source.
 			// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
-			Version:      p.checkVersion(info.Main.Path, info.Main.Version),
+			Version:      cmp.Or(p.checkVersion(info.Main.Path, info.Main.Version), p.ParseLDFlags(info.Main.Path, ldflags)),
 			Relationship: types.RelationshipRoot,
 		},
 		{
@@ -93,8 +100,71 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 // checkVersion detects `(devel)` versions, removes them and adds a debug message about it.
 func (p *Parser) checkVersion(name, version string) string {
 	if version == "(devel)" {
-		p.logger.Debug("Unable to detect dependency version (`(devel)` is used). Version will be empty.", log.String("dependency", name))
+		p.logger.Debug("Unable to detect main module's dependency version - `(devel)` is used", log.String("dependency", name))
 		return ""
 	}
 	return version
+}
+
+func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
+	for _, setting := range settings {
+		if setting.Key != "-ldflags" {
+			continue
+		}
+
+		return strings.Fields(setting.Value)
+	}
+	return nil
+}
+
+// ParseLDFlags attempts to parse the binary's version from any `-ldflags` passed to `go build` at build time.
+func (p *Parser) ParseLDFlags(name string, flags []string) string {
+	p.logger.Debug("Parsing dependency's build info settings", "dependency", name, "-ldflags", flags)
+	fset := pflag.NewFlagSet("ldflags", pflag.ContinueOnError)
+	// This prevents the flag set from erroring out if other flags were provided.
+	// This helps keep the implementation small, so that only the -X flag is needed.
+	fset.ParseErrorsWhitelist.UnknownFlags = true
+	// The shorthand name is needed here because setting the full name
+	// to `X` will cause the flag set to look for `--X` instead of `-X`.
+	// The flag can also be set multiple times, so a string slice is needed
+	// to handle that edge case.
+	var x map[string]string
+	fset.StringToStringVarP(&x, "", "X", nil, "")
+	if err := fset.Parse(flags); err != nil {
+		p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
+		return ""
+	}
+
+	for key, val := range x {
+		// It's valid to set the -X flags with quotes so we trim any that might
+		// have been provided: Ex:
+		//
+		// -X main.version=1.0.0
+		// -X=main.version=1.0.0
+		// -X 'main.version=1.0.0'
+		// -X='main.version=1.0.0'
+		// -X="main.version=1.0.0"
+		// -X "main.version=1.0.0"
+		key = strings.TrimLeft(key, `'`)
+		val = strings.TrimRight(val, `'`)
+		if isValidXKey(key) && isValidSemVer(val) {
+			return val
+		}
+	}
+
+	p.logger.Debug("Unable to detect dependency version used in `-ldflags` build info settings. Empty version used.", log.String("dependency", name))
+	return ""
+}
+
+func isValidXKey(key string) bool {
+	key = strings.ToLower(key)
+	// The check for a 'ver' prefix enables the parser to pick up Trivy's own version value that's set.
+	return strings.HasSuffix(key, "version") || strings.HasSuffix(key, "ver")
+}
+
+func isValidSemVer(ver string) bool {
+	// semver.IsValid strictly checks for the v prefix so prepending 'v'
+	// here and checking validity again increases the chances that we
+	// parse a valid semver version.
+	return semver.IsValid(ver) || semver.IsValid("v"+ver)
 }
