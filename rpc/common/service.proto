@@ -59,6 +59,7 @@ message Package {
 message PkgIdentifier {
   string purl    = 1;
   string bom_ref = 2;
+  string uid     = 3;
 }
 
 message Location {
