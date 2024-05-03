@@ -25,7 +25,8 @@
           "ID": "castore@0.1.18",
           "Name": "castore",
           "Identifier": {
-            "PURL": "pkg:hex/castore@0.1.18"
+            "PURL": "pkg:hex/castore@0.1.18",
+            "UID": "92fd0f5d45735c7c"
           },
           "Version": "0.1.18",
           "Layer": {},
@@ -40,7 +41,8 @@
           "ID": "jason@1.4.0",
           "Name": "jason",
           "Identifier": {
-            "PURL": "pkg:hex/jason@1.4.0"
+            "PURL": "pkg:hex/jason@1.4.0",
+            "UID": "b9cff6ce54a65dae"
           },
           "Version": "1.4.0",
           "Layer": {},
@@ -55,7 +57,8 @@
           "ID": "phoenix@1.6.13",
           "Name": "phoenix",
           "Identifier": {
-            "PURL": "pkg:hex/phoenix@1.6.13"
+            "PURL": "pkg:hex/phoenix@1.6.13",
+            "UID": "5b0d3fb75bef47e3"
           },
           "Version": "1.6.13",
           "Layer": {},
@@ -70,7 +73,8 @@
           "ID": "phoenix_html@3.2.0",
           "Name": "phoenix_html",
           "Identifier": {
-            "PURL": "pkg:hex/phoenix_html@3.2.0"
+            "PURL": "pkg:hex/phoenix_html@3.2.0",
+            "UID": "8c18e24394b53ab"
           },
           "Version": "3.2.0",
           "Layer": {},
@@ -85,7 +89,8 @@
           "ID": "phoenix_pubsub@2.1.1",
           "Name": "phoenix_pubsub",
           "Identifier": {
-            "PURL": "pkg:hex/phoenix_pubsub@2.1.1"
+            "PURL": "pkg:hex/phoenix_pubsub@2.1.1",
+            "UID": "89226dc20d54eb50"
           },
           "Version": "2.1.1",
           "Layer": {},
@@ -100,7 +105,8 @@
           "ID": "phoenix_template@1.0.0",
           "Name": "phoenix_template",
           "Identifier": {
-            "PURL": "pkg:hex/phoenix_template@1.0.0"
+            "PURL": "pkg:hex/phoenix_template@1.0.0",
+            "UID": "5cd9afe7111a31b7"
           },
           "Version": "1.0.0",
           "Layer": {},
@@ -115,7 +121,8 @@
           "ID": "phoenix_view@2.0.1",
           "Name": "phoenix_view",
           "Identifier": {
-            "PURL": "pkg:hex/phoenix_view@2.0.1"
+            "PURL": "pkg:hex/phoenix_view@2.0.1",
+            "UID": "2f4485f9653589ad"
           },
           "Version": "2.0.1",
           "Layer": {},
@@ -130,7 +137,8 @@
           "ID": "plug@1.14.0",
           "Name": "plug",
           "Identifier": {
-            "PURL": "pkg:hex/plug@1.14.0"
+            "PURL": "pkg:hex/plug@1.14.0",
+            "UID": "2390188ac1142ded"
           },
           "Version": "1.14.0",
           "Layer": {},
@@ -145,7 +153,8 @@
           "ID": "plug_crypto@1.2.3",
           "Name": "plug_crypto",
           "Identifier": {
-            "PURL": "pkg:hex/plug_crypto@1.2.3"
+            "PURL": "pkg:hex/plug_crypto@1.2.3",
+            "UID": "912b06dac071654"
           },
           "Version": "1.2.3",
           "Layer": {},
@@ -160,7 +169,8 @@
           "ID": "telemetry@1.1.0",
           "Name": "telemetry",
           "Identifier": {
-            "PURL": "pkg:hex/telemetry@1.1.0"
+            "PURL": "pkg:hex/telemetry@1.1.0",
+            "UID": "15879b8627da74b9"
           },
           "Version": "1.1.0",
           "Layer": {},
@@ -178,7 +188,8 @@
           "PkgID": "phoenix@1.6.13",
           "PkgName": "phoenix",
           "PkgIdentifier": {
-            "PURL": "pkg:hex/phoenix@1.6.13"
+            "PURL": "pkg:hex/phoenix@1.6.13",
+            "UID": "5b0d3fb75bef47e3"
           },
           "InstalledVersion": "1.6.13",
           "FixedVersion": "1.6.14",
