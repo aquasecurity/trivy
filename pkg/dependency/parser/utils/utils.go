@@ -40,6 +40,11 @@ func UniqueLibraries(libs []types.Library) []types.Library {
 				unique[identifier] = l
 			}
 
+			if lib.Relationship == types.RelationshipDirect {
+				l.Relationship = types.RelationshipDirect
+				unique[identifier] = l
+			}
+
 			if len(lib.Locations) > 0 {
 				// merge locations
 				l.Locations = append(l.Locations, lib.Locations...)
