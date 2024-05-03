@@ -81,35 +81,16 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 				continue
 			}
 
-			symlinks[targetPath] = path.Join(filepath.Dir(targetPath), header.Linkname)
+			symlinks[targetPath] = path.Join(filepath.Dir(targetPath), header.Linkname) // nolint:gosec // virtual file system is used
 		default:
 			return nil, fmt.Errorf("header type %q is not supported", header.Typeflag)
 		}
 	}
 
 	for target, link := range symlinks {
-		fi, err := tarFS.Stat(link)
-		if err != nil {
-			p.debug.Log("stat error: %s", err)
-			continue
+		if err := copySymlink(tarFS, link, target); err != nil {
+			return nil, fmt.Errorf("copy symlink error: %w", err)
 		}
-		if fi.IsDir() {
-			if err := copyDir(tarFS, link, target); err != nil {
-				return nil, fmt.Errorf("copy dir error: %w", err)
-			}
-			continue
-		}
-
-		f, err := tarFS.Open(link)
-		if err != nil {
-			return nil, fmt.Errorf("open symlink error: %w", err)
-		}
-
-		if err := copyFile(tarFS, f, target); err != nil {
-			f.Close()
-			return nil, fmt.Errorf("copy file error: %w", err)
-		}
-		f.Close()
 	}
 
 	if err := tarFS.Remove(archivePath); err != nil {
@@ -117,6 +98,31 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 	}
 
 	return tarFS, nil
+}
+
+func copySymlink(fsys *memoryfs.FS, src, dst string) error {
+	fi, err := fsys.Stat(src)
+	if err != nil {
+		return nil
+	}
+	if fi.IsDir() {
+		if err := copyDir(fsys, src, dst); err != nil {
+			return fmt.Errorf("copy dir error: %w", err)
+		}
+		return nil
+	}
+
+	f, err := fsys.Open(src)
+	if err != nil {
+		return fmt.Errorf("open symlink error: %w", err)
+	}
+	defer f.Close()
+
+	if err := copyFile(fsys, f, dst); err != nil {
+		return fmt.Errorf("copy file error: %w", err)
+	}
+
+	return nil
 }
 
 func copyFile(fsys *memoryfs.FS, src io.Reader, dst string) error {
@@ -136,7 +142,7 @@ func copyFile(fsys *memoryfs.FS, src io.Reader, dst string) error {
 	return nil
 }
 
-func copyDir(fsys *memoryfs.FS, src string, dst string) error {
+func copyDir(fsys *memoryfs.FS, src, dst string) error {
 	walkFn := func(filePath string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
