@@ -2,6 +2,8 @@ package pnpm
 
 import (
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -15,6 +17,11 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+)
+
+const (
+	v5VersionSep = "/"
+	v6VersionSep = "@"
 )
 
 type PackageResolution struct {
@@ -35,6 +42,28 @@ type LockFile struct {
 	Dependencies    map[string]any         `yaml:"dependencies,omitempty"`
 	DevDependencies map[string]any         `yaml:"devDependencies,omitempty"`
 	Packages        map[string]PackageInfo `yaml:"packages,omitempty"`
+
+	// V9
+	Importers Importer            `yaml:"importers,omitempty"`
+	Snapshots map[string]Snapshot `yaml:"snapshots,omitempty"`
+}
+
+type Importer struct {
+	Root RootImporter `yaml:".,omitempty"`
+}
+
+type RootImporter struct {
+	Dependencies    map[string]ImporterDepVersion `yaml:"dependencies,omitempty"`
+	DevDependencies map[string]ImporterDepVersion `yaml:"devDependencies,omitempty"`
+}
+
+type ImporterDepVersion struct {
+	Version string `yaml:"version,omitempty"`
+}
+
+type Snapshot struct {
+	Dependencies         map[string]string `yaml:"dependencies,omitempty"`
+	OptionalDependencies map[string]string `yaml:"optionalDependencies,omitempty"`
 }
 
 type Parser struct {
@@ -58,7 +87,19 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, nil
 	}
 
-	libs, deps := p.parse(lockVer, lockFile)
+	var libs []types.Library
+	var deps []types.Dependency
+	if lockVer >= 9 {
+		libs, deps = p.parseV9(lockFile)
+	} else {
+		libs, deps = p.parse(lockVer, lockFile)
+	}
+
+	libs = utils.UniqueLibraries(libs)
+	deps = lo.UniqBy(deps, func(dep types.Dependency) string {
+		return dep.ID
+	})
+	sort.Sort(types.Dependencies(deps))
 
 	return libs, deps, nil
 }
@@ -108,6 +149,20 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []t
 	return libs, deps
 }
 
+func (p *Parser) parseV9(lockFile LockFile) ([]types.Library, []types.Dependency) {
+	var libs []types.Library
+	var deps []types.Dependency
+
+	for name, ver := range lockFile.Importers.Root.Dependencies {
+		depPath := packageID(name, ver.Version)
+		snapshotLibs, snapshotDeps := p.parseSnapshot(depPath, lockFile.Snapshots, types.RelationshipDirect)
+		libs = append(libs, snapshotLibs...)
+		deps = append(deps, snapshotDeps...)
+	}
+
+	return libs, deps
+}
+
 func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
 	switch v := lockFile.LockfileVersion.(type) {
 	// v5
@@ -128,6 +183,55 @@ func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
 	}
 }
 
+// parsePackage parses a `snapshot` from v9 lock file.
+func (p *Parser) parseSnapshot(depPath string, snapshots map[string]Snapshot, relationship types.Relationship) ([]types.Library, []types.Dependency) {
+	var libs []types.Library
+	var deps []types.Dependency
+
+	// Skip if snapshots don't contain dependency
+	// e.g. peer dependency
+	snapshot, ok := snapshots[depPath]
+	if !ok {
+		return nil, nil
+	}
+
+	resolvedSnapshotName, resolvedSnapshotVersion := p.parseDepPath(depPath, v6VersionSep)
+	libs = append(libs, types.Library{
+		ID:           packageID(resolvedSnapshotName, resolvedSnapshotVersion),
+		Name:         resolvedSnapshotName,
+		Version:      resolvedSnapshotVersion,
+		Relationship: relationship,
+	})
+
+	var dependsOn []string
+	for name, ver := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
+		snapshotDepPath := packageID(name, ver)
+		resolvedDepName, resolvedDepVersion := p.parseDepPath(snapshotDepPath, v6VersionSep)
+		// Don't include dependencies if `snapshots` don't contain them.
+		// e.g. `snapshots` contain optional deps.
+		// But peer deps are also marked as optional, but `snapshots` don't contain them.
+		if _, ok := snapshots[snapshotDepPath]; ok {
+			dependsOn = append(dependsOn, packageID(resolvedDepName, resolvedDepVersion))
+		}
+
+		// Recursive checking of child snapshots
+		childLibs, childDeps := p.parseSnapshot(snapshotDepPath, snapshots, types.RelationshipIndirect)
+		libs = append(libs, childLibs...)
+		deps = append(deps, childDeps...)
+	}
+
+	if dependsOn != nil {
+		sort.Strings(dependsOn)
+		deps = append(deps, types.Dependency{
+			ID:        packageID(resolvedSnapshotName, resolvedSnapshotVersion),
+			DependsOn: dependsOn,
+		})
+	}
+
+	return libs, deps
+}
+
+// parsePackage parses a `package` from a v6 or earlier lock file.
 // cf. https://github.com/pnpm/pnpm/blob/ce61f8d3c29eee46cee38d56ced45aea8a439a53/packages/dependency-path/src/index.ts#L112-L163
 func (p *Parser) parsePackage(depPath string, lockFileVersion float64) (string, string) {
 	// The version separator is different between v5 and v6+.
@@ -135,17 +239,19 @@ func (p *Parser) parsePackage(depPath string, lockFileVersion float64) (string, 
 	if lockFileVersion < 6 {
 		versionSep = "/"
 	}
-	return p.parseDepPath(depPath, versionSep)
-}
 
-func (p *Parser) parseDepPath(depPath, versionSep string) (string, string) {
 	// Skip registry
 	// e.g.
 	//    - "registry.npmjs.org/lodash/4.17.10" => "lodash/4.17.10"
 	//    - "registry.npmjs.org/@babel/generator/7.21.9" => "@babel/generator/7.21.9"
 	//    - "/lodash/4.17.10" => "lodash/4.17.10"
+	// 	  - "/asap@2.0.6" => "asap@2.0.6"
 	_, depPath, _ = strings.Cut(depPath, "/")
 
+	return p.parseDepPath(depPath, versionSep)
+}
+
+func (p *Parser) parseDepPath(depPath, versionSep string) (string, string) {
 	// Parse scope
 	// e.g.
 	//    - v5:  "@babel/generator/7.21.9" => {"babel", "generator/7.21.9"}
