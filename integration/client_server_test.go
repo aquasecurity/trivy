@@ -283,7 +283,9 @@ func TestClientServer(t *testing.T) {
 				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
 			}
 
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{})
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+				override: clearUID,
+			})
 		})
 	}
 }
@@ -397,7 +399,9 @@ func TestClientServerWithFormat(t *testing.T) {
 			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
-			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{})
+			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
+				override: clearUID,
+			})
 		})
 	}
 }
@@ -475,7 +479,10 @@ func TestClientServerWithToken(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
-			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{wantErr: tt.wantErr})
+			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
+				override: clearUID,
+				wantErr:  tt.wantErr,
+			})
 		})
 	}
 }
@@ -512,7 +519,8 @@ func TestClientServerWithRedis(t *testing.T) {
 
 		// Run Trivy client
 		runTest(t, osArgs, "", "", types.FormatJSON, runOptions{
-			wantErr: "unable to store cache",
+			override: clearUID,
+			wantErr:  "unable to store cache",
 		})
 	})
 }
@@ -659,4 +667,23 @@ func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, st
 
 	addr := fmt.Sprintf("redis://%s:%s", ip, p.Port())
 	return redis, addr
+}
+
+// clearUID only checks for the presence of the package UID and clears the UID;
+// the UID is calculated from the package metadata, but the UID does not match
+// as it varies slightly depending on the mode of scanning, e.g. the digest of the layer.
+func clearUID(t *testing.T, want, got *types.Report) {
+	for i, result := range got.Results {
+		for j, vuln := range result.Vulnerabilities {
+			assert.NotEmptyf(t, vuln.PkgIdentifier.UID, "UID is empty: %s", vuln.VulnerabilityID)
+			// Do not compare UID as the package metadata is slightly different between the tests,
+			// causing different UIDs.
+			got.Results[i].Vulnerabilities[j].PkgIdentifier.UID = ""
+		}
+	}
+	for i, result := range want.Results {
+		for j := range result.Vulnerabilities {
+			want.Results[i].Vulnerabilities[j].PkgIdentifier.UID = ""
+		}
+	}
 }

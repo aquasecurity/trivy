@@ -194,7 +194,7 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 
 type runOptions struct {
 	wantErr  string
-	override func(want, got *types.Report)
+	override func(t *testing.T, want, got *types.Report)
 	fakeUUID string
 }
 
@@ -262,11 +262,11 @@ func compareRawFiles(t *testing.T, wantFile, gotFile string) {
 	assert.EqualValues(t, string(want), string(got))
 }
 
-func compareReports(t *testing.T, wantFile, gotFile string, override func(want, got *types.Report)) {
+func compareReports(t *testing.T, wantFile, gotFile string, override func(t *testing.T, want, got *types.Report)) {
 	want := readReport(t, wantFile)
 	got := readReport(t, gotFile)
 	if override != nil {
-		override(&want, &got)
+		override(t, &want, &got)
 	}
 	assert.Equal(t, want, got)
 }
@@ -305,5 +305,13 @@ func validateReport(t *testing.T, schema string, report any) {
 			return err.String()
 		})
 		assert.True(t, valid, strings.Join(errs, "\n"))
+	}
+}
+
+func overrideFuncs(funcs ...func(*testing.T, *types.Report, *types.Report)) func(*testing.T, *types.Report, *types.Report) {
+	return func(t *testing.T, want, got *types.Report) {
+		for _, f := range funcs {
+			f(t, want, got)
+		}
 	}
 }
