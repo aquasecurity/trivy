@@ -397,7 +397,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	defer func() {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Warn("Increase --timeout value")
+			log.Warn("Provide a higher timeout value, see https://aquasecurity.github.io/trivy/latest/docs/configuration/")
 		}
 	}()
 
