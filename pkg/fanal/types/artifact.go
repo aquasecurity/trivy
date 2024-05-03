@@ -119,6 +119,7 @@ type Package struct {
 
 // PkgIdentifier represents a software identifiers in one of more of the supported formats.
 type PkgIdentifier struct {
+	UID    string                 `json:",omitempty"` // Calculated by the package struct
 	PURL   *packageurl.PackageURL `json:"-"`
 	BOMRef string                 `json:",omitempty"` // For CycloneDX
 }
@@ -167,7 +168,7 @@ func (id *PkgIdentifier) UnmarshalJSON(data []byte) error {
 }
 
 func (id *PkgIdentifier) Empty() bool {
-	return id.PURL == nil && id.BOMRef == ""
+	return id.UID == "" && id.PURL == nil && id.BOMRef == ""
 }
 
 func (id *PkgIdentifier) Match(s string) bool {

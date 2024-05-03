@@ -3,7 +3,8 @@
     "ID": "alpine-baselayout@3.1.2-r0",
     "Name": "alpine-baselayout",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/alpine-baselayout@3.1.2-r0?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/alpine-baselayout@3.1.2-r0?arch=x86_64\u0026distro=3.10.2",
+      "UID": "3ca42aecf84bfa9"
     },
     "Version": "3.1.2-r0",
     "Arch": "x86_64",
@@ -53,7 +54,8 @@
     "ID": "alpine-keys@2.1-r2",
     "Name": "alpine-keys",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/alpine-keys@2.1-r2?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/alpine-keys@2.1-r2?arch=x86_64\u0026distro=3.10.2",
+      "UID": "c8139a25abdfb636"
     },
     "Version": "2.1-r2",
     "Arch": "x86_64",
@@ -92,7 +94,8 @@
     "ID": "apk-tools@2.10.4-r2",
     "Name": "apk-tools",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/apk-tools@2.10.4-r2?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/apk-tools@2.10.4-r2?arch=x86_64\u0026distro=3.10.2",
+      "UID": "fa7ca40ce236844e"
     },
     "Version": "2.10.4-r2",
     "Arch": "x86_64",
@@ -120,7 +123,8 @@
     "ID": "busybox@1.30.1-r2",
     "Name": "busybox",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/busybox@1.30.1-r2?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/busybox@1.30.1-r2?arch=x86_64\u0026distro=3.10.2",
+      "UID": "1941d9acbebe7f44"
     },
     "Version": "1.30.1-r2",
     "Arch": "x86_64",
@@ -150,7 +154,8 @@
     "ID": "ca-certificates-cacert@20190108-r0",
     "Name": "ca-certificates-cacert",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/ca-certificates-cacert@20190108-r0?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/ca-certificates-cacert@20190108-r0?arch=x86_64\u0026distro=3.10.2",
+      "UID": "9b1db91ad655d76c"
     },
     "Version": "20190108-r0",
     "Arch": "x86_64",
@@ -173,7 +178,8 @@
     "ID": "libc-utils@0.7.1-r0",
     "Name": "libc-utils",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/libc-utils@0.7.1-r0?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/libc-utils@0.7.1-r0?arch=x86_64\u0026distro=3.10.2",
+      "UID": "53fe480444a44c6e"
     },
     "Version": "0.7.1-r0",
     "Arch": "x86_64",
@@ -195,7 +201,8 @@
     "ID": "libcrypto1.1@1.1.1c-r0",
     "Name": "libcrypto1.1",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+      "UID": "c6c116a4441ec6de"
     },
     "Version": "1.1.1c-r0",
     "Arch": "x86_64",
@@ -231,7 +238,8 @@
     "ID": "libssl1.1@1.1.1c-r0",
     "Name": "libssl1.1",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+      "UID": "e132dcfcc51772ef"
     },
     "Version": "1.1.1c-r0",
     "Arch": "x86_64",
@@ -258,7 +266,8 @@
     "ID": "libtls-standalone@2.9.1-r0",
     "Name": "libtls-standalone",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/libtls-standalone@2.9.1-r0?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/libtls-standalone@2.9.1-r0?arch=x86_64\u0026distro=3.10.2",
+      "UID": "578e2c441f445479"
     },
     "Version": "2.9.1-r0",
     "Arch": "x86_64",
@@ -287,7 +296,8 @@
     "ID": "musl@1.1.22-r3",
     "Name": "musl",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/musl@1.1.22-r3?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/musl@1.1.22-r3?arch=x86_64\u0026distro=3.10.2",
+      "UID": "796d455bf42e5034"
     },
     "Version": "1.1.22-r3",
     "Arch": "x86_64",
@@ -310,7 +320,8 @@
     "ID": "musl-utils@1.1.22-r3",
     "Name": "musl-utils",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/musl-utils@1.1.22-r3?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/musl-utils@1.1.22-r3?arch=x86_64\u0026distro=3.10.2",
+      "UID": "40edadcb74964baa"
     },
     "Version": "1.1.22-r3",
     "Arch": "x86_64",
@@ -342,7 +353,8 @@
     "ID": "scanelf@1.2.3-r0",
     "Name": "scanelf",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/scanelf@1.2.3-r0?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/scanelf@1.2.3-r0?arch=x86_64\u0026distro=3.10.2",
+      "UID": "6e5cf642f47e44d0"
     },
     "Version": "1.2.3-r0",
     "Arch": "x86_64",
@@ -367,7 +379,8 @@
     "ID": "ssl_client@1.30.1-r2",
     "Name": "ssl_client",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/ssl_client@1.30.1-r2?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/ssl_client@1.30.1-r2?arch=x86_64\u0026distro=3.10.2",
+      "UID": "3338164dd993d2c8"
     },
     "Version": "1.30.1-r2",
     "Arch": "x86_64",
@@ -393,7 +406,8 @@
     "ID": "zlib@1.2.11-r1",
     "Name": "zlib",
     "Identifier": {
-      "PURL": "pkg:apk/alpine/zlib@1.2.11-r1?arch=x86_64\u0026distro=3.10.2"
+      "PURL": "pkg:apk/alpine/zlib@1.2.11-r1?arch=x86_64\u0026distro=3.10.2",
+      "UID": "73011a6749e0754a"
     },
     "Version": "1.2.11-r1",
     "Arch": "x86_64",

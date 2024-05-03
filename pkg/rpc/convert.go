@@ -86,6 +86,7 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 		p = pkg.PURL.String()
 	}
 	return &common.PkgIdentifier{
+		Uid:    pkg.UID,
 		Purl:   p,
 		BomRef: pkg.BOMRef,
 	}
@@ -236,7 +237,8 @@ func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier
 	}
 
 	pkgID := ftypes.PkgIdentifier{
-		BOMRef: pkg.BomRef,
+		UID:    pkg.GetUid(),
+		BOMRef: pkg.GetBomRef(),
 	}
 
 	if pkg.Purl != "" {
