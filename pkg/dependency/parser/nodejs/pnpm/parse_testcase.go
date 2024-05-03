@@ -730,4 +730,111 @@ var (
 			DependsOn: []string{"@babel/runtime@7.22.3"},
 		},
 	}
+
+	pnpmV9 = []types.Library{
+		{
+			ID:           "asap@2.0.6",
+			Name:         "asap",
+			Version:      "2.0.6",
+			Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID:           "debug@4.3.4",
+			Name:         "debug",
+			Version:      "4.3.4",
+			Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID:           "ee-first@1.1.1",
+			Name:         "ee-first",
+			Version:      "1.1.1",
+			Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID:           "encodeurl@1.0.2",
+			Name:         "encodeurl",
+			Version:      "1.0.2",
+			Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID:           "escape-html@1.0.3",
+			Name:         "escape-html",
+			Version:      "1.0.3",
+			Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID:           "finalhandler@1.1.1",
+			Name:         "finalhandler",
+			Version:      "1.1.1",
+			Relationship: types.RelationshipDirect,
+		},
+		{
+			ID:           "ms@2.0.0",
+			Name:         "ms",
+			Version:      "2.0.0",
+			Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID:           "on-finished@2.3.0",
+			Name:         "on-finished",
+			Version:      "2.3.0",
+			Relationship: types.RelationshipDirect,
+		},
+		{
+			ID:           "parseurl@1.3.3",
+			Name:         "parseurl",
+			Version:      "1.3.3",
+			Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID:           "promise@8.1.0",
+			Name:         "promise",
+			Version:      "8.1.0",
+			Relationship: types.RelationshipDirect,
+		},
+		{
+			ID:           "statuses@1.4.0",
+			Name:         "statuses",
+			Version:      "1.4.0",
+			Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID:           "unpipe@1.0.0",
+			Name:         "unpipe",
+			Version:      "1.0.0",
+			Relationship: types.RelationshipIndirect,
+		},
+	}
+	pnpmV9Deps = []types.Dependency{
+		{
+			ID: "debug@4.3.4",
+			DependsOn: []string{
+				"ms@2.0.0",
+			},
+		},
+		{
+			ID: "finalhandler@1.1.1",
+			DependsOn: []string{
+				"debug@4.3.4",
+				"encodeurl@1.0.2",
+				"escape-html@1.0.3",
+				"on-finished@2.3.0",
+				"parseurl@1.3.3",
+				"statuses@1.4.0",
+				"unpipe@1.0.0",
+			},
+		},
+		{
+			ID: "on-finished@2.3.0",
+			DependsOn: []string{
+				"ee-first@1.1.1",
+			},
+		},
+		{
+			ID: "promise@8.1.0",
+			DependsOn: []string{
+				"asap@2.0.6",
+			},
+		},
+	}
 )

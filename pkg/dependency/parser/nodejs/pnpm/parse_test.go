@@ -55,6 +55,12 @@ func TestParse(t *testing.T) {
 			want:     pnpmV6WithDev,
 			wantDeps: pnpmV6WithDevDeps,
 		},
+		{
+			name:     "v9",
+			file:     "testdata/pnpm-lock_v9.yaml",
+			want:     pnpmV9,
+			wantDeps: pnpmV9Deps,
+		},
 	}
 
 	for _, tt := range tests {
