@@ -769,10 +769,17 @@ var (
 			Relationship: types.RelationshipDirect,
 		},
 		{
+			ID:           "jquery@3.6.0",
+			Name:         "jquery",
+			Version:      "3.6.0",
+			Dev:          true,
+			Relationship: types.RelationshipDirect,
+		},
+		{
 			ID:           "ms@2.0.0",
 			Name:         "ms",
 			Version:      "2.0.0",
-			Relationship: types.RelationshipIndirect,
+			Relationship: types.RelationshipDirect,
 		},
 		{
 			ID:           "on-finished@2.3.0",

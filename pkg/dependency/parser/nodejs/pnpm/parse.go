@@ -2,12 +2,12 @@ package pnpm
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/samber/lo"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -95,12 +95,8 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		libs, deps = p.parse(lockVer, lockFile)
 	}
 
-	libs = utils.UniqueLibraries(libs)
-	deps = lo.UniqBy(deps, func(dep types.Dependency) string {
-		return dep.ID
-	})
+	sort.Sort(types.Libraries(libs))
 	sort.Sort(types.Dependencies(deps))
-
 	return libs, deps, nil
 }
 
@@ -150,17 +146,81 @@ func (p *Parser) parse(lockVer float64, lockFile LockFile) ([]types.Library, []t
 }
 
 func (p *Parser) parseV9(lockFile LockFile) ([]types.Library, []types.Dependency) {
-	var libs []types.Library
-	var deps []types.Dependency
+	resolvedLibs := make(map[string]types.Library)
+	resolvedDeps := make(map[string][]string)
 
-	for name, ver := range lockFile.Importers.Root.Dependencies {
-		depPath := packageID(name, ver.Version)
-		snapshotLibs, snapshotDeps := p.parseSnapshot(depPath, lockFile.Snapshots, types.RelationshipDirect)
-		libs = append(libs, snapshotLibs...)
-		deps = append(deps, snapshotDeps...)
+	directDeps := make(map[string]any)
+	for n, d := range lo.Assign(lockFile.Importers.Root.DevDependencies, lockFile.Importers.Root.Dependencies) {
+		name, version := p.parseDepPath(packageID(n, d.Version), v6VersionSep)
+		directDeps[packageID(name, version)] = struct{}{}
 	}
 
+	// Check all snapshots to get a list of resolved libraries and dependencies.
+	for depPath, snapshot := range lockFile.Snapshots {
+		// snapshots use unresolved strings
+		// e.g. `debug@4.3.4(supports-color@8.1.1):`
+		resolvedSnapshotName, resolvedSnapshotVersion := p.parseDepPath(depPath, v6VersionSep)
+
+		id := packageID(resolvedSnapshotName, resolvedSnapshotVersion)
+		resolvedLibs[id] = types.Library{
+			ID:           id,
+			Name:         resolvedSnapshotName,
+			Version:      resolvedSnapshotVersion,
+			Relationship: lo.Ternary(isDirectLib(id, directDeps), types.RelationshipDirect, types.RelationshipIndirect),
+			Dev:          true, // Mark all libs as Dev. We will update this later.
+		}
+
+		var dependsOn []string
+		for name, ver := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
+			// Dependency can be unresolved
+			// e.g. dependencies:
+			//        debug: 4.3.4(supports-color@8.1.1)
+			snapshotID := packageID(name, ver)
+			resolvedDepName, resolvedDepVersion := p.parseDepPath(snapshotID, v6VersionSep)
+			// Don't include dependencies if `snapshots` don't contain them.
+			// e.g. `snapshots` contain optional deps.
+			// But peer deps are also marked as optional, but `snapshots` don't contain them.
+			if _, ok := lockFile.Snapshots[snapshotID]; ok {
+				dependsOn = append(dependsOn, packageID(resolvedDepName, resolvedDepVersion))
+			}
+		}
+		if dependsOn != nil {
+			sort.Strings(dependsOn)
+			resolvedDeps[id] = dependsOn
+		}
+	}
+
+	// Overwrite the Dev field for root and their child dependencies.
+	for n, d := range lockFile.Importers.Root.Dependencies {
+		p.markRootLibs(packageID(n, d.Version), resolvedLibs, resolvedDeps)
+	}
+
+	deps := lo.MapToSlice(resolvedDeps, func(id string, dependsOn []string) types.Dependency {
+		return types.Dependency{
+			ID:        id,
+			DependsOn: dependsOn,
+		}
+	})
+
+	libs := maps.Values(resolvedLibs)
 	return libs, deps
+}
+
+// markRootLibs sets `Dev` to false for non dev dependency.
+func (p *Parser) markRootLibs(id string, libs map[string]types.Library, deps map[string][]string) {
+	lib, ok := libs[id]
+	if !ok {
+		return
+	}
+
+	lib.Dev = false
+	libs[id] = lib
+
+	// Update child deps
+	for _, depID := range deps[id] {
+		p.markRootLibs(depID, libs, deps)
+	}
+	return
 }
 
 func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
@@ -183,61 +243,13 @@ func (p *Parser) parseLockfileVersion(lockFile LockFile) float64 {
 	}
 }
 
-// parsePackage parses a `snapshot` from v9 lock file.
-func (p *Parser) parseSnapshot(depPath string, snapshots map[string]Snapshot, relationship types.Relationship) ([]types.Library, []types.Dependency) {
-	var libs []types.Library
-	var deps []types.Dependency
-
-	// Skip if snapshots don't contain dependency
-	// e.g. peer dependency
-	snapshot, ok := snapshots[depPath]
-	if !ok {
-		return nil, nil
-	}
-
-	resolvedSnapshotName, resolvedSnapshotVersion := p.parseDepPath(depPath, v6VersionSep)
-	libs = append(libs, types.Library{
-		ID:           packageID(resolvedSnapshotName, resolvedSnapshotVersion),
-		Name:         resolvedSnapshotName,
-		Version:      resolvedSnapshotVersion,
-		Relationship: relationship,
-	})
-
-	var dependsOn []string
-	for name, ver := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
-		snapshotDepPath := packageID(name, ver)
-		resolvedDepName, resolvedDepVersion := p.parseDepPath(snapshotDepPath, v6VersionSep)
-		// Don't include dependencies if `snapshots` don't contain them.
-		// e.g. `snapshots` contain optional deps.
-		// But peer deps are also marked as optional, but `snapshots` don't contain them.
-		if _, ok := snapshots[snapshotDepPath]; ok {
-			dependsOn = append(dependsOn, packageID(resolvedDepName, resolvedDepVersion))
-		}
-
-		// Recursive checking of child snapshots
-		childLibs, childDeps := p.parseSnapshot(snapshotDepPath, snapshots, types.RelationshipIndirect)
-		libs = append(libs, childLibs...)
-		deps = append(deps, childDeps...)
-	}
-
-	if dependsOn != nil {
-		sort.Strings(dependsOn)
-		deps = append(deps, types.Dependency{
-			ID:        packageID(resolvedSnapshotName, resolvedSnapshotVersion),
-			DependsOn: dependsOn,
-		})
-	}
-
-	return libs, deps
-}
-
 // parsePackage parses a `package` from a v6 or earlier lock file.
 // cf. https://github.com/pnpm/pnpm/blob/ce61f8d3c29eee46cee38d56ced45aea8a439a53/packages/dependency-path/src/index.ts#L112-L163
 func (p *Parser) parsePackage(depPath string, lockFileVersion float64) (string, string) {
 	// The version separator is different between v5 and v6+.
-	versionSep := "@"
+	versionSep := v6VersionSep
 	if lockFileVersion < 6 {
-		versionSep = "/"
+		versionSep = v5VersionSep
 	}
 
 	// Skip registry
