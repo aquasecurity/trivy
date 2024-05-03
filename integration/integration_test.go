@@ -192,9 +192,10 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 	return bom
 }
 
+type OverrideFunc func(t *testing.T, want, got *types.Report)
 type runOptions struct {
 	wantErr  string
-	override func(t *testing.T, want, got *types.Report)
+	override OverrideFunc
 	fakeUUID string
 }
 
@@ -308,10 +309,32 @@ func validateReport(t *testing.T, schema string, report any) {
 	}
 }
 
-func overrideFuncs(funcs ...func(*testing.T, *types.Report, *types.Report)) func(*testing.T, *types.Report, *types.Report) {
+func overrideFuncs(funcs ...OverrideFunc) OverrideFunc {
 	return func(t *testing.T, want, got *types.Report) {
 		for _, f := range funcs {
+			if f == nil {
+				continue
+			}
 			f(t, want, got)
+		}
+	}
+}
+
+// overrideUID only checks for the presence of the package UID and clears the UID;
+// the UID is calculated from the package metadata, but the UID does not match
+// as it varies slightly depending on the mode of scanning, e.g. the digest of the layer.
+func overrideUID(t *testing.T, want, got *types.Report) {
+	for i, result := range got.Results {
+		for j, vuln := range result.Vulnerabilities {
+			assert.NotEmptyf(t, vuln.PkgIdentifier.UID, "UID is empty: %s", vuln.VulnerabilityID)
+			// Do not compare UID as the package metadata is slightly different between the tests,
+			// causing different UIDs.
+			got.Results[i].Vulnerabilities[j].PkgIdentifier.UID = ""
+		}
+	}
+	for i, result := range want.Results {
+		for j := range result.Vulnerabilities {
+			want.Results[i].Vulnerabilities[j].PkgIdentifier.UID = ""
 		}
 	}
 }

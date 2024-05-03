@@ -284,7 +284,7 @@ func TestClientServer(t *testing.T) {
 			}
 
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
-				override: clearUID,
+				override: overrideUID,
 			})
 		})
 	}
@@ -400,7 +400,7 @@ func TestClientServerWithFormat(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
 			runTest(t, osArgs, tt.golden, "", tt.args.Format, runOptions{
-				override: clearUID,
+				override: overrideUID,
 			})
 		})
 	}
@@ -480,7 +480,7 @@ func TestClientServerWithToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 			runTest(t, osArgs, tt.golden, "", types.FormatJSON, runOptions{
-				override: clearUID,
+				override: overrideUID,
 				wantErr:  tt.wantErr,
 			})
 		})
@@ -508,7 +508,9 @@ func TestClientServerWithRedis(t *testing.T) {
 		osArgs := setupClient(t, testArgs, addr, cacheDir, golden)
 
 		// Run Trivy client
-		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{})
+		runTest(t, osArgs, golden, "", types.FormatJSON, runOptions{
+			override: overrideUID,
+		})
 	})
 
 	// Terminate the Redis container
@@ -519,8 +521,7 @@ func TestClientServerWithRedis(t *testing.T) {
 
 		// Run Trivy client
 		runTest(t, osArgs, "", "", types.FormatJSON, runOptions{
-			override: clearUID,
-			wantErr:  "unable to store cache",
+			wantErr: "unable to store cache",
 		})
 	})
 }
@@ -667,23 +668,4 @@ func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, st
 
 	addr := fmt.Sprintf("redis://%s:%s", ip, p.Port())
 	return redis, addr
-}
-
-// clearUID only checks for the presence of the package UID and clears the UID;
-// the UID is calculated from the package metadata, but the UID does not match
-// as it varies slightly depending on the mode of scanning, e.g. the digest of the layer.
-func clearUID(t *testing.T, want, got *types.Report) {
-	for i, result := range got.Results {
-		for j, vuln := range result.Vulnerabilities {
-			assert.NotEmptyf(t, vuln.PkgIdentifier.UID, "UID is empty: %s", vuln.VulnerabilityID)
-			// Do not compare UID as the package metadata is slightly different between the tests,
-			// causing different UIDs.
-			got.Results[i].Vulnerabilities[j].PkgIdentifier.UID = ""
-		}
-	}
-	for i, result := range want.Results {
-		for j := range result.Vulnerabilities {
-			want.Results[i].Vulnerabilities[j].PkgIdentifier.UID = ""
-		}
-	}
 }
