@@ -22,4 +22,26 @@ func TestParseFS(t *testing.T) {
 		}
 		assert.Equal(t, expectedFiles, p.filepaths)
 	})
+
+	t.Run("archive with symlinks", func(t *testing.T) {
+		// mkdir -p chart && cd $_
+		// touch Chart.yaml
+		// mkdir -p dir && cp -p Chart.yaml dir/Chart.yaml
+		// mkdir -p sym-to-file && ln -s ../Chart.yaml sym-to-file/Chart.yaml
+		// ln -s dir sym-to-dir
+		// cd .. && tar -czvf chart.tar.gz chart && rm -rf chart
+		p, err := New(".")
+		require.NoError(t, err)
+
+		fsys := os.DirFS(filepath.Join("testdata", "archive-with-symlinks"))
+		require.NoError(t, p.ParseFS(context.TODO(), fsys, "chart.tar.gz"))
+
+		expectedFiles := []string{
+			"chart/Chart.yaml",
+			"chart/dir/Chart.yaml",
+			"chart/sym-to-dir/Chart.yaml",
+			"chart/sym-to-file/Chart.yaml",
+		}
+		assert.Equal(t, expectedFiles, p.filepaths)
+	})
 }
