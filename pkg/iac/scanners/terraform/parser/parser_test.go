@@ -3,6 +3,7 @@ package parser
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"sort"
 	"testing"
 
@@ -1698,4 +1699,28 @@ resource "test" "values" {
 	assert.True(t, map_attr.Value().RawEquals(cty.MapVal(map[string]cty.Value{
 		"a": cty.NumberIntVal(1), "b": cty.NumberIntVal(2),
 	})))
+}
+
+func Test_LoadLocalCachedModule(t *testing.T) {
+	fsys := os.DirFS(filepath.Join("testdata", "cached-modules"))
+
+	parser := New(
+		fsys, "",
+		OptionStopOnHCLError(true),
+		OptionWithDownloads(false),
+	)
+	require.NoError(t, parser.ParseFS(context.TODO(), "."))
+
+	modules, _, err := parser.EvaluateAll(context.TODO())
+	require.NoError(t, err)
+
+	assert.Len(t, modules, 2)
+
+	buckets := modules.GetResourcesByType("aws_s3_bucket")
+	assert.Len(t, buckets, 1)
+
+	assert.Equal(t, "my-private-module/s3-bucket/aws/.terraform/modules/s3-bucket/main.tf", buckets[0].GetMetadata().Range().GetFilename())
+
+	bucketName := buckets[0].GetAttribute("bucket").Value().AsString()
+	assert.Equal(t, "my-s3-bucket", bucketName)
 }
