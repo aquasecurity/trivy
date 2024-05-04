@@ -86,9 +86,6 @@ func (w *FS) onError(wrapped fs.WalkDirFunc) fs.WalkDirFunc {
 		// Ignore permission errors
 		case os.IsPermission(err):
 			return nil
-		// Ignore "file does not exist" errors: it happens with special files like /proc/.
-		case errors.Is(err, fs.ErrNotExist):
-			return nil
 		case err != nil:
 			// halt traversal on any other error
 			return xerrors.Errorf("unknown error with %s: %w", filePath, err)
