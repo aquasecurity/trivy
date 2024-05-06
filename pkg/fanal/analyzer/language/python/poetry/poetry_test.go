@@ -26,7 +26,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Poetry,
 						FilePath: "poetry.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "certifi@2022.12.7",
 								Name:         "certifi",
@@ -130,7 +130,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Poetry,
 						FilePath: "poetry.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "click@8.1.3",
 								Name:    "click",
@@ -157,7 +157,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Poetry,
 						FilePath: "poetry.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "click@8.1.3",
 								Name:    "click",

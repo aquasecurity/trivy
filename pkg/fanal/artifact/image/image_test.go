@@ -700,7 +700,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											ID:       "guzzlehttp/guzzle@6.2.0",
 											Name:     "guzzlehttp/guzzle",
@@ -908,7 +908,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									Type:     "bundler",
 									FilePath: "ruby-app/Gemfile.lock",
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											ID:           "actioncable@5.2.3",
 											Name:         "actioncable",

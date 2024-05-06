@@ -444,7 +444,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "php-app/composer.lock",
-								Libraries: ftypes.Packages{
+								Packages: ftypes.Packages{
 									{
 										Name:    "guzzlehttp/guzzle",
 										Version: "6.2.0",

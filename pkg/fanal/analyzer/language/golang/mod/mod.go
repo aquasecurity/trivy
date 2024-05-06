@@ -138,13 +138,13 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 	licenses := make(map[string][]string)
 	for i, app := range apps {
 		// Actually used dependencies
-		usedLibs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+		usedLibs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 			return pkg.Name, pkg
 		})
-		for j, lib := range app.Libraries {
+		for j, lib := range app.Packages {
 			if l, ok := licenses[lib.ID]; ok {
 				// Fill licenses
-				apps[i].Libraries[j].Licenses = l
+				apps[i].Packages[j].Licenses = l
 				continue
 			}
 
@@ -159,7 +159,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 				licenses[lib.ID] = licenseNames
 
 				// Fill licenses
-				apps[i].Libraries[j].Licenses = licenseNames
+				apps[i].Packages[j].Licenses = licenseNames
 			}
 
 			// Collect dependencies of the direct dependency
@@ -170,7 +170,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 				continue
 			} else {
 				// Filter out unused dependencies and convert module names to module IDs
-				apps[i].Libraries[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
+				apps[i].Packages[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
 					if m, ok := usedLibs[modName]; !ok {
 						return "", false
 					} else {
@@ -230,7 +230,7 @@ func parse(fsys fs.FS, path string, parser language.Parser) (*types.Application,
 }
 
 func lessThanGo117(gomod *types.Application) bool {
-	for _, lib := range gomod.Libraries {
+	for _, lib := range gomod.Packages {
 		// The indirect field is populated only in Go 1.17+
 		if lib.Relationship == types.RelationshipIndirect {
 			return false
@@ -244,13 +244,13 @@ func mergeGoSum(gomod, gosum *types.Application) {
 		return
 	}
 	uniq := make(map[string]types.Package)
-	for _, lib := range gomod.Libraries {
+	for _, lib := range gomod.Packages {
 		// It will be used for merging go.sum.
 		uniq[lib.Name] = lib
 	}
 
 	// For Go 1.16 or less, we need to merge go.sum into go.mod.
-	for _, lib := range gosum.Libraries {
+	for _, lib := range gosum.Packages {
 		// Skip dependencies in go.mod so that go.mod should be preferred.
 		if _, ok := uniq[lib.Name]; ok {
 			continue
@@ -262,7 +262,7 @@ func mergeGoSum(gomod, gosum *types.Application) {
 		uniq[lib.Name] = lib
 	}
 
-	gomod.Libraries = maps.Values(uniq)
+	gomod.Packages = maps.Values(uniq)
 }
 
 func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error) {

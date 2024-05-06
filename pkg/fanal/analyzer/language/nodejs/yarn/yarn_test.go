@@ -26,7 +26,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "js-tokens@2.0.0",
 								Name:         "js-tokens",
@@ -142,7 +142,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "foo/yarn.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "hoek@6.1.3",
 								Name:         "hoek",
@@ -168,7 +168,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
@@ -271,7 +271,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
@@ -307,7 +307,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Packages: []types.Package{
 							{
 								ID:           "is-callable@1.2.7",
 								Name:         "is-callable",
@@ -362,7 +362,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "foo-json@0.8.33",
 								Name:         "@types/jsonstream",
@@ -480,7 +480,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "is-number@7.0.0",
 								Name:         "is-number",
@@ -647,7 +647,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Yarn,
 						FilePath: "yarn.lock",
-						Libraries: []types.Package{
+						Packages: []types.Package{
 							{
 								ID:           "@vue/compiler-sfc@2.7.14",
 								Name:         "@vue/compiler-sfc",

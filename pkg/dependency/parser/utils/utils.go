@@ -32,7 +32,7 @@ func UniquePackages(pkgs []ftypes.Package) []ftypes.Package {
 		if l, ok := unique[identifier]; !ok {
 			unique[identifier] = pkg
 		} else {
-			// There are times when we get 2 same libraries as root and dev dependencies.
+			// There are times when we get 2 same packages as root and dev dependencies.
 			// https://github.com/aquasecurity/trivy/issues/5532
 			// In these cases, we need to mark the dependency as a root dependency.
 			if !pkg.Dev {

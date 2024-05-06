@@ -33,7 +33,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Npm,
 						FilePath: "package-lock.json",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:       "@babel/parser@7.23.6",
 								Name:     "@babel/parser",
@@ -201,7 +201,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Npm,
 						FilePath: "package-lock.json",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:      "ms@2.1.1",
 								Name:    "ms",
@@ -241,7 +241,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 
 			assert.NoError(t, err)
 			if len(got.Applications) > 0 {
-				sort.Sort(got.Applications[0].Libraries)
+				sort.Sort(got.Applications[0].Packages)
 			}
 			assert.Equal(t, tt.want, got)
 		})

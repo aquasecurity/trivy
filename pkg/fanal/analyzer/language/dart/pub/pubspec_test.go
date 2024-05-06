@@ -32,7 +32,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pub,
 						FilePath: "pubspec.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "crypto@3.0.3",
 								Name:         "crypto",
@@ -80,7 +80,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pub,
 						FilePath: "pubspec.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "crypto@3.0.3",
 								Name:         "crypto",

@@ -64,16 +64,16 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 			return nil
 		}
 
-		libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, struct{}) {
+		libs := lo.SliceToMap(app.Packages, func(lib types.Package) (string, struct{}) {
 			return lib.ID, struct{}{}
 		})
 
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			pom := poms[lib.ID]
 
 			// Fill licenses from pom file
 			if len(pom.Licenses.License) > 0 {
-				app.Libraries[i].Licenses = lo.Map(pom.Licenses.License, func(license License, _ int) string {
+				app.Packages[i].Licenses = lo.Map(pom.Licenses.License, func(license License, _ int) string {
 					return license.Name
 				})
 			}
@@ -87,10 +87,10 @@ func (a gradleLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 				}
 			}
 			sort.Strings(deps)
-			app.Libraries[i].DependsOn = deps
+			app.Packages[i].DependsOn = deps
 		}
 
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	})

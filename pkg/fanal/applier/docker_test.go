@@ -44,7 +44,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app/Gemfile.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "gemlibrary1",
 									Version: "1.2.3",
@@ -54,7 +54,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Composer,
 							FilePath: "app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -64,7 +64,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.GemSpec,
 							FilePath: "usr/local/bundle/specifications/gon-6.3.2.gemspec",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:     "gon",
 									Version:  "6.3.2",
@@ -123,7 +123,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.GemSpec,
 							FilePath: "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:     "activesupport",
 									Version:  "6.0.2.1",
@@ -192,7 +192,7 @@ func TestApplyLayers(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type: types.GemSpec,
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:     "activesupport",
 								Version:  "6.0.2.1",
@@ -232,7 +232,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Bundler,
 						FilePath: "app/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "gemlibrary1",
 								Version: "1.2.3",
@@ -284,7 +284,7 @@ func TestApplyLayers(t *testing.T) {
 					Applications: []types.Application{
 						{
 							Type: types.PythonPkg,
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "pip",
 									Version: "23.0.1",
@@ -339,7 +339,7 @@ func TestApplyLayers(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type: types.PythonPkg,
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:     "pip",
 								Version:  "23.0.1",
@@ -406,7 +406,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app/Gemfile.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "rails",
 									Version: "5.0.0",
@@ -420,7 +420,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Composer,
 							FilePath: "app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -430,7 +430,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.GemSpec,
 							FilePath: "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:     "activesupport",
 									Version:  "6.0.2.1",
@@ -448,7 +448,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app/Gemfile.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "rails",
 									Version: "6.0.0",
@@ -462,7 +462,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "app/composer2.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -485,7 +485,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Bundler,
 						FilePath: "app/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "rack",
 								Version: "4.0.0",
@@ -523,7 +523,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Composer,
 						FilePath: "app/composer2.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "phplibrary1",
 								Version: "6.6.6",
@@ -736,7 +736,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -854,7 +854,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "app/composer.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "phplibrary1",
 									Version: "6.6.6",
@@ -1069,7 +1069,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app1/Gemfile.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "gemlibrary1",
 									Version: "1.2.3",
@@ -1079,7 +1079,7 @@ func TestApplyLayers(t *testing.T) {
 						{
 							Type:     types.Bundler,
 							FilePath: "app2/Gemfile.lock",
-							Libraries: types.Packages{
+							Packages: types.Packages{
 								{
 									Name:    "gemlibrary1",
 									Version: "1.2.3",
@@ -1094,7 +1094,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Bundler,
 						FilePath: "app1/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "gemlibrary1",
 								Version: "1.2.3",
@@ -1116,7 +1116,7 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Type:     types.Bundler,
 						FilePath: "app2/Gemfile.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "gemlibrary1",
 								Version: "1.2.3",
@@ -1148,7 +1148,7 @@ func TestApplyLayers(t *testing.T) {
 				return got.Applications[i].FilePath < got.Applications[j].FilePath
 			})
 			for _, app := range got.Applications {
-				sort.Sort(app.Libraries)
+				sort.Sort(app.Packages)
 			}
 			assert.Equal(t, tt.want, got, tt.name)
 		})

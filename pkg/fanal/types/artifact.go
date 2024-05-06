@@ -332,8 +332,8 @@ type Application struct {
 	// Lock files have the file path here, while each package metadata do not have
 	FilePath string `json:",omitempty"`
 
-	// Libraries is a list of lang-specific packages
-	Libraries Packages
+	// Packages is a list of lang-specific packages
+	Packages Packages
 }
 
 type File struct {

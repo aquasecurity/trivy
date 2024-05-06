@@ -86,9 +86,9 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		}
 
 		// Fill licenses
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			if l, ok := licenses[lib.ID]; ok {
-				app.Libraries[i].Licenses = l
+				app.Packages[i].Licenses = l
 			}
 		}
 
@@ -164,20 +164,20 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 		return xerrors.Errorf("unable to parse %s: %w", dir, err)
 	}
 
-	// yarn.lock file can contain same libraries with different versions
+	// yarn.lock file can contain same packages with different versions
 	// save versions separately for version comparison by comparator
-	pkgIDs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+	pkgIDs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
 	// Walk prod dependencies
-	pkgs, err := a.walkDependencies(app.Libraries, pkgIDs, directDeps, false)
+	pkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDeps, false)
 	if err != nil {
 		return xerrors.Errorf("unable to walk dependencies: %w", err)
 	}
 
 	// Walk dev dependencies
-	devPkgs, err := a.walkDependencies(app.Libraries, pkgIDs, directDevDeps, true)
+	devPkgs, err := a.walkDependencies(app.Packages, pkgIDs, directDevDeps, true)
 	if err != nil {
 		return xerrors.Errorf("unable to walk dependencies: %w", err)
 	}
@@ -189,8 +189,8 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	pkgSlice := maps.Values(pkgs)
 	sort.Sort(types.Packages(pkgSlice))
 
-	// Save libraries
-	app.Libraries = pkgSlice
+	// Save packages
+	app.Packages = pkgSlice
 	return nil
 }
 

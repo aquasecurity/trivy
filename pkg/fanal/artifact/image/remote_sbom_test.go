@@ -229,7 +229,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 							Applications: []types.Application{
 								{
 									Type: types.GoBinary,
-									Libraries: types.Packages{
+									Packages: types.Packages{
 										{
 											ID:      "github.com/opencontainers/go-digest@v1.0.0",
 											Name:    "github.com/opencontainers/go-digest",

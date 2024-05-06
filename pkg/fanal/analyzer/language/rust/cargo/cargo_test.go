@@ -27,7 +27,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Cargo,
 						FilePath: "Cargo.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "memchr@1.0.2",
 								Name:         "memchr",
@@ -153,7 +153,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Cargo,
 						FilePath: "Cargo.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "memchr@2.5.0",
 								Name:         "memchr",
@@ -180,7 +180,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Cargo,
 						FilePath: "Cargo.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "aho-corasick@0.7.20",
 								Name:         "aho-corasick",
@@ -367,7 +367,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Cargo,
 						FilePath: "Cargo.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "app@0.1.0",
 								Name:         "app",
@@ -413,7 +413,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Cargo,
 						FilePath: "Cargo.lock",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "gdb-command@0.7.6",
 								Name:         "gdb-command",

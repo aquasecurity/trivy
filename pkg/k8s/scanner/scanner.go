@@ -235,7 +235,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 					{
 						Type:     ftypes.LangType(lang),
 						FilePath: artifact.Name,
-						Libraries: []ftypes.Package{
+						Packages: []ftypes.Package{
 							{
 								Name:    comp.Name,
 								Version: comp.Version,
@@ -271,7 +271,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 					{
 						Type:     ftypes.LangType(lang),
 						FilePath: artifact.Name,
-						Libraries: []ftypes.Package{
+						Packages: []ftypes.Package{
 							{
 								Name:    kubelet,
 								Version: kubeletVersion,
@@ -281,7 +281,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 					{
 						Type:     ftypes.GoBinary,
 						FilePath: artifact.Name,
-						Libraries: []ftypes.Package{
+						Packages: []ftypes.Package{
 							{
 								Name:    runtimeName,
 								Version: runtimeVersion,
@@ -316,7 +316,7 @@ func (s *Scanner) scanK8sVulns(ctx context.Context, artifactsData []*artifacts.A
 					{
 						Type:     ftypes.LangType(lang),
 						FilePath: artifact.Name,
-						Libraries: []ftypes.Package{
+						Packages: []ftypes.Package{
 							{
 								Name:    cf.Name,
 								Version: cf.Version,

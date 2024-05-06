@@ -110,9 +110,9 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 	}
 
 	return &types.Application{
-		Type:      fileType,
-		FilePath:  filePath,
-		Libraries: pkgs,
+		Type:     fileType,
+		FilePath: filePath,
+		Packages: pkgs,
 	}
 }
 

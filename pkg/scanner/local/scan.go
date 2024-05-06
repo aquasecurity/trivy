@@ -311,7 +311,7 @@ func (s Scanner) scanLicenses(target types.ScanTarget, options types.ScanOptions
 	// License - language-specific packages
 	for _, app := range target.Applications {
 		var langLicenses []types.DetectedLicense
-		for _, lib := range app.Libraries {
+		for _, lib := range app.Packages {
 			for _, license := range lib.Licenses {
 				category, severity := scanner.Scan(license)
 				langLicenses = append(langLicenses, types.DetectedLicense{
@@ -435,7 +435,7 @@ func excludeDevDeps(apps []ftypes.Application, include bool) {
 		log.Info("Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.")
 	})
 	for i := range apps {
-		apps[i].Libraries = lo.Filter(apps[i].Libraries, func(lib ftypes.Package, index int) bool {
+		apps[i].Packages = lo.Filter(apps[i].Packages, func(lib ftypes.Package, index int) bool {
 			if lib.Dev {
 				onceInfo()
 			}

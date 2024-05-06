@@ -78,7 +78,7 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 			return nil
 		}
 
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			license, ok := foundLicenses[lib.ID]
 			if !ok {
 				license, err = a.licenseParser.findLicense(lib.Name, lib.Version)
@@ -88,10 +88,10 @@ func (a *nugetLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Pos
 				foundLicenses[lib.ID] = license
 			}
 
-			app.Libraries[i].Licenses = license
+			app.Packages[i].Licenses = license
 		}
 
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	})

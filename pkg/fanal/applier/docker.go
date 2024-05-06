@@ -81,7 +81,7 @@ func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftype
 			if filePath != layerApp.FilePath {
 				continue
 			}
-			if containsPackage(lib, layerApp.Libraries) {
+			if containsPackage(lib, layerApp.Packages) {
 				return layer.Digest, layer.DiffID
 			}
 		}
@@ -230,19 +230,19 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	}
 
 	for _, app := range mergedLayer.Applications {
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			// Skip lookup for SBOM
 			if lo.IsEmpty(lib.Layer) {
 				originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, lib, layers)
-				app.Libraries[i].Layer = ftypes.Layer{
+				app.Packages[i].Layer = ftypes.Layer{
 					Digest: originLayerDigest,
 					DiffID: originLayerDiffID,
 				}
 			}
 			if lib.Identifier.PURL == nil {
-				app.Libraries[i].Identifier.PURL = newPURL(app.Type, types.Metadata{}, lib)
+				app.Packages[i].Identifier.PURL = newPURL(app.Type, types.Metadata{}, lib)
 			}
-			app.Libraries[i].Identifier.UID = calcPkgUID(app.FilePath, lib)
+			app.Packages[i].Identifier.UID = calcPkgUID(app.FilePath, lib)
 		}
 	}
 
@@ -292,11 +292,11 @@ func aggregate(detail *ftypes.ArtifactDetail) {
 			apps = append(apps, app)
 			continue
 		}
-		a.Libraries = append(a.Libraries, app.Libraries...)
+		a.Packages = append(a.Packages, app.Packages...)
 	}
 
 	for _, app := range aggregatedApps {
-		if len(app.Libraries) > 0 {
+		if len(app.Packages) > 0 {
 			apps = append(apps, *app)
 		}
 	}

@@ -62,7 +62,7 @@ func TestAnalyze(t *testing.T) {
 					{
 						Type:     types.GoBinary,
 						FilePath: "app/myweb",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								Name:    "test",
 								Version: "1.2.3",

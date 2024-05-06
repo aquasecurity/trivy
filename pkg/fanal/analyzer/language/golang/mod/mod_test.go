@@ -31,7 +31,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
@@ -81,7 +81,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
@@ -121,7 +121,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
@@ -173,7 +173,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoModule,
 						FilePath: "go.mod",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "github.com/org/repo",
 								Name:         "github.com/org/repo",
@@ -234,8 +234,8 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			assert.NoError(t, err)
 
 			if len(got.Applications) > 0 {
-				sort.Sort(got.Applications[0].Libraries)
-				sort.Sort(tt.want.Applications[0].Libraries)
+				sort.Sort(got.Applications[0].Packages)
+				sort.Sort(tt.want.Applications[0].Packages)
 			}
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)

@@ -64,15 +64,15 @@ func (a conanLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 		}
 
 		// Fill licenses
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			if license, ok := licenses[lib.Name]; ok {
-				app.Libraries[i].Licenses = []string{
+				app.Packages[i].Licenses = []string{
 					license,
 				}
 			}
 		}
 
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	}); err != nil {

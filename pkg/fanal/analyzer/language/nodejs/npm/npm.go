@@ -67,9 +67,9 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 		}
 
 		// Fill licenses
-		for i, lib := range app.Libraries {
+		for i, lib := range app.Packages {
 			if ll, ok := licenses[lib.ID]; ok {
-				app.Libraries[i].Licenses = ll
+				app.Packages[i].Licenses = ll
 			}
 		}
 

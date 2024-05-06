@@ -28,7 +28,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Gradle,
 						FilePath: "gradle.lockfile",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "junit:junit:4.13",
 								Name:         "junit:junit",
@@ -72,7 +72,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Gradle,
 						FilePath: "gradle.lockfile",
-						Libraries: types.Packages{
+						Packages: types.Packages{
 							{
 								ID:           "junit:junit:4.13",
 								Name:         "junit:junit",

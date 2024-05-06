@@ -71,22 +71,22 @@ func (a pubSpecLockAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostA
 
 		if allDependsOn != nil {
 			// Required to search for library versions for DependsOn.
-			libs := lo.SliceToMap(app.Libraries, func(lib types.Package) (string, string) {
+			libs := lo.SliceToMap(app.Packages, func(lib types.Package) (string, string) {
 				return lib.Name, lib.ID
 			})
 
-			for i, lib := range app.Libraries {
+			for i, lib := range app.Packages {
 				var dependsOn []string
 				for _, depName := range allDependsOn[lib.ID] {
 					if depID, ok := libs[depName]; ok {
 						dependsOn = append(dependsOn, depID)
 					}
 				}
-				app.Libraries[i].DependsOn = dependsOn
+				app.Packages[i].DependsOn = dependsOn
 			}
 		}
 
-		sort.Sort(app.Libraries)
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	})

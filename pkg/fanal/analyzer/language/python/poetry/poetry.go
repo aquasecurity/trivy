@@ -102,13 +102,13 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 
-	for i, lib := range app.Libraries {
+	for i, lib := range app.Packages {
 		// Identify the direct/transitive dependencies
 		if _, ok := p[lib.Name]; ok {
-			app.Libraries[i].Relationship = types.RelationshipDirect
+			app.Packages[i].Relationship = types.RelationshipDirect
 		} else {
-			app.Libraries[i].Indirect = true
-			app.Libraries[i].Relationship = types.RelationshipIndirect
+			app.Packages[i].Indirect = true
+			app.Packages[i].Relationship = types.RelationshipIndirect
 		}
 	}
 
