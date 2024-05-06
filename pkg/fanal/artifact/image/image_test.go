@@ -910,6 +910,113 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "ruby-app/Gemfile.lock",
 									Packages: types.Packages{
 										{
+											ID:           "dotenv@2.7.2",
+											Name:         "dotenv",
+											Version:      "2.7.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 51,
+													EndLine:   51,
+												},
+											},
+										},
+										{
+											ID:           "faker@1.9.3",
+											Name:         "faker",
+											Version:      "1.9.3",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string{"i18n@1.6.0"},
+											Locations: []types.Location{
+												{
+													StartLine: 53,
+													EndLine:   53,
+												},
+											},
+										},
+										{
+											ID:           "json@2.2.0",
+											Name:         "json",
+											Version:      "2.2.0",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn:    []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 60,
+													EndLine:   60,
+												},
+											},
+										},
+										{
+											ID:           "pry@0.12.2",
+											Name:         "pry",
+											Version:      "0.12.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn: []string{
+												"coderay@1.1.2",
+												"method_source@0.9.2",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 79,
+													EndLine:   79,
+												},
+											},
+										},
+										{
+											ID:           "rails@5.2.0",
+											Name:         "rails",
+											Version:      "5.2.0",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn: []string{
+												"actioncable@5.2.3",
+												"actionmailer@5.2.3",
+												"actionpack@5.2.3",
+												"actionview@5.2.3",
+												"activejob@5.2.3",
+												"activemodel@5.2.3",
+												"activerecord@5.2.3",
+												"activestorage@5.2.3",
+												"activesupport@5.2.3",
+												"railties@5.2.3",
+												"sprockets-rails@3.2.1",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 86,
+													EndLine:   86,
+												},
+											},
+										},
+										{
+											ID:           "rubocop@0.67.2",
+											Name:         "rubocop",
+											Version:      "0.67.2",
+											Indirect:     false,
+											Relationship: types.RelationshipDirect,
+											DependsOn: []string{
+												"jaro_winkler@1.5.2",
+												"parallel@1.17.0",
+												"parser@2.6.3.0",
+												"psych@3.1.0",
+												"rainbow@3.0.0",
+												"ruby-progressbar@1.10.0",
+												"unicode-display_width@1.5.0",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 112,
+													EndLine:   112,
+												},
+											},
+										},
+										{
 											ID:           "actioncable@5.2.3",
 											Name:         "actioncable",
 											Version:      "5.2.3",
@@ -1159,20 +1266,6 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:           "dotenv@2.7.2",
-											Name:         "dotenv",
-											Version:      "2.7.2",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn:    []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 51,
-													EndLine:   51,
-												},
-											},
-										},
-										{
 											ID:           "erubi@1.8.0",
 											Name:         "erubi",
 											Version:      "1.8.0",
@@ -1183,20 +1276,6 @@ func TestArtifact_Inspect(t *testing.T) {
 												{
 													StartLine: 52,
 													EndLine:   52,
-												},
-											},
-										},
-										{
-											ID:           "faker@1.9.3",
-											Name:         "faker",
-											Version:      "1.9.3",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn:    []string{"i18n@1.6.0"},
-											Locations: []types.Location{
-												{
-													StartLine: 53,
-													EndLine:   53,
 												},
 											},
 										},
@@ -1239,20 +1318,6 @@ func TestArtifact_Inspect(t *testing.T) {
 												{
 													StartLine: 59,
 													EndLine:   59,
-												},
-											},
-										},
-										{
-											ID:           "json@2.2.0",
-											Name:         "json",
-											Version:      "2.2.0",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn:    []string(nil),
-											Locations: []types.Location{
-												{
-													StartLine: 60,
-													EndLine:   60,
 												},
 											},
 										},
@@ -1428,23 +1493,6 @@ func TestArtifact_Inspect(t *testing.T) {
 											},
 										},
 										{
-											ID:           "pry@0.12.2",
-											Name:         "pry",
-											Version:      "0.12.2",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn: []string{
-												"coderay@1.1.2",
-												"method_source@0.9.2",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 79,
-													EndLine:   79,
-												},
-											},
-										},
-										{
 											ID:           "psych@3.1.0",
 											Name:         "psych",
 											Version:      "3.1.0",
@@ -1483,32 +1531,6 @@ func TestArtifact_Inspect(t *testing.T) {
 												{
 													StartLine: 84,
 													EndLine:   84,
-												},
-											},
-										},
-										{
-											ID:           "rails@5.2.0",
-											Name:         "rails",
-											Version:      "5.2.0",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn: []string{
-												"actioncable@5.2.3",
-												"actionmailer@5.2.3",
-												"actionpack@5.2.3",
-												"actionview@5.2.3",
-												"activejob@5.2.3",
-												"activemodel@5.2.3",
-												"activerecord@5.2.3",
-												"activestorage@5.2.3",
-												"activesupport@5.2.3",
-												"railties@5.2.3",
-												"sprockets-rails@3.2.1",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 86,
-													EndLine:   86,
 												},
 											},
 										},
@@ -1588,28 +1610,6 @@ func TestArtifact_Inspect(t *testing.T) {
 												{
 													StartLine: 111,
 													EndLine:   111,
-												},
-											},
-										},
-										{
-											ID:           "rubocop@0.67.2",
-											Name:         "rubocop",
-											Version:      "0.67.2",
-											Indirect:     false,
-											Relationship: types.RelationshipDirect,
-											DependsOn: []string{
-												"jaro_winkler@1.5.2",
-												"parallel@1.17.0",
-												"parser@2.6.3.0",
-												"psych@3.1.0",
-												"rainbow@3.0.0",
-												"ruby-progressbar@1.10.0",
-												"unicode-display_width@1.5.0",
-											},
-											Locations: []types.Location{
-												{
-													StartLine: 112,
-													EndLine:   112,
 												},
 											},
 										},

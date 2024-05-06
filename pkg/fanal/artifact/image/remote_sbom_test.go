@@ -223,7 +223,7 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:7e0b5476a5ff5a10594ad1ed7566220fcc43ecff29b831236cb2e98e574a1d05",
+						BlobID: "sha256:a06ed679a3289fba254040e1ce8f3467fadcc454ee3d0d4720f6978065f56684",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Applications: []types.Application{
@@ -268,9 +268,9 @@ func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: registry + "/test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:7e0b5476a5ff5a10594ad1ed7566220fcc43ecff29b831236cb2e98e574a1d05",
+				ID:   "sha256:a06ed679a3289fba254040e1ce8f3467fadcc454ee3d0d4720f6978065f56684",
 				BlobIDs: []string{
-					"sha256:7e0b5476a5ff5a10594ad1ed7566220fcc43ecff29b831236cb2e98e574a1d05",
+					"sha256:a06ed679a3289fba254040e1ce8f3467fadcc454ee3d0d4720f6978065f56684",
 				},
 			},
 		},
