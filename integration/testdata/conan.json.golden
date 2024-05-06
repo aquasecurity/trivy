@@ -22,6 +22,30 @@
       "Type": "conan",
       "Packages": [
         {
+          "ID": "poco/1.9.4",
+          "Name": "poco",
+          "Identifier": {
+            "PURL": "pkg:conan/poco@1.9.4",
+            "UID": "312753cebe80c0eb"
+          },
+          "Version": "1.9.4",
+          "Relationship": "direct",
+          "DependsOn": [
+            "pcre/8.43",
+            "zlib/1.2.12",
+            "expat/2.4.8",
+            "sqlite3/3.39.2",
+            "openssl/1.1.1q"
+          ],
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 12,
+              "EndLine": 25
+            }
+          ]
+        },
+        {
           "ID": "bzip2/1.0.8",
           "Name": "bzip2",
           "Identifier": {
@@ -94,30 +118,6 @@
             {
               "StartLine": 26,
               "EndLine": 36
-            }
-          ]
-        },
-        {
-          "ID": "poco/1.9.4",
-          "Name": "poco",
-          "Identifier": {
-            "PURL": "pkg:conan/poco@1.9.4",
-            "UID": "312753cebe80c0eb"
-          },
-          "Version": "1.9.4",
-          "Relationship": "direct",
-          "DependsOn": [
-            "pcre/8.43",
-            "zlib/1.2.12",
-            "expat/2.4.8",
-            "sqlite3/3.39.2",
-            "openssl/1.1.1q"
-          ],
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 12,
-              "EndLine": 25
             }
           ]
         },
